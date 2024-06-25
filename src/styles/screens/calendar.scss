@@ -19,6 +19,14 @@
         }
     }
 
+    #calendar-ui-container {
+
+        &.active {
+            display: block;
+            display: none !important;
+        }
+    }
+
     .flatpickr-calendar {
         background-color: $complimentaryBlue !important;
         margin: 20px auto 0 auto;

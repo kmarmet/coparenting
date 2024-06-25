@@ -31,16 +31,16 @@ export default function EventCalendar() {
     let allEvents = await db.getFilteredRecords(eventsFromDB, currentUser).then((x) => x);
     allEvents = util.getUniqueArrayOfObjects(allEvents, "id");
     const eventsToAddDotsTo = allEvents;
+
     if (selectedDay !== null) {
       allEvents = allEvents.filter((x) => {
-        if (x.date === selectedDay) {
+        if (x.date === selectedDay.toString()) {
           return x;
         }
       });
     }
 
     addEventDot(selectedMonth, eventsToAddDotsTo);
-
     const formattedDateArr = formatEvents(allEvents);
     setAllEvents(formattedDateArr);
     setState({
@@ -74,34 +74,52 @@ export default function EventCalendar() {
   useEffect(() => {
     util.scrollToTopOfPage();
     const dbRef = ref(getDatabase());
-
-    onValue(child(dbRef, db.tables.calendarEvents), async (snapshot) => {
-      const tableData = snapshot.val();
-      setExistingEvents(await db.getFilteredRecords(tableData, currentUser).then((x) => x));
-      updateLogFromDb(moment().format("MM/DD/yyyy"), null, tableData);
-    });
-
-    setState({ ...state, currentScreenTitle: "Shared Calendar" });
     flatpickr("#calendar-ui-container", {
       inline: true,
       onReady: () => {
-        console.log("ready");
+        // console.log("ready");
       },
       onMonthChange: (selectedDates, dateStr, instance) => {
-        updateLogFromDb(moment(`${instance.currentMonth + 1}/01/${instance.currentYear}`).format("MM/DD/yyyy"), instance.currentMonth + 1, existingEvents);
+        onValue(child(dbRef, db.tables.calendarEvents), async (snapshot) => {
+          const tableData = snapshot.val();
+          await db.getFilteredRecords(tableData, currentUser).then((x) => {
+            setExistingEvents(x);
+            updateLogFromDb(moment(`${instance.currentMonth + 1}/01/${instance.currentYear}`).format("MM/DD/yyyy"), instance.currentMonth + 1, x);
+          });
+        });
       },
-      onChange: (e) => {
-        const date = moment(e[0]).format("MM/DD/yyyy");
-        updateLogFromDb(date, moment(e[0]).format("MM"), existingEvents);
+      onChange: async (e) => {
+        const date = moment(e[0]).format("MM/DD/yyyy").toString();
+        onValue(child(dbRef, db.tables.calendarEvents), async (snapshot) => {
+          const tableData = snapshot.val();
+          await db.getFilteredRecords(tableData, currentUser).then((x) => {
+            setExistingEvents(x);
+            updateLogFromDb(date, moment(e[0]).format("MM"), x);
+          });
+        });
       },
     });
+    onValue(child(dbRef, db.tables.calendarEvents), async (snapshot) => {
+      const tableData = snapshot.val();
+      await db.getFilteredRecords(tableData, currentUser).then((x) => {
+        setExistingEvents(x);
+        updateLogFromDb(moment().format("MM/DD/yyyy"), null, x);
+      });
+    });
+
+    setState({ ...state, currentScreenTitle: "Shared Calendar" });
   }, []);
 
   return (
     <div id="calendar-container" className="page-container">
       {!showEventForm && (
         <div className="action-pills">
-          <div className="flex" onClick={() => setShowEventForm(true)}>
+          <div
+            className="flex"
+            onClick={() => {
+              document.querySelector(".flatpickr-calendar").style.display = "none";
+              setShowEventForm(true);
+            }}>
             <p>New Event</p>
             <ion-icon name="add-outline"></ion-icon>
           </div>
@@ -110,6 +128,7 @@ export default function EventCalendar() {
       {showEventForm && (
         <CalendarEventForm
           onSubmit={() => {
+            document.querySelector(".flatpickr-calendar").style.display = "block";
             setShowEventForm(false);
           }}
         />
