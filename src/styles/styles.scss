@@ -1,0 +1,501 @@
+@import "./_mixins.scss";
+
+#app-container {
+    background: linear-gradient(0deg, hsla(214, 100%, 14%, 1) 0%, hsla(212, 55%, 32%, 1) 100%);
+    background-size: cover;
+    // overflow: hidden;
+    position: relative;
+    height: 100%;
+
+    * {
+        @include fontType;
+    }
+
+
+    #pwa-steps {
+        @include button(white, $darkBlue);
+        font-weight: 400;
+        width: 120px;
+        font-size: 14px;
+        margin: 10px auto 0 auto;
+        min-width: 0;
+        padding: 0;
+        height: 30px;
+    }
+
+    #checkbox-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+
+        margin: 0 0 10px 0;
+        display: flex;
+        flex-wrap: wrap;
+
+        .flex {
+            margin-bottom: 10px;
+        }
+
+
+        .flex {
+            align-items: center;
+
+            .box {
+                height: 22px;
+                width: 22px;
+                border: 1px solid $complimentaryBlue;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                ion-icon {
+                    display: none;
+                }
+
+                &.active {
+                    background-color: $complimentaryBlue;
+                    border: 0;
+
+                    ion-icon {
+                        color: white;
+                        font-weight: bold;
+                        font-size: 18px;
+                        display: inline;
+                    }
+                }
+            }
+
+            span {
+                color: white;
+                margin: 0 15px 0 5px;
+                padding: 0;
+                line-height: 1;
+            }
+        }
+    }
+
+    #coparent-verification-container {
+        p {
+            font-weight: 300;
+        }
+
+        button {
+            margin: 0 auto;
+            @include button($green);
+        }
+    }
+
+    #forgot-password-container {
+        button {
+            @include button(white, $green);
+            margin: 30px auto 0 auto;
+            width: 100px;
+
+            &.send-security-code {
+                width: 80%;
+            }
+        }
+    }
+
+    #consent-screen-container {
+        .text {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: 15px;
+            border-radius: $borderRadius;
+
+            h3 {
+                color: black;
+                font-weight: 400;
+                line-height: 1;
+                font-size: 25px;
+                margin-bottom: 5px;
+            }
+
+            p {
+                line-height: 1.3;
+                color: black;
+                font-weight: 300;
+                padding-bottom: 10px;
+            }
+        }
+
+        #checkbox-group {
+            margin-top: 20px;
+            justify-content: center;
+
+            .box {
+                border-color: white;
+
+                span {
+                    margin-left: 10px;
+                }
+            }
+
+            * {
+                font-weight: 300;
+            }
+        }
+    }
+
+    #error-container {
+        // background-color: #f8d7da;
+        border-color: #f5c6cb;
+        width: 100vw;
+        margin: 0 auto;
+        border-radius: $borderRadius;
+
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        z-index: -1;
+        left: 0;
+        overflow: hidden;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        opacity: 0;
+        transition: all .8s ease-in-out;
+        top: 0;
+        display: flex;
+        @include blurredBg;
+
+        &.desktop {
+            p {
+                margin-top: 0;
+            }
+        }
+
+        &.show {
+            transition: all .3s ease-in-out;
+            top: 0;
+            opacity: 1;
+            padding: 10px;
+            z-index: 10000;
+        }
+
+        ion-icon {
+            display: block;
+            width: 100%;
+            margin-top: auto;
+            color: $red;
+            font-size: 35px;
+        }
+
+        button {
+            @include button(white, $green);
+            opacity: .8;
+            width: 30%;
+            padding-left: 10px;
+            margin-top: 20px;
+            margin-bottom: auto;
+
+            ion-icon {
+                display: flex;
+                top: 0;
+                margin-top: 0;
+                margin: 0;
+                font-size: 25px;
+                padding: 0;
+                margin-left: 0;
+                color: white;
+            }
+        }
+
+        p {
+            @include shadow;
+            background-color: $bgRed;
+            padding: 20px;
+            border-radius: $borderRadius;
+            color: $red;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: center;
+            margin-top: auto;
+
+        }
+    }
+
+    .menu-icon-container {
+        background-color: #03234c;
+        width: 100%;
+        height: 50px;
+        position: fixed;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        height: 70px;
+
+        &.open {
+            background-color: transparent;
+        }
+
+        .hamburger-react {
+            position: relative;
+            z-index: 100;
+            color: #ccc;
+            user-select: none;
+            border-radius: 100%;
+            -webkit-tap-highlight-color: transparent;
+
+            &::focus {
+                outline: 0;
+            }
+        }
+    }
+
+    #menu {
+        padding: 50px 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: opacity .4s ease-in-out;
+        opacity: 0;
+        @include darkBg(.97);
+
+
+        &.open {
+            opacity: 1;
+            z-index: 10;
+        }
+
+        h2 {
+            font-style: italic;
+            margin-bottom: auto;
+            font-weight: 300;
+        }
+
+        #version-number {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: white;
+        }
+
+        .action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            width: 300px;
+
+            &:last-child {
+                margin-bottom: auto;
+            }
+
+            &.active {
+
+                p,
+                ion-icon {
+                    opacity: 1;
+                    font-weight: 500;
+                }
+            }
+
+            p {
+                line-height: 1;
+                color: white;
+                font-size: 22px;
+                text-align: left;
+                width: 200px;
+                @include fontType(100);
+                opacity: .7;
+            }
+
+            ion-icon {
+                font-size: 30px;
+                color: white;
+                margin-right: 10px;
+                margin-left: 40px;
+                opacity: .7;
+            }
+        }
+    }
+
+    b {
+        font-weight: bold;
+    }
+
+    p {
+        line-height: 1.2;
+    }
+
+    .page-container {
+        padding-bottom: 100px;
+        position: relative;
+        width: 100vw;
+        height: calc(100vh + 15px);
+        // min-height: 1000px;
+        margin-top: 0;
+        padding: 15px;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        max-width: 100vw;
+
+        &#agreement-container {
+            height: 100vh;
+            padding-bottom: 300px;
+            overflow: auto;
+        }
+    }
+
+    .modal {
+        transition: all .3s ease-in-out;
+        @include modal;
+
+        &.pwa-modal {
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+
+            .os-container {
+                margin-bottom: 20px;
+            }
+
+            * {
+                color: white;
+                font-size: 14px;
+            }
+
+            .close {
+                font-size: 35px;
+            }
+
+            button {
+                @include button($green);
+                width: 100%;
+                margin-top: 50px;
+
+                ion-icon {
+                    color: $green;
+                }
+            }
+
+            h1 {
+                font-size: 20px;
+                font-weight: 500;
+                margin-bottom: 5px;
+                line-height: 1;
+
+                ion-icon {
+                    color: $green;
+                    font-size: 20px;
+                    position: relative;
+                    top: 3px;
+
+                    &[name='logo-apple'] {
+                        color: silver;
+                    }
+
+                    &[name='android-logo'] {
+                        color: $green;
+                    }
+
+                }
+            }
+
+            p,
+            i {
+                font-weight: 400;
+                font-style: italic;
+                margin: 0 0 10px 0;
+
+            }
+
+            i {
+                font-style: italic;
+            }
+
+
+            li {
+                margin-left: -10px;
+                margin-bottom: 8px;
+                line-height: 1.3;
+                font-weight: 400;
+
+                ion-icon {
+                    position: relative;
+                    top: 3px;
+                }
+            }
+        }
+    }
+
+    .button-group {
+        // width: 90%;
+        margin: 0 auto;
+    }
+
+    .form {
+        @include form;
+    }
+
+    .overlay {
+        @include blurredBg;
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        left: 0;
+        right: 0;
+        z-index: -1;
+        bottom: 0;
+        top: 0;
+        transition: all .3s ease-in-out;
+        opacity: 0;
+
+        &.active {
+            opacity: 1;
+            z-index: 1000;
+        }
+    }
+
+    .screen-title {
+        @include screenTitle;
+    }
+
+    .red {
+        color: $red;
+    }
+
+    .flex {
+        display: flex;
+    }
+
+    .action-pills {
+        @include actionPills;
+    }
+
+    // Override rsuite Styles
+    @include rSuiteOverrides;
+
+    .instructions {
+        color: white;
+        opacity: .7;
+        font-style: italic;
+        text-align: center;
+        margin-top: 10px;
+        font-weight: 300;
+        margin-bottom: 10px;
+        line-height: 1.1;
+        font-size: 16px;
+    }
+
+    .button {
+        @include button;
+    }
+
+    * {
+        @include fontType;
+    }
+
+    #dashboard-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow-y: auto;
+    }
+}

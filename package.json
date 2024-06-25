@@ -1,0 +1,60 @@
+{
+  "name": "coparenting-app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emailjs/browser": "4.3.3",
+    "@emotion/react": "11.11.4",
+    "@emotion/styled": "11.11.5",
+    "@mui/material": "5.15.20",
+    "date-fns": "3.6.0",
+    "date-fns-jalali": "^2.13.0-0 || ^3.2.0-0",
+    "dayjs": "1.11.11",
+    "firebase": "10.12.2",
+    "flatpickr": "4.6.13",
+    "hamburger-react": "2.5.1",
+    "luxon": "3.4.4",
+    "moment": "2.30.1",
+    "moment-hijri": "2.1.2",
+    "moment-jalaali": "0.10.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-scripts": "5.0.1",
+    "rsuite": "5.64.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "test": "react-scripts test",
+    "build": "react-scripts build&& npm run postbuild",
+    "eject": "react-scripts eject",
+    "dev": "cd public && rm -rf dist && rm -rf .cache && parcel index.html",
+    "postbuild": "cd public && workbox generateSW"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "7.24.7",
+    "@babel/preset-react": "7.24.7",
+    "@parcel/transformer-sass": "2.12.0",
+    "@parcel/transformer-webmanifest": "2.12.0",
+    "parcel": "2.12.0",
+    "parcel-bundler": "1.12.5",
+    "sass": "1.77.4"
+  }
+}

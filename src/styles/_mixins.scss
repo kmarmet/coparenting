@@ -1,0 +1,437 @@
+@mixin shadow {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+@mixin screenTitle {
+    color: white;
+    font-size: 30px;
+    text-align: center;
+    padding: 15px 0;
+    line-height: 1;
+    opacity: .9;
+    @include fontType(500)
+}
+
+@mixin fontType($weight: 200) {
+    font-family: "Poppins", sans-serif;
+    font-style: normal;
+    font-weight: $weight;
+}
+
+@mixin transBg {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+@mixin darkBg($darkAmount: .9) {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, $darkAmount);
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    z-index: -1;
+}
+
+@mixin modal {
+    @include darkBg();
+
+    &.show {
+        opacity: 1;
+        z-index: 10000;
+    }
+
+    .modal-content {
+        width: 80%;
+        margin: 0 auto;
+        position: fixed;
+        top: 35%;
+        left: 40%;
+        right: 40%;
+        transform: translate(-40%, -40%);
+        max-height: 80vh;
+        overflow-y: auto;
+
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+
+            button {
+                @include buttonWithIcon;
+
+                &#mark-as-paid {
+                    background-color: $green;
+                }
+            }
+        }
+
+        p {
+            color: white;
+
+            &#expense-notes {
+                max-height: 150px;
+                overflow: scroll;
+                line-height: 1.2;
+                display: block;
+
+            }
+        }
+    }
+
+    .close {
+        margin-top: auto;
+        position: fixed;
+        bottom: -10px;
+        left: 50%;
+        right: 50%;
+        transform: translate(-50%, -50%);
+        background-color: transparent;
+        border: 0;
+        color: white;
+        font-weight: bold;
+        z-index: 10000;
+        font-size: 40px;
+    }
+}
+
+@mixin blurredBg {
+    -webkit-backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    transition: all .5s ease-in-out;
+}
+
+@mixin buttonWithIcon($color: white, $bgColor: $green) {
+    border: 0;
+    border-radius: 5px;
+    color: $color;
+    padding: 18px 0;
+    line-height: 1;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    background-color: $bgColor;
+
+    ion-icon {
+        font-size: 20px;
+        margin-left: 5px;
+        line-height: 1;
+    }
+}
+
+@mixin gradientButtonBg {
+    background-image: linear-gradient(to right, $darkBlue 0%, $mainBlue 51%, $lightBlue 100%);
+    text-align: center;
+    text-transform: uppercase;
+    transition: 0.5s;
+    background-size: 200% auto;
+    box-shadow: 0 0 5px $lightBlue;
+}
+
+@mixin actionPills() {
+    display: flex;
+    align-items: center;
+
+    .flex {
+        padding: 3px 10px;
+        border-radius: 8px;
+        align-items: center;
+        color: black;
+        margin-right: 10px;
+        background-color: $darkBlue;
+        text-align: center;
+        text-transform: uppercase;
+        transition: 0.5s;
+        border: 0;
+        background-size: 200% auto;
+
+        p {
+            line-height: 1;
+            padding: 5px;
+            margin: 0;
+            font-size: 14px;
+            font-weight: 400;
+            color: white;
+            opacity: .8;
+        }
+
+        ion-icon {
+            font-size: 18px;
+            color: white;
+        }
+    }
+
+    &.swap-request {
+        background-color: $darkBlue;
+        padding: 0;
+        height: 45px;
+
+        .flex {
+            border-radius: 0;
+            margin: 0;
+            height: 100%;
+            opacity: .6;
+            align-items: center;
+            justify-content: center;
+
+            p {
+                text-align: center;
+            }
+
+            &.active {
+                opacity: 1;
+                border: 0;
+                @include transBg();
+            }
+        }
+    }
+}
+
+@mixin greyLine {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    width: 100%;
+    height: 1px;
+    background-color: #E0E0E0;
+}
+
+@mixin button($color: white, $bgColor: $green) {
+    line-height: 1;
+    border: 0;
+    border-radius: 0;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $bgColor;
+    border-radius: 5px;
+    color: $color;
+    min-width: 50%;
+    height: 35px;
+    font-size: 18px;
+    text-transform: uppercase;
+    text-align: center;
+    opacity: 1;
+    padding: 0 10px;
+    vertical-align: middle;
+
+    ion-icon {
+        font-size: 18px;
+        margin-left: 10px;
+    }
+}
+
+
+@mixin form {
+    margin-top: 20px;
+
+    &.show {
+        display: block;
+    }
+
+    input,
+    textarea {
+        margin: 0 auto;
+        display: block;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        width: 100%;
+        border: 0;
+        background-color: transparent;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 0;
+        outline: 0;
+        color: white !important;
+        font-weight: 400;
+        padding-left: 0;
+        min-height: 25px;
+
+        &:focus,
+        &:valid,
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus,
+        &:-webkit-autofill:active {
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: #ffffff;
+        }
+
+        &::placeholder {
+            color: white;
+            opacity: .6;
+            font-style: italic;
+            font-weight: 300;
+        }
+    }
+
+    textarea {
+        height: 150px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 10px;
+        border-radius: $borderRadius;
+    }
+
+    label {
+        @include fontType(300);
+        color: white;
+
+        b {
+            font-weight: 500;
+        }
+    }
+
+    .button-group {
+        margin: 0 auto;
+        justify-content: center;
+        margin-top: 30px;
+
+        button {
+            @include button;
+
+            &.green {
+                margin-right: 10px;
+                @include button(white, $green);
+            }
+
+            &.red {
+                background-color: transparent;
+                @include button(white, $red);
+            }
+        }
+    }
+}
+
+@mixin deadCenter() {
+    position: absolute;
+    top: 50%;
+    bottom: 50%;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@mixin rSuiteOverrides() {
+
+    .rs-picker-toggle {
+        outline: none;
+
+        .rs-picker-toggle-placeholder {
+            color: white;
+        }
+    }
+
+    .rs-picker {
+        margin: 0;
+        outline: none;
+
+        &::placeholder {
+            color: white;
+        }
+    }
+
+    .rs-daterange-input,
+    .rs-picker-date,
+    .rs-input {
+        outline: none !important;
+        background-color: transparent !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    .rs-input {
+        display: flex;
+        align-items: center;
+        align-items: flex-end;
+        outline: none;
+    }
+
+    .rs-input-group.rs-input-group-inside {
+        background-color: transparent;
+        width: 100%;
+        margin: 0 auto;
+        border: 0;
+        outline: none;
+    }
+
+    .rs-picker-select-menu-item {
+        color: $darkBlue !important;
+    }
+
+    .rs-dropdown,
+    .rs-picker,
+    .rs-picker-toggle {
+        width: 100%;
+        margin: 0 auto 20px auto;
+        display: block;
+        outline: none;
+
+        .rs-dropdown-toggle,
+        .rs-btn,
+        .rs-btn-default {
+            background-color: transparent !important;
+            border: 1px solid $complimentaryBlue;
+            width: 100%;
+            color: white !important;
+            font-weight: 300;
+        }
+
+        .rs-picker-toggle-value {
+            color: white;
+            outline: none;
+        }
+
+        ul {
+            background-color: transparent;
+            border: 1px solid $complimentaryBlue;
+            width: 100%;
+            position: relative;
+            z-index: 1000;
+
+            li {
+                span {
+                    color: white;
+                }
+
+            }
+        }
+    }
+
+    .rs-picker {
+        // margin: 0 auto 10px auto !important;
+        display: block;
+        width: 100%;
+        background-color: transparent;
+        // border: 1px solid red;
+        margin-bottom: 20px;
+    }
+
+    .rs-picker-popup {
+        @include transBg;
+        position: absolute;
+        top: 50%;
+        bottom: 50%;
+        left: 50% !important;
+        right: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+
+    .rs-input-group-addon {
+        fill: $mainBlue;
+        border-bottom: 1px solid $translucent;
+        display: none;
+
+        svg {
+            fill: white;
+            opacity: .7;
+            height: 20px;
+            width: 20px;
+        }
+    }
+}

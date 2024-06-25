@@ -1,0 +1,305 @@
+@import "../mixins";
+
+#expense-tracker {
+    .image-modal {
+        img {
+            width: 100%;
+            height: auto;
+            max-height: 100%;
+        }
+    }
+
+    #expenses-card-container {
+        width: 100%;
+
+        .expense {
+            border-radius: $borderRadius;
+            background-color: $bgWhite;
+            margin: 0 auto 8px auto;
+            height: 60px;
+            border: 0;
+
+            .content {
+                ion-icon {
+                    margin: 0 auto;
+                    display: block;
+                    position: relative;
+                    top: 5px;
+                }
+
+                .flex {
+                    display: flex;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+
+                    p {
+                        font-weight: 400;
+                        line-height: 1.2;
+                        opacity: .9;
+
+                        &.subtext {
+                            opacity: .6;
+                        }
+
+                        &.unpaid {
+                            color: $red;
+                            opacity: 1;
+                            margin: 0;
+                        }
+
+                        &.paid {
+                            color: $green;
+                        }
+
+                        &.name,
+                        &.amount {
+                            font-weight: 500;
+                        }
+                    }
+
+                    b {
+                        font-weight: 500;
+                    }
+                }
+
+                .top-details {
+                    justify-content: flex-start;
+                    flex-wrap: nowrap;
+                    background-color: transparent;
+                    transition: all .8s linear;
+
+                    .amount-block {
+                        align-items: stretch;
+                        width: 70px;
+                        background-color: $complimentaryBlue;
+                        align-items: center;
+                        display: flex;
+                        justify-content: center;
+                        color: white;
+                        height: 60px;
+                        font-weight: 400;
+                        border-radius: $borderRadius 0 0 $borderRadius;
+                        font-size: 20px;
+
+                    }
+
+                    .top-details-text {
+                        width: calc(100% - 60px);
+                        padding: 10px 15px;
+                        display: flex;
+                        flex-wrap: wrap;
+                        align-items: flex-end;
+
+                        .flex {
+                            width: 100%;
+
+                            p {
+                                line-height: 1;
+                            }
+                        }
+                    }
+                }
+
+
+                .details {
+                    padding: 0;
+                    opacity: 0;
+                    height: 0;
+                    max-height: 0;
+                    overflow: hidden;
+
+                    &.show {
+                        opacity: 1;
+                        max-height: 100%;
+                        height: 100%;
+                        max-height: 100%;
+                        padding: 15px;
+
+                        #img-container {
+                            opacity: 1;
+                        }
+                    }
+
+                    #img-container {
+                        max-width: 150px;
+                        width: 150px;
+                        opacity: 0;
+                        justify-content: center;
+                        margin-bottom: 20px;
+
+                        #img-expand-text {
+                            line-height: 1;
+                            text-align: center;
+                            width: 100%;
+                            font-style: italic;
+                            opacity: .7;
+                            font-size: 14px;
+                            padding-top: 10px;
+                        }
+                    }
+
+                    .group {
+                        margin-bottom: 10px;
+
+                        p {
+                            margin: 0;
+                        }
+
+                        &.notes {
+                            max-width: 160px;
+                        }
+                    }
+
+                    #button-group {
+                        display: flex;
+                        justify-content: center;
+                        width: 100%;
+                        flex-wrap: nowrap;
+                        max-width: 100%;
+
+                        button {
+                            @include button(white, $green);
+                            font-size: 14px;
+                            min-width: 0;
+
+                            &.mark-as-paid {
+                                width: calc(100%);
+                                font-size: 14px;
+                                min-width: 0;
+                            }
+
+                            &.delete {
+                                @include button(white, $red);
+                                margin-right: 5px;
+                                margin-left: 5px;
+                                font-size: 14px;
+                                width: calc(100%);
+                                min-width: 0;
+                            }
+
+                            &.close {
+                                @include button(white, $mainBlue);
+                                width: calc(100%);
+                                opacity: .8;
+                                font-size: 14px;
+                                min-width: 0;
+                            }
+
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+
+            &.open {
+                height: auto;
+                box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+
+                .top-details {
+                    transition: all .3s linear;
+                    background-color: $complimentaryBlue;
+                    border-radius: $borderRadius $borderRadius 0 0;
+
+                    .top-details-text {
+                        color: white;
+
+                        .flex {
+                            align-items: center;
+                        }
+
+                        .unpaid,
+                        .paid {
+                            background-color: $bgRed;
+                            padding: 5px 10px;
+                            border-radius: $borderRadius;
+                            font-weight: 500;
+                            line-height: 1;
+                            font-size: 14px;
+                            margin: 0;
+                            opacity: 1;
+
+                            &.paid {
+                                background-color: $green;
+                                color: white;
+                            }
+                        }
+
+                        .recipient {
+                            position: relative;
+                            top: -3px;
+                        }
+                    }
+
+                    .amount-block {
+                        border-radius: $borderRadius 0 0 0;
+                    }
+                }
+            }
+        }
+    }
+
+    #add-expense-form {
+        display: none;
+        @include form;
+
+        label {
+            margin-top: 15px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .rs-picker {
+            margin: 0;
+        }
+
+        #checkbox-group {
+            margin: 0 0 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+
+            .flex {
+                margin-bottom: 10px;
+            }
+        }
+
+        .button-group {
+            margin: 0 auto;
+            justify-content: center;
+            margin-top: 30px;
+
+            button {
+                margin: 0 auto;
+
+                ion-icon {
+                    margin-left: 0;
+                }
+
+                &.green {
+                    margin-right: 10px;
+
+                    @include buttonWithIcon(white, $green);
+                }
+
+                &.red {
+                    @include button(white, $red);
+                }
+            }
+        }
+
+        #upload-input {
+            background-color: transparent;
+            padding: 0;
+            border: 0;
+
+            &::file-selector-button {
+                margin-right: 10px;
+                color: white;
+                padding: 5px 10px;
+                border: thin solid white;
+                border-radius: $borderRadius;
+                background-color: transparent;
+                opacity: .7;
+            }
+        }
+    }
+}

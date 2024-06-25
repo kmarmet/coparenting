@@ -1,0 +1,32 @@
+#profile-container {
+    #children-container {
+        display: flex;
+        width: 100%;
+        // border: 1px solid red;
+        overflow: auto;
+        background-color: $complimentaryBlue;
+        border-radius: $borderRadius;
+        padding: 10px;
+
+        .child {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-width: calc(100% / 3);
+            // border: 1px solid blue;
+            margin-right: 5px;
+
+            ion-icon {
+                color: $darkBlue;
+                font-size: 40px;
+            }
+
+            span {
+                color: $darkBlue;
+                font-size: 16px;
+                font-weight: 300;
+            }
+        }
+    }
+}
