@@ -55,6 +55,12 @@ export default function SwapRequests() {
     });
   };
 
+  const close = (e) => {
+    e.stopPropagation();
+    const requestContainer = e.currentTarget.parentNode.parentNode;
+    requestContainer.classList.remove("open");
+  };
+
   useEffect(() => {
     util.scrollToTopOfPage();
     const dbRef = ref(getDatabase());
@@ -102,8 +108,9 @@ export default function SwapRequests() {
                     const clickedEl = e.currentTarget;
                     let allRequestEls = document.querySelectorAll(".request");
                     allRequestEls.forEach((x) => x.classList.remove("open"));
-
-                    e.currentTarget.classList.add("open");
+                    if (!clickedEl.classList.contains("button")) {
+                      clickedEl.classList.add("open");
+                    }
                   }}>
                   <div className="name-container">
                     <ion-icon name="calendar-outline"></ion-icon>
@@ -133,6 +140,9 @@ export default function SwapRequests() {
                       )}
                       <p className="reason-text">{request.reason}</p>
                     </div>
+                    <button className="button close" onClick={(e) => close(e)}>
+                      Close
+                    </button>
                   </div>
                   {util.getName(request.forCoparent).includes(util.getName(currentUser.name)) && (
                     <>

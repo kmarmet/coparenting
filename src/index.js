@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.js";
+import App from "./app";
 import "./styles/bundle.scss";
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

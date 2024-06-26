@@ -154,6 +154,8 @@
                         opacity: 1;
                         text-align: center;
 
+
+
                         ion-icon {
                             font-size: 25px;
                         }
@@ -230,10 +232,19 @@
                     display: none;
                 }
 
+                .close {
+                    @include button(white, #143662);
+                    margin: 20px auto 0 auto;
+                    display: block;
+                    opacity: .8;
+                }
+
                 .flex {
                     display: flex;
                     justify-content: space-between;
                     flex-wrap: wrap;
+
+
 
                     p {
                         font-weight: 400;

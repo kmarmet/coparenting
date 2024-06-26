@@ -190,6 +190,9 @@
 
                     &.register {
                         @include buttonWithIcon(white, $complimentaryBlue);
+                        min-width: 0;
+                        width: 50%;
+                        margin-right: 0;
                     }
                 }
             }
