@@ -31,7 +31,8 @@
     "build": "react-scripts build&& npm run postbuild",
     "eject": "react-scripts eject",
     "dev": "cd public && rm -rf dist && rm -rf .cache && parcel index.html",
-    "postbuild": "cd public && cd ../src && workbox generateSW"
+    "postbuild": "cd src && workbox generateSW",
+    "push": "git push pcp HEAD:main"
   },
   "eslintConfig": {
     "extends": [
