@@ -89,13 +89,11 @@ export default function App() {
           if (user && user.showPwaSteps) {
             setShowPwaSteps(user.showPwaSteps);
           }
-          setError("Please pull down on the screen (after closing this) to receive the latest update. If you already have, please ignore.");
           setState({
             ...state,
             currentScreen: screenNames.calendar,
             currentUser: user,
             userIsLoggedIn: true,
-            showError: true,
           });
         }
       });
