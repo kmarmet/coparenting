@@ -42,7 +42,6 @@ export default function Menu() {
 
   return (
     <div id="menu">
-      <span id="version-number">v{versionNumber}</span>
       {currentUser && <h2>Hello {util.uppercaseFirstLetterInWord([util.getName(currentUser.name)])}!</h2>}
       <div className={`action ${currentScreen === screenNames.calendar ? "active" : ""}`} onClick={() => changeCurrentScreen(screenNames.calendar)}>
         <ion-icon name="calendar-outline"></ion-icon>
