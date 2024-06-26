@@ -11,16 +11,26 @@
             margin: 0;
         }
 
-        button {
-            &.submit {
-                margin: 0 auto;
-                @include button(white, $green);
+        .button-group {
+            display: flex;
+
+            button {
+                &.submit {
+                    @include button(white, $green);
+                    margin-right: 10px;
+                    min-width: 0;
+                    width: 50%;
+                }
+
+                &.red {
+                    min-width: 0;
+                    width: 50%;
+                }
             }
         }
     }
 
     #calendar-ui-container {
-
         &.active {
             display: block;
             display: none !important;
@@ -32,9 +42,10 @@
         margin: 20px auto 0 auto;
         border: 0;
         border-radius: $borderRadius;
-        width: 95%;
+        width: 100%;
         box-shadow: none;
         padding: 20px;
+        margin: 10px 0 0 0;
 
         &::before,
         &::after {
@@ -48,6 +59,19 @@
             margin: 0 auto;
         }
 
+        select {
+            &.flatpickr-monthDropdown-months {
+                margin-bottom: 10px;
+                display: block;
+                position: relative;
+                top: -5px;
+            }
+        }
+
+        .numInput {
+            display: none;
+        }
+
         .flatpickr-monthDropdown-months {
             option {
                 background-color: $darkBlue;
@@ -59,8 +83,13 @@
         .flatpickr-prev-month,
         .flatpickr-next-month {
             position: relative;
-            top: 5px;
-            font-weight: bold;
+
+            // top: 5px;
+            svg {
+                font-weight: bold;
+                font-size: 45px;
+                transform: scale(130%);
+            }
         }
 
         .flatpickr-weekday {

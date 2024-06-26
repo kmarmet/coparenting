@@ -21,7 +21,8 @@ import ForgotPassword from "./components/screens/forgotPassword.jsx";
 import Agreement from "./components/screens/agreement.jsx";
 import UploadAgreement from "./components/screens/uploadAgreement.jsx";
 import Profile from "./components/screens/profile.jsx";
-
+import ReactPullToRefresh from "react-pull-to-refresh";
+import moment from "moment";
 const stateObj = {
   currentScreen: screenNames.login,
   setCurrentScreen: (screen) => {},
@@ -72,6 +73,11 @@ export default function App() {
     }
   };
 
+  const onRefresh = () => {
+    console.log("true");
+    window.location.reload();
+  };
+
   // Remember Me
   useEffect(() => {
     const rememberKey = localStorage.getItem("rememberKey");
@@ -83,11 +89,13 @@ export default function App() {
           if (user && user.showPwaSteps) {
             setShowPwaSteps(user.showPwaSteps);
           }
+          setError("Please pull down on the screen (after closing this) to receive the latest update. If you already have, please ignore.");
           setState({
             ...state,
             currentScreen: screenNames.calendar,
             currentUser: user,
             userIsLoggedIn: true,
+            showError: true,
           });
         }
       });
@@ -97,16 +105,21 @@ export default function App() {
 
   return (
     <div className="App" id="app-container">
+      <div className="loading">
+        <span className="loading-ptr-1"></span>
+        <span className="loading-ptr-2"></span>
+        <span className="loading-ptr-3"></span>
+      </div>
+      <span className="genericon genericon-next"></span>
       <globalState.Provider value={stateToUpdate}>
-        {error !== null && <Error className={error && error.length > 0 ? "desktop" : ""} errorMessage={error} canClose={false} />}
-        {currentScreenTitle && currentScreenTitle.length > 0 && currentScreenTitle !== "error" && currentScreen !== screenNames.consentInfo && <p className="screen-title">{currentScreenTitle}</p>}
-        {!hideInstallAppArray.includes(currentScreen) && (
+        <ReactPullToRefresh onRefresh={onRefresh}>
+          {error !== null && window.innerWidth > 768 && <Error className={error && error.length > 0 ? "desktop" : ""} errorMessage={error} canClose={false} />}
+          <Error errorMessage={error} />
+          {currentScreenTitle && currentScreenTitle.length > 0 && currentScreenTitle !== "error" && currentScreen !== screenNames.consentInfo && <p className="screen-title">{currentScreenTitle}</p>}
           <p id="pwa-steps" onClick={() => setShowPwaSteps(true)}>
             Install App
           </p>
-        )}
-        <Modal elClass={`pwa-modal ${showPwaSteps ? "show" : ""}`} onClose={() => setShowPwaSteps(false)}>
-          <>
+          <Modal elClass={`pwa-modal ${showPwaSteps ? "show" : ""}`} onClose={() => setShowPwaSteps(false)}>
             <div className="os-container">
               <h1>
                 iOS <ion-icon name="logo-apple"></ion-icon>
@@ -140,28 +153,28 @@ export default function App() {
             {/* <button className="button" onClick={disablePwaSteps}>
               Do not show again <ion-icon name="checkmark-circle"></ion-icon>
             </button> */}
-          </>
-        </Modal>
-        {currentScreen === screenNames.consentInfo && <ConsentInfo />}
-        {currentScreen === screenNames.dashboard && <Dashboard />}
-        {currentScreen === screenNames.login && <Login />}
-        {currentScreen === screenNames.registration && <Registration />}
-        {currentScreen === screenNames.expenseTracker && <ExpenseTracker />}
-        {currentScreen === screenNames.swapRequests && <SwapRequests />}
-        {currentScreen === screenNames.forgotPassword && <ForgotPassword />}
-        {currentScreen === screenNames.uploadAgreement && <UploadAgreement />}
-        {currentScreen === screenNames.calendar && <EventCalendar />}
-        {currentScreen === screenNames.agreement && <Agreement />}
-        {currentScreen === screenNames.profile && <Profile />}
-        {currentScreen === screenNames.coparentVerification && <CoparentVerification />}
-        {userIsLoggedIn && currentScreen !== screenNames.coparentVerification && (
-          <div>
-            <Menu />
-            <div className="menu-icon-container">
-              <Hamburger toggled={menuIsOpen} hideOutline={true} toggle={() => setState({ ...state, menuIsOpen: !menuIsOpen })} />
+          </Modal>
+          {currentScreen === screenNames.consentInfo && <ConsentInfo />}
+          {currentScreen === screenNames.dashboard && <Dashboard />}
+          {currentScreen === screenNames.login && <Login />}
+          {currentScreen === screenNames.registration && <Registration />}
+          {currentScreen === screenNames.expenseTracker && <ExpenseTracker />}
+          {currentScreen === screenNames.swapRequests && <SwapRequests />}
+          {currentScreen === screenNames.forgotPassword && <ForgotPassword />}
+          {currentScreen === screenNames.uploadAgreement && <UploadAgreement />}
+          {currentScreen === screenNames.calendar && <EventCalendar />}
+          {currentScreen === screenNames.agreement && <Agreement />}
+          {currentScreen === screenNames.profile && <Profile />}
+          {currentScreen === screenNames.coparentVerification && <CoparentVerification />}
+          {userIsLoggedIn && currentScreen !== screenNames.coparentVerification && (
+            <div>
+              <Menu />
+              <div className="menu-icon-container">
+                <Hamburger toggled={menuIsOpen} hideOutline={true} toggle={() => setState({ ...state, menuIsOpen: !menuIsOpen })} />
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </ReactPullToRefresh>
       </globalState.Provider>
     </div>
   );

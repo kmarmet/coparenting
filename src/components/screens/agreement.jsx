@@ -70,7 +70,9 @@ export default function Agreement() {
                 let newHeaderArray = [];
                 spanHeaders.forEach((header) => {
                   const text = header.textContent.replaceAll(" ", "-");
-                  newHeaderArray.push(text);
+                  if (newHeaderArray.indexOf(text) === -1) {
+                    newHeaderArray.push(text);
+                  }
                 });
                 setTocHeaders(newHeaderArray);
               }
@@ -110,8 +112,9 @@ export default function Agreement() {
       <div className="form">
         <Modal elClass={!showTextContainer ? "show" : ""} hasClose={false}>
           <>
-            <p>Retrieving the agreement...(doing magic).</p>
-            <p>This can take up to 2 minutes (depending on how many images were uploaded).</p>
+            <p>Retrieving the agreement...</p>
+            <p>This can take up to 2 minutes</p>
+            <p>...depending on how many images were uploaded</p>
             <p>Enjoy some jokes in the meantime...</p>
             <p className="dad-joke"></p>
             <p className="progress-count">
@@ -145,9 +148,16 @@ export default function Agreement() {
         </div>
         <div id="text-container" className={showTextContainer === true ? "active" : ""}></div>
         {showTextContainer && (
-          <>
-            <ion-icon onClick={() => document.querySelector(".screen-title").scrollIntoView({ block: "start", behavior: "smooth" })} id="scroll-icon" name="chevron-up-circle"></ion-icon>
-          </>
+          <div
+            onClick={() => {
+              const ref = document.querySelector("#text-container p").firstChild;
+              ref.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}>
+            <ion-icon id="scroll-icon" name="chevron-up-circle"></ion-icon>
+          </div>
         )}
       </div>
     </div>

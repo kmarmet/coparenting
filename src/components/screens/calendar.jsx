@@ -6,6 +6,7 @@ import db from "../../db";
 import globalState from "../../context";
 import util from "../../util";
 import flatpickr from "flatpickr";
+import screenNames from "../../constants/screenNames";
 
 export default function EventCalendar() {
   const [allEvents, setAllEvents] = useState([]);
@@ -69,6 +70,12 @@ export default function EventCalendar() {
     });
   };
 
+  const cancel = () => {
+    setState({ ...state, currentScreen: screenNames.calendar, currentScreenTitle: "Calendar" });
+    setShowEventForm(false);
+    document.querySelector(".flatpickr-calendar").style.display = "block";
+  };
+
   const deleteEvent = (e) => db.delete(db.tables.calendarEvents, e.id);
 
   useEffect(() => {
@@ -127,6 +134,7 @@ export default function EventCalendar() {
       )}
       {showEventForm && (
         <CalendarEventForm
+          onCancel={cancel}
           onSubmit={() => {
             document.querySelector(".flatpickr-calendar").style.display = "block";
             setShowEventForm(false);

@@ -13,7 +13,7 @@ export default function Profile() {
 
   useEffect(() => {
     util.scrollToTopOfPage();
-    setState({ ...state, currentScreenTitle: "Forgot Password" });
+    setState({ ...state, currentScreenTitle: `Your Profile` });
   }, []);
 
   return (
@@ -24,7 +24,6 @@ export default function Profile() {
           currentUser.children &&
           currentUser.children.length > 0 &&
           currentUser.children.map((child, index) => {
-            console.log(child);
             return (
               <div key={index} className="child">
                 <ion-icon name="person-circle"></ion-icon>
@@ -32,6 +31,14 @@ export default function Profile() {
               </div>
             );
           })}
+      </div>
+      <div id="sections">
+        <p className="section">
+          <ion-icon name="person-outline"></ion-icon>My Profile<ion-icon class="go-arrow" name="chevron-forward-outline"></ion-icon>
+        </p>
+        <p className="section">
+          <ion-icon name="people-outline"></ion-icon>Coparents<ion-icon class="go-arrow" name="chevron-forward-outline"></ion-icon>
+        </p>
       </div>
     </div>
   );

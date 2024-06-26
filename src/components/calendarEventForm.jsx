@@ -9,8 +9,9 @@ import moment from "moment";
 import CalendarEvent from "../models/calendarEvent";
 import CheckboxGroup from "./shared/checkboxGroup";
 import SmsUtil from "../smsUtil";
+import screenNames from "../constants/screenNames";
 
-export default function CalendarEventForm({ onSubmit }) {
+export default function CalendarEventForm({ onSubmit, onCancel }) {
   const [eventDate, setEventDate] = useState(null);
   const [children, setChildren] = useState([]);
   const [eventLocation, setEventLocation] = useState(null);
@@ -103,9 +104,14 @@ export default function CalendarEventForm({ onSubmit }) {
 
       {currentUser && <CheckboxGroup labels={currentUser.children} onCheck={handleCheckboxSelection} />}
 
-      <button className="button green submit" onClick={submit}>
-        Submit
-      </button>
+      <div className="button-group">
+        <button className="button green submit" onClick={submit}>
+          Submit
+        </button>
+        <button className="button red " onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }

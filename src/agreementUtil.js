@@ -22,7 +22,6 @@ const AgreementUtil = {
     "general-release",
     "general-provisions",
     "acknowledgement",
-    "separation",
     "division-of-property",
     "real-estate",
     "household-goods-and-furnishings",
@@ -39,6 +38,10 @@ const AgreementUtil = {
     "husbands-separate-property",
     "wifes-separate-property",
   ],
+  hasNumbers: (str) => {
+    var regex = /\d/g;
+    return regex.test(str);
+  },
   cleanHeader: (header, uppercaseAll = false, uppercaseFirstWord) => {
     let returnString = header.replaceAll("-", " ");
     if (uppercaseAll) {
@@ -62,6 +65,9 @@ const AgreementUtil = {
       let paragraphs = result.data.paragraphs;
 
       paragraphs.forEach((par) => {
+        if (AgreementUtil.hasNumbers(par.text) && par.text.trim().split(/\s+/).length <= 10) {
+          par.text = `<span class="sub-header">${par.text}</span>`;
+        }
         const parEl = document.createElement("p");
         par.text = AgreementUtil.formatDocHeaders(par.text);
         parEl.innerHTML = par.text;
