@@ -13,21 +13,7 @@
     }
 
 
-    #pwa-steps {
-        @include button(white, $darkBlue);
-        font-weight: 400;
-        width: 120px;
-        font-size: 14px;
-        margin: 10px auto 0 auto;
-        min-width: 0;
-        padding: 0;
-        height: 30px;
-        position: fixed;
-        bottom: 20px;
-        right: 10px;
-        z-index: 10000;
-        background-color: transparent;
-    }
+
 
     #checkbox-group {
         display: flex;
@@ -84,11 +70,14 @@
     #coparent-verification-container {
         p {
             font-weight: 300;
+            color:white;
+            line-height: 1.3;
         }
 
         button {
             margin: 0 auto;
-            @include button($green);
+            @include button(white, $green);
+
         }
     }
 
@@ -146,27 +135,23 @@
     }
 
     #error-container {
-        // background-color: #f8d7da;
-        border-color: #f5c6cb;
-        width: 100vw;
-        margin: 0 auto;
+        @include blurredBg;
+        border-color: transparent;
+        // margin: 0 auto;
         border-radius: $borderRadius;
-
         height: 100vh;
         width: 100vw;
         position: fixed;
         z-index: -1;
         left: 0;
         overflow: hidden;
-        justify-content: center;
-        align-items: center;
+        justify-content: flex-end;
+        // align-items: center;s
         flex-wrap: wrap;
-        opacity: 0;
+        // opacity: 0;
         transition: all .8s ease-in-out;
         top: 0;
         display: flex;
-        @include blurredBg;
-
         &.desktop {
             p {
                 margin-top: 0;
@@ -177,35 +162,38 @@
             transition: all .3s ease-in-out;
             top: 0;
             opacity: 1;
-            padding: 10px;
+            padding: 20px;
             z-index: 10000;
         }
 
         ion-icon {
             display: block;
             width: 100%;
-            margin-top: auto;
-            color: $red;
+/*             margin-top: auto;
+ */            color: $red;
             font-size: 35px;
         }
 
         button {
-            @include button(white, $green);
             opacity: .8;
-            width: 30%;
-            padding-left: 10px;
             margin-top: 20px;
-            margin-bottom: auto;
+            // margin-bottom: auto;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            min-width: 0;
+            width: 130px;
 
             ion-icon {
-                display: flex;
                 top: 0;
                 margin-top: 0;
                 margin: 0;
                 font-size: 25px;
                 padding: 0;
-                margin-left: 0;
                 color: white;
+                margin-left: 0;
+                padding: 0;
+                width: 30px;
             }
         }
 
@@ -217,14 +205,14 @@
             color: $red;
             font-weight: bold;
             font-size: 20px;
+            width: 100%;
             text-align: center;
             margin-top: auto;
-
+display: block;
         }
     }
 
     .menu-icon-container {
-        background-color: #03234c;
         width: 100%;
         height: 50px;
         position: fixed;
@@ -233,91 +221,160 @@
         align-items: center;
         justify-content: center;
         z-index: 1000;
-        height: 70px;
+        height: 80px;
+        @include blurredBg;
+        background-color: rgba(0, 0, 0, 0.5);
 
         &.open {
             background-color: transparent;
         }
 
-        .hamburger-react {
+        ion-icon {
             position: relative;
             z-index: 100;
             color: #ccc;
             user-select: none;
             border-radius: 100%;
             -webkit-tap-highlight-color: transparent;
+            font-size: 50px;
+            transition: all .7s;
 
             &::focus {
                 outline: 0;
+            }
+
+            &[name='chevron-back'] {
+                margin-right: auto;
+                margin-left: 20px;
             }
         }
     }
 
     #menu {
-        padding: 50px 0;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        transition: opacity .4s ease-in-out;
-        opacity: 0;
-        @include darkBg(.97);
+        transition: .7s;
+        position: fixed;
+        left: -100vw;
+        width: 0;
+        overflow-x: hidden;
+        opacity: 1;
+        height: 100vh;
+        background-color: #28282B;
+        top: 0;
 
+        #pwa-steps {
+            @include button(white, $darkBlue);
+            font-weight: 400;
+            width: 120px;
+            font-size: 14px;
+            margin: 20px auto 0 auto;
+            min-width: 0;
+            padding: 0;
+            height: 30px;
+            z-index: 10000;
+            background-color: #ccc;
+            color: #28282B;
+        }
+
+        #menu-title {
+            height: 150px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0;
+
+            p {
+                color: white;
+                text-align: center;
+                font-size: 30px;
+                line-height: 1.2;
+                margin: 0;
+                display: block;
+                padding: 0;
+
+                span {
+                    opacity: .5;
+                    font-size: 25px;
+                }
+
+                &:first-child {
+                    margin-top: auto;
+                    width: 100%;
+                }
+
+                &:last-child {
+                    margin-bottom: auto;
+                }
+            }
+        }
 
         &.open {
             opacity: 1;
             z-index: 1000;
+            width: 80vw;
+            left: 0;
+
+            * {
+                transition: .1s;
+            }
         }
 
-        h2 {
-            font-style: italic;
+
+        #actions {
+            width: 100%;
             margin-bottom: auto;
-            font-weight: 300;
-        }
 
-        #version-number {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            color: white;
-        }
-
-        .action {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            width: 300px;
-
-            &:last-child {
+            .action {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 90px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                margin-top: 0;
                 margin-bottom: auto;
-            }
 
-            &.active {
-
-                p,
-                ion-icon {
-                    opacity: 1;
-                    font-weight: 500;
+                &:nth-child(1) {
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                    margin-top: 0;
                 }
-            }
 
-            p {
-                line-height: 1;
-                color: white;
-                font-size: 22px;
-                text-align: left;
-                width: 200px;
-                @include fontType(100);
-                opacity: .7;
-            }
+                &:last-child {}
 
-            ion-icon {
-                font-size: 30px;
-                color: white;
-                margin-right: 10px;
-                margin-left: 40px;
-                opacity: .7;
+                &.active {
+
+                    p,
+                    ion-icon {
+                        opacity: 1;
+                        font-weight: 500;
+                    }
+                }
+
+                p {
+                    line-height: 1;
+                    color: white;
+                    font-size: 22px;
+                    text-align: left;
+                    width: 200px;
+                    display: flex;
+                    margin-right: auto;
+                    align-items: center;
+                    @include fontType(100);
+                    opacity: .7;
+                }
+
+                ion-icon {
+                    font-size: 30px;
+                    color: white;
+                    margin-right: 10px;
+                    margin-left: 40px;
+                    opacity: .7;
+                }
             }
         }
     }
@@ -336,6 +393,7 @@
         width: 100vw;
         margin-top: 0;
         padding: 15px;
+        padding-top: 0;
         height: 100vh;
         max-height: 100vh;
         overflow: auto;
@@ -343,8 +401,15 @@
         max-width: 100vw;
         padding-bottom: 300px;
         background: linear-gradient(0deg, hsla(214, 100%, 14%, 1) 0%, hsla(212, 55%, 32%, 1) 100%);
-
         -webkit-overflow-scrolling: touch;
+
+        &#calendar-container, &#agreement-container {
+            overflow: hidden;
+        }
+
+        &#profile-container {
+            padding-left: 0;
+        }
     }
 
     .modal {
@@ -480,10 +545,9 @@
         color: white;
         opacity: .7;
         font-style: italic;
-        text-align: center;
-        margin-top: 10px;
+        text-align: left;
+        margin-top: 20px;
         font-weight: 300;
-        margin-bottom: 10px;
         line-height: 1.1;
         font-size: 16px;
     }

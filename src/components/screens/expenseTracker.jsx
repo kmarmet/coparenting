@@ -150,14 +150,14 @@ export default function ExpenseTracker() {
         <img src="" />
       </Modal>
 
-      {!viewExpenseForm && (
+      {!viewExpenseForm && <div className="action-pills add">
+        <div className="flex" onClick={showExpenseForm}>
+          <ion-icon name="add-circle"></ion-icon>
+        </div>
+      </div>}
+      {!viewExpenseForm && expenseLog.length > 0 && (
         <>
-          <div className="action-pills">
-            <div className="flex" onClick={showExpenseForm}>
-              <p>New Expense</p>
-              <ion-icon name="add-outline"></ion-icon>
-            </div>
-          </div>
+
           <p className="instructions">Click an expense to view details or take action</p>
         </>
       )}

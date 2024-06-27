@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import globalState from "../../context";
 
-export default function Error({ errorMessage, canClose = true, className }) {
+export default function Error({ errorMessage, canClose = true, className= "" }) {
   const { state, setState } = useContext(globalState);
   const { showError } = state;
 

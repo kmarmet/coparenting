@@ -63,6 +63,8 @@ const AgreementUtil = {
     await worker.recognize(imagePath).then((result) => {
       let confidence = result.confidence;
       let paragraphs = result.data.paragraphs;
+      let lines = result.data.lines;
+      let textToDelete = []
 
       paragraphs.forEach((par) => {
         if (AgreementUtil.hasNumbers(par.text) && par.text.trim().split(/\s+/).length <= 10) {
@@ -70,9 +72,43 @@ const AgreementUtil = {
         }
         const parEl = document.createElement("p");
         par.text = AgreementUtil.formatDocHeaders(par.text);
+
+        // par.lines.forEach((line) => {
+        //   line.words.forEach((word) => {
+        //     if (word.text.length < 5 && word.text.slice(-1) === ".") {
+        //       textToDelete.push(word.text)
+        //     }
+        //   })
+        // })
+
         parEl.innerHTML = par.text;
         textContainer.appendChild(parEl);
       });
+
+      
+      // console.log(document.querySelector("#text-container").textContent)
+      // textToDelete.forEach((toDel) => {
+      //   document.querySelector("#text-container").textContent.replace(toDel, "")
+      // })
+
+      // document.querySelectorAll(".sub-header").forEach((header, index) => {
+      //   let text = header.textContent;
+      //   // console.log(text.substring)
+      //   const firstThreeChars = text.slice(0, 3);
+      //   // console.log(textToDelete.includes(firstThreeChars))
+      //   const charsUntilPeriod = text.slice(0, text.indexOf(".") + 1);
+      //   if (textToDelete.includes(charsUntilPeriod)) {
+      //     console.log(text)
+      //     text = text.replace(charsUntilPeriod, "")
+      //   }
+        // console.log(text.slice(0, text.indexOf(".") + 1))
+        // textToDelete.forEach((toDel) => {
+        //   if (text.indexOf(toDel) > -1  && text.slice(-1) === ".") {
+        //     console.log(header)
+        //     header.textContent = ""
+        //   }
+        // })
+      // })
     });
   },
 };

@@ -26,7 +26,7 @@ const util = {
     return Math.floor(100000 + Math.random() * 900000);
   },
   scrollToTopOfPage: () => {
-    const eventsContainer = document.querySelector("#app-container").offsetTop;
+    const eventsContainer = document.querySelector("body").offsetTop;
     window.scroll({
       top: eventsContainer,
       behavior: "smooth",
@@ -95,15 +95,21 @@ const util = {
     return returnArray;
   },
   uppercaseFirstLetterOfAllWords: (mySentence) => {
-    let words = mySentence.replaceAll("-", " ").split(" ");
-
+    let words = mySentence
+    if (words.indexOf("-") > -1) {
+      words = mySentence.replaceAll("-", " ").split(" ");
+    }
+    else {
+      words = mySentence.split(" ");
+    }
+    words = words.filter( x => x.length > 0)
     for (let i = 0; i < words.length; i++) {
       words[i] = words[i][0].toUpperCase() + words[i].substr(1);
     }
 
     words = words.join(" ");
 
-    return words;
+    return words.replaceAll("With", "with").replaceAll("Of", "of").replaceAll("And", "and").replaceAll("The", 'the')
   },
   cleanString: (string) => {
     if (string) {

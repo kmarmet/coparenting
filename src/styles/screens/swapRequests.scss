@@ -2,6 +2,21 @@
 
 #swap-requests {
     .action-pills {
+        .flex {
+            padding: 0;
+
+            background-color: transparent;
+
+            ion-icon {
+                border-radius: 100%;
+                font-size: 45px;
+                color: $darkBlue;
+                padding: 0;
+                margin: 0;
+                box-shadow: 0 7px 8px rgba(0,0,0,0.1), 0 0px 0px rgba(0,0,0,0);
+            }
+        }
+
         &.swap-request {
             justify-content: flex-start;
 
@@ -16,6 +31,7 @@
                 max-width: 30%;
                 border-right: 1px solid $mainBlue;
                 justify-content: center;
+                padding: 0 !important;
 
                 ion-icon {
                     display: none;

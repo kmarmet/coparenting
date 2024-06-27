@@ -1,13 +1,14 @@
 import util from "../util";
 
 class CalendarEvent {
-  constructor(id = "", date = "", time = "", phone = "", children = [], location = "", title = "", createdBy = "", forCoparent = "") {
+  constructor(id = "", directionsLink = "", date = "", time = "", phone = "", children = [], location = "", title = "", createdBy = "", forCoparent = "") {
     this.id = "";
     this.date = "";
     this.phone = "";
     this.children = [];
     this.location = "";
     this.title = "";
+    this.directionsLink,
     (this.time = ""), (this.createdBy = ""), (this.forCoparent = "");
   }
 
@@ -27,6 +28,15 @@ class CalendarEvent {
     return this.date;
   }
 
+   // Date
+   set setDate(directionsLink) {
+    this.directionsLink = directionsLink
+  }
+  get getDate() {
+    return this.directionsLink;
+  }
+
+  
   // Time
   set setTime(time) {
     this.time = time;

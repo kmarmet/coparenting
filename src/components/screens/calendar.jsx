@@ -119,29 +119,28 @@ export default function EventCalendar() {
 
   return (
     <div id="calendar-container" className="page-container">
+      {showEventForm && (
+        <CalendarEventForm
+        onCancel={cancel}
+        onSubmit={() => {
+          document.querySelector(".flatpickr-calendar").style.display = "block";
+          setShowEventForm(false);
+        }}
+        />
+        )}
+      <div id="calendar-ui-container"></div>
       {!showEventForm && (
-        <div className="action-pills">
+        <div className="action-pills add">
           <div
             className="flex"
             onClick={() => {
               document.querySelector(".flatpickr-calendar").style.display = "none";
               setShowEventForm(true);
             }}>
-            <p>New Event</p>
-            <ion-icon name="add-outline"></ion-icon>
+           <ion-icon name="add-circle"></ion-icon>
           </div>
         </div>
       )}
-      {showEventForm && (
-        <CalendarEventForm
-          onCancel={cancel}
-          onSubmit={() => {
-            document.querySelector(".flatpickr-calendar").style.display = "block";
-            setShowEventForm(false);
-          }}
-        />
-      )}
-      <div id="calendar-ui-container"></div>
       {showEventForm === false && (
         <div className="events">
           {allEvents &&
@@ -157,19 +156,16 @@ export default function EventCalendar() {
                           <div key={index} className="event-details">
                             <div className="left">
                               <p className="title">
-                                <b> {event.title} </b>
+                                <b> {util.uppercaseFirstLetterOfAllWords(event.title.toString())} </b>
                               </p>
-                              {event.location && event.location.length > 0 && (
-                                <p>
-                                  <b>Location: </b>
-                                  {event.location}
-                                </p>
-                              )}
                               {event.children && event.children.length > 0 && (
                                 <p>
-                                  <b>Children: </b>
+                                  <b>with  </b>
                                   {event.children.join(", ")}
                                 </p>
+                              )}
+                              {event.location && event.location.length > 0 && (
+                                <a href={event.directionsLink}><ion-icon name="car"></ion-icon>{event.location}</a>
                               )}
                             </div>
                             <div className="right">

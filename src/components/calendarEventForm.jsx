@@ -10,6 +10,8 @@ import CalendarEvent from "../models/calendarEvent";
 import CheckboxGroup from "./shared/checkboxGroup";
 import SmsUtil from "../smsUtil";
 import screenNames from "../constants/screenNames";
+import Autocomplete from "react-google-autocomplete";
+
 
 export default function CalendarEventForm({ onSubmit, onCancel }) {
   const [eventDate, setEventDate] = useState(null);
@@ -19,6 +21,7 @@ export default function CalendarEventForm({ onSubmit, onCancel }) {
   const [forCoparent, setForCoparent] = useState("");
   const [eventTime, setEventTime] = useState(null);
   const { state, setState } = useContext(globalState);
+  const [directionsLink, setDirectionsLink  ] = useState(null)
   const { currentUser } = state;
   const [error, setError] = useState("");
 
@@ -33,6 +36,7 @@ export default function CalendarEventForm({ onSubmit, onCancel }) {
     newEvent.createdBy = currentUser.name;
     newEvent.forCoparent = forCoparent;
     newEvent.time = eventTime;
+    newEvent.directionsLink = directionsLink;
 
     if (util.validation([eventDate, eventTitle, forCoparent]) > 0) {
       setError("Please fill out required fields");
@@ -86,8 +90,17 @@ export default function CalendarEventForm({ onSubmit, onCancel }) {
       <DatePicker placeholder="Time" format="hh:mm aa" showMeridian onChange={(e) => setEventTime(moment(e).format("h:mm a"))} />
 
       <input type="text" placeholder="Event title - required" onChange={(e) => setEventTitle(e.target.value)} />
-      <input type="text" placeholder="Event location" onChange={(e) => setEventLocation(e.target.value)} />
-
+      <Autocomplete
+        apiKey={"AIzaSyAuJdFWQRa6sXNhtRhuAVEWIyFqeo3WApY"}
+        options={{
+          types: ["address"],
+          componentRestrictions: { country: "usa" },
+        }}
+        onPlaceSelected={(place) => {
+          setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
+          setEventLocation(place.formatted_address)
+        }}
+      />;
       {currentUser && (
         <SelectPicker
           cleanable={false}

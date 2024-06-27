@@ -82,11 +82,9 @@ export default function SwapRequests() {
     <div id="swap-requests" className="page-container">
       {!viewSwapRequestForm && (
         <>
-          {" "}
-          <div className="action-pills">
+          <div className="action-pills add">
             <div className="flex" onClick={() => setState({ ...state, viewSwapRequestForm: true })}>
-              <p>New Request</p>
-              <ion-icon name="add-outline"></ion-icon>
+            <ion-icon name="add-circle"></ion-icon>
             </div>
           </div>
           <p className="instructions">Click request to view details/take action</p>

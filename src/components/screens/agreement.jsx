@@ -61,7 +61,7 @@ export default function Agreement() {
               pageCounter++;
               setConvertedImageCount(pageCounter);
 
-              // Dont extracting text
+              // Done extracting text
               if (pageCounter >= allImagePaths.length) {
                 setShowTextContainer(true);
 

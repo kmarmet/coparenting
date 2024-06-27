@@ -25,31 +25,32 @@ import moment from "moment";
 
 const stateObj = {
   currentScreen: screenNames.login,
-  setCurrentScreen: (screen) => {},
+  setCurrentScreen: (screen) => { },
   menuIsOpen: false,
-  setMenuIsOpen: (isOpen) => {},
+  setMenuIsOpen: (isOpen) => { },
   viewExpenseForm: false,
-  setViewExpenseForm: (show) => {},
+  setViewExpenseForm: (show) => { },
   currentScreenTitle: "Shared Calendar",
   viewSwapRequestForm: false,
-  setViewSwapRequestForm: (show) => {},
+  setViewSwapRequestForm: (show) => { },
   users: [],
-  setUsers: (users) => {},
+  setUsers: (users) => { },
   userIsLoggedIn: false,
-  setUserIsLoggedIn: (isLoggedIn) => {},
+  setUserIsLoggedIn: (isLoggedIn) => { },
   showError: false,
-  setShowError: (bool) => {},
+  setShowError: (bool) => { },
   currentUser: {},
-  setCurrentUser: (user) => {},
+  setCurrentUser: (user) => { },
+  showPwaSteps: false,
+  setShowPwaSteps: () => { }
 };
 
 export default function App() {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const [state, setState] = useState(stateObj);
-  const [showPwaSteps, setShowPwaSteps] = useState(false);
   const stateToUpdate = { state, setState };
-  const { userIsLoggedIn, currentScreen, menuIsOpen, currentScreenTitle } = state;
+  const { userIsLoggedIn, currentScreen, menuIsOpen, currentScreenTitle, setShowPwaSteps, showPwaSteps } = state;
   const [error, setError] = useState(null);
 
   const disablePwaSteps = () => {
@@ -103,20 +104,14 @@ export default function App() {
 
   return (
     <div className="App" id="app-container">
-      <div className="loading">
-        <span className="loading-ptr-1"></span>
-        <span className="loading-ptr-2"></span>
-        <span className="loading-ptr-3"></span>
-      </div>
-      <span className="genericon genericon-next"></span>
+      <div className={menuIsOpen ? "active overlay" : "overlay"}></div>
+
       <globalState.Provider value={stateToUpdate}>
         {error !== null && window.innerWidth > 768 && <Error className={error && error.length > 0 ? "desktop" : ""} errorMessage={error} canClose={false} />}
         {window.innerWidth > 768 && <Error errorMessage={error} />}
         {currentScreenTitle && currentScreenTitle.length > 0 && currentScreenTitle !== "error" && currentScreen !== screenNames.consentInfo && <p className="screen-title">{currentScreenTitle}</p>}
-        <p id="pwa-steps" onClick={() => setShowPwaSteps(true)}>
-          Install App
-        </p>
-        <Modal elClass={`pwa-modal ${showPwaSteps ? "show" : ""}`} onClose={() => setShowPwaSteps(false)}>
+
+        <Modal elClass={`pwa-modal ${showPwaSteps ? "show" : ""}`} onClose={() => setState({ ...state, showPwaSteps: false })}>
           <div className="os-container">
             <h1>
               iOS <ion-icon name="logo-apple"></ion-icon>
@@ -167,7 +162,7 @@ export default function App() {
           <div>
             <Menu />
             <div className="menu-icon-container">
-              <Hamburger toggled={menuIsOpen} hideOutline={true} toggle={() => setState({ ...state, menuIsOpen: !menuIsOpen })} />
+              <ion-icon onClick={() => setState({ ...state, menuIsOpen: !menuIsOpen })} name={menuIsOpen ? "chevron-back" : "menu-outline"}></ion-icon>
             </div>
           </div>
         )}
