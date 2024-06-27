@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import globalState from "../../context";
 
-export default function Error({ errorMessage, canClose = true, className= "" }) {
+export default function Error({ errorMessage, canClose = true, className = "" }) {
   const { state, setState } = useContext(globalState);
   const { showError } = state;
 
@@ -12,12 +12,12 @@ export default function Error({ errorMessage, canClose = true, className= "" }) 
   return (
     <div id="error-container" className={`${className} ${showError ? "show" : ""}`}>
       <p>
-        <ion-icon name="warning"></ion-icon>
+        <span className="material-icons-round">sentiment_dissatisfied</span>
         {errorMessage}
       </p>
       {canClose === true && (
         <button className="button red close" onClick={hide}>
-          OKAY <ion-icon name="checkmark-outline"></ion-icon>
+          OKAY <span className="material-icons-round">check</span>
         </button>
       )}
     </div>

@@ -121,13 +121,13 @@ export default function EventCalendar() {
     <div id="calendar-container" className="page-container">
       {showEventForm && (
         <CalendarEventForm
-        onCancel={cancel}
-        onSubmit={() => {
-          document.querySelector(".flatpickr-calendar").style.display = "block";
-          setShowEventForm(false);
-        }}
+          onCancel={cancel}
+          onSubmit={() => {
+            document.querySelector(".flatpickr-calendar").style.display = "block";
+            setShowEventForm(false);
+          }}
         />
-        )}
+      )}
       <div id="calendar-ui-container"></div>
       {!showEventForm && (
         <div className="action-pills add">
@@ -137,7 +137,7 @@ export default function EventCalendar() {
               document.querySelector(".flatpickr-calendar").style.display = "none";
               setShowEventForm(true);
             }}>
-           <ion-icon name="add-circle"></ion-icon>
+            <span className="material-icons-round">add_circle</span>
           </div>
         </div>
       )}
@@ -160,17 +160,22 @@ export default function EventCalendar() {
                               </p>
                               {event.children && event.children.length > 0 && (
                                 <p>
-                                  <b>with  </b>
+                                  <b>with </b>
                                   {event.children.join(", ")}
                                 </p>
                               )}
                               {event.location && event.location.length > 0 && (
-                                <a href={event.directionsLink}><ion-icon name="car"></ion-icon>{event.location}</a>
+                                <a href={event.directionsLink}>
+                                  <span className="material-icons-round">directions</span>
+                                  {event.location}
+                                </a>
                               )}
                             </div>
                             <div className="right">
                               <p className="time"> {event.time}</p>
-                              <ion-icon onClick={() => deleteEvent(event)} name="trash" class="delete-icon"></ion-icon>
+                              <span onClick={() => deleteEvent(event)} className="material-icons delete-icon">
+                                remove
+                              </span>
                             </div>
                           </div>
                         );

@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.js";
 import "./styles/bundle.scss";
+import "material-icons/iconfont/material-icons.css";
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     // const url = new URL("./serviceWorker.js", import.meta.url);

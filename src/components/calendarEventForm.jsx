@@ -12,7 +12,6 @@ import SmsUtil from "../smsUtil";
 import screenNames from "../constants/screenNames";
 import Autocomplete from "react-google-autocomplete";
 
-
 export default function CalendarEventForm({ onSubmit, onCancel }) {
   const [eventDate, setEventDate] = useState(null);
   const [children, setChildren] = useState([]);
@@ -21,7 +20,7 @@ export default function CalendarEventForm({ onSubmit, onCancel }) {
   const [forCoparent, setForCoparent] = useState("");
   const [eventTime, setEventTime] = useState(null);
   const { state, setState } = useContext(globalState);
-  const [directionsLink, setDirectionsLink  ] = useState(null)
+  const [directionsLink, setDirectionsLink] = useState(null);
   const { currentUser } = state;
   const [error, setError] = useState("");
 
@@ -78,7 +77,6 @@ export default function CalendarEventForm({ onSubmit, onCancel }) {
   return (
     <div id="calendar-event-form-container">
       <Error errorMessage={error} />
-
       <DatePicker
         format="MM/dd/yyyy"
         placeholder="Event date - required"
@@ -88,7 +86,6 @@ export default function CalendarEventForm({ onSubmit, onCancel }) {
         }}
       />
       <DatePicker placeholder="Time" format="hh:mm aa" showMeridian onChange={(e) => setEventTime(moment(e).format("h:mm a"))} />
-
       <input type="text" placeholder="Event title - required" onChange={(e) => setEventTitle(e.target.value)} />
       <Autocomplete
         apiKey={"AIzaSyAuJdFWQRa6sXNhtRhuAVEWIyFqeo3WApY"}
@@ -97,10 +94,11 @@ export default function CalendarEventForm({ onSubmit, onCancel }) {
           componentRestrictions: { country: "usa" },
         }}
         onPlaceSelected={(place) => {
-          setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
-          setEventLocation(place.formatted_address)
+          setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`);
+          setEventLocation(place.formatted_address);
         }}
-      />;
+      />
+      ;
       {currentUser && (
         <SelectPicker
           cleanable={false}
@@ -114,12 +112,10 @@ export default function CalendarEventForm({ onSubmit, onCancel }) {
           block
         />
       )}
-
       {currentUser && <CheckboxGroup labels={currentUser.children} onCheck={handleCheckboxSelection} />}
-
       <div className="button-group">
         <button className="button green submit" onClick={submit}>
-          Submit
+          Submit <span className="material-icons-round">check</span>
         </button>
         <button className="button red " onClick={onCancel}>
           Cancel

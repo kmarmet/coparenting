@@ -95,10 +95,10 @@ export default function Login() {
           <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
           <div className="flex button-group">
             <button className="button green" onClick={login}>
-              Login <ion-icon name="lock-open"></ion-icon>
+              Login <span className="material-icons-round">lock_open</span>
             </button>
             <button className="button register" onClick={showConsentInfoScreen}>
-              Register <ion-icon name="person-add"></ion-icon>
+              Register <span className="material-icons-round">person_add</span>
             </button>
           </div>
           <CheckboxGroup onCheck={toggleRememberMe} labels={["Remember Me"]} />

@@ -188,7 +188,7 @@ export default function Registration() {
         </button>
         <div className="flex button-group">
           <button className="button green" onClick={submit}>
-            Register <ion-icon name="person-add"></ion-icon>
+            Register <span className="material-icons-round">person_add</span>
           </button>
           <button className="button red" onClick={cancel}>
             Cancel

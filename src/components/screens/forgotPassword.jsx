@@ -90,9 +90,14 @@ export default function ForgotPassword() {
         <input value={confirmPassword} type="password" autoComplete="off" placeholder="Confirm New Password - required" onChange={(e) => setConfirmPassword(e.target.value)} />
         <input type="number" pattern="[0-9]*" inputMode="numeric" placeholder="Security Code Sent to Your Device - required" onChange={(e) => setCodeFromInput(e.target.value)} />
         {showSendCodeButton && (
-          <button className="button send-security-code" onClick={sendSecurityCode}>
-            Send Security Code to Me
-          </button>
+          <>
+            <button className="button send-security-code" onClick={sendSecurityCode}>
+              Send Code to Me
+            </button>
+            <button className="button red" onClick={() => setState({ ...state, currentScreen: screenNames.login })}>
+              Cancel
+            </button>
+          </>
         )}
         {!showSendCodeButton && (
           <button className="button green" onClick={reset}>

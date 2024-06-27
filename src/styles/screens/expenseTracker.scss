@@ -7,16 +7,17 @@
 
             background-color: transparent;
 
-            ion-icon {
+            span {
                 border-radius: 100%;
                 font-size: 45px;
                 color: $darkBlue;
                 padding: 0;
                 margin: 0;
-                box-shadow: 0 7px 8px rgba(0,0,0,0.1), 0 0px 0px rgba(0,0,0,0);
+                box-shadow: 0 7px 8px rgba(0, 0, 0, 0.1), 0 0px 0px rgba(0, 0, 0, 0);
             }
         }
     }
+
     .image-modal {
         img {
             width: 100%;
@@ -36,7 +37,7 @@
             border: 0;
 
             .content {
-                ion-icon {
+                span {
                     margin: 0 auto;
                     display: block;
                     position: relative;
@@ -286,7 +287,7 @@
             button {
                 margin: 0 auto;
 
-                ion-icon {
+                span {
                     margin-left: 0;
                 }
 

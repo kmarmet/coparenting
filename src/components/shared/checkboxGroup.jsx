@@ -10,7 +10,7 @@ export default function CheckboxGroup({ labels, onCheck }) {
           return (
             <div data-label={label} className="flex" key={index} onClick={(e) => onCheck(e)}>
               <div className="box">
-                <ion-icon name="checkmark-outline"></ion-icon>
+                <span className="checkmark-icon material-icons-round">check</span>
               </div>
               <span>{label}</span>
             </div>

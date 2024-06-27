@@ -121,7 +121,7 @@
     font-weight: 400;
     background-color: $bgColor;
 
-    ion-icon {
+    span {
         font-size: 20px;
         margin-left: 5px;
         line-height: 1;
@@ -164,7 +164,7 @@
             opacity: .8;
         }
 
-        ion-icon {
+        span {
             font-size: 18px;
             color: white;
         }
@@ -175,20 +175,18 @@
         position: fixed;
         bottom: 95px;
         right: 15px;
-        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
         border-radius: 100%;
         padding: 0;
-        background-color: transparent;
+
         .flex {
             background-color: transparent;
             margin: 0;
             border-radius: 100%;
             padding: 0;
             background-color: transparent;
-            ion-icon {
-                background-color: transparent;
-                color: rgba(255, 255, 255, 0.3);;
-                fill: rgba(255, 255, 255, 0.3);;
+
+            span {
+                color: rgba(255, 255, 255, 0.3);
                 border: 0;
                 font-size: 55px;
             }
@@ -215,7 +213,14 @@
             &.active {
                 opacity: 1;
                 border: 0;
-                @include transBg();
+                background-color: $complimentaryBlue;
+
+                p,
+                span {
+                    color: $darkBlue;
+                    opacity: 1;
+                    font-weight: bold;
+                }
             }
         }
     }
@@ -249,7 +254,7 @@
     padding: 0 10px;
     vertical-align: middle;
 
-    ion-icon {
+    span {
         font-size: 18px;
         margin-left: 10px;
     }
@@ -395,7 +400,7 @@
     .rs-picker,
     .rs-picker-toggle {
         width: 100%;
-        margin: 0 auto 20px auto;
+        margin: 0 auto 10px auto;
         display: block;
         outline: none;
 

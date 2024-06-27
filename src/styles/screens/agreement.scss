@@ -52,6 +52,7 @@
             font-size: 18px;
             font-weight: 300;
             margin: 20px 0;
+
             &:has(> span) {
                 margin-bottom: 0;
             }
@@ -86,7 +87,7 @@
         position: fixed;
         right: 0;
         z-index: 1000;
-        padding: 5px ;
+        padding: 5px;
         background-color: $darkBlue;
         border-radius: $borderRadius 0 0 $borderRadius;
 
@@ -112,7 +113,7 @@
         max-height: calc(100vh - 40px);
         top: 20px;
 
-        ion-icon {
+        span {
             position: relative;
             top: 8px;
             font-size: 20px;
@@ -170,7 +171,8 @@
         backdrop-filter: blur(8px);
 
         .progress-count {
-            margin-top: 40px;;
+            margin-top: 40px;
+            ;
         }
 
         .progress-bar-container {
