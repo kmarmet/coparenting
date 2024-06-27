@@ -4,16 +4,26 @@
     .action-pills {
         .flex {
             padding: 0;
-
             background-color: transparent;
 
-            ion-icon {
+            p {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            span {
                 border-radius: 100%;
-                font-size: 45px;
-                color: $darkBlue;
+                font-size: 20px;
+                color: white;
+                opacity: .5;
                 padding: 0;
                 margin: 0;
-                box-shadow: 0 7px 8px rgba(0,0,0,0.1), 0 0px 0px rgba(0,0,0,0);
+                box-shadow: 0 7px 8px rgba(0, 0, 0, 0.1), 0 0px 0px rgba(0, 0, 0, 0);
+            }
+
+            &.active {
+                background-color: $complimentaryBlue;
             }
         }
 
@@ -33,7 +43,7 @@
                 justify-content: center;
                 padding: 0 !important;
 
-                ion-icon {
+                span {
                     display: none;
                 }
 
@@ -42,7 +52,7 @@
                     max-width: 60%;
                     border: 0;
 
-                    ion-icon {
+                    span {
                         display: inline;
                     }
                 }
@@ -65,7 +75,7 @@
                 display: block;
                 min-width: 45%;
 
-                ion-icon {
+                span {
                     position: relative;
                     top: 3px;
                 }
@@ -90,8 +100,9 @@
             background-color: $bgWhite;
             border-radius: $borderRadius;
             width: 100%;
-            max-height: 90px;
+            max-height: 100px;
             overflow: hidden;
+            transition: all .3s ease-in-out;
 
             &.open {
                 min-height: 200px;
@@ -156,7 +167,7 @@
                     background-color: transparent;
                     width: 100%;
 
-                    ion-icon {
+                    span {
                         position: relative;
                         top: 3px;
                     }
@@ -170,9 +181,7 @@
                         opacity: 1;
                         text-align: center;
 
-
-
-                        ion-icon {
+                        span {
                             font-size: 25px;
                         }
                     }
@@ -207,6 +216,7 @@
                     margin: 0;
 
                     span {
+                        font-size: 16px;
                         display: block;
                         line-height: 1.2;
                         font-weight: 400;
@@ -218,7 +228,7 @@
                     }
                 }
 
-                ion-icon {
+                span {
                     font-size: 25px;
                     color: $lightBlue;
                 }
@@ -253,14 +263,17 @@
                     margin: 20px auto 0 auto;
                     display: block;
                     opacity: .8;
+                    padding: 0;
+                    height: 30px;
+                    width: 100px;
+                    min-width: 0;
+                    font-size: 14px;
                 }
 
                 .flex {
                     display: flex;
                     justify-content: space-between;
                     flex-wrap: wrap;
-
-
 
                     p {
                         font-weight: 400;
@@ -303,6 +316,9 @@
         .form {
             @include form;
 
+            .flex {
+                .from-hour {}
+            }
 
             button {
                 @include button($green);
@@ -314,7 +330,7 @@
                     display: none;
                 }
 
-                ion-icon {
+                span {
                     position: relative;
                     top: 3px;
                     margin-left: 5px;

@@ -169,7 +169,7 @@ function NewExpenseForm() {
       <input ref={imgRef} type="file" id="upload-input" onChange={(e) => chooseImage(e)} />
       <div className="button-group flex">
         <button className="green" onClick={() => submitNewExpense()}>
-          Submit <ion-icon name="arrow-forward"></ion-icon>
+          Submit <span className="material-icons-round">check</span>
         </button>
         <button className="red" onClick={() => hideExpenseForm()}>
           Cancel

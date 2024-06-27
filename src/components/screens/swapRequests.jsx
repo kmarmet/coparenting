@@ -84,7 +84,7 @@ export default function SwapRequests() {
         <>
           <div className="action-pills add">
             <div className="flex" onClick={() => setState({ ...state, viewSwapRequestForm: true })}>
-            <ion-icon name="add-circle"></ion-icon>
+              <span className="material-icons-round">add_circle</span>
             </div>
           </div>
           <p className="instructions">Click request to view details/take action</p>
@@ -111,7 +111,7 @@ export default function SwapRequests() {
                     }
                   }}>
                   <div className="name-container">
-                    <ion-icon name="calendar-outline"></ion-icon>
+                    <span className="material-icons-round">calendar_month</span>
                     <p className="name">
                       {request.length === swapLengths.single && util.formatDate(request.fromDate)}
                       {request.length === swapLengths.intra && (

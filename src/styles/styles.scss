@@ -1,9 +1,7 @@
 @import "./_mixins.scss";
 
 #app-container {
-    background: linear-gradient(0deg, hsla(214, 100%, 14%, 1) 0%, hsla(212, 55%, 32%, 1) 100%);
-    background-size: cover;
-    // overflow: hidden;
+    background-color: #244e7d;
     position: relative;
     max-height: 100vh;
     overflow: auto;
@@ -12,8 +10,13 @@
         @include fontType;
     }
 
+    .material-icons {
+        font-family: 'Material Icons Round';
+    }
 
-
+    .material-icons-round {
+        font-family: 'Material Icons Round';
+    }
 
     #checkbox-group {
         display: flex;
@@ -31,6 +34,16 @@
 
         .flex {
             align-items: center;
+            margin-right: 10px;
+            width: 100px;
+
+            span {
+                color: white;
+                font-weight: 200;
+                font-size: 14px;
+                display: inline;
+                margin-left: 5px;
+            }
 
             .box {
                 height: 22px;
@@ -41,26 +54,22 @@
                 align-items: center;
                 justify-content: center;
 
-                ion-icon {
+                .checkmark-icon {
                     display: none;
+                    color: white;
                 }
 
                 &.active {
                     background-color: $complimentaryBlue;
                     border: 0;
 
-                    ion-icon {
-                        color: white;
-                        font-weight: bold;
-                        font-size: 18px;
-                        display: inline;
-                    }
+
                 }
             }
 
-            span {
+            .checkmark-icon {
                 color: white;
-                margin: 0 15px 0 5px;
+                // margin: 0 15px 0 5px;
                 padding: 0;
                 line-height: 1;
             }
@@ -70,7 +79,7 @@
     #coparent-verification-container {
         p {
             font-weight: 300;
-            color:white;
+            color: white;
             line-height: 1.3;
         }
 
@@ -85,10 +94,11 @@
         button {
             @include button(white, $green);
             margin: 30px auto 0 auto;
-            width: 100px;
+            width: 200px;
 
-            &.send-security-code {
-                width: 80%;
+            &.red {
+                @include button(white, $red);
+                margin-top: 5px;
             }
         }
     }
@@ -120,11 +130,20 @@
             margin-top: 20px;
             justify-content: center;
 
-            .box {
-                border-color: white;
+            .flex {
+                width: 200px;
+                margin: 0 auto;
+                text-align: center;
+                display: flex;
+                justify-content: center;
 
-                span {
-                    margin-left: 10px;
+                .box {
+                    border-color: white;
+                    padding: 0 10px;
+
+                    span {
+                        margin-left: 10px;
+                    }
                 }
             }
 
@@ -137,7 +156,6 @@
     #error-container {
         @include blurredBg;
         border-color: transparent;
-        // margin: 0 auto;
         border-radius: $borderRadius;
         height: 100vh;
         width: 100vw;
@@ -146,12 +164,11 @@
         left: 0;
         overflow: hidden;
         justify-content: flex-end;
-        // align-items: center;s
         flex-wrap: wrap;
-        // opacity: 0;
         transition: all .8s ease-in-out;
         top: 0;
         display: flex;
+
         &.desktop {
             p {
                 margin-top: 0;
@@ -166,25 +183,25 @@
             z-index: 10000;
         }
 
-        ion-icon {
+        span {
             display: block;
             width: 100%;
-/*             margin-top: auto;
- */            color: $red;
+            /*             margin-top: auto;
+ */
+            color: $red;
             font-size: 35px;
         }
 
         button {
             opacity: .8;
-            margin-top: 20px;
-            // margin-bottom: auto;
             display: flex;
             justify-content: center;
             text-align: center;
             min-width: 0;
             width: 130px;
+            margin: 20px auto 0 auto;
 
-            ion-icon {
+            span {
                 top: 0;
                 margin-top: 0;
                 margin: 0;
@@ -208,7 +225,7 @@
             width: 100%;
             text-align: center;
             margin-top: auto;
-display: block;
+            display: block;
         }
     }
 
@@ -220,33 +237,45 @@ display: block;
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 1000;
+        z-index: 10000;
         height: 80px;
         @include blurredBg;
         background-color: rgba(0, 0, 0, 0.5);
 
         &.open {
             background-color: transparent;
+            backdrop-filter: blur(0);
         }
 
-        ion-icon {
+        span {
             position: relative;
             z-index: 100;
             color: #ccc;
             user-select: none;
             border-radius: 100%;
             -webkit-tap-highlight-color: transparent;
-            font-size: 50px;
+            font-size: 45px;
             transition: all .7s;
+            display: block;
+
+
+            &.menu-icon {
+                margin: 0 auto;
+                transition: all .7s;
+
+                &.back {
+                    opacity: .6;
+                    z-index: 1000000;
+                    margin-right: auto;
+                    margin-left: 20px;
+                    display: block;
+                }
+            }
 
             &::focus {
                 outline: 0;
             }
 
-            &[name='chevron-back'] {
-                margin-right: auto;
-                margin-left: 20px;
-            }
         }
     }
 
@@ -264,11 +293,12 @@ display: block;
         height: 100vh;
         background-color: #28282B;
         top: 0;
+        z-index: 100;
 
         #pwa-steps {
             @include button(white, $darkBlue);
             font-weight: 400;
-            width: 120px;
+            width: 130px;
             font-size: 14px;
             margin: 20px auto 0 auto;
             min-width: 0;
@@ -282,11 +312,28 @@ display: block;
         #menu-title {
             height: 150px;
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             margin-bottom: 0;
+
+            .contents {
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                align-items: center;
+                margin-top: auto;
+                height: 100%;
+                margin-bottom: auto;
+            }
+
+            .title-icon {
+                color: white;
+                font-size: 45px;
+                position: relative;
+                top: 10px;
+                opacity: .6;
+                width: 100%;
+                margin-bottom: 0;
+                text-align: center;
+            }
 
             p {
                 color: white;
@@ -296,14 +343,27 @@ display: block;
                 margin: 0;
                 display: block;
                 padding: 0;
+                width: 100%;
+                font-family: "Playwrite MX", cursive;
+                font-optical-sizing: auto;
+                font-weight: 300;
+                font-style: normal;
 
                 span {
                     opacity: .5;
-                    font-size: 25px;
+                    font-size: 28px;
+                    opacity: .7;
+                    margin-left: 0;
+                    font-family: "Playwrite MX", cursive;
+                    font-optical-sizing: auto;
+                    font-weight: 300;
+                    font-style: normal;
+                    position: relative;
+                    left: 3px;
                 }
 
                 &:first-child {
-                    margin-top: auto;
+                    // margin-top: auto;
                     width: 100%;
                 }
 
@@ -315,7 +375,7 @@ display: block;
 
         &.open {
             opacity: 1;
-            z-index: 1000;
+            z-index: 10000;
             width: 80vw;
             left: 0;
 
@@ -323,7 +383,6 @@ display: block;
                 transition: .1s;
             }
         }
-
 
         #actions {
             width: 100%;
@@ -334,7 +393,7 @@ display: block;
                 align-items: center;
                 justify-content: center;
                 width: 100%;
-                height: 90px;
+                height: 70px;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                 margin-top: 0;
                 margin-bottom: auto;
@@ -348,10 +407,12 @@ display: block;
 
                 &.active {
 
-                    p,
-                    ion-icon {
-                        opacity: 1;
+                    p {
                         font-weight: 500;
+                    }
+
+                    p {
+                        opacity: 1;
                     }
                 }
 
@@ -364,15 +425,15 @@ display: block;
                     display: flex;
                     margin-right: auto;
                     align-items: center;
-                    @include fontType(100);
+                    @include fontType(200);
                     opacity: .7;
                 }
 
-                ion-icon {
+                span {
                     font-size: 30px;
                     color: white;
-                    margin-right: 10px;
-                    margin-left: 40px;
+                    margin-right: 8px;
+                    margin-left: 10px;
                     opacity: .7;
                 }
             }
@@ -403,7 +464,8 @@ display: block;
         background: linear-gradient(0deg, hsla(214, 100%, 14%, 1) 0%, hsla(212, 55%, 32%, 1) 100%);
         -webkit-overflow-scrolling: touch;
 
-        &#calendar-container, &#agreement-container {
+        &#calendar-container,
+        &#agreement-container {
             overflow: hidden;
         }
 
@@ -439,7 +501,7 @@ display: block;
                 width: 100%;
                 margin-top: 50px;
 
-                ion-icon {
+                span {
                     color: $green;
                 }
             }
@@ -450,7 +512,7 @@ display: block;
                 margin-bottom: 5px;
                 line-height: 1;
 
-                ion-icon {
+                span {
                     color: $green;
                     font-size: 20px;
                     position: relative;
@@ -486,7 +548,7 @@ display: block;
                 line-height: 1.3;
                 font-weight: 400;
 
-                ion-icon {
+                span {
                     position: relative;
                     top: 3px;
                 }
@@ -550,6 +612,10 @@ display: block;
         font-weight: 300;
         line-height: 1.1;
         font-size: 16px;
+
+        &.center {
+            text-align: center
+        }
     }
 
     .button {

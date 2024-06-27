@@ -20,7 +20,8 @@
             &:first-child {
                 border-top: 1px solid rgba(255, 255, 255, 0.1);
             }
-            ion-icon {
+
+            span {
                 font-size: 25px;
                 margin-right: 30px;
                 opacity: .8;
@@ -80,7 +81,7 @@
             margin-right: 5px;
 
 
-            ion-icon {
+            span {
                 color: $darkBlue;
                 font-size: 45px;
             }

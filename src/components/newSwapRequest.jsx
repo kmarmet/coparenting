@@ -98,15 +98,15 @@ export default function NewSwapRequest() {
     <div id="new-swap-request-container">
       <div className="action-pills swap-request">
         <div className={`flex ${swapLength === "single" ? "active" : ""}`} onClick={() => changeSwapLength(swapLengths.single)}>
-          <ion-icon name="today-outline"></ion-icon>
+          <span className="material-icons-round">event</span>
           <p>Single Day</p>
         </div>
         <div className={`flex ${swapLength === "multiple" ? "active" : ""}`} onClick={() => changeSwapLength(swapLengths.multiple)}>
-          <ion-icon name="calendar-outline"></ion-icon>
+          <span className="material-icons-round">date_range</span>
           <p>Multiple Days</p>
         </div>
         <div className={`flex ${swapLength === "intraday" ? "active" : ""}`} onClick={() => changeSwapLength(swapLengths.intra)}>
-          <ion-icon name="calendar-number-outline"></ion-icon>
+          <span className="material-icons-round ">today</span>
           <p>Intraday</p>
         </div>
       </div>
@@ -125,8 +125,11 @@ export default function NewSwapRequest() {
         {swapLength === swapLengths.intra && (
           <>
             <DatePicker placeholder="Day" format="MM/dd/yyyy" showMeridian onChange={(e) => setRequestRange(moment(e).format("MM/DD/YYYY").toString())} />
-            <DatePicker placeholder="From Hour" format="hh aa" showMeridian onChange={(e) => setRequestFromHour(moment(e).format("h a"))} />
-            <DatePicker placeholder="To Hour" format="hh aa" showMeridian onChange={(e) => setRequestToHour(moment(e).format("h a"))} />
+            <div className="flex">
+              {" "}
+              <DatePicker className="from-hour" placeholder="From Hour" format="hh aa" showMeridian onChange={(e) => setRequestFromHour(moment(e).format("h a"))} />
+              <DatePicker className="to-hour" placeholder="To Hour" format="hh aa" showMeridian onChange={(e) => setRequestToHour(moment(e).format("h a"))} />
+            </div>
           </>
         )}
         {swapLength === swapLengths.multiple && (
@@ -170,7 +173,7 @@ export default function NewSwapRequest() {
 
         <div className="button-group flex">
           <button className="green" onClick={submit}>
-            Send <ion-icon name="send"></ion-icon>
+            Send <span className="material-icons-round">send</span>
           </button>
           <button className="close" onClick={cancel}>
             Cancel

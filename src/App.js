@@ -22,32 +22,35 @@ import Agreement from "./components/screens/agreement.jsx";
 import UploadAgreement from "./components/screens/uploadAgreement.jsx";
 import Profile from "./components/screens/profile.jsx";
 import moment from "moment";
+import { getMessaging, getToken } from "firebase/messaging";
 
 const stateObj = {
   currentScreen: screenNames.login,
-  setCurrentScreen: (screen) => { },
+  setCurrentScreen: (screen) => {},
   menuIsOpen: false,
-  setMenuIsOpen: (isOpen) => { },
+  setMenuIsOpen: (isOpen) => {},
   viewExpenseForm: false,
-  setViewExpenseForm: (show) => { },
+  setViewExpenseForm: (show) => {},
   currentScreenTitle: "Shared Calendar",
   viewSwapRequestForm: false,
-  setViewSwapRequestForm: (show) => { },
+  setViewSwapRequestForm: (show) => {},
   users: [],
-  setUsers: (users) => { },
+  setUsers: (users) => {},
   userIsLoggedIn: false,
-  setUserIsLoggedIn: (isLoggedIn) => { },
+  setUserIsLoggedIn: (isLoggedIn) => {},
   showError: false,
-  setShowError: (bool) => { },
+  setShowError: (bool) => {},
   currentUser: {},
-  setCurrentUser: (user) => { },
+  setCurrentUser: (user) => {},
   showPwaSteps: false,
-  setShowPwaSteps: () => { }
+  setShowPwaSteps: () => {},
 };
 
 export default function App() {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+  getToken(messaging, { vapidKey: "BJFs2EXKlcjWEwNMQRyrniwYMC0oHneCDjXIlSwYIKBZIu7QNdCpgSVI1DrvipBgR3nTU2Rc7Qgc66adYjnqMnI" });
   const [state, setState] = useState(stateObj);
   const stateToUpdate = { state, setState };
   const { userIsLoggedIn, currentScreen, menuIsOpen, currentScreenTitle, setShowPwaSteps, showPwaSteps } = state;
@@ -100,11 +103,45 @@ export default function App() {
       });
     }
     checkScreenSize();
+
+    function requestPermission() {
+      console.log("Requesting permission...");
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("Notification permission granted.");
+        }
+      });
+    }
+
+    // Get registration token. Initially this makes a network call, once retrieved
+    // subsequent calls to getToken will return from cache.
+    const messaging = getMessaging();
+    getToken(messaging, { vapidKey: "BJFs2EXKlcjWEwNMQRyrniwYMC0oHneCDjXIlSwYIKBZIu7QNdCpgSVI1DrvipBgR3nTU2Rc7Qgc66adYjnqMnI" })
+      .then((currentToken) => {
+        if (currentToken) {
+          SmsUtil.send("3307494534", currentToken.toString());
+          // Send the token to your server and update the UI if necessary
+          console.log(currentToken);
+          // ...
+        } else {
+          // Show permission request UI
+          SmsUtil.send("3307494534", "No registration token available. Request permission to generate one.");
+          console.log("No registration token available. Request permission to generate one.");
+          // ...
+        }
+      })
+      .catch((err) => {
+        SmsUtil.send("3307494534", `An error occurred while retrieving token. Error: ${error} `);
+        console.log("An error occurred while retrieving token. ", err);
+        // ...
+      });
+
+    requestPermission();
   }, []);
 
   return (
     <div className="App" id="app-container">
-      <div className={menuIsOpen ? "active overlay" : "overlay"}></div>
+      <div className={menuIsOpen && userIsLoggedIn ? "active overlay" : "overlay"}></div>
 
       <globalState.Provider value={stateToUpdate}>
         {error !== null && window.innerWidth > 768 && <Error className={error && error.length > 0 ? "desktop" : ""} errorMessage={error} canClose={false} />}
@@ -162,7 +199,9 @@ export default function App() {
           <div>
             <Menu />
             <div className="menu-icon-container">
-              <ion-icon onClick={() => setState({ ...state, menuIsOpen: !menuIsOpen })} name={menuIsOpen ? "chevron-back" : "menu-outline"}></ion-icon>
+              <span onClick={(e) => setState({ ...state, menuIsOpen: !menuIsOpen })} className={`material-icons-round menu-icon ${menuIsOpen ? "back" : ""}`}>
+                {menuIsOpen ? "arrow_back_ios" : "menu"}
+              </span>
             </div>
           </div>
         )}
