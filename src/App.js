@@ -145,7 +145,6 @@ export default function App() {
 
       <globalState.Provider value={stateToUpdate}>
         {error !== null && window.innerWidth > 768 && <Error className={error && error.length > 0 ? "desktop" : ""} errorMessage={error} canClose={false} />}
-        {window.innerWidth > 768 && <Error errorMessage={error} />}
         {currentScreenTitle && currentScreenTitle.length > 0 && currentScreenTitle !== "error" && currentScreen !== screenNames.consentInfo && <p className="screen-title">{currentScreenTitle}</p>}
 
         <Modal elClass={`pwa-modal ${showPwaSteps ? "show" : ""}`} onClose={() => setState({ ...state, showPwaSteps: false })}>
