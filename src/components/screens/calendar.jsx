@@ -69,6 +69,13 @@ export default function EventCalendar() {
       }
     });
   };
+  const isIos = () => {
+    return (
+      ["iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod"].includes(navigator.platform) ||
+      // iPad on iOS 13 detection
+      (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+    );
+  };
 
   const cancel = () => {
     setState({ ...state, currentScreen: screenNames.calendar, currentScreenTitle: "Calendar" });
@@ -165,7 +172,7 @@ export default function EventCalendar() {
                                 </p>
                               )}
                               {event.location && event.location.length > 0 && (
-                                <a href={event.directionsLink}>
+                                <a href={isIos() ? `http://maps.apple.com/?daddr=${encodeURIComponent(event.location)}` : event.directionsLink}>
                                   <span className="material-icons-round">directions</span>
                                   {event.location}
                                 </a>

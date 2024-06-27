@@ -6,6 +6,7 @@ const firebaseConfig = {
   storageBucket: "coparenting-app-aa9f9.appspot.com",
   messagingSenderId: "7278132726",
   appId: "1:7278132726:web:e6d4b345a6969022991bd7",
+  messagingSenderId: "7278132726",
 };
 
 // Initialize Firebase

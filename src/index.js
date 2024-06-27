@@ -14,6 +14,14 @@ if ("serviceWorker" in navigator) {
       .catch((err) => {
         console.error("[SW] service Worker registration failed:", err);
       });
+    // navigator.serviceWorker
+    //   .register("./firebase-messaging-sw.js")
+    //   .then((registration) => {
+    //     console.log("[SW] service Worker is registered", registration.scope);
+    //   })
+    //   .catch((err) => {
+    //     console.error("[SW] service Worker registration failed:", err);
+    //   });
   });
 }
 // window.addEventListener("visibilitychange", function () {

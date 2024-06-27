@@ -15,6 +15,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
 
   const login = async () => {
+    console.log(true);
     setError("");
 
     if (util.validation([phone, password]) > 0) {
@@ -32,10 +33,11 @@ export default function Login() {
           if (user && user.phone && user.password) {
             if (user.phone === phone && user.password === password) {
               foundUser = user;
+              console.log(foundUser);
               if (rememberMe) {
-                localStorage.setItem("rememberKey", user.id);
-              } else {
                 localStorage.removeItem("rememberKey");
+              } else {
+                localStorage.setItem("rememberKey", user.id);
               }
             }
           }
@@ -79,7 +81,7 @@ export default function Login() {
 
   return (
     <div id="login-container" className="page-container">
-      <Error errorMessage={error} />
+      {/* <Error errorMessage={error} /> */}
       <div id="quote-container">
         <span>
           <code>❝</code>

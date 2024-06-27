@@ -34,7 +34,7 @@
   "scripts": {
     "start": "react-scripts start",
     "test": "react-scripts test",
-    "build": "rm -rf build && react-scripts build ",
+    "build": "rm -rf build && react-scripts build && npm run postbuild",
     "eject": "react-scripts eject",
     "dev": "cd public && rm -rf dist && rm -rf .cache && parcel index.html",
     "postbuild": "cd src && workbox generateSW",
@@ -61,6 +61,7 @@
   "devDependencies": {
     "@babel/core": "7.24.7",
     "@babel/preset-react": "7.24.7",
+    "@parcel/packager-raw-url": "2.12.0",
     "@parcel/transformer-sass": "2.12.0",
     "@parcel/transformer-webmanifest": "2.12.0",
     "parcel": "2.12.0",
