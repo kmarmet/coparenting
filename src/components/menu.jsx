@@ -73,7 +73,7 @@ export default function Menu() {
         <div className={`action`} onClick={logout}>
           <span className="material-icons-round">logout</span> <p>Logout</p>
         </div>
-        <p id="pwa-steps" onClick={() => setState({ ...state, showPwaSteps: true })}>
+        <p id="pwa-steps" onClick={() => setState({ ...state, showPwaSteps: true, menuIsOpen: false })}>
           Install App <span className="material-icons">install_mobile</span>
         </p>
       </div>

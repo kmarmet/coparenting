@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.3a61feb3.css",
-    "main.js": "/static/js/main.fb7243ad.js",
+    "main.css": "/static/css/main.f7b7b130.css",
+    "main.js": "/static/js/main.f8b0a9e6.js",
     "static/media/material-icons-two-tone.woff": "/static/media/material-icons-two-tone.3baa5b8f3469222b822d.woff",
     "static/media/material-icons-two-tone.woff2": "/static/media/material-icons-two-tone.4ef4218c522f1eb6b5b1.woff2",
     "static/media/material-icons-round.woff": "/static/media/material-icons-round.5d681e2edae8c60630db.woff",
@@ -14,11 +14,11 @@
     "static/media/material-icons.woff2": "/static/media/material-icons.0c35d18bf06992036b69.woff2",
     "static/media/fallback-image.png": "/static/media/fallback-image.baba1a7394e8054d69cf.png",
     "index.html": "/index.html",
-    "main.3a61feb3.css.map": "/static/css/main.3a61feb3.css.map",
-    "main.fb7243ad.js.map": "/static/js/main.fb7243ad.js.map"
+    "main.f7b7b130.css.map": "/static/css/main.f7b7b130.css.map",
+    "main.f8b0a9e6.js.map": "/static/js/main.f8b0a9e6.js.map"
   },
   "entrypoints": [
-    "static/css/main.3a61feb3.css",
-    "static/js/main.fb7243ad.js"
+    "static/css/main.f7b7b130.css",
+    "static/js/main.f8b0a9e6.js"
   ]
 }
