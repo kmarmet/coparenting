@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "scheduleTypes.js",
+  "sourceRoot": "\\",
+  "sources": [
+    "scheduleTypes.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;;AAAA",
+  "sourcesContent": [
+    ""
+  ]
+}

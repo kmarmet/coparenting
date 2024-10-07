@@ -1,0 +1,727 @@
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+@keyframes pulse {
+  0%, 100% {
+    color: "#9d98fc";
+  }
+  50% {
+    color: #2b3563;
+  }
+}
+@keyframes pulseWhite {
+  0%, 100% {
+    box-shadow: 0px 0px 20px 0px white;
+  }
+  50% {
+    box-shadow: 0px 0px 10px 0px white;
+  }
+}
+@keyframes beat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes animStar {
+  from {
+    transform: translateX(-100px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+@keyframes shootingStar {
+  0% {
+    transform: rotate(315deg) translateX(250px);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(315deg) translateX(-1500px);
+    opacity: 0;
+  }
+}
+@keyframes starTwinkle {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes topBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes bottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tilt {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes rotateMoon {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+#external-overrides #documents-container .back-button,
+#external-overrides #doc-selection-container .back-button {
+  color: var(--textColor);
+  font-weight: 400;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  color: #0080FF;
+  justify-content: flex-start;
+  width: auto;
+  padding: 0;
+  position: fixed;
+  left: -15px;
+  padding: 0 8px;
+  border-radius: 8px;
+  bottom: 90px;
+  font-size: 18px;
+  text-align: left;
+}
+#external-overrides #documents-container .back-button span,
+#external-overrides #doc-selection-container .back-button span {
+  padding: 0;
+  width: 25px;
+  margin-right: 0;
+  font-size: 45px;
+  margin-right: 5px;
+}
+#external-overrides #documents-container .add-document-text,
+#external-overrides #doc-selection-container .add-document-text {
+  color: var(--textColor);
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+#external-overrides #documents-container .form,
+#external-overrides #doc-selection-container .form {
+  margin: 0;
+}
+#external-overrides #documents-container #upload-inputs #upload-input,
+#external-overrides #doc-selection-container #upload-inputs #upload-input {
+  margin: 0 auto 10px auto;
+  width: 220px;
+}
+#external-overrides #documents-container .sections p,
+#external-overrides #doc-selection-container .sections p {
+  font-size: 20px;
+}
+#external-overrides #documents-container .sections .section,
+#external-overrides #doc-selection-container .sections .section {
+  color: var(--textColor);
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  width: calc(100vw - 30px);
+  position: relative;
+  flex-wrap: wrap;
+  align-items: center;
+  line-height: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  height: 60px;
+  margin: 0;
+  justify-content: space-between;
+  margin: 0 auto;
+  justify-content: flex-start;
+}
+#external-overrides #documents-container .sections .section span:nth-child(2),
+#external-overrides #doc-selection-container .sections .section span:nth-child(2) {
+  margin-left: auto;
+  margin-right: 0;
+  font-size: 20px;
+}
+#external-overrides #documents-container .sections .section.notifications,
+#external-overrides #doc-selection-container .sections .section.notifications {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+#external-overrides #documents-container .sections .section.notifications span,
+#external-overrides #doc-selection-container .sections .section.notifications span {
+  line-height: 1.2;
+  justify-self: flex-start;
+  margin-right: auto;
+  margin-left: 0;
+}
+#external-overrides #documents-container .sections .section.notifications span:nth-child(2),
+#external-overrides #doc-selection-container .sections .section.notifications span:nth-child(2) {
+  color: var(--textColor);
+}
+#external-overrides #documents-container .sections .section.notifications span.accent,
+#external-overrides #doc-selection-container .sections .section.notifications span.accent {
+  margin-right: 20px;
+}
+#external-overrides #documents-container .sections .section.notifications #checkbox-group,
+#external-overrides #doc-selection-container .sections .section.notifications #checkbox-group {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 0;
+  margin-left: 10px;
+}
+#external-overrides #documents-container .sections .section.notifications #checkbox-group .flex,
+#external-overrides #doc-selection-container .sections .section.notifications #checkbox-group .flex {
+  width: auto;
+}
+#external-overrides #documents-container .sections .section.notifications #checkbox-group .flex:last-child,
+#external-overrides #doc-selection-container .sections .section.notifications #checkbox-group .flex:last-child {
+  margin: 0;
+}
+#external-overrides #documents-container .sections .section:first-child,
+#external-overrides #doc-selection-container .sections .section:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+#external-overrides #documents-container .sections .section span,
+#external-overrides #doc-selection-container .sections .section span {
+  font-size: 25px;
+  margin-right: 20px;
+  opacity: 0.8;
+  color: var(--accent);
+}
+#external-overrides #documents-container .sections .section span:nth-child(2),
+#external-overrides #doc-selection-container .sections .section span:nth-child(2) {
+  font-size: 16px;
+  margin-right: 20px;
+  opacity: 0.5;
+  color: var(--textColor);
+}
+#external-overrides #documents-container .current-value,
+#external-overrides #doc-selection-container .current-value {
+  opacity: 0.6;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+#external-overrides #documents-container .instructions.gallery,
+#external-overrides #doc-selection-container .instructions.gallery {
+  margin-bottom: 10px;
+  color: var(--textColor);
+  margin-top: 0;
+}
+#external-overrides #documents-container .gallery,
+#external-overrides #doc-selection-container .gallery {
+  grid-template-columns: auto auto auto;
+  grid-gap: 8px;
+  display: grid;
+}
+#external-overrides #documents-container .gallery #img-container img,
+#external-overrides #doc-selection-container .gallery #img-container img {
+  height: auto;
+  width: 100%;
+  border-radius: 8px;
+  display: none;
+}
+#external-overrides #documents-container .gallery #img-container p,
+#external-overrides #doc-selection-container .gallery #img-container p {
+  color: #ca436c;
+  text-align: center;
+  width: 70px;
+  margin: 5px auto 0 auto;
+  font-weight: 500;
+  border-bottom: 1px solid #ca436c;
+  padding-bottom: 1px;
+  display: none;
+}
+#external-overrides #documents-container .gallery #img-container p.image-name,
+#external-overrides #doc-selection-container .gallery #img-container p.image-name {
+  color: var(--textColor);
+  font-size: 14px;
+  width: 100%;
+  border-bottom: 0;
+  padding-bottom: 5px;
+}
+#external-overrides #documents-container .gallery.active #img-container img,
+#external-overrides #doc-selection-container .gallery.active #img-container img {
+  display: inline;
+}
+#external-overrides #documents-container .gallery.active #img-container p,
+#external-overrides #doc-selection-container .gallery.active #img-container p {
+  display: block;
+}
+#external-overrides #documents-container .gallery img,
+#external-overrides #doc-selection-container .gallery img {
+  height: auto;
+  display: none;
+  width: 100%;
+  border-radius: 8px;
+}
+#external-overrides #legal-docs-container,
+#external-overrides #upload-legal-doc-container,
+#external-overrides #upload-documents-container,
+#external-overrides #documents-container {
+  position: relative;
+  z-index: 1000;
+}
+#external-overrides #legal-docs-container .page-overlay,
+#external-overrides #upload-legal-doc-container .page-overlay,
+#external-overrides #upload-documents-container .page-overlay,
+#external-overrides #documents-container .page-overlay {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  bottom: 0;
+  top: 0;
+  opacity: 0;
+}
+#external-overrides #legal-docs-container .page-overlay.active,
+#external-overrides #upload-legal-doc-container .page-overlay.active,
+#external-overrides #upload-documents-container .page-overlay.active,
+#external-overrides #documents-container .page-overlay.active {
+  opacity: 1;
+  -webkit-backdrop-filter: blur(10px);
+  background-color: var(--modalBg);
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
+  transition: all 0.5s ease-in-out;
+  z-index: 100;
+}
+#external-overrides #legal-docs-container b,
+#external-overrides #legal-docs-container strong,
+#external-overrides #upload-legal-doc-container b,
+#external-overrides #upload-legal-doc-container strong,
+#external-overrides #upload-documents-container b,
+#external-overrides #upload-documents-container strong,
+#external-overrides #documents-container b,
+#external-overrides #documents-container strong {
+  color: var(--textColor);
+}
+#external-overrides #legal-docs-container p,
+#external-overrides #upload-legal-doc-container p,
+#external-overrides #upload-documents-container p,
+#external-overrides #documents-container p {
+  color: var(--textColor);
+  line-height: 1.3;
+  font-weight: 400;
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+#external-overrides #legal-docs-container p strong,
+#external-overrides #upload-legal-doc-container p strong,
+#external-overrides #upload-documents-container p strong,
+#external-overrides #documents-container p strong {
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.07);
+}
+#external-overrides #legal-docs-container img,
+#external-overrides #upload-legal-doc-container img,
+#external-overrides #upload-documents-container img,
+#external-overrides #documents-container img {
+  margin-bottom: 10px;
+}
+#external-overrides #legal-docs-container a,
+#external-overrides #upload-legal-doc-container a,
+#external-overrides #upload-documents-container a,
+#external-overrides #documents-container a {
+  font-size: 16px;
+  color: #0080FF;
+  font-weight: bold;
+  text-decoration: underline;
+  display: block;
+  font-style: italic;
+}
+#external-overrides #legal-docs-container a span,
+#external-overrides #upload-legal-doc-container a span,
+#external-overrides #upload-documents-container a span,
+#external-overrides #documents-container a span {
+  position: relative;
+  top: 5px;
+  font-size: 18px;
+}
+#external-overrides #legal-docs-container #toc-close-icon,
+#external-overrides #upload-legal-doc-container #toc-close-icon,
+#external-overrides #upload-documents-container #toc-close-icon,
+#external-overrides #documents-container #toc-close-icon {
+  color: var(--textColor);
+  margin-left: auto;
+  background-color: transparent;
+  color: #ca436c;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.7;
+  z-index: 1000;
+  position: fixed;
+  bottom: 70px;
+  margin: 0;
+  display: none;
+}
+#external-overrides #legal-docs-container #toc-close-icon.active,
+#external-overrides #upload-legal-doc-container #toc-close-icon.active,
+#external-overrides #upload-documents-container #toc-close-icon.active,
+#external-overrides #documents-container #toc-close-icon.active {
+  display: flex;
+}
+#external-overrides #legal-docs-container #text-container,
+#external-overrides #upload-legal-doc-container #text-container,
+#external-overrides #upload-documents-container #text-container,
+#external-overrides #documents-container #text-container {
+  position: relative;
+  overflow: auto;
+}
+#external-overrides #legal-docs-container #text-container.active,
+#external-overrides #upload-legal-doc-container #text-container.active,
+#external-overrides #upload-documents-container #text-container.active,
+#external-overrides #documents-container #text-container.active {
+  display: block;
+}
+#external-overrides #legal-docs-container #text-container .document-text-container,
+#external-overrides #upload-legal-doc-container #text-container .document-text-container,
+#external-overrides #upload-documents-container #text-container .document-text-container,
+#external-overrides #documents-container #text-container .document-text-container {
+  max-height: 0;
+  opacity: 0;
+  transition: all 0.4s ease-in-out;
+}
+#external-overrides #legal-docs-container #text-container .document-text-container.active,
+#external-overrides #upload-legal-doc-container #text-container .document-text-container.active,
+#external-overrides #upload-documents-container #text-container .document-text-container.active,
+#external-overrides #documents-container #text-container .document-text-container.active {
+  opacity: 1;
+  display: block;
+  max-height: 10000px;
+}
+#external-overrides #legal-docs-container #text-container .header,
+#external-overrides #legal-docs-container #text-container .document-text-header,
+#external-overrides #upload-legal-doc-container #text-container .header,
+#external-overrides #upload-legal-doc-container #text-container .document-text-header,
+#external-overrides #upload-documents-container #text-container .header,
+#external-overrides #upload-documents-container #text-container .document-text-header,
+#external-overrides #documents-container #text-container .header,
+#external-overrides #documents-container #text-container .document-text-header {
+  font-weight: bold;
+  width: 100%;
+  display: block;
+  margin: 20px 0 5px 0;
+  line-height: 1.3;
+  font-size: 20px;
+  text-transform: capitalize;
+  background-color: rgba(126, 119, 253, 0.5803921569);
+  opacity: 0.9;
+  border-radius: 5px;
+  display: flex;
+  padding: 12px 0;
+  justify-content: center;
+  text-align: center;
+  color: whitesmoke;
+  color: var(--textColor);
+}
+#external-overrides #legal-docs-container #text-container .header strong,
+#external-overrides #legal-docs-container #text-container .document-text-header strong,
+#external-overrides #upload-legal-doc-container #text-container .header strong,
+#external-overrides #upload-legal-doc-container #text-container .document-text-header strong,
+#external-overrides #upload-documents-container #text-container .header strong,
+#external-overrides #upload-documents-container #text-container .document-text-header strong,
+#external-overrides #documents-container #text-container .header strong,
+#external-overrides #documents-container #text-container .document-text-header strong {
+  font-weight: bold;
+  background-color: transparent;
+}
+#external-overrides #legal-docs-container #text-container p,
+#external-overrides #upload-legal-doc-container #text-container p,
+#external-overrides #upload-documents-container #text-container p,
+#external-overrides #documents-container #text-container p {
+  letter-spacing: 1px;
+  font-size: 16px;
+  font-weight: 300;
+  margin: 10px 0 20px 0;
+  line-height: 1.3;
+}
+#external-overrides #legal-docs-container #text-container p:has(> span),
+#external-overrides #upload-legal-doc-container #text-container p:has(> span),
+#external-overrides #upload-documents-container #text-container p:has(> span),
+#external-overrides #documents-container #text-container p:has(> span) {
+  margin-bottom: 0;
+}
+#external-overrides #legal-docs-container #text-container p.highlight,
+#external-overrides #upload-legal-doc-container #text-container p.highlight,
+#external-overrides #upload-documents-container #text-container p.highlight,
+#external-overrides #documents-container #text-container p.highlight {
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.04);
+  padding: 5px 10px;
+  display: inline-block;
+  margin: 0;
+  border-radius: 5px;
+}
+#external-overrides #legal-docs-container #text-container .sub-header,
+#external-overrides #upload-legal-doc-container #text-container .sub-header,
+#external-overrides #upload-documents-container #text-container .sub-header,
+#external-overrides #documents-container #text-container .sub-header {
+  font-weight: bold;
+  margin-top: 20px;
+  display: block;
+  font-style: italic;
+  margin-bottom: 0;
+  position: relative;
+  top: 15px;
+}
+#external-overrides #legal-docs-container #scroll-icon,
+#external-overrides #upload-legal-doc-container #scroll-icon,
+#external-overrides #upload-documents-container #scroll-icon,
+#external-overrides #documents-container #scroll-icon {
+  position: fixed;
+  background-color: #2b3563;
+  border-radius: 100%;
+  bottom: 120px;
+  right: 20px;
+  color: var(--textColor);
+  z-index: 1;
+  font-size: 45px;
+}
+#external-overrides #legal-docs-container #toc-icon,
+#external-overrides #upload-legal-doc-container #toc-icon,
+#external-overrides #upload-documents-container #toc-icon,
+#external-overrides #documents-container #toc-icon {
+  color: var(--textColor);
+  font-size: 40px;
+  position: fixed;
+  right: 0;
+  z-index: 1000000;
+  bottom: 100px;
+  padding: 0 5px;
+  background-color: var(--compColor);
+  border-radius: 8px 0 0 8px;
+}
+#external-overrides #legal-docs-container #table-of-contents,
+#external-overrides #upload-legal-doc-container #table-of-contents,
+#external-overrides #upload-documents-container #table-of-contents,
+#external-overrides #documents-container #table-of-contents {
+  background-color: var(--screenTitle);
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  align-items: center;
+  padding: 0;
+  width: 0;
+  position: fixed;
+  right: 0;
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
+  overflow: auto;
+  right: 0;
+  top: 0;
+  max-height: calc(100vh - 150px);
+  bottom: 100px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+#external-overrides #legal-docs-container #table-of-contents span,
+#external-overrides #upload-legal-doc-container #table-of-contents span,
+#external-overrides #upload-documents-container #table-of-contents span,
+#external-overrides #documents-container #table-of-contents span {
+  position: relative;
+  top: 8px;
+  font-size: 20px;
+}
+#external-overrides #legal-docs-container #table-of-contents #toc-contents,
+#external-overrides #upload-legal-doc-container #table-of-contents #toc-contents,
+#external-overrides #upload-documents-container #table-of-contents #toc-contents,
+#external-overrides #documents-container #table-of-contents #toc-contents {
+  transition: all 0.3s ease-in-out;
+  display: block;
+}
+#external-overrides #legal-docs-container #table-of-contents #toc-contents span:last-child p,
+#external-overrides #upload-legal-doc-container #table-of-contents #toc-contents span:last-child p,
+#external-overrides #upload-documents-container #table-of-contents #toc-contents span:last-child p,
+#external-overrides #documents-container #table-of-contents #toc-contents span:last-child p {
+  border-bottom: 0;
+}
+#external-overrides #legal-docs-container #table-of-contents.open,
+#external-overrides #upload-legal-doc-container #table-of-contents.open,
+#external-overrides #upload-documents-container #table-of-contents.open,
+#external-overrides #documents-container #table-of-contents.open {
+  width: 100vw;
+}
+#external-overrides #legal-docs-container #table-of-contents.open #toc-contents,
+#external-overrides #upload-legal-doc-container #table-of-contents.open #toc-contents,
+#external-overrides #upload-documents-container #table-of-contents.open #toc-contents,
+#external-overrides #documents-container #table-of-contents.open #toc-contents {
+  display: block;
+  flex-wrap: wrap;
+}
+#external-overrides #legal-docs-container #table-of-contents h4,
+#external-overrides #upload-legal-doc-container #table-of-contents h4,
+#external-overrides #upload-documents-container #table-of-contents h4,
+#external-overrides #documents-container #table-of-contents h4 {
+  color: var(--textColor);
+  width: 100%;
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+#external-overrides #legal-docs-container #table-of-contents .toc-header,
+#external-overrides #upload-legal-doc-container #table-of-contents .toc-header,
+#external-overrides #upload-documents-container #table-of-contents .toc-header,
+#external-overrides #documents-container #table-of-contents .toc-header {
+  font-weight: 400;
+  font-size: 15px;
+  margin: 0;
+  color: var(--textColor);
+  border-radius: 0;
+  width: 100%;
+  padding: 12px 10px;
+  margin-right: 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  opacity: 0.8;
+}
+#external-overrides #legal-docs-container .flex,
+#external-overrides #upload-legal-doc-container .flex,
+#external-overrides #upload-documents-container .flex,
+#external-overrides #documents-container .flex {
+  margin-top: 15px;
+}
+#external-overrides #legal-docs-container .flex input,
+#external-overrides #legal-docs-container .flex label,
+#external-overrides #legal-docs-container .flex button,
+#external-overrides #upload-legal-doc-container .flex input,
+#external-overrides #upload-legal-doc-container .flex label,
+#external-overrides #upload-legal-doc-container .flex button,
+#external-overrides #upload-documents-container .flex input,
+#external-overrides #upload-documents-container .flex label,
+#external-overrides #upload-documents-container .flex button,
+#external-overrides #documents-container .flex input,
+#external-overrides #documents-container .flex label,
+#external-overrides #documents-container .flex button {
+  width: 50%;
+  height: 35px;
+  max-height: 35px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 18px;
+  text-align: center;
+  justify-content: center;
+  line-height: 1;
+}
+#external-overrides #legal-docs-container .flex input:first-child,
+#external-overrides #legal-docs-container .flex label:first-child,
+#external-overrides #legal-docs-container .flex button:first-child,
+#external-overrides #upload-legal-doc-container .flex input:first-child,
+#external-overrides #upload-legal-doc-container .flex label:first-child,
+#external-overrides #upload-legal-doc-container .flex button:first-child,
+#external-overrides #upload-documents-container .flex input:first-child,
+#external-overrides #upload-documents-container .flex label:first-child,
+#external-overrides #upload-documents-container .flex button:first-child,
+#external-overrides #documents-container .flex input:first-child,
+#external-overrides #documents-container .flex label:first-child,
+#external-overrides #documents-container .flex button:first-child {
+  margin-right: 10px;
+}
+#external-overrides #legal-docs-container .flex input span,
+#external-overrides #legal-docs-container .flex label span,
+#external-overrides #legal-docs-container .flex button span,
+#external-overrides #upload-legal-doc-container .flex input span,
+#external-overrides #upload-legal-doc-container .flex label span,
+#external-overrides #upload-legal-doc-container .flex button span,
+#external-overrides #upload-documents-container .flex input span,
+#external-overrides #upload-documents-container .flex label span,
+#external-overrides #upload-documents-container .flex button span,
+#external-overrides #documents-container .flex input span,
+#external-overrides #documents-container .flex label span,
+#external-overrides #documents-container .flex button span {
+  top: 0;
+}
+#external-overrides #legal-docs-container#upload-documents-container .flex,
+#external-overrides #upload-legal-doc-container#upload-documents-container .flex,
+#external-overrides #upload-documents-container#upload-documents-container .flex,
+#external-overrides #documents-container#upload-documents-container .flex {
+  margin-top: 0;
+}/*# sourceMappingURL=documents.css.map */

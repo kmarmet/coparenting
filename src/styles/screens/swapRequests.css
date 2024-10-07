@@ -1,0 +1,789 @@
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+@keyframes pulse {
+  0%, 100% {
+    color: "#9d98fc";
+  }
+  50% {
+    color: #2b3563;
+  }
+}
+@keyframes pulseWhite {
+  0%, 100% {
+    box-shadow: 0px 0px 20px 0px white;
+  }
+  50% {
+    box-shadow: 0px 0px 10px 0px white;
+  }
+}
+@keyframes beat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes animStar {
+  from {
+    transform: translateX(-100px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+@keyframes shootingStar {
+  0% {
+    transform: rotate(315deg) translateX(250px);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(315deg) translateX(-1500px);
+    opacity: 0;
+  }
+}
+@keyframes starTwinkle {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes topBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes bottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tilt {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes rotateMoon {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+#swap-requests .description,
+#transfer-requests-container .description {
+  color: var(--textColor);
+  font-size: 17px;
+}
+#swap-requests .description.small,
+#transfer-requests-container .description.small {
+  font-size: 15px;
+  font-style: italic;
+}
+#swap-requests .reminder,
+#transfer-requests-container .reminder {
+  font-size: 12px;
+  height: 35px;
+  background-color: transparent;
+  font-weight: bold;
+  color: var(--textColor);
+  margin-bottom: 10px;
+  border: 1px solid var(--textColor);
+  padding: 0;
+  margin-top: 10px;
+}
+#swap-requests .reminder span,
+#transfer-requests-container .reminder span {
+  top: 0;
+  margin-left: 5px;
+  font-size: 16px;
+  color: var(--accent);
+}
+#swap-requests .action-pills,
+#transfer-requests-container .action-pills {
+  width: 100%;
+  margin-bottom: 15px;
+}
+#swap-requests .action-pills .flex,
+#transfer-requests-container .action-pills .flex {
+  padding: 0;
+  background-color: transparent;
+  color: var(--textColor);
+  padding: 5px 0;
+  display: block;
+  min-width: 45%;
+  margin: 0;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+}
+#swap-requests .action-pills .flex.close,
+#transfer-requests-container .action-pills .flex.close {
+  min-width: 45%;
+}
+#swap-requests .action-pills .flex p,
+#transfer-requests-container .action-pills .flex p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+  opacity: 0.8;
+}
+#swap-requests .action-pills .flex span,
+#transfer-requests-container .action-pills .flex span {
+  border-radius: 100%;
+  font-size: 20px;
+  color: var(--compColor);
+  opacity: 0.8;
+  padding: 0;
+  margin: 0;
+}
+#swap-requests .action-pills .flex p,
+#swap-requests .action-pills .flex span,
+#transfer-requests-container .action-pills .flex p,
+#transfer-requests-container .action-pills .flex span {
+  color: var(--textColor);
+  text-align: center;
+}
+#swap-requests .action-pills.swap-request, #swap-requests .action-pills.calendar-event,
+#transfer-requests-container .action-pills.swap-request,
+#transfer-requests-container .action-pills.calendar-event {
+  justify-content: flex-start;
+}
+#swap-requests .action-pills.swap-request .flex, #swap-requests .action-pills.calendar-event .flex,
+#transfer-requests-container .action-pills.swap-request .flex,
+#transfer-requests-container .action-pills.calendar-event .flex {
+  background-image: none;
+  background-color: transparent;
+  box-shadow: none;
+  overflow: hidden;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
+  justify-content: center;
+  padding: 0 !important;
+  align-items: center;
+  display: flex;
+  width: 100%;
+}
+#swap-requests .action-pills.swap-request .flex p, #swap-requests .action-pills.calendar-event .flex p,
+#transfer-requests-container .action-pills.swap-request .flex p,
+#transfer-requests-container .action-pills.calendar-event .flex p {
+  opacity: 0.5;
+}
+#swap-requests .action-pills.swap-request .flex.active, #swap-requests .action-pills.calendar-event .flex.active,
+#transfer-requests-container .action-pills.swap-request .flex.active,
+#transfer-requests-container .action-pills.calendar-event .flex.active {
+  width: 100%;
+  border: 0;
+  background-color: var(--compColor);
+}
+#swap-requests .action-pills.swap-request .flex.active p, #swap-requests .action-pills.calendar-event .flex.active p,
+#transfer-requests-container .action-pills.swap-request .flex.active p,
+#transfer-requests-container .action-pills.calendar-event .flex.active p {
+  color: var(--bgColor);
+  opacity: 1;
+  font-weight: 500;
+}
+#swap-requests .action-pills.swap-request .flex.active span, #swap-requests .action-pills.calendar-event .flex.active span,
+#transfer-requests-container .action-pills.swap-request .flex.active span,
+#transfer-requests-container .action-pills.calendar-event .flex.active span {
+  display: inline;
+  color: var(--bgColor);
+  opacity: 1;
+}
+#swap-requests .action-pills.swap-request.swap-request .flex, #swap-requests .action-pills.calendar-event.swap-request .flex,
+#transfer-requests-container .action-pills.swap-request.swap-request .flex,
+#transfer-requests-container .action-pills.calendar-event.swap-request .flex {
+  max-width: 30%;
+  min-width: 0;
+}
+#swap-requests .action-pills.swap-request.swap-request .flex.active, #swap-requests .action-pills.calendar-event.swap-request .flex.active,
+#transfer-requests-container .action-pills.swap-request.swap-request .flex.active,
+#transfer-requests-container .action-pills.calendar-event.swap-request .flex.active {
+  width: 60%;
+  max-width: 60%;
+}
+@media only screen and (min-width: 800px) {
+  #swap-requests #swap-requests-container,
+  #swap-requests #all-transfer-requests-container,
+  #transfer-requests-container #swap-requests-container,
+  #transfer-requests-container #all-transfer-requests-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-gap: 10px;
+  }
+}
+#swap-requests #swap-requests-container .close,
+#swap-requests #all-transfer-requests-container .close,
+#transfer-requests-container #swap-requests-container .close,
+#transfer-requests-container #all-transfer-requests-container .close {
+  margin: 20px auto 10px auto;
+  display: block;
+  opacity: 0.8;
+  padding: 0;
+  height: 30px;
+  width: 100px;
+  min-width: 0;
+  font-size: 14px;
+}
+#swap-requests #swap-requests-container .request,
+#swap-requests #all-transfer-requests-container .request,
+#transfer-requests-container #swap-requests-container .request,
+#transfer-requests-container #all-transfer-requests-container .request {
+  margin: 0;
+  border: 0;
+  background-color: var(--eventDetails);
+  border-radius: 8px;
+  width: 100%;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+#swap-requests #swap-requests-container .request.open,
+#swap-requests #all-transfer-requests-container .request.open,
+#transfer-requests-container #swap-requests-container .request.open,
+#transfer-requests-container #all-transfer-requests-container .request.open {
+  min-height: 200px;
+  height: auto;
+  width: 100%;
+  max-height: 100%;
+  grid-column: span 2;
+}
+#swap-requests #swap-requests-container .request.open #button-group,
+#swap-requests #all-transfer-requests-container .request.open #button-group,
+#transfer-requests-container #swap-requests-container .request.open #button-group,
+#transfer-requests-container #all-transfer-requests-container .request.open #button-group {
+  align-items: center;
+}
+#swap-requests #swap-requests-container .request.open .content,
+#swap-requests #all-transfer-requests-container .request.open .content,
+#transfer-requests-container #swap-requests-container .request.open .content,
+#transfer-requests-container #all-transfer-requests-container .request.open .content {
+  padding: 10px;
+}
+#swap-requests #swap-requests-container .request.open .content .reason,
+#swap-requests #swap-requests-container .request.open .content .reason-text,
+#swap-requests #all-transfer-requests-container .request.open .content .reason,
+#swap-requests #all-transfer-requests-container .request.open .content .reason-text,
+#transfer-requests-container #swap-requests-container .request.open .content .reason,
+#transfer-requests-container #swap-requests-container .request.open .content .reason-text,
+#transfer-requests-container #all-transfer-requests-container .request.open .content .reason,
+#transfer-requests-container #all-transfer-requests-container .request.open .content .reason-text {
+  display: block;
+}
+#swap-requests #swap-requests-container .request.open a,
+#swap-requests #all-transfer-requests-container .request.open a,
+#transfer-requests-container #swap-requests-container .request.open a,
+#transfer-requests-container #all-transfer-requests-container .request.open a {
+  display: flex;
+}
+#swap-requests #swap-requests-container .request button.delete,
+#swap-requests #all-transfer-requests-container .request button.delete,
+#transfer-requests-container #swap-requests-container .request button.delete,
+#transfer-requests-container #all-transfer-requests-container .request button.delete {
+  border-radius: 0;
+  padding: 8px 0;
+}
+#swap-requests #swap-requests-container .request a,
+#swap-requests #all-transfer-requests-container .request a,
+#transfer-requests-container #swap-requests-container .request a,
+#transfer-requests-container #all-transfer-requests-container .request a {
+  display: none;
+  align-items: center;
+  margin-top: 5px;
+  font-weight: 400;
+  font-size: 14px;
+}
+#swap-requests #swap-requests-container .request a span,
+#swap-requests #all-transfer-requests-container .request a span,
+#transfer-requests-container #swap-requests-container .request a span,
+#transfer-requests-container #all-transfer-requests-container .request a span {
+  margin-right: 5px;
+}
+#swap-requests #swap-requests-container .request textarea,
+#swap-requests #all-transfer-requests-container .request textarea,
+#transfer-requests-container #swap-requests-container .request textarea,
+#transfer-requests-container #all-transfer-requests-container .request textarea {
+  width: 95%;
+  margin-top: 10px;
+  height: 100px;
+  border: 0;
+  margin: 10px auto;
+  display: block;
+  padding: 5px;
+  font-weight: 300;
+  outline: 0;
+  border-radius: 8px;
+  background-color: var(--eventDetails);
+}
+#swap-requests #swap-requests-container .request textarea::-moz-placeholder, #swap-requests #all-transfer-requests-container .request textarea::-moz-placeholder, #transfer-requests-container #swap-requests-container .request textarea::-moz-placeholder, #transfer-requests-container #all-transfer-requests-container .request textarea::-moz-placeholder {
+  color: var(--textColor);
+  font-weight: 300;
+  opacity: 0.7;
+  font-style: italic;
+}
+#swap-requests #swap-requests-container .request textarea::placeholder,
+#swap-requests #all-transfer-requests-container .request textarea::placeholder,
+#transfer-requests-container #swap-requests-container .request textarea::placeholder,
+#transfer-requests-container #all-transfer-requests-container .request textarea::placeholder {
+  color: var(--textColor);
+  font-weight: 300;
+  opacity: 0.7;
+  font-style: italic;
+}
+#swap-requests #swap-requests-container .request #button-group,
+#swap-requests #all-transfer-requests-container .request #button-group,
+#transfer-requests-container #swap-requests-container .request #button-group,
+#transfer-requests-container #all-transfer-requests-container .request #button-group {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: 0;
+}
+#swap-requests #swap-requests-container .request #button-group .flex,
+#swap-requests #all-transfer-requests-container .request #button-group .flex,
+#transfer-requests-container #swap-requests-container .request #button-group .flex,
+#transfer-requests-container #all-transfer-requests-container .request #button-group .flex {
+  flex-direction: column;
+  height: auto;
+  align-items: center;
+  justify-content: space-between;
+  background-color: transparent;
+  width: 100%;
+}
+#swap-requests #swap-requests-container .request #button-group .flex span,
+#swap-requests #all-transfer-requests-container .request #button-group .flex span,
+#transfer-requests-container #swap-requests-container .request #button-group .flex span,
+#transfer-requests-container #all-transfer-requests-container .request #button-group .flex span {
+  position: relative;
+  top: 3px;
+}
+#swap-requests #swap-requests-container .request #button-group .flex button,
+#swap-requests #all-transfer-requests-container .request #button-group .flex button,
+#transfer-requests-container #swap-requests-container .request #button-group .flex button,
+#transfer-requests-container #all-transfer-requests-container .request #button-group .flex button {
+  width: 100%;
+  border-radius: 0;
+  padding: 10px 5px;
+  font-weight: 500;
+  opacity: 1;
+  text-align: center;
+  font-size: 14px;
+}
+#swap-requests #swap-requests-container .request #button-group .flex button span,
+#swap-requests #all-transfer-requests-container .request #button-group .flex button span,
+#transfer-requests-container #swap-requests-container .request #button-group .flex button span,
+#transfer-requests-container #all-transfer-requests-container .request #button-group .flex button span {
+  font-size: 25px;
+}
+#swap-requests #swap-requests-container .request #button-group .flex button.approve,
+#swap-requests #all-transfer-requests-container .request #button-group .flex button.approve,
+#transfer-requests-container #swap-requests-container .request #button-group .flex button.approve,
+#transfer-requests-container #all-transfer-requests-container .request #button-group .flex button.approve {
+  border-radius: 0 0 0 8px;
+}
+#swap-requests #swap-requests-container .request #button-group .flex button.reject,
+#swap-requests #all-transfer-requests-container .request #button-group .flex button.reject,
+#transfer-requests-container #swap-requests-container .request #button-group .flex button.reject,
+#transfer-requests-container #all-transfer-requests-container .request #button-group .flex button.reject {
+  border-radius: 0 0 8px 0;
+}
+#swap-requests #swap-requests-container .request .request-date-container,
+#swap-requests #all-transfer-requests-container .request .request-date-container,
+#transfer-requests-container #swap-requests-container .request .request-date-container,
+#transfer-requests-container #all-transfer-requests-container .request .request-date-container {
+  display: flex;
+  align-items: center;
+  background-color: var(--purple);
+  border-radius: 8px 8px 0 0;
+  padding: 5px;
+}
+#swap-requests #swap-requests-container .request .request-date-container .request-date,
+#swap-requests #all-transfer-requests-container .request .request-date-container .request-date,
+#transfer-requests-container #swap-requests-container .request .request-date-container .request-date,
+#transfer-requests-container #all-transfer-requests-container .request .request-date-container .request-date {
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  line-height: 1;
+  padding-right: 15px;
+  margin: 0;
+}
+#swap-requests #swap-requests-container .request .request-date-container .request-date span,
+#swap-requests #all-transfer-requests-container .request .request-date-container .request-date span,
+#transfer-requests-container #swap-requests-container .request .request-date-container .request-date span,
+#transfer-requests-container #all-transfer-requests-container .request .request-date-container .request-date span {
+  font-size: 16px;
+  display: block;
+  line-height: 1.2;
+  font-weight: 400;
+}
+#swap-requests #swap-requests-container .request .request-date-container .request-date span:nth-child(2), #swap-requests #swap-requests-container .request .request-date-container .request-date span.time,
+#swap-requests #all-transfer-requests-container .request .request-date-container .request-date span:nth-child(2),
+#swap-requests #all-transfer-requests-container .request .request-date-container .request-date span.time,
+#transfer-requests-container #swap-requests-container .request .request-date-container .request-date span:nth-child(2),
+#transfer-requests-container #swap-requests-container .request .request-date-container .request-date span.time,
+#transfer-requests-container #all-transfer-requests-container .request .request-date-container .request-date span:nth-child(2),
+#transfer-requests-container #all-transfer-requests-container .request .request-date-container .request-date span.time {
+  font-size: 12px;
+  opacity: 0.7;
+}
+#swap-requests #swap-requests-container .request .request-date-container span,
+#swap-requests #all-transfer-requests-container .request .request-date-container span,
+#transfer-requests-container #swap-requests-container .request .request-date-container span,
+#transfer-requests-container #all-transfer-requests-container .request .request-date-container span {
+  font-size: 25px;
+  color: #cfd9e4;
+}
+#swap-requests #swap-requests-container .request .content,
+#swap-requests #all-transfer-requests-container .request .content,
+#transfer-requests-container #swap-requests-container .request .content,
+#transfer-requests-container #all-transfer-requests-container .request .content {
+  padding-left: 10px;
+  position: relative;
+  align-items: center;
+  overflow: hidden;
+}
+#swap-requests #swap-requests-container .request .content.long-text,
+#swap-requests #all-transfer-requests-container .request .content.long-text,
+#transfer-requests-container #swap-requests-container .request .content.long-text,
+#transfer-requests-container #all-transfer-requests-container .request .content.long-text {
+  padding-top: 10px;
+}
+#swap-requests #swap-requests-container .request .content .reason,
+#swap-requests #all-transfer-requests-container .request .content .reason,
+#transfer-requests-container #swap-requests-container .request .content .reason,
+#transfer-requests-container #all-transfer-requests-container .request .content .reason {
+  font-weight: 300;
+  font-size: 14px;
+}
+#swap-requests #swap-requests-container .request .content .flex,
+#swap-requests #all-transfer-requests-container .request .content .flex,
+#transfer-requests-container #swap-requests-container .request .content .flex,
+#transfer-requests-container #all-transfer-requests-container .request .content .flex {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+#swap-requests #swap-requests-container .request .content .flex p,
+#swap-requests #all-transfer-requests-container .request .content .flex p,
+#transfer-requests-container #swap-requests-container .request .content .flex p,
+#transfer-requests-container #all-transfer-requests-container .request .content .flex p {
+  font-weight: 400;
+  line-height: 1.2;
+  opacity: 0.9;
+  margin: 0;
+  width: 100%;
+}
+#swap-requests #swap-requests-container .request .content .flex p.subtext,
+#swap-requests #all-transfer-requests-container .request .content .flex p.subtext,
+#transfer-requests-container #swap-requests-container .request .content .flex p.subtext,
+#transfer-requests-container #all-transfer-requests-container .request .content .flex p.subtext {
+  opacity: 0.6;
+}
+#swap-requests #swap-requests-container .request .content .flex p.unpaid,
+#swap-requests #all-transfer-requests-container .request .content .flex p.unpaid,
+#transfer-requests-container #swap-requests-container .request .content .flex p.unpaid,
+#transfer-requests-container #all-transfer-requests-container .request .content .flex p.unpaid {
+  color: #ca436c;
+  opacity: 1;
+}
+#swap-requests #swap-requests-container .request .content .flex p.request-date, #swap-requests #swap-requests-container .request .content .flex p.amount,
+#swap-requests #all-transfer-requests-container .request .content .flex p.request-date,
+#swap-requests #all-transfer-requests-container .request .content .flex p.amount,
+#transfer-requests-container #swap-requests-container .request .content .flex p.request-date,
+#transfer-requests-container #swap-requests-container .request .content .flex p.amount,
+#transfer-requests-container #all-transfer-requests-container .request .content .flex p.request-date,
+#transfer-requests-container #all-transfer-requests-container .request .content .flex p.amount {
+  font-weight: 500;
+}
+#swap-requests #swap-requests-container .request .content .flex p.time span,
+#swap-requests #all-transfer-requests-container .request .content .flex p.time span,
+#transfer-requests-container #swap-requests-container .request .content .flex p.time span,
+#transfer-requests-container #all-transfer-requests-container .request .content .flex p.time span {
+  position: relative;
+  top: 2px;
+}
+#swap-requests #swap-requests-container .request .content .flex b,
+#swap-requests #all-transfer-requests-container .request .content .flex b,
+#transfer-requests-container #swap-requests-container .request .content .flex b,
+#transfer-requests-container #all-transfer-requests-container .request .content .flex b {
+  font-weight: 500;
+  padding-top: 10px;
+  display: block;
+}
+#swap-requests #swap-requests-container .request .content .reminder,
+#swap-requests #all-transfer-requests-container .request .content .reminder,
+#transfer-requests-container #swap-requests-container .request .content .reminder,
+#transfer-requests-container #all-transfer-requests-container .request .content .reminder {
+  font-weight: 400;
+}
+#swap-requests #swap-requests-container .request .content .reminder span,
+#swap-requests #all-transfer-requests-container .request .content .reminder span,
+#transfer-requests-container #swap-requests-container .request .content .reminder span,
+#transfer-requests-container #all-transfer-requests-container .request .content .reminder span {
+  color: var(--accent);
+}
+#swap-requests #request-form,
+#transfer-requests-container #request-form {
+  margin-top: 50px;
+}
+#swap-requests #request-form .rs-picker,
+#transfer-requests-container #request-form .rs-picker {
+  margin: 0;
+}
+#swap-requests #request-form .form.show,
+#transfer-requests-container #request-form .form.show {
+  display: block;
+}
+#swap-requests #request-form .form.transfer-change input:first-child,
+#transfer-requests-container #request-form .form.transfer-change input:first-child {
+  margin-bottom: 0;
+}
+#swap-requests #request-form .form input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus), #transfer-requests-container #request-form .form input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus) {
+  margin: 0 auto;
+  display: block;
+  border-radius: 5px;
+  width: 100%;
+  border: 0;
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--eventDetails);
+  border-radius: 0;
+  outline: 0;
+  color: var(--textColorWhite);
+  font-weight: 400;
+  padding-left: 0;
+  min-height: 25px;
+  opacity: 0.8;
+}
+#swap-requests #request-form .form input:is(:-webkit-autofill, :autofill, :-webkit-autofill:focus),
+#transfer-requests-container #request-form .form input:is(:-webkit-autofill, :autofill, :-webkit-autofill:focus) {
+  margin: 0 auto;
+  display: block;
+  border-radius: 5px;
+  width: 100%;
+  border: 0;
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--eventDetails);
+  border-radius: 0;
+  outline: 0;
+  color: var(--textColorWhite);
+  font-weight: 400;
+  padding-left: 0;
+  min-height: 25px;
+  opacity: 0.8;
+}
+#swap-requests #request-form .form input,
+#swap-requests #request-form .form textarea,
+#transfer-requests-container #request-form .form input,
+#transfer-requests-container #request-form .form textarea {
+  margin: 0 auto;
+  display: block;
+  border-radius: 5px;
+  width: 100%;
+  border: 0;
+  background-color: transparent;
+  border-bottom: 1px solid var(--borderColor);
+  border-radius: 0;
+  outline: 0;
+  color: var(--textColorWhite);
+  font-weight: 400;
+  padding-left: 0;
+  min-height: 25px;
+  opacity: 0.8;
+}
+#swap-requests #request-form .form input.rs-input,
+#swap-requests #request-form .form textarea.rs-input,
+#transfer-requests-container #request-form .form input.rs-input,
+#transfer-requests-container #request-form .form textarea.rs-input {
+  margin-bottom: 0;
+}
+#swap-requests #request-form .form input::-moz-placeholder, #swap-requests #request-form .form textarea::-moz-placeholder, #transfer-requests-container #request-form .form input::-moz-placeholder, #transfer-requests-container #request-form .form textarea::-moz-placeholder {
+  color: var(--textColor) !important;
+  opacity: 0.8;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 16px;
+}
+#swap-requests #request-form .form input::placeholder,
+#swap-requests #request-form .form textarea::placeholder,
+#transfer-requests-container #request-form .form input::placeholder,
+#transfer-requests-container #request-form .form textarea::placeholder {
+  color: var(--textColor) !important;
+  opacity: 0.8;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 16px;
+}
+#swap-requests #request-form .form textarea,
+#transfer-requests-container #request-form .form textarea {
+  height: 150px;
+  border: 1px solid var(--borderColor);
+  padding: 10px;
+  border-radius: 8px;
+}
+#swap-requests #request-form .form label,
+#transfer-requests-container #request-form .form label {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: "Rubik";
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: var(--textColor);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.3;
+}
+#swap-requests #request-form .form label span,
+#transfer-requests-container #request-form .form label span {
+  font-size: 22px;
+  margin-right: 5px;
+  color: var(--accent);
+}
+#swap-requests #request-form .form label span.notifications,
+#transfer-requests-container #request-form .form label span.notifications {
+  color: var(--accent);
+}
+#swap-requests #request-form .form .button-group,
+#transfer-requests-container #request-form .form .button-group {
+  margin: 0 auto;
+  justify-content: center;
+}
+#swap-requests #request-form .form .button-group button.green,
+#transfer-requests-container #request-form .form .button-group button.green {
+  width: 50%;
+}
+#swap-requests #request-form .form .button-group button.red,
+#transfer-requests-container #request-form .form .button-group button.red {
+  background-color: transparent;
+  width: 50%;
+}
+#swap-requests #request-form .form button,
+#transfer-requests-container #request-form .form button {
+  padding: 8px 10px;
+  margin: 20px auto 0 auto;
+  display: block;
+  width: 50%;
+}
+#swap-requests #request-form .form button.rs-picker-clean,
+#transfer-requests-container #request-form .form button.rs-picker-clean {
+  display: none;
+}
+#swap-requests #request-form .form button span,
+#transfer-requests-container #request-form .form button span {
+  position: relative;
+  top: 3px;
+  margin-left: 5px;
+}
+#swap-requests .button-group,
+#transfer-requests-container .button-group {
+  display: flex;
+}
+#swap-requests .button-group button.submit,
+#transfer-requests-container .button-group button.submit {
+  margin-right: 10px;
+  min-width: 0;
+  width: 50%;
+}
+#swap-requests .button-group button.close,
+#transfer-requests-container .button-group button.close {
+  min-width: 0;
+  width: 50%;
+}/*# sourceMappingURL=swapRequests.css.map */

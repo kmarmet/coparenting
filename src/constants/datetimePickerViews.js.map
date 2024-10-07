@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "datetimePickerViews.js",
+  "sourceRoot": "\\",
+  "sources": [
+    "datetimePickerViews.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAEE,IAAA;;AAAA,mBAAA,GACC;EAAA,QAAA,EAAU,CACR,KADQ,EAER,OAFQ,EAGR,MAHQ,EAIR,OAJQ,EAKR,SALQ,CAAV;EAOA,WAAA,EAAa,CACX,KADW,EAEX,OAFW,CAPb;EAWA,QAAA,EAAU,CACR,OADQ,EAER,SAFQ,CAXV;EAeA,YAAA,EAAc,CACZ,OADY,EAEZ,MAFY,CAfd;EAmBA,YAAA,EAAc,CACZ,KADY,EAEZ,OAFY,EAGZ,MAHY;AAnBd;;AAyBD,OAAA,QAAe",
+  "sourcesContent": [
+    "\r\n\r\nDateTimePickerViews =\r\n  datetime: [\r\n    'day'\r\n    'month'\r\n    'year'\r\n    'hours'\r\n    'minutes'\r\n  ]\r\n  monthAndDay: [\r\n    'day'\r\n    'month'\r\n  ]\r\n  timeOnly: [\r\n    'hours'\r\n    'minutes'\r\n  ]\r\n  monthAndYear: [\r\n    'month'\r\n    'year'\r\n  ]\r\n  monthDayYear: [\r\n    'day'\r\n    'month'\r\n    'year'\r\n  ]\r\n\r\nexport default DateTimePickerViews\r\n\r\n"
+  ]
+}

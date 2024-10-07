@@ -1,0 +1,57 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "baseUrl": "src",
+    "module": "es6",
+    "paths": {
+      "@components": [
+        "./components"
+      ],
+      "@prototypes": [
+        "./prototypes"
+      ],
+      "@screens": [
+        "./components/screens"
+      ],
+      "@managers": [
+        "./managers"
+      ],
+      "@manager": [
+        "./managers/manager"
+      ],
+      "@screenNames": [
+        "./constants/screenNames"
+      ],
+      "@db": [
+        "./database/DB"
+      ],
+      "@models": [
+        "./models"
+      ],
+      "@constants": [
+        "./constants"
+      ],
+      "@firebaseStorage": [
+        "./database/firebaseStorage"
+      ],
+      "@shared": [
+        "./components/shared"
+      ],
+      "@api": [
+        "./api"
+      ],
+      "@userScoped": [
+        "./database/db_userScoped"
+      ],
+      "@documentScoped": [
+        "./database/db_documentScoped"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

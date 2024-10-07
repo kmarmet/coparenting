@@ -1,0 +1,288 @@
+@import "../mixins";
+
+#external-overrides {
+    #registration-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        min-height: 100vh;
+        overflow-y: auto;
+        margin-top: 0;
+        padding-bottom: 300px;
+
+        label {
+            font-weight: bold;
+        }
+
+        .form {
+            margin: 0;
+
+            .children {
+                input {
+                    &:last-child {
+                        margin-bottom: 10px;
+                    }
+                }
+            }
+
+            #coparent-code-instructions {
+                line-height: 1.2;
+                font-weight: 300;
+                background-color: #fff3cd;
+                border: 1px solid #ffeeba;
+                color: #856404;
+                border-radius: $borderRadius;
+                padding: 10px;
+            }
+
+            #coparent-input-container, #parent-input-container, #child-input-container {
+                background-color: rgba(255, 255, 255, 0.05);
+                padding: 15px;
+                margin: 15px auto 0 auto;
+                border-radius: $borderRadius;
+                @include translucentBgWithBorder;
+
+                #coparent-label, #parent-label, #child-label {
+                    color: $blue;
+                    font-size: 22px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+
+                #checkbox-group {
+                    margin: 0;
+                    border: 0;
+                    padding: 0;
+
+                    .box {
+
+                        &.active {
+                            background-color: var(--compColor);
+                            ;
+                        }
+                    }
+                }
+
+                input {
+                    margin-bottom: 10px;
+                }
+            }
+
+
+            .button-group {
+                margin-bottom: 100px;
+            }
+
+            ul {
+                margin-bottom: 10px;
+                display: block;
+
+                li {
+                    span {
+                        color: var(--textColor);
+                        line-height: 1;
+                        font-size: 16px;
+                        margin-bottom: 5px;
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    svg {
+                        font-size: 12px;
+                        height: 12px;
+                        width: 12px;
+                    }
+                }
+            }
+
+            button {
+                margin: 20px auto 0 auto;
+                display: block;
+                font-size: 16px;
+
+                &#add-child-button {
+                    opacity: .8;
+                    font-size: 14px;
+                    margin: 20px auto 0;
+                    
+                }
+
+                &#add-coparent-button {
+                    opacity: .8;
+                    font-size: 14px;
+                    margin: 20px auto;
+                }
+
+            }
+
+            #checkbox-group {
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+                display: flex;
+                width: 100%;
+                flex-wrap: wrap;
+
+                .flex {
+                    width: 50%;
+
+                    .box {
+                        &.active {
+                            .checkmark-icon {
+                                display: block;
+                                text-align: center;
+                                margin: 0 auto;
+                                font-size: 18px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #login-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow-y: auto;
+        margin-top: 0;
+
+        #install-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            width: 150px;
+            font-size: 12px;
+            margin: 0 auto 0 auto;
+            min-width: 0;
+            padding: 0 10px;
+            height: 30px;
+            z-index: 10000;
+            background-color: $accent;
+            color: white;
+            @include glow();
+            border-radius: $borderRadius;
+            animation: beat 2s infinite;
+        }
+
+        #forgot-password-link {
+            font-size: 16px;
+            text-decoration: underline;
+            color: var(--compColor);
+            ;
+
+            span {
+                position: relative;
+                top: 3px;
+                margin-left: 10px;
+                font-size: 20px;
+            }
+        }
+
+        #quote-container {
+            width: 95%;
+            position: relative;
+            margin: 40px auto 0;
+            
+            b {
+                font-weight: 500;
+                font-style: italic;
+                color: $accent;
+                opacity: .8;
+                font-size: 18px;
+            }
+
+            span {
+                color: var(--textColor);
+                opacity: .1;
+                position: absolute;
+
+                code {
+                    font-size: 80px;
+                }
+
+                &:first-child {
+                    top: -35px;
+                    left: -20px;
+                }
+            }
+
+            p {
+                font-size: 18px;
+                width: 100%;
+                color: var(--textColor);
+                text-align: center;
+                font-style: italic;
+
+                &#author {
+                    font-size: 16px;
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+        }
+
+        .screen-title {
+            span {
+                position: relative;
+                top: 5px;
+            }
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-top: 100px;
+
+            p {
+                width: 100%;
+                text-align: center;
+                color: var(--textColor);
+                font-weight: bold;
+                font-size: 25px;
+                ;
+            }
+
+            .form {
+                .inputs {
+                    align-items: center;
+
+                    span {
+                        color: var(--textColor);
+                        font-size: 25px;
+                        margin-left: 10px;
+                    }
+                }
+
+                .button-group {
+                    button {
+                        margin: 0 10px 10px auto;
+                    }
+                }
+            }
+
+            #checkbox-group {
+                margin-top: 10px;
+
+                .flex {
+                    width: 100%;
+
+                    span {
+                        font-weight: 400;
+
+                        &.checkmark-icon {
+                            // display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 18px;
+                            text-align: center;
+                            margin: 0 auto;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

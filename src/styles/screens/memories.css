@@ -1,0 +1,279 @@
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+@keyframes pulse {
+  0%, 100% {
+    color: "#9d98fc";
+  }
+  50% {
+    color: #2b3563;
+  }
+}
+@keyframes pulseWhite {
+  0%, 100% {
+    box-shadow: 0px 0px 20px 0px white;
+  }
+  50% {
+    box-shadow: 0px 0px 10px 0px white;
+  }
+}
+@keyframes beat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes animStar {
+  from {
+    transform: translateX(-100px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+@keyframes shootingStar {
+  0% {
+    transform: rotate(315deg) translateX(250px);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(315deg) translateX(-1500px);
+    opacity: 0;
+  }
+}
+@keyframes starTwinkle {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes topBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes bottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tilt {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes rotateMoon {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+#external-overrides #memories-container .form input:first-child,
+#external-overrides #memories-container .form button:first-child,
+#external-overrides #memories-container .form label:first-child {
+  margin-right: 10px;
+}
+#external-overrides #memories-container .form label span {
+  color: var(--accent);
+}
+#external-overrides #memories-container .form .flex {
+  margin-bottom: 10px;
+}
+#external-overrides #memories-container #upload-button {
+  font-size: 14px;
+  height: 30px;
+  min-width: 0;
+  padding: 0 20px;
+  margin: 0 0 0 auto;
+}
+#external-overrides #memories-container #happy-subtitle {
+  color: var(--textColor);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.3;
+}
+#external-overrides #memories-container #happy-subtitle span {
+  color: #ca436c;
+  font-size: 20px;
+  position: relative;
+  top: 3px;
+}
+#external-overrides #memories-container .instructions.gallery {
+  margin-bottom: 10px;
+  color: var(--textColor);
+  opacity: 1;
+  font-weight: 400;
+  font-size: 14px;
+}
+#external-overrides #memories-container .gallery .flex {
+  align-items: center;
+}
+#external-overrides #memories-container .gallery #img-container {
+  position: relative;
+}
+#external-overrides #memories-container .gallery #img-container img {
+  height: auto;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  max-height: 130px;
+  height: 130px;
+  width: 140px;
+}
+#external-overrides #memories-container .gallery #img-container p {
+  color: #ca436c;
+  text-align: center;
+  margin: 0 auto;
+  font-weight: 500;
+  padding: 5px 0;
+  display: none;
+  font-size: 16px;
+}
+#external-overrides #memories-container .gallery #img-container p.notes {
+  text-align: left;
+  color: var(--textColor);
+  width: 100%;
+  border: 0;
+  margin-right: 15px;
+  max-height: 150px;
+  font-weight: 400;
+  overflow: auto;
+  font-size: 16px;
+}
+#external-overrides #memories-container .gallery #img-container p.notes.fade-bottom {
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
+#external-overrides #memories-container .gallery #img-container .notes-icon {
+  color: white;
+  position: absolute;
+  font-size: 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 8px 0 8px 0;
+  padding: 2px;
+  bottom: 24px;
+  right: 0;
+}
+#external-overrides #memories-container .gallery.active .img-container {
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+#external-overrides #memories-container .gallery.active .img-container.active {
+  opacity: 1;
+}
+#external-overrides #memories-container .gallery.active #img-container {
+  width: calc(100vw - 30px);
+}
+#external-overrides #memories-container .gallery.active #img-container #img-content-container {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  height: 200px;
+  width: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 12px;
+  background-position: center 5%;
+}
+#external-overrides #memories-container .gallery.active #img-container p {
+  display: block;
+}
+#external-overrides #memories-container .gallery .instructions {
+  margin-top: 0;
+}
+#external-overrides #memories-container .instructions {
+  line-height: 1.3;
+}/*# sourceMappingURL=memories.css.map */

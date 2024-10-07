@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "dateFormats.js",
+  "sourceRoot": "\\",
+  "sources": [
+    "dateFormats.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA,IAAA;;AAAA,WAAA,GACE;EAAA,cAAA,EAAgB,qBAAhB;EACA,gBAAA,EAAkB,sBADlB;EAEA,YAAA,EAAc,kBAFd;EAGA,WAAA,EAAa,OAHb;EAIA,SAAA,EAAW,YAJX;EAKA,UAAA,EAAY,mBALZ;EAMA,SAAA,EAAW,OANX;EAOA,YAAA,EAAc,YAPd;EAQA,WAAA,EAAa,SARb;EASA,SAAA,EAAW,IATX;EAUA,aAAA,EAAe,MAVf;EAWA,SAAA,EAAW,eAXX;EAYA,WAAA,EAAa;AAZb;;AAeF,OAAA,QAAe",
+  "sourcesContent": [
+    "DateFormats =\r\n  withReadbleDay: 'dddd, MMMM DD, YYYY'\r\n  readableDatetime: 'ddd, MMM DD @ hh:mma'\r\n  fullDatetime: 'MM/DD/YYYY h:mma'\r\n  monthAndDay: 'MM/DD'\r\n  dateForDb: 'MM/DD/YYYY'\r\n  jsDateTime: 'yyyy,MM,DD h:mm a'\r\n  timeForDb: 'h:mma'\r\n  monthDayYear: 'MM/DD/YYYY'\r\n  readableDay: 'dddd Do'\r\n  monthOnly: \"MM\"\r\n  readableMonth: \"MMMM\"\r\n  flatpickr: \"MMMM DD, yyyy\"\r\n  summaryHour: \"ha\"\r\n\r\n\r\nexport default DateFormats"
+  ]
+}

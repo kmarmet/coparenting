@@ -1,0 +1,30 @@
+@import "../mixins";
+
+#swap-requests,
+#transfer-requests-container {
+    .reminder {
+        @include reminderButton;
+        margin-top: 10px;
+    }
+
+    @include lengthSelection;
+    @include requests;
+
+
+    .button-group {
+        display: flex;
+
+        button {
+            &.submit {
+                margin-right: 10px;
+                min-width: 0;
+                width: 50%;
+            }
+
+            &.close {
+                min-width: 0;
+                width: 50%;
+            }
+        }
+    }
+}

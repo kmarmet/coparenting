@@ -1,0 +1,492 @@
+@import '../mixins';
+
+#external-overrides {
+  .conversation-container {
+    #image-wrapper {
+      width: 90vw;
+      border-radius: $borderRadius;
+      margin: 5px auto 20px auto;
+      height: 300px;
+      overflow: hidden;
+      @include glow;
+
+      @media screen and (min-width: 800px) {
+        width: 28vw;
+      }
+    }
+    .convo-message {
+      background-color: var(--borderColor);
+      border-radius: $borderRadius;
+      margin-bottom: 10px;
+      padding: 10px;
+
+      p {
+        margin: 0;
+
+        &#message {
+          color: white;
+          opacity: 0.87;
+        }
+
+        &#timestamp {
+          opacity: 0.5;
+          font-size: 14px;
+        }
+        &#sender {
+          opacity: 0.7;
+          font-size: 15px;
+        }
+      }
+    }
+  }
+  #chats-container {
+    &.page-container {
+      padding: 0;
+    }
+
+    #close-new-conversation-button {
+      position: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: $purple;
+      color: white;
+      font-weight: bold !important;
+      text-transform: uppercase;
+      padding: 8px 0;
+      transition: none;
+      box-shadow: rgba(0, 0, 0, 0.56) 0 22px 30px 14px;
+      z-index: 1000;
+      background-color: $red;
+      bottom: 40px;
+      left: 20px;
+      width: 50px;
+      height: 50px;
+      border: 0;
+      font-size: 18px;
+      right: 20px;
+      margin: 0;
+      border-radius: 100%;
+
+      span {
+        transform: scale(1.6);
+      }
+    }
+
+    .thread-item {
+      @include lineItem;
+      color: $blue;
+      justify-content: space-between;
+      width: 100vw;
+      align-items: center;
+      border-bottom: 0;
+      flex-wrap: nowrap;
+      border-bottom: 1px solid var(--borderColor);
+      padding: 0 10px;
+      min-height: 80px;
+      #thread-action-button {
+        margin-right: 5px;
+        color: $accent;
+        opacity: 0.8;
+        font-size: 25px;
+      }
+
+      button {
+        &.delete {
+          animation: beatRed 1.5s ease-in-out infinite;
+        }
+      }
+
+      .coparent-name {
+        display: flex;
+        position: relative;
+        right: 0;
+        color: $blue;
+        font-weight: bold;
+        font-size: 20px;
+        line-height: 1;
+        vertical-align: middle;
+        flex-wrap: wrap;
+        width: 90%;
+        align-self: center;
+
+        @media screen and (min-width: 800px) {
+          width: 28vw;
+        }
+
+        .last-message {
+          color: $offWhite;
+          max-width: 400px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          line-height: 1.3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding-top: 3px;
+          width: 95%;
+        }
+        .timestamp {
+          opacity: 0.7;
+          font-size: 15px;
+          font-style: italic;
+          color: white;
+          font-weight: 400;
+          margin-left: auto;
+          float: right;
+          justify-self: flex-end;
+        }
+      }
+    }
+
+    .profile-pic {
+      font-size: 45px !important;
+      margin-right: 8px;
+      border-radius: 100%;
+      position: relative;
+      opacity: 0.8;
+      color: white;
+    }
+
+    .unread-count {
+      background-color: $red;
+      border-radius: 100%;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      line-height: 1;
+      width: 25px;
+      height: 25px;
+      padding: 1px 10px 0 10px;
+      font-weight: 500;
+      border: 1px solid var(--translucent);
+      display: none;
+      color: white;
+      margin-left: auto;
+
+      &.active {
+        display: flex;
+      }
+    }
+  }
+}
+
+#message-thread-container {
+  position: relative;
+
+  &.dark {
+    .top-buttons {
+      #conversation-bookmark-icon {
+        color: $darkBlueMedium;
+      }
+    }
+    #previous-screen-button {
+      color: $offWhite;
+    }
+    .form {
+      #message-input-container {
+        border: 1px solid $darkGrey;
+      }
+    }
+    #default-messages, #bookmark-messages {
+      .from {
+        p {
+          background-color: $darkBlue;
+        }
+      }
+    }
+  }
+
+  &.page-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0 10px 10px 10px;
+
+    .search-results {
+      display: none;
+
+      &.active {
+        display: block;
+      }
+
+      @media screen and (min-width: 800px) {
+        top: 100px;
+        position: relative;
+
+        .to {
+          text-align: right;
+        }
+      }
+    }
+
+    .flex {
+      align-items: center;
+    }
+
+    .search-input {
+      background-color: var(--borderColor);
+      border: 0;
+      border-radius: $borderRadius;
+      width: 100%;
+      padding: 8px;
+      @include bestShadow;
+      margin-bottom: 5px;
+
+      &:focus,
+      &:active,
+      &:focus-visible {
+        outline: none;
+      }
+
+      &::placeholder {
+        position: relative;
+        top: -2px;
+        color: var(--whiteOrBlack);
+        opacity: 0.6;
+        font-size: 14px;
+      }
+    }
+
+    .top-buttons {
+      justify-content: flex-end;
+      position: relative;
+      top: 50px;
+      z-index: 100000;
+
+      #previous-screen-button {
+        font-size: 14px;
+        font-weight: bold;
+        padding: 5px 15px 5px 0;
+        border-radius: $borderRadius;
+        z-index: 10000;
+        display: flex;
+        margin-right: auto;
+        align-items: center;
+        background: transparent;
+        span {
+          margin-right: 5px;
+          font-size: 14px;
+        }
+      }
+
+      #conversation-bookmark-icon {
+        font-size: 25px;
+        position: relative;
+        top: -2px;
+        margin-right: 10px;
+
+        &.active {
+          color: $green;
+        }
+      }
+
+      #conversation-search-icon {
+        font-size: 30px;
+        color: $blue;
+        margin-bottom: 5px;
+      }
+    }
+
+    #default-messages,
+    #messages,
+    #bookmark-messages {
+      margin-top: auto;
+      width: calc(100vw - 30px);
+      position: fixed;
+      overflow: auto;
+      top: 101px;
+      bottom: 85px;
+      padding: 0 5px;
+
+      @media screen and (min-width: 800px) {
+        min-width: 10%;
+        width: 28vw;
+      }
+
+      .message {
+        transition: all 0.2s ease-in-out;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        p {
+          color: white;
+          font-weight: 500;
+        }
+
+        &.longpress {
+          p {
+            animation: beat 1.5s infinite;
+          }
+        }
+
+        &.animation {
+          position: relative;
+          opacity: 0;
+        }
+
+        &.to {
+          .under-message {
+            float: right;
+          }
+          p {
+            color: white;
+          }
+        }
+
+        &.from {
+          .under-message {
+            float: left;
+          }
+        }
+
+        .under-message {
+          user-select: none;
+          outline: none;
+          margin: 0 10px 20px 0;
+          clear: both;
+          color: $offWhite;
+          opacity: .8;
+        }
+
+        .timestamp,
+        .from-name {
+          font-size: 13px;
+          font-style: italic;
+        }
+      }
+
+      .message-subtitle {
+        display: block;
+        clear: both;
+        font-size: 14px;
+        opacity: 0.4;
+        font-weight: 300;
+        margin-top: 50px;
+      }
+
+      .add-bookmark-icon {
+        font-size: 30px;
+      }
+
+      .from,
+      .to {
+        p {
+          display: inline-block;
+          max-width: 85%;
+          width: auto;
+          min-width: 65%;
+          border-radius: 20px;
+          margin-bottom: 5px;
+          padding: 10px 15px;
+          box-shadow:
+            0 1px 3px rgba(0, 0, 0, 0.12),
+            0 1px 2px rgba(0, 0, 0, 0.24);
+          transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+          line-height: 1.3;
+
+          &.to {
+            p {
+              color: white;
+            }
+          }
+        }
+      }
+
+      .from-said {
+        margin-bottom: 10px;
+        margin-left: 5px;
+      }
+
+      .from {
+        p {
+          z-index: 100;
+          margin-right: auto;
+          float: left;
+        }
+      }
+
+      .to {
+        p {
+          background-color: #534aff;
+          margin-left: auto;
+          margin-right: 0;
+          float: right;
+        }
+
+        .message-subtitle {
+          margin-left: auto;
+          display: block;
+          text-align: right;
+        }
+      }
+    }
+
+    .from,
+    .to {
+      @media screen and (min-width: 800px) {
+        min-width: 50%;
+        max-width: 65%;
+        clear: both;
+        &.from {
+          float: left;
+        }
+        &.to {
+          float: right;
+        }
+      }
+    }
+
+    .form {
+      margin-top: 5px;
+      position: fixed;
+      bottom: 0;
+      width: calc(100vw - 30px);
+
+      #emoji-icon {
+        font-size: 25px;
+        border: 0;
+      }
+
+      #message-input-container {
+        display: flex;
+        align-items: center;
+        height: 45px;
+        margin-bottom: 30px;
+        border-radius: 50px;
+        padding: 10px;
+
+        #message-input {
+          border: 0;
+          background-color: transparent;
+          color: white;
+          outline: none;
+          height: 45px;
+          margin-right: 10px;
+          overflow-y: hidden;
+          line-height: 1;
+          vertical-align: middle;
+
+          &::placeholder {
+            position: relative;
+            top: 3px;
+          }
+        }
+      }
+
+      #message-icon {
+        color: $accent;
+        font-size: 30px;
+        float: right;
+        position: relative;
+        margin-left: 10px;
+      }
+
+      @media screen and (min-width: 800px) {
+        min-width: 10%;
+        width: 28vw;
+      }
+    }
+  }
+}

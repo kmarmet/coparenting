@@ -1,0 +1,179 @@
+@import './../mixins';
+
+#external-overrides {
+  #memories-container {
+    #fyi-wrapper {
+      flex-wrap: wrap;
+      width: 100%;
+      p {
+        color: var(--textColor);
+      }
+      .material-icons-round {
+        font-size: 25px;
+        justify-self: flex-end;
+        margin-left: auto;
+      }
+      .rs-panel-group {
+        justify-self: flex-end;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        flex-wrap: wrap;
+      }
+      .rs-panel-in {
+        background-color: var(--pageContainer);
+        padding: 10px;
+      }
+    }
+
+    #upload-button {
+      font-size: 14px;
+      height: 30px;
+      min-width: 0;
+      padding: 0 20px;
+      margin: 0 0 0 auto;
+    }
+
+    #happy-subtitle {
+      color: var(--textColor);
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1;
+
+      span {
+        color: $red;
+        font-size: 20px;
+        position: relative;
+        top: 3px;
+      }
+    }
+
+    .form {
+      input,
+      button,
+      label {
+        &:first-child {
+          margin-right: 10px;
+        }
+      }
+
+      label {
+        span {
+          color: $accent;
+        }
+      }
+
+      .flex {
+        margin-bottom: 10px;
+      }
+    }
+
+    .instructions {
+      &.gallery {
+        margin-bottom: 10px;
+        color: var(--textColor);
+        opacity: 1;
+        font-weight: 400;
+        font-size: 14px;
+      }
+    }
+
+    .gallery {
+      #img-container {
+        position: relative;
+
+        img {
+          border-radius: $borderRadius;
+          box-shadow:
+            0 3px 6px rgba(0, 0, 0, 0.16),
+            0 3px 6px rgba(0, 0, 0, 0.23);
+          object-fit: cover;
+          max-height: 130px;
+          height: 130px;
+          width: 140px;
+          
+          border: 2px solid red;
+        }
+
+        p {
+          color: $red;
+          text-align: center;
+          margin: 0 auto;
+          font-weight: 500;
+          padding: 5px 0;
+          display: none;
+          font-size: 16px;
+
+          &.notes {
+            text-align: left;
+            color: var(--textColor);
+            width: 100%;
+            border: 0;
+            margin-right: 15px;
+            max-height: 150px;
+            font-weight: 400;
+            overflow: auto;
+            font-size: 16px;
+
+            &.fade-bottom {
+              @include fadeBottom;
+            }
+          }
+        }
+
+        .notes-icon {
+          color: white;
+          position: absolute;
+          font-size: 20px;
+          background-color: rgb(0, 0, 0, 0.6);
+          border-radius: $borderRadius 0 $borderRadius 0;
+          padding: 2px;
+          bottom: 24px;
+          right: 0;
+        }
+      }
+
+      .flex {
+        align-items: center;
+      }
+
+      .instructions {
+        margin-top: 0;
+      }
+
+      &.active {
+        .img-container {
+          opacity: 0;
+          transition: all 0.3s ease-in-out;
+
+          &.active {
+            opacity: 1;
+          }
+        }
+
+        #img-container {
+          width: calc(100vw - 30px);
+
+          .img-content-container {
+            @include shadow;
+            height: 200px;
+            width: 100%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            border-radius: 12px;
+            background-position: center;
+          }
+
+          p {
+            display: block;
+          }
+          
+          @media screen and (min-width: 800px) {
+                width: 28vw;
+          }
+        }
+      }
+    }
+  }
+}

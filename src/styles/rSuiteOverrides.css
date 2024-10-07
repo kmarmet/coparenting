@@ -1,0 +1,920 @@
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+@keyframes pulse {
+  0%, 100% {
+    color: "#9d98fc";
+  }
+  50% {
+    color: #2b3563;
+  }
+}
+@keyframes pulseWhite {
+  0%, 100% {
+    box-shadow: 0px 0px 20px 0px white;
+  }
+  50% {
+    box-shadow: 0px 0px 10px 0px white;
+  }
+}
+@keyframes beat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes animStar {
+  from {
+    transform: translateX(-100px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+@keyframes shootingStar {
+  0% {
+    transform: rotate(315deg) translateX(250px);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(315deg) translateX(-1500px);
+    opacity: 0;
+  }
+}
+@keyframes starTwinkle {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes topBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes bottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tilt {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes rotateMoon {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+#external-overrides {
+  /*#region RS OVERRIDES*/
+  /*#endregion RS OVERRIDES */
+}
+#external-overrides .flatpickr-calendar {
+  width: 100vw;
+  position: relative;
+  box-shadow: none;
+  left: 0;
+  right: 0;
+  border-radius: 0;
+  border: 0;
+  background-color: transparent;
+}
+#external-overrides .flatpickr-calendar.hide {
+  display: none !important;
+}
+#external-overrides .flatpickr-calendar::before, #external-overrides .flatpickr-calendar::after {
+  display: none;
+}
+#external-overrides .flatpickr-calendar *:not(.flatpickr-month, .flatpickr-current-month, .flatpickr-monthDropdown-months, .flatpickr-monthDropdown-month, .flatpickr-months) {
+  color: var(--textColor);
+  font-weight: 400;
+  margin: 0 auto;
+}
+#external-overrides .flatpickr-calendar .flatpickr-innerContainer,
+#external-overrides .flatpickr-calendar .flatpickr-days,
+#external-overrides .flatpickr-calendar .dayContainer {
+  width: 100vw;
+  max-width: 100vw;
+}
+#external-overrides .flatpickr-calendar .flatpickr-innerContainer.dayContainer,
+#external-overrides .flatpickr-calendar .flatpickr-days.dayContainer,
+#external-overrides .flatpickr-calendar .dayContainer.dayContainer {
+  height: 250px;
+}
+#external-overrides .flatpickr-calendar .numInputWrapper {
+  margin: 0;
+}
+#external-overrides .flatpickr-calendar .flatpickr-month {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+#external-overrides .flatpickr-calendar .flatpickr-current-month {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#external-overrides .flatpickr-calendar .flatpickr-current-month select,
+#external-overrides .flatpickr-calendar .flatpickr-current-month option {
+  font-weight: 500;
+}
+#external-overrides .flatpickr-calendar .flatpickr-current-month,
+#external-overrides .flatpickr-calendar .flatpickr-monthDropdown-months {
+  color: var(--textColor);
+  padding: 0;
+}
+#external-overrides .flatpickr-calendar .flatpickr-current-month select,
+#external-overrides .flatpickr-calendar .flatpickr-monthDropdown-months select {
+  border: 0;
+}
+#external-overrides .flatpickr-calendar .flatpickr-monthDropdown-months option {
+  background-color: var(--bgColor);
+  color: var(--textColor);
+  font-size: 16px;
+  font-weight: 500;
+}
+#external-overrides .flatpickr-calendar .flatpickr-prev-month,
+#external-overrides .flatpickr-calendar .flatpickr-next-month {
+  position: relative;
+  font-weight: bold;
+  color: var(--textColor);
+  padding-left: 0;
+  padding-right: 0;
+  font-weight: bold !important;
+}
+#external-overrides .flatpickr-calendar .flatpickr-prev-month svg,
+#external-overrides .flatpickr-calendar .flatpickr-next-month svg {
+  transform: scale(150%);
+  fill: var(--textColor);
+  font-weight: bold !important;
+}
+#external-overrides .flatpickr-calendar .flatpickr-prev-month.flatpickr-prev-month,
+#external-overrides .flatpickr-calendar .flatpickr-next-month.flatpickr-prev-month {
+  left: 15px;
+}
+#external-overrides .flatpickr-calendar .flatpickr-prev-month.flatpickr-next-month,
+#external-overrides .flatpickr-calendar .flatpickr-next-month.flatpickr-next-month {
+  right: 15px;
+}
+#external-overrides .flatpickr-calendar .flatpickr-weekdays {
+  margin-bottom: 10px;
+}
+#external-overrides .flatpickr-calendar .flatpickr-weekday {
+  color: var(--textColor);
+  opacity: 1;
+  font-weight: 500 !important;
+}
+#external-overrides .flatpickr-calendar .flatpickr-rContainer {
+  width: 100vw;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day {
+  max-width: 100px;
+  color: var(--textColorWhite);
+  font-weight: 400;
+  position: relative;
+  border-radius: 8px;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day:hover {
+  background-color: var(--purple);
+  border: 0;
+  border-radius: 100%;
+  color: white;
+  max-width: 39px;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day .dot {
+  background-color: transparent;
+  height: 5px;
+  width: 5px;
+  border-radius: 100%;
+  position: absolute;
+  bottom: 10px;
+  left: 42%;
+  right: 50%;
+  transform: translateX(-50%);
+}
+#external-overrides .flatpickr-calendar .flatpickr-day .dot.single {
+  left: 50%;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day .visitation-dot {
+  background-color: #00b389;
+  height: 5px;
+  width: 5px;
+  border-radius: 100%;
+  position: absolute;
+  bottom: 10px;
+  left: 58%;
+  right: 50%;
+  transform: translateX(-50%);
+}
+#external-overrides .flatpickr-calendar .flatpickr-day .holiday-emoji {
+  position: absolute;
+  top: -27%;
+  left: 55%;
+  z-index: -1;
+  right: 50%;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day.today {
+  border: 0;
+  font-weight: bold !important;
+  position: relative;
+  top: 1px;
+  color: #fa3889 !important;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day.today .dot {
+  top: 28px;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day.today .visitation-dot {
+  top: 28px;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day.selected {
+  border: 0;
+  border-radius: 100%;
+  color: white !important;
+  font-weight: inherit;
+  opacity: 0.8;
+  padding: 0;
+  transform-origin: center;
+  box-shadow: 0 0 20px;
+  position: relative;
+  box-shadow: 0px 0px 12px 0px rgb(124, 117, 255);
+  top: -5px;
+  padding-top: 7px;
+  max-width: 39px;
+  margin: 0 8px;
+  padding-right: 2px;
+  font-weight: bold !important;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day.selected .dot {
+  top: 28px;
+  left: 38%;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day.selected .visitation-dot {
+  top: 28px;
+  left: 58%;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day.nextMonthDay, #external-overrides .flatpickr-calendar .flatpickr-day.prevMonthDay {
+  opacity: 0.4;
+}
+#external-overrides .flatpickr-calendar .flatpickr-day.nextMonthDay.selected, #external-overrides .flatpickr-calendar .flatpickr-day.prevMonthDay.selected {
+  background-color: #ca436c;
+  border: 1px solid #2b3563;
+  color: white;
+}
+#external-overrides .rs-picker-toggle {
+  outline: none;
+}
+#external-overrides .rs-picker-toggle .rs-picker-toggle-placeholder {
+  color: var(--textColor);
+}
+#external-overrides .rs-panel-title {
+  color: var(--textColorWhite);
+}
+#external-overrides .rs-picker {
+  margin: 0;
+  outline: none;
+  padding-bottom: 0 !important;
+  height: 40px;
+  justify-content: flex-end;
+  vertical-align: baseline;
+}
+#external-overrides .rs-picker::-moz-placeholder {
+  color: var(--textColor);
+}
+#external-overrides .rs-picker::placeholder {
+  color: var(--textColor);
+}
+#external-overrides .rs-daterange-input,
+#external-overrides .rs-picker-date,
+#external-overrides .rs-input {
+  outline: none !important;
+  background-color: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+#external-overrides .rs-input {
+  display: flex;
+  align-items: center;
+  align-items: flex-end;
+  outline: none;
+  justify-content: flex-end;
+  padding-bottom: 0;
+}
+#external-overrides .rs-inputtextarea {
+  margin-bottom: 0;
+}
+#external-overrides .rs-input-group {
+  height: 30px;
+}
+#external-overrides .rs-input-group.rs-input-group-inside {
+  background-color: transparent;
+  width: 100%;
+  margin: 0 auto;
+  border: 0;
+  outline: none;
+}
+#external-overrides .rs-input-group.rs-input-group-inside .rs-picker-label {
+  color: var(--textColor);
+  padding-left: 0;
+  padding-right: 10px !important;
+  font-weight: 300;
+  opacity: 0.6;
+}
+#external-overrides .rs-input-group.rs-input-group-inside::-moz-placeholder {
+  color: var(--textColor);
+}
+#external-overrides .rs-input-group.rs-input-group-inside::placeholder {
+  color: var(--textColor);
+}
+#external-overrides .rs-picker-select-menu-item {
+  color: #2b3563 !important;
+}
+#external-overrides .rs-dropdown,
+#external-overrides .rs-picker,
+#external-overrides .rs-picker-toggle {
+  width: 100%;
+  display: block;
+  outline: none;
+}
+#external-overrides .rs-dropdown ul,
+#external-overrides .rs-picker ul,
+#external-overrides .rs-picker-toggle ul {
+  background-color: var(--bgColor) !important;
+  border: 0 !important;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+#external-overrides .rs-dropdown ul li,
+#external-overrides .rs-picker ul li,
+#external-overrides .rs-picker-toggle ul li {
+  padding: 10px !important;
+}
+#external-overrides .rs-dropdown ul li span,
+#external-overrides .rs-picker ul li span,
+#external-overrides .rs-picker-toggle ul li span {
+  color: var(--textColorWhite) !important;
+  opacity: 0.8;
+}
+#external-overrides .rs-dropdown .rs-dropdown-toggle,
+#external-overrides .rs-dropdown .rs-btn,
+#external-overrides .rs-dropdown .rs-btn-default,
+#external-overrides .rs-picker .rs-dropdown-toggle,
+#external-overrides .rs-picker .rs-btn,
+#external-overrides .rs-picker .rs-btn-default,
+#external-overrides .rs-picker-toggle .rs-dropdown-toggle,
+#external-overrides .rs-picker-toggle .rs-btn,
+#external-overrides .rs-picker-toggle .rs-btn-default {
+  background-color: var(--eventDetails) !important;
+  border: 0;
+  width: 100%;
+  color: white;
+  font-weight: 300;
+}
+#external-overrides .rs-dropdown .rs-picker-toggle-value,
+#external-overrides .rs-picker .rs-picker-toggle-value,
+#external-overrides .rs-picker-toggle .rs-picker-toggle-value {
+  color: var(--textColor);
+  outline: none;
+}
+#external-overrides .rs-dropdown ul,
+#external-overrides .rs-picker ul,
+#external-overrides .rs-picker-toggle ul {
+  background-color: transparent;
+  border: 1px solid var(--compColor);
+  width: 100%;
+  position: relative;
+  z-index: 1000;
+}
+#external-overrides .rs-dropdown ul li span,
+#external-overrides .rs-picker ul li span,
+#external-overrides .rs-picker-toggle ul li span {
+  color: var(--textColor);
+}
+#external-overrides .rs-picker {
+  display: block;
+  width: 100%;
+  background-color: transparent;
+  height: 30px;
+}
+#external-overrides .rs-input-group-addon {
+  border: 0;
+  border-bottom: 1px solid var(--eventDetails);
+  height: 30px;
+}
+#external-overrides .rs-input-group-addon svg {
+  fill: white;
+  opacity: 0.4;
+  height: 20px;
+  width: 20px;
+}
+#external-overrides .rs-picker-popup {
+  background-color: black;
+  width: 90vw;
+  border-radius: 10px;
+  box-shadow: 0px 0px 105px 45px rgba(0, 0, 0, 0.9);
+  height: 50vh;
+}
+#external-overrides .rs-picker-popup.rs-anim-fade.rs-picker-popup-date {
+  height: 50vh;
+}
+#external-overrides .rs-picker-popup.rs-anim-fade.rs-picker-popup-date .rs-stack .rs-stack-item .rs-calendar {
+  height: 50vh;
+}
+#external-overrides .rs-picker-popup .rs-stack-item {
+  height: 50vh;
+}
+#external-overrides .rs-picker-popup .rs-stack-item .rs-calendar {
+  height: 50vh;
+}
+#external-overrides .rs-picker-popup .rs-stack-item:nth-child(1) {
+  position: relative;
+}
+#external-overrides .rs-picker-popup .rs-stack-item:nth-child(1) .rs-picker-toolbar {
+  position: absolute;
+  top: 80%;
+  height: 50px;
+  z-index: 1000;
+}
+#external-overrides .rs-picker-popup .rs-stack-item:nth-child(1) .rs-picker-toolbar button {
+  width: 298px;
+  padding: 10px;
+  left: 0;
+  font-weight: bold;
+}
+#external-overrides .rs-picker-popup .rs-picker-toolbar {
+  height: 50vh;
+  top: 0;
+  border-top: 1px solid var(--eventDetails);
+}
+#external-overrides .rs-picker-popup .rs-calendar {
+  width: 90vw;
+  height: 60vh;
+}
+#external-overrides .rs-picker-popup .rs-calendar .rs-calendar-table-cell-un-same-month span {
+  opacity: 0.5;
+}
+#external-overrides .rs-picker-popup .rs-calendar .rs-calendar-table-cell-content {
+  font-size: 18px;
+  border-radius: 100%;
+  margin: 10px 0;
+  align-items: center;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+#external-overrides .rs-picker-popup .rs-calendar .rs-calendar-table-cell-content span {
+  color: white;
+}
+#external-overrides .rs-picker-popup .rs-calendar .rs-calendar-table-cell-selected .rs-calendar-table-cell-content {
+  display: flex;
+  align-items: center;
+  background-color: var(--accent);
+  justify-content: center;
+  padding: 20px;
+}
+#external-overrides .rs-picker-popup .rs-calendar-table {
+  width: 100%;
+}
+#external-overrides .rs-picker-popup .rs-calendar-time-dropdown-cell.rs-calendar-time-dropdown-cell-active {
+  background-color: var(--accent);
+}
+#external-overrides .rs-picker-popup .rs-btn-primary {
+  background-color: var(--accent);
+}
+#external-overrides .rs-picker-popup .rs-calendar-header {
+  height: 20px;
+}
+#external-overrides .rs-picker-popup .rs-calendar-header .rs-calendar-header-month-toolbar {
+  height: 20px;
+}
+#external-overrides .rs-picker-popup .rs-calendar-header-title-time,
+#external-overrides .rs-picker-popup .rs-calendar-header-meridian,
+#external-overrides .rs-picker-popup .rs-calendar-header-error {
+  font-size: 20px;
+  color: var(--accent);
+}
+#external-overrides .rs-picker-popup .rs-calendar-header-title-time.rs-calendar-header-meridian,
+#external-overrides .rs-picker-popup .rs-calendar-header-meridian.rs-calendar-header-meridian,
+#external-overrides .rs-picker-popup .rs-calendar-header-error.rs-calendar-header-meridian {
+  border: 1px solid var(--accent);
+}
+#external-overrides .rs-picker-popup .rs-calendar-time-dropdown {
+  background-color: black;
+}
+#external-overrides .rs-picker-popup .rs-calendar-time-dropdown-cell,
+#external-overrides .rs-picker-popup .rs-calendar-time-dropdown-column-title {
+  font-size: 18px;
+  background-color: black;
+}
+#external-overrides .rs-picker-popup .rs-calendar-time-dropdown-column [aria-label="Select hours"] {
+  margin-right: 8px;
+}
+#external-overrides .rs-picker-popup .rs-calendar-time-dropdown-column [aria-selected=true] span {
+  background-color: var(--eventDetails);
+  border-radius: 8px;
+}
+#external-overrides .rs-picker-popup .rs-calendar-time-dropdown-column:after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  bottom: -1px;
+  left: 0;
+  pointer-events: none;
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgb(0, 0, 0) 65%);
+  width: 100%;
+  height: 55px;
+}
+#external-overrides .rs-picker-popup .rs-calendar-table-cell-is-today .rs-calendar-table-cell-content {
+  border: 0;
+  color: var(--accent);
+  box-shadow: none;
+}
+#external-overrides .rs-picker-popup .rs-calendar-header-month-toolbar * {
+  font-size: 18px;
+}
+#external-overrides .rs-picker-popup .rs-calendar-header-month-toolbar svg {
+  height: 24px;
+  width: 30px;
+  position: relative;
+  top: -5px;
+}
+#external-overrides .rc-tooltip {
+  max-width: 300px;
+}
+#external-overrides .rc-tooltip .rc-tooltip-inner {
+  color: white;
+  font-size: 16px;
+  line-height: 1.2;
+  background-color: var(--compColor);
+}
+#external-overrides [data-testid].center {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  height: 300px !important;
+  width: 90vw !important;
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  padding: 10px !important;
+  background-color: var(--menuBg) !important;
+  border-radius: 15px;
+  transition: top 0.2s linear;
+  box-shadow: 0px 25px 80px rgba(0, 0, 0, 0.5) !important;
+  opacity: 0 !important;
+  top: 100vh !important;
+}
+#external-overrides [data-testid].center.active {
+  opacity: 1 !important;
+  top: 50% !important;
+}
+#external-overrides [data-testid].center .rs-stack {
+  overflow: hidden !important;
+  height: 240px !important;
+}
+#external-overrides [data-testid].center .rs-stack.rs-picker-toolbar {
+  height: auto !important;
+}
+#external-overrides [data-testid].center .rs-calendar-table-cell-selected .rs-calendar-table-cell-content {
+  background-color: var(--accent);
+  height: 35px !important;
+  width: 35px !important;
+}
+#external-overrides [data-testid].center .rs-calendar-table-cell-content {
+  height: 35px !important;
+  width: 35px !important;
+}
+#external-overrides [data-testid].center .rs-calendar-table-cell-day {
+  color: white !important;
+  font-size: 18px !important;
+}
+#external-overrides [data-testid].center .rs-calendar-table-cell-un-same-month .rs-calendar-table-cell-day {
+  color: white !important;
+  opacity: 0.6;
+}
+#external-overrides [data-testid].center .rs-calendar-table-cell-is-today .rs-calendar-table-cell-content {
+  box-shadow: inset 0 0 0 1px var(--accent) !important;
+  box-shadow: inset 0 0 0 1px var(--accent) !important;
+}
+#external-overrides [data-testid].center .rs-calendar-header-meridian {
+  color: white;
+}
+#external-overrides [data-testid].center .rs-calendar-header-meridian:hover {
+  background-color: var(--accent);
+}
+#external-overrides [data-testid].center .rs-calendar-time-dropdown {
+  background-color: var(--menuBg);
+}
+#external-overrides [data-testid].center .rs-calendar-time-dropdown .rs-calendar-time-dropdown-column-title {
+  background-color: var(--menuBg);
+}
+#external-overrides [data-testid].center .rs-calendar-time-dropdown .rs-calendar-time-dropdown-cell-active {
+  background-color: var(--accent);
+}
+#external-overrides [data-testid].center .rs-calendar-time-dropdown .rs-calendar-time-dropdown-column-title {
+  color: white;
+  font-weight: bold;
+}
+#external-overrides [data-testid].center .rs-calendar-header-forward,
+#external-overrides [data-testid].center .rs-calendar-header-backward {
+  color: white;
+  opacity: 0.7;
+  font-size: 30px;
+}
+#external-overrides [data-testid].center .rs-calendar-header-forward svg,
+#external-overrides [data-testid].center .rs-calendar-header-backward svg {
+  height: 25px;
+  position: relative;
+  top: -5px;
+}
+#external-overrides [data-testid].center .rs-calendar-header-title {
+  font-size: 18px;
+  color: white;
+}
+#external-overrides [data-testid].center .rs-picker-toolbar {
+  margin-top: auto;
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  border: 0 !important;
+}
+#external-overrides [data-testid].center .rs-picker-toolbar .rs-btn-primary {
+  background-color: var(--accent);
+}
+#external-overrides [data-testid=daterange-predefined-bottom] {
+  display: none !important;
+}
+#external-overrides .flatpickr-day.selected {
+  background-color: var(--purple) !important;
+}
+#external-overrides .flatpickr-days .flatpickr-day.prevMonthDay {
+  opacity: 0.5;
+}
+#external-overrides .rs-picker-toggle {
+  outline: none;
+}
+#external-overrides .rs-picker-toggle .rs-picker-toggle-placeholder {
+  color: var(--textColor);
+}
+#external-overrides .rs-picker {
+  margin: 0;
+  outline: none;
+  padding-bottom: 0 !important;
+  height: 40px;
+  justify-content: flex-end;
+  vertical-align: baseline;
+}
+#external-overrides .rs-picker::-moz-placeholder {
+  color: var(--textColor);
+}
+#external-overrides .rs-picker::placeholder {
+  color: var(--textColor);
+}
+#external-overrides .rs-daterange-input,
+#external-overrides .rs-picker-date,
+#external-overrides .rs-input {
+  outline: none !important;
+  background-color: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+#external-overrides .rs-input {
+  display: flex;
+  align-items: center;
+  align-items: flex-end;
+  outline: none;
+  justify-content: flex-end;
+  padding-bottom: 0;
+}
+#external-overrides .rs-inputtextarea {
+  margin-bottom: 0;
+}
+#external-overrides .rs-input-group {
+  height: 30px;
+}
+#external-overrides .rs-input-group input,
+#external-overrides .rs-input-group textarea {
+  margin: 0 auto;
+  display: block;
+  border-radius: 5px;
+  width: 100%;
+  border: 0;
+  background-color: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0;
+  outline: 0;
+  color: var(--textColor);
+  font-weight: 400;
+  padding-left: 0;
+  min-height: 25px;
+  -webkit-text-fill-color: var(--textColor) !important;
+}
+#external-overrides .rs-input-group input.rs-input,
+#external-overrides .rs-input-group textarea.rs-input {
+  margin-bottom: 0;
+}
+#external-overrides .rs-input-group input:focus, #external-overrides .rs-input-group input:valid, #external-overrides .rs-input-group input:-webkit-autofill, #external-overrides .rs-input-group input:-webkit-autofill:hover, #external-overrides .rs-input-group input:-webkit-autofill:focus, #external-overrides .rs-input-group input:-webkit-autofill:active,
+#external-overrides .rs-input-group textarea:focus,
+#external-overrides .rs-input-group textarea:valid,
+#external-overrides .rs-input-group textarea:-webkit-autofill,
+#external-overrides .rs-input-group textarea:-webkit-autofill:hover,
+#external-overrides .rs-input-group textarea:-webkit-autofill:focus,
+#external-overrides .rs-input-group textarea:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: #ffffff;
+}
+#external-overrides .rs-input-group input::-moz-placeholder, #external-overrides .rs-input-group textarea::-moz-placeholder {
+  color: var(--textColor);
+  opacity: 0.6;
+  font-style: italic;
+  font-weight: 300;
+}
+#external-overrides .rs-input-group input::placeholder,
+#external-overrides .rs-input-group textarea::placeholder {
+  color: var(--textColor);
+  opacity: 0.6;
+  font-style: italic;
+  font-weight: 300;
+}
+#external-overrides .rs-input-group textarea {
+  height: 150px;
+  border: 1px solid var(--translucent);
+  padding: 10px;
+  border-radius: 8px;
+}
+#external-overrides .rs-input-group.rs-input-group-inside {
+  background-color: transparent;
+  width: 100%;
+  margin: 0 auto;
+  border: 0;
+  outline: none;
+}
+#external-overrides .rs-input-group.rs-input-group-inside .rs-picker-label {
+  color: var(--textColor);
+  padding-left: 0;
+  padding-right: 10px !important;
+  font-weight: 300;
+  opacity: 0.6;
+}
+#external-overrides .rs-input-group.rs-input-group-inside::-moz-placeholder {
+  color: var(--textColor);
+}
+#external-overrides .rs-input-group.rs-input-group-inside::placeholder {
+  color: var(--textColor);
+}
+#external-overrides .rs-picker-select-menu-item {
+  color: #2b3563 !important;
+}
+#external-overrides .rs-dropdown,
+#external-overrides .rs-picker,
+#external-overrides .rs-picker-toggle {
+  width: 100%;
+  display: block;
+  outline: none;
+}
+#external-overrides .rs-dropdown .rs-dropdown-toggle,
+#external-overrides .rs-dropdown .rs-btn,
+#external-overrides .rs-dropdown .rs-btn-default,
+#external-overrides .rs-picker .rs-dropdown-toggle,
+#external-overrides .rs-picker .rs-btn,
+#external-overrides .rs-picker .rs-btn-default,
+#external-overrides .rs-picker-toggle .rs-dropdown-toggle,
+#external-overrides .rs-picker-toggle .rs-btn,
+#external-overrides .rs-picker-toggle .rs-btn-default {
+  background-color: transparent !important;
+  border: 1px solid var(--translucent);
+  width: 100%;
+  color: var(--textColor);
+  font-weight: 300;
+}
+#external-overrides .rs-dropdown .rs-picker-toggle-value,
+#external-overrides .rs-picker .rs-picker-toggle-value,
+#external-overrides .rs-picker-toggle .rs-picker-toggle-value {
+  color: var(--textColor);
+  outline: none;
+}
+#external-overrides .rs-dropdown ul,
+#external-overrides .rs-picker ul,
+#external-overrides .rs-picker-toggle ul {
+  background-color: transparent;
+  border: 1px solid var(--compColor);
+  width: 100%;
+  position: relative;
+  z-index: 1000;
+}
+#external-overrides .rs-dropdown ul li span,
+#external-overrides .rs-picker ul li span,
+#external-overrides .rs-picker-toggle ul li span {
+  color: var(--textColor);
+}
+#external-overrides .rs-picker {
+  display: block;
+  width: 100%;
+  background-color: transparent;
+  height: 30px;
+}
+#external-overrides .rs-input-group-addon {
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  height: 30px;
+}
+#external-overrides .rs-input-group-addon svg {
+  fill: white;
+  opacity: 0.7;
+  height: 20px;
+  width: 20px;
+}/*# sourceMappingURL=rSuiteOverrides.css.map */

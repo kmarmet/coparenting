@@ -1,0 +1,207 @@
+@import '../mixins';
+
+#external-overrides {
+  #settings-container {
+    .rs-panel-body-collapse {
+      background-color: rgba(38, 38, 38, .1);
+      padding: 10px;
+      border-radius: 0 0 $borderRadius $borderRadius;
+      border-top: 0;
+    }
+    .back-button {
+      font-weight: 400;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      color: $linkColor;
+      justify-content: flex-start;
+      width: auto;
+      position: fixed;
+      left: -15px;
+      padding: 0 8px;
+      border-radius: $borderRadius;
+      bottom: 90px;
+      font-size: 18px;
+      text-align: left;
+
+      span {
+        padding: 0;
+        width: 25px;
+        font-size: 45px;
+        margin-right: 5px;
+      }
+    }
+
+    .calendar-settings,
+    .shortcuts-settings {
+
+      .shortcuts-example {
+        border-radius: 15px;
+        border: 1px solid var(--borderColor);
+      }
+
+      .section {
+        width: 100%;
+        display: flex;
+
+        .input-container {
+          width: 100%;
+          align-items: center;
+        }
+      }
+
+      .rs-panel-group {
+        margin: 0 auto !important;
+        display: block;
+
+        &[data-region] {
+          padding: 0;
+        }
+
+        .rs-panel-body,
+        .rs-panel-heading {
+          padding: 0;
+        }
+
+        .rs-heading {
+          background-color: var(--borderColor);
+          margin: 0 auto;
+          padding: 0;
+
+          button {
+            &:active,
+            &:focus,
+            &:focus-within {
+              background-color: var(--borderColor);
+            }
+          }
+        }
+      }
+
+      .material-icons {
+        font-size: 25px;
+        color: $accent;
+      }
+    }
+
+    .sections {
+      .section {
+        @include lineItem;
+        justify-content: flex-start;
+
+        &.notifications {
+          flex-wrap: nowrap;
+          justify-content: space-between;
+
+          span {
+            line-height: 1.2;
+            justify-self: flex-start;
+            margin-right: auto;
+            margin-left: 0;
+
+            &:nth-child(2) {
+              color: var(--textColor);
+            }
+
+            &.accent {
+              margin-right: 20px;
+            }
+          }
+
+          #checkbox-group {
+            display: flex;
+            flex-wrap: nowrap;
+            margin: 0;
+            margin-left: 10px;
+
+            .flex {
+              width: auto;
+
+              &:last-child {
+                margin: 0;
+              }
+            }
+          }
+        }
+
+        &.summary {
+          display: flex;
+          flex-wrap: nowrap;
+          align-items: center;
+
+          .summary-hour {
+            margin: 0;
+          }
+
+          .input-container {
+            justify-self: flex-start;
+            width: 100%;
+
+            .rs-input-group-addon {
+              margin: 0 !important;
+              border: 0 !important;
+            }
+
+            input {
+              border-bottom: 1px solid var(--translucent);
+              border-radius: 0;
+              color: var(--textColor);
+              width: 100%;
+
+              &::placeholder {
+                color: var(--textColor);
+                opacity: 0.7;
+                font-style: italic;
+                font-size: 16px;
+              }
+            }
+          }
+        }
+
+        &.theme,
+        &.summary {
+          span {
+            margin: 0;
+            font-size: 25px;
+
+            &:nth-child(2) {
+              margin-left: 20px;
+              color: var(--textColor);
+              font-size: 20px;
+            }
+          }
+
+          div {
+            margin-left: auto;
+
+            span {
+              font-size: 20px;
+              animation: rotate 15s linear infinite;
+              color: $yellow;
+            }
+          }
+        }
+
+        &:first-child {
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        &:not(.theme) {
+          span {
+            font-size: 25px;
+            margin-right: 20px;
+            opacity: 0.8;
+            color: $accent;
+
+            &:nth-child(2) {
+              font-size: 16px;
+              margin-right: 20px;
+              opacity: 0.5;
+              color: var(--textColor);
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "swapDurations.js",
+  "sourceRoot": "\\",
+  "sources": [
+    "swapDurations.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA,IAAA;;AAAA,aAAA,GACE;EAAA,MAAA,EAAQ,QAAR;EACA,QAAA,EAAU,UADV;EAEA,KAAA,EAAO;AAFP;;AAIF,OAAA,QAAe",
+  "sourcesContent": [
+    "SwapDurations =\r\n  single: 'single'\r\n  multiple: 'multiple'\r\n  intra: \"intraday\"\r\n\r\nexport default SwapDurations"
+  ]
+}

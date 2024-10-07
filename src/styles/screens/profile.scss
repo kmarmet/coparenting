@@ -1,0 +1,246 @@
+@import "../mixins";
+
+#update-contact-info-container {
+    button {
+        margin: 0 auto;
+    }
+}
+
+#child-info-container {
+    #coparent-info {
+        .info-section {
+            max-height: 60px;
+            overflow: hidden;
+            margin-bottom: 5px;
+            transition: max-height .3s ease-in-out;
+
+            &.active {
+                max-height: 1000px;
+
+                .header {
+                    border-bottom: 0;
+                }
+            }
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                @include lineItem;
+
+                span {
+                    font-size: 18px;
+                    margin-left: 10px;
+                }
+            }
+
+            a {
+                span {
+                    font-size: 30px;
+                }
+            }
+
+            p {
+                color: var(--textColor, 'white');
+                font-weight: 400;
+            }
+        }
+    }
+}
+
+#update-contact-info-container {
+    .back-button {
+        color: var(--textColor);
+        font-weight: 400;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        color: $linkColor;
+        justify-content: flex-start;
+        width: auto;
+        padding: 0;
+        position: fixed;
+        left: -15px;
+        padding: 0 8px;
+        border-radius: $borderRadius;
+        bottom: 90px;
+        font-size: 18px;
+        text-align: left;
+
+        span {
+            padding: 0;
+            width: 25px;
+            margin-right: 0;
+            font-size: 45px;
+            margin-right: 5px;
+        }
+    }
+
+    .add-document-text {
+        color: var(--textColor);
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .form {
+        margin: 0;
+    }
+
+    #upload-inputs {
+        .add-doc-button {}
+
+        #upload-input {
+            margin: 0 auto 10px auto;
+            width: 220px;
+        }
+    }
+
+    .sections {
+        .section {
+            @include lineItem;
+            justify-content: flex-start;
+
+            &.notifications {
+                flex-wrap: nowrap;
+                justify-content: space-between;
+
+                span {
+                    line-height: 1.2;
+                    justify-self: flex-start;
+                    margin-right: auto;
+                    margin-left: 0;
+
+                    &:nth-child(2) {
+                        color: var(--textColor);
+                    }
+
+                    &.accent {
+                        margin-right: 20px;
+                    }
+                }
+
+                #checkbox-group {
+                    display: flex;
+                    flex-wrap: nowrap;
+                    margin: 0;
+                    margin-left: 10px;
+
+                    .flex {
+                        width: auto;
+
+                        &:last-child {
+                            margin: 0;
+                        }
+                    }
+                }
+            }
+
+
+            &.theme {
+                span {
+                    margin: 0;
+                    font-size: 25px;
+
+                    &:nth-child(2) {
+                        margin-left: 20px;
+                        color: var(--textColor);
+                        font-size: 20px;
+                    }
+                }
+
+                div {
+                    margin-left: auto;
+
+                    span {
+                        font-size: 20px;
+                    }
+                }
+            }
+
+
+            &:first-child {
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            &:not(.theme) {
+
+                span {
+                    font-size: 25px;
+                    margin-right: 20px;
+                    opacity: .8;
+                    color: $accent;
+
+                    &:nth-child(2) {
+                        font-size: 16px;
+                        margin-right: 20px;
+                        opacity: .5;
+                        color: var(--textColor);
+                    }
+                }
+            }
+
+
+        }
+    }
+
+    .current-value {
+        opacity: .6;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .instructions {
+        &.gallery {
+            margin-bottom: 10px;
+            color: var(--textColor);
+            margin-top: 0;
+        }
+    }
+
+    .gallery {
+        grid-template-columns: auto auto auto;
+        grid-gap: 8px;
+        display: grid;
+
+        #img-container {
+            img {
+                height: auto;
+                width: 100%;
+                border-radius: $borderRadius;
+                display: none;
+            }
+
+            p {
+                color: $red;
+                text-align: center;
+                width: 70px;
+                margin: 5px auto 0 auto;
+                font-weight: 500;
+                border-bottom: 1px solid $red;
+                padding-bottom: 1px;
+                display: none;
+            }
+        }
+
+        &.active {
+            #img-container {
+                img {
+                    display: inline;
+                }
+
+                p {
+                    display: block;
+                }
+            }
+
+        }
+
+        img {
+            height: auto;
+            display: none;
+            width: 100%;
+            border-radius: $borderRadius;
+        }
+    }
+
+}

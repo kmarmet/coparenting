@@ -1,0 +1,419 @@
+#external-overrides {
+  // Primary calendar container
+  .MuiPaper-root {
+    background-color: var(--darkBlueOrLightGrey);
+    border-radius: 15px;
+    width: 95vw !important;
+    
+    * {
+      color: var(--whiteOrBlack);
+    }
+    
+    .MuiDialogActions-root {
+      padding: 10px 30px;
+    }
+    
+    .MuiTypography-root {
+      &.MuiTypography-overline {
+        display: none;
+      }
+      &.MuiTypography-h4 {
+        font-size: 16px;
+        color: var(--whiteOrBlack);;
+        font-weight: bold;
+      }
+      &.MuiTypography-h3 {
+        font-size: 20px;
+      }
+    }
+    
+    .MuiDateCalendar-root {
+      margin: 0;
+      height: 400px;
+      max-height: 1000px;
+      width: 98vw;
+      max-width: 365px;
+      
+      .MuiIconButton-root {
+        font-size: 45px;
+      }
+      
+      .MuiPickersCalendarHeader-label {
+        font-size: 18px;
+        color: var(--whiteOrBlack);;
+      }
+      
+      .MuiSvgIcon-root {
+        font-size: 60px;
+        position: relative;
+        top: -3px;
+      }
+    }
+    .MuiDayCalendar-weekContainer {
+      justify-content: center;
+    }
+    
+    .MuiDayCalendar-weekDayLabel {
+      font-size: 16px;
+      width: 50px;
+      height: 50px;
+      color: white;
+      opacity: 0.7;
+      font-weight: bold;
+    }
+    
+    .MuiTabs-flexContainer {
+      button {
+        width: 50%;
+      }
+    }
+    
+    .MuiDateTimePickerToolbar-dateContainer,
+    .MuiDateTimePickerToolbar-timeContainer,
+    .MuiDateTimePickerToolbar-timeDigitsContainer,
+    .MuiDateTimePickerToolbar-ampmSelection {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      justify-content: center;
+      
+      &.MuiDateTimePickerToolbar-ampmSelection,
+      &.MuiDateTimePickerToolbar-timeDigitsContainer {
+        margin-left: 0;
+        button {
+          width: 100px;
+          &:first-child {
+            margin-right: 12px;
+          }
+        }
+        &.MuiDateTimePickerToolbar-timeDigitsContainer {
+          button {
+            width: 100px;
+            &:first-child {
+              margin-right: 0;
+            }
+          }
+        }
+        &.MuiDateTimePickerToolbar-ampmSelection {
+          button {
+            width: 110px;
+          }
+        }
+      }
+      button {
+        width: 50%;
+      }
+    }
+    
+    .MuiDateTimePickerToolbar-separator {
+      position: relative;
+      margin: 0 8px;
+    }
+    
+    .MuiDateTimePickerToolbar-root {
+      &.Mui-selected {
+        background-color: $accent;
+        width: 55px;
+      }
+      
+      &.MuiDateTimePickerToolbar-root {
+        max-width: 325px !important;
+        margin: 0 auto;
+      }
+      
+      button {
+        margin-bottom: 6px;
+      }
+    }
+    
+    .css-15dhvw6-MuiTypography-root-MuiPickersToolbarText-root {
+      width: 50%;
+    }
+    
+    // Date/time/ampm at top
+    .css-12vly6n-MuiDateTimePickerToolbar-timeContainer {
+      flex-wrap: wrap;
+    }
+    
+    // Date/time container (including buttons and clock)
+    .css-16b5y55-MuiPickersLayout-contentWrapper,
+    .MuiPickersLayout-contentWrapper {
+      grid-column: 3;
+      max-width: 365px;
+      overflow: hidden;
+    }
+    
+    .MuiTimeClock-arrowSwitcher {
+      display: none;
+    }
+    
+    .Mui-selected {
+      &.MuiTypography-subtitle2 {
+        background-color: $accent;
+        width: 100%;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+      }
+      &.css-bw88rr-MuiPickersMonth-monthButton {
+        background-color: $accent;
+      }
+    }
+    
+    .MuiButtonBase-root,
+    .MuiPickersDay-hiddenDaySpacingFiller {
+      width: 50px;
+      height: 50px;
+      font-size: 16px;
+      color: white;
+      &.Mui-selected {
+        background-color: $accent;
+        width: 45px;
+        height: 45px;
+        position: relative;
+        top: 5px;
+      }
+      &.MuiButton-textPrimary {
+        &.css-1apkmlw-MuiButtonBase-root-MuiButton-root {
+          background-color: $accent;
+        }
+      }
+      
+      &.MuiButton-root {
+        color: white;
+        font-weight: bold;
+        border: 1px solid var(--borderColor);
+        border-radius: 15px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        line-height: 1;
+        min-width: 100px;
+        height: 40px;
+        padding: 0;
+        margin-top: 10px;
+        
+        &:first-child {
+          background-color: transparent;
+          color: var(--whiteOrBlack);
+        }
+        &:nth-child(3) {
+          margin-right: 8px;
+        }
+      }
+    }
+    
+    .Mui-focused {
+      border-color: transparent;
+    }
+    
+    // Calendar/Time icon buttons
+    .css-1m3hk3w-MuiButtonBase-root-MuiTab-root {
+      &.Mui-selected {
+        background-color: var(--borderColor);
+        border-bottom: 0;
+        svg {
+          border-bottom: 0;
+        }
+      }
+    }
+    // Blue bottom border
+    .css-1sj2jcg-MuiTabs-indicator {
+      background-color: var(--pageContainer);
+    }
+  }
+  
+  .MuiInputBase-input {
+    &::placeholder {
+      font-size: 14px;
+    }
+  }
+
+  .MuiClockPointer-root {
+    background-color: $accent;
+  }
+
+  .MuiDayCalendar-monthContainer {
+    [role='row'] {
+      &:first-child {
+        .MuiPickersDay-root {
+        }
+      }
+    }
+  }
+
+  .MuiClock-pin,
+  .MuiClockPointer-thumb {
+    background-color: white;
+  }
+  .MuiClockPointer-thumb {
+    border: 16px solid $accent;
+  }
+
+  .MuiPickersLayout-contentWrapper,
+  .MuiPickersLayout-actionBar {
+    max-width: 365px;
+  }
+
+  .MuiInputBase-root {
+    border: 0;
+    border-radius: 0;
+    padding-right: 0;
+    * {
+      user-select: none;
+    }
+
+    input {
+      border: 0;
+      outline: none;
+      padding: 0;
+    }
+  }
+
+  // Input border
+  .MuiOutlinedInput-notchedOutline {
+    border: 0 !important;
+    display: none;
+    &.css-1d3z3hw-MuiOutlinedInput-notchedOutline {
+      border: 0 !important;
+      margin-bottom: 15px;
+    }
+  }
+
+  // Input border
+  .css-lxfshk-MuiInputBase-root-MuiOutlinedInput-root {
+    &.Mui-error {
+      .MuiOutlinedInput-notchedOutline {
+        border-color: var(--textColor) !important;
+        border-radius: 0;
+        border: 0 !important;
+      }
+    }
+  }
+
+  .MuiOutlinedInput-root {
+    position: relative;
+  }
+
+  .MuiInputLabel-animated {
+    position: relative;
+  }
+
+  // Overlay
+  .css-yiavyu-MuiBackdrop-root-MuiDialog-backdrop {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  .css-rsks93-MuiPaper-root-MuiDialog-paper {
+    margin: 0 auto;
+  }
+
+  // Year selection
+  .css-innj4t-MuiPickersYear-yearButton.Mui-selected {
+    background-color: $accent;
+  }
+
+  // Top time container
+  .css-17lne2t {
+    display: block;
+  }
+
+  // Digital time container {
+  .css-1l4fxj8 {
+    justify-content: center;
+  }
+
+  //  Am/Pm Flexbox
+  .css-1bt0dft,
+  .MuiTimePickerToolbar-hourMinuteLabel {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  // Input container {
+  .css-14879vg,
+  .css-1q964xs-MuiFormLabel-root-MuiInputLabel-root {
+    transform: none;
+  }
+
+  .css-jaa451 {
+    .MuiPickersLayout-toolbar {
+      max-width: 365px;
+    }
+  }
+
+  // Input
+  .css-z3c6am-MuiFormControl-root-MuiTextField-root {
+    margin: 15px 0 15px 0;
+    user-select: none;
+    -moz-user-select: none; // Firefox
+    -webkit-text-select: none; // IOS Safari
+    -webkit-user-select: none; // Safari
+
+    &::placeholder {
+      font-size: 14px;
+    }
+  }
+  .MuiPickersFadeTransitionGroup-root {
+    max-width: 365px;
+    .MuiDateCalendar-viewTransitionContainer {
+      max-width: 365px;
+      .css-1h73gvd {
+        max-width: 365px;
+      }
+    }
+  }
+  .css-18pjc51-MuiFormLabel-root-MuiInputLabel-root,
+  .MuiFormLabel-root {
+    overflow: inherit;
+    font-size: 15px !important;
+  }
+  
+  .css-ufcxyz-MuiTypography-root-MuiDayCalendar-weekDayLabel {
+    font-weight: bold;
+    color: var(--textColor) !important;
+  }
+  
+  .MuiPickersLayout-root {
+    margin: 0 auto;
+    max-width: 365px;
+    .css-1st8yxe-MuiPickersLayout-root {
+      max-width: 365px;
+    }
+  }
+  
+  .css-18pjc51-MuiFormLabel-root-MuiInputLabel-root,
+  .css-18w7by0 {
+    transform: none;
+    font-size: 15px !important;
+}
+  
+  // Calendar container
+  .css-1y8461r {
+    margin: 0;
+    position: fixed;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%);
+  }
+  
+  .css-1nf2ro8, .MuiDialog-paper {
+    width: 365px;
+  }
+
+  .css-18w7by0 {
+    transform: none;
+  }
+  
+  .css-1386ez6-MuiMonthCalendar-root {
+    margin: 0 auto;
+  }
+
+  // Top date container
+  .css-x79lsh {
+    max-width: 365px;
+  }
+  //@include testBorders;
+}

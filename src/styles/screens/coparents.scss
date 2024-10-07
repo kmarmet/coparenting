@@ -1,0 +1,136 @@
+@import "../mixins";
+
+#coparents-container {
+    #coparent-container {
+        display: flex;
+        width: 100%;
+        // border: 1px solid red;
+        overflow: auto;
+        background-color: transparent;
+        border-radius: 0;
+        border: 0;
+        padding: 10px;
+        margin: 0;
+
+        .coparent {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-width: calc(100% / 3);
+            margin-right: 5px;
+            transition: all .3s ease-in-out;
+
+            &.active {
+                margin-top: -10px;
+                transition: all .3s ease-in-out;
+
+                span {
+                    color: $accent;
+                    opacity: 1;
+                }
+
+                .child-name {
+                    font-weight: 500;
+                    opacity: 1;
+                }
+
+                .coparent-type {
+                    opacity: .8;
+                }
+
+            }
+
+            span {
+                color: var(--textColor);
+                font-size: 40px;
+                opacity: .7;
+
+                &.coparent-type {
+                    font-size: 12px;
+                    text-align: center;
+                    font-weight: 400;
+                    line-height: 1;
+                    font-style: italic;
+                }
+            }
+
+            .coparent-name {
+                color: var(--textColor);
+                font-size: 14px;
+                font-weight: 400;
+                opacity: .7;
+                border: 0;
+            }
+        }
+    }
+
+    #coparent-info {
+        margin-top: 20px;
+
+        .info-section {
+            overflow: hidden;
+            margin-bottom: 5px;
+            transition: max-height .3s ease-in-out;
+
+            &.active {
+                max-height: 1000px;
+
+                .header {
+                    border-bottom: 0;
+                }
+            }
+
+            .flex {
+                width: 95%;
+                margin: 0 auto;
+
+                &.input {
+                    .delete-icon {
+                        font-size: 22px;
+                        position: relative;
+                        margin-left: 5px;
+                        right: -5px;
+                        color: #ca436c;
+                        height: 49px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                }
+            }
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                @include lineItem;
+
+                span {
+                    font-size: 18px;
+                    margin-left: 10px;
+                }
+            }
+
+            .directions-icon {
+                position: relative;
+                top: -4px;
+                margin-right: 10px;
+            }
+
+            a {
+                span {
+                    font-size: 30px;
+                }
+            }
+
+            p {
+                color: var(--textColor, 'white');
+                font-weight: 400;
+            }
+
+            button {
+                width: 70%;
+            }
+        }
+    }
+}

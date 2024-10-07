@@ -1,0 +1,281 @@
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+@keyframes pulse {
+  0%, 100% {
+    color: "#9d98fc";
+  }
+  50% {
+    color: #2b3563;
+  }
+}
+@keyframes pulseWhite {
+  0%, 100% {
+    box-shadow: 0px 0px 20px 0px white;
+  }
+  50% {
+    box-shadow: 0px 0px 10px 0px white;
+  }
+}
+@keyframes beat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes animStar {
+  from {
+    transform: translateX(-100px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+@keyframes shootingStar {
+  0% {
+    transform: rotate(315deg) translateX(250px);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(315deg) translateX(-1500px);
+    opacity: 0;
+  }
+}
+@keyframes starTwinkle {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes topBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes bottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tilt {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes rotateMoon {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+#coparents-container #coparent-container {
+  display: flex;
+  width: 100%;
+  overflow: auto;
+  background-color: transparent;
+  border-radius: 0;
+  border: 0;
+  padding: 10px;
+  margin: 0;
+}
+#coparents-container #coparent-container .coparent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 33.3333333333%;
+  margin-right: 5px;
+  transition: all 0.3s ease-in-out;
+}
+#coparents-container #coparent-container .coparent.active {
+  margin-top: -10px;
+  transition: all 0.3s ease-in-out;
+}
+#coparents-container #coparent-container .coparent.active span {
+  color: var(--accent);
+  opacity: 1;
+}
+#coparents-container #coparent-container .coparent.active .child-name {
+  font-weight: 500;
+  opacity: 1;
+}
+#coparents-container #coparent-container .coparent.active .coparent-type {
+  opacity: 0.8;
+}
+#coparents-container #coparent-container .coparent span {
+  color: var(--textColor);
+  font-size: 40px;
+  opacity: 0.7;
+}
+#coparents-container #coparent-container .coparent span.coparent-type {
+  font-size: 12px;
+  text-align: center;
+  font-weight: 400;
+  line-height: 1;
+  font-style: italic;
+}
+#coparents-container #coparent-container .coparent .coparent-name {
+  color: var(--textColor);
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.7;
+  border: 0;
+}
+#coparents-container #coparent-info {
+  margin-top: 20px;
+}
+#coparents-container #coparent-info .info-section {
+  overflow: hidden;
+  margin-bottom: 5px;
+  transition: max-height 0.3s ease-in-out;
+}
+#coparents-container #coparent-info .info-section.active {
+  max-height: 1000px;
+}
+#coparents-container #coparent-info .info-section.active .header {
+  border-bottom: 0;
+}
+#coparents-container #coparent-info .info-section .flex {
+  width: 95%;
+  margin: 0 auto;
+}
+#coparents-container #coparent-info .info-section .flex.input .delete-icon {
+  color: #ca436c;
+  font-size: 22px;
+  position: relative;
+  top: 5px;
+  margin-left: 10px;
+  right: -5px;
+}
+#coparents-container #coparent-info .info-section .header {
+  display: flex;
+  justify-content: space-between;
+  color: var(--textColor);
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  width: calc(100vw - 30px);
+  position: relative;
+  flex-wrap: wrap;
+  align-items: center;
+  line-height: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  height: 60px;
+  margin: 0;
+  justify-content: space-between;
+  margin: 0 auto;
+}
+#coparents-container #coparent-info .info-section .header span:nth-child(2) {
+  margin-left: auto;
+  margin-right: 0;
+  font-size: 20px;
+}
+#coparents-container #coparent-info .info-section .header span {
+  font-size: 18px;
+  margin-left: 10px;
+}
+#coparents-container #coparent-info .info-section .directions-icon {
+  position: relative;
+  top: -4px;
+  margin-right: 10px;
+}
+#coparents-container #coparent-info .info-section a span {
+  font-size: 30px;
+}
+#coparents-container #coparent-info .info-section p {
+  color: var(--textColor, "white");
+  font-weight: 400;
+}
+#coparents-container #coparent-info .info-section button {
+  width: 70%;
+}/*# sourceMappingURL=coparents.css.map */

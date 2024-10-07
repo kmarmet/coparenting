@@ -1,0 +1,272 @@
+{
+  "calendarEvents": [
+    {
+      "children": [
+        "Otto"
+      ],
+      "createdBy": "Kevin Marmet",
+      "date": "08/08/2024",
+      "id": "96bbc0f4-296a-4be1-97fc-7f8c3c5fe700",
+      "location": "Bookwalter ",
+      "phone": "3307494534",
+      "recipientName": "Lindsay",
+      "time": "11:30 am",
+      "title": "Orthodontist"
+    },
+    {
+      "children": [
+        "Ariyana",
+        "Princeton",
+        "Magnolia"
+      ],
+      "createdBy": "Kevin Marmet",
+      "date": "07/11/2024",
+      "id": "dfa2eaf6-bf49-4a1f-a089-d4df30af977f",
+      "location": "Townsview Pl, Wooster, OH 44691, USA",
+      "phone": "3307494534",
+      "recipientName": "Ashley",
+      "shareWith": [
+        "3307494343"
+      ],
+      "title": "Kevin is keeping kids until Sunday July 14th.  "
+    },
+    {
+      "children": [
+        "Ariyana"
+      ],
+      "createdBy": "Kevin Marmet",
+      "fromDate": "07/10/2024",
+      "id": "0cd838b2-2407-45ad-9f1f-16b4b806e076",
+      "location": "6580 S Township Rd 131, Tiffin, OH 44883, USA",
+      "phone": "3307494534",
+      "recipientName": "",
+      "shareWith": [
+        "4199615795",
+        "3307494343"
+      ],
+      "time": "6:30 pm",
+      "title": "Baptism",
+      "toDate": "07/10/2024"
+    },
+    {
+      "createdBy": "Kevin Marmet",
+      "fromDate": "07/09/2024",
+      "id": "a3692b29-1ea5-426d-9281-1773d249a1d4",
+      "phone": "3307494534",
+      "recipientName": "",
+      "shareWith": [
+        "4199615795"
+      ],
+      "time": "2:00 pm",
+      "title": "Lindsay Working 2p to 12a",
+      "toDate": "07/09/2024"
+    },
+    {
+      "createdBy": "Kevin Marmet",
+      "fromDate": "07/09/2024",
+      "id": "cd0ccf50-de8d-44f6-8b6b-30a89b7d2eea",
+      "location": "Westbrook Ave, Mansfield, OH 44906, USA",
+      "phone": "3307494534",
+      "recipientName": "",
+      "shareWith": [
+        "4199615795"
+      ],
+      "time": "11:00 am",
+      "title": "Lindsay Speaking Event",
+      "toDate": "07/09/2024"
+    },
+    {
+      "createdBy": "Kevin Marmet",
+      "forCoparent": "Ashley",
+      "fromDate": "07/14/2024",
+      "fromTime": "",
+      "id": "5c03f0a9-a9fb-4ea5-95ad-cf864a26d2fd",
+      "phone": "3307494534",
+      "recipientName": "",
+      "shareWith": [
+        "4199615795",
+        "3307494343"
+      ],
+      "title": "Vacation with Ashley",
+      "toDate": "07/28/2024",
+      "toTime": ""
+    },
+    {
+      "createdBy": "Kevin Marmet",
+      "forCoparent": "Lindsay",
+      "fromDate": "07/18/2024",
+      "fromTime": "3:00pm",
+      "id": "d9193afc-8708-40cf-8411-fc8d74fc91e6",
+      "location": "OH-4, Marysville, OH, USA",
+      "phone": "3307494534",
+      "recipientName": "",
+      "shareWith": [
+        "4199615795"
+      ],
+      "title": "JON PARDI",
+      "toDate": "07/18/2024",
+      "toTime": ""
+    },
+    {
+      "createdBy": "Lindsay  Marmet",
+      "forCoparent": "Kevin marmet",
+      "fromDate": "10/10/2024",
+      "fromTime": "10:15am",
+      "id": "7fa580aa-77c3-4c31-8a8c-e218f64583f5",
+      "phone": "4199615795",
+      "recipientName": "",
+      "shareWith": [
+        "3307494534"
+      ],
+      "title": "Charlie Davis Appt",
+      "toDate": "10/10/2024",
+      "toTime": "11:15am"
+    },
+    null,
+    {
+      "createdBy": "Kevin Marmet",
+      "forCoparent": "Lindsay",
+      "fromDate": "08/03/2024",
+      "fromTime": "7:30pm",
+      "id": "692e1d7d-fea0-4eb4-bbcc-a7716a1fa6a8",
+      "phone": "3307494534",
+      "recipientName": "",
+      "shareWith": [
+        "4199615795"
+      ],
+      "title": "Beauty and the Beast ",
+      "toDate": "08/03/2024",
+      "toTime": "10:00pm"
+    }
+  ],
+  "swapRequests": [
+    {
+      "children": [
+        "Magnolia"
+      ],
+      "createdBy": "Kevin Marmet",
+      "dateAdded": "7/14/2024",
+      "fromDate": [
+        "07/14/2024"
+      ],
+      "id": "f1ce2422-940e-48db-90a3-d3d616b76c31",
+      "length": "single",
+      "phone": "3307494534",
+      "reason": "Train",
+      "recipientName": "Lindsay  Marmet",
+      "recipientPhone": "4199615795",
+      "shareWith": [
+        "4199615795"
+      ],
+      "toDate": [
+        "07/14/2024"
+      ]
+    }
+  ],
+  "transferChange": [
+    {
+      "createdBy": "Kevin Marmet",
+      "date": "07/17/2024",
+      "directionsLink": "https://www.google.com/maps?daddr=7Wooster%20Pike%2C%20Seville%2C%20OH%2C%20USA",
+      "id": "259419f2-a47f-4bbf-991e-5433cde49adf",
+      "location": "Wooster Pike, Seville, OH, USA",
+      "phone": "3307494534",
+      "reason": "Reason",
+      "recipientName": "Lindsay",
+      "shareWith": [
+        "4199615795"
+      ],
+      "time": "9:38 pm"
+    }
+  ],
+  "users": [
+    {
+      "allowNotifications": true,
+      "coparents": [
+        {
+          "address": "1022 Columbus Cir N, Ashland, OH 44805, USA",
+          "name": "Lindsay",
+          "parentType": "Step-Parent",
+          "phone": "4199615795"
+        },
+        {
+          "address": "OH-14, Salem, OH, USA",
+          "name": "Ashley",
+          "parentType": "Biological Parent",
+          "phone": "3307494343"
+        }
+      ],
+      "email": "kmarmet1@gmail.com",
+      "id": "316c763a-8fec-4141-8e87-857adfeac31e",
+      "memories": {
+        "-O1uc3UmLNbQCDDOis8y": {
+          "id": "20b54b8f-01e2-49c9-b4ec-669b33e2a698",
+          "notes": "Princeton worshipping at camp",
+          "shareWith": [
+            "3307494343"
+          ],
+          "url": "https://firebasestorage.googleapis.com/v0/b/coparenting-app-aa9f9.appspot.com/o/memories%2F316c763a-8fec-4141-8e87-857adfeac31e%2FIMG_6643.jpeg?alt=media&token=bfe8f95b-c1bd-46f7-9bab-b4f5872bfa33"
+        }
+      },
+      "name": "Kevin Marmet",
+      "parentType": "Biological Parent",
+      "password": "Kramer12$",
+      "phone": "3307494534",
+      "theme": "dark"
+    },
+    null,
+    {
+      "coparents": [
+        {
+          "name": "Kevin marmet",
+          "parentType": "Step-Parent",
+          "phone": "3307494534"
+        },
+        {
+          "name": "Adam",
+          "parentType": "Biological Parent",
+          "phone": "4195712438"
+        }
+      ],
+      "email": "lmarmet6@gmail.com",
+      "id": "b692aef3-e997-40b4-b168-781e9c9cad54",
+      "name": "Lindsay  Marmet",
+      "parentType": "Biological Parent",
+      "password": "Password12$",
+      "phone": "4199615795",
+      "theme": "dark"
+    },
+    {
+      "coparents": [
+        {
+          "name": "Lindsay Marmet",
+          "parentType": "Biological Parent",
+          "phone": "4199615795"
+        }
+      ],
+      "email": "email@email.com",
+      "id": "5663490d-f3ea-485a-b06b-077be553ffd0",
+      "name": "Adam Rietschlin",
+      "parentType": "Biological Parent",
+      "password": "Password12$",
+      "phone": "4195712438",
+      "theme": "dark"
+    },
+    {
+      "coparents": [
+        {
+          "name": "Kevin Marmet",
+          "parentType": "Biological Parent",
+          "phone": "3307494534"
+        }
+      ],
+      "email": "ashleymarmet@gmail.com",
+      "id": "2be5b680-a0c2-437b-8713-ef761990af59",
+      "name": "Ashley",
+      "parentType": "Biological Parent",
+      "password": "tytmuh-kazte2-qizpoH",
+      "phone": "3307494343",
+      "theme": "dark"
+    }
+  ]
+}

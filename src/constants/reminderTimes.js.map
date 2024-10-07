@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "reminderTimes.js",
+  "sourceRoot": "\\",
+  "sources": [
+    "reminderTimes.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA,IAAA;;AAAA,aAAA,GACE;EAAA,WAAA,EAAa,aAAb;EACA,IAAA,EAAM,MADN;EAEA,QAAA,EAAU,UAFV;EAGA,WAAA,EAAa;AAHb;;AAMF,OAAA,QAAe",
+  "sourcesContent": [
+    "ReminderTimes =\r\n  fiveMinutes: 'fiveMinutes'\r\n  hour: 'hour'\r\n  halfHour: 'halfHour'\r\n  timeOfEvent: 'timeOfEvent'\r\n\r\n\r\nexport default ReminderTimes"
+  ]
+}

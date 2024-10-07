@@ -1,0 +1,42 @@
+{
+  "name": "Peaceful coParenting",
+  "short_name": "Peaceful coParenting",
+  "start_url": "https://peaceful-coparenting.app/",
+  "id": "https://peaceful-coparenting.app/",
+  "display": "fullscreen",
+  "background_color": "#121735",
+  "theme_color": "#121735",
+  "display_override": ["fullscreen", "minimal-ui"],
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+,
+  "shortcuts" : [
+    {
+      "name": "Shared Calendar",
+      "url": "src/components/screens/calendar.jsx",
+      "description": "List of events planned for today"
+    },
+    {
+      "name": "New Event",
+      "url": "src/components/forms/newCalendarEvent.jsx"
+    }
+  ]
+}

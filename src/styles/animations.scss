@@ -1,0 +1,232 @@
+@import "../styles/colors";
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+
+	50% {
+		background-position: 100% 50%;
+	}
+
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+// @keyframes beat {
+// 	to {
+// 		transform: scale(1.05);
+// 	}
+// }
+
+@keyframes rotate {
+	100% {
+		transform: rotate(1turn);
+	}
+}
+
+@keyframes pulse {
+
+	0%,
+	100% {
+		color: "#9d98fc";
+	}
+
+	50% {
+		color: $darkBlue;
+	}
+}
+
+@keyframes pulseWhite {
+
+	0%,
+	100% {
+		box-shadow: 0px 0px 20px 0px white;
+	}
+
+	50% {
+		box-shadow: 0px 0px 10px 0px white;
+	}
+}
+
+@keyframes beat {
+	0% {
+		transform: scale(1);
+		box-shadow: 0 0 0 0 rgba(123, 117, 255, .7);
+	}
+
+	70% {
+		transform: scale(1.1);
+		box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+	}
+
+	100% {
+		transform: scale(1);
+		box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+	}
+}
+
+@keyframes beatRed {
+  0% {
+	transform: scale(1);
+	box-shadow: 0 0 0 0 $red;
+  }
+  
+  70% {
+	transform: scale(1.1);
+	box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  
+  100% {
+	transform: scale(1);
+	box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+
+	50% {
+		background-position: 100% 50%;
+	}
+
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+@keyframes animStar {
+	from {
+		transform: translateX(-100px)
+	}
+
+	to {
+		transform: translateX(0px)
+	}
+}
+
+@keyframes shootingStar {
+	0% {
+		transform: rotate(315deg) translateX(250px);
+		opacity: 1;
+	}
+
+	70% {
+		opacity: 1;
+	}
+
+	100% {
+		transform: rotate(315deg) translateX(-1500px);
+		opacity: 0;
+
+	}
+
+}
+
+@keyframes starTwinkle {
+	0% {
+		transform: scale(0.3);
+		opacity: 0;
+	}
+
+	50% {
+		transform: scale(0.5);
+		opacity: 1;
+	}
+
+	100% {
+		transform: scale(0.5);
+		opacity: 0;
+	}
+}
+
+@keyframes twinkle {
+	0% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: .70;
+	}
+
+	70% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+@keyframes topBubbles {
+	0% {
+		background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+	}
+
+	50% {
+		background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+	}
+
+	100% {
+		background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+		background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+	}
+}
+
+@keyframes bottomBubbles {
+	0% {
+		background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+	}
+
+	50% {
+		background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+	}
+
+	100% {
+		background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+		background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+	}
+}
+
+@keyframes rotate {
+
+	0% {
+		transform: rotate(0);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes tilt {
+
+	0% {
+		transform: rotate(0deg);
+	}
+
+	25% {
+		transform: rotate(-10deg);
+	}
+
+	75% {
+		transform: rotate(10deg);
+	}
+
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+@keyframes rotateMoon {
+	0% {
+		transform: rotate(0);
+	}
+
+	100% {
+		transform: rotate(-90deg);
+	}
+}

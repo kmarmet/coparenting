@@ -1,0 +1,1454 @@
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+@keyframes pulse {
+  0%, 100% {
+    color: "#9d98fc";
+  }
+  50% {
+    color: #2b3563;
+  }
+}
+@keyframes pulseWhite {
+  0%, 100% {
+    box-shadow: 0px 0px 20px 0px white;
+  }
+  50% {
+    box-shadow: 0px 0px 10px 0px white;
+  }
+}
+@keyframes beat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes animStar {
+  from {
+    transform: translateX(-100px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+@keyframes shootingStar {
+  0% {
+    transform: rotate(315deg) translateX(250px);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(315deg) translateX(-1500px);
+    opacity: 0;
+  }
+}
+@keyframes starTwinkle {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes topBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes bottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tilt {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes rotateMoon {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+#external-overrides #calendar-container .edit-cal,
+#external-overrides #calendar-event-form-container .edit-cal,
+#external-overrides #edit-cal-event-container .edit-cal {
+  padding: 0;
+}
+#external-overrides #calendar-container#calendar-container,
+#external-overrides #calendar-event-form-container#calendar-container,
+#external-overrides #edit-cal-event-container#calendar-container {
+  padding-top: 0;
+}
+#external-overrides #calendar-container #filter-button,
+#external-overrides #calendar-event-form-container #filter-button,
+#external-overrides #edit-cal-event-container #filter-button {
+  border-radius: 40px;
+  background-color: var(--borderColor);
+  display: flex;
+  align-items: center;
+  width: 100px;
+  justify-content: space-between;
+  padding: 0 15px;
+  height: 30px;
+  font-weight: 500;
+}
+#external-overrides #calendar-container #filter-accordion .rs-panel-body,
+#external-overrides #calendar-event-form-container #filter-accordion .rs-panel-body,
+#external-overrides #edit-cal-event-container #filter-accordion .rs-panel-body {
+  border-radius: 8px;
+  padding: 0 0 0 10px;
+  background-color: var(--borderColor);
+  padding: 15px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+#external-overrides #calendar-container #filter-accordion .rs-panel-body p,
+#external-overrides #calendar-event-form-container #filter-accordion .rs-panel-body p,
+#external-overrides #edit-cal-event-container #filter-accordion .rs-panel-body p {
+  padding-bottom: 5px;
+  line-height: 1;
+  color: var(--textColor);
+  font-weight: 500;
+}
+#external-overrides #calendar-container #filter-accordion .rs-panel-body p:last-child,
+#external-overrides #calendar-event-form-container #filter-accordion .rs-panel-body p:last-child,
+#external-overrides #edit-cal-event-container #filter-accordion .rs-panel-body p:last-child {
+  padding-bottom: 0;
+}
+#external-overrides #calendar-container #below-calendar,
+#external-overrides #calendar-event-form-container #below-calendar,
+#external-overrides #edit-cal-event-container #below-calendar {
+  display: block;
+  height: 50px;
+  transition: height 0.3s linear;
+}
+#external-overrides #calendar-container #below-calendar #view-holidays-button,
+#external-overrides #calendar-event-form-container #below-calendar #view-holidays-button,
+#external-overrides #edit-cal-event-container #below-calendar #view-holidays-button {
+  border-bottom: 1px solid var(--textColor);
+  height: 25px;
+}
+#external-overrides #calendar-container #below-calendar #filter-icon,
+#external-overrides #calendar-event-form-container #below-calendar #filter-icon,
+#external-overrides #edit-cal-event-container #below-calendar #filter-icon {
+  color: var(--accent);
+  font-size: 25px;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container {
+  transform: scale(0);
+}
+#external-overrides #calendar-container #below-calendar.active,
+#external-overrides #calendar-event-form-container #below-calendar.active,
+#external-overrides #edit-cal-event-container #below-calendar.active {
+  height: auto;
+  transform: scale(1);
+}
+#external-overrides #calendar-container #below-calendar.active #cal-info-container,
+#external-overrides #calendar-event-form-container #below-calendar.active #cal-info-container,
+#external-overrides #edit-cal-event-container #below-calendar.active #cal-info-container {
+  transform: scale(1);
+}
+#external-overrides #calendar-container #below-calendar .info-icon,
+#external-overrides #calendar-event-form-container #below-calendar .info-icon,
+#external-overrides #edit-cal-event-container #below-calendar .info-icon {
+  font-size: 28px;
+  color: var(--yellow);
+  display: block;
+  width: 30px;
+  height: 25px;
+  position: relative;
+  top: -5px;
+}
+#external-overrides #calendar-container #below-calendar .search-icon,
+#external-overrides #calendar-event-form-container #below-calendar .search-icon,
+#external-overrides #edit-cal-event-container #below-calendar .search-icon {
+  position: relative;
+  top: -5px;
+  margin-left: auto;
+  margin-right: 10px;
+  font-size: 28px;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container {
+  padding: 10px;
+  background-color: var(--eventDetails);
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  opacity: 0;
+  max-height: 0;
+  transition: all 0.4s ease-in-out;
+  transform: scale(0);
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container.active,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container.active,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container.active {
+  transform: scale(1);
+  opacity: 1;
+  max-height: 1000px;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container p:not(.small),
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container p:not(.small),
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container p:not(.small) {
+  font-weight: 500;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container .small,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container .small,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container .small {
+  font-size: 15px;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container .small span,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container .small span,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container .small span {
+  color: #0080FF;
+  font-size: 15px;
+  font-weight: 500;
+  border-bottom: 1px solid #0080FF;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container #calendar-legend,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container #calendar-legend,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container #calendar-legend {
+  justify-content: space-between;
+  margin: 0 auto;
+  justify-content: flex-start;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container #calendar-legend .column,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container #calendar-legend .column,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container #calendar-legend .column {
+  opacity: 0.6;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--textColor);
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container #calendar-legend .column span,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container #calendar-legend .column span,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container #calendar-legend .column span {
+  position: relative;
+  top: 2px;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container #calendar-legend .column.one,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container #calendar-legend .column.one,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container #calendar-legend .column.one {
+  display: flex;
+  align-items: center;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container #calendar-legend .column.one .visitation,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container #calendar-legend .column.one .visitation,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container #calendar-legend .column.one .visitation {
+  display: block;
+  background: #00b389;
+  height: 10px;
+  width: 10px;
+  border-radius: 20px;
+  margin-right: 10px;
+  top: 1px;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container #calendar-legend .column.two,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container #calendar-legend .column.two,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container #calendar-legend .column.two {
+  display: flex;
+  align-items: center;
+}
+#external-overrides #calendar-container #below-calendar #cal-info-container #calendar-legend .column.two .dot,
+#external-overrides #calendar-event-form-container #below-calendar #cal-info-container #calendar-legend .column.two .dot,
+#external-overrides #edit-cal-event-container #below-calendar #cal-info-container #calendar-legend .column.two .dot {
+  margin-right: 10px;
+  display: block;
+  background-color: var(--purple);
+  height: 10px;
+  width: 10px;
+  border-radius: 100%;
+  top: 0;
+}
+#external-overrides #calendar-container #search-container,
+#external-overrides #calendar-event-form-container #search-container,
+#external-overrides #edit-cal-event-container #search-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-right: 20px;
+  align-items: stretch;
+}
+#external-overrides #calendar-container #search-container .search-input,
+#external-overrides #calendar-event-form-container #search-container .search-input,
+#external-overrides #edit-cal-event-container #search-container .search-input {
+  background-color: transparent;
+  margin: 0;
+  border: 0;
+  width: calc(100% - 70px);
+  width: 100%;
+  color: var(--textColor);
+  border-bottom: 2px solid var(--borderColor);
+}
+#external-overrides #calendar-container #search-container .search-input:focus, #external-overrides #calendar-container #search-container .search-input:active, #external-overrides #calendar-container #search-container .search-input:focus-visible,
+#external-overrides #calendar-event-form-container #search-container .search-input:focus,
+#external-overrides #calendar-event-form-container #search-container .search-input:active,
+#external-overrides #calendar-event-form-container #search-container .search-input:focus-visible,
+#external-overrides #edit-cal-event-container #search-container .search-input:focus,
+#external-overrides #edit-cal-event-container #search-container .search-input:active,
+#external-overrides #edit-cal-event-container #search-container .search-input:focus-visible {
+  outline: none;
+}
+#external-overrides #calendar-container #search-container .search-input::-moz-placeholder, #external-overrides #calendar-event-form-container #search-container .search-input::-moz-placeholder, #external-overrides #edit-cal-event-container #search-container .search-input::-moz-placeholder {
+  color: var(--textColor);
+  opacity: 0.6;
+  font-size: 14px;
+  padding-left: 0;
+}
+#external-overrides #calendar-container #search-container .search-input::placeholder,
+#external-overrides #calendar-event-form-container #search-container .search-input::placeholder,
+#external-overrides #edit-cal-event-container #search-container .search-input::placeholder {
+  color: var(--textColor);
+  opacity: 0.6;
+  font-size: 14px;
+  padding-left: 0;
+}
+#external-overrides #calendar-container #search-container button,
+#external-overrides #calendar-event-form-container #search-container button,
+#external-overrides #edit-cal-event-container #search-container button {
+  background-color: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.6;
+  margin: 0;
+  line-height: 1;
+  margin-left: auto;
+  color: white;
+  border-bottom: 2px solid var(--eventDetails);
+}
+#external-overrides #calendar-container #date-container,
+#external-overrides #calendar-event-form-container #date-container,
+#external-overrides #edit-cal-event-container #date-container {
+  display: block;
+  width: 100%;
+}
+#external-overrides #calendar-container #date-container .fromDate,
+#external-overrides #calendar-container #date-container .toDate,
+#external-overrides #calendar-event-form-container #date-container .fromDate,
+#external-overrides #calendar-event-form-container #date-container .toDate,
+#external-overrides #edit-cal-event-container #date-container .fromDate,
+#external-overrides #edit-cal-event-container #date-container .toDate {
+  font-size: 16px;
+  color: var(--textColorWhite);
+  text-align: left;
+}
+#external-overrides #calendar-container .children p,
+#external-overrides #calendar-event-form-container .children p,
+#external-overrides #edit-cal-event-container .children p {
+  text-align: left;
+  padding: 3px 0;
+}
+#external-overrides #calendar-container .title span,
+#external-overrides #calendar-event-form-container .title span,
+#external-overrides #edit-cal-event-container .title span {
+  opacity: 0.7;
+}
+#external-overrides #calendar-container#calendar-event-form-container, #external-overrides #calendar-container#edit-cal-event-container,
+#external-overrides #calendar-event-form-container#calendar-event-form-container,
+#external-overrides #calendar-event-form-container#edit-cal-event-container,
+#external-overrides #edit-cal-event-container#calendar-event-form-container,
+#external-overrides #edit-cal-event-container#edit-cal-event-container {
+  overflow: auto;
+  overflow-x: hidden;
+}
+#external-overrides #calendar-container#calendar-event-form-container.show, #external-overrides #calendar-container#edit-cal-event-container.show,
+#external-overrides #calendar-event-form-container#calendar-event-form-container.show,
+#external-overrides #calendar-event-form-container#edit-cal-event-container.show,
+#external-overrides #edit-cal-event-container#calendar-event-form-container.show,
+#external-overrides #edit-cal-event-container#edit-cal-event-container.show {
+  display: block;
+}
+#external-overrides #calendar-container#calendar-event-form-container.transfer-change input:first-child, #external-overrides #calendar-container#edit-cal-event-container.transfer-change input:first-child,
+#external-overrides #calendar-event-form-container#calendar-event-form-container.transfer-change input:first-child,
+#external-overrides #calendar-event-form-container#edit-cal-event-container.transfer-change input:first-child,
+#external-overrides #edit-cal-event-container#calendar-event-form-container.transfer-change input:first-child,
+#external-overrides #edit-cal-event-container#edit-cal-event-container.transfer-change input:first-child {
+  margin-bottom: 0;
+}
+#external-overrides #calendar-container#calendar-event-form-container input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus), #external-overrides #calendar-container#edit-cal-event-container input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus), #external-overrides #calendar-event-form-container#calendar-event-form-container input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus), #external-overrides #calendar-event-form-container#edit-cal-event-container input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus), #external-overrides #edit-cal-event-container#calendar-event-form-container input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus), #external-overrides #edit-cal-event-container#edit-cal-event-container input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus) {
+  margin: 0 auto;
+  display: block;
+  border-radius: 5px;
+  width: 100%;
+  border: 0;
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--eventDetails);
+  border-radius: 0;
+  outline: 0;
+  color: var(--textColorWhite);
+  font-weight: 400;
+  padding-left: 0;
+  min-height: 25px;
+  opacity: 0.8;
+}
+#external-overrides #calendar-container#calendar-event-form-container input:is(:-webkit-autofill, :autofill, :-webkit-autofill:focus), #external-overrides #calendar-container#edit-cal-event-container input:is(:-webkit-autofill, :autofill, :-webkit-autofill:focus),
+#external-overrides #calendar-event-form-container#calendar-event-form-container input:is(:-webkit-autofill, :autofill, :-webkit-autofill:focus),
+#external-overrides #calendar-event-form-container#edit-cal-event-container input:is(:-webkit-autofill, :autofill, :-webkit-autofill:focus),
+#external-overrides #edit-cal-event-container#calendar-event-form-container input:is(:-webkit-autofill, :autofill, :-webkit-autofill:focus),
+#external-overrides #edit-cal-event-container#edit-cal-event-container input:is(:-webkit-autofill, :autofill, :-webkit-autofill:focus) {
+  margin: 0 auto;
+  display: block;
+  border-radius: 5px;
+  width: 100%;
+  border: 0;
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--eventDetails);
+  border-radius: 0;
+  outline: 0;
+  color: var(--textColorWhite);
+  font-weight: 400;
+  padding-left: 0;
+  min-height: 25px;
+  opacity: 0.8;
+}
+#external-overrides #calendar-container#calendar-event-form-container input,
+#external-overrides #calendar-container#calendar-event-form-container textarea, #external-overrides #calendar-container#edit-cal-event-container input,
+#external-overrides #calendar-container#edit-cal-event-container textarea,
+#external-overrides #calendar-event-form-container#calendar-event-form-container input,
+#external-overrides #calendar-event-form-container#calendar-event-form-container textarea,
+#external-overrides #calendar-event-form-container#edit-cal-event-container input,
+#external-overrides #calendar-event-form-container#edit-cal-event-container textarea,
+#external-overrides #edit-cal-event-container#calendar-event-form-container input,
+#external-overrides #edit-cal-event-container#calendar-event-form-container textarea,
+#external-overrides #edit-cal-event-container#edit-cal-event-container input,
+#external-overrides #edit-cal-event-container#edit-cal-event-container textarea {
+  margin: 0 auto;
+  display: block;
+  border-radius: 5px;
+  width: 100%;
+  border: 0;
+  background-color: transparent;
+  border-bottom: 1px solid var(--borderColor);
+  border-radius: 0;
+  outline: 0;
+  color: var(--textColorWhite);
+  font-weight: 400;
+  padding-left: 0;
+  min-height: 25px;
+  opacity: 0.8;
+}
+#external-overrides #calendar-container#calendar-event-form-container input.rs-input,
+#external-overrides #calendar-container#calendar-event-form-container textarea.rs-input, #external-overrides #calendar-container#edit-cal-event-container input.rs-input,
+#external-overrides #calendar-container#edit-cal-event-container textarea.rs-input,
+#external-overrides #calendar-event-form-container#calendar-event-form-container input.rs-input,
+#external-overrides #calendar-event-form-container#calendar-event-form-container textarea.rs-input,
+#external-overrides #calendar-event-form-container#edit-cal-event-container input.rs-input,
+#external-overrides #calendar-event-form-container#edit-cal-event-container textarea.rs-input,
+#external-overrides #edit-cal-event-container#calendar-event-form-container input.rs-input,
+#external-overrides #edit-cal-event-container#calendar-event-form-container textarea.rs-input,
+#external-overrides #edit-cal-event-container#edit-cal-event-container input.rs-input,
+#external-overrides #edit-cal-event-container#edit-cal-event-container textarea.rs-input {
+  margin-bottom: 0;
+}
+#external-overrides #calendar-container#calendar-event-form-container input::-moz-placeholder, #external-overrides #calendar-container#calendar-event-form-container textarea::-moz-placeholder, #external-overrides #calendar-container#edit-cal-event-container input::-moz-placeholder, #external-overrides #calendar-container#edit-cal-event-container textarea::-moz-placeholder, #external-overrides #calendar-event-form-container#calendar-event-form-container input::-moz-placeholder, #external-overrides #calendar-event-form-container#calendar-event-form-container textarea::-moz-placeholder, #external-overrides #calendar-event-form-container#edit-cal-event-container input::-moz-placeholder, #external-overrides #calendar-event-form-container#edit-cal-event-container textarea::-moz-placeholder, #external-overrides #edit-cal-event-container#calendar-event-form-container input::-moz-placeholder, #external-overrides #edit-cal-event-container#calendar-event-form-container textarea::-moz-placeholder, #external-overrides #edit-cal-event-container#edit-cal-event-container input::-moz-placeholder, #external-overrides #edit-cal-event-container#edit-cal-event-container textarea::-moz-placeholder {
+  color: var(--textColor) !important;
+  opacity: 0.8;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 16px;
+}
+#external-overrides #calendar-container#calendar-event-form-container input::placeholder,
+#external-overrides #calendar-container#calendar-event-form-container textarea::placeholder, #external-overrides #calendar-container#edit-cal-event-container input::placeholder,
+#external-overrides #calendar-container#edit-cal-event-container textarea::placeholder,
+#external-overrides #calendar-event-form-container#calendar-event-form-container input::placeholder,
+#external-overrides #calendar-event-form-container#calendar-event-form-container textarea::placeholder,
+#external-overrides #calendar-event-form-container#edit-cal-event-container input::placeholder,
+#external-overrides #calendar-event-form-container#edit-cal-event-container textarea::placeholder,
+#external-overrides #edit-cal-event-container#calendar-event-form-container input::placeholder,
+#external-overrides #edit-cal-event-container#calendar-event-form-container textarea::placeholder,
+#external-overrides #edit-cal-event-container#edit-cal-event-container input::placeholder,
+#external-overrides #edit-cal-event-container#edit-cal-event-container textarea::placeholder {
+  color: var(--textColor) !important;
+  opacity: 0.8;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 16px;
+}
+#external-overrides #calendar-container#calendar-event-form-container textarea, #external-overrides #calendar-container#edit-cal-event-container textarea,
+#external-overrides #calendar-event-form-container#calendar-event-form-container textarea,
+#external-overrides #calendar-event-form-container#edit-cal-event-container textarea,
+#external-overrides #edit-cal-event-container#calendar-event-form-container textarea,
+#external-overrides #edit-cal-event-container#edit-cal-event-container textarea {
+  height: 150px;
+  border: 1px solid var(--borderColor);
+  padding: 10px;
+  border-radius: 8px;
+}
+#external-overrides #calendar-container#calendar-event-form-container label, #external-overrides #calendar-container#edit-cal-event-container label,
+#external-overrides #calendar-event-form-container#calendar-event-form-container label,
+#external-overrides #calendar-event-form-container#edit-cal-event-container label,
+#external-overrides #edit-cal-event-container#calendar-event-form-container label,
+#external-overrides #edit-cal-event-container#edit-cal-event-container label {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: "Rubik";
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: var(--textColor);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.3;
+}
+#external-overrides #calendar-container#calendar-event-form-container label span, #external-overrides #calendar-container#edit-cal-event-container label span,
+#external-overrides #calendar-event-form-container#calendar-event-form-container label span,
+#external-overrides #calendar-event-form-container#edit-cal-event-container label span,
+#external-overrides #edit-cal-event-container#calendar-event-form-container label span,
+#external-overrides #edit-cal-event-container#edit-cal-event-container label span {
+  font-size: 22px;
+  margin-right: 5px;
+  color: var(--accent);
+}
+#external-overrides #calendar-container#calendar-event-form-container label span.notifications, #external-overrides #calendar-container#edit-cal-event-container label span.notifications,
+#external-overrides #calendar-event-form-container#calendar-event-form-container label span.notifications,
+#external-overrides #calendar-event-form-container#edit-cal-event-container label span.notifications,
+#external-overrides #edit-cal-event-container#calendar-event-form-container label span.notifications,
+#external-overrides #edit-cal-event-container#edit-cal-event-container label span.notifications {
+  color: var(--accent);
+}
+#external-overrides #calendar-container#calendar-event-form-container .button-group, #external-overrides #calendar-container#edit-cal-event-container .button-group,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .button-group,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .button-group,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .button-group,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .button-group {
+  margin: 0 auto;
+  justify-content: center;
+}
+#external-overrides #calendar-container#calendar-event-form-container .button-group button.green, #external-overrides #calendar-container#edit-cal-event-container .button-group button.green,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .button-group button.green,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .button-group button.green,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .button-group button.green,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .button-group button.green {
+  width: 50%;
+}
+#external-overrides #calendar-container#calendar-event-form-container .button-group button.red, #external-overrides #calendar-container#edit-cal-event-container .button-group button.red,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .button-group button.red,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .button-group button.red,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .button-group button.red,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .button-group button.red {
+  background-color: transparent;
+  width: 50%;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills, #external-overrides #calendar-container#edit-cal-event-container .action-pills,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills {
+  width: 100%;
+  margin-bottom: 15px;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills .flex, #external-overrides #calendar-container#edit-cal-event-container .action-pills .flex,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills .flex,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills .flex,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills .flex,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills .flex {
+  padding: 0;
+  background-color: transparent;
+  color: var(--textColor);
+  padding: 5px 0;
+  display: block;
+  min-width: 45%;
+  margin: 0;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills .flex.close, #external-overrides #calendar-container#edit-cal-event-container .action-pills .flex.close,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills .flex.close,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills .flex.close,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills .flex.close,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills .flex.close {
+  min-width: 45%;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills .flex p, #external-overrides #calendar-container#edit-cal-event-container .action-pills .flex p,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills .flex p,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills .flex p,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills .flex p,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills .flex p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+  opacity: 0.8;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills .flex span, #external-overrides #calendar-container#edit-cal-event-container .action-pills .flex span,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills .flex span,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills .flex span,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills .flex span,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills .flex span {
+  border-radius: 100%;
+  font-size: 20px;
+  color: var(--compColor);
+  opacity: 0.8;
+  padding: 0;
+  margin: 0;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills .flex p,
+#external-overrides #calendar-container#calendar-event-form-container .action-pills .flex span, #external-overrides #calendar-container#edit-cal-event-container .action-pills .flex p,
+#external-overrides #calendar-container#edit-cal-event-container .action-pills .flex span,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills .flex p,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills .flex span,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills .flex p,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills .flex span,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills .flex p,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills .flex span,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills .flex p,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills .flex span {
+  color: var(--textColor);
+  text-align: center;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills.swap-request, #external-overrides #calendar-container#calendar-event-form-container .action-pills.calendar-event, #external-overrides #calendar-container#edit-cal-event-container .action-pills.swap-request, #external-overrides #calendar-container#edit-cal-event-container .action-pills.calendar-event,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.swap-request,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.calendar-event,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.swap-request,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.calendar-event,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.swap-request,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.calendar-event,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.swap-request,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.calendar-event {
+  justify-content: flex-start;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills.swap-request .flex, #external-overrides #calendar-container#calendar-event-form-container .action-pills.calendar-event .flex, #external-overrides #calendar-container#edit-cal-event-container .action-pills.swap-request .flex, #external-overrides #calendar-container#edit-cal-event-container .action-pills.calendar-event .flex,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.swap-request .flex,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.calendar-event .flex,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.swap-request .flex,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.calendar-event .flex,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.swap-request .flex,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.calendar-event .flex,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.swap-request .flex,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.calendar-event .flex {
+  background-image: none;
+  background-color: transparent;
+  box-shadow: none;
+  overflow: hidden;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
+  justify-content: center;
+  padding: 0 !important;
+  align-items: center;
+  display: flex;
+  width: 100%;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills.swap-request .flex p, #external-overrides #calendar-container#calendar-event-form-container .action-pills.calendar-event .flex p, #external-overrides #calendar-container#edit-cal-event-container .action-pills.swap-request .flex p, #external-overrides #calendar-container#edit-cal-event-container .action-pills.calendar-event .flex p,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.swap-request .flex p,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.calendar-event .flex p,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.swap-request .flex p,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.calendar-event .flex p,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.swap-request .flex p,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.calendar-event .flex p,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.swap-request .flex p,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.calendar-event .flex p {
+  opacity: 0.5;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills.swap-request .flex.active, #external-overrides #calendar-container#calendar-event-form-container .action-pills.calendar-event .flex.active, #external-overrides #calendar-container#edit-cal-event-container .action-pills.swap-request .flex.active, #external-overrides #calendar-container#edit-cal-event-container .action-pills.calendar-event .flex.active,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.swap-request .flex.active,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.calendar-event .flex.active,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.swap-request .flex.active,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.calendar-event .flex.active,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.swap-request .flex.active,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.calendar-event .flex.active,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.swap-request .flex.active,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.calendar-event .flex.active {
+  width: 100%;
+  border: 0;
+  background-color: var(--compColor);
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills.swap-request .flex.active p, #external-overrides #calendar-container#calendar-event-form-container .action-pills.calendar-event .flex.active p, #external-overrides #calendar-container#edit-cal-event-container .action-pills.swap-request .flex.active p, #external-overrides #calendar-container#edit-cal-event-container .action-pills.calendar-event .flex.active p,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.swap-request .flex.active p,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.calendar-event .flex.active p,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.swap-request .flex.active p,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.calendar-event .flex.active p,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.swap-request .flex.active p,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.calendar-event .flex.active p,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.swap-request .flex.active p,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.calendar-event .flex.active p {
+  color: var(--bgColor);
+  opacity: 1;
+  font-weight: 500;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills.swap-request .flex.active span, #external-overrides #calendar-container#calendar-event-form-container .action-pills.calendar-event .flex.active span, #external-overrides #calendar-container#edit-cal-event-container .action-pills.swap-request .flex.active span, #external-overrides #calendar-container#edit-cal-event-container .action-pills.calendar-event .flex.active span,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.swap-request .flex.active span,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.calendar-event .flex.active span,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.swap-request .flex.active span,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.calendar-event .flex.active span,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.swap-request .flex.active span,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.calendar-event .flex.active span,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.swap-request .flex.active span,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.calendar-event .flex.active span {
+  display: inline;
+  color: var(--bgColor);
+  opacity: 1;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills.swap-request.swap-request .flex, #external-overrides #calendar-container#calendar-event-form-container .action-pills.calendar-event.swap-request .flex, #external-overrides #calendar-container#edit-cal-event-container .action-pills.swap-request.swap-request .flex, #external-overrides #calendar-container#edit-cal-event-container .action-pills.calendar-event.swap-request .flex,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.swap-request.swap-request .flex,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.calendar-event.swap-request .flex,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.swap-request.swap-request .flex,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.calendar-event.swap-request .flex,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.swap-request.swap-request .flex,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.calendar-event.swap-request .flex,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.swap-request.swap-request .flex,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.calendar-event.swap-request .flex {
+  max-width: 30%;
+  min-width: 0;
+}
+#external-overrides #calendar-container#calendar-event-form-container .action-pills.swap-request.swap-request .flex.active, #external-overrides #calendar-container#calendar-event-form-container .action-pills.calendar-event.swap-request .flex.active, #external-overrides #calendar-container#edit-cal-event-container .action-pills.swap-request.swap-request .flex.active, #external-overrides #calendar-container#edit-cal-event-container .action-pills.calendar-event.swap-request .flex.active,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.swap-request.swap-request .flex.active,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .action-pills.calendar-event.swap-request .flex.active,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.swap-request.swap-request .flex.active,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .action-pills.calendar-event.swap-request .flex.active,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.swap-request.swap-request .flex.active,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .action-pills.calendar-event.swap-request .flex.active,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.swap-request.swap-request .flex.active,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .action-pills.calendar-event.swap-request .flex.active {
+  width: 60%;
+  max-width: 60%;
+}
+#external-overrides #calendar-container#calendar-event-form-container#calendar-event-form-container .header, #external-overrides #calendar-container#edit-cal-event-container#calendar-event-form-container .header,
+#external-overrides #calendar-event-form-container#calendar-event-form-container#calendar-event-form-container .header,
+#external-overrides #calendar-event-form-container#edit-cal-event-container#calendar-event-form-container .header,
+#external-overrides #edit-cal-event-container#calendar-event-form-container#calendar-event-form-container .header,
+#external-overrides #edit-cal-event-container#edit-cal-event-container#calendar-event-form-container .header {
+  color: var(--textColor);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0.9;
+  text-decoration: underline;
+}
+#external-overrides #calendar-container#calendar-event-form-container#calendar-event-form-container .header span, #external-overrides #calendar-container#edit-cal-event-container#calendar-event-form-container .header span,
+#external-overrides #calendar-event-form-container#calendar-event-form-container#calendar-event-form-container .header span,
+#external-overrides #calendar-event-form-container#edit-cal-event-container#calendar-event-form-container .header span,
+#external-overrides #edit-cal-event-container#calendar-event-form-container#calendar-event-form-container .header span,
+#external-overrides #edit-cal-event-container#edit-cal-event-container#calendar-event-form-container .header span {
+  font-size: 20px;
+}
+#external-overrides #calendar-container#calendar-event-form-container#calendar-event-form-container #repeating-container label span, #external-overrides #calendar-container#edit-cal-event-container#calendar-event-form-container #repeating-container label span,
+#external-overrides #calendar-event-form-container#calendar-event-form-container#calendar-event-form-container #repeating-container label span,
+#external-overrides #calendar-event-form-container#edit-cal-event-container#calendar-event-form-container #repeating-container label span,
+#external-overrides #edit-cal-event-container#calendar-event-form-container#calendar-event-form-container #repeating-container label span,
+#external-overrides #edit-cal-event-container#edit-cal-event-container#calendar-event-form-container #repeating-container label span {
+  position: relative;
+  top: -2px;
+  margin-right: 10px;
+  color: var(--accent);
+}
+#external-overrides #calendar-container#calendar-event-form-container#calendar-event-form-container #url-notes-container, #external-overrides #calendar-container#edit-cal-event-container#calendar-event-form-container #url-notes-container,
+#external-overrides #calendar-event-form-container#calendar-event-form-container#calendar-event-form-container #url-notes-container,
+#external-overrides #calendar-event-form-container#edit-cal-event-container#calendar-event-form-container #url-notes-container,
+#external-overrides #edit-cal-event-container#calendar-event-form-container#calendar-event-form-container #url-notes-container,
+#external-overrides #edit-cal-event-container#edit-cal-event-container#calendar-event-form-container #url-notes-container {
+  border-radius: 0 0 8px 8px;
+}
+#external-overrides #calendar-container#calendar-event-form-container#calendar-event-form-container #url-notes-container input, #external-overrides #calendar-container#edit-cal-event-container#calendar-event-form-container #url-notes-container input,
+#external-overrides #calendar-event-form-container#calendar-event-form-container#calendar-event-form-container #url-notes-container input,
+#external-overrides #calendar-event-form-container#edit-cal-event-container#calendar-event-form-container #url-notes-container input,
+#external-overrides #edit-cal-event-container#calendar-event-form-container#calendar-event-form-container #url-notes-container input,
+#external-overrides #edit-cal-event-container#edit-cal-event-container#calendar-event-form-container #url-notes-container input {
+  border-bottom: 1px solid var(--borderColor);
+}
+#external-overrides #calendar-container#calendar-event-form-container#calendar-event-form-container #url-notes-container textarea, #external-overrides #calendar-container#edit-cal-event-container#calendar-event-form-container #url-notes-container textarea,
+#external-overrides #calendar-event-form-container#calendar-event-form-container#calendar-event-form-container #url-notes-container textarea,
+#external-overrides #calendar-event-form-container#edit-cal-event-container#calendar-event-form-container #url-notes-container textarea,
+#external-overrides #edit-cal-event-container#calendar-event-form-container#calendar-event-form-container #url-notes-container textarea,
+#external-overrides #edit-cal-event-container#edit-cal-event-container#calendar-event-form-container #url-notes-container textarea {
+  border: 0;
+  padding: 0;
+  height: 100px;
+  border: 1px solid var(--borderColor);
+  padding: 10px;
+}
+#external-overrides #calendar-container#calendar-event-form-container#calendar-event-form-container .rs-panel-header,
+#external-overrides #calendar-container#calendar-event-form-container#calendar-event-form-container .rs-panel-body, #external-overrides #calendar-container#edit-cal-event-container#calendar-event-form-container .rs-panel-header,
+#external-overrides #calendar-container#edit-cal-event-container#calendar-event-form-container .rs-panel-body,
+#external-overrides #calendar-event-form-container#calendar-event-form-container#calendar-event-form-container .rs-panel-header,
+#external-overrides #calendar-event-form-container#calendar-event-form-container#calendar-event-form-container .rs-panel-body,
+#external-overrides #calendar-event-form-container#edit-cal-event-container#calendar-event-form-container .rs-panel-header,
+#external-overrides #calendar-event-form-container#edit-cal-event-container#calendar-event-form-container .rs-panel-body,
+#external-overrides #edit-cal-event-container#calendar-event-form-container#calendar-event-form-container .rs-panel-header,
+#external-overrides #edit-cal-event-container#calendar-event-form-container#calendar-event-form-container .rs-panel-body,
+#external-overrides #edit-cal-event-container#edit-cal-event-container#calendar-event-form-container .rs-panel-header,
+#external-overrides #edit-cal-event-container#edit-cal-event-container#calendar-event-form-container .rs-panel-body {
+  padding: 0;
+}
+#external-overrides #calendar-container#calendar-event-form-container .from-hour, #external-overrides #calendar-container#edit-cal-event-container .from-hour,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .from-hour,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .from-hour,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .from-hour,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .from-hour {
+  margin-right: 20px;
+}
+#external-overrides #calendar-container#calendar-event-form-container .rs-input, #external-overrides #calendar-container#edit-cal-event-container .rs-input,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .rs-input,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .rs-input,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .rs-input,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .rs-input {
+  padding: 0;
+  line-height: 1;
+  margin: 0;
+}
+#external-overrides #calendar-container#calendar-event-form-container .button-group, #external-overrides #calendar-container#edit-cal-event-container .button-group,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .button-group,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .button-group,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .button-group,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .button-group {
+  background-color: var(--bgColor);
+  position: fixed;
+  bottom: 0;
+  height: 50px;
+  top: auto;
+  bottom: 35px;
+  left: 0;
+  right: 0;
+  height: 51px;
+  top: auto;
+  bottom: 35px;
+  left: 0;
+  right: 0;
+  bottom: 9px;
+  width: 100%;
+  width: 100%;
+  bottom: -3px;
+  background-color: transparent;
+}
+#external-overrides #calendar-container#calendar-event-form-container .button-group button.submit, #external-overrides #calendar-container#edit-cal-event-container .button-group button.submit,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .button-group button.submit,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .button-group button.submit,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .button-group button.submit,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .button-group button.submit {
+  margin-right: 10px;
+  min-width: 0;
+  color: white;
+}
+#external-overrides #calendar-container#calendar-event-form-container .button-group button.red, #external-overrides #calendar-container#edit-cal-event-container .button-group button.red,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .button-group button.red,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .button-group button.red,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .button-group button.red,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .button-group button.red {
+  min-width: 0;
+}
+#external-overrides #calendar-container#calendar-event-form-container .rs-panel-body, #external-overrides #calendar-container#edit-cal-event-container .rs-panel-body,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .rs-panel-body,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .rs-panel-body,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .rs-panel-body,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .rs-panel-body {
+  padding: 0;
+}
+#external-overrides #calendar-container#calendar-event-form-container .url-notes-header, #external-overrides #calendar-container#edit-cal-event-container .url-notes-header,
+#external-overrides #calendar-event-form-container#calendar-event-form-container .url-notes-header,
+#external-overrides #calendar-event-form-container#edit-cal-event-container .url-notes-header,
+#external-overrides #edit-cal-event-container#calendar-event-form-container .url-notes-header,
+#external-overrides #edit-cal-event-container#edit-cal-event-container .url-notes-header {
+  color: var(--textColor);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0.9;
+  text-decoration: underline;
+}
+#external-overrides #calendar-container #calendar-ui-container.active,
+#external-overrides #calendar-event-form-container #calendar-ui-container.active,
+#external-overrides #edit-cal-event-container #calendar-ui-container.active {
+  display: block;
+  display: none !important;
+}
+#external-overrides #calendar-container .events,
+#external-overrides #calendar-container .search-results,
+#external-overrides #calendar-event-form-container .events,
+#external-overrides #calendar-event-form-container .search-results,
+#external-overrides #edit-cal-event-container .events,
+#external-overrides #edit-cal-event-container .search-results {
+  overflow-y: hidden;
+}
+#external-overrides #calendar-container .events.search-results,
+#external-overrides #calendar-container .search-results.search-results,
+#external-overrides #calendar-event-form-container .events.search-results,
+#external-overrides #calendar-event-form-container .search-results.search-results,
+#external-overrides #edit-cal-event-container .events.search-results,
+#external-overrides #edit-cal-event-container .search-results.search-results {
+  padding-bottom: 200px;
+  max-height: 600px;
+  overflow: auto;
+}
+#external-overrides #calendar-container .events.search-results .columns .details-container p.title,
+#external-overrides #calendar-container .search-results.search-results .columns .details-container p.title,
+#external-overrides #calendar-event-form-container .events.search-results .columns .details-container p.title,
+#external-overrides #calendar-event-form-container .search-results.search-results .columns .details-container p.title,
+#external-overrides #edit-cal-event-container .events.search-results .columns .details-container p.title,
+#external-overrides #edit-cal-event-container .search-results.search-results .columns .details-container p.title {
+  max-width: 100%;
+}
+#external-overrides #calendar-container .events.search-results .columns .details-container .event-details:last-child,
+#external-overrides #calendar-container .search-results.search-results .columns .details-container .event-details:last-child,
+#external-overrides #calendar-event-form-container .events.search-results .columns .details-container .event-details:last-child,
+#external-overrides #calendar-event-form-container .search-results.search-results .columns .details-container .event-details:last-child,
+#external-overrides #edit-cal-event-container .events.search-results .columns .details-container .event-details:last-child,
+#external-overrides #edit-cal-event-container .search-results.search-results .columns .details-container .event-details:last-child {
+  margin-bottom: 0px;
+  padding-bottom: 0;
+}
+#external-overrides #calendar-container .events .columns .details-container,
+#external-overrides #calendar-container .search-results .columns .details-container,
+#external-overrides #calendar-event-form-container .events .columns .details-container,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container,
+#external-overrides #edit-cal-event-container .events .columns .details-container,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container {
+  transition: all 0.3s ease-in;
+  padding-bottom: 300px;
+  max-height: 500px;
+  overflow: auto;
+  width: 100%;
+  border-radius: 0;
+  margin-bottom: 20px;
+  position: relative;
+}
+#external-overrides #calendar-container .events .columns .details-container.search,
+#external-overrides #calendar-container .search-results .columns .details-container.search,
+#external-overrides #calendar-event-form-container .events .columns .details-container.search,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container.search,
+#external-overrides #edit-cal-event-container .events .columns .details-container.search,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container.search {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+#external-overrides #calendar-container .events .columns .details-container *,
+#external-overrides #calendar-container .search-results .columns .details-container *,
+#external-overrides #calendar-event-form-container .events .columns .details-container *,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container *,
+#external-overrides #edit-cal-event-container .events .columns .details-container *,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container * {
+  overflow: hidden;
+}
+#external-overrides #calendar-container .events .columns .details-container .from-time,
+#external-overrides #calendar-container .events .columns .details-container .to-time,
+#external-overrides #calendar-container .search-results .columns .details-container .from-time,
+#external-overrides #calendar-container .search-results .columns .details-container .to-time,
+#external-overrides #calendar-event-form-container .events .columns .details-container .from-time,
+#external-overrides #calendar-event-form-container .events .columns .details-container .to-time,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .from-time,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .to-time,
+#external-overrides #edit-cal-event-container .events .columns .details-container .from-time,
+#external-overrides #edit-cal-event-container .events .columns .details-container .to-time,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .from-time,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .to-time {
+  color: var(--textColorWhite);
+  opacity: 0.9;
+}
+#external-overrides #calendar-container .events .columns .details-container .from-time .at-symbol,
+#external-overrides #calendar-container .events .columns .details-container .to-time .at-symbol,
+#external-overrides #calendar-container .search-results .columns .details-container .from-time .at-symbol,
+#external-overrides #calendar-container .search-results .columns .details-container .to-time .at-symbol,
+#external-overrides #calendar-event-form-container .events .columns .details-container .from-time .at-symbol,
+#external-overrides #calendar-event-form-container .events .columns .details-container .to-time .at-symbol,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .from-time .at-symbol,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .to-time .at-symbol,
+#external-overrides #edit-cal-event-container .events .columns .details-container .from-time .at-symbol,
+#external-overrides #edit-cal-event-container .events .columns .details-container .to-time .at-symbol,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .from-time .at-symbol,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .to-time .at-symbol {
+  font-size: 14px;
+  position: relative;
+  top: -2px;
+}
+#external-overrides #calendar-container .events .columns .details-container p,
+#external-overrides #calendar-container .search-results .columns .details-container p,
+#external-overrides #calendar-event-form-container .events .columns .details-container p,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container p,
+#external-overrides #edit-cal-event-container .events .columns .details-container p,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container p {
+  color: var(--textColorWhite);
+  line-height: 1.3;
+  font-weight: 300;
+  margin: 0;
+}
+#external-overrides #calendar-container .events .columns .details-container p#reminder-times,
+#external-overrides #calendar-container .search-results .columns .details-container p#reminder-times,
+#external-overrides #calendar-event-form-container .events .columns .details-container p#reminder-times,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container p#reminder-times,
+#external-overrides #edit-cal-event-container .events .columns .details-container p#reminder-times,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container p#reminder-times {
+  font-style: normal;
+  opacity: 1;
+  position: relative;
+  top: -5px;
+  margin-bottom: 5px;
+}
+#external-overrides #calendar-container .events .columns .details-container p#reminder-times span,
+#external-overrides #calendar-container .search-results .columns .details-container p#reminder-times span,
+#external-overrides #calendar-event-form-container .events .columns .details-container p#reminder-times span,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container p#reminder-times span,
+#external-overrides #edit-cal-event-container .events .columns .details-container p#reminder-times span,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container p#reminder-times span {
+  text-align: center;
+  display: inline-block;
+  background-color: var(--eventDetails);
+  border-radius: 20px;
+  padding: 3px 10px;
+  margin-right: 8px;
+  color: var(--textColor);
+  font-weight: 500;
+  position: relative;
+  bottom: -7px;
+  font-size: 14px;
+}
+#external-overrides #calendar-container .events .columns .details-container p b,
+#external-overrides #calendar-container .search-results .columns .details-container p b,
+#external-overrides #calendar-event-form-container .events .columns .details-container p b,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container p b,
+#external-overrides #edit-cal-event-container .events .columns .details-container p b,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container p b {
+  font-weight: 400;
+}
+#external-overrides #calendar-container .events .columns .details-container p.title,
+#external-overrides #calendar-container .search-results .columns .details-container p.title,
+#external-overrides #calendar-event-form-container .events .columns .details-container p.title,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container p.title,
+#external-overrides #edit-cal-event-container .events .columns .details-container p.title,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container p.title {
+  font-size: 16px;
+  opacity: 1;
+  font-style: normal;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  padding: 0;
+}
+#external-overrides #calendar-container .events .columns .details-container p.title b,
+#external-overrides #calendar-container .search-results .columns .details-container p.title b,
+#external-overrides #calendar-event-form-container .events .columns .details-container p.title b,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container p.title b,
+#external-overrides #edit-cal-event-container .events .columns .details-container p.title b,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container p.title b {
+  font-style: normal;
+  line-height: 1.4;
+  font-weight: 500;
+  font-size: 16px;
+}
+#external-overrides #calendar-container .events .columns .details-container p.title .time,
+#external-overrides #calendar-container .search-results .columns .details-container p.title .time,
+#external-overrides #calendar-event-form-container .events .columns .details-container p.title .time,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container p.title .time,
+#external-overrides #edit-cal-event-container .events .columns .details-container p.title .time,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container p.title .time {
+  line-height: 1;
+  margin-left: auto;
+}
+#external-overrides #calendar-container .events .columns .details-container p.children,
+#external-overrides #calendar-container .search-results .columns .details-container p.children,
+#external-overrides #calendar-event-form-container .events .columns .details-container p.children,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container p.children,
+#external-overrides #edit-cal-event-container .events .columns .details-container p.children,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container p.children {
+  line-height: 1;
+  text-align: left;
+  padding: 3px 0;
+  padding-left: 8px;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details {
+  display: flex;
+  justify-content: space-between;
+  border-radius: 0;
+  position: relative;
+  flex-wrap: wrap;
+  align-items: center;
+  border-left: 2px solid var(--eventLeftBorder);
+  padding-left: 8px;
+  margin-bottom: 15px;
+  margin-top: 100px;
+  opacity: 0;
+  background-color: var(--eventDetails);
+  width: 100%;
+  transform: scale(0);
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details.active,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details.active,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details.active,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details.active,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details.active,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details.active {
+  opacity: 1;
+  margin-top: 0;
+  transition: all 0.6s ease-in-out;
+  transform: scale(1);
+  background-color: transparent;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details:last-child,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details:last-child,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details:last-child,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details:last-child,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details:last-child,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details:last-child {
+  margin-bottom: 150px;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details.show-buttons .text,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details.show-buttons .text,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details.show-buttons .text,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details.show-buttons .text,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details.show-buttons .text,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details.show-buttons .text {
+  max-width: 55%;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details.show-buttons .buttons,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details.show-buttons .buttons,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details.show-buttons .buttons,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details.show-buttons .buttons,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details.show-buttons .buttons,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details.show-buttons .buttons {
+  max-width: 10000px;
+  opacity: 1;
+  transition: max-width 2s ease-in-out;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details.show-buttons .buttons *,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details.show-buttons .buttons *,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details.show-buttons .buttons *,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details.show-buttons .buttons *,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details.show-buttons .buttons *,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details.show-buttons .buttons * {
+  transition: max-width 0.9s ease-in-out;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details.visitation .title,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details.visitation .title,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details.visitation .title,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details.visitation .title,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details.visitation .title,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details.visitation .title {
+  color: #00b389;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details.visitation .title b,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details.visitation .title b,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details.visitation .title b,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details.visitation .title b,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details.visitation .title b,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details.visitation .title b {
+  font-weight: bold;
+  font-size: 17px;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details #website-url-container,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details #website-url-container,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details #website-url-container,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details #website-url-container,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details #website-url-container,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details #website-url-container {
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 5px;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details #website-url-container a,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details #website-url-container a,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details #website-url-container a,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details #website-url-container a,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details #website-url-container a,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details #website-url-container a {
+  padding-left: 8px;
+  word-break: break-word;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details #directions-container,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details #directions-container,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details #directions-container,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details #directions-container,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details #directions-container,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details #directions-container {
+  margin-bottom: 5px;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details #directions-container a,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details #directions-container a,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details #directions-container a,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details #directions-container a,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details #directions-container a,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details #directions-container a {
+  word-break: break-word;
+  max-width: 70%;
+  padding-left: 8px;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .flex,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .flex,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .flex,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .flex,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .flex,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .flex {
+  width: 100%;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .flex.content,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .flex.content,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .flex.content,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .flex.content,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .flex.content,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .flex.content {
+  width: 100%;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .notes,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .notes,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .notes,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .notes,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .notes,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .notes {
+  font-style: normal;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .text,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .text,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .text,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .text,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .text,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .text {
+  padding: 0;
+  width: 100%;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .text *,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .text *,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .text *,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .text *,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .text *,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .text * {
+  text-align: left;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .text a,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .text a,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .text a,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .text a,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .text a,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .text a {
+  color: #0080FF;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  line-height: 1.1;
+  font-size: 16px;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .text a span,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .text a span,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .text a span,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .text a span,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .text a span,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .text a span {
+  font-size: 20px;
+  margin-right: 5px;
+  color: #0080FF;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .text a .website-url-icon,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .text a .website-url-icon,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .text a .website-url-icon,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .text a .website-url-icon,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .text a .website-url-icon,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .text a .website-url-icon {
+  font-size: 16px;
+  margin-left: 5px;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .buttons,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .buttons,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .buttons,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .buttons,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .buttons,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .buttons {
+  margin: 0;
+  position: absolute;
+  justify-content: flex-start;
+  width: auto;
+  display: flex;
+  right: 0;
+  align-items: stretch;
+  margin-bottom: -5px;
+  height: 95%;
+  max-width: 0;
+  transition: max-width 2s ease-in-out;
+  opacity: 0;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .buttons *,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .buttons *,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .buttons *,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .buttons *,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .buttons *,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .buttons * {
+  line-height: 1;
+  width: 70px;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-details .flex,
+#external-overrides #calendar-container .search-results .columns .details-container .event-details .flex,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-details .flex,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-details .flex,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-details .flex,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-details .flex {
+  align-items: center;
+  justify-content: space-between;
+}
+#external-overrides #calendar-container .events .columns .details-container .event-count,
+#external-overrides #calendar-container .search-results .columns .details-container .event-count,
+#external-overrides #calendar-event-form-container .events .columns .details-container .event-count,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .event-count,
+#external-overrides #edit-cal-event-container .events .columns .details-container .event-count,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .event-count {
+  position: absolute;
+  top: -10px;
+  left: -15px;
+  margin-right: auto;
+  justify-self: flex-start;
+  background-color: #00b389;
+  font-weight: 500;
+  color: var(--textColor);
+  border-radius: 100%;
+  height: 20px;
+  width: 20px;
+  margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+#external-overrides #calendar-container .events .columns .details-container .clickable-row,
+#external-overrides #calendar-container .search-results .columns .details-container .clickable-row,
+#external-overrides #calendar-event-form-container .events .columns .details-container .clickable-row,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .clickable-row,
+#external-overrides #edit-cal-event-container .events .columns .details-container .clickable-row,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .clickable-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#external-overrides #calendar-container .events .columns .details-container .clickable-row .date-button,
+#external-overrides #calendar-container .search-results .columns .details-container .clickable-row .date-button,
+#external-overrides #calendar-event-form-container .events .columns .details-container .clickable-row .date-button,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .clickable-row .date-button,
+#external-overrides #edit-cal-event-container .events .columns .details-container .clickable-row .date-button,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .clickable-row .date-button {
+  text-align: left;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: auto;
+}
+#external-overrides #calendar-container .events .columns .details-container .clickable-row span,
+#external-overrides #calendar-container .search-results .columns .details-container .clickable-row span,
+#external-overrides #calendar-event-form-container .events .columns .details-container .clickable-row span,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .clickable-row span,
+#external-overrides #edit-cal-event-container .events .columns .details-container .clickable-row span,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .clickable-row span {
+  font-size: 20px;
+  color: #143662;
+}
+#external-overrides #calendar-container .events .columns .details-container .clickable-row .eye-icon,
+#external-overrides #calendar-container .search-results .columns .details-container .clickable-row .eye-icon,
+#external-overrides #calendar-event-form-container .events .columns .details-container .clickable-row .eye-icon,
+#external-overrides #calendar-event-form-container .search-results .columns .details-container .clickable-row .eye-icon,
+#external-overrides #edit-cal-event-container .events .columns .details-container .clickable-row .eye-icon,
+#external-overrides #edit-cal-event-container .search-results .columns .details-container .clickable-row .eye-icon {
+  color: #2b3563;
+}
+#external-overrides #calendar-container .events .columns #swipe-gif,
+#external-overrides #calendar-container .search-results .columns #swipe-gif,
+#external-overrides #calendar-event-form-container .events .columns #swipe-gif,
+#external-overrides #calendar-event-form-container .search-results .columns #swipe-gif,
+#external-overrides #edit-cal-event-container .events .columns #swipe-gif,
+#external-overrides #edit-cal-event-container .search-results .columns #swipe-gif {
+  height: 55px;
+  width: 45px;
+  transform: scaleX(1);
+  position: relative;
+  top: -5px;
+}/*# sourceMappingURL=calendar.css.map */

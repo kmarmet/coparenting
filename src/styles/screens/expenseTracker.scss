@@ -1,0 +1,388 @@
+@import '../mixins';
+
+#external-overrides {
+  #add-expense-form {
+    margin: 0;
+    position: relative;
+
+    .rs-picker {
+      margin: 0;
+    }
+
+    #amount-input-wrapper {
+      margin: 0 auto;
+      width: 200px;
+      #dollar-sign {
+        font-size: 25px;
+        color: $green;
+      }
+      #amount-input {
+        border-bottom: 1px solid var(--borderColor);
+      }
+      #zero {
+        font-size: 25px;
+        opacity: 0.7;
+        color: var(--whiteOrBlack);
+
+        &.active {
+          opacity: 1;
+        }
+      }
+      .defaults {
+        text-align: center;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        span {
+          text-align: center;
+        }
+      }
+    }
+    &.form {
+      label {
+        &.caption {
+          justify-content: center;
+        }
+      }
+    }
+    #default-expense-amounts {
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      button {
+        border-radius: $borderRadius;
+        background-color: var(--lightOnDarkBg);
+        width: calc(100% / 5);
+        padding: 10px 0;
+        color: var(--whiteOrBlack);
+        &.pressed {
+          background-color:  var(--lightOnDarkBg);
+          border-radius: $borderRadius;
+          transform: scale(1.1);
+        }
+      }
+
+      .done {
+        span {
+          color: $green;
+          transform: scale(1.8);
+        }
+      }
+    }
+
+    #or {
+      width: 100%;
+      text-align: center;
+      font-style: italic;
+      color: var(--whiteOrBlack);
+      font-size: 18px;
+      opacity: 0.7;
+    }
+
+    #upload-inputs {
+      margin-bottom: 10px;
+
+      span {
+        color: var(--compColor);
+      }
+
+      #upload-button {
+        span {
+          color: white;
+        }
+      }
+    }
+  }
+
+  #expense-tracker {
+    .action-pills {
+      .flex {
+        padding: 0;
+        background-color: transparent;
+
+        span {
+          border-radius: 100%;
+          font-size: 45px;
+          color: $darkBlue;
+          padding: 0;
+          margin: 0;
+          box-shadow:
+            0 7px 8px rgba(0, 0, 0, 0.1),
+            0 0px 0px rgba(0, 0, 0, 0);
+        }
+      }
+    }
+
+    .payment-options-link {
+      color: $linkColor;
+      text-decoration: underline;
+      font-size: 17px;
+      font-weight: 500;
+
+      span {
+        font-size: 25px;
+        position: relative;
+        bottom: -5px;
+        margin-left: 8px;
+      }
+    }
+
+    .image-modal {
+      img {
+        width: 100%;
+        height: auto;
+        max-height: 100%;
+      }
+    }
+
+    #expenses-card-container {
+      margin-top: 10px;
+      background-color: transparent;
+
+      .expense {
+        border: 0;
+        border-radius: 15px;
+        @include shadow;
+        display: block;
+        background-color: var(--borderColor);
+        @include translucentBgWithBorder;
+
+        &:last-child {
+          border-bottom: 0;
+        }
+
+        .lower-details {
+          #button-group {
+            width: 100%;
+            border-top: 1px solid var(--borderColor);
+
+            button {
+              border: 0;
+              height: auto;
+              min-height: 0;
+              padding: 10px 5px;
+              font-size: 14px;
+              width: 100%;
+              box-shadow: none;
+
+              &:first-child {
+                border-radius: 0 0 0 15px;
+              }
+
+              &:nth-child(2) {
+                min-width: 150px;
+              }
+
+              &:last-child {
+                border-radius: 0 0 15px 0;
+              }
+            }
+          }
+
+          #img-container {
+            padding: 10px 0;
+            width: 100%;
+
+            img {
+              width: auto;
+              height: 100%;
+              border-radius: $borderRadius;
+              margin: 0 auto;
+            }
+          }
+
+          #img-expand-text {
+            margin-top: 10px;
+            width: 100%;
+            text-align: center;
+            font-style: italic;
+            color: var(--textColor);
+          }
+
+          .lower-details-text {
+            padding: 10px;
+
+            .flex {
+              padding: 8px 10px;
+              margin-bottom: 5px;
+              border-radius: $borderRadius;
+              align-items: center;
+
+              &.editable {
+                background-color: var(--lightOnDarkBg);
+                justify-content: flex-start;
+
+                &.due-date {
+                  background-color: $red;
+
+                  p,
+                  span {
+                    color: white;
+                    font-weight: bold;
+
+                    b {
+                      font-weight: bold;
+                    }
+                  }
+
+                  span {
+                    width: calc(100% - 100px);
+                  }
+                }
+
+                &.notes {
+                  span {
+                    width: 100%;
+                  }
+                }
+
+                span {
+                  top: -1px;
+                  margin: 0 0 0 5px;
+                  color: var(--textColor);
+                }
+              }
+            }
+          }
+
+          .group,
+          .due-date {
+            background-color: var(--lightOnDarkBg);
+            padding: 8px 10px;
+            border-radius: $borderRadius;
+            margin-bottom: 5px;
+            align-items: center;
+            line-height: 1;
+
+            .due-date-text {
+              padding-left: 0;
+            }
+
+            &.red {
+              background-color: $red;
+              p {
+                color: white;
+                font-weight: 600;
+              }
+
+              span {
+                position: relative;
+                top: 2px;
+                font-size: 20px;
+                left: -3px;
+              }
+            }
+
+            &.subtext {
+              p {
+                padding: 8px 10px;
+              }
+            }
+          }
+        }
+
+        .content {
+          .rs-panel-body {
+            padding: 0;
+          }
+
+          span {
+            margin: 0 auto;
+            display: block;
+            position: relative;
+            top: 5px;
+          }
+
+          p {
+            line-height: 1.3;
+            opacity: 0.9;
+            margin: 0;
+            font-size: 15px;
+            font-weight: 400;
+
+            b {
+              font-weight: 600;
+              font-size: 15px;
+            }
+
+            &.due-date {
+              color: $red;
+              font-weight: 500;
+
+              b {
+                font-weight: 600;
+              }
+            }
+          }
+
+          .top-details {
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            background-color: transparent;
+            transition: all 0.8s linear;
+            display: flex;
+            width: 100%;
+            align-items: center;
+
+            b {
+              font-weight: 500;
+            }
+
+            .flex {
+              width: 100%;
+              border-radius: 15px 15px 0 0;
+              background-color: $purple;
+              padding: 8px 10px;
+
+              &.amount-flex {
+                display: flex;
+                align-items: center;
+                padding: 0;
+                width: auto;
+                #dollar-sign {
+                  border-radius: 10px 0 0 10px;
+                  background-color: white;
+                  opacity: 0.9;
+                  font-size: 20px;
+                  position: relative;
+                  margin: 0 0 0 auto;
+                  color: $green;
+                  top: 0;
+                  right: -5px;
+                  z-index: 1000;
+                  padding: 1px 5px 2px;
+                }
+              }
+
+              .name {
+                line-height: 1;
+                text-transform: uppercase;
+                font-weight: 600;
+                width: 100%;
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                font-size: 20px;
+                align-items: center;
+                background-color: $purple;
+              }
+
+              .amount {
+                margin: 0;
+                color: var(--whiteOrBlack);
+                background-color: var(--borderColor);
+                font-size: 18px;
+                padding: 5px 10px;
+                position: relative;
+                border-radius: $borderRadius;
+                top: 0;
+                min-width: 50px;
+                text-align: center;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
