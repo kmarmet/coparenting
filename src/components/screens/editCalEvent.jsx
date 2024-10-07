@@ -487,7 +487,7 @@ export default function EditCalEvent() {
                     Date <span className="asterisk">*</span>
                   </label>
                   <MobileDatePicker
-                    className="m-0 w-100 event-from-date"
+                    className={`${currentUser?.settings?.theme} m-0 w-100 event-from-date`}
                     onAccept={(e) => setEventFromDate(e)}
                     defaultValue={moment(calEventToEdit.fromDate)}
                   />
@@ -502,14 +502,13 @@ export default function EditCalEvent() {
                     Date Range <span className="asterisk">*</span>
                   </label>
                   <DateRangePicker
-                    placeholder="Date range*"
                     showOneCalendar
                     showHeader={false}
                     editable={false}
                     id="event-date"
                     placement="auto"
                     character=" to "
-                    className="event-date-range m-0 w-100"
+                    className={`${currentUser?.settings?.theme} event-date-range m-0 w-100`}
                     format={'MM/dd/yyyy'}
                     onChange={(e) => {
                       let formattedDates = []
@@ -531,7 +530,7 @@ export default function EditCalEvent() {
                 <div>
                   <label>Start time</label>
                   <MobileTimePicker
-                    className={'m-0'}
+                    className={`${currentUser?.settings?.theme} event-date-range m-0 w-100`}
                     onAccept={(e) => setEventStartTime(e)}
                     minutesStep={5}
                     defaultValue={DateManager.dateIsValid(calEventToEdit.startTime) ? moment(calEventToEdit?.startTime, DateFormats.timeForDb) : null}
@@ -540,7 +539,7 @@ export default function EditCalEvent() {
                 <div>
                   <label>End time</label>
                   <MobileTimePicker
-                    className={'m-0'}
+                    className={`${currentUser?.settings?.theme} event-date-range m-0 w-100`}
                     minutesStep={5}
                     onAccept={(e) => setEventEndTime(e)}
                     defaultValue={DateManager.dateIsValid(calEventToEdit.endTime) ? moment(calEventToEdit?.endTime, DateFormats.timeForDb) : null}

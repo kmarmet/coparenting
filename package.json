@@ -65,7 +65,7 @@
     "dev": "craco start",
     "build": "rm -rf build && craco build && compress-cra",
     "removeUnusedPackages": "rm -rf node_modules && npm install",
-    "generate-splash": "pwa-asset-generator splash.png ./assets --splash-only  --background \"#121735\" -o false -r padding \"0px\"\n",
+    "generate-splash": "pwa-asset-generator splash.png ./assets --splash-only  --background \"#0a0a0a\" -o false -r padding \"0px\"\n",
     "generate-icons": "pwa-asset-generator icon.png ./assets --icon-only --background \"#394479\" padding \"0px\"\n"
   },
   "eslintConfig": {

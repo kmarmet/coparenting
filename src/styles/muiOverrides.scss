@@ -1,12 +1,13 @@
+@import "./palette";
 #external-overrides {
   // Primary calendar container
   .MuiPaper-root {
-    background-color: var(--darkBlueOrLightGrey);
+    background-color: $darkBlueDarkest;
     border-radius: 15px;
     width: 95vw !important;
     
     * {
-      color: var(--whiteOrBlack);
+      color: white;
     }
     
     .MuiDialogActions-root {
@@ -19,7 +20,7 @@
       }
       &.MuiTypography-h4 {
         font-size: 16px;
-        color: var(--whiteOrBlack);;
+        color: var(--whiteOrBlack);
         font-weight: bold;
       }
       &.MuiTypography-h3 {
@@ -351,6 +352,12 @@
     -moz-user-select: none; // Firefox
     -webkit-text-select: none; // IOS Safari
     -webkit-user-select: none; // Safari
+    
+    &.dark {
+      input {
+        background-color: $darkBlue;
+      }
+    }
 
     &::placeholder {
       font-size: 14px;

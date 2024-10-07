@@ -423,7 +423,7 @@ export default function NewCalendarEvent() {
                 </label>
                 <MobileDatePicker
                   defaultValue={moment(selectedNewEventDay)}
-                  className="m-0 w-100 event-from-date mui-input"
+                  className={`${currentUser?.settings?.theme} m-0 w-100 event-from-date mui-input`}
                   onAccept={(e) => setEventFromDate(e)}
                 />
               </div>
@@ -435,11 +435,11 @@ export default function NewCalendarEvent() {
             <div className={'flex gap'}>
               <div>
                 <label>Start time</label>
-                <MobileTimePicker minutesStep={5} className="m-0" onAccept={(e) => setEventStartTime(e)} />
+                <MobileTimePicker minutesStep={5} className={`${currentUser?.settings?.theme} m-0`} onAccept={(e) => setEventStartTime(e)} />
               </div>
               <div>
                 <label>End time</label>
-                <MobileTimePicker minutesStep={5} className="m-0" onAccept={(e) => setEventEndTime(e)} />
+                <MobileTimePicker minutesStep={5} className={`${currentUser?.settings?.theme} m-0`} onAccept={(e) => setEventEndTime(e)} />
               </div>
             </div>
           )}

@@ -1,0 +1,351 @@
+@import '../mixins';
+
+#transfer-requests-container {
+  /*#region  DARK THEME*/
+  .content {
+    .row {
+      background-color: $darkBlue;
+    }
+    button {
+      &.button {
+        &.default {
+          &#reminder-button {
+            background-color: $yellow;
+            color: black;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+  /*#endregion  DARK THEME*/
+
+  @include lengthSelection;
+
+  @media only screen and (min-width: 800px) {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-gap: 10px;
+  }
+
+  #all-transfer-requests-container {
+    .request {
+      margin: 0;
+      border: 0;
+      background-color: $darkBlue;
+      border-radius: $borderRadius;
+      width: 100%;
+      overflow: hidden;
+      transition: all 0.3s ease-in-out;
+
+      button {
+        &.delete {
+          border-radius: 0;
+          padding: 8px 0;
+        }
+      }
+
+      button {
+        width: 100%;
+        border-radius: 0;
+        padding: 10px 5px;
+        opacity: 1;
+        text-align: center;
+        font-weight: 600;
+
+        &.default {
+          border-radius: 0;
+        }
+
+        &.button {
+          &.default {
+            border-radius: 0;
+          }
+        }
+
+        span {
+          font-size: 25px;
+        }
+
+        &.approve {
+          border-radius: 0 0 0 8px;
+        }
+
+        &.reject {
+          border-radius: 0 0 8px 0;
+        }
+      }
+      a {
+        align-items: center;
+        margin-top: 5px;
+        font-weight: 400;
+        display: flex;
+
+        span {
+          margin-right: 5px;
+        }
+      }
+
+      .request-date-container {
+        display: flex;
+        align-items: center;
+        background-color: $purple;
+        border-radius: $borderRadius $borderRadius 0 0;
+        padding: 5px;
+
+        #calendar-icon {
+          font-size: 25px;
+          color: $offWhite;
+        }
+
+        #request-date {
+          text-align: center;
+          color: white;
+          font-weight: bold;
+          width: 100%;
+          line-height: 1;
+          padding-right: 15px;
+          margin: 0;
+          
+
+          span {
+            font-size: 16px;
+            display: block;
+            line-height: 1.2;
+            font-weight: 400;
+
+            &:nth-child(2),
+            &.time {
+              font-size: 12px;
+              opacity: 0.7;
+            }
+          }
+        }
+      }
+
+      .content {
+        padding-left: 10px;
+        position: relative;
+        align-items: center;
+        overflow: hidden;
+
+        .top-details {
+          
+          .reason {
+            font-weight: 300;
+            font-size: 14px;
+          }
+          
+          .reason-text {
+            -ms-word-break: break-all;
+            word-break: break-all;
+            
+            &.wrap {
+              width: 100%;
+            }
+          }
+          .row {
+            margin-top: 10px;
+            padding: 10px;
+            width: calc(100% - 10px);
+            border-radius: $borderRadius;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            display: flex;
+            align-items: center;
+            
+            &.time {
+              span {
+                top: inherit;;
+              }
+            }
+          }
+        }
+
+
+        .flex {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+
+          p {
+            font-weight: 400;
+            line-height: 1.2;
+            opacity: 0.9;
+            margin: 0;
+
+            &.label {
+              opacity: 0.87;
+            }
+
+            &.subtext {
+              opacity: 0.6;
+            }
+
+            &.unpaid {
+              color: $red;
+              opacity: 1;
+            }
+
+            &.request-date,
+            &.amount {
+              font-weight: 500;
+            }
+
+            &.time {
+              span {
+                position: relative;
+                top: 2px;
+              }
+            }
+          }
+
+          b {
+            font-weight: 500;
+            display: block;
+          }
+        }
+
+        #reminder-button {
+          margin: 10px 0;
+          span {
+            color: black;
+          }
+        }
+      }
+    }
+
+    #rejection-reason-wrapper {
+      label {
+        padding-left: 10px;
+      }
+      #rejection-reason-textarea {
+        height: 100px;
+        border: 0;
+        margin: 0 10px 10px 10px;
+        width: calc(100% - 20px);
+        display: block;
+        padding: 10px;
+        font-weight: 300;
+        outline: 0;
+        border-radius: 8px;
+
+        &::placeholder {
+          font-style: italic;
+          font-weight: 400;
+          font-size: 16px;
+          opacity: 0.7;
+        }
+      }
+    }
+  }
+
+  #request-form {
+    margin-top: 50px;
+
+    .rs-picker {
+      margin: 0;
+    }
+
+    .form {
+      @include form;
+
+      button {
+        padding: 8px 10px;
+        margin: 20px auto 0 auto;
+        display: block;
+        width: 50%;
+
+        &.rs-picker-clean {
+          display: none;
+        }
+
+        span {
+          position: relative;
+          top: 3px;
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+
+  .button-group {
+    display: flex;
+
+    button {
+      &.submit {
+        margin-right: 10px;
+        min-width: 0;
+        width: 50%;
+      }
+
+      &.close {
+        min-width: 0;
+        width: 50%;
+      }
+    }
+  }
+}
+
+// New Request
+#new-swap-request-container {
+  /*#region  DARK THEME*/
+  &.dark {
+    #duration-options {
+      &.swap-request {
+        .flex {
+          p,
+          span {
+            color: white;
+     
+          }
+          
+          &.active {
+            p,span {
+              color: $accent;
+            }
+          }
+        }
+      }
+    }
+  }
+  /*#endregion  DARK THEME*/
+
+  #duration-options {
+    padding: 0;
+    height: 45px;
+    display: flex;
+    gap: 20px;
+
+    .flex {
+      margin: 0;
+      height: 100%;
+      opacity: 0.6;
+      align-items: center;
+      justify-content: center;
+
+      p,
+      span {
+        text-align: center;
+        font-weight: 200;
+        transition: all .3s ease-in-out;
+        transform: scale(.9);
+      }
+
+      span {
+        margin-right: 5px;
+      }
+
+      &.active {
+        opacity: 1;
+
+        p,
+        span {
+          opacity: 1;
+          font-weight: bold;
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+}

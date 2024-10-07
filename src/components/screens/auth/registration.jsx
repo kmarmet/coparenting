@@ -92,7 +92,6 @@ export default function Registration() {
         return false
       }
       let parent = await DB_UserScoped.getUser(DB.tables.users, parentPhone)
-      console.log(parent)
       if (Manager.isValid(parent)) {
         let newUser = new ChildUser()
         newUser.id = Manager.getUid()
@@ -252,12 +251,15 @@ export default function Registration() {
 
   return (
     <>
+      {/* SCREEN TITLE */}
       <p className="screen-title ">Sign Up</p>
-      <div id="registration-container" className="page-container" {...handlers}>
+
+      {/* PAGE CONTAINER */}
+      <div id="registration-container" className="page-container dark" {...handlers}>
         {/* SET ACCOUNT TYPE */}
         {!accountType && (
           <>
-            <label className="mb-10 block center-text">
+            <label className="account-type-label mb-10 mt-15">
               Account Type <span className="asterisk">*</span>
             </label>
             <div className="button-group flex">
@@ -315,10 +317,11 @@ export default function Registration() {
             <label>
               Confirm Password <span className="asterisk">*</span>
             </label>
-            <input className="mb-10" type="password" onChange={(e) => setConfirmedPassword(e.target.value)} />
+            <input className="mb-20" type="password" onChange={(e) => setConfirmedPassword(e.target.value)} />
             <PasswordChecklist
               rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'notEmpty']}
               minLength={5}
+              className={'password-validation'}
               value={password}
               valueAgain={confirmedPassword}
               onChange={(isValid) => {
@@ -388,6 +391,7 @@ export default function Registration() {
             <PasswordChecklist
               rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'notEmpty']}
               minLength={5}
+              className={'password-validation'}
               value={password}
               valueAgain={confirmedPassword}
               onChange={(isValid) => {

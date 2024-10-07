@@ -59,7 +59,7 @@ import ReviseChildTransferChangeRequest from './components/forms/reviseTransferR
 
 const stateObj = {
   alertMessage: '',
-  alertType: 'error',
+  alertType: '',
   confirmMessage: '',
   contactInfoToUpdateType: 'email',
   currentScreen: ScreenNames.login,

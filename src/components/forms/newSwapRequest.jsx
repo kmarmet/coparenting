@@ -112,8 +112,8 @@ export default function NewSwapRequest() {
   return (
     <>
       <p className="screen-title ">New Swap Request</p>
-      <div id="new-swap-request-container" className="page-container">
-        <div className="action-pills swap-request">
+      <div id="new-swap-request-container" className={`${currentUser?.settings?.theme} page-container form`}>
+        <div id="duration-options" className="swap-request">
           <div className={`flex pl-0 ${swapDuration === 'single' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.single)}>
             <span className="material-icons-round">event</span>
             <p>Day</p>
@@ -135,7 +135,7 @@ export default function NewSwapRequest() {
                 Date <span className="asterisk">*</span>
               </label>
               <MobileDatePicker
-                className="mb-15 mt-0 w-100"
+                className={`${currentUser?.settings?.theme} mb-15 mt-0 w-100`}
                 onChange={(e) => {
                   setRequestRange([moment(e).format('MM/DD/YYYY')])
                 }}
@@ -148,19 +148,28 @@ export default function NewSwapRequest() {
               <label>
                 Day <span className="asterisk">*</span>
               </label>
-              <MobileDatePicker className="mb-15 mt-0 w-100" onAccept={(e) => setRequestRange([moment(e).format('MM/DD/YYYY').toString()])} />
-              <div className="flex gap mt-20">
+              <MobileDatePicker
+                className={`${currentUser?.settings?.theme} mb-15 mt-0 w-100`}
+                onAccept={(e) => setRequestRange([moment(e).format('MM/DD/YYYY').toString()])}
+              />
+              <div className="flex gap ">
                 <div>
                   <label>
                     Start time <span className="asterisk">*</span>
                   </label>
-                  <MobileTimePicker className="mb-15 mt-5 from-hour" onChange={(e) => setRequestFromHour(moment(e).format('h a'))} />
+                  <MobileTimePicker
+                    className={`${currentUser?.settings?.theme} mb-15 mt-5 from-hour`}
+                    onChange={(e) => setRequestFromHour(moment(e).format('h a'))}
+                  />
                 </div>
                 <div>
                   <label>
                     End time <span className="asterisk">*</span>
                   </label>
-                  <MobileTimePicker className="mb-15 mt-5 to-hour" onChange={(e) => setRequestToHour(moment(e).format('h a'))} />
+                  <MobileTimePicker
+                    className={`${currentUser?.settings?.theme} mb-15 mt-5 to-hour`}
+                    onChange={(e) => setRequestToHour(moment(e).format('h a'))}
+                  />
                 </div>
               </div>
             </>
@@ -229,7 +238,8 @@ export default function NewSwapRequest() {
             </>
           )}
 
-          <textarea placeholder="Reason" onChange={(e) => setRequestReason(e.target.value)}></textarea>
+          <label>Reason</label>
+          <textarea id="rejection-reason-textarea" onChange={(e) => setRequestReason(e.target.value)}></textarea>
           {requestRange.length > 0 && shareWith.length > 0 && recipientName.length > 0 && (
             <BottomButton onClick={submit} elClass={'active visible'} />
           )}

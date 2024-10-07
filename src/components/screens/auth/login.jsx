@@ -136,8 +136,13 @@ export default function Login() {
     <>
       {/* INSTALL APP MODAL */}
       <InstallAppPopup />
-      <p className="screen-title  show center-text mt-20 pt-20 mb-10 w-100 p-0">Login</p>
-      <div id="login-container" className="page-container">
+
+      {/* SCREEN TITLE */}
+      <p className="screen-title  show center-text mt-20  mb-10 w-100 p-0">Login</p>
+
+      {/* PAGE CONTAINER */}
+      <div id="login-container" className={`dark page-container form`}>
+        {/* INSTALL BUTTON */}
         <p
           id="install-button"
           className="mb-10 button mt-10"
@@ -148,51 +153,55 @@ export default function Login() {
           }}>
           Install App <span className="material-icons">install_mobile</span>
         </p>
+
+        {/* QUOTE CONTAINER */}
         <div id="quote-container">
           <span>
             <code>❝</code>
           </span>
           <p id="quote">
-            Co-parenting. It's not a competition between two homes. It's <b>a collaboration of parents doing what is best for the kids</b>
+            Co-parenting. It's not a competition between two homes. It's <b>a collaboration of parents doing what is best for the kids.</b>
           </p>
           <p id="author">~ Heather Hetchler</p>
         </div>
+
+        {/* FORM/INPUTS */}
         <div className="flex form-container">
           <div className="form w-80">
-            <input
-              className="mb-15"
-              type="number"
-              pattern="[0-9]*"
-              inputMode="numeric"
-              placeholder="Phone number"
-              onChange={(e) => setPhone(e.target.value)}
-            />
+            <label>
+              Phone Number <span className="asterisk">*</span>
+            </label>
+            <input className="mb-15" type="number" pattern="[0-9]*" inputMode="numeric" onChange={(e) => setPhone(e.target.value)} />
+            <label>
+              Password <span className="asterisk">*</span>
+            </label>
             <div className="flex inputs mb-20">
-              <input type={viewPassword ? 'text' : 'password'} placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+              <input type={viewPassword ? 'text' : 'password'} onChange={(e) => setPassword(e.target.value)} />
               {!viewPassword && (
-                <span className="material-icons-round" onClick={() => setViewPassword(true)}>
+                <span className="material-icons-round accent" onClick={() => setViewPassword(true)}>
                   visibility
                 </span>
               )}
               {viewPassword && (
-                <span className="material-icons-round" onClick={() => setViewPassword(false)}>
+                <span className="material-icons-round accent" onClick={() => setViewPassword(false)}>
                   visibility_off
                 </span>
               )}
             </div>
             <CheckboxGroup boxWidth={50} onCheck={toggleRememberMe} labels={['Remember Me']} skipNameFormatting={true} />
-            <div className="flex w-100 mb-15">
-              <button className="button default green w-60 mr-10" onClick={manualLogin}>
+            <div className="flex w-100 mb-15 gap">
+              <button className="button default green w-50" onClick={manualLogin}>
                 Login <span className="material-icons-round">lock_open</span>
               </button>
-              <button className="button default w-60 " onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
+              <button className="button default w-50 " onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
                 Register <span className="material-icons-round">person_add</span>
               </button>
             </div>
           </div>
 
+          {/* FORGOT PASSWORD BUTTON */}
           <p id="forgot-password-link" className="mt-20" onClick={() => setState({ ...state, currentScreen: ScreenNames.forgotPassword })}>
-            Forgot Password
+            Forgot Password <span className="material-icons-round">password</span>
           </p>
         </div>
       </div>

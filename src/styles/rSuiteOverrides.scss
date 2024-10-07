@@ -1,6 +1,11 @@
 @import './mixins';
 
 #external-overrides {
+  .rs-input-group {
+    input {
+      background-color: $darkBlue !important;
+    }
+  }
    .rs-input {
     margin: 0 !important;
   }
@@ -27,6 +32,16 @@
         span {
           color: white !important;
         }
+      }
+    }
+  }
+  .flatpickr-calendar {
+    .flatpickr-monthDropdown-months {
+      option {
+        &.selected {
+          background-color: $darkBlueDarkest !important;
+        }
+        background-color: $darkBlueDarkest !important;
       }
     }
   }

@@ -96,7 +96,7 @@ export default function SwapRequests() {
     <>
       <p className="screen-title ">Swap Requests</p>
       <AddNewButton onClick={() => setState({ ...state, currentScreen: ScreenNames.newSwapRequest, showMenuButton: false })} />
-      <div id="swap-requests" className="page-container">
+      <div id="swap-requests" className={`${currentUser?.settings?.theme} page-container`}>
         <>
           <p className="text-screen-intro mb-15">
             A Swap Request is a request for your child(ren) to stay with you during your coparent's scheduled time to have them.
@@ -111,9 +111,11 @@ export default function SwapRequests() {
               return (
                 <div key={index} className="request w-100 mb-15">
                   <div className="request-date-container">
-                    <span className="material-icons-round">calendar_month</span>
+                    <span className="material-icons-round" id="calendar-icon">
+                      calendar_month
+                    </span>
                     {/* REQUEST DATE */}
-                    <p className="request-date">
+                    <p id="request-date">
                       {request.duration === SwapDurations.single && DateManager.formatDate(request.fromDate)}
                       {request.duration === SwapDurations.intra && (
                         <>
@@ -127,27 +129,36 @@ export default function SwapRequests() {
                         `${DateManager.formatDate(request.fromDate)} - ${DateManager.formatDate(request.toDate)}`}
                     </p>
                   </div>
-                  <div className={`content ${request.reason.length > 20 ? 'long-text' : ''}`}>
+                  <div className={`content ${request?.reason.length > 20 ? 'long-text' : ''}`}>
                     <div className="flex top-details">
-                      <p>
-                        <b>Request Sent to&nbsp;</b>
-                      </p>
-                      <p>{request.recipientPhone}</p>
-                      {request.reason && request.reason.length > 0 && (
-                        <p className={`reason`}>
-                          <b>Reason</b>
+                      {/* SENT TO */}
+                      <div className="flex row">
+                        <p>
+                          <b>Request Sent to:&nbsp;</b>
                         </p>
+                        <p>{currentUser.coparents.filter((x) => (x.phone = request.recipientPhone))[0].name}</p>
+                      </div>
+
+                      {/* REASON */}
+                      {request?.reason && request?.reason.length > 0 && (
+                        <div className="flex row">
+                          <p className={`reason`}>
+                            <b>Reason:&nbsp;</b>
+                          </p>
+                          <p className={request?.reason.length > 50 ? 'wrap reason-text' : 'reason-text'}>{request?.reason}</p>
+                        </div>
                       )}
-                      <p className="reason-text">{request.reason}</p>
+
+                      {/* REASON BUTTON */}
                       {request.phone === currentUser.phone && (
-                        <button className="button default reminder w-60" onClick={() => sendReminder(request)}>
+                        <button id="reminder-button" className="button default reminder w-50" onClick={() => sendReminder(request)}>
                           Send Reminder <span className="material-icons-round">notification_important</span>
                         </button>
                       )}
                     </div>
                   </div>
 
-                  {request.recipientPhone == currentUser.phone && (
+                  {request?.recipientPhone === currentUser.phone && (
                     <>
                       <textarea
                         id="rejection-reason-input"
@@ -184,12 +195,6 @@ export default function SwapRequests() {
               )
             })}
         </div>
-
-        <Modal
-          elClass="swap-requests-modal"
-          onClose={() => {
-            document.querySelector('.swap-requests-modal').classList.remove('show')
-          }}></Modal>
       </div>
     </>
   )

@@ -11,7 +11,7 @@ export default function BottomCard({ onClose, children, title, subtitle = '', sh
   const isMobile = window.screen.width < 800
 
   const cardClasses = () => {
-    let classes = currentUser?.settings?.theme
+    let classes = currentUser?.settings?.theme + ' ' + className
     if (showCard) {
       classes += ' active '
     }

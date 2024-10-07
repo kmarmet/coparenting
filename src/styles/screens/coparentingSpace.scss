@@ -4,6 +4,24 @@
   #coparenting-setup-container {
     z-index: 1000000;
 
+    &.dark {
+      .help-icon {
+        color: $darkBlueMedium;
+      }
+      .text {
+        p {
+          color: $offWhite;
+        }
+      }
+      .note-container {
+        background-color: $darkBlue;
+        border-radius: $borderRadius;
+        .note {
+          color: $offWhite;
+        }
+      }
+    }
+
     /*#region rSuite */
     .rs-panel-body,
     .rs-panel-btn {
@@ -89,7 +107,6 @@
     .note {
       font-weight: 400;
       margin: 0 auto;
-      color: var(--whiteOrBlack);
       line-height: 1.5;
       padding: 10px;
       @include translucentBgWithBorder;

@@ -19,18 +19,21 @@
       padding-top: 0;
     }
 
-    &#calendar-event-form-container, &#edit-cal-event-container {
+    &#calendar-event-form-container,
+    &#edit-cal-event-container {
       &.dark {
         #url-notes-container {
           background-color: $darkBlue;
-          
-          input, textarea {
+
+          input,
+          textarea {
             background-color: $translucent;
           }
         }
       }
       .event-title {
         width: 100%;
+        background-color: $darkBlue;
 
         &.no-radius {
           border-radius: $borderRadius $borderRadius $borderRadius 0;
@@ -136,8 +139,10 @@
     // BELOW CALENDAR
     #below-calendar {
       display: block;
-      height: 50px;
       transition: height 0.3s linear;
+      #close-search-button {
+        margin-top: 10px;
+      }
 
       &.dark {
         .search-icon {
@@ -159,10 +164,11 @@
 
       .flex {
         align-items: flex-start;
-      }
-
-      .material-icons {
-        height: 40px;
+        .material-icons {
+          height: 40px;
+          position: relative;
+          top: -4px;
+        }
       }
 
       #view-holidays-button {
@@ -179,23 +185,9 @@
         font-size: 25px;
       }
 
-      #cal-info-container {
-        transform: scale(0);
-      }
-
       &.active {
         height: auto;
         transform: scale(1);
-
-        #cal-info-container {
-          transform: scale(1);
-        }
-      }
-
-      .info-icon,
-      .search-icon {
-        position: relative;
-        top: -5px;
       }
 
       .info-icon {
@@ -221,6 +213,10 @@
         @include shadow;
         @include fadeAndExpand;
         background-color: $darkBlue;
+
+        &.active {
+          margin-bottom: 15px;
+        }
 
         p:not(.small) {
           font-weight: 500;
@@ -299,7 +295,6 @@
     #search-container {
       display: flex;
       width: 100%;
-      margin-right: 20px;
       align-items: stretch;
       position: relative;
 

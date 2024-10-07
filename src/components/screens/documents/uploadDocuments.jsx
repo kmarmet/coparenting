@@ -87,24 +87,20 @@ export default function UploadDocuments() {
 
   useEffect(() => {
     Manager.toggleForModalOrNewForm('show')
-    setState({ ...state, previousScreen: ScreenNames.docsList, showBackButton: true })
+    setState({ ...state, previousScreen: ScreenNames.docsList, showBackButton: true, showMenuButton: false })
   }, [])
 
   return (
     <>
       <p className="screen-title ">Upload Documents</p>
 
-      <div id="upload-documents-container" className="page-container">
-        <p>Upload documents (.doc or .docx) , or images of documents you would like to save or share with a coparent.</p>
-        <p>
-          The uploaded document
-          <b className="pl-5 pr-5">
-            <span className="asterisk">*</span>
-            <u>MUST</u>
-            <span className="asterisk">*</span>
-          </b>
-          be of type <b>.docx</b>. If the document you are uploading is a different type is not .docx (.doc, .pdf, .txt, .etc) please click the link
-          below to convert it to .docx for free.
+      <div id="upload-documents-container" className={`${currentUser?.settings?.theme} page-container`}>
+        <p className={`${currentUser?.settings?.theme} text-screen-intro`}>
+          Upload documents (.doc or .docx) , or images of documents you would like to save or share with a coparent.
+        </p>
+        <p className={`${currentUser?.settings?.theme} text-screen-intro`}>
+          The uploaded document <span className="accent">MUST</span> be of type <b>.docx</b>. If the document you are uploading is a different type is
+          not .docx (.doc, .pdf, .txt, .etc) please click the link below to convert it to .docx for free.
         </p>
         <a href="https://convertio.co/" target="_blank" className="mb-10">
           Convert to .docx

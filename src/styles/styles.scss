@@ -337,6 +337,10 @@
     .accent {
       color: $accent;
     }
+    
+    .wrap {
+      flex-wrap: wrap;
+    }
 
     #previous-screen-button-container {
       .previous-screen-button {
@@ -352,7 +356,7 @@
         align-items: center;
         justify-content: center;
         background-color: $purple;
-        color: var(--iconColor);
+        color:white;
         opacity: 1;
         height: 40px;
         width: 40px;

@@ -1,3 +1,5 @@
+@import "../styles/palette";
+
 /*#region Margin */
 
 .m-0 {
@@ -450,9 +452,18 @@
   font-size: 17px !important;
 }
 
+.text-description {
+  &.dark {
+    color: $offWhite !important;
+    opacity: .7;
+  }
+}
+
 .text-screen-intro {
   font-size: 17px !important;
-  color: var(--whiteOrBlack) !important;
-  opacity: .9 !important;
+  
+  &.dark {
+    color: $offWhite !important;
+  }
 }
 /*#endregion Text Sizes */

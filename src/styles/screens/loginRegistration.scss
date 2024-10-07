@@ -9,9 +9,26 @@
         overflow-y: auto;
         margin-top: 0;
         padding-bottom: 300px;
-
+        
+        #password-validation {
+            margin: 10px 0 !important;
+        }
+        
+        &.dark {
+            input,
+            textarea {
+                background-color: $darkBlue;
+                color: $offWhite;
+            }
+        }
+        
         label {
             font-weight: bold;
+            &.account-type-label {
+                display: flex;
+                justify-content: center;
+                color: $offWhite;
+            }
         }
 
         .form {
@@ -36,11 +53,10 @@
             }
 
             #coparent-input-container, #parent-input-container, #child-input-container {
-                background-color: rgba(255, 255, 255, 0.05);
+                background-color: $darkBlue;
                 padding: 15px;
                 margin: 15px auto 0 auto;
                 border-radius: $borderRadius;
-                @include translucentBgWithBorder;
 
                 #coparent-label, #parent-label, #child-label {
                     color: $blue;
@@ -79,7 +95,8 @@
 
                 li {
                     span {
-                        color: var(--textColor);
+                        color: $offWhite;
+                        opacity: 1 !important;
                         line-height: 1;
                         font-size: 16px;
                         margin-bottom: 5px;
@@ -146,6 +163,31 @@
         height: 100vh;
         overflow-y: auto;
         margin-top: 0;
+        
+        // DARK
+        &.dark {
+            #forgot-password-link {
+                color: $darkBlueMedium;
+                border-bottom: 1px solid $darkBlueMedium;
+                width: 180px;
+                padding-bottom: 3px;
+            }
+            
+            #quote-container {
+                p {
+                    color: white;
+                    
+                    b {
+                        font-weight: bold;
+                    }
+                }
+                span {
+                    code {
+                        color: $darkGrey;
+                    }
+                }
+            }
+        }
 
         #install-button {
             display: flex;
@@ -159,7 +201,7 @@
             padding: 0 10px;
             height: 30px;
             z-index: 10000;
-            background-color: $accent;
+            background-color: $purple;
             color: white;
             @include glow();
             border-radius: $borderRadius;
@@ -168,9 +210,8 @@
 
         #forgot-password-link {
             font-size: 16px;
-            text-decoration: underline;
+//            text-decoration: underline;
             color: var(--compColor);
-            ;
 
             span {
                 position: relative;
@@ -219,6 +260,7 @@
                     font-size: 16px;
                     width: 100%;
                     text-align: center;
+                    opacity: .6;
                 }
             }
         }
@@ -250,7 +292,6 @@
                     align-items: center;
 
                     span {
-                        color: var(--textColor);
                         font-size: 25px;
                         margin-left: 10px;
                     }

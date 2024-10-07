@@ -73,25 +73,31 @@
 
 // SCREEN TITLE
 @mixin screenTitle {
-  font-size: 30px;
+  font-size: 42px;
   text-align: center;
   width: 100vw;
-  font-weight: 600;
   word-break: break-word;
-  transition: all 0.3s linear;
+  transition: all 0.6s linear;
   line-height: 1;
   display: flex;
   justify-content: flex-start;
   padding-left: 15px;
   align-items: center;
-  height: 60px;
-  margin-top: -100px;
+  left: -100vw;
+  position: relative;
   opacity: 0;
   color: $darkBlueMedium;
+  font-family: 'Damion', cursive;
+  font-weight: 400;
+  letter-spacing: 3px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  transform: scale(0.9);
 
   &.active {
+    transform: scale(1);
     opacity: 1;
-    margin-top: 0;
+    left: 0;
   }
 
   &.conversation {
@@ -116,6 +122,8 @@
     justify-content: center;
   }
 }
+
+// DEFAULTS
 @mixin lineItem {
   color: var(--textColor);
   display: flex;
@@ -159,286 +167,12 @@
     display: none;
   }
 }
-@mixin requests {
-  #swap-requests-container,
-  #all-transfer-requests-container {
-    @media only screen and (min-width: 800px) {
-      display: grid;
-      grid-template-columns: auto auto;
-      grid-gap: 10px;
-    }
-
-    .close {
-      margin: 20px auto 10px auto;
-      display: block;
-      opacity: 0.8;
-      padding: 0;
-      height: 30px;
-      width: 100px;
-      min-width: 0;
-      font-size: 14px;
-    }
-
-    .request {
-      margin: 0;
-      border: 0;
-      background-color: var(--borderColor);
-      border-radius: $borderRadius;
-      width: 100%;
-      overflow: hidden;
-      transition: all 0.3s ease-in-out;
-      box-shadow: var(--shadow);
-
-      &.open {
-        min-height: 200px;
-        height: auto;
-        width: 100%;
-        max-height: 100%;
-        grid-column: span 2;
-
-        #button-group {
-          align-items: center;
-        }
-
-        .content {
-          padding: 10px;
-
-          .reason,
-          .reason-text {
-            display: block;
-          }
-        }
-
-        a {
-          display: flex;
-        }
-      }
-
-      button {
-        &.delete {
-          border-radius: 0;
-          padding: 8px 0;
-        }
-      }
-
-      a {
-        display: none;
-        align-items: center;
-        margin-top: 5px;
-        font-weight: 400;
-        font-size: 14px;
-
-        span {
-          margin-right: 5px;
-        }
-      }
-
-      textarea {
-        width: 95%;
-        height: 100px;
-        border: 0;
-        margin: 10px auto;
-        display: block;
-        padding: 10px;
-        font-weight: 300;
-        outline: 0;
-        border-radius: 8px;
-        background-color: var(--lightOnDarkBg);
-
-        &::placeholder {
-          color: var(--whiteOrBlue) !important;
-          font-style: italic;
-          font-weight: 400;
-          font-size: 16px;
-          opacity: 0.7;
-        }
-      }
-
-      #button-group {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin-top: auto;
-        margin-bottom: 0;
-
-        span {
-          position: relative;
-          top: 3px;
-        }
-
-        button {
-          width: 100%;
-          border-radius: 0;
-          padding: 10px 5px;
-          opacity: 1;
-          text-align: center;
-          font-size: 14px;
-          font-weight: 600;
-
-          &.button {
-            &.default {
-              border-radius: 0;
-            }
-          }
-
-          span {
-            font-size: 25px;
-          }
-
-          &.approve {
-            border-radius: 0 0 0 8px;
-          }
-
-          &.reject {
-            border-radius: 0 0 8px 0;
-          }
-        }
-      }
-
-      .request-date-container {
-        display: flex;
-        align-items: center;
-        background-color: $purple;
-        border-radius: $borderRadius $borderRadius 0 0;
-        padding: 5px;
-
-        .request-date {
-          text-align: center;
-          color: white;
-          font-weight: bold;
-          width: 100%;
-          line-height: 1;
-          padding-right: 15px;
-          margin: 0;
-
-          span {
-            font-size: 16px;
-            display: block;
-            line-height: 1.2;
-            font-weight: 400;
-
-            &:nth-child(2),
-            &.time {
-              font-size: 12px;
-              opacity: 0.7;
-            }
-          }
-        }
-
-        span {
-          font-size: 25px;
-          color: $lightBlue;
-        }
-      }
-
-      .content {
-        padding-left: 10px;
-        position: relative;
-        align-items: center;
-        overflow: hidden;
-
-        &.long-text {
-          padding-top: 10px;
-        }
-
-        .reason {
-          font-weight: 300;
-          font-size: 14px;
-        }
-
-        .flex {
-          display: flex;
-          justify-content: space-between;
-          flex-wrap: wrap;
-
-          p {
-            font-weight: 400;
-            line-height: 1.2;
-            opacity: 0.9;
-            margin: 0;
-            width: 100%;
-
-            &.label {
-              color: var(--whiteOrBlue);
-              opacity: 0.87;
-            }
-
-            &.subtext {
-              opacity: 0.6;
-            }
-
-            &.unpaid {
-              color: $red;
-              opacity: 1;
-            }
-
-            &.request-date,
-            &.amount {
-              font-weight: 500;
-            }
-
-            &.time {
-              span {
-                position: relative;
-                top: 2px;
-              }
-            }
-          }
-
-          b {
-            font-weight: 500;
-            padding-top: 10px;
-            display: block;
-          }
-        }
-
-        .reminder {
-          font-weight: 400;
-
-          span {
-            color: $accent;
-          }
-        }
-      }
-    }
-  }
-
-  #request-form {
-    margin-top: 50px;
-
-    .rs-picker {
-      margin: 0;
-    }
-
-    .form {
-      @include form;
-
-      button {
-        padding: 8px 10px;
-        margin: 20px auto 0 auto;
-        display: block;
-        width: 50%;
-
-        &.rs-picker-clean {
-          display: none;
-        }
-
-        span {
-          position: relative;
-          top: 3px;
-          margin-left: 5px;
-        }
-      }
-    }
-  }
-}
 
 // FORM
 @mixin form {
   &.dark {
     input,
     textarea {
-      background-color: $darkBlue;
       color: $offWhite;
     }
   }
@@ -527,7 +261,6 @@
     justify-content: center;
   }
 }
-
 @mixin fontType($weight: 300) {
   font-weight: 500;
   font-size: 16px;
@@ -625,11 +358,11 @@
         p {
           opacity: 0.5;
           font-weight: 400;
-          transition: all .3s ease-in-out;
+          transition: all 0.3s ease-in-out;
         }
-        
+
         span {
-          transition: all .3s ease-in-out;
+          transition: all 0.3s ease-in-out;
         }
 
         &.active {
@@ -639,13 +372,13 @@
           p {
             transform: scale(1.1);
             color: $accent;
-            opacity: .9;
+            opacity: 0.9;
             font-weight: bold;
           }
 
           span {
             display: inline;
-            opacity: .9;
+            opacity: 0.9;
             color: $accent;
             transform: scale(1.1);
             margin-right: 5px;
@@ -670,7 +403,6 @@
 
 /*#region  BUTTONS*/
 @mixin defaultButton() {
-  background-color: var(--borderColor);
   border-radius: 20px;
   padding: 8px 20px;
   display: flex;
@@ -678,11 +410,12 @@
   justify-content: center;
   font-weight: 500;
   box-shadow: var(--shadow);
-  
+  color: white;
+
   &.dark {
     &.default {
       background-color: $darkBlue;
-      color:white;
+      color: white;
       font-weight: 300;
     }
   }
@@ -698,8 +431,12 @@
   }
 
   &.default {
-    &.white-text {
+    background-color: $darkBlue;
+
+    &.green {
+      background-color: $green;
       color: white;
+      @include buttonPress(#02a67c);
     }
 
     &#upload-button {
@@ -733,6 +470,10 @@
   &.red-text {
     color: $red;
   }
+  
+  &.no-border {
+    border-radius: 0;
+  }
 }
 
 @mixin button() {
@@ -746,11 +487,10 @@
   align-items: center;
   justify-content: center;
 
-
   span {
     font-size: 20px;
   }
-
+  
   &.default {
     color: var(--whiteOrBlack);
     opacity: 1;
@@ -872,6 +612,10 @@
     @media screen and (min-width: 780px) and (max-width: 1024px) {
       right: 20px;
     }
+  }
+  
+  &.no-border {
+    border-radius: 0;
   }
 }
 
@@ -1231,6 +975,8 @@
   align-items: center;
   background-color: transparent;
   border-radius: 8px;
+  
+
 
   .flex {
     padding: 3px 10px;
@@ -1255,39 +1001,6 @@
 
     span {
       font-size: 18px;
-      color: var(--textColor);
-    }
-  }
-
-  &.swap-request {
-    padding: 0;
-    height: 45px;
-
-    .flex {
-      margin: 0;
-      height: 100%;
-      opacity: 0.6;
-      align-items: center;
-      justify-content: center;
-
-      p,
-      span {
-        //        color: var(--textColor);
-        text-align: center;
-      }
-
-      &.active {
-        opacity: 1;
-        //        background-color: var(--compColor);
-
-        p,
-        span {
-          // color: $darkBlue;
-          color: $lightPurple;
-          opacity: 1;
-          font-weight: bold;
-        }
-      }
     }
   }
 }
@@ -1333,16 +1046,24 @@
   flex-wrap: wrap;
   margin-bottom: 10px;
   padding: 0;
-  
+
   &.dark {
     #checkbox-container {
       &.flex {
         .box {
           border: 1.5px solid $darkGrey;
-          
+
           &.active {
             background-color: $purple;
             box-shadow: 0 0 12px 0 $purple;
+            
+            + {
+              span {
+                color:white;
+                font-weight: bold;
+              }
+            }
+            
           }
         }
         span {
@@ -1360,7 +1081,7 @@
       margin-bottom: 10px;
 
       span {
-        color: var(--whiteOrBlack);
+        color: white;
         font-weight: 300;
         display: inline;
         margin-left: 6px;
@@ -1376,6 +1097,7 @@
         transition: all 0.5s ease-out;
         border-radius: 100%;
         min-width: 22px;
+        border: 1.5px solid $darkGrey;
 
         .checkmark-icon {
           display: none;
@@ -1384,6 +1106,8 @@
 
         &.active {
           border: 0;
+          background-color: $purple;
+          box-shadow: 0 0 12px 0 $purple;
 
           .checkmark-icon {
             display: block;
@@ -1426,10 +1150,7 @@
 
   #upload-input,
   .custom-file-upload {
-    border: 2px solid var(--borderColor);
-    color: var(--whiteOrBlack);
-    opacity: 0.8;
-    height: 35px;
+    color: white;
   }
 }
 @mixin popupContainers {
@@ -2279,7 +2000,7 @@
 @mixin bottomCard {
   width: 100vw;
   min-height: 30vh;
-  background-color: var(--pageContainer);
+  background-color: $darkBlueDarkest;
   position: fixed;
   z-index: -1;
   border-radius: 20px 20px 0 0;
@@ -2290,7 +2011,7 @@
   bottom: -30vh;
   transition: all 0.3s ease-in-out;
   opacity: 0;
-  
+
   #swipe-line {
     height: 4px;
     width: 100px;
@@ -2299,13 +2020,13 @@
     position: relative;
     top: -8px;
     margin: 0 auto 10px auto;
-    opacity: .8;
+    opacity: 0.8;
   }
-  
+
   #title {
     color: $lightPurple;
   }
-  
+
   &.success {
     #title {
       color: $green;
@@ -2328,7 +2049,7 @@
 
     p:not(#title) {
       background-color: $darkBlue;
-      color: $darkBlueLight;
+      color: white;
     }
   }
 
@@ -2346,7 +2067,7 @@
       border-radius: 12px;
       padding: 8px 0;
       font-weight: bold;
-      color:white;
+      color: white;
 
       &:first-child {
         margin-right: 8px;
@@ -2375,7 +2096,6 @@
 
   #title {
     font-size: 25px;
-    color: var(--whiteOrPurple);
     font-weight: bold;
     line-height: 1.2;
     display: flex;
@@ -2385,17 +2105,22 @@
       font-size: 22px;
     }
   }
-
+  
   p:not(#title) {
-    background-color: var(--lightOnDarkBg);
+    background-color: $darkBlue;
     padding: 10px;
     border-radius: 10px;
     font-weight: 600;
-    color: var(--whiteOrBlue);
+    color: $offWhite;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10000;
+    
+    &#subtitle, &.description{
+      font-weight: 400;
+      color: $offWhite;
+    }
 
     &#swipe-instructions {
       background-color: transparent;
@@ -2474,6 +2199,12 @@
   &.payment-options-card {
     max-height: 80vh;
     overflow: auto;
+    padding-bottom: 200px;
+    transition: all 0.3s ease-in-out;
+    
+    #title {
+      margin-top: 10px;
+    }
 
     p:not(#title) {
       background-color: transparent;
@@ -2711,44 +2442,44 @@
     @include hideScrollbars();
     width: 70vw;
     left: -100vh;
-    
+
     &.dark {
       background-color: $darkBg;
-      
+
       #theme-toggle {
         button {
           &.sun {
             color: $yellow;
           }
-          
+
           &.moon {
             color: $darkBlueMedium;
           }
         }
-        
+
         p {
-          color:white;
+          color: white;
         }
       }
-      
+
       .content {
         background-color: $darkBg;
-        
+
         #menu-title {
           #install-button {
             background-color: $purple;
           }
-          
+
           p {
             color: $darkBlueMedium;
           }
         }
-        
+
         #menu-items {
           .menu-item {
             p {
               color: white;
-              opacity: .7;
+              opacity: 0.7;
             }
           }
         }
@@ -3036,7 +2767,6 @@
   color: white;
   font-weight: bold !important;
   text-transform: uppercase;
-  margin-bottom: 40px;
   padding: 8px 0;
   transition: none;
   transform: scale(0);
@@ -3054,7 +2784,7 @@
     opacity: 1;
     margin-top: 0;
     transform: scale(1);
-    bottom: 0;
+    bottom: 40px;
 
     &.hide {
       opacity: 0;

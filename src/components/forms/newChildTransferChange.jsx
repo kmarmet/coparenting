@@ -14,6 +14,7 @@ import DB_UserScoped from '@userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
+import DateManager from '../../managers/dateManager'
 
 export default function NewChildTransferChangeRequest() {
   const { state, setState } = useContext(globalState)
@@ -44,7 +45,7 @@ export default function NewChildTransferChangeRequest() {
       newRequest.phone = currentUser.phone
       newRequest.createdBy = currentUser.name
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
-      newRequest.time = moment(requestTime).format(DateFormats.timeForDb)
+      newRequest.time = DateManager.dateIsValid(moment(requestTime).format(DateFormats.timeForDb)) || ''
       newRequest.location = requestLocation
       newRequest.date = moment(requestDate).format(DateFormats.dateForDb)
       newRequest.directionsLink = directionsLink
@@ -95,7 +96,7 @@ export default function NewChildTransferChangeRequest() {
   const handlePreferredLocation = (e) => {
     Manager.handleCheckboxSelection(
       e,
-      () => {
+      (e) => {
         if (e.indexOf('Set') > -1) {
           setPreferredLocation(requestLocation)
         }
@@ -114,15 +115,15 @@ export default function NewChildTransferChangeRequest() {
 
   return (
     <>
-      <p className="screen-title ">Transfer Change Request</p>
-      <div id="transfer-change-container" className="page-container">
+      <p className="screen-title ">New Request</p>
+      <div id="transfer-change-container" className={`${currentUser?.settings?.theme} form page-container`}>
         <div className="form transfer-change">
           <div className="flex gap">
             <div>
-              <label>
+              <label className="mb-5">
                 Day<span className="asterisk">*</span>
               </label>
-              <MobileDatePicker className="mb-15 mt-0 w-100" onChange={(e) => setRequestDate(e)} />
+              <MobileDatePicker className="mb-15 mt-0 w-100" onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))} />
             </div>
             <div>
               <label className="mt-0">
@@ -133,8 +134,9 @@ export default function NewChildTransferChangeRequest() {
           </div>
 
           {/*  NEW LOCATION*/}
+          <label>New Location</label>
           <Autocomplete
-            placeholder="New Location"
+            placeholder={''}
             apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
             options={{
               types: ['geocode', 'establishment'],
@@ -155,8 +157,11 @@ export default function NewChildTransferChangeRequest() {
             onCheck={handlePreferredLocation}
           />
 
+          {/* REASON */}
+          <label>Reason</label>
+          <textarea className="mb-15" onChange={(e) => setRequestReason(e.target.value)}></textarea>
+
           {/* SEND REQUEST TO */}
-          <textarea className="mb-15" placeholder="Reason" onChange={(e) => setRequestReason(e.target.value)}></textarea>
           {currentUser && (
             <div className="share-with-container">
               <label>
@@ -173,7 +178,7 @@ export default function NewChildTransferChangeRequest() {
           {currentUser && (
             <div className="share-with-container">
               <label>
-                <span className="material-icons-round">visibility</span> Who should see it?
+                <span className="material-icons-round">visibility</span> Who is allowed to see it? <span className="asterisk">*</span>
               </label>
               <CheckboxGroup
                 dataPhone={currentUser.coparents.map((x) => x.phone)}

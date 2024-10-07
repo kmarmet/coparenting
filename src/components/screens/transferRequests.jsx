@@ -90,9 +90,9 @@ export default function TransferRequests() {
 
   return (
     <>
-      <p className="screen-title ">Child Transfer Change</p>
+      <p className="screen-title ">Transfer Change</p>
       <AddNewButton canClose={true} onClick={() => setState({ ...state, currentScreen: ScreenNames.newTransferRequest })} />
-      <div id="transfer-requests-container" className="page-container">
+      <div id="transfer-requests-container" className={`${currentUser?.settings?.theme} page-container form`}>
         {!viewTransferRequestForm && (
           <>
             <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>
@@ -106,80 +106,91 @@ export default function TransferRequests() {
             {existingRequests &&
               existingRequests.length > 0 &&
               existingRequests.map((request, index) => {
+                console.log(request.location)
                 return (
                   <div key={index} data-request-id={request.id} className="request open mb-15">
                     <div className="request-date-container">
-                      <span className="material-icons-outlined">calendar_month</span>
-                      <p className="request-date">{DateManager.formatDate(request.date)}</p>
+                      <span className="material-icons-outlined" id="calendar-icon">
+                        calendar_month
+                      </span>
+                      <p id="request-date">{DateManager.formatDate(request.date)}</p>
                     </div>
                     <div className={`content ${request.reason.length > 20 ? 'long-text' : ''}`}>
                       <div className="flex top-details">
-                        {request.location && request.location.length > 0 && (
-                          <p className="label">
-                            <b>Suggested Time&nbsp;</b>
-                          </p>
-                        )}
-                        {request.time && request.time.length > 0 && (
-                          <p className="time label">
+                        {/* TIME */}
+                        {request?.time && request?.time.length > 0 && (
+                          <p className="time label row">
                             <span className="material-icons-outlined mr-5">schedule</span>
                             {request.time}
                           </p>
                         )}
+
+                        {/* LOCATION */}
                         {request.location && request.location.length > 0 && (
-                          <p>
-                            <b className="label">Suggested Location&nbsp;</b>
+                          <div className="flex row">
+                            <p>
+                              <b className="label">Suggested Location&nbsp;</b>
+                            </p>
+                            <a
+                              target="_blank"
+                              href={
+                                Manager.isIos() ? `http://maps.apple.com/?daddr=${encodeURIComponent(request.location)}` : request.directionsLink
+                              }>
+                              <span className="material-icons-round">directions</span>
+                              {request.location}
+                            </a>
+                          </div>
+                        )}
+
+                        {/* SENT TO */}
+                        <div className="flex row">
+                          <p className="label">
+                            <b>Request Sent to:&nbsp;</b>
                           </p>
-                        )}
-                        {request.location && request.location.length > 0 && (
-                          <a href={Manager.isIos() ? `http://maps.apple.com/?daddr=${encodeURIComponent(request.location)}` : request.directionsLink}>
-                            <span className="material-icons-round">directions</span>
-                            {request.location}
-                          </a>
-                        )}
-                        <p className="label">
-                          <b>Request Sent to&nbsp;</b>
-                        </p>
-                        <p>
-                          {Manager.isValid(recipients, true) &&
-                            recipients.filter((x) => x.phone === request.recipientPhone)[0].name.formatNameFirstNameOnly()}
-                        </p>
-                        {request.reason && request.reason.length > 0 && (
-                          <p className={`reason label`}>
-                            <b>Reason</b>
+                          <p className="ml-10 mr-10">
+                            {Manager.isValid(recipients, true) &&
+                              recipients.filter((x) => x.phone === request.recipientPhone)[0].name.formatNameFirstNameOnly()}
                           </p>
+                        </div>
+                        {/* REASON */}
+                        {request?.reason && request?.reason.length > 0 && (
+                          <div className="flex row">
+                            <p className={`reason `}>
+                              <b>Reason:&nbsp;</b>
+                            </p>
+                            <p className="reason-text">{request?.reason}</p>
+                          </div>
                         )}
-                        <p className="reason-text">{request.reason}</p>
                       </div>
                     </div>
-                    <textarea placeholder="Rejection reason" onChange={(e) => setRejectionReason(e.target.value)}></textarea>
-                    <>
+                    {/* REJECTION REASON WRAPPER */}
+                    <div id="rejection-reason-wrapper">
+                      <label className="mt-10">Rejection Reason</label>
+                      <textarea id="rejection-reason-textarea" onChange={(e) => setRejectionReason(e.target.value)}></textarea>
                       <div id="button-group" className="flex">
-                        <button onClick={(e) => approve(request)} className="approve button default green-text no-border">
+                        <button onClick={(e) => approve(request)} className="w-100 button default green-text no-border">
                           Approve
                         </button>
                         <button
                           onClick={(e) => {
                             setState({ ...state, transferRequestToRevise: request, currentScreen: ScreenNames.reviseTransferRequest })
                           }}
-                          className="approve button default  no-border">
+                          className="approve w-100  button default  no-border">
                           Revise
                         </button>
-                        <button data-request-id={request.id} onClick={(e) => reject(request)} className="reject button default red-text no-border">
+                        <button
+                          data-request-id={request.id}
+                          onClick={(e) => reject(request)}
+                          className="w-100 reject button default red-text no-border">
                           Reject
                         </button>
                       </div>
-                    </>
+                    </div>
                   </div>
                 )
               })}
           </div>
         )}
-
-        <Modal
-          elClass="swap-requests-modal"
-          onClose={() => {
-            document.querySelector('.swap-requests-modal').classList.remove('show')
-          }}></Modal>
       </div>
     </>
   )

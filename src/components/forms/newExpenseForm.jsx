@@ -285,7 +285,7 @@ function NewExpenseForm() {
         moment(expenseDueDate).format(DateFormats.dateForDb).length > 0 &&
         shareWith.length > 0 &&
         payer.name.length > 0 && <BottomButton elClass={'active visible'} type="submit" onClick={submitNewExpense} />}
-      <div {...handlers} id="add-expense-form" className="form page-container">
+      <div {...handlers} id="add-expense-form" className={`${currentUser?.settings?.theme} form page-container`}>
         {/* AMOUNT */}
         <label className="caption center-text">click below to add a custom amount</label>
         <div id="amount-input-wrapper" onClick={() => setShowNumpad(true)}>
@@ -343,7 +343,7 @@ function NewExpenseForm() {
             <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
               $90
             </button>
-            <button className="default-amount-button" onClick={() => setExpenseAmount('')}>
+            <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
               RESET
             </button>
             <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>

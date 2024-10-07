@@ -289,7 +289,7 @@ export default function CoparentingSpace() {
         onAccept={deleteSchedule}
       />
       <p className="screen-title">Coparenting Space</p>
-      <div id="coparenting-setup-container" className="page-container form">
+      <div id="coparenting-setup-container" className={`${currentUser?.settings?.theme} page-container form`}>
         {/* SECTIONS */}
         <div className="sections">
           {/* VISITATION SCHEDULE */}
@@ -303,10 +303,12 @@ export default function CoparentingSpace() {
               )}
             </label>
             <Accordion.Panel expanded={visitationAccordionExpanded}>
-              <Note
-                elClass={'mt-10 white-text'}
-                message={'When you choose a visitation schedule, it will be visible in the calendar for you and chosen coparents to view'}
-              />
+              <div className="note-container">
+                <Note
+                  elClass={'mt-10'}
+                  message={'When you choose a visitation schedule, it will be visible in the calendar for you and chosen coparents to view'}
+                />
+              </div>
 
               {/* SCHEDULE SELECTION ACCORDION */}
               <div className="section visitation-schedule mt-10 mb-10">
@@ -347,14 +349,16 @@ export default function CoparentingSpace() {
                       </i>
                     </p>
                   </div>
-                  <span className="material-icons help-icon center-text fs-25 yellow" onClick={() => setShowFFExample(!showFFExample)}>
+                  <span className="material-icons help-icon center-text fs-25" onClick={() => setShowFFExample(!showFFExample)}>
                     {showFFExample ? 'close' : 'help'}
                   </span>
 
-                  <Note
-                    elClass={showFFExample ? 'mb-10 ff-note active white-text' : 'mb-10 white-text ff-note'}
-                    message={`<b class="white-text">Example</b> <br/> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:<br/><span class="fs-15">You would choose: 8/14-8/16 for the first period and 8/19-8/21 for the second period.</span>`}
-                  />
+                  <div className="note-container">
+                    <Note
+                      elClass={showFFExample ? 'mb-10 ff-note active white-text' : 'mb-10 white-text ff-note'}
+                      message={`<b class="white-text">Example</b> <br/> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:<br/><span class="fs-15">You would choose: 8/14-8/16 for the first period and 8/19-8/21 for the second period.</span>`}
+                    />
+                  </div>
                   {/* 50/50 DATE PICKERS */}
                   <>
                     <label className="h-20">

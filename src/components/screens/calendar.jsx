@@ -469,7 +469,7 @@ export default function EventCalendar() {
         <div id="with-padding" className={`${currentUser?.settings?.theme}`}>
           {/* BELOW CALENDAR */}
           <div id="below-calendar" className={`${currentUser.settings.theme} mt-10 ${showInfoContainer ? 'active' : ''}`}>
-            <div className="flex">
+            <div className="flex wrap">
               <p onClick={() => setShowFilters(!showFilters)} id="filter-button">
                 Filter
                 <span id="filter-icon" className="material-icons-round ">
@@ -478,42 +478,45 @@ export default function EventCalendar() {
               </p>
 
               {/* SEARCH INPUT */}
-              <div className={'mb-5 form'} id="search-container">
-                <DebounceInput
-                  placeholder="Find an event..."
-                  minLength={2}
-                  className={`${showSearchInput ? 'active search-input' : 'search-input'}`}
-                  debounceTimeout={500}
-                  onChange={(e) => {
-                    const inputValue = e.target.value
-                    if (inputValue.length > 3) {
-                      let results = []
-                      if (Manager.isValid(allEventsFromDb, true)) {
-                        results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
-                      }
-                      if (results.length > 0) {
-                        setSearchResultsToUse(results)
-                        toggleCalendar('hide')
-                        CalendarManager.hideCalendar()
-                        Manager.scrollToTopOfPage()
+              {showSearchInput && (
+                <div className={'mb-5 flex form'} id="search-container">
+                  <DebounceInput
+                    placeholder="Find an event..."
+                    minLength={2}
+                    className={`${showSearchInput ? 'active search-input' : 'search-input'}`}
+                    debounceTimeout={500}
+                    onChange={(e) => {
+                      const inputValue = e.target.value
+                      if (inputValue.length > 3) {
+                        let results = []
+                        if (Manager.isValid(allEventsFromDb, true)) {
+                          results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+                        }
+                        if (results.length > 0) {
+                          setSearchResultsToUse(results)
+                          toggleCalendar('hide')
+                          CalendarManager.hideCalendar()
+                          Manager.scrollToTopOfPage()
+                        } else {
+                          setSearchResultsToUse([])
+                        }
                       } else {
                         setSearchResultsToUse([])
                       }
-                    } else {
+                    }}
+                  />
+                  <button
+                    id="close-search-button"
+                    onClick={() => {
                       setSearchResultsToUse([])
-                    }
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    setSearchResultsToUse([])
-                    addFlatpickrCalendar().then((r) => r)
-                    document.querySelector('.search-input').value = ''
-                    setShowSearchInput(false)
-                  }}>
-                  {showSearchInput && <span className="material-icons-round">close</span>}
-                </button>
-              </div>
+                      addFlatpickrCalendar().then((r) => r)
+                      document.querySelector('.search-input').value = ''
+                      setShowSearchInput(false)
+                    }}>
+                    <span className="material-icons-round">close</span>
+                  </button>
+                </div>
+              )}
 
               <span
                 className="material-icons search-icon blue"
@@ -535,39 +538,38 @@ export default function EventCalendar() {
               {/*<button id="today-button" onClick={goToToday} className="button default ml-10">*/}
               {/*  Today*/}
               {/*</button>*/}
-            </div>
+              <div id="cal-info-container" className={`${showInfoContainer ? 'active' : ''} w-100`}>
+                {/* LEGEND */}
+                <div id="calendar-legend" className="mb-5">
+                  <p id="legend-title" className="blue">
+                    Legend
+                  </p>
+                  <div className="column one mr-15">
+                    <span className="visitation"></span>visitation day
+                  </div>
+                  <div className="column two">
+                    <span className="dot"></span>day with event(s)
+                  </div>
+                </div>
 
-            <div id="cal-info-container" className={`${showInfoContainer ? 'active' : ''} mt-10 mb-10`}>
-              {/* LEGEND */}
-              <div id="calendar-legend" className="mb-5">
-                <p id="legend-title" className="blue">
-                  Legend
+                {/* INFO TEXT */}
+                <p id="tips-title" className="blue">
+                  Tips
                 </p>
-                <div className="column one mr-15">
-                  <span className="visitation"></span>visitation day
-                </div>
-                <div className="column two">
-                  <span className="dot"></span>day with event(s)
-                </div>
+                <p className="small mb-5 mt-0">&#8226; Swipe left/right to change the current month</p>
+                <p
+                  className="small link mt-0 mb-5"
+                  onClick={() =>
+                    setState({
+                      ...state,
+                      currentScreen: ScreenNames.settings,
+                    })
+                  }>
+                  &#8226; Daily Summary reminder times can be set in the <span>Settings</span>
+                </p>
+                <p className="small mt-5 mb-5">&#8226; Tap calendar event to edit or delete</p>
+                <p className="small mt-0">&#8226; Scroll events below to view more</p>
               </div>
-
-              {/* INFO TEXT */}
-              <p id="tips-title" className="blue">
-                Tips
-              </p>
-              <p className="small mb-5 mt-0">&#8226; Swipe left/right to change the current month</p>
-              <p
-                className="small link mt-0 mb-5"
-                onClick={() =>
-                  setState({
-                    ...state,
-                    currentScreen: ScreenNames.settings,
-                  })
-                }>
-                &#8226; Daily Summary reminder times can be set in the <span>Settings</span>
-              </p>
-              <p className="small mt-5 mb-5">&#8226; Tap calendar event to edit or delete</p>
-              <p className="small mt-0">&#8226; Scroll events below to view more</p>
             </div>
           </div>
 
