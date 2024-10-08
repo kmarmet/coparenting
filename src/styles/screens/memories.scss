@@ -2,12 +2,28 @@
 
 #external-overrides {
   #memories-container {
+    /*#region  DARK THEME*/
+    #fyi-wrapper {
+      p {
+        color: $offWhite;
+        
+        &.gallery {
+          &.center-text {
+            color: $darkGrey;
+          }
+        }
+      }
+      
+      .rs-panel-in {
+        background-color: $darkBlue;
+        padding: 10px;
+      }
+    }
+    /*#endregion  DARK THEME*/
+    
     #fyi-wrapper {
       flex-wrap: wrap;
       width: 100%;
-      p {
-        color: var(--textColor);
-      }
       .material-icons-round {
         font-size: 25px;
         justify-self: flex-end;
@@ -22,7 +38,6 @@
         flex-wrap: wrap;
       }
       .rs-panel-in {
-        background-color: var(--pageContainer);
         padding: 10px;
       }
     }

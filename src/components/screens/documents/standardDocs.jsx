@@ -3,8 +3,7 @@ import ScreenNames from '@screenNames'
 import globalState from '../../../context'
 import DB from '@db'
 import FirebaseStorage from '../../../database/firebaseStorage'
-import TableOfContentsListItem from '../../legalDocToc'
-import Modal from '@shared/modal'
+import TableOfContentsListItem from '../../tableOfContentsListItem'
 import DocManager from '@managers/docManager'
 import ImageManager from '@managers/imageManager'
 import Manager from '@manager'
@@ -24,12 +23,24 @@ export default function StandardDocs() {
   const [screenTitle, setScreenTitle] = useState('Document')
   const [showCard, setShowCard] = useState(false)
   const [searchResults, setSearchResults] = useState([])
-  const [searchResultsIndex, setSearchResultsIndex] = useState(0)
-
+  const [searchResultsIndex, setSearchResultsIndex] = useState(1)
+  const [showTocButton, setShowTocButton] = useState(true)
+  const [showSearchInput, setShowSearchInput] = useState(false)
   const scrollToHeader = (header) => {
     closeSearch()
-    const el = document.querySelector(`[data-header-name='${header.replaceAll(',', '-')}']`)
-    el.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    const firstChar = header.slice(0, 1)
+    if (firstChar === '-') {
+      header = header.replace('-', '')
+    }
+    const el = document.querySelector(`.header[data-header-name='${header}']`)
+    setTimeout(() => {
+      if (el) {
+        el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        })
+      }
+    }, 500)
   }
 
   const getDocsAndImages = async () => {
@@ -128,7 +139,7 @@ export default function StandardDocs() {
         }
       })
       setTocHeaders(newHeaderArray.sort())
-      setState({ ...state, isLoading: false })
+      setState({ ...state, isLoading: false, showBackButton: true, showMenuButton: false })
     }
   }
 
@@ -179,57 +190,90 @@ export default function StandardDocs() {
 
   const search = (searchValue) => {
     let allPars = document.querySelectorAll('#text-container p')
+    allPars.forEach((par) => {
+      par.classList.add('low-opacity')
+    })
     allPars = Array.from(allPars)
 
     if (searchValue.length === 0) {
       allPars.forEach((par) => par.classList.remove('search-highlight'))
     } else {
-      let foundElement = allPars.filter((x) => x.textContent.toLowerCase().contains(searchValue.toLowerCase()))[0]
-      let allParsNodes = document.querySelectorAll('#text-container p')
-      allParsNodes = Array.from(allParsNodes)
-      allParsNodes = allParsNodes.filter((x) => x.textContent.toLowerCase().contains(searchValue.toLowerCase()))
-      setSearchResults(allParsNodes)
-      if (foundElement) {
-        foundElement.scrollIntoView({ block: 'start', behavior: 'smooth' })
-        foundElement.classList.add('search-highlight')
+      // Allow search
+      if (searchValue.length > 3) {
+        let foundElement = allPars.filter((x) => x.textContent.toLowerCase().contains(searchValue.toLowerCase()))[0]
+        let allParsNodes = document.querySelectorAll('#text-container p')
+        allParsNodes = Array.from(allParsNodes)
+        allParsNodes = allParsNodes.filter((x) => x.textContent.toLowerCase().contains(searchValue.toLowerCase()))
+        setSearchResults(allParsNodes)
+        if (foundElement) {
+          foundElement.scrollIntoView({ block: 'start', behavior: 'smooth' })
+          foundElement.classList.add('search-highlight')
+          foundElement.classList.remove('low-opacity')
+        }
+      } else {
+        allPars.forEach((par) => par.classList.remove('search-highlight'))
       }
     }
   }
 
   const searchTraverse = (direction) => {
     let allPars = document.querySelectorAll('#text-container p')
+    let currentIndex = searchResultsIndex
 
-    // Remove highlight class by default
-    allPars = Array.from(allPars)
-    allPars.forEach((par) => par.classList.remove('search-highlight'))
+    // TOGGLE UP/DOWN ARROWS BASED ON EXISTENCE OF FOUND ELEMENT
+    const preFoundElement = direction === 'up' ? searchResults[(currentIndex -= 1)] : searchResults[(currentIndex += 1)]
+    if (preFoundElement) {
+      // Remove highlight class by default
+      allPars = Array.from(allPars)
+      allPars.forEach((par) => {
+        par.classList.remove('search-highlight')
+        par.classList.add('low-opacity')
+      })
 
-    // Update index state on nav arrow click
-    if (direction === 'up') {
-      setSearchResultsIndex((searchResultsIndex) => (searchResultsIndex -= 1))
-    } else {
-      setSearchResultsIndex((searchResultsIndex) => (searchResultsIndex += 1))
-    }
+      // Update index state on nav arrow click
+      if (direction === 'up') {
+        setSearchResultsIndex((searchResultsIndex) => (searchResultsIndex -= 1))
+      } else {
+        setSearchResultsIndex((searchResultsIndex) => (searchResultsIndex += 1))
+      }
 
-    const foundElement = searchResults[searchResultsIndex]
-    if (foundElement) {
-      // Scroll to next index / add class
       setTimeout(() => {
-        foundElement.scrollIntoView({ block: 'center', behavior: 'smooth' })
+        const foundElement = searchResults[searchResultsIndex]
+        if (foundElement) {
+          // Scroll to next index / add class
+          setTimeout(() => {
+            foundElement.scrollIntoView({ block: 'center', behavior: 'smooth' })
+          }, 200)
+          foundElement.classList.add('search-highlight')
+          foundElement.classList.remove('low-opacity')
+        }
       }, 200)
-      foundElement.classList.add('search-highlight')
     }
   }
 
   const closeSearch = () => {
-    let allHeaders = document.querySelectorAll('.header')
-    let allPars = document.querySelectorAll('#text-container p')
-    document.getElementById('search-input').value = ''
-    allPars = Array.from(allPars)
-    allPars.forEach((par) => par.classList.remove('search-highlight'))
+    if (!showTocButton) {
+      let allHeaders = document.querySelectorAll('.header')
+      let allPars = document.querySelectorAll('#text-container p')
+      document.getElementById('search-input').value = ''
+      allPars = Array.from(allPars)
+      allPars.forEach((par) => {
+        par.classList.remove('search-highlight')
+        par.classList.remove('low-opacity')
+      })
+      setSearchResults([])
+      setSearchResultsIndex(0)
+      allHeaders = Array.from(allHeaders)
+      allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
+    }
+  }
+
+  const toggleSearch = () => {
+    setShowSearchInput(!showSearchInput)
     setSearchResults([])
-    setSearchResultsIndex(0)
-    allHeaders = Array.from(allHeaders)
-    allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
+    setShowTocButton(!showTocButton)
+
+    closeSearch()
   }
 
   useEffect(() => {
@@ -250,80 +294,79 @@ export default function StandardDocs() {
 
   return (
     <>
-      <p className="screen-title" id="documents-screen-title">
+      <p className="screen-title documents" id="documents-screen-title">
         {screenTitle}
       </p>
-      <div id="toc-button" className="blue" onClick={() => setShowCard(true)}>
-        Table of Contents <span className="pl-10 fs-20 blue material-icons-round">format_list_bulleted</span>
+
+      {/* BOTTOM ACTIONS */}
+      <div className={`${currentUser?.settings?.theme} flex form`} id="bottom-actions">
+        {showTocButton && (
+          <div id="toc-button" className={`${currentUser?.settings?.theme}`} onClick={() => setShowCard(true)}>
+            Table of Contents <span className="pl-10 fs-20 material-icons-round">format_list_bulleted</span>
+          </div>
+        )}
+        <div className="flex" id="search-wrapper">
+          {/* INPUT */}
+          {showSearchInput && <DebounceInput minLength={3} id="search-input" onChange={(e) => search(e.target.value)} debounceTimeout={500} />}
+          <span id="search-button" className="material-icons-round" onClick={toggleSearch}>
+            {showTocButton ? 'search' : 'close'}
+          </span>
+        </div>
       </div>
 
-      <div id="documents-container">
-        {/* SEARCH WRAPPER */}
-        <div id="search-wrapper" className={searchResults.length > 0 ? 'w-100 form m-0' : 'form'}>
-          <label>Enter 3 letters or more to search this document</label>
-          <div className={searchResults.length > 0 ? 'flex input-and-nav onscroll' : 'flex input-and-nav'}>
-            {/* INPUT */}
-            <input
-              type="text"
-              className={searchResults.length > 0 ? '' : 'w-100 mr-0'}
-              minLength={3}
-              id="search-input"
-              onChange={(e) => search(e.target.value)}
-            />
-
-            {/* NAVIGATION */}
-            {searchResults.length > 0 && (
-              <div className="flex">
-                <span className="material-icons-round" onClick={closeSearch}>
-                  close
-                </span>
-                <span className="material-icons-round ml-5 mr-5" onClick={() => searchTraverse('up')}>
-                  arrow_upward
-                </span>
-                <span className="material-icons-round" onClick={() => searchTraverse('down')}>
-                  arrow_downward
-                </span>
-              </div>
-            )}
+      {/* SEARCH NAV */}
+      {searchResults.length > 0 && (
+        <div id="input-and-nav">
+          {/* NAVIGATION */}
+          <div className="flex">
+            <span className="material-icons-round ml-5 mr-15" onClick={() => searchTraverse('up')}>
+              arrow_upward
+            </span>
+            <span className="material-icons-round" onClick={() => searchTraverse('down')}>
+              arrow_downward
+            </span>
           </div>
         </div>
-        {/* TABLE OF CONTENTS */}
-        <BottomCard showCard={showCard} onClose={() => setShowCard(false)} className="toc" title={'Table of Contents'}>
-          <div id="table-of-contents">
-            <p id="toc-subtitle" className="caption">
-              Each item is clickable - Scroll to see more
-            </p>
-            <button
-              className="button default center mt-5"
-              onClick={() => {
-                setShowCard(false)
-                let firstHeader = document.querySelectorAll('.header')
-                firstHeader = Array.from(firstHeader)
-                firstHeader[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
-              }}>
-              Scroll to top
-            </button>
-            <div id="toc-contents">
-              {tocHeaders.length > 0 &&
-                tocHeaders.sort().map((header, index) => {
-                  return (
-                    <span key={index}>
-                      {!header.contains('___') && (
-                        <TableOfContentsListItem
-                          agreementText={document.querySelector('#text-container').textContent}
-                          text={`• ${header}`}
-                          onClick={() => {
-                            setShowCard(false)
-                            scrollToHeader(header.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, ''))
-                          }}
-                        />
-                      )}
-                    </span>
-                  )
-                })}
-            </div>
+      )}
+
+      {/* TABLE OF CONTENTS */}
+      <BottomCard showCard={showCard} onClose={() => setShowCard(false)} className="toc" title={'Table of Contents'}>
+        <div id="table-of-contents">
+          <button
+            className="button default center mt-5"
+            onClick={() => {
+              setShowCard(false)
+              let firstHeader = document.querySelectorAll('.header')
+              firstHeader = Array.from(firstHeader)
+              firstHeader[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
+            }}>
+            Scroll to top
+          </button>
+          <div id="toc-contents">
+            {tocHeaders.length > 0 &&
+              tocHeaders.sort().map((header, index) => {
+                header = header.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
+                return (
+                  <span key={index}>
+                    {!header.contains('___') && (
+                      <TableOfContentsListItem
+                        agreementText={document.querySelector('#text-container').textContent}
+                        text={`• ${header}`}
+                        dataHeader={header}
+                        onClick={() => {
+                          setShowCard(false)
+                          scrollToHeader(header)
+                        }}
+                      />
+                    )}
+                  </span>
+                )
+              })}
           </div>
-        </BottomCard>
+        </div>
+      </BottomCard>
+
+      <div id="documents-container" className={`${currentUser?.settings?.theme} page-container form`}>
         {!showModal && images.length > 0 && imageCount && imageCount > 0 && (
           <>
             <p className="gallery instructions">Click image to expand</p>

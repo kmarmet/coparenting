@@ -84,16 +84,15 @@ const DocManager = {
       returnString = returnString.toUpperCase()
     }
     if (uppercaseFirstWord) {
-      returnString = Manager.uppercaseFirstLetterInWord
+      returnString = returnString.uppercaseFirstLetterInWord()
     }
     return returnString.replaceAll("'", '')
   },
   formatDocHeaders: (text) => {
     DocManager.tocHeaders.forEach((header) => {
-      console.log(header)
       text = text.replaceAll(
         DocManager.cleanHeader(header, true),
-        `<span data-header-name="${header.replaceAll("'", '&apos;')}" className="header">${DocManager.cleanHeader(header)}</span>`
+        `<span data-header-name="${header.replaceAll("'", '&apos;')}" class="header">${DocManager.cleanHeader(header)}</span>`
       )
     })
     return text

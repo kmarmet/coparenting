@@ -34,7 +34,6 @@ const NewCoparentForm = () => {
       newCoparent.phone = phoneNumber
       newCoparent.name = name
       newCoparent.parentType = parentType
-
       // Has coparents already
       if (existingCoparents.length > 0) {
         await set(child(dbRef, `users/${currentUser.phone}/coparents`), [...existingCoparents, newCoparent])
@@ -68,7 +67,7 @@ const NewCoparentForm = () => {
   return (
     <>
       <p className="screen-title ">Add Coparent</p>
-      <div id="new-coparent-container" className="page-container">
+      <div id="new-coparent-container" className={`${currentUser?.settings?.theme} page-container form`}>
         <div className="form new-coparent-form">
           <label>
             Name <span className="asterisk">*</span>

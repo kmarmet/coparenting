@@ -97,7 +97,7 @@ function NewMemoryForm() {
   return (
     <>
       <p className="screen-title ">New Memory</p>
-      <div id="new-memory-form-container" className="page-container">
+      <div id="new-memory-form-container" className={`${currentUser?.settings?.theme} page-container form`}>
         <div className="form">
           {currentUser && (
             <div className="share-with-container mb-20">

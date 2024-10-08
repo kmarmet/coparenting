@@ -83,7 +83,7 @@ const NewChildForm = () => {
   }, [])
 
   return (
-    <div {...handlers} id="new-child-container" className="page-container">
+    <div {...handlers} id="new-child-container" className={`${currentUser?.settings?.theme} page-container form`}>
       <div className="form new-child-form">
         <p className="screen-title pl-0">Add Child</p>
         {/* NAME */}

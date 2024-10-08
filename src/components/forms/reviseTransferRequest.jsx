@@ -74,7 +74,7 @@ export default function ReviseChildTransferChangeRequest() {
   return (
     <>
       <p className="screen-title ">Revise Change Request</p>
-      <div id="transfer-change-container" className="page-container">
+      <div id="transfer-change-container" className={`${currentUser?.settings?.theme} page-container form`}>
         <div className="form transfer-change">
           <div className="flex gap">
             <div>

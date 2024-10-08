@@ -21,7 +21,7 @@ export default function Documents() {
         onClose={() => setState({ ...state, currentScreen: ScreenNames.uploadDocuments })}
         onClick={() => setState({ ...state, currentScreen: ScreenNames.uploadDocuments })}
       />
-      <div id="documents-container" className="page-container">
+      <div id="documents-container" className={`${currentUser?.settings?.theme} page-container form`}>
         <div className="sections">
           <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.docsList })}>
             <span className="material-icons-round accent">description</span>Non-Legal

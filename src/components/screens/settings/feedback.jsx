@@ -41,7 +41,7 @@ function Feedback() {
   return (
     <>
       <p className="screen-title ">App Feedback</p>
-      <div {...handlers} id="feature-request-container" className="page-container">
+      <div {...handlers} id="feature-request-container" className={`${currentUser?.settings?.theme} page-container form`}>
         <div className="form">
           <label>
             Your Feedback <span className="asterisk">*</span>

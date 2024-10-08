@@ -20,7 +20,6 @@ export default function DocsList() {
 
   const getDocs = async () => {
     const allDocs = await DocumentsManager.getAllDocs(currentUser)
-    console.log(allDocs)
     setDocs(allDocs)
   }
 
@@ -55,8 +54,8 @@ export default function DocsList() {
         onClose={() => setState({ ...state, currentScreen: ScreenNames.uploadDocuments })}
         onClick={() => setState({ ...state, currentScreen: ScreenNames.uploadDocuments })}
       />
-      <div id="doc-selection-container" className="page-container">
-        {docs.length === 0 && <p className="caption">there are currently no documents</p>}
+      <div id="doc-selection-container" className={`${currentUser?.settings?.theme} page-container`}>
+        {docs.length === 0 && <p className={`${currentUser?.settings?.theme} caption`}>there are currently no documents</p>}
         {!Manager.isValid(selectedDoc, false, true) && (
           <div className="sections">
             {Manager.isValid(docs, true) &&

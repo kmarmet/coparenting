@@ -32,7 +32,7 @@ export default function UploadLegalDoc() {
   }, [])
 
   return (
-    <div id="upload-legal-doc-container" className="page-container">
+    <div id="upload-legal-doc-container" className={`${currentUser?.settings?.theme} page-container form`}>
       <p>
         Upload documents (.pdf, .doc, .docx, etc.) , or images of dissolution/divorce/separation agreement documents you would like to save or share
         with a coparent.

@@ -140,8 +140,8 @@ export default function Memories() {
       <AddNewButton icon="add_photo_alternate" onClick={() => setState({ ...state, currentScreen: ScreenNames.newMemory })} />
 
       {/* PAGE CONTAINER */}
-      <div id="memories-container" className="page-container">
-        <p id="happy-subtitle" className="mb-10 text-screen-intro">
+      <div id="memories-container" className={`${currentUser?.settings?.theme} page-container`}>
+        <p id="happy-subtitle" className={`${currentUser?.settings?.theme} mb-10 text-screen-intro`}>
           Upload photos of memories that are too good NOT to share <span className="material-icons heart">favorite</span>
         </p>
 

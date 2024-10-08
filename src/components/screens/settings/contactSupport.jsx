@@ -19,7 +19,7 @@ function ContactSupport() {
 
   const submit = () => {
     if (supportNotes.length === 0) {
-      setState({ ...state, alertMessage: 'Please enter a description of what we can help you with', showAlert: true })
+      setState({ ...state, alertType: 'error', alertMessage: 'Please enter a description of what we can help you with', showAlert: true })
       return false
     }
     EmailManager.sendEmail(currentUser.email, EmailManager.supportEmail, supportNotes)
@@ -37,7 +37,7 @@ function ContactSupport() {
   return (
     <>
       <p className="screen-title ">Contact Support</p>
-      <div {...handlers} id="support-container" className="page-container">
+      <div {...handlers} id="support-container" className={`${currentUser?.settings?.theme} page-container form`}>
         <div className="form">
           <label>
             What can we help you with? <span className="asterisk">*</span>

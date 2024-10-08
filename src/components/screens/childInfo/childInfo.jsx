@@ -60,7 +60,7 @@ export default function ChildInfo() {
       <AddNewButton onClick={() => setState({ ...state, currentScreen: ScreenNames.newChild, showMenuButton: false })} />
 
       {/* PAGE CONTAINER */}
-      <div id="child-info-container" className="page-container">
+      <div id="child-info-container" className={`${currentUser?.settings?.theme} page-container form`}>
         {/* PROFILE PICS */}
         <div id="children-container" className="mb-10">
           <>

@@ -2,8 +2,19 @@
 
 #external-overrides {
   #settings-container {
+    /*#region  DARK THEME*/
+      &.dark {
+        .rs-panel-body-collapse {
+          background-color: $darkBlue;
+        }
+        &.form {
+          input {
+            background: $translucentLightest
+          }
+        }
+      }
+    /*#endregion  DARK THEME*/
     .rs-panel-body-collapse {
-      background-color: rgba(38, 38, 38, .1);
       padding: 10px;
       border-radius: 0 0 $borderRadius $borderRadius;
       border-top: 0;

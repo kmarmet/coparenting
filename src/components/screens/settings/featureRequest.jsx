@@ -44,7 +44,7 @@ function FeatureRequest() {
   return (
     <>
       <p className="screen-title ">Feature Request</p>
-      <div {...handlers} id="feature-request-container" className="page-container">
+      <div {...handlers} id="feature-request-container" className={`${currentUser?.settings?.theme} page-container form`}>
         <div className="form">
           <label>
             Name of the feature <span className="asterisk">*</span>

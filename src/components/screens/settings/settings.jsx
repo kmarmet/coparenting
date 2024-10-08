@@ -84,14 +84,14 @@ export default function Settings() {
 
   useEffect(() => {
     Manager.toggleForModalOrNewForm('show')
-    setState({ ...state, showBackButton: false })
+    setState({ ...state, showBackButton: false, showMenuButton: true })
     setMenuItemsList(AllMenuItems.map((x) => x.Name.spaceBetweenWords().uppercaseFirstLetterOfAllWords()))
   }, [])
 
   return (
     <>
       <p className="screen-title ">Settings</p>
-      <div id="settings-container" className="page-container">
+      <div id="settings-container" className={`${currentUser?.settings?.theme} page-container form`}>
         {/* CALENDAR SETTINGS */}
         <div className="calendar-settings mb-10 form">
           <Accordion className=" w-100">
@@ -116,7 +116,7 @@ export default function Settings() {
 
               {currentUser && (
                 <div className="mt-30">
-                  <button onClick={submitCalendarSettings} className="buttonw white-text default submit green center mb-10">
+                  <button onClick={submitCalendarSettings} className="button default submit green center mb-10">
                     Update
                   </button>
                 </div>
@@ -134,7 +134,7 @@ export default function Settings() {
             <Accordion.Panel expanded={shortcutAccIsOpen} className={'pl-0 pr-0'}>
               <img className="shortcuts-example center mt-5" src={require('img/shortcutsExample.png')} alt="" />
               <p className="center-text mt-5 caption">shortcuts</p>
-              <p className="mt-10 mb-10 white-text">
+              <p className="mt-10 mb-10 ">
                 Select the shortcuts (only four) you would like to use in the menu (example above). Select them in the order you would like them
                 displayed. <br /> <br /> The middle button is the menu button and cannot be modified.
               </p>

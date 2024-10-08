@@ -84,8 +84,10 @@ function ChatRecovery() {
       return false
     } else {
       let messages = scopedChat.messages
+      messages = Manager.convertToArray(messages)
 
       if (messageType === 'Bookmarked') {
+        console.log(messages)
         messages = messages.filter((x) => x.saved === true)
       }
 
@@ -171,7 +173,7 @@ function ChatRecovery() {
       {!viewConvo && (
         <>
           <p className="screen-title ">Chat Recovery</p>
-          <div {...handlers} id="chat-request-container" className="page-container">
+          <div {...handlers} id="chat-request-container" className={`${currentUser?.settings?.theme} page-container form`}>
             <div className="form">
               {/* PHONE */}
               <label>
@@ -217,10 +219,10 @@ function ChatRecovery() {
               <CheckboxGroup defaultLabel={'All'} boxWidth={50} onCheck={handleMessageTypeSelection} labels={['Bookmarked Only', 'All']} />
 
               {/* DISCLAIMER/LEGAL TEXT */}
-              <p className="mb-10 white-text">
+              <p className="mb-10">
                 Please provide your signature below to provide self-identification, in the event that the messages are used for legal purposes.
               </p>
-              <p className="mb-20 white-text">
+              <p className="mb-20">
                 <i>
                   I, {currentUser.name}, agree and understand that by signing the Electronic Signature Acknowledgment and Consent Form, that all
                   electronic signatures are the legal equivalent of my manual/handwritten signature and I consent to be legally bound to this
@@ -247,7 +249,7 @@ function ChatRecovery() {
       )}
       <div className="conversation-container">
         <p className="screen-title active">Conversation</p>
-        <div {...handlers} id="chat-request-container" className="page-container active">
+        <div {...handlers} id="chat-request-container" className={`${currentUser?.settings?.theme} page-container active form`}>
           {/* CONVO IMAGE */}
           <label>Below is an image of the entire conversation</label>
           <div id="image-wrapper" className="mt-5"></div>

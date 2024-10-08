@@ -22,7 +22,7 @@ export default function UpdateContactInfo() {
     },
   })
 
-  const submit = () => {
+  const submit = async () => {
     if (contactInfoToUpdateType === 'phone' && Manager.validation([phone]) > 0) {
       setState({
         ...state,
@@ -39,7 +39,7 @@ export default function UpdateContactInfo() {
       })
       return false
     }
-    DB.updatePhoneOrEmail(currentUser, contactInfoToUpdateType, contactInfoToUpdateType === 'phone' ? phone : email)
+    await DB.updatePhoneOrEmail(currentUser, contactInfoToUpdateType, contactInfoToUpdateType === 'phone' ? phone : email)
     setState({ ...state, showAlert: true })
     setTimeout(() => {
       setState({ ...state, currentScreen: ScreenNames.settings })
@@ -54,7 +54,7 @@ export default function UpdateContactInfo() {
   return (
     <>
       <p className="screen-title ">Update Your Info</p>
-      <div {...handlers} id="update-contact-info-container" className="page-container active">
+      <div {...handlers} id="update-contact-info-container" className={`${currentUser?.settings?.theme} page-container form`}>
         <div className="form">
           {contactInfoToUpdateType === 'email' && (
             <>

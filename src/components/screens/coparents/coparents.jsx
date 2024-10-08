@@ -129,7 +129,7 @@ export default function Coparents() {
       </BottomCard>
 
       {/* COPARENTS CONTAINER */}
-      <div id="coparents-container" className="page-container">
+      <div id="coparents-container" className={`${currentUser?.settings?.theme} page-container form`}>
         {/* COPARENT ICONS CONTAINER */}
         <div id="coparent-container">
           {selectedCoparent &&

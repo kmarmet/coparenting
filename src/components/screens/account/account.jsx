@@ -8,14 +8,14 @@ export default function Account() {
   const { currentUser } = state
 
   useEffect(() => {
-    setState({ ...state, currentScreen: ScreenNames.account })
+    setState({ ...state, currentScreen: ScreenNames.account, showMenuButton: true, showBackButton: false })
     Manager.toggleForModalOrNewForm('show')
   }, [])
 
   return (
     <>
       <p className="screen-title ">Account</p>
-      <div id="account-container" className="page-container">
+      <div id="account-container" className={`${currentUser?.settings?.theme} page-container`}>
         <p id="user-name">
           Hello {currentUser?.name?.formatNameFirstNameOnly()}! <span className="material-icons-outlined">sentiment_very_satisfied</span>
         </p>

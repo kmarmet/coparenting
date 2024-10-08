@@ -39,6 +39,7 @@
             .section {
                 @include lineItem;
                 justify-content: flex-start;
+                color: $darkBlueMedium;
 
                 &.notifications {
                     flex-wrap: nowrap;
