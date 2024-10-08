@@ -14,17 +14,20 @@
     .edit-cal {
       padding: 0;
     }
-     &#calendar-event-form-container, &#edit-cal-event-container {
-      /*#region  LIGHT THEME*/
+
+    /*#region  LIGHT THEME*/
+    &#calendar-event-form-container,
+    &#edit-cal-event-container {
       &.light {
         .requirement-text {
           color: $lightBlackLight;
         }
-        
+
         .action-pills {
           &.calendar-event {
             .flex {
-              p, span {
+              p,
+              span {
                 color: $lightBlackLight;
               }
             }
@@ -35,9 +38,9 @@
         #event-title-input {
           background-color: white;
         }
-        
+
         .share-with-container {
-          .rs-anim-collapse{
+          .rs-anim-collapse {
             background-color: transparent;
             color: $lightBlackLight;
           }
@@ -47,30 +50,80 @@
           background-color: $lightGrey;
         }
       }
-      /*#endregion  LIGHT THEME*/
     }
-
     &#calendar-container {
       padding-top: 0;
 
-      /*#region  LIGHT THEME*/
       &.light {
+        .events, .search-results {
+          &.search-results {
+            .columns {
+              margin-bottom: 10px;
+              .details-container {
+                .event-details {
+                    .flex {
+                      &.parent {
+                        .content {
+                          background-color: $lightGrey;
+                          padding: 8px;
+                        }
+                      }
+                    }
+                  }
+                }
+            }
+          }
+          .columns {
+            .details-container {
+              .event-details {
+                .title {
+                  color: $purple;
+                }
+                
+                .event-content {
+                  background-color: $lightGrey;
+                  padding-top: 8px;
+
+                  .event-row {
+                    p {
+                      opacity: 1;
+                      color: $lightBlackLight;
+                    }
+
+                    .child-name {
+                      background-color: white;
+                    }
+
+                    #reminder-times {
+                      span {
+                        background-color: white;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
         #date-container {
           .fromDate,
-          .toDate {
+          .toDate,
+          .from-time,
+          .to-time {
             color: $lightBlackLight;
           }
         }
       }
-      /*#endregion  LIGHT THEME*/
     }
+    /*#endregion  LIGHT THEME*/
 
+    /*#region  DARK THEME*/
     &#calendar-event-form-container,
     &#edit-cal-event-container {
       &.dark {
         #url-notes-container {
           background-color: $darkBlue;
-
+          
           input,
           textarea {
             background-color: $translucent;
@@ -80,38 +133,39 @@
       #event-title-input {
         width: 100%;
         background-color: $darkBlue;
-
+        
         &.no-radius {
           border-radius: $borderRadius $borderRadius $borderRadius 0;
         }
       }
     }
+    /*#endregion  DARK THEME*/
 
     // Content Container
     #with-padding {
       padding-left: 15px;
       padding-right: 15px;
 
-      // DARK
+      /*#region  DARK THEME*/
       &.dark {
         .events {
           .columns {
             .details-container {
               p {
                 color: white;
-
+                
                 &.title {
                   color: $lightPurple;
                 }
               }
             }
           }
-
+          
           .event-details {
             &.visitation {
               .title {
                 color: $green;
-
+                
                 b {
                   color: $green;
                 }
@@ -141,6 +195,7 @@
           }
         }
       }
+      /*#endregion  DARK THEME*/
     }
 
     #filter-button {
@@ -197,8 +252,11 @@
         #cal-info-container {
           background-color: $lightGrey;
           box-shadow: none;
-
+          p, .small {
+            opacity: 1;
+          }
           #calendar-legend {
+
             .column {
               color: $lightBlackLight;
               &.two {
@@ -210,7 +268,7 @@
         #filter-button {
           background-color: $lightGrey;
           color: $darkBlueMedium;
-          opacity: 0.8;
+          opacity: 1;
 
           span {
             color: $accent;
@@ -303,7 +361,6 @@
         .small {
           font-size: 15px;
           margin-left: 15px;
-          color: white;
           opacity: 0.9;
 
           span {
@@ -321,7 +378,6 @@
 
           .column {
             font-weight: 400;
-            color: white;
             opacity: 0.9;
             margin-left: 10px;
 
@@ -522,7 +578,6 @@
           }
           .from-time,
           .to-time {
-            color: var(--whiteOrBlack);
             opacity: 0.9;
 
             .at-symbol {
@@ -532,14 +587,6 @@
             }
           }
 
-          p,
-          span:not(.material-icons, .material-icons-round) {
-            color: var(--whiteOrBlack);
-
-            b {
-              font-weight: 400;
-            }
-          }
           .event-details {
             display: flex;
             justify-content: space-between;
@@ -636,10 +683,6 @@
               width: 100%;
               border-radius: 10px;
 
-              &.light {
-                background-color: transparent;
-              }
-
               &.dark {
                 background-color: $darkBlue;
 
@@ -700,7 +743,6 @@
                 .child-name {
                   text-align: center;
                   display: inline-block;
-                  background-color: var(--borderColor);
                   border-radius: 20px;
                   padding: 3px 10px;
                   margin-right: 0;
@@ -899,8 +941,6 @@
             }
 
             .event-details {
-              background-color: var(--borderColor);
-              padding: 10px;
               width: 100%;
               box-shadow: none;
               &:last-child {

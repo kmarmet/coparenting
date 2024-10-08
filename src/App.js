@@ -75,7 +75,7 @@ const stateObj = {
   selectedNewEventDay: null,
   showAlert: false,
   showConfirm: false,
-  showMenuButton: true,
+  showMenuButton: false,
   showShortcutMenu: false,
   showBackButton: false,
   showOverlay: false,
@@ -339,7 +339,7 @@ export default function App() {
           {showShortcutMenu && <BubbleMenu />}
 
           {/* MENU BUTTON */}
-          {showMenuButton && (
+          {showMenuButton && currentScreen !== currentScreen.login && (
             <button
               id="menu-button"
               className={showMenuButton ? 'button bottom visible' : 'button bottom hide'}

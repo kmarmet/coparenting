@@ -577,14 +577,14 @@ export default function EventCalendar() {
 
           {/* MAP/LOOP SEARCH/HOLIDAY RESULTS */}
           {searchResultsToUse.length > 0 && (
-            <div className="search-results">
+            <div className={`${currentUser?.settings?.theme} search-results`}>
               {Manager.isValid(searchResultsToUse, true) &&
                 searchResultsToUse.map((event, index) => {
                   return (
                     <div className="flex columns" key={index}>
                       <div className="event search">
                         <div
-                          className={'details-container search mb-10 '}
+                          className={'details-container search'}
                           onClick={(e) => {
                             // @ts-ignore
                             const elementType = e.target.tagName

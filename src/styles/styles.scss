@@ -48,11 +48,9 @@
       color: inherit;
     }
 
-
-    
+    // ROOT LEVEL MODS
+    /*#region  LIGHT THEME*/
     .light {
-      * {
-      }
       .button {
         &.default {
           &.default {
@@ -66,6 +64,24 @@
         color: $darkBlueMedium;
       }
     }
+    /*#endregion  LIGHT THEME*/
+    
+    /*#region  DARK THEME*/
+    .dark {
+      .button {
+        &.default {
+          &.default {
+            color: white;
+            border-radius: 20px;
+            background-color: $darkBlue;
+          }
+        }
+      }
+      #search-button {
+        color: $darkBlueMedium;
+      }
+    }
+    /*#endregion  DARK THEME*/
     
     p {
       /*#region  DARK THEME*/
@@ -75,7 +91,7 @@
       /*#endregion  DARK THEME*/
     }
 
-    // TOP LEVEL THEME MODS
+    // TOP LEVEL THEME MODS (page container)
     .page-container {
       /*#region  LIGHT THEME*/
 
@@ -104,6 +120,7 @@
 
         .button {
           &.default {
+            color: $lightBlackLight;
             &.send-reminder {
               color: $lightBlackLight;
             }

@@ -494,8 +494,6 @@
 }
 
 @mixin button() {
-  border: 1px solid var(--textColor);
-  background-color: var(--borderColor);
   border-radius: 20px;
   color: white;
   padding: 5px 15px;
@@ -509,9 +507,7 @@
   }
 
   &.default {
-    color: var(--whiteOrBlack);
     opacity: 1;
-    border: 1px solid var(--translucent);
   }
 
   &.red {

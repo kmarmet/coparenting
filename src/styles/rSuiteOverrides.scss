@@ -68,6 +68,11 @@
   #calendar-ui-container {
     /*#region  DARK THEME*/
     &.dark {
+      .flatpickr-calendar {
+        .flatpickr-weekday {
+          color: $offWhite;
+        }
+      }
       .multidate-picker {
         .rs-input {
           color: $offWhite;
@@ -212,7 +217,7 @@ S
           border-radius: 50%;
           align-items: center;
           &.payday-emoji {
-            top: -8px;
+//            top: -8px;
             color: $green !important;
             font-size: 14px;
             font-weight: bold !important;

@@ -24,8 +24,9 @@ export default function Login() {
       setState({ ...state, showAlert: true, alertMessage: 'Please fill out all fields' })
       return false
     }
-
+    document.body.classList.add('dark')
     if (foundUser) {
+      console.log(foundUser)
       document.body.classList.add(foundUser?.settings.theme)
       if (rememberMe) {
         localStorage.setItem('rememberKey', foundUser.id)
@@ -46,6 +47,7 @@ export default function Login() {
   const autoLogin = async () => {
     const foundUser = await tryGetCurrentUser()
     const rememberMeKey = localStorage.getItem('rememberKey')
+    document.body.classList.add('dark')
     if (foundUser) {
       subscribeUser(foundUser)
 
@@ -127,7 +129,12 @@ export default function Login() {
   }
 
   useLayoutEffect(() => {
+    console.log('he')
     setTimeout(() => {
+      const menuButton = document.querySelector('#menu-button')
+      if (menuButton) {
+        menuButton.classList.remove('visible')
+      }
       setState({ ...state, showMenuButton: false, showBackArrow: false })
       autoLogin().then((r) => r)
       Manager.toggleForModalOrNewForm('show')
