@@ -44,6 +44,19 @@
       padding: 0;
     }
 
+    /*#region  LIGHT THEME*/
+    &.light {
+      .thread-item {
+        .coparent-name {
+          .timestamp,
+          .last-message {
+            color: $lightBlackLight;
+          }
+        }
+      }
+    }
+    /*#endregion  LIGHT THEME*/
+
     #close-new-conversation-button {
       position: fixed;
       display: flex;
@@ -175,6 +188,50 @@
 #message-thread-container {
   position: relative;
 
+  /*#region  LIGHT THEME*/
+  &.light {
+    &.page-container {
+      .form {
+        #message-input-container {
+          border: 2px solid $lightGrey;
+
+          #message-input {
+            color: $lightBlackLight;
+          }
+        }
+      }
+    }
+    .top-buttons {
+      #conversation-bookmark-icon {
+        color: $darkBlueMedium;
+      }
+    }
+    #default-messages,
+    #bookmark-messages {
+      .message {
+        &.from,
+        &.to {
+          &.from {
+            p {
+              background-color: $lightGrey;
+            }
+          }
+          p {
+            color: $lightBlackLight;
+          }
+          .under-message {
+            .from-name,
+            .timestamp {
+              color: $lightBlackLight;
+            }
+          }
+        }
+      }
+    }
+  }
+  /*#endregion  LIGHT THEME*/
+
+  /*#region  DARK THEME*/
   &.dark {
     .top-buttons {
       #conversation-bookmark-icon {
@@ -189,7 +246,8 @@
         border: 1px solid $darkGrey;
       }
     }
-    #default-messages, #bookmark-messages {
+    #default-messages,
+    #bookmark-messages {
       .from {
         p {
           background-color: $darkBlue;
@@ -197,6 +255,7 @@
       }
     }
   }
+  /*#endregion  DARK THEME*/
 
   &.page-container {
     display: flex;
@@ -347,7 +406,7 @@
           margin: 0 10px 20px 0;
           clear: both;
           color: $offWhite;
-          opacity: .8;
+          opacity: 0.8;
         }
 
         .timestamp,

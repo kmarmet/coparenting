@@ -12,7 +12,9 @@ export default function ThemeToggle() {
   const [isToggled, setToggle] = useState(currentUser?.settings?.theme !== 'dark')
 
   const changeTheme = async (themeColor) => {
-    await DB_UserScoped.updateUserRecord(currentUser.phone, `settings/theme`, themeColor)
+    await DB_UserScoped.updateUserRecord(currentUser.phone, `settings/theme`, themeColor).finally(() => {
+      window.location.reload()
+    })
   }
 
   return (
@@ -24,8 +26,6 @@ export default function ThemeToggle() {
         toggled={isToggled}
         toggle={setToggle}
         onToggle={async (e) => {
-          const updatedTheme = e === true ? 'light' : 'dark'
-          await DB_UserScoped.updateUserProp(currentUser, `settings`, 'theme', updatedTheme)
           await changeTheme(e === true ? 'light' : 'dark')
           setState({ ...state, theme: e === true ? 'light' : 'dark' })
         }}

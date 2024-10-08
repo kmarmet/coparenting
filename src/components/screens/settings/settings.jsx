@@ -105,11 +105,19 @@ export default function Settings() {
                 <div className="input-container">
                   {/* MORNING SUMMARY */}
                   <label>Morning Summary Hour</label>
-                  <MobileTimePicker views={['hours']} className={'mt-0 w-100'} onAccept={(e) => setMorningSummaryTime(e)} />
+                  <MobileTimePicker
+                    className={`${currentUser?.settings?.theme} mt-0 w-100`}
+                    views={['hours']}
+                    onAccept={(e) => setMorningSummaryTime(e)}
+                  />
                   {/* EVENING SUMMARY */}
                   <div className="input-container">
                     <label>Evening Summary Hour</label>
-                    <MobileTimePicker views={['hours']} className={'mt-0 w-100'} onAccept={(e) => setEveningSummaryTime(e)} />
+                    <MobileTimePicker
+                      className={`${currentUser?.settings?.theme} mt-0 w-100`}
+                      views={['hours']}
+                      onAccept={(e) => setEveningSummaryTime(e)}
+                    />
                   </div>
                 </div>
               </div>

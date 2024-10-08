@@ -123,13 +123,16 @@ export default function NewChildTransferChangeRequest() {
               <label className="mb-5">
                 Day<span className="asterisk">*</span>
               </label>
-              <MobileDatePicker className="mb-15 mt-0 w-100" onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))} />
+              <MobileDatePicker
+                className={`${currentUser?.settings?.theme} mb-15 mt-0 w-100`}
+                onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
+              />
             </div>
             <div>
               <label className="mt-0">
                 New Time <span>&nbsp;</span>
               </label>
-              <MobileTimePicker className="mb-15 mt-0 w-100" onChange={(e) => setRequestTime(e)} />
+              <MobileTimePicker minutesStep={5} className={`${currentUser?.settings?.theme} mb-15 mt-0 w-100`} onChange={(e) => setRequestTime(e)} />
             </div>
           </div>
 

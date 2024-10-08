@@ -14,9 +14,55 @@
     .edit-cal {
       padding: 0;
     }
+     &#calendar-event-form-container, &#edit-cal-event-container {
+      /*#region  LIGHT THEME*/
+      &.light {
+        .requirement-text {
+          color: $lightBlackLight;
+        }
+        
+        .action-pills {
+          &.calendar-event {
+            .flex {
+              p, span {
+                color: $lightBlackLight;
+              }
+            }
+          }
+        }
+
+        input,
+        #event-title-input {
+          background-color: white;
+        }
+        
+        .share-with-container {
+          .rs-anim-collapse{
+            background-color: transparent;
+            color: $lightBlackLight;
+          }
+        }
+
+        .rs-anim-collapse {
+          background-color: $lightGrey;
+        }
+      }
+      /*#endregion  LIGHT THEME*/
+    }
 
     &#calendar-container {
       padding-top: 0;
+
+      /*#region  LIGHT THEME*/
+      &.light {
+        #date-container {
+          .fromDate,
+          .toDate {
+            color: $lightBlackLight;
+          }
+        }
+      }
+      /*#endregion  LIGHT THEME*/
     }
 
     &#calendar-event-form-container,
@@ -31,7 +77,7 @@
           }
         }
       }
-      .event-title {
+      #event-title-input {
         width: 100%;
         background-color: $darkBlue;
 
@@ -107,6 +153,8 @@
       height: 30px;
       font-weight: 600;
       font-size: 18px;
+      position: relative;
+      top: -1px;
 
       span {
         margin-left: 8px;
@@ -144,11 +192,35 @@
         margin-top: 10px;
       }
 
-      &.dark {
-        .search-icon {
-          position: inherit;
-          top: auto;
+      /*#region  LIGHT THEME*/
+      &.light {
+        #cal-info-container {
+          background-color: $lightGrey;
+          box-shadow: none;
+
+          #calendar-legend {
+            .column {
+              color: $lightBlackLight;
+              &.two {
+                color: $lightBlackLight;
+              }
+            }
+          }
         }
+        #filter-button {
+          background-color: $lightGrey;
+          color: $darkBlueMedium;
+          opacity: 0.8;
+
+          span {
+            color: $accent;
+          }
+        }
+      }
+      /*#endregion  LIGHT THEME*/
+
+      /*#region  DARK THEME*/
+      &.dark {
         #filter-button {
           background-color: $darkBlue;
           color: white;
@@ -156,11 +228,10 @@
 
           span {
             color: $accent;
-            position: relative;
-            top: -1px;
           }
         }
       }
+      /*#endregion  DARK THEME*/
 
       .flex {
         align-items: flex-start;
@@ -205,6 +276,8 @@
         align-self: stretch;
         display: flex;
         align-items: center;
+        position: inherit;
+        top: auto;
       }
 
       #cal-info-container {

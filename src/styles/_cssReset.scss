@@ -46,8 +46,20 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow: hidden !important;
-  background-color: $blackPageContainer !important;
   max-height: 100vh !important;
+  
+  &.dark {
+      background-color: $darkBg;
+  }
+  &.light {
+    background-color: $lightBg;
+    
+    .rc-tooltip {
+      .rc-tooltip-inner {
+        background-color: $darkBlueMedium !important;
+      }
+    }
+  }
 
   #popup-card-container {
     @include popupCardContainer;

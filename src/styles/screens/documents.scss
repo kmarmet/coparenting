@@ -17,6 +17,7 @@
       }
     }
   }
+
   #bottom-actions {
     padding-top: 10px;
     position: fixed;
@@ -42,6 +43,11 @@
         
         &.dark {
           background-color: $darkBlue;
+          color: $accent;
+        }
+        
+        &.light {
+          background-color: $darkBg;
           color: $accent;
         }
       }
@@ -87,6 +93,33 @@
   }
   #documents-container,
   #doc-selection-container {
+    /*#region  LIGHT THEME*/
+    &.light {
+      .caption {
+        color: $darkGrey;
+        @include deadCenter;
+      }
+      .section {
+        color: $darkBlueMedium;
+      }
+
+      #text-container {
+        .header {
+          color: white;
+        }
+        p {
+          color: $lightBlackLight;
+          
+          &.highlight {
+            &.header {
+              background-color: $lightPurple;
+            }
+          }
+        }
+      }
+    }
+    /*#endregion  LIGHT THEME*/
+    
     /*#region  DARK THEME*/
     &.dark {
       .caption {
@@ -111,8 +144,8 @@
         }
       }
     }
-
     /*#endregion  DARK THEME*/
+    
     &#documents-container {
       #bottom-card {
         bottom: -75vh;

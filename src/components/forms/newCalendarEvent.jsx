@@ -461,7 +461,7 @@ export default function NewCalendarEvent() {
               id="event-date"
               placement="auto"
               character=" to "
-              className="m-0"
+              className={`${currentUser?.settings?.theme} m-0`}
               format={'MM/dd/yyyy'}
               onChange={(e) => {
                 let formattedDates = []

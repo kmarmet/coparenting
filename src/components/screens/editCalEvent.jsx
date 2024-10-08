@@ -477,7 +477,13 @@ export default function EditCalEvent() {
           <label>
             Title<span className="asterisk">*</span>
           </label>
-          <input defaultValue={calEventToEdit.title} className="mb-0 w-100 event-title" type="text" onChange={(e) => setEventTitle(e.target.value)} />
+          <input
+            id="event-title-input"
+            defaultValue={calEventToEdit.title}
+            className="mb-0 w-100"
+            type="text"
+            onChange={(e) => setEventTitle(e.target.value)}
+          />
           {/* DATE */}
           <div className="flex mt-15 mb-15" id={'date-input-container'}>
             {eventLength === EventLengths.single && (

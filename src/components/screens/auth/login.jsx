@@ -8,6 +8,7 @@ import DB_UserScoped from '@userScoped'
 import InstallAppPopup from 'components/installAppPopup.jsx'
 import ThemeManager from '../../../managers/themeManager'
 import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
+import doc from '../../../models/doc'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
@@ -25,7 +26,7 @@ export default function Login() {
     }
 
     if (foundUser) {
-      // ThemeManager.changeTheme(foundUser?.settings?.theme || 'dark')
+      document.body.classList.add(foundUser?.settings.theme)
       if (rememberMe) {
         localStorage.setItem('rememberKey', foundUser.id)
         await DB_UserScoped.updateUserRecord(foundUser.phone, 'rememberMe', true)
@@ -47,7 +48,8 @@ export default function Login() {
     const rememberMeKey = localStorage.getItem('rememberKey')
     if (foundUser) {
       subscribeUser(foundUser)
-      // ThemeManager.changeTheme(foundUser?.settings?.theme || 'dark')
+
+      document.body.classList.add(foundUser?.settings.theme)
 
       // SIGN USER IN BASED ON rememberMe KEY
       if (Manager.isValid(rememberMeKey)) {

@@ -1,25 +1,47 @@
 @import '../mixins';
 
-#swap-requests{
-  /*#region  DARK THEME*/
-
-  .content {
-    .row {
-      background-color: $darkBlue;
-    }
-    button {
-      &.button {
-        &.default {
-          &#reminder-button {
-            background-color: $yellow;
-            color: black;
-            font-weight: 600;
+#swap-requests {
+  /*#region  LIGHT THEME*/
+  &.light {
+    .content {
+      background-color: white;
+      .row {
+        background-color: $lightGrey;
+      }
+      button {
+        &.button {
+          &.default {
+            &#reminder-button {
+              background-color: $yellow;
+              color: black;
+              font-weight: 600;
+            }
           }
         }
       }
     }
   }
+  /*#endregion  LIGHT THEME*/
 
+  /*#region  DARK THEME*/
+  &.dark {
+    .content {
+      .row {
+        background-color: $darkBlue;
+      }
+      button {
+        &.button {
+          &.default {
+            &#reminder-button {
+              background-color: $yellow;
+              color: black;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
   /*#endregion  DARK THEME*/
 
   @include lengthSelection;
@@ -113,7 +135,6 @@
 
       &.approve {
         border-radius: 0 0 0 8px;
-        
       }
 
       &.reject {
@@ -178,16 +199,16 @@
           flex-wrap: wrap;
         }
       }
-      
+
       .reason {
         font-weight: 300;
         font-size: 14px;
       }
-      
+
       .reason-text {
         -ms-word-break: break-all;
         word-break: break-all;
-        
+
         &.wrap {
           width: 100%;
         }
@@ -237,7 +258,7 @@
       }
 
       #reminder-button {
-          margin: 10px 0;
+        margin: 10px 0;
         span {
           color: black;
         }

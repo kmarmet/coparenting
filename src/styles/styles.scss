@@ -34,7 +34,6 @@
     height: 100vh;
     padding: 0;
     margin: 0;
-    background: var(--bgColor);
 
     &::-webkit-scrollbar {
       display: none;
@@ -48,11 +47,72 @@
     span {
       color: inherit;
     }
+
+
     
-    p {
-      color: $offWhite;
+    .light {
+      * {
+      }
+      .button {
+        &.default {
+          &.default {
+            color: $lightBlackLight;
+            background-color: $lightGrey;
+            border-radius: 20px;
+          }
+        }
+      }
+      #search-button {
+        color: $darkBlueMedium;
+      }
     }
     
+    p {
+      /*#region  DARK THEME*/
+      &.dark {
+        color: $offWhite;
+      }
+      /*#endregion  DARK THEME*/
+    }
+
+    // TOP LEVEL THEME MODS
+    .page-container {
+      /*#region  LIGHT THEME*/
+
+      &.light {
+        #upload-inputs {
+          label {
+            &:first-child {
+              background-color: $lightGrey;
+              color: $lightBlackLight;
+            }
+          }
+        }
+        .accordion-header {
+          background-color: $lightGrey;
+          color: $darkBlueMedium;
+          font-weight: 600;
+        }
+        
+        .rs-anim-collapse {
+          background-color: $lightGrey;
+        }
+
+        .note {
+          background-color: $lightGrey;
+        }
+
+        .button {
+          &.default {
+            &.send-reminder {
+              color: $lightBlackLight;
+            }
+          }
+        }
+      }
+      /*#endregion  LIGHT THEME*/
+    }
+
     label {
       @include fontType(300);
       display: flex;
@@ -61,19 +121,18 @@
       font-weight: 500;
       line-height: 1.2;
       font-size: 16px;
-      
+
       span {
         font-size: 22px;
         margin-right: 5px;
         color: $accent;
-        
+
         &.notifications {
           color: $accent;
         }
       }
     }
-    
-    
+
     input {
       &[type='file'] {
         display: none !important;
@@ -119,18 +178,18 @@
     #checkbox-group {
       @include checkboxGroup;
     }
-  
-  .checkbox {
-    @include checkbox;
-  }
+
+    .checkbox {
+      @include checkbox;
+    }
 
     #menu-button {
       @include menuButton();
     }
-    
+
     #menu-overlay {
       &.dark {
-//        background-color: rgba(0,0,0,0.8);
+        //        background-color: rgba(0,0,0,0.8);
         position: fixed;
         top: 0;
         left: 0;
@@ -183,7 +242,7 @@
     @include menuIconContainer;
     @include menu;
     /*#endregion MIXINS */
-    
+
     /*#region  CLASS/ID DEFAULTS*/
     #image-theater-wrapper {
       @include imageTheater;
@@ -243,7 +302,7 @@
       display: flex;
       align-items: center;
     }
-    
+
     // Colors
     .accent {
       color: $accent;
@@ -252,7 +311,7 @@
     .blue {
       color: $blue;
     }
-    
+
     .yellow {
       color: $yellow;
     }
@@ -261,11 +320,11 @@
       color: var(--whiteOrBlack);
       opacity: 0.87;
     }
-    
+
     .trans-blue-bg {
       background-color: $transBlue;
     }
-    
+
     .trans-blue-color {
       color: $transBlue;
     }
@@ -275,7 +334,7 @@
     }
 
     .multidate-picker {
-//      display: none !important;
+      //      display: none !important;
 
       &.active {
         display: block !important;
@@ -313,9 +372,9 @@
         display: flex;
       }
     }
-    
+
     .varela-round-regular {
-      font-family: "Varela Round", sans-serif;
+      font-family: 'Varela Round', sans-serif;
       font-weight: 400;
       font-style: normal;
     }
@@ -337,7 +396,7 @@
     .accent {
       color: $accent;
     }
-    
+
     .wrap {
       flex-wrap: wrap;
     }
@@ -356,25 +415,25 @@
         align-items: center;
         justify-content: center;
         background-color: $purple;
-        color:white;
+        color: white;
         opacity: 1;
         height: 40px;
         width: 40px;
-        
+
         &.dark {
           background-color: $purple;
-          color:white;
+          color: white;
         }
-        
+
         span {
           font-size: 30px;
         }
-        
+
         @media screen and (min-width: 800px) {
           top: 20px;
           left: 20px;
         }
-        
+
         @media screen and (min-width: 780px) and (max-width: 1024px) {
           bottom: 20px;
           left: 10px;
@@ -511,7 +570,7 @@
       background-color: rgba(0, 0, 0, 0.4);
       opacity: 0;
       height: 100vh;
-      
+
       &.active {
         transition: all 1s ease-in-out;
         opacity: 1;
@@ -629,6 +688,6 @@
       & + .rs-panel-in {
       }
     }
-  /*#endregion  CLASS/ID DEFAULTS*/
+    /*#endregion  CLASS/ID DEFAULTS*/
   }
 }

@@ -1,18 +1,78 @@
 @import '../mixins';
 
 #transfer-requests-container {
-  /*#region  DARK THEME*/
-  .content {
-    .row {
-      background-color: $darkBlue;
+  /*#region LIGHT THEME*/
+  &.light {
+    #all-transfer-requests-container {
+      .request {
+        background-color: white;
+      }
     }
-    button {
-      &.button {
-        &.default {
-          &#reminder-button {
-            background-color: $yellow;
-            color: black;
-            font-weight: 600;
+    #rejection-reason-wrapper,
+    #rejection-reason-textarea {
+      background-color: transparent;
+      width: calc(100% - 5px);
+      border-radius: $borderRadius;
+      margin: 0 auto;
+      &#rejection-reason-textarea {
+        background-color: $lightGrey;
+      }
+    }
+    #button-group {
+      //      border: 1px solid $;
+      button {
+        &.approve {
+          background-color: $green;
+          &.green-text {
+            color:white;
+          }
+        }
+        &.revise {
+          background-color: $lightGrey;
+          color:$lightBlackLight;
+        }
+        &.reject {
+          background-color: $red;
+          &.red-text {
+            color:white;
+          }
+        }
+      }
+    }
+    .content {
+      background-color: white;
+      .row {
+        background-color: $lightGrey;
+      }
+      button {
+        &.button {
+          &.default {
+            &#reminder-button {
+              background-color: $yellow;
+              color: black;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
+  /*#endregion LIGHT THEME*/
+
+  /*#region  DARK THEME*/
+  &.dark {
+    .content {
+      .row {
+        background-color: $darkBlue;
+      }
+      button {
+        &.button {
+          &.default {
+            &#reminder-button {
+              background-color: $yellow;
+              color: black;
+              font-weight: 600;
+            }
           }
         }
       }
@@ -106,7 +166,6 @@
           line-height: 1;
           padding-right: 15px;
           margin: 0;
-          
 
           span {
             font-size: 16px;
@@ -130,16 +189,15 @@
         overflow: hidden;
 
         .top-details {
-          
           .reason {
             font-weight: 300;
             font-size: 14px;
           }
-          
+
           .reason-text {
             -ms-word-break: break-all;
             word-break: break-all;
-            
+
             &.wrap {
               width: 100%;
             }
@@ -153,15 +211,14 @@
             flex-wrap: wrap;
             display: flex;
             align-items: center;
-            
+
             &.time {
               span {
-                top: inherit;;
+                top: inherit;
               }
             }
           }
         }
-
 
         .flex {
           display: flex;
@@ -297,11 +354,11 @@
           p,
           span {
             color: white;
-     
           }
-          
+
           &.active {
-            p,span {
+            p,
+            span {
               color: $accent;
             }
           }
@@ -328,8 +385,8 @@
       span {
         text-align: center;
         font-weight: 200;
-        transition: all .3s ease-in-out;
-        transform: scale(.9);
+        transition: all 0.3s ease-in-out;
+        transform: scale(0.9);
       }
 
       span {

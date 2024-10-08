@@ -1,9 +1,9 @@
-@import "../styles/palette";
+@import '../styles/palette';
 
 /*#region Margin */
 
 .m-0 {
-  margin: 0 !important;;
+  margin: 0 !important;
 }
 .ml-auto {
   margin-left: auto !important;
@@ -442,10 +442,9 @@
 }
 /*#endregion Lineheight */
 
-
 /*#region Text Sizes */
 .text-default {
-  font-size: 16px !important;;
+  font-size: 16px !important;
 }
 
 .text-small-title {
@@ -455,15 +454,22 @@
 .text-description {
   &.dark {
     color: $offWhite !important;
-    opacity: .7;
+    opacity: 0.7;
   }
 }
 
 .text-screen-intro {
   font-size: 17px !important;
+  /*#region  LIGHT THEME*/
+  &.light {
+    color: $lightBlackLight !important;
+  }
+  /*#endregion  LIGHT THEME*/
   
+  /*#region  DARK THEME*/
   &.dark {
     color: $offWhite !important;
   }
+  /*#endregion  DARK THEME*/
 }
 /*#endregion Text Sizes */

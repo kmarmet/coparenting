@@ -4,6 +4,30 @@
   #add-expense-form {
     margin: 0;
     position: relative;
+    
+    /*#region  LIGHT THEME*/
+    &.light {
+      #or {
+        color: $darkGrey;
+        font-size: 20px;
+      }
+      #default-expense-amounts {
+        button {
+          background-color: white;
+          color: $lightBlackLight;
+          
+          &.reset {
+            font-weight: bold;
+          }
+        }
+      }
+      #amount-input-wrapper {
+        #amount-input {
+          border-bottom: 1px solid $lightGrey;
+        }
+      }
+    }
+    /*#endregion  LIGHT THEME*/
 
     /*#region  DARK THEME*/
     &.dark {
@@ -111,6 +135,56 @@
   }
 
   #expense-tracker {
+    /*#region  LIGHT THEME*/
+    &.light {
+      .description {
+        color: $darkGrey;
+        font-style: italic;
+      }
+      .amount {
+        background-color: $translucentLightest;
+        color: white;
+      }
+      .expense {
+//        background-color: $darkBlue;
+        .content {
+          #date-added-text {
+            color: $lightBlackLight;
+          }
+        }
+        .lower-details {
+          #img-expand-text {
+            color: $darkGrey;
+          }
+          .group {
+            background-color: $lightGrey;
+          }
+          .lower-details {
+            #button-group {
+              button {
+                &.default {
+                  color: $darkGrey;
+                }
+              }
+            }
+          }
+          .lower-details-text {
+            b {
+              color: $lightBlackLight;
+            }
+            .flex {
+              &.editable {
+                background-color: $lightGrey;
+                span {
+                  color: $darkGrey;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    /*#endregion  LIGHT THEME*/
     /*#region  DARK THEME*/
     &.dark {
       .description {
@@ -424,6 +498,7 @@
                 top: 0;
                 min-width: 50px;
                 text-align: center;
+                color:white;
               }
             }
           }

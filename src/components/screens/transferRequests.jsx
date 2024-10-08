@@ -167,24 +167,24 @@ export default function TransferRequests() {
                     <div id="rejection-reason-wrapper">
                       <label className="mt-10">Rejection Reason</label>
                       <textarea id="rejection-reason-textarea" onChange={(e) => setRejectionReason(e.target.value)}></textarea>
-                      <div id="button-group" className="flex">
-                        <button onClick={(e) => approve(request)} className="w-100 button default green-text no-border">
-                          Approve
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            setState({ ...state, transferRequestToRevise: request, currentScreen: ScreenNames.reviseTransferRequest })
-                          }}
-                          className="approve w-100  button default  no-border">
-                          Revise
-                        </button>
-                        <button
-                          data-request-id={request.id}
-                          onClick={(e) => reject(request)}
-                          className="w-100 reject button default red-text no-border">
-                          Reject
-                        </button>
-                      </div>
+                    </div>
+                    <div id="button-group" className="flex">
+                      <button onClick={(e) => approve(request)} className="w-100 button default approve green-text no-border">
+                        Approve
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          setState({ ...state, transferRequestToRevise: request, currentScreen: ScreenNames.reviseTransferRequest })
+                        }}
+                        className="revise w-100  button default  no-border">
+                        Revise
+                      </button>
+                      <button
+                        data-request-id={request.id}
+                        onClick={(e) => reject(request)}
+                        className="w-100 reject button default red-text no-border">
+                        Reject
+                      </button>
                     </div>
                   </div>
                 )
