@@ -1,8 +1,24 @@
 import Manager from '@manager'
 import { createWorker } from 'tesseract.js'
 import FirebaseStorage from '@firebaseStorage'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension,
+} from '../globalFunctions'
 
-const DocManager = {
+const DocumentConversionManager = {
   tocHeaders: [
     'child-support',
     'spousal-maintenance',
@@ -42,6 +58,11 @@ const DocManager = {
     'introductory-provisions',
     'property',
     'purpose-of-agreement',
+    'week-one',
+    'week-two',
+    'holiday-parenting-time',
+    'odd-years',
+    'even-years',
   ],
   documentApiUrl: () => {
     if (window.location.hostname === 'localhost') {
@@ -84,15 +105,15 @@ const DocManager = {
       returnString = returnString.toUpperCase()
     }
     if (uppercaseFirstWord) {
-      returnString = returnString.uppercaseFirstLetterInWord()
+      returnString = uppercaseFirstLetterOfAllWords(returnString)
     }
     return returnString.replaceAll("'", '')
   },
   formatDocHeaders: (text) => {
-    DocManager.tocHeaders.forEach((header) => {
+    DocumentConversionManager.tocHeaders.forEach((header) => {
       text = text.replaceAll(
-        DocManager.cleanHeader(header, true),
-        `<span data-header-name="${header.replaceAll("'", '&apos;')}" class="header">${DocManager.cleanHeader(header)}</span>`
+        DocumentConversionManager.cleanHeader(header, true),
+        `<span data-header-name="${header.replaceAll("'", '&apos;')}" class="header">${DocumentConversionManager.cleanHeader(header)}</span>`
       )
     })
     return text
@@ -104,11 +125,11 @@ const DocManager = {
       let paragraphs = result.data.paragraphs
 
       paragraphs.forEach((par) => {
-        if (DocManager.hasNumbers(par.text) && par.text.trim().split(/\s+/).length <= 10) {
+        if (DocumentConversionManager.hasNumbers(par.text) && par.text.trim().split(/\s+/).length <= 10) {
           par.text = `<span className="sub-header">${par.text}</span>`
         }
         const parEl = document.createElement('p')
-        par.text = DocManager.formatDocHeaders(par.text)
+        par.text = DocumentConversionManager.formatDocHeaders(par.text)
 
         parEl.innerHTML = par.text
         textContainer.appendChild(parEl)
@@ -123,10 +144,10 @@ const DocManager = {
       if (Manager.isValid(el)) {
         const strongText = el.textContent
         const hasNumbers = strongText.indexOf('.') > -1
-        if (hasNumbers && strongText.wordCount() < 6 && strongText.length > 3) {
+        if (hasNumbers && wordCount(strongText) < 6 && strongText.length > 3) {
           el.parentNode.classList.add('header')
         }
-        if (strongText.wordCount() <= 6 && strongText.length > 5) {
+        if (wordCount(strongText) <= 6 && strongText.length > 5) {
           if (strongText.toLowerCase().indexOf('state') === -1 && strongText.toLowerCase().indexOf('county') === -1) {
             el.parentNode.classList.add('header')
           } else {
@@ -138,10 +159,11 @@ const DocManager = {
       if (Manager.isValid(strong)) {
         const strongText = strong.textContent
         const hasNumbers = strongText.indexOf('.') > -1
-        if (hasNumbers && strongText.wordCount() < 6 && strongText.length > 3) {
+
+        if (hasNumbers && wordCount(strongText) < 6 && strongText.length > 3) {
           el.classList.add('header')
         }
-        if (strongText.wordCount() <= 6 && strongText.length > 5) {
+        if (wordCount(strongText) <= 6 && strongText.length > 5) {
           if (strongText.toLowerCase().indexOf('state') === -1 && strongText.toLowerCase().indexOf('county') === -1) {
             el.classList.add('header')
           }
@@ -151,4 +173,4 @@ const DocManager = {
   },
 }
 
-export default DocManager
+export default DocumentConversionManager

@@ -8,7 +8,6 @@ import DB from '@db'
 import SmsManager from '@managers/smsManager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import Doc from '../../../models/doc'
-import DocManager from '@managers/docManager'
 import PushAlertApi from '@api/pushAlert'
 import NotificationManager from '@managers/notificationManager'
 import DocumentsManager from '../../../managers/documentsManager'
@@ -82,48 +81,6 @@ export default function UploadDocuments() {
           // Send Notification
           NotificationManager.sendToShareWith(shareWith, 'New Document', `${currentUser} has uploaded a new document`)
         })
-      })
-  }
-
-  const getImages = async () => {
-    // Get Firebase images
-    FirebaseStorage.getImages(FirebaseStorage.directories.documents, currentUser.id)
-      .then(async (imgs) => {
-        if (imgs.length === 0) {
-          setState({ ...state, currentScreenTitle: 'Upload Agreement', currentScreen: ScreenNames.uploadAgreement })
-        } else {
-          setImageCount(imgs.length)
-
-          Promise.all(imgs).then(async (allImagePaths) => {
-            let pageCounter = 0
-            for (let path of allImagePaths) {
-              await DocManager.imageToTextAndAppend(path, document.querySelector('#text-container'))
-              pageCounter++
-              // setConvertedImageCount(pageCounter)
-
-              // Done extracting text
-              if (pageCounter >= allImagePaths.length) {
-                setShowTextContainer(true)
-
-                // Filter TOC
-                const spanHeaders = document.querySelectorAll('.header')
-                let newHeaderArray = []
-                spanHeaders.forEach((header) => {
-                  const text = header.textContent.replaceAll(' ', '-')
-                  if (newHeaderArray.indexOf(text) === -1) {
-                    newHeaderArray.push(text)
-                  }
-                })
-                setTocHeaders(newHeaderArray)
-              }
-            }
-          })
-        }
-      })
-      .catch((error) => {
-        if (error.toString().indexOf('does not exist') > -1) {
-          setState({ ...state, currentScreenTitle: 'Upload Agreement', currentScreen: ScreenNames.uploadAgreement })
-        }
       })
   }
 

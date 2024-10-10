@@ -79,8 +79,8 @@ export default function DocsList() {
               docs.map((doc, index) => {
                 const fileType = getFileExtension(doc.name).contains('docx') ? 'Document' : 'Image'
                 return (
-                  <div className="row">
-                    <div className="flex" key={index}>
+                  <div className="row" key={index}>
+                    <div className="flex">
                       <p
                         key={Manager.getUid()}
                         className="section"

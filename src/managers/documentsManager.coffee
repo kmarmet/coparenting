@@ -46,7 +46,8 @@ export default DocumentsManager =
       for coparent in coparents
         currentCoparentFromDb = await DB_UserScoped.getUser(DB.tables.users, coparent.phone)
         if thisDoc.uploadedBy == currentCoparentFromDb.phone
-          returnObject.push {docs: thisDoc, coparent: currentCoparentFromDb}
+          if thisDoc.shareWith.includes(currentUser.phone)
+            returnObject.push {docs: thisDoc, coparent: currentCoparentFromDb}
     return returnObject
   addDocumentToDocumentsTable: ( data) ->
     dbRef = ref getDatabase()

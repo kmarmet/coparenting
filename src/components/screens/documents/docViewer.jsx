@@ -4,7 +4,7 @@ import globalState from '../../../context'
 import DB from '@db'
 import FirebaseStorage from '../../../database/firebaseStorage'
 import TableOfContentsListItem from '../../tableOfContentsListItem'
-import DocManager from '@managers/docManager'
+import DocumentConversionManager from '@managers/documentConversionManager'
 import ImageManager from '@managers/imageManager'
 import Manager from '@manager'
 import { useSwipeable } from 'react-swipeable'
@@ -198,7 +198,7 @@ export default function DocViewer() {
     setScreenTitle(removeFileExtension(fileName))
 
     // Insert HTML
-    const docHtml = await DocManager.docToHtml(fileName, userIdToUse)
+    const docHtml = await DocumentConversionManager.docToHtml(fileName, userIdToUse)
     textContainer.innerHTML = docHtml
 
     // Format HTML
@@ -223,9 +223,9 @@ export default function DocViewer() {
       }
       const allStrongs = listItem.querySelectorAll('strong')
       allStrongs.forEach((thisStrong) => {
-        DocManager.addHeaderClass(thisStrong)
+        DocumentConversionManager.addHeaderClass(thisStrong)
       })
-      DocManager.addHeaderClass(listItem)
+      DocumentConversionManager.addHeaderClass(listItem)
       if (wordCount(listItem.textContent) > 10) {
         listItem.classList.remove('highlight')
       }
@@ -243,9 +243,9 @@ export default function DocViewer() {
 
       const allStrongs = par.querySelectorAll('strong')
       allStrongs.forEach((thisStrong) => {
-        DocManager.addHeaderClass(thisStrong)
+        DocumentConversionManager.addHeaderClass(thisStrong)
       })
-      DocManager.addHeaderClass(par)
+      DocumentConversionManager.addHeaderClass(par)
     })
 
     // Cleanup unecessary header classes
@@ -304,7 +304,7 @@ export default function DocViewer() {
     }
 
     const imagePath = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, userIdToUse, docToView.name)
-    await DocManager.imageToTextAndAppend(imagePath.imageUrl, document.querySelector('#text-container')).finally(() => {
+    await DocumentConversionManager.imageToTextAndAppend(imagePath.imageUrl, document.querySelector('#text-container')).finally(() => {
       setState({ ...state, isLoading: false, previousScreen: ScreenNames.docsList, showBackButton: true, showMenuButton: false })
       Manager.toggleForModalOrNewForm('show')
     })
