@@ -39,7 +39,7 @@ export default function TransferRequests() {
 
   const reject = async (request) => {
     await DB.delete(DB.tables.transferChange, request.id).finally(async () => {
-      await DB_UserScoped.getCoparent(request.recipientName, currentUser).then(async (cop) => {
+      await DB_UserScoped.getCoparentByPhone(request.recipientName, currentUser).then(async (cop) => {
         const subId = await NotificationManager.getUserSubId(cop.phone)
         PushAlertApi.sendMessage(
           'Swap Request Decision',
@@ -52,7 +52,7 @@ export default function TransferRequests() {
 
   const approve = async (request) => {
     await DB.delete(DB.tables.transferChange, request.id).finally(async () => {
-      await DB_UserScoped.getCoparent(request.recipientName, currentUser).then(async (cop) => {
+      await DB_UserScoped.getCoparentByPhone(request.recipientName, currentUser).then(async (cop) => {
         const subId = await NotificationManager.getUserSubId(cop.phone)
 
         PushAlertApi.sendMessage(

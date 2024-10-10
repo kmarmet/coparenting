@@ -22,6 +22,25 @@ import {
 
 import FirebaseStorage from "../database/firebaseStorage";
 
+import DB_UserScoped from "../database/db_userScoped";
+
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension
+} from "../globalFunctions";
+
 export default DocumentsManager = {
   deleteDocsWithIds: async function(toDelete, currentUser, callback) {
     var dbDocs, docId, docs, i, len, results, thisDoc;
@@ -61,6 +80,26 @@ export default DocumentsManager = {
     allDocs = (await DB.getAllFilteredRecords(DB.tables.documents, currentUser, 'documents', 'root'));
     allDocs = Manager.convertToArray(allDocs);
     return allDocs;
+  },
+  getCoparentDocs: async function(currentUser) {
+    var allDocs, coparent, coparents, currentCoparentFromDb, i, j, len, len1, returnObject, thisDoc;
+    allDocs = (await DB.getAllFilteredRecords(DB.tables.documents, currentUser, 'documents', 'root'));
+    coparents = currentUser.coparents;
+    returnObject = [];
+    for (i = 0, len = allDocs.length; i < len; i++) {
+      thisDoc = allDocs[i];
+      for (j = 0, len1 = coparents.length; j < len1; j++) {
+        coparent = coparents[j];
+        currentCoparentFromDb = (await DB_UserScoped.getUser(DB.tables.users, coparent.phone));
+        if (thisDoc.uploadedBy === currentCoparentFromDb.phone) {
+          returnObject.push({
+            docs: thisDoc,
+            coparent: currentCoparentFromDb
+          });
+        }
+      }
+    }
+    return returnObject;
   },
   addDocumentToDocumentsTable: async function(data) {
     var dbRef, tableData;

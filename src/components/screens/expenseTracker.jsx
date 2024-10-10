@@ -133,7 +133,7 @@ export default function ExpenseTracker() {
   }
 
   const sendReminder = async (expense) => {
-    await DB_UserScoped.getCoparent(expense.recipientName, currentUser).then(async (coparent) => {
+    await DB_UserScoped.getCoparentByPhone(expense.recipientName, currentUser).then(async (coparent) => {
       const subId = await NotificationManager.getUserSubId(coparent.phone)
       const message = `This is a reminder to pay the ${expense.name} expense. Due date is: ${
         Manager.isValid(expense.dueDate) ? expense.dueDate : 'N/A'

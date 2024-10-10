@@ -26,15 +26,12 @@ import {
   uniqueArray,
   getFileExtension,
 } from '../../../globalFunctions'
+import DB_UserScoped from '@userScoped'
+import DocumentsManager from '../../../managers/documentsManager'
 
 export default function DocViewer() {
   const { state, setState } = useContext(globalState)
   const { currentUser, previousScreen, currentScreen, docToView } = state
-  const [images, setImages] = useState([])
-  const [loadedImages, setLoadedImages] = useState(1)
-  const [imageCount, setImageCount] = useState(0)
-  const [isDoneLoading, setIsDoneLoading] = useState(false)
-  const [showModal, setShowModal] = useState(false)
   const [tocHeaders, setTocHeaders] = useState([])
   const [screenTitle, setScreenTitle] = useState('Document')
   const [showCard, setShowCard] = useState(false)
@@ -42,8 +39,6 @@ export default function DocViewer() {
   const [searchResultsIndex, setSearchResultsIndex] = useState(1)
   const [showTocButton, setShowTocButton] = useState(true)
   const [showSearchInput, setShowSearchInput] = useState(false)
-  const [showTextContainer, setShowTextContainer] = useState(false)
-  const [convertedImageCount, setConvertedImageCount] = useState(0)
 
   const scrollToHeader = (header) => {
     closeSearch()
@@ -71,32 +66,7 @@ export default function DocViewer() {
     }
   }
 
-  const navigateToImage = (direction) => {
-    const img = document.querySelector('#modal-img')
-    const src = img.getAttribute('src')
-    let imgIndex
-    let imageUrls = images.map((x) => x.url)
-    imgIndex = imageUrls.findIndex((x) => x === src)
-
-    if (imgIndex > -1 && imgIndex + 1 < images.length) {
-      if (direction === 'forward') {
-        img.src = images[imgIndex + 1].url
-      } else {
-        if (images[imgIndex - 1] === undefined) {
-          img.src = images[images.length - 1].url
-        } else {
-          img.src = images[imgIndex - 1].url
-        }
-      }
-    } else {
-      if (images[0] !== undefined) {
-        img.src = images[0].url
-      }
-    }
-  }
-
   const expandImage = (e) => {
-    setShowModal(true)
     const modal = document.querySelector('.image-modal')
     modal.classList.add('show')
     ImageManager.expandImage(e, modal)
@@ -212,12 +182,23 @@ export default function DocViewer() {
     const url = docToView.url
     const fileName = FirebaseStorage.getImageNameFromUrl(url)
     const textContainer = document.getElementById('text-container')
+    const coparentDocsObjects = await DocumentsManager.getCoparentDocs(currentUser)
+    const docsFromObject = coparentDocsObjects.map((x) => x.docs)
+    const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
+    const relevantDoc = docsFromObject.filter((x) => x.name === docToView.name)[0]
+    let userIdToUse = currentUser.id
+
+    if (Manager.isValid(relevantDoc)) {
+      const uploadedByPhone = relevantDoc.uploadedBy
+      const relevantCoparent = coparentsFromObject.filter((x) => x.phone === uploadedByPhone)[0]
+      userIdToUse = relevantCoparent.id
+    }
 
     // Set dynamic screen title
     setScreenTitle(removeFileExtension(fileName))
 
     // Insert HTML
-    const docHtml = await DocManager.docToHtml(fileName, currentUser.id)
+    const docHtml = await DocManager.docToHtml(fileName, userIdToUse)
     textContainer.innerHTML = docHtml
 
     // Format HTML
@@ -310,7 +291,19 @@ export default function DocViewer() {
     // Get Firebase images
     setScreenTitle(removeFileExtension(docToView.name))
 
-    const imagePath = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, currentUser.id, docToView.name)
+    const coparentDocsObjects = await DocumentsManager.getCoparentDocs(currentUser)
+    const docsFromObject = coparentDocsObjects.map((x) => x.docs)
+    const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
+    const relevantDoc = docsFromObject.filter((x) => x.name === docToView.name)[0]
+    let userIdToUse = currentUser.id
+
+    if (Manager.isValid(relevantDoc)) {
+      const uploadedByPhone = relevantDoc.uploadedBy
+      const relevantCoparent = coparentsFromObject.filter((x) => x.phone === uploadedByPhone)[0]
+      userIdToUse = relevantCoparent.id
+    }
+
+    const imagePath = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, userIdToUse, docToView.name)
     await DocManager.imageToTextAndAppend(imagePath.imageUrl, document.querySelector('#text-container')).finally(() => {
       setState({ ...state, isLoading: false, previousScreen: ScreenNames.docsList, showBackButton: true, showMenuButton: false })
       Manager.toggleForModalOrNewForm('show')
@@ -325,18 +318,7 @@ export default function DocViewer() {
       }
     })
     setTocHeaders(newHeaderArray)
-    setShowTextContainer(true)
   }
-
-  useEffect(() => {
-    if (imageCount > 0 && loadedImages === imageCount) {
-      document.querySelectorAll('.agreement-image').forEach((img) => {
-        if (img.complete) {
-          setIsDoneLoading(true)
-        }
-      })
-    }
-  }, [loadedImages])
 
   useEffect(() => {
     document.getElementById('text-container').innerText = ''
@@ -423,36 +405,6 @@ export default function DocViewer() {
       )}
 
       <div id="documents-container" className={`${currentUser?.settings?.theme} page-container form`}>
-        {!showModal && images.length > 0 && imageCount && imageCount > 0 && (
-          <>
-            <p className="gallery instructions">Click image to expand</p>
-            <div className={`gallery ${isDoneLoading ? 'active' : ''}`}>
-              {imageCount && imageCount > 0 && (
-                <img className={isDoneLoading === true ? '' : 'active'} src={require('../../../img/loading.gif')} id="loading-gif" />
-              )}
-
-              {images.length > 0 &&
-                images.map((imgObj, index) => {
-                  return (
-                    <div id="img-container" key={index}>
-                      <img
-                        data-url={imgObj.url}
-                        onLoad={(e) => {
-                          setLoadedImages((loadedImages) => loadedImages + 1)
-                        }}
-                        onClick={(e) => expandImage(e)}
-                        src={imgObj.url}
-                        onError={(e) => setImages(images.filter((x) => x.id !== imgObj.id))}
-                        className="agreement-image"
-                      />
-                      {imgObj.name && imgObj.name.length > 0 && <p className="image-name">{imgObj.name}</p>}
-                      <p onClick={() => deleteDoc(imgObj.url, imgObj)}>DELETE</p>
-                    </div>
-                  )
-                })}
-            </div>
-          </>
-        )}
         <div id="text-container"></div>
       </div>
     </>

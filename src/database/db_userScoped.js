@@ -62,7 +62,6 @@ const DB_UserScoped = {
     let tableData = []
     await get(child(dbRef, `${tableName}/${phoneNumber}`)).then((snapshot) => {
       tableData = snapshot.val()
-      console.log(tableData)
     })
     return tableData
   },
@@ -117,12 +116,12 @@ const DB_UserScoped = {
         })
     })
   },
-  getCoparent: async (coparentPhone, currentUser, getBioCoparent) => {
+  getCoparentByPhone: async (coparentPhone, currentUser, getBioCoparent) => {
     return new Promise(async (resolve, reject) => {
       const dbRef = ref(getDatabase())
       await get(child(dbRef, `users`)).then((snapshot) => {
         if (snapshot.exists()) {
-          const tableData = DB.convertKeyObjectToArray(snapshot.val())
+          const tableData = Manager.convertToArray(snapshot.val())
           if (snapshot.exists() && tableData.length > 0) {
             tableData.forEach((firebaseUser) => {
               if (firebaseUser.phone === coparentPhone) {
@@ -134,6 +133,7 @@ const DB_UserScoped = {
       })
     })
   },
+
   addMultipleExpenses: async (data) => {
     const dbRef = ref(getDatabase())
     const currentExpenses = await DB.getTable(DB.tables.expenseTracker)

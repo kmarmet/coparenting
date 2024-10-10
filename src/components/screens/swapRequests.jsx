@@ -67,7 +67,7 @@ export default function SwapRequests() {
   const sendReminder = async (request) => {
     setState({ ...state, showAlert: true, alertType: 'success', alertMessage: 'Reminder Sent!' })
 
-    await DB_UserScoped.getCoparent(request.recipientPhone, currentUser).then(async (coparent) => {
+    await DB_UserScoped.getCoparentByPhone(request.recipientPhone, currentUser).then(async (coparent) => {
       const subId = await PushAlertApi.getSubId(coparent.phone)
       PushAlertApi.sendMessage(`Pending Swap Decision`, ` ${moment(request.fromDate).format('dddd, MMMM Do')}`, subId)
     })

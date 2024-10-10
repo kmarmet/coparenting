@@ -4,8 +4,26 @@ import DateManager from "./dateManager"
 import moment from "moment"
 import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
 import FirebaseStorage from "../database/firebaseStorage"
+import DB_UserScoped from "../database/db_userScoped"
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension
+} from "../globalFunctions"
 
 export default DocumentsManager =
+
   deleteDocsWithIds: (toDelete, currentUser, callback) ->
     for docId in toDelete
       docs = await DB.getTable(DB.tables.documents)
@@ -20,6 +38,16 @@ export default DocumentsManager =
     allDocs = await DB.getAllFilteredRecords(DB.tables.documents, currentUser, 'documents', 'root')
     allDocs = Manager.convertToArray (allDocs)
     allDocs
+  getCoparentDocs: (currentUser) ->
+    allDocs = await DB.getAllFilteredRecords(DB.tables.documents, currentUser, 'documents', 'root')
+    coparents = currentUser.coparents
+    returnObject = []
+    for thisDoc in allDocs
+      for coparent in coparents
+        currentCoparentFromDb = await DB_UserScoped.getUser(DB.tables.users, coparent.phone)
+        if thisDoc.uploadedBy == currentCoparentFromDb.phone
+          returnObject.push {docs: thisDoc, coparent: currentCoparentFromDb}
+    return returnObject
   addDocumentToDocumentsTable: ( data) ->
     dbRef = ref getDatabase()
     tableData = await DB.getTable (DB.tables.documents)

@@ -474,6 +474,16 @@
 }
 /*#endregion Text Sizes */
 
+/*#region  FONT STYLE*/
+.italic {
+  font-style:  italic !important;
+}
+.underline {
+  text-decoration: underline !important;
+}
+
+/*#endregion  FONT STYLE*/
+
 .no-border-radius {
   border-radius: 0 !important;
 }

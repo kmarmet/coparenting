@@ -42,7 +42,7 @@ const Chats = () => {
   const [activeChatsMembers, setActiveChatsMembers] = useState([])
 
   const openMessageThread = async (coparentPhone) => {
-    const userCoparent = await DB_UserScoped.getCoparent(coparentPhone, currentUser)
+    const userCoparent = await DB_UserScoped.getCoparentByPhone(coparentPhone, currentUser)
     setState({ ...state, currentScreen: ScreenNames.conversation, messageToUser: userCoparent })
   }
 

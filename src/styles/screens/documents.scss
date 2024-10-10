@@ -198,60 +198,61 @@
       p {
         font-size: 20px;
       }
+      
+      .row {
+        min-height: 50px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 20px;
+        
+        .section {
+          @include lineItem;
+          justify-content: flex-start;
+          border: 0;
+          height: auto;
 
-      .section {
-        @include lineItem;
-        justify-content: flex-start;
-
-        &.notifications {
-          flex-wrap: nowrap;
-          justify-content: space-between;
-
-          span {
-            line-height: 1.2;
-            justify-self: flex-start;
-            margin-right: auto;
-            margin-left: 0;
-
-            &:nth-child(2) {
-            
-            }
-
-            &.accent {
-              margin-right: 20px;
-            }
-          }
-
-          #checkbox-group {
-            display: flex;
+          
+          &.notifications {
             flex-wrap: nowrap;
-            margin: 0 0 0 10px;
-
-            .flex {
-              width: auto;
-
-              &:last-child {
-                margin: 0;
+            justify-content: space-between;
+            
+            span {
+              line-height: 1.2;
+              justify-self: flex-start;
+              margin-right: auto;
+              margin-left: 0;
+              
+              &.accent {
+                margin-right: 20px;
+              }
+            }
+            
+            #checkbox-group {
+              display: flex;
+              flex-wrap: nowrap;
+              margin: 0 0 0 10px;
+              
+              .flex {
+                width: auto;
+                
+                &:last-child {
+                  margin: 0;
+                }
               }
             }
           }
-        }
-
-        &:first-child {
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        span {
-          font-size: 25px;
-          margin-right: 20px;
-          opacity: 0.8;
-          color: $accent;
-
-          &:nth-child(2) {
-            font-size: 16px;
+          
+          span {
+            font-size: 25px;
             margin-right: 20px;
-            opacity: 0.5;
+            opacity: 0.8;
+            color: $accent;
             
+            &:nth-child(2) {
+              font-size: 16px;
+              margin-right: 20px;
+              opacity: 0.5;
+              
+            }
           }
         }
       }

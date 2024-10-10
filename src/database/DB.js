@@ -88,7 +88,7 @@ const DB = {
         const coparentsPromise = new Promise(async (resolve) => {
           let toReturn = []
           for (const coparentPhone of coparentPhones) {
-            await DB_UserScoped.getCoparent(coparentPhone).then(async (coparentObj) => {
+            await DB_UserScoped.getCoparentByPhone(coparentPhone).then(async (coparentObj) => {
               let records = await DB_UserScoped.getRecordsByUser(tableName, coparentObj, objectName)
               records = Manager.convertToArray(records)
               if (records && records.length > 0) {
