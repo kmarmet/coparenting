@@ -25,7 +25,7 @@ ScreenNames = {
   conversation: 'conversation',
   coparents: 'coparents',
   uploadDocuments: 'uploadDocuments',
-  standardDocs: 'standardDocs',
+  docViewer: 'docViewer',
   featureRequests: 'featureRequests',
   feedback: 'feedback',
   contactSupport: 'contactSupport',

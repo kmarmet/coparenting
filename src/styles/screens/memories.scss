@@ -51,7 +51,7 @@
     }
 
     #happy-subtitle {
-      color: var(--textColor);
+      
       font-weight: 400;
       font-size: 16px;
       line-height: 1;
@@ -87,7 +87,7 @@
     .instructions {
       &.gallery {
         margin-bottom: 10px;
-        color: var(--textColor);
+        
         opacity: 1;
         font-weight: 400;
         font-size: 14px;
@@ -122,7 +122,7 @@
 
           &.notes {
             text-align: left;
-            color: var(--textColor);
+            
             width: 100%;
             border: 0;
             margin-right: 15px;

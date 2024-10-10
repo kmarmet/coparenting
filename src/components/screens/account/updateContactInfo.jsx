@@ -28,6 +28,7 @@ export default function UpdateContactInfo() {
         ...state,
         alertMessage: `Phone is required`,
         showAlert: true,
+        alertType: 'error',
       })
       return false
     }
@@ -36,6 +37,7 @@ export default function UpdateContactInfo() {
         ...state,
         alertMessage: `Email is required`,
         showAlert: true,
+        alertType: 'error',
       })
       return false
     }

@@ -172,10 +172,11 @@ const DateManager = {
       "New Year's Eve",
       'Halloween',
       'Easter',
+      "Father's Day",
+      "Mother's Day",
     ]
     holidays.forEach((holiday) => {
       visitationRelatedHolidays.forEach((mainHoliday) => {
-        // @ts-ignore
         if (mainHoliday.getFirstWord() === holiday.name.getFirstWord()) {
           const exists = visitationHolidays.filter((x) => x.name.contains(holiday.name))
           if (exists.length === 0) {
@@ -185,14 +186,16 @@ const DateManager = {
             if (holiday.name === "New Year's Day") {
               holiday.date = '2025-01-01'
             }
-            if (!mainHoliday.includes(holiday)) {
-              visitationHolidays.push(holiday)
+            const holidayObject = {
+              name: holiday.name,
+              date: holiday.date,
             }
+            visitationHolidays.push(holidayObject)
           }
         }
       })
     })
-    return visitationHolidays
+    return Manager.getUniqueArray(visitationHolidays).flat()
   },
   getDuration: (timeInterval, start, end) => {
     if (timeInterval === 'days') {
@@ -200,6 +203,9 @@ const DateManager = {
     }
     if (timeInterval === 'hours') {
       return moment.duration(moment(end).diff(moment(start))).asHours()
+    }
+    if (timeInterval === 'seconds') {
+      return moment.duration(moment(end).diff(moment(start))).asSeconds()
     }
   },
   getJsDate: (inputDate) => {

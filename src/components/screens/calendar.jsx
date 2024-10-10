@@ -16,6 +16,19 @@ import BottomCard from 'components/shared/bottomCard'
 import DateFormats from '../../constants/dateFormats'
 import { useSwipeable } from 'react-swipeable'
 import BottomButton from '../shared/bottomButton'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+} from '../../globalFunctions'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -289,6 +302,7 @@ export default function EventCalendar() {
   const addFlatpickrCalendar = async () => {
     const dbRef = ref(getDatabase())
     Manager.toggleForModalOrNewForm('show')
+    setState({ ...state, showMenuButton: true })
     toggleCalendar('show')
     flatpickr('#calendar-ui-container', {
       inline: true,
@@ -331,9 +345,7 @@ export default function EventCalendar() {
     onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
       let calEvents = snapshot.val()
       if (snapshot.exists()) {
-        if (!Array.isArray(calEvents)) {
-          calEvents = DB.convertKeyObjectToArray(calEvents)
-        }
+        calEvents = Manager.convertToArray(calEvents)
         await DB.getFilteredRecords(calEvents, currentUser).then((events) => {
           const sortedEvents = DateManager.sortCalendarEvents(events, 'fromDate', 'startTime')
           updateLogFromDb(moment().format('MM/DD/yyyy'), null, sortedEvents)
@@ -343,8 +355,8 @@ export default function EventCalendar() {
   }
 
   const toggleAllHolidays = async () => {
-    const allEvents = await DB.getTable(DB.tables.calendarEvents)
-    const _holidays = allEvents.filter((x) => x.isHoliday === true).filter((x) => !x.title.contains('Visitation'))
+    const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
+    const _holidays = allEvents.filter((x) => x.isHoliday === true).filter((x) => !x.title.toLowerCase().contains('visitation'))
     toggleCalendar('hide')
     setSearchResultsToUse(_holidays)
     setAllHolidays(_holidays)
@@ -352,14 +364,12 @@ export default function EventCalendar() {
   }
 
   const toggleVisitationHolidays = async () => {
-    const allEvents = await DB.getTable(DB.tables.calendarEvents)
-    let userVisitationHolidays = allEvents.filter((x) => x.isHoliday === true && x.title.contains(currentUser.name.getFirstWord()))
-    let apiHolidays = await DateManager.getHolidays()
+    const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
+    let userVisitationHolidays = allEvents.filter(
+      (x) => x.isHoliday === true && x.phone === currentUser.phone && x.title.toLowerCase().contains('holiday')
+    )
     userVisitationHolidays.forEach((holiday) => {
-      const apiHoliday = apiHolidays.filter((x) => x.date === moment(holiday.fromDate).format('yyyy-MM-DD'))[0]
-      if (apiHoliday !== undefined && apiHoliday.hasOwnProperty('name')) {
-        holiday.title += ` (${apiHoliday.name})`
-      }
+      holiday.title += ` (${holiday?.holidayName})`
     })
     setSearchResultsToUse(userVisitationHolidays)
     setShowFilters(!showFilters)
@@ -423,7 +433,7 @@ export default function EventCalendar() {
       />
 
       {/* CLOSE SEARCH BUTTON */}
-      {allHolidays.length > 0 && (
+      {searchResultsToUse.length > 0 && (
         <BottomButton
           iconName="close"
           elClass={'red visible'}
@@ -714,10 +724,7 @@ export default function EventCalendar() {
                                   <div className="text">
                                     {/* TITLE */}
                                     <p className="title mb-3" data-event-id={event.id}>
-                                      <b className="text-small-title">
-                                        {CalendarManager.formatEventTitle(event.title)}
-                                        {Manager.isValid(event.visitationEnd) && event.visitationEnd === true ? ' (END)' : ''}
-                                      </b>
+                                      <b className="text-small-title">{CalendarManager.formatEventTitle(event.title)}</b>
                                     </p>
 
                                     <div className={`${currentUser?.settings?.theme} event-content`}>
@@ -762,7 +769,7 @@ export default function EventCalendar() {
                                             <span className="mr-0 material-icons-round event-icon">face</span>Children:
                                             {event.children.map((child, index) => {
                                               return (
-                                                <span key={index} className="child-name">
+                                                <span key={index} className="child-date">
                                                   {child}
                                                 </span>
                                               )
@@ -811,7 +818,7 @@ export default function EventCalendar() {
                                         <div className="event-row reminders">
                                           <>
                                             <span className={`event-icon material-icons-round`}>notifications_active</span>
-                                            <div className="flex">
+                                            <div className="flex" id="reminder-times-flex">
                                               <p id="reminders-title">Reminders: </p>
 
                                               <p

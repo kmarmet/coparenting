@@ -13,11 +13,11 @@ VisitationMapper = {
       case type.contains('50'):
         return scheduleTypes.fiftyFifty;
       case type.contains('Specific Weekends'):
-        return scheduleTypes.variableWeekends;
+        return scheduleTypes.specificWeekends;
       case type.contains('Every Weekend'):
-        return scheduleTypes.weekends;
+        return scheduleTypes.everyOtherWeekend;
       case type.contains('Every other Weekend'):
-        return scheduleTypes.weekends;
+        return scheduleTypes.everyOtherWeekend;
     }
     return null;
   }

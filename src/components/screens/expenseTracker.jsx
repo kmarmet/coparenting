@@ -102,17 +102,19 @@ export default function ExpenseTracker() {
       let existingExpenses = await DB.getTable(DB.tables.expenseTracker)
       existingExpenses = expenseLog.filter((x) => x.name === currentExpense.name && x.repeating === true)
       existingExpenses.forEach(async (expense) => {
-        await DB.delete(DB.tables.expenseTracker, expense.id).finally(async () => {
-          setCurrentExpense(false)
-          setDeleteConfirmTitle('')
-          setState({ ...state, showAlert: true, alertMessage: `All ${currentExpense.name} expenses have been deleted` })
-          await getExpensesFromDb()
-            .then((fromDb) => {
-              updateLogFromDb(fromDb)
-              setViewType(ViewTypes.all)
-            })
-            .finally(whenDone)
-        })
+        await DB.delete(DB.tables.expenseTracker, expense.id)
+          .finally(async () => {
+            setCurrentExpense(false)
+            setDeleteConfirmTitle('')
+            setState({ ...state, showAlert: true, alertMessage: `All ${currentExpense.name} expenses have been deleted`, alertType: 'success' })
+            await getExpensesFromDb()
+              .then((fromDb) => {
+                updateLogFromDb(fromDb)
+                setViewType(ViewTypes.all)
+              })
+              .finally(whenDone)
+          })
+          .then((r) => r)
       })
     }
   }
@@ -273,7 +275,7 @@ export default function ExpenseTracker() {
               <div className="options">
                 {/* ZELLE */}
                 <div className="option zelle">
-                  <p className="brand-name accent">Zelle</p>
+                  <p className="brand-date accent">Zelle</p>
                   <div className="flex">
                     <img className="active" src={require('../../img/brandLogos/zelle.png')} alt="" />
                     <div className="text">
@@ -294,7 +296,7 @@ export default function ExpenseTracker() {
 
                 {/* VENMO */}
                 <div className="option venmo">
-                  <p className="brand-name">Venmo</p>
+                  <p className="brand-date">Venmo</p>
                   <div className="flex">
                     <img className="active" src={require('../../img/brandLogos/venmo.png')} alt="" />
                     <div className="text">
@@ -317,7 +319,7 @@ export default function ExpenseTracker() {
                 </div>
                 {/* APPLE PAY */}
                 <div className="option apple-cash">
-                  <p className="brand-name">Apple Cash</p>
+                  <p className="brand-date">Apple Cash</p>
                   <div className="flex ">
                     <img className="active" src={require('../../img/brandLogos/applepay.png')} alt="" />
                     <div className="text">
@@ -331,7 +333,7 @@ export default function ExpenseTracker() {
 
                 {/* PAYPAL */}
                 <div className="option paypal">
-                  <p className="brand-name">PayPal</p>
+                  <p className="brand-date">PayPal</p>
                   <div className="flex">
                     <img className="active" src={require('../../img/brandLogos/paypal.png')} alt="" />
                     <div className="text">
@@ -345,7 +347,7 @@ export default function ExpenseTracker() {
 
                 {/* CASHAPP */}
                 <div className="option cashapp">
-                  <p className="brand-name">CashApp</p>
+                  <p className="brand-date">CashApp</p>
                   <div className="flex">
                     <img className="active" src={require('../../img/brandLogos/cashapp.png')} alt="" />
                     <div className="text">
@@ -407,11 +409,11 @@ export default function ExpenseTracker() {
                         <div className="flex">
                           <p
                             onBlur={(e) => {
-                              handleEditable(e, expense, 'name', e.currentTarget.innerHTML).then((r) => r)
+                              handleEditable(e, expense, 'date', e.currentTarget.innerHTML).then((r) => r)
                             }}
                             contentEditable
                             dangerouslySetInnerHTML={{ __html: expense.name.uppercaseFirstLetterOfAllWords() }}
-                            className="name"></p>
+                            className="date"></p>
                           <div className="flex amount-flex">
                             <span
                               className="amount"

@@ -61,23 +61,23 @@ function NewExpenseForm() {
 
   const submitNewExpense = async () => {
     if (payer.name.length === 0) {
-      setState({ ...state, alertMessage: 'Please select will be paying the expense', showAlert: true })
+      setState({ ...state, alertMessage: 'Please select will be paying the expense', showAlert: true, alertType: 'error' })
       return false
     }
     if (!expenseDueDate || expenseDueDate.length === 0) {
-      setState({ ...state, alertMessage: 'Please choose a due date', showAlert: true })
+      setState({ ...state, alertMessage: 'Please choose a due date', showAlert: true, alertType: 'error' })
       return false
     }
     if (expenseName.length === 0) {
-      setState({ ...state, alertMessage: 'Please add an expense name', showAlert: true })
+      setState({ ...state, alertMessage: 'Please add an expense name', showAlert: true, alertType: 'error' })
       return false
     }
     if (expenseAmount.length === 0) {
-      setState({ ...state, alertMessage: 'Please add an expense expenseAmount', showAlert: true })
+      setState({ ...state, alertMessage: 'Please add an expense expenseAmount', showAlert: true, alertType: 'error' })
       return false
     }
     if (shareWith.length === 0) {
-      setState({ ...state, alertMessage: 'Please select who can view this expense', showAlert: true })
+      setState({ ...state, alertMessage: 'Please select who can view this expense', showAlert: true, alertType: 'error' })
       return false
     }
     const newExpense = new Expense()

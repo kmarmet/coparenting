@@ -22,7 +22,7 @@ ScreenNames=
   conversation: 'conversation'
   coparents: 'coparents'
   uploadDocuments: 'uploadDocuments'
-  standardDocs: 'standardDocs'
+  docViewer: 'docViewer'
   featureRequests: 'featureRequests'
   feedback: 'feedback'
   contactSupport: 'contactSupport'
@@ -37,6 +37,6 @@ ScreenNames=
   newSwapRequest: 'newSwapRequest'
   newTransferRequest: 'newTransferRequest'
   newCoparent: 'newCoparent'
-  childSelector: 'childSelector',
+  childSelector: 'childSelector'
   reviseTransferRequest: 'reviseTransferRequest'
 export default ScreenNames

@@ -50,7 +50,6 @@ export default function Registration() {
     if (isValid) {
       // Check for existing account
       await DB.getTable(DB.tables.users).then((users) => {
-        console.log(users)
         if (!Array.isArray()) {
           users = DB.convertKeyObjectToArray(users)
         }
@@ -88,7 +87,7 @@ export default function Registration() {
     const isValid = validateChildForm()
     if (isValid) {
       if (!verificationCode || verificationCode?.length === 0) {
-        setState({ ...state, showAlert: true, alertMessage: 'Verification code is required' })
+        setState({ ...state, showAlert: true, alertMessage: 'Verification code is required', alertType: 'error' })
         return false
       }
       let parent = await DB_UserScoped.getUser(DB.tables.users, parentPhone)
@@ -125,6 +124,7 @@ export default function Registration() {
           ...state,
           showAlert: true,
           alertMessage: `There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`,
+          alertType: 'error',
         })
         return false
       }
@@ -136,27 +136,27 @@ export default function Registration() {
   const validateChildForm = () => {
     let valid = true
     if (!parentPhone || parentPhone?.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: "Parent's phone number is required" })
+      setState({ ...state, showAlert: true, alertMessage: "Parent's phone number is required", alertType: 'error' })
       valid = false
     }
     if (!Manager.phoneNumberIsValid(parentPhone)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid' })
+      setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid', alertType: 'error' })
       return false
     }
     if (userName.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Your name is required' })
+      setState({ ...state, showAlert: true, alertMessage: 'Your name is required', alertType: 'error' })
       valid = false
     }
     if (password.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Your password is required' })
+      setState({ ...state, showAlert: true, alertMessage: 'Your password is required', alertType: 'error' })
       valid = false
     }
     if (confirmedPassword.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Confirmed password is required' })
+      setState({ ...state, showAlert: true, alertMessage: 'Confirmed password is required', alertType: 'error' })
       valid = false
     }
     if (confirmedPassword !== password) {
-      setState({ ...state, showAlert: true, alertMessage: 'Password and confirmed password do not match' })
+      setState({ ...state, showAlert: true, alertMessage: 'Password and confirmed password do not match', alertType: 'error' })
       valid = false
     }
 
@@ -167,26 +167,26 @@ export default function Registration() {
     let valid = true
 
     if (!Manager.phoneNumberIsValid(phone)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid' })
+      setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid', alertType: 'error' })
       return false
     }
 
     if (parentType.length === 0) {
-      setState({ ...state, alertMessage: 'Select your parent type', showAlert: true })
+      setState({ ...state, alertMessage: 'Select your parent type', showAlert: true, alertType: 'error' })
       valid = false
     }
 
     if (Manager.validation([userName, email, phone, parentType]) > 0) {
-      setState({ ...state, alertMessage: 'Please fill out all fields', showAlert: true })
+      setState({ ...state, alertMessage: 'Please fill out all fields', showAlert: true, alertType: 'error' })
       valid = false
     }
 
     if (!Manager.formatPhoneNumber(phone)) {
-      setState({ ...state, alertMessage: 'Enter a valid phone number', showAlert: true })
+      setState({ ...state, alertMessage: 'Enter a valid phone number', showAlert: true, alertType: 'error' })
     }
 
     if (children.length === 0) {
-      setState({ ...state, alertMessage: 'Please enter at least 1 child', showAlert: true })
+      setState({ ...state, alertMessage: 'Please enter at least 1 child', showAlert: true, alertType: 'error' })
       valid = false
     }
 

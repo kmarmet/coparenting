@@ -15,7 +15,6 @@
       }
     }
     .convo-message {
-      background-color: var(--borderColor);
       border-radius: $borderRadius;
       margin-bottom: 10px;
       padding: 10px;
@@ -95,7 +94,6 @@
       align-items: center;
       border-bottom: 0;
       flex-wrap: nowrap;
-      border-bottom: 1px solid var(--borderColor);
       padding: 0 10px;
       min-height: 80px;
       #thread-action-button {
@@ -173,7 +171,6 @@
       height: 25px;
       padding: 1px 10px 0 10px;
       font-weight: 500;
-      border: 1px solid var(--translucent);
       display: none;
       color: white;
       margin-left: auto;
@@ -284,7 +281,6 @@
     }
 
     .search-input {
-      background-color: var(--borderColor);
       border: 0;
       border-radius: $borderRadius;
       width: 100%;
@@ -301,7 +297,6 @@
       &::placeholder {
         position: relative;
         top: -2px;
-        color: var(--whiteOrBlack);
         opacity: 0.6;
         font-size: 14px;
       }

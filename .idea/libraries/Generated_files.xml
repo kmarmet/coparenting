@@ -12,6 +12,7 @@
         <item url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
         <item url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
+        <item url="file://$PROJECT_DIR$/src/globalFunctions.js" />
         <item url="file://$PROJECT_DIR$/src/managers/appManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/calendarManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
@@ -38,6 +39,7 @@
       <root url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
       <root url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
+      <root url="file://$PROJECT_DIR$/src/globalFunctions.js" />
       <root url="file://$PROJECT_DIR$/src/managers/appManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/calendarManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />

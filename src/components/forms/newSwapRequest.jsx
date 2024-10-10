@@ -28,7 +28,7 @@ export default function NewSwapRequest() {
 
   const submit = async () => {
     if (requestRange.length === 0 || shareWith.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields', alertType: 'error' })
       return false
     } else {
       let newRequest = new SwapRequest()

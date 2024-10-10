@@ -37,7 +37,7 @@ const NewChildForm = () => {
     const dbRef = ref(getDatabase())
 
     if (Manager.validation([name, dateOfBirth]) > 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields', alertType: 'error' })
       return false
     } else {
       setState({ ...state, currentScreen: ScreenNames.childInfo, alertMessage: '', showAlert: false })

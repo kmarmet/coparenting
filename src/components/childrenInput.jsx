@@ -22,12 +22,12 @@ export default function ChildrenInput({ add, childrenCount }) {
           className="button default green"
           onClick={() => {
             if (name.length == 0) {
-              setState({ ...state, showAlert: true, alertMessage: 'Please enter required fields' })
+              setState({ ...state, showAlert: true, alertMessage: 'Please enter required fields', alertType: 'error' })
               return false
             }
             if (phone.length > 0) {
               if (!Manager.phoneNumberIsValid(phone)) {
-                setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid' })
+                setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid', alertType: 'error' })
                 return false
               }
             }

@@ -11,8 +11,20 @@ import Behavior from '../childInfo/behavior'
 import General from '../childInfo/general'
 import Medical from '../childInfo/medical'
 import Schooling from '../childInfo/schooling'
-import DB_UserScoped from '@userScoped'
-import PopupCard from 'components/shared/popupCard'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  uniqueArray,
+} from '../../../globalFunctions'
 
 export default function ChildInfo() {
   // @ts-ignore
@@ -26,7 +38,7 @@ export default function ChildInfo() {
     // @ts-ignore
     const imgFiles = document.getElementById('upload-input').files
     if (imgFiles.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose an image', isLoading: false })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose an image', isLoading: false, alertType: 'error' })
       return false
     }
 
@@ -78,7 +90,7 @@ export default function ChildInfo() {
               </div>
             )}
 
-            <span className="child-name">{selectedChild?.general?.name.formatNameFirstNameOnly()}</span>
+            <span className="child-date">{formatNameFirstNameOnly(selectedChild?.general?.name)}</span>
           </>
         </div>
 

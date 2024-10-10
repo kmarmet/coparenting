@@ -8,11 +8,11 @@ VisitationMapper =
       when type.contains '50'
         return scheduleTypes.fiftyFifty
       when type.contains 'Specific Weekends'
-        return scheduleTypes.variableWeekends
+        return scheduleTypes.specificWeekends
       when type.contains 'Every Weekend'
-        return scheduleTypes.weekends
+        return scheduleTypes.everyOtherWeekend
       when type.contains 'Every other Weekend'
-        return scheduleTypes.weekends
+        return scheduleTypes.everyOtherWeekend
     null
 
 

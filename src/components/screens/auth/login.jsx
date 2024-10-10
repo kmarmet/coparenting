@@ -21,7 +21,7 @@ export default function Login() {
   const manualLogin = async () => {
     const foundUser = await tryGetCurrentUser()
     if (Manager.validation([phone, password]) > 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please fill out all fields' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please fill out all fields', alertType: 'error' })
       return false
     }
     document.body.classList.add('dark')
@@ -40,7 +40,7 @@ export default function Login() {
         isLoading: false,
       })
     } else {
-      setState({ ...state, showAlert: true, alertMessage: 'Incorrect phone and/or password' })
+      setState({ ...state, showAlert: true, alertMessage: 'Incorrect phone and/or password', alertType: 'error' })
     }
   }
 
@@ -129,7 +129,6 @@ export default function Login() {
   }
 
   useLayoutEffect(() => {
-    console.log('he')
     setTimeout(() => {
       const menuButton = document.querySelector('#menu-button')
       if (menuButton) {

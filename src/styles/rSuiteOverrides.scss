@@ -394,8 +394,7 @@ S
 
       .flatpickr-monthDropdown-months {
         option {
-          background-color: var(--bgColor);
-          color: var(--textColor);
+          
           font-size: 16px;
           font-weight: 500;
         }
@@ -416,7 +415,7 @@ S
     .flatpickr-prev-month,
     .flatpickr-next-month {
       position: relative;
-      color: var(--textColor);
+      
       padding-left: 0;
       padding-right: 0;
       font-weight: bold !important;
@@ -464,12 +463,11 @@ S
     outline: none;
 
     .rs-picker-toggle-placeholder {
-      color: var(--textColor);
+    
     }
   }
 
   .rs-panel-title {
-    color: var(--whiteOrBlack);
   }
 
   .rs-picker {
@@ -482,7 +480,7 @@ S
     vertical-align: baseline;
 
     &::placeholder {
-      color: var(--textColor);
+    
     }
   }
 
@@ -506,7 +504,7 @@ S
     outline: none;
 
     .rs-picker-label {
-      color: var(--textColor);
+      
       padding-left: 0;
       padding-right: 10px !important;
       font-weight: 300;
@@ -514,7 +512,7 @@ S
     }
 
     &::placeholder {
-      color: var(--textColor);
+    
     }
   }
 
@@ -530,7 +528,6 @@ S
     outline: none;
 
     ul {
-      background-color: var(--bgColor) !important;
       border: 0 !important;
       @include shadow();
 
@@ -538,7 +535,6 @@ S
         padding: 10px !important;
 
         span {
-          color: var(--whiteOrBlack) !important;
           opacity: 0.8;
         }
       }
@@ -547,7 +543,6 @@ S
     .rs-dropdown-toggle,
     .rs-btn,
     .rs-btn-default {
-      background-color: var(--borderColor) !important;
       border: 0;
       width: 100%;
       color: white;
@@ -555,20 +550,19 @@ S
     }
 
     .rs-picker-toggle-value {
-      color: var(--textColor);
+      
       outline: none;
     }
 
     ul {
       background-color: transparent;
-      border: 1px solid var(--compColor);
       width: 100%;
       position: relative;
       z-index: 1000;
 
       li {
         span {
-          color: var(--textColor);
+        
         }
       }
     }
@@ -585,7 +579,6 @@ S
 
   .rs-input-group-addon {
     border: 0;
-    border-bottom: 1px solid var(--borderColor);
     height: 30px;
 
     svg {
@@ -650,7 +643,6 @@ S
     .rs-picker-toolbar {
       height: 50vh;
       top: 0;
-      border-top: 1px solid var(--borderColor);
     }
 
     .rs-calendar {
@@ -734,7 +726,6 @@ S
 
       [aria-selected='true'] {
         span {
-          background-color: var(--borderColor);
           border-radius: $borderRadius;
         }
       }
@@ -782,7 +773,6 @@ S
       color: white;
       font-size: 16px;
       line-height: 1.2;
-      background-color: var(--compColor);
     }
   }
 
@@ -797,7 +787,6 @@ S
       text-align: center !important;
       margin: 0 !important;
       padding: 10px !important;
-      background-color: var(--menuBg) !important;
       border-radius: 15px;
       transition: top 0.2s linear;
       box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5) !important;
@@ -845,8 +834,6 @@ S
 
       .rs-calendar-table-cell-is-today {
         .rs-calendar-table-cell-content {
-          -webkit-box-shadow: inset 0 0 0 1px var(--accent) !important;
-          box-shadow: inset 0 0 0 1px var(--accent) !important;
         }
       }
 
@@ -859,10 +846,8 @@ S
       }
 
       .rs-calendar-time-dropdown {
-        background-color: var(--menuBg);
 
         .rs-calendar-time-dropdown-column-title {
-          background-color: var(--menuBg);
         }
 
         .rs-calendar-time-dropdown-cell-active {
@@ -942,7 +927,7 @@ S
     outline: none;
 
     .rs-picker-toggle-placeholder {
-      color: var(--textColor);
+    
     }
   }
 
@@ -955,7 +940,7 @@ S
     vertical-align: baseline;
 
     &::placeholder {
-      color: var(--textColor);
+    
     }
   }
 
@@ -1003,11 +988,9 @@ S
       &:-webkit-autofill:hover,
       &:-webkit-autofill:focus,
       &:-webkit-autofill:active {
-        -webkit-text-fill-color: var(--whiteOrBlack);
       }
 
       &::placeholder {
-        color: var(--whiteOrBlack);
         opacity: 0.6;
         font-style: italic;
         font-weight: 300;
@@ -1016,7 +999,6 @@ S
 
     textarea {
       height: 150px;
-      border: 1px solid var(--translucent);
       padding: 10px;
       border-radius: 8px;
     }
@@ -1037,27 +1019,24 @@ S
     .rs-btn,
     .rs-btn-default {
       background-color: transparent !important;
-      border: 1px solid var(--translucent);
       width: 100%;
-      color: var(--textColor);
+      
       font-weight: 300;
     }
 
     .rs-picker-toggle-value {
-      color: var(--textColor);
+      
       outline: none;
     }
 
     ul {
       background-color: transparent;
-      border: 1px solid var(--compColor);
-      width: 100%;
       position: relative;
       z-index: 1000;
 
       li {
         span {
-          color: var(--textColor);
+        
         }
       }
     }

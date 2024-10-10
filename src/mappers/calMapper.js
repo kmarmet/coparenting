@@ -5,6 +5,8 @@ import ReminderTimes from 'constants/reminderTimes';
 
 import DateManager from 'managers/dateManager';
 
+import moment from "moment";
+
 CalendarMapper = {
   reminderTimes: function(timeframe) {
     var _timeframe;
@@ -73,6 +75,106 @@ CalendarMapper = {
       datesToRepeat = DateManager.getMonthlyDates(eventFromDate, repeatingEndDate);
     }
     return datesToRepeat;
+  },
+  holidayNameToDate: function(name) {
+    switch (true) {
+      case name === "New Year's Day":
+        return '01/01';
+      case name === "New Year's":
+        return '01/01';
+      case name === "Martin Luther King Day":
+        return '01/15';
+      case name === "Good Friday":
+        return '05/29';
+      case name === 'Easter':
+        return '04/20';
+      case name === 'Juneteenth':
+        return '06/19';
+      case name === "Father's Day":
+        return '06/15';
+      case name === "Mother's Day":
+        return '05/11';
+      case name === 'Memorial Day':
+        return '05/27';
+      case name === 'Independence Day':
+        return '07/04';
+      case name === 'Labor Day':
+        return '09/02';
+      case name === 'Columbus Day':
+        return '10/14';
+      case name === 'Halloween':
+        return '10/31';
+      case name === 'Christmas':
+        return '12/25';
+      case name === 'Christmas Day':
+        return '12/25';
+      case name === 'Christmas Eve':
+        return '12/24';
+      case name === "New Year's Eve":
+        return '12/31';
+      case name === "Veteran's Day":
+        return '11/11';
+      case name === "Thanksgiving Day":
+        return '11/28';
+      default:
+        return null;
+    }
+  },
+  holidayDateToName: function(date) {
+    date = moment(date).format("MM/DD");
+    switch (true) {
+      case date === '01/01':
+        return "New Year's Day";
+      case date === '01/15':
+        return "Martin Luther King Day";
+      case date === '05/29':
+        return "Good Friday";
+      case date === '04/20':
+        return 'Easter';
+      case date === '06/19':
+        return 'Juneteenth';
+      case date === '06/15':
+        return "Father's Day";
+      case date === '05/11':
+        return "Mother's Day";
+      case date === '05/27':
+        return 'Memorial Day';
+      case date === '07/04':
+        return 'Independence Day';
+      case date === '09/02':
+        return 'Labor Day';
+      case date === '10/14':
+        return 'Columbus Day';
+      case date === '12/25':
+        return 'Christmas Day';
+      case date === '12/24':
+        return 'Christmas Eve';
+      case date === '12/31':
+        return "New Year's Eve";
+      case date === '11/11':
+        return "Veteran's Day";
+      case date === '11/28':
+        return "Thanksgiving Day";
+      default:
+        return null;
+    }
+  },
+  eventsToHolidays: function(holidayEvents) {
+    var holiday, holidayDate, holidayName, i, len, obj, userHolidaysList;
+    userHolidaysList = [];
+    for (i = 0, len = holidayEvents.length; i < len; i++) {
+      holiday = holidayEvents[i];
+      obj = {
+        name: '',
+        date: ''
+      };
+      holidayName = CalendarMapper.holidayDateToName(holiday.fromDate);
+      holidayDate = holiday.fromDate;
+      obj.name = holidayName;
+      obj.date = holidayDate;
+      userHolidaysList.push(obj);
+    }
+    return userHolidaysList;
   }
 };
 

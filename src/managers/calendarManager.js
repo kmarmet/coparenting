@@ -20,6 +20,20 @@ import {
 
 import Manager from "./manager";
 
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension
+} from "../globalFunctions";
+
 export default CalendarManager = {
   getUniqueArrayOfObjects: (arr, key) => {
     var i, len, obj, output, results;
@@ -34,7 +48,7 @@ export default CalendarManager = {
   formatEventTitle: (title) => {
     if (title && title.length > 0) {
       title = title.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at");
-      return title.uppercaseFirstLetterOfAllWords();
+      return uppercaseFirstLetterOfAllWords(title);
     }
   },
   hideCalendar: () => {
@@ -47,22 +61,9 @@ export default CalendarManager = {
     }
   },
   addMultipleCalEvents: async function(newEvents) {
-    var currentEvents, dbRef, error, event, eventsToAdd, i, j, len, len1, newEvent;
+    var currentEvents, dbRef, error, eventsToAdd;
     dbRef = ref(getDatabase());
-    currentEvents = (await DB.getTable(DB.tables.calendarEvents));
-    if (!Array.isArray(currentEvents)) {
-      currentEvents = [currentEvents];
-    }
-// Delete Existing
-    for (i = 0, len = currentEvents.length; i < len; i++) {
-      event = currentEvents[i];
-      for (j = 0, len1 = newEvents.length; j < len1; j++) {
-        newEvent = newEvents[j];
-        if (event.fromDate === newEvent.fromDate && event.title === newEvent.title) {
-          await DB.delete(DB.tables.calendarEvents, event.id);
-        }
-      }
-    }
+    currentEvents = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents)));
     eventsToAdd = [...currentEvents, ...newEvents].filter(function(x) {
       return x != null;
     }).flat();
@@ -75,36 +76,43 @@ export default CalendarManager = {
   addCalendarEvent: async function(data) {
     var currentEvents, dbRef;
     dbRef = ref(getDatabase());
-    currentEvents = (await DB.getTable(DB.tables.calendarEvents));
-    if (!Array.isArray(currentEvents)) {
-      currentEvents = [];
-    }
+    currentEvents = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents)));
     currentEvents = currentEvents.filter(function(n) {
       return n;
     });
     return set(child(dbRef, `${DB.tables.calendarEvents}`), [...currentEvents, data]);
   },
+  deleteMultipleEvents: async function(events, currentUser) {
+    var dbRef, holiday, i, idToDelete, len, results, tableRecords, userHolidays;
+    dbRef = ref(getDatabase());
+    tableRecords = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents)));
+    userHolidays = tableRecords.filter((x) => {
+      return x.phone === currentUser.phone && x.isHoliday === true;
+    });
+    results = [];
+    for (i = 0, len = userHolidays.length; i < len; i++) {
+      holiday = userHolidays[i];
+      idToDelete = (await DB.getSnapshotKey(DB.tables.calendarEvents, holiday, 'id'));
+      results.push((await remove(child(dbRef, `${DB.tables.calendarEvents}/${idToDelete}/`))));
+    }
+    return results;
+  },
   deleteEvent: async function(tableName, id) {
     var dbRef, i, idToDelete, len, record, results, tableRecords;
     dbRef = ref(getDatabase());
     idToDelete = null;
-    tableRecords = (await DB.getTable(tableName));
-    if (Manager.isValid(tableRecords, true)) {
-      if (!Array.isArray(tableRecords)) {
-        tableRecords = DB.convertKeyObjectToArray(tableRecords);
+    tableRecords = Manager.convertToArray((await DB.getTable(tableName)));
+    results = [];
+    for (i = 0, len = tableRecords.length; i < len; i++) {
+      record = tableRecords[i];
+      if ((record != null ? record.id : void 0) === id) {
+        idToDelete = (await DB.getSnapshotKey(tableName, record, 'id'));
+        results.push(remove(child(dbRef, `${tableName}/${idToDelete}/`)));
+      } else {
+        results.push(void 0);
       }
-      results = [];
-      for (i = 0, len = tableRecords.length; i < len; i++) {
-        record = tableRecords[i];
-        if ((record != null ? record.id : void 0) === id) {
-          idToDelete = (await DB.getSnapshotKey(tableName, record, 'id'));
-          results.push(remove(child(dbRef, `${tableName}/${idToDelete}/`)));
-        } else {
-          results.push(void 0);
-        }
-      }
-      return results;
     }
+    return results;
   }
 };
 

@@ -48,7 +48,6 @@
 
       .shortcuts-example {
         border-radius: 15px;
-        border: 1px solid var(--borderColor);
       }
 
       .section {
@@ -75,7 +74,6 @@
         }
 
         .rs-heading {
-          background-color: var(--borderColor);
           margin: 0 auto;
           padding: 0;
 
@@ -83,7 +81,6 @@
             &:active,
             &:focus,
             &:focus-within {
-              background-color: var(--borderColor);
             }
           }
         }
@@ -111,7 +108,7 @@
             margin-left: 0;
 
             &:nth-child(2) {
-              color: var(--textColor);
+            
             }
 
             &.accent {
@@ -154,13 +151,12 @@
             }
 
             input {
-              border-bottom: 1px solid var(--translucent);
               border-radius: 0;
-              color: var(--textColor);
+              
               width: 100%;
 
               &::placeholder {
-                color: var(--textColor);
+                
                 opacity: 0.7;
                 font-style: italic;
                 font-size: 16px;
@@ -177,7 +173,7 @@
 
             &:nth-child(2) {
               margin-left: 20px;
-              color: var(--textColor);
+              
               font-size: 20px;
             }
           }
@@ -208,7 +204,7 @@
               font-size: 16px;
               margin-right: 20px;
               opacity: 0.5;
-              color: var(--textColor);
+              
             }
           }
         }

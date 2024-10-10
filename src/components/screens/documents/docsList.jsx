@@ -5,7 +5,7 @@ import DB from '@db'
 import Manager from '@manager'
 import DB_UserScoped from '@userScoped'
 import globalState from '../../../context'
-import StandardDocs from './standardDocs'
+import DocViewer from './docViewer'
 import DB_DocumentScoped from '@documentScoped'
 import AddNewButton from '../../shared/addNewButton'
 import FirebaseStorage from '@firebaseStorage'
@@ -68,7 +68,7 @@ export default function DocsList() {
                       data-id={doc.id}
                       onClick={() => {
                         setSelectedDoc(doc)
-                        setState({ ...state, docToView: doc, currentScreen: ScreenNames.standardDocs })
+                        setState({ ...state, docToView: doc, currentScreen: ScreenNames.docViewer })
                       }}>
                       {doc.name.formatFileName()}
                     </p>

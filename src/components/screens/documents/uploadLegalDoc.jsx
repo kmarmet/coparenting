@@ -10,10 +10,10 @@ export default function UploadLegalDoc() {
   const upload = async () => {
     const imgs = document.querySelector('#upload-input').files
     if (imgs.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose an image' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose an image', alertType: 'error' })
     } else {
       if (Object.entries(imgs).map((x) => x[1].name.includes('.doc'))[0] === true) {
-        setState({ ...state, showAlert: true, alertMessage: 'Uploaded file MUST be an image' })
+        setState({ ...state, showAlert: true, alertMessage: 'Uploaded file MUST be an image', alertType: 'error' })
       } else {
         await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.documents}/`, currentUser.id, imgs).then(() => {
           setState({ ...state, currentScreenTitle: 'Legal Documents', currentScreen: ScreenNames.legalDocs })

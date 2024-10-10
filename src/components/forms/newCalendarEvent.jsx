@@ -111,6 +111,7 @@ export default function NewCalendarEvent() {
       setState({
         ...state,
         showAlert: true,
+        alertType: 'error',
         alertMessage: 'For repeating events, please choose an end month. Or uncheck the interval option',
       })
       return false
@@ -118,12 +119,17 @@ export default function NewCalendarEvent() {
 
     // Single Event Validation
     if (Manager.validation([eventTitle, shareWith]) > 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields', alertType: 'error' })
       return false
     }
 
     if (reminderTimes.length > 0 && eventStartTime.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'If you set reminder times, please also uncheck All Day and add a start time' })
+      setState({
+        ...state,
+        showAlert: true,
+        alertMessage: 'If you set reminder times, please also uncheck All Day and add a start time',
+        alertType: 'error',
+      })
       return false
     }
 

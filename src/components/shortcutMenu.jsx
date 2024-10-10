@@ -3,7 +3,6 @@ import AppManager from '@managers/appManager'
 import globalState from 'context'
 import ScreenNames from '@screenNames'
 import Manager from '@manager'
-import ThemeManager from '@managers/themeManager'
 import DB from '@db'
 import DB_UserScoped from '@userScoped'
 import Shortcut from '../models/shortcut'
@@ -18,7 +17,7 @@ function ShortcutMenu() {
   const [secondHalfShortcutsFromDB, setSecondHalfShortcutsFromDB] = useState([])
 
   const changeCurrentScreen = async (screen) => {
-    setCurrentUser({
+    await setCurrentUser({
       currentScreen: screen,
       menuIsOpen: false,
       setAlertMessage: '',
@@ -113,9 +112,9 @@ function ShortcutMenu() {
     <div>
       <div id="shortcuts" className={`${currentUser?.settings?.theme}`}>
         {!menuIsOpen && (
-          <div id="bubble-menu-container">
+          <div id="shortcut-menu-container">
             {/* SKY */}
-            <div className="page-overlay bubble-menu" id="star-parallax">
+            <div className="page-overlay shortcut-menu" id="star-parallax">
               <div id="sky">
                 <div id="stars"></div>
                 <div id="stars2"></div>
@@ -138,7 +137,7 @@ function ShortcutMenu() {
               </span>
             </div>
 
-            <div id="bubble-menu-content">
+            <div id="shortcut-menu-content">
               {Manager.isValid(firstHalfShortcutsFromDB, true) &&
                 firstHalfShortcutsFromDB.map((shortcut, index) => {
                   return (

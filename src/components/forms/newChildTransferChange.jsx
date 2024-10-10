@@ -30,13 +30,13 @@ export default function NewChildTransferChangeRequest() {
 
   const submit = async () => {
     if (requestRecipientPhone.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose who to send the request to' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose who to send the request to', alertType: 'error' })
       return false
     } else if (requestLocation.length === 0 && requestTime.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose a new location or time' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose a new location or time', alertType: 'error' })
       return false
     } else if (requestDate.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose the day of the requested transfer change' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose the day of the requested transfer change', alertType: 'error' })
       return false
     } else {
       let newRequest = new TransferChangeRequest()

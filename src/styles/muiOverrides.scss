@@ -20,7 +20,6 @@
       }
       &.MuiTypography-h4 {
         font-size: 16px;
-        color: var(--whiteOrBlack);
         font-weight: bold;
       }
       &.MuiTypography-h3 {
@@ -41,7 +40,6 @@
       
       .MuiPickersCalendarHeader-label {
         font-size: 18px;
-        color: var(--whiteOrBlack);;
       }
       
       .MuiSvgIcon-root {
@@ -185,7 +183,6 @@
       &.MuiButton-root {
         color: white;
         font-weight: bold;
-        border: 1px solid var(--borderColor);
         border-radius: 15px;
         font-size: 18px;
         display: flex;
@@ -198,7 +195,6 @@
         
         &:first-child {
           background-color: transparent;
-          color: var(--whiteOrBlack);
         }
         &:nth-child(3) {
           margin-right: 8px;
@@ -213,7 +209,6 @@
     // Calendar/Time icon buttons
     .css-1m3hk3w-MuiButtonBase-root-MuiTab-root {
       &.Mui-selected {
-        background-color: var(--borderColor);
         border-bottom: 0;
         svg {
           border-bottom: 0;
@@ -222,7 +217,6 @@
     }
     // Blue bottom border
     .css-1sj2jcg-MuiTabs-indicator {
-      background-color: var(--pageContainer);
     }
   }
   
@@ -287,7 +281,6 @@
   .css-lxfshk-MuiInputBase-root-MuiOutlinedInput-root {
     &.Mui-error {
       .MuiOutlinedInput-notchedOutline {
-        border-color: var(--textColor) !important;
         border-radius: 0;
         border: 0 !important;
       }
@@ -380,7 +373,7 @@
   
   .css-ufcxyz-MuiTypography-root-MuiDayCalendar-weekDayLabel {
     font-weight: bold;
-    color: var(--textColor) !important;
+    
   }
   
   .MuiPickersLayout-root {

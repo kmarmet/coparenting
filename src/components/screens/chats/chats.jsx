@@ -16,6 +16,21 @@ import Confirm from 'components/shared/confirm.jsx'
 import DateFormats from '../../../constants/dateFormats'
 import manager from '@manager'
 import BottomButton from '../../shared/bottomButton'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+} from '../../../globalFunctions'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -40,7 +55,7 @@ const Chats = () => {
       setTimeout(async () => {
         const threadItems = document.querySelectorAll('.thread-item')
         for (const item of threadItems) {
-          const parWithPhone = item.querySelector('.coparent-name')
+          const parWithPhone = item.querySelector('.coparent-date')
           if (parWithPhone) {
             const coparentPhoneNumber = parWithPhone.getAttribute('data-coparent-phone')
             const coparent = currentUser.coparents.filter((x) => x.phone === coparentPhoneNumber)[0]
@@ -123,7 +138,7 @@ const Chats = () => {
   }
 
   const getSetActiveChats = async () => {
-    const activeChats = await ChatManager.getActiveChats(currentUser)
+    const activeChats = Manager.convertToArray(await ChatManager.getActiveChats(currentUser))
     const activeChatsMembers = activeChats.map((x) => x.memberPhones).flat()
     setActiveChatsMembers(activeChatsMembers || [])
   }
@@ -202,7 +217,7 @@ const Chats = () => {
                   }}
                   data-coparent-phone={coparent.phone}
                   className="coparent-name">
-                  {coparent.name.formatNameFirstNameOnly()}
+                  {formatNameFirstNameOnly(coparent.name)}
                 </p>
                 <span
                   className="material-icons-round"
@@ -239,7 +254,7 @@ const Chats = () => {
             .filter((x) => !activeChatsMembers.includes(x.phone))
             .map((coparent, index) => {
               return (
-                <p key={index} className="coparent-name thread-item blue" onClick={() => openMessageThread(coparent.phone)}>
+                <p key={index} className="coparent-date thread-item blue" onClick={() => openMessageThread(coparent.phone)}>
                   {coparent.name} <span className="material-icons">arrow_forward_ios</span>
                 </p>
               )

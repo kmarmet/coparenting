@@ -25,10 +25,8 @@
             margin-bottom: 8px;
             margin-right: 8px;
             @include shadow;
-            background-color: var(--borderColor);
 
             &.active {
-                background-color: var(--compColor);
             }
         }
 
@@ -39,7 +37,7 @@
             font-weight: 400;
             @include shadow;
             position: relative;
-            color: var(--textColor);
+            
 
             .close-info {
                 position: absolute;
@@ -47,7 +45,7 @@
                 top: 10px;
                 font-size: 20px;
                 font-weight: bold;
-                color: var(--textColor);
+                
             }
         }
 
@@ -84,7 +82,7 @@
                 background-color: white;
 
                 p {
-                    color: var(--textColor);
+                    
                     font-weight: 500;
                 }
             }
@@ -109,7 +107,6 @@
                     text-align: center;
                     margin: 0 auto;
                     display: block;
-                    color: var(--borderColor);
                     position: relative;
                     top: 2px;
                 }
@@ -132,7 +129,7 @@
                         margin-left: 0;
 
                         &:nth-child(2) {
-                            color: var(--textColor);
+                        
                         }
 
                         &.accent {
@@ -163,7 +160,7 @@
 
                         &:nth-child(2) {
                             margin-left: 20px;
-                            color: var(--textColor);
+                            
                         }
                     }
 
@@ -351,7 +348,6 @@
                 }
 
                 p {
-                    color: var(--textColor, 'white');
                     font-weight: 400;
                 }
             }

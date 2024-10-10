@@ -73,7 +73,6 @@
                     .box {
 
                         &.active {
-                            background-color: var(--compColor);
                             ;
                         }
                     }
@@ -210,8 +209,6 @@
 
         #forgot-password-link {
             font-size: 16px;
-//            text-decoration: underline;
-            color: var(--compColor);
 
             span {
                 position: relative;
@@ -235,7 +232,7 @@
             }
 
             span {
-                color: var(--textColor);
+                
                 opacity: .1;
                 position: absolute;
 
@@ -252,7 +249,7 @@
             p {
                 font-size: 18px;
                 width: 100%;
-                color: var(--textColor);
+                
                 text-align: center;
                 font-style: italic;
 
@@ -281,7 +278,7 @@
             p {
                 width: 100%;
                 text-align: center;
-                color: var(--textColor);
+                
                 font-weight: bold;
                 font-size: 25px;
                 ;

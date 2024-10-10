@@ -20,7 +20,7 @@ function Feedback() {
 
   const submit = () => {
     if (feedback.length === 0) {
-      setState({ ...state, alertMessage: 'Please enter your feedback about the app (good OR bad)', showAlert: true })
+      setState({ ...state, alertMessage: 'Please enter your feedback about the app (good OR bad)', showAlert: true, alertType: 'error' })
       return false
     }
     EmailManager.sendEmail(currentUser.email, EmailManager.supportEmail, `App Feedback: ${feedback}`)

@@ -13,7 +13,6 @@
 
             .conversation-canvas {
                 width: 100%;
-                border: 1px solid var(--borderColor);
                 border-radius: $borderRadius;
             }
         }
@@ -52,7 +51,7 @@
                         margin-left: 0;
 
                         &:nth-child(2) {
-                            color: var(--textColor);
+                        
                         }
 
                         &.accent {
@@ -83,7 +82,7 @@
 
                         &:nth-child(2) {
                             margin-left: 20px;
-                            color: var(--textColor);
+                            
                         }
                     }
 
@@ -113,7 +112,7 @@
         }
 
         .back-button {
-            color: var(--textColor);
+            
             font-weight: 400;
             margin-bottom: 8px;
             display: flex;

@@ -99,6 +99,7 @@ export default function Coparents() {
     if (autocompleteInput) {
       document.querySelector('.pac-target-input').setAttribute('placeholder', 'Enter updated address')
     }
+    setState({ ...state, showMenuButton: true, showBackButton: false })
   }, [])
 
   return (
@@ -140,7 +141,6 @@ export default function Coparents() {
                   onClick={() => setSelectedCoparent(coparent)}
                   className={selectedCoparent && selectedCoparent.phone === coparent.phone ? 'active coparent' : 'coparent'}
                   data-phone={coparent.phone}
-                  data-name={coparent.name}
                   key={index}>
                   <span className="material-icons-round">escalator_warning</span>
                   <span className="coparent-name">{coparent.name.formatNameFirstNameOnly()}</span>

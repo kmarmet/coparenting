@@ -1,7 +1,6 @@
 @import './_mixins.scss';
 
 #fallback {
-  background-color: var(--pageContainer);
   height: 100vh;
   width: 100vw;
 
@@ -57,6 +56,10 @@
             color: $lightBlackLight;
             background-color: $lightGrey;
             border-radius: 20px;
+            
+            &.red {
+              background-color: $red;
+            }
           }
         }
       }
@@ -65,15 +68,19 @@
       }
     }
     /*#endregion  LIGHT THEME*/
-    
+
     /*#region  DARK THEME*/
     .dark {
       .button {
         &.default {
           &.default {
             color: white;
-            border-radius: 20px;
+//            border-radius: 20px;
             background-color: $darkBlue;
+            
+            &.red {
+              background-color: $red;
+            }
           }
         }
       }
@@ -82,7 +89,7 @@
       }
     }
     /*#endregion  DARK THEME*/
-    
+
     p {
       /*#region  DARK THEME*/
       &.dark {
@@ -109,7 +116,7 @@
           color: $darkBlueMedium;
           font-weight: 600;
         }
-        
+
         .rs-anim-collapse {
           background-color: $lightGrey;
         }
@@ -232,8 +239,8 @@
 
     .requirement-text {
       font-style: italic;
-      font-weight: 100;
-      opacity: 0.4;
+      opacity: 1;
+      font-weight: 600;
     }
 
     .screen-title {
@@ -334,7 +341,6 @@
     }
 
     .white-text {
-      color: var(--whiteOrBlack);
       opacity: 0.87;
     }
 
@@ -359,8 +365,6 @@
     }
 
     .note {
-      background-color: var(--pageContainer);
-      color: black;
       padding: 0 8px 8px 8px;
       border-radius: $borderRadius;
 
@@ -595,7 +599,7 @@
         backdrop-filter: blur(10px);
       }
 
-      &.bubble-menu {
+      &.shortcut-menu {
         transition: all 1s ease-in-out;
         backdrop-filter: blur(30px);
         background-color: #10132d;
@@ -635,7 +639,7 @@
     }
 
     .instructions {
-      color: var(--textColor);
+      
       opacity: 0.7;
       font-style: italic;
       text-align: left;

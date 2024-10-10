@@ -10,8 +10,24 @@ import Manager from '@manager'
 import { useSwipeable } from 'react-swipeable'
 import BottomCard from '../../shared/bottomCard'
 import { DebounceInput } from 'react-debounce-input'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension,
+} from '../../../globalFunctions'
 
-export default function StandardDocs() {
+export default function DocViewer() {
   const { state, setState } = useContext(globalState)
   const { currentUser, previousScreen, currentScreen, docToView } = state
   const [images, setImages] = useState([])
@@ -26,13 +42,16 @@ export default function StandardDocs() {
   const [searchResultsIndex, setSearchResultsIndex] = useState(1)
   const [showTocButton, setShowTocButton] = useState(true)
   const [showSearchInput, setShowSearchInput] = useState(false)
+  const [showTextContainer, setShowTextContainer] = useState(false)
+  const [convertedImageCount, setConvertedImageCount] = useState(0)
+
   const scrollToHeader = (header) => {
     closeSearch()
     const firstChar = header.slice(0, 1)
     if (firstChar === '-') {
       header = header.replace('-', '')
     }
-    const el = document.querySelector(`.header[data-header-name='${header}']`)
+    const el = document.querySelector(`.header[data-header-date='${header}']`)
     setTimeout(() => {
       if (el) {
         el.scrollIntoView({
@@ -42,104 +61,13 @@ export default function StandardDocs() {
       }
     }, 500)
   }
-
-  const getDocsAndImages = async () => {
-    if (currentUser) {
-      setState({ ...state, isLoading: true })
-      const url = docToView.url
-      const fileName = FirebaseStorage.getImageNameFromUrl(url)
-      const textContainer = document.getElementById('text-container')
-
-      // Set dynamic screen title
-      setScreenTitle(fileName.removeFileExtension())
-
-      // Insert HTML
-      const docHtml = await DocManager.docToHtml(fileName, currentUser.id)
-      textContainer.innerHTML = docHtml
-
-      // Format HTML
-      const pars = textContainer.querySelectorAll('p, li')
-      const listItems = textContainer.querySelectorAll('li')
-      const containsLettersRegex = /[a-zA-Z]/g
-
-      // List Item formatting
-      listItems.forEach((listItem, index) => {
-        if (listItem.textContent.stringHasNumbers() && listItem.textContent.toLowerCase().indexOf('article') > -1) {
-          listItem.classList.add('highlight')
-        }
-        if (listItem.textContent.isAllUppercase() && !listItem.classList.contains('header')) {
-          listItem.classList.add('highlight')
-        }
-        if (listItem.textContent.stringHasNumbers()) {
-          listItem.classList.add('highlight')
-        }
-        if (listItem.classList.contains('highlight')) {
-          const header = listItem.textContent.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
-          listItem.setAttribute('data-header-name', header)
-        }
-        const allStrongs = listItem.querySelectorAll('strong')
-        allStrongs.forEach((thisStrong) => {
-          DocManager.addHeaderClass(thisStrong)
-        })
-        DocManager.addHeaderClass(listItem)
-        if (listItem.textContent.wordCount() > 10) {
-          listItem.classList.remove('highlight')
-        }
-      })
-
-      // Header formatting
-      pars.forEach((par, index) => {
-        if (par.textContent.stringHasNumbers() && par.textContent.toLowerCase().indexOf('article') > -1) {
-          par.classList.add('header')
-          par.classList.add('w-100')
-        }
-        if (par.textContent.isAllUppercase() && !par.classList.contains('header')) {
-          par.classList.add('highlight')
-        }
-
-        const allStrongs = par.querySelectorAll('strong')
-        allStrongs.forEach((thisStrong) => {
-          DocManager.addHeaderClass(thisStrong)
-        })
-        DocManager.addHeaderClass(par)
-      })
-
-      // Cleanup unecessary header classes
-      pars.forEach((par) => {
-        if (!containsLettersRegex.test(par.textContent)) {
-          par.classList.remove('header', 'highlight')
-          par.remove()
-        }
-        if (par.textContent.contains('___')) {
-          par.textContent.replace(/_/g, '')
-        }
-        if (par.textContent.wordCount() > 10) {
-          par.classList.remove('header')
-        }
-        if (par.classList.contains('header')) {
-          const header = par.textContent.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
-          par.setAttribute('data-header-name', header)
-        }
-      })
-
-      // Set TOC headers
-      const headers = document.querySelectorAll('.header, li.highlight, span.highlight, .toc-header')
-      let newHeaderArray = []
-      headers.forEach((header) => {
-        const text = header.textContent
-          .replaceAll(' ', '-')
-          .replaceAll('-', ' ')
-          .replace(/ /g, '-')
-          .replace(/[0-9]/g, '')
-          .replace('.', '')
-          .replace(/\s/g, '')
-          .replaceAll('•', '')
-        if (newHeaderArray.indexOf(text) === -1 && header.textContent.wordCount() < 10) {
-          newHeaderArray.push(text)
-        }
-      })
-      setTocHeaders(newHeaderArray.sort())
-      setState({ ...state, isLoading: false, showBackButton: true, showMenuButton: false })
+  const convertAndAppendDocOrImage = async () => {
+    const fileType = `.${getFileExtension(docToView.name)}`
+    setState({ ...state, isLoading: true })
+    if (currentUser && fileType === '.docx') {
+      await getDoc()
+    } else {
+      await getImage()
     }
   }
 
@@ -175,12 +103,13 @@ export default function StandardDocs() {
   }
 
   const deleteDoc = async (path, record) => {
-    const imageName = await FirebaseStorage.getImageNameFromUrl(path)
+    console.log(path)
+    const imageName = FirebaseStorage.getImageNameFromUrl(path)
 
     // Delete from Firebase Realtime DB
     await DB.deleteImage(DB.tables.users, currentUser, record.id, 'documents')
       .then(() => {
-        getDocsAndImages()
+        convertAndAppendDocOrImage()
       })
       .finally(async () => {
         // Delete from Firebase Storage
@@ -264,7 +193,9 @@ export default function StandardDocs() {
       setSearchResults([])
       setSearchResultsIndex(0)
       allHeaders = Array.from(allHeaders)
-      allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
+      if (Manager.isValid(allHeaders, true)) {
+        allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
+      }
     }
   }
 
@@ -274,6 +205,127 @@ export default function StandardDocs() {
     setShowTocButton(!showTocButton)
 
     closeSearch()
+  }
+
+  // Get/Append Doc
+  const getDoc = async () => {
+    const url = docToView.url
+    const fileName = FirebaseStorage.getImageNameFromUrl(url)
+    const textContainer = document.getElementById('text-container')
+
+    // Set dynamic screen title
+    setScreenTitle(removeFileExtension(fileName))
+
+    // Insert HTML
+    const docHtml = await DocManager.docToHtml(fileName, currentUser.id)
+    textContainer.innerHTML = docHtml
+
+    // Format HTML
+    const pars = textContainer.querySelectorAll('p, li')
+    const listItems = textContainer.querySelectorAll('li')
+    const containsLettersRegex = /[a-zA-Z]/g
+
+    // List Item formatting
+    listItems.forEach((listItem, index) => {
+      if (stringHasNumbers(listItem.textContent) && listItem.textContent.toLowerCase().indexOf('article') > -1) {
+        listItem.classList.add('highlight')
+      }
+      if (isAllUppercase(listItem.textContent) && !listItem.classList.contains('header')) {
+        listItem.classList.add('highlight')
+      }
+      if (stringHasNumbers(listItem.textContent)) {
+        listItem.classList.add('highlight')
+      }
+      if (listItem.classList.contains('highlight')) {
+        const header = listItem.textContent.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
+        listItem.setAttribute('data-header-date', header)
+      }
+      const allStrongs = listItem.querySelectorAll('strong')
+      allStrongs.forEach((thisStrong) => {
+        DocManager.addHeaderClass(thisStrong)
+      })
+      DocManager.addHeaderClass(listItem)
+      if (wordCount(listItem.textContent) > 10) {
+        listItem.classList.remove('highlight')
+      }
+    })
+
+    // Header formatting
+    pars.forEach((par, index) => {
+      if (stringHasNumbers(par.textContent) && par.textContent.toLowerCase().indexOf('article') > -1) {
+        par.classList.add('header')
+        par.classList.add('w-100')
+      }
+      if (isAllUppercase(par.textContent) && !par.classList.contains('header')) {
+        par.classList.add('highlight')
+      }
+
+      const allStrongs = par.querySelectorAll('strong')
+      allStrongs.forEach((thisStrong) => {
+        DocManager.addHeaderClass(thisStrong)
+      })
+      DocManager.addHeaderClass(par)
+    })
+
+    // Cleanup unecessary header classes
+    pars.forEach((par) => {
+      if (!containsLettersRegex.test(par.textContent)) {
+        par.classList.remove('header', 'highlight')
+        par.remove()
+      }
+      if (contains(par.textContent, '___')) {
+        par.textContent.replace(/_/g, '')
+      }
+      if (wordCount(par.textContent) > 10) {
+        par.classList.remove('header')
+      }
+      if (par.classList.contains('header')) {
+        const header = par.textContent.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
+        par.setAttribute('data-header-date', header)
+      }
+    })
+
+    // Set TOC headers
+    const headers = document.querySelectorAll('.header, li.highlight, span.highlight, .toc-header')
+    let newHeaderArray = []
+    headers.forEach((header) => {
+      const text = header.textContent
+        .replaceAll(' ', '-')
+        .replaceAll('-', ' ')
+        .replace(/ /g, '-')
+        .replace(/[0-9]/g, '')
+        .replace('.', '')
+        .replace(/\s/g, '')
+        .replaceAll('•', '')
+      if (newHeaderArray.indexOf(text) === -1 && header.textContent.wordCount() < 10) {
+        newHeaderArray.push(text)
+      }
+    })
+    setTocHeaders(newHeaderArray.sort())
+    setState({ ...state, isLoading: false, showBackButton: true, showMenuButton: false })
+  }
+
+  // Get/Append Image
+  const getImage = async () => {
+    // Get Firebase images
+    setScreenTitle(removeFileExtension(docToView.name))
+
+    const imagePath = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, currentUser.id, docToView.name)
+    await DocManager.imageToTextAndAppend(imagePath.imageUrl, document.querySelector('#text-container')).finally(() => {
+      setState({ ...state, isLoading: false, previousScreen: ScreenNames.docsList, showBackButton: true, showMenuButton: false })
+      Manager.toggleForModalOrNewForm('show')
+    })
+    // Filter TOC
+    const spanHeaders = document.querySelectorAll('.header')
+    let newHeaderArray = []
+    spanHeaders.forEach((header) => {
+      const text = header.textContent.replaceAll(' ', '-')
+      if (newHeaderArray.indexOf(text) === -1) {
+        newHeaderArray.push(text)
+      }
+    })
+    setTocHeaders(newHeaderArray)
+    setShowTextContainer(true)
   }
 
   useEffect(() => {
@@ -287,9 +339,9 @@ export default function StandardDocs() {
   }, [loadedImages])
 
   useEffect(() => {
-    setState({ ...state, previousScreen: ScreenNames.docsList, showBackButton: true, showMenuButton: false })
+    document.getElementById('text-container').innerText = ''
     Manager.toggleForModalOrNewForm('show')
-    getDocsAndImages().then((r) => r)
+    convertAndAppendDocOrImage().then((r) => r)
   }, [])
 
   return (
@@ -300,7 +352,7 @@ export default function StandardDocs() {
 
       {/* BOTTOM ACTIONS */}
       <div className={`${currentUser?.settings?.theme} flex form`} id="bottom-actions">
-        {showTocButton && (
+        {showTocButton && Manager.isValid(document.querySelectorAll('.header'), true) && (
           <div id="toc-button" className={`${currentUser?.settings?.theme}`} onClick={() => setShowCard(true)}>
             Table of Contents <span className="pl-10 fs-20 material-icons-round">format_list_bulleted</span>
           </div>
@@ -330,41 +382,45 @@ export default function StandardDocs() {
       )}
 
       {/* TABLE OF CONTENTS */}
-      <BottomCard showCard={showCard} onClose={() => setShowCard(false)} className="toc" title={'Table of Contents'}>
-        <div id="table-of-contents">
-          <button
-            className="button default center mt-5"
-            onClick={() => {
-              setShowCard(false)
-              let firstHeader = document.querySelectorAll('.header')
-              firstHeader = Array.from(firstHeader)
-              firstHeader[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
-            }}>
-            Scroll to top
-          </button>
-          <div id="toc-contents">
-            {tocHeaders.length > 0 &&
-              tocHeaders.sort().map((header, index) => {
-                header = header.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
-                return (
-                  <span key={index}>
-                    {!header.contains('___') && (
-                      <TableOfContentsListItem
-                        agreementText={document.querySelector('#text-container').textContent}
-                        text={`• ${header}`}
-                        dataHeader={header}
-                        onClick={() => {
-                          setShowCard(false)
-                          scrollToHeader(header)
-                        }}
-                      />
-                    )}
-                  </span>
-                )
-              })}
+      {Manager.isValid(document.querySelectorAll('.header'), true) && (
+        <BottomCard showCard={showCard} onClose={() => setShowCard(false)} className="toc" title={'Table of Contents'}>
+          <div id="table-of-contents">
+            <button
+              className="button default center mt-5"
+              onClick={() => {
+                setShowCard(false)
+                let allHeaders = document.querySelectorAll('.header')
+                if (Manager.isValid(allHeaders, true)) {
+                  allHeaders = Array.from(allHeaders)
+                  allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
+                }
+              }}>
+              Scroll to top
+            </button>
+            <div id="toc-contents">
+              {tocHeaders.length > 0 &&
+                tocHeaders.sort().map((header, index) => {
+                  header = header.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
+                  return (
+                    <span key={index}>
+                      {!header.contains('___') && (
+                        <TableOfContentsListItem
+                          agreementText={document.querySelector('#text-container').textContent}
+                          text={`• ${header}`}
+                          dataHeader={header}
+                          onClick={() => {
+                            setShowCard(false)
+                            scrollToHeader(header)
+                          }}
+                        />
+                      )}
+                    </span>
+                  )
+                })}
+            </div>
           </div>
-        </div>
-      </BottomCard>
+        </BottomCard>
+      )}
 
       <div id="documents-container" className={`${currentUser?.settings?.theme} page-container form`}>
         {!showModal && images.length > 0 && imageCount && imageCount > 0 && (

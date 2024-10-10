@@ -40,7 +40,6 @@
             }
 
             p {
-                color: var(--textColor, 'white');
                 font-weight: 400;
             }
         }
@@ -49,7 +48,7 @@
 
 #update-contact-info-container {
     .back-button {
-        color: var(--textColor);
+        
         font-weight: 400;
         margin-bottom: 8px;
         display: flex;
@@ -57,7 +56,6 @@
         color: $linkColor;
         justify-content: flex-start;
         width: auto;
-        padding: 0;
         position: fixed;
         left: -15px;
         padding: 0 8px;
@@ -76,7 +74,7 @@
     }
 
     .add-document-text {
-        color: var(--textColor);
+        
         display: flex;
         align-items: center;
         margin-bottom: 10px;
@@ -111,7 +109,7 @@
                     margin-left: 0;
 
                     &:nth-child(2) {
-                        color: var(--textColor);
+                    
                     }
 
                     &.accent {
@@ -143,7 +141,7 @@
 
                     &:nth-child(2) {
                         margin-left: 20px;
-                        color: var(--textColor);
+                        
                         font-size: 20px;
                     }
                 }
@@ -174,7 +172,7 @@
                         font-size: 16px;
                         margin-right: 20px;
                         opacity: .5;
-                        color: var(--textColor);
+                        
                     }
                 }
             }
@@ -192,7 +190,7 @@
     .instructions {
         &.gallery {
             margin-bottom: 10px;
-            color: var(--textColor);
+            
             margin-top: 0;
         }
     }

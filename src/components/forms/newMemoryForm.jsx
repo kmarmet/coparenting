@@ -34,12 +34,12 @@ function NewMemoryForm() {
   const submit = async () => {
     setState({ ...state, isLoading: true })
     if (images.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose an image', isLoading: false })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose an image', isLoading: false, alertType: 'error' })
       return false
     }
 
     if (shareWith.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please select who can see this memory', isLoading: false })
+      setState({ ...state, showAlert: true, alertMessage: 'Please select who can see this memory', isLoading: false, alertType: 'error' })
       return false
     }
 

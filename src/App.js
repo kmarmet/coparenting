@@ -10,6 +10,7 @@ import ScreenNames from '@screenNames'
 import globalState from './context.js'
 import DB from '@db'
 import firebaseConfig from './firebaseConfig.js'
+
 import Manager from '@manager'
 import moment from 'moment'
 // Screens
@@ -38,9 +39,7 @@ import SwapRequests from '@screens/swapRequests.jsx'
 import TransferRequests from '@screens/transferRequests.jsx'
 import Alert from '@shared/alert.jsx'
 import AppManager from '@managers/appManager.js'
-import ThemeManager from '@managers/themeManager.js'
 import ChatRecovery from '@screens/account/chatRecovery'
-import BubbleMenu from '@components/shortcutMenu.jsx'
 import NewCalendarEvent from '@components/forms/newCalendarEvent.jsx'
 import EditCalEvent from '@components/screens/editCalEvent.jsx'
 import NewChildForm from 'components/screens/childInfo/newChildForm.jsx'
@@ -48,14 +47,16 @@ import NewMemoryForm from 'components/forms/newMemoryForm.jsx'
 import NewExpenseForm from 'components/forms/newExpenseForm.jsx'
 import NewSwapRequest from 'components/forms/newSwapRequest.jsx'
 import NewChildTransferChangeRequest from 'components/forms/newChildTransferChange.jsx'
-import emailjs from '@emailjs/browser'
 import NewCoparentForm from 'components/screens/coparents/newCoparentForm.jsx'
 import ChildSelector from 'components/screens/childInfo/childSelector.jsx'
 import Loading from './components/shared/loading'
 import ImageDocs from './components/screens/documents/legalDocs'
-import StandardDocs from './components/screens/documents/standardDocs'
-import EditChildTransferChangeRequest from './components/forms/reviseTransferRequest'
+import DocViewer from './components/screens/documents/docViewer'
+import ShortcutMenu from './components/shortcutMenu'
 import ReviseChildTransferChangeRequest from './components/forms/reviseTransferRequest'
+import './globalFunctions'
+import { wordCount, getFirstWord } from './globalFunctions'
+import emailjs from '@emailjs/browser'
 
 const stateObj = {
   alertMessage: '',
@@ -80,7 +81,7 @@ const stateObj = {
   showBackButton: false,
   showOverlay: false,
   theme: 'dark',
-  tranferRequestToEdit: {},
+  transferRequestToEdit: {},
   unreadMessages: null,
   unreadMessagesCountSet: false,
   userIsLoggedIn: false,
@@ -99,7 +100,7 @@ const stateObj = {
   setDocToView: (doc) => {},
   setEventToEdit: (event) => {},
   setGoBackScreen: (screen) => {},
-  setTranferRequestToEdit: (request) => {},
+  setTransferRequestToEdit: (request) => {},
   setIsLoading: (bool) => {},
   setMenuIsOpen: (isOpen) => {},
   setMessageToUser: (user) => {},
@@ -125,9 +126,6 @@ export default function App() {
   const app = initializeApp(firebaseConfig)
   const [state, setState] = useState(stateObj)
   const stateToUpdate = { state, setState }
-  const [showOverlay, setShowOverlay] = useState(false)
-  const [shouldShowMenuButton, setShouldShowMenuButton] = useState(true)
-  const [shouldShowBackButton, setShouldShowBackButton] = useState(false)
   const myCanvas = document.createElement('canvas')
   document.body.appendChild(myCanvas)
 
@@ -150,18 +148,8 @@ export default function App() {
   })
 
   // State to include in App.js
-  const {
-    selectedNewEventDay,
-    showMenuButton,
-    showShortcutMenu,
-    isLoading,
-    previousScreen,
-    calEventToEdit,
-    currentScreen,
-    menuIsOpen,
-    showBackButton,
-    currentUser,
-  } = state
+  const { showMenuButton, showShortcutMenu, isLoading, previousScreen, calEventToEdit, currentScreen, menuIsOpen, showBackButton, currentUser } =
+    state
 
   const getUnreadMessageCount = async (thisUser) => {
     const dbRef = ref(getDatabase())
@@ -193,28 +181,6 @@ export default function App() {
     return unreadMessageCount
   }
 
-  const showScreenTitleShadowOnScroll = () => {
-    const pageContainer = document.querySelector('.page-container')
-    if (pageContainer) {
-      pageContainer.addEventListener('scroll', () => {
-        const distanceToTop = pageContainer.scrollTop
-        const screenTitle = document.querySelector('.screen-title')
-        const backArrow = document.querySelector('.previous-screen-button')
-        if (distanceToTop > 50) {
-          if (backArrow) {
-            backArrow.classList.add('bg')
-          }
-          screenTitle.classList.add('shadow')
-        } else {
-          if (backArrow) {
-            backArrow.classList.remove('bg')
-          }
-          screenTitle.classList.remove('shadow')
-        }
-      })
-    }
-  }
-
   // ON PAGE LOAD
   useEffect(() => {
     setState({ ...state, isLoading: true, showMenuButton: false })
@@ -225,11 +191,8 @@ export default function App() {
 
     AppManager.deleteExpiredCalendarEvents().then((r) => r)
     AppManager.deleteExpiredMemories().then((r) => r)
-    // setCurrentUser().then((r) => r)
-    // ThemeManager.changeTheme('dark')
     // throw new Error('Something went wrong')
     // AppManager.setHolidays()
-    // CalendarManager.deDupe()
   }, [])
 
   return (
@@ -292,7 +255,7 @@ export default function App() {
 
             {/* DOCUMENTS */}
             {currentScreen === ScreenNames.docsList && <DocsList />}
-            {currentScreen === ScreenNames.standardDocs && <StandardDocs />}
+            {currentScreen === ScreenNames.docViewer && <DocViewer />}
             {currentScreen === ScreenNames.imageDocs && <ImageDocs />}
 
             {/* UPLOAD */}
@@ -336,7 +299,7 @@ export default function App() {
           {menuIsOpen && <Menu />}
 
           {/* SHORTCUT MENU */}
-          {showShortcutMenu && <BubbleMenu />}
+          {showShortcutMenu && <ShortcutMenu />}
 
           {/* MENU BUTTON */}
           {showMenuButton && currentScreen !== currentScreen.login && (

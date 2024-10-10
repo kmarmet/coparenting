@@ -114,6 +114,7 @@ const DocManager = {
         textContainer.appendChild(parEl)
       })
     })
+    console.log('done d')
   },
   addHeaderClass: (el) => {
     let strong = el.querySelector('strong')

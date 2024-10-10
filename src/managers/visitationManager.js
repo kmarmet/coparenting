@@ -2,6 +2,7 @@ import moment from 'moment'
 import DateManager from './dateManager'
 import Manager from '@manager'
 import DB from '@db'
+import DateFormats from '../constants/dateFormats'
 
 const VisitationManager = {
   weekendMapper: (input) => {
@@ -38,10 +39,8 @@ const VisitationManager = {
     } while (moment(date).isBefore(lastDate))
     return dates
   },
-  getWeekends: (scheduleType, endDate, selectedWeekends, fifthWeekendSelection) => {
+  getSpecificWeekends: (scheduleType, endDate, selectedWeekends, fifthWeekendSelection) => {
     let formattedWeekends = selectedWeekends.map((x) => VisitationManager.weekendMapper(x))
-    // formattedWeekends.push(VisitationManager.mapper(fiveWeekendSelections))
-    // formattedWeekends = formattedWeekends.flat()
 
     let iterationMonth = moment().startOf('month').format('MM')
     let readableMonths = []
@@ -105,6 +104,77 @@ const VisitationManager = {
         }
       }
       fridayInMonthNumber = 0
+    }
+    return dateArray
+  },
+  getEveryOtherWeekend: (firstWeekend) => {
+    const firstWeekendDate = moment(firstWeekend).format(DateFormats.dateForDb)
+    let iterationMonth = moment().startOf('month').format('MM')
+    let readableMonths = []
+    const monthsLeftInYear = 12 - moment().month() - 1
+    const lastDayOfYear = moment([moment().year()]).endOf('year').format('MM-DD-YYYY')
+    let fridayToAddTo = firstWeekendDate
+    // Get readable months until end of year
+    for (let counter = 0; counter <= monthsLeftInYear; counter++) {
+      readableMonths.push(iterationMonth)
+      iterationMonth = moment(moment(iterationMonth).add(1, 'month')).format('MM')
+    }
+    const dateArray = []
+    // Loop fridays in month
+    for (let i = 0; i <= readableMonths.length; i++) {
+      const thisMonth = readableMonths[i]
+      let daysInMonth = moment(readableMonths[i]).daysInMonth()
+      for (let x = 1; x <= daysInMonth; x++) {
+        let thisDay = moment(`${thisMonth} ${x} ${moment().year()}`).format('MM/DD/yyyy')
+        // Do not go past end of year
+        if (moment(thisDay).isSameOrAfter(moment(lastDayOfYear))) {
+          break
+        }
+        let dayOfTheWeek = moment(thisDay, 'MM DD').format('dddd')
+
+        // Add to dates array
+        if (dayOfTheWeek === 'Friday') {
+          const thisFridayDate = moment(thisDay).format(DateFormats.dateForDb)
+          if (thisFridayDate === fridayToAddTo) {
+            const range = VisitationManager.getDateRange(moment(fridayToAddTo).format(DateFormats.dateForDb), moment(thisDay).add(2, 'days'))
+            const fridayPlusTwoWeeks = moment(thisDay).add(2, 'weeks')
+            fridayToAddTo = moment(fridayPlusTwoWeeks).format(DateFormats.dateForDb)
+            dateArray.push(range.flat())
+          }
+        }
+      }
+    }
+    return dateArray
+  },
+  getEveryWeekend: () => {
+    let iterationMonth = moment().startOf('month').format('MM')
+    let readableMonths = []
+    const monthsLeftInYear = 12 - moment().month() - 1
+    const lastDayOfYear = moment([moment().year()]).endOf('year').format('MM-DD-YYYY')
+    // Get readable months until end of year
+    for (let counter = 0; counter <= monthsLeftInYear; counter++) {
+      readableMonths.push(iterationMonth)
+      iterationMonth = moment(moment(iterationMonth).add(1, 'month')).format('MM')
+    }
+    const dateArray = []
+    // Loop fridays in month
+    for (let i = 0; i <= readableMonths.length; i++) {
+      const thisMonth = readableMonths[i]
+      let daysInMonth = moment(readableMonths[i]).daysInMonth()
+      for (let x = 1; x <= daysInMonth; x++) {
+        let thisDay = moment(`${thisMonth} ${x} ${moment().year()}`).format('MM/DD/yyyy')
+        // Do not go past end of year
+        if (moment(thisDay).isSameOrAfter(moment(lastDayOfYear))) {
+          break
+        }
+        let dayOfTheWeek = moment(thisDay, 'MM DD').format('dddd')
+
+        // Add to dates array
+        if (dayOfTheWeek === 'Friday') {
+          const range = VisitationManager.getDateRange(thisDay, moment(thisDay).add(2, 'days'))
+          dateArray.push(range.flat())
+        }
+      }
     }
     return dateArray
   },

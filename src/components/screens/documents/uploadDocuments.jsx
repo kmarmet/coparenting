@@ -12,6 +12,21 @@ import DocManager from '@managers/docManager'
 import PushAlertApi from '@api/pushAlert'
 import NotificationManager from '@managers/notificationManager'
 import DocumentsManager from '../../../managers/documentsManager'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+} from '../../../globalFunctions'
 
 export default function UploadDocuments() {
   const { state, setState } = useContext(globalState)
@@ -22,20 +37,22 @@ export default function UploadDocuments() {
   const upload = async () => {
     setState({ ...state, isLoading: true })
     const files = document.querySelector('#upload-input').files
+
+    // Validation
     if (files.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose a file to upload' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose a file to upload', alertType: 'error' })
       return false
     }
     if (!Manager.isValid(shareWith, true) || !Manager.isValid(docType)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Document type and Who should see it? are required' })
+      setState({ ...state, showAlert: true, alertMessage: 'Document Type and Who should see it? are required', alertType: 'error' })
+      return false
+    }
+    if (docType === 'document' && Object.entries(files).map((x) => !x[1].name.contains('.docx'))[0]) {
+      setState({ ...state, showAlert: true, alertMessage: 'Uploaded file MUST be of type .docx', alertType: 'error' })
       return false
     }
 
-    if (Object.entries(files).map((x) => !x[1].name.contains('.docx'))[0]) {
-      setState({ ...state, showAlert: true, alertMessage: 'Uploaded file MUST be of type .docx' })
-      return false
-    }
-
+    // Upload to Firebase Storage
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.documents}/`, currentUser.id, files)
       .then(() => {
         const checkedCheckbox = document.querySelector('.share-with-container .box.active')
@@ -54,7 +71,7 @@ export default function UploadDocuments() {
             newDocument.id = Manager.getUid()
             newDocument.shareWith = Manager.getUniqueArray(shareWith).flat()
             newDocument.type = docType
-            newDocument.name = FirebaseStorage.getImageNameFromUrl(url).replace('.png', '').replace('.jpg', '').replace('.jpeg', '')
+            newDocument.name = FirebaseStorage.getImageNameFromUrl(url)
             await DocumentsManager.addDocumentToDocumentsTable(newDocument).finally(() => {
               setState({ ...state, currentScreen: ScreenNames.documents })
             })
@@ -65,6 +82,48 @@ export default function UploadDocuments() {
           // Send Notification
           NotificationManager.sendToShareWith(shareWith, 'New Document', `${currentUser} has uploaded a new document`)
         })
+      })
+  }
+
+  const getImages = async () => {
+    // Get Firebase images
+    FirebaseStorage.getImages(FirebaseStorage.directories.documents, currentUser.id)
+      .then(async (imgs) => {
+        if (imgs.length === 0) {
+          setState({ ...state, currentScreenTitle: 'Upload Agreement', currentScreen: ScreenNames.uploadAgreement })
+        } else {
+          setImageCount(imgs.length)
+
+          Promise.all(imgs).then(async (allImagePaths) => {
+            let pageCounter = 0
+            for (let path of allImagePaths) {
+              await DocManager.imageToTextAndAppend(path, document.querySelector('#text-container'))
+              pageCounter++
+              // setConvertedImageCount(pageCounter)
+
+              // Done extracting text
+              if (pageCounter >= allImagePaths.length) {
+                setShowTextContainer(true)
+
+                // Filter TOC
+                const spanHeaders = document.querySelectorAll('.header')
+                let newHeaderArray = []
+                spanHeaders.forEach((header) => {
+                  const text = header.textContent.replaceAll(' ', '-')
+                  if (newHeaderArray.indexOf(text) === -1) {
+                    newHeaderArray.push(text)
+                  }
+                })
+                setTocHeaders(newHeaderArray)
+              }
+            }
+          })
+        }
+      })
+      .catch((error) => {
+        if (error.toString().indexOf('does not exist') > -1) {
+          setState({ ...state, currentScreenTitle: 'Upload Agreement', currentScreen: ScreenNames.uploadAgreement })
+        }
       })
   }
 
@@ -92,9 +151,12 @@ export default function UploadDocuments() {
 
   return (
     <>
+      {/* SCREEN TITLE */}
       <p className="screen-title ">Upload Documents</p>
 
-      <div id="upload-documents-container" className={`${currentUser?.settings?.theme} page-container`}>
+      {/* PAGE CONTAINER */}
+      <div id="upload-documents-container" className={`${currentUser?.settings?.theme} page-container form`}>
+        <label>If uploading a document</label>
         <p className={`${currentUser?.settings?.theme} text-screen-intro`}>
           Upload documents (.doc or .docx) , or images of documents you would like to save or share with a coparent.
         </p>

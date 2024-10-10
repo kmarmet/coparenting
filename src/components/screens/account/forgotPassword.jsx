@@ -30,7 +30,7 @@ export default function ForgotPassword() {
     validateInputs()
 
     if (password !== confirmPassword) {
-      setState({ ...state, showAlert: true, alertMessage: 'Passwords do not match' })
+      setState({ ...state, showAlert: true, alertMessage: 'Passwords do not match', alertType: 'error' })
       return false
     }
     await DB.getTable(DB.tables.users).then((people) => {
@@ -56,7 +56,7 @@ export default function ForgotPassword() {
 
   const validateInputs = () => {
     if (Manager.validation([email, phone, confirmPassword, password]) > 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please fill out all fields' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please fill out all fields', alertType: 'error' })
       return false
     }
   }
@@ -64,7 +64,7 @@ export default function ForgotPassword() {
   const sendSecurityCode = async () => {
     validateInputs()
     if (password !== confirmPassword) {
-      setState({ ...state, showAlert: true, alertMessage: 'Passwords do not match' })
+      setState({ ...state, showAlert: true, alertMessage: 'Passwords do not match', alertType: 'error' })
       return false
     }
     await DB.getTable(DB.tables.users).then((people) => {

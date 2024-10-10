@@ -19,7 +19,7 @@ export default function ThemeToggle() {
 
   return (
     <div id="theme-toggle">
-      <p className={isToggled === true ? 'moon' : 'sun'}>Theme</p>
+      <p className={isToggled === true ? 'moon center-text' : 'sun center-text'}>Go {isToggled === true ? 'Dark' : 'Light'}</p>
       <Within
         className={isToggled === true ? 'moon' : 'sun'}
         duration={750}

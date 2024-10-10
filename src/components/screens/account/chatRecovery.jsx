@@ -33,15 +33,20 @@ function ChatRecovery() {
 
   const submit = async () => {
     if (reason.length === 0) {
-      setState({ ...state, alertMessage: 'Please provide a reason for recovering this deleted conversation', showAlert: true })
+      setState({ ...state, alertMessage: 'Please provide a reason for recovering this deleted conversation', showAlert: true, alertType: 'error' })
       return false
     }
     if (signaturePad && signaturePad.isEmpty()) {
-      setState({ ...state, alertMessage: 'Please draw your signature', showAlert: true })
+      setState({ ...state, alertMessage: 'Please draw your signature', showAlert: true, alertType: 'error' })
       return false
     }
     if (coparentPhone.length === 0) {
-      setState({ ...state, alertMessage: 'Please enter the phone number of the coparent you were chatting with', showAlert: true })
+      setState({
+        ...state,
+        alertMessage: 'Please enter the phone number of the coparent you were chatting with',
+        showAlert: true,
+        alertType: 'error',
+      })
       return false
     }
     setViewConvo(true)

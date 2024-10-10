@@ -21,11 +21,11 @@ const NewCoparentForm = () => {
   const submit = async () => {
     const dbRef = ref(getDatabase())
     if (!Manager.phoneNumberIsValid(phoneNumber)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid' })
+      setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid', alertType: 'error' })
       return false
     }
     if (Manager.validation([phoneNumber, address, name, parentType]) > 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'All fields are required' })
+      setState({ ...state, showAlert: true, alertMessage: 'All fields are required', alertType: 'error' })
     } else {
       const existingCoparents = currentUser.coparents
       const newCoparent = new Coparent()

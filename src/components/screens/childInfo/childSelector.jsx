@@ -7,6 +7,20 @@ import PopupCard from 'components/shared/popupCard'
 import { Accordion } from 'rsuite'
 import Manager from '@manager'
 import BottomCard from '../../shared/bottomCard'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  uniqueArray,
+} from '../../../globalFunctions'
 
 function ChildSelector() {
   // @ts-ignore
@@ -50,7 +64,7 @@ function ChildSelector() {
                     alertType: 'error',
                   })
                 }>
-                {child.general.name.formatNameFirstNameOnly()}
+                {formatNameFirstNameOnly(child.general.name)}
               </p>
             )
           })}

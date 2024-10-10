@@ -26,11 +26,11 @@ export default function ReviseChildTransferChangeRequest() {
 
   const submit = async () => {
     if (requestLocation.length === 0 && requestTime.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose a new location or time' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose a new location or time', alertType: 'error' })
       return false
     }
     if (requestDate.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose the day of the requested transfer change' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose the day of the requested transfer change', alertType: 'error' })
       return false
     }
     let revisedRequest

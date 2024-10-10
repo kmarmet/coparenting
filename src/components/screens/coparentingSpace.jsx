@@ -17,6 +17,26 @@ import DateManager from 'managers/dateManager'
 import VisitationMapper from 'mappers/visitationMapper'
 import ScreenNames from '@screenNames'
 import Manger from '@manager'
+import BottomButton from '../shared/bottomButton'
+import { MobileDatePicker } from '@mui/x-date-pickers'
+import DateFormats from '../../constants/dateFormats'
+import user from '../../models/user'
+import CalendarManager from '../../managers/calendarManager'
+import CalendarMapper from '../../mappers/calMapper'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  uniqueArray,
+} from '../../globalFunctions'
 
 export default function CoparentingSpace() {
   const { state, setState } = useContext(globalState)
@@ -33,12 +53,14 @@ export default function CoparentingSpace() {
   const [thirdFFPeriodStart, setThirdFFPeriodStart] = useState('')
   const [thirdFFPeriodEnd, setThirdFFPeriodEnd] = useState('')
   const [showFFExample, setShowFFExample] = useState(false)
-  const [holidayLabels, setHolidayLabels] = useState([])
-  const [holidaySelections, setHolidaySelections] = useState([])
-  const [ffAccordionExpanded, setFfAccordionExpanded] = useState(false)
   const [scheduleAccordionExpanded, setScheduleAccordionExpanded] = useState(false)
   const [visitationAccordionExpanded, setVisitationAccordionExpanded] = useState(false)
-  const [updateKey, setUpdateKey] = useState(0)
+  const [firstEveryOtherWeekend, setFirstEveryOtherWeekend] = useState('')
+  // Holiday
+  const [selectedHolidayDates, setSelectedHolidayDates] = useState([])
+  const [holidayLabels, setHolidayLabels] = useState([])
+  const [userHolidayEvents, setUserHolidayEvents] = useState([])
+  const [dataDates, setDataDates] = useState([])
 
   const updatePreferredLocation = async (location, link) => {
     await DB_UserScoped.updateUserRecord(DB.tables.users, currentUser.phone, 'preferredTransferLocationDirectionsLink', link)
@@ -65,7 +87,6 @@ export default function CoparentingSpace() {
     setThirdFFPeriodStart('')
     setThirdFFPeriodEnd('')
     setShowFFExample(false)
-    // Manager.toggleForModalOrNewForm('show')
     setVisitationAccordionExpanded(false)
     const checkboxes = document.querySelectorAll('.box')
     checkboxes.forEach((box) => box.classList.remove('active'))
@@ -74,20 +95,20 @@ export default function CoparentingSpace() {
     }, 500)
   }
 
-  // Weekends
-  const addWeekendsToCalendar = () => {
+  // Specific Weekends
+  const addSpecificWeekendsToCalendar = async () => {
     if (!Manager.isValid(defaultSelectedWeekends, true) || !Manager.isValid(fifthWeekendSelection)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose default weekends and a five-month weekend' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose default weekends and a five-month weekend', alertType: 'error' })
       return false
     }
 
     if (!Manager.isValid(shareWith, true)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please set who can see the schedule' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please set who can see the schedule', alertType: 'error' })
       return false
     }
     // Set end date to the end of the year
     const endDate = moment([moment().year()]).endOf('year').format('MM-DD-YYYY')
-    let weekends = VisitationManager.getWeekends(scheduleTypes.variableWeekends, endDate, defaultSelectedWeekends, fifthWeekendSelection)
+    let weekends = VisitationManager.getSpecificWeekends(scheduleTypes.variableWeekends, endDate, defaultSelectedWeekends, fifthWeekendSelection)
 
     // Standard Dates
     let events = []
@@ -95,7 +116,7 @@ export default function CoparentingSpace() {
       const dateObject = new CalendarEvent()
       // Required
       dateObject.title = `${currentUser.name.formatNameFirstNameOnly()}'s Scheduled Visitation`
-      dateObject.fromDate = moment(date).format('MM/DD/yyyy')
+      dateObject.fromDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
       dateObject.phone = currentUser.phone
       dateObject.createdBy = currentUser.name
@@ -110,39 +131,92 @@ export default function CoparentingSpace() {
       }
     })
 
-    // Holidays
-    holidaySelections.forEach((holiday) => {
+    // Upload to DB
+    DB.addVisitationSchedule(events).then((r) => r)
+    MyConfetti.fire()
+  }
+
+  // Every Other Weekend
+  const addEveryOtherWeekendToCalendar = async () => {
+    if (firstEveryOtherWeekend.length === 0) {
+      setState({
+        ...state,
+        showAlert: true,
+        alertMessage: 'Please choose the Friday of the next weekend YOU have the child(ren)',
+        alertType: 'error',
+      })
+      return false
+    }
+
+    if (!Manager.isValid(shareWith, true)) {
+      setState({ ...state, showAlert: true, alertMessage: 'Please set who can see the schedule', alertType: 'error' })
+      return false
+    }
+    // Set end date to the end of the year
+    let weekends = VisitationManager.getEveryOtherWeekend(moment(firstEveryOtherWeekend).format(DateFormats.dateForDb))
+    let events = []
+    weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${currentUser.name.formatNameFirstNameOnly()}'s Holiday Visitation`
-      dateObject.fromDate = moment(holiday.date).format('MM/DD/yyyy')
+      dateObject.title = `${currentUser.name.formatNameFirstNameOnly()}'s Scheduled Visitation`
+      dateObject.fromDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
       dateObject.phone = currentUser.phone
       dateObject.createdBy = currentUser.name
       dateObject.fromVisitationSchedule = true
-      dateObject.isHoliday = true
       dateObject.id = Manager.getUid()
       dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
-      events = [...events, dateObject]
+
+      events.push(dateObject)
     })
 
     // Upload to DB
-    DB.addVisitationSchedule(events)
+    DB.addVisitationSchedule(events).then((r) => r)
+    MyConfetti.fire()
+  }
+
+  // Every Weekend
+  const addEveryWeekendToCalendar = async () => {
+    if (!Manager.isValid(shareWith, true)) {
+      setState({ ...state, showAlert: true, alertMessage: 'Please set who can see the schedule', alertType: 'error' })
+      return false
+    }
+    // Set end date to the end of the year
+    let weekends = VisitationManager.getEveryWeekend()
+    let events = []
+    weekends.flat().forEach((date) => {
+      const dateObject = new CalendarEvent()
+      // Required
+      dateObject.title = `${currentUser.name.formatNameFirstNameOnly()}'s Scheduled Visitation`
+      dateObject.fromDate = moment(date).format(DateFormats.dateForDb)
+      // Not Required
+      dateObject.phone = currentUser.phone
+      dateObject.createdBy = currentUser.name
+      dateObject.fromVisitationSchedule = true
+      dateObject.id = Manager.getUid()
+      dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
+
+      events.push(dateObject)
+    })
+
+    // Upload to DB
+    DB.addVisitationSchedule(events).then((r) => r)
     MyConfetti.fire()
   }
 
   // 50/50
-  const addFiftyFiftyToCal = () => {
+  const addFiftyFiftyToCal = async () => {
     if (firstFFPeriodEnd.length === 0 || firstFFPeriodStart.length === 0 || secondFFPeriodEnd.length === 0 || secondFFPeriodStart.length === 0) {
       setState({ ...state, showAlert: true, alertMessage: 'Both schedule ranges are required' })
       return false
     }
 
     if (shareWith.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose who can see this visitation schedule' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose who can see this visitation schedule', alertType: 'error' })
       return false
     }
 
+    let events = []
     const dates = {
       firstFFPeriodStart,
       firstFFPeriodEnd,
@@ -152,7 +226,6 @@ export default function CoparentingSpace() {
       thirdFFPeriodEnd,
     }
     const scheduleDates = VisitationManager.getFiftyFifty(dates)
-    let events = []
     scheduleDates.forEach((date, index) => {
       const dateObject = new CalendarEvent()
       // Required
@@ -172,31 +245,42 @@ export default function CoparentingSpace() {
       }
     })
 
-    // Holidays
-    holidaySelections.forEach((holiday) => {
-      const dateObject = new CalendarEvent()
-      // Required
-      dateObject.title = `${currentUser.name.formatNameFirstNameOnly()}'s Holiday Visitation`
-      dateObject.fromDate = moment(holiday.date).format('MM/DD/yyyy')
-      // Not Required
-      dateObject.phone = currentUser.phone
-      dateObject.createdBy = currentUser.name
-      dateObject.fromVisitationSchedule = true
-      dateObject.isHoliday = true
-      dateObject.id = Manager.getUid()
-      dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
-      events = [...events, dateObject]
-    })
-
     // Upload to DB
-    DB.addVisitationSchedule(events)
+    await DB.addVisitationSchedule(events).then((r) => r)
     MyConfetti.fire()
   }
 
-  const handleWeekendSelection = (e) => {
+  const setHolidaysInDatabase = async () => {
+    // Delete all user events before adding new
+    await CalendarManager.deleteMultipleEvents(userHolidayEvents, currentUser).finally(async () => {
+      // Holidays
+      if (Manager.isValid(selectedHolidayDates, true)) {
+        let events = []
+        selectedHolidayDates.forEach((holidayDateString) => {
+          const dateObject = new CalendarEvent()
+          const holidayName = CalendarMapper.holidayDateToName(holidayDateString)
+          // Required
+          dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Holiday Visitation`
+          dateObject.fromDate = moment(holidayDateString).format('MM/DD/yyyy')
+          dateObject.holidayName = holidayName
+          // Not Required
+          dateObject.phone = currentUser.phone
+          dateObject.createdBy = currentUser.name
+          dateObject.fromVisitationSchedule = true
+          dateObject.isHoliday = true
+          dateObject.id = Manager.getUid()
+          dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
+          events = [...events, dateObject]
+        })
+        // Upload to DB
+        await CalendarManager.addMultipleCalEvents(events)
+      }
+    })
+  }
+
+  const handleSpecificWeekendSelection = (e) => {
     Manager.handleCheckboxSelection(
       e,
-      (e) => {},
       (e) => {
         if (defaultSelectedWeekends.length > 0) {
           setDefaultSelectedWeekends((defaultSelectedWeekends) => [...defaultSelectedWeekends, e])
@@ -204,6 +288,7 @@ export default function CoparentingSpace() {
           setDefaultSelectedWeekends([e])
         }
       },
+      (e) => {},
       true
     )
   }
@@ -212,11 +297,9 @@ export default function CoparentingSpace() {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
-        console.log(e)
-      },
-      (e) => {
         setFifthWeekendSelection(e)
       },
+      (e) => {},
       false
     )
   }
@@ -231,12 +314,15 @@ export default function CoparentingSpace() {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
-        let filtered = holidaySelections.filter((x) => x !== e)
-        setHolidaySelections(filtered)
+        const dataDate = CalendarMapper.holidayNameToDate(e)
+        const dateAsString = moment(`${dataDate}/${moment().year()}`, 'MM/DD/yyyy').format(DateFormats.dateForDb)
+        setSelectedHolidayDates([...selectedHolidayDates, dateAsString])
       },
       (e) => {
-        let formattedName = holidayLabels.filter((x) => x.name === e)[0]
-        setHolidaySelections([...holidaySelections, formattedName])
+        const dataDate = CalendarMapper.holidayNameToDate(e)
+        const dateAsString = moment(`${dataDate}/${moment().year()}`, 'MM/DD/yyyy').format(DateFormats.dateForDb)
+        let filtered = selectedHolidayDates.filter((x) => x !== dateAsString)
+        setSelectedHolidayDates(filtered)
       },
       true
     )
@@ -246,37 +332,85 @@ export default function CoparentingSpace() {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
-        setScheduleType(VisitationMapper.formattedScheduleTypes(e))
-        setScheduleAccordionExpanded(false)
-        setState({ ...state, showMenuButton: false })
+        console.log(e)
+        if (e === 'Every Weekend') {
+          addEveryWeekendToCalendar()
+        } else {
+          setScheduleType(VisitationMapper.formattedScheduleTypes(e))
+          setScheduleAccordionExpanded(false)
+          setState({ ...state, showMenuButton: false })
+        }
       },
       (e) => {}
     )
   }
 
   const getVisitationHolidays = async () => {
-    const hols = []
+    const _holidays = []
     await DateManager.getVisitationHolidays().then((holiday) => {
-      hols.push(holiday)
+      _holidays.push(holiday)
     })
-    return hols
+    const userEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
+    let userHolidays = []
+    if (Manager.isValid(userEvents, true)) {
+      userHolidays = userEvents.filter((x) => x.phone === currentUser.phone && x.fromVisitationSchedule === true && x.isHoliday === true)
+    }
+    return {
+      holidays: _holidays.flat(),
+      userHolidays: userHolidays,
+    }
+  }
+
+  const setDefaultHolidays = (allUserHolidayObjects) => {
+    const holidayCheckboxesWrapper = document.querySelector('.holiday-checkboxes')
+    if (Manager.isValid(holidayCheckboxesWrapper)) {
+      const checkboxes = holidayCheckboxesWrapper.querySelectorAll('[data-date]')
+      checkboxes.forEach((checkboxWrapper) => {
+        const holidayLabel = checkboxWrapper.getAttribute('data-label')
+        if (holidayLabel.length > 0) {
+          const allUserHolidays = allUserHolidayObjects.map((x) => x.name)
+          if (allUserHolidays.includes(holidayLabel)) {
+            // Set checkboxes active
+            holidayCheckboxesWrapper.querySelector(`[data-label="${holidayLabel}"]`).querySelector('.box').classList.add('active')
+          }
+        }
+      })
+    }
+  }
+
+  const setAllStates = async () => {
+    await getVisitationHolidays().then((holidaysObject) => {
+      const { holidays, userHolidays } = holidaysObject
+      const userHolidaysList = Manger.convertToArray(CalendarMapper.eventsToHolidays(userHolidays))
+      const userHolidaysDates = userHolidaysList.map((x) => x.date)
+      const allHolidayDates = holidaysObject.holidays.map((x) => x.date)
+      setDataDates(allHolidayDates)
+      setSelectedHolidayDates(uniqueArray(userHolidaysDates).flat())
+      setHolidayLabels(holidays)
+      setUserHolidayEvents(uniqueArray(userHolidays).flat())
+      setTimeout(() => {
+        setDefaultHolidays(uniqueArray(userHolidaysList).flat())
+      }, 300)
+    })
   }
 
   useEffect(() => {
-    getVisitationHolidays().then((holidays) => {
-      setHolidayLabels(holidays[0])
-    })
     Manager.toggleForModalOrNewForm('show')
+    setAllStates().then((r) => r)
     setTimeout(() => {
       setState({ ...state, showMenuButton: true, showBackButton: false })
     }, 500)
   }, [])
 
+  useEffect(() => {
+    setState({ ...state, showMenuButton: false, showBackButton: false })
+  }, [scheduleType])
+
   return (
     <div>
       {/* CONFIRM ALERT */}
       <Confirm
-        message={'Are you sure you would like to delete your visitation schedule?'}
+        message={'Are you sure you would like to delete your visitation schedule? You can add another one any time.'}
         title={deleteMessage}
         onReject={() => {
           setState({ ...state, showAlert: false })
@@ -288,7 +422,26 @@ export default function CoparentingSpace() {
         }}
         onAccept={deleteSchedule}
       />
+      {/* BOTTOM BUTTONS */}
+      <BottomButton elClass={'blue'} onClick={resetScreen} iconName="undo" bottom="220" />
+      <BottomButton elClass={'red'} onClick={() => setDeleteMessage('DELETING SCHEDULE')} iconName="delete" bottom="160" />
+      {scheduleType === scheduleTypes.everyOtherWeekend && (
+        <BottomButton elClass={'green visible'} onClick={addEveryOtherWeekendToCalendar} iconName="event_available" bottom="100" />
+      )}
+      {scheduleType === scheduleTypes.specificWeekends && (
+        <BottomButton elClass={'green visible'} onClick={addSpecificWeekendsToCalendar} iconName="event_available" bottom="100" />
+      )}
+      {scheduleType === scheduleTypes.fiftyFifty && (
+        <BottomButton elClass={'green visible'} onClick={addFiftyFiftyToCal} iconName="event_available" bottom="100" />
+      )}
+      {scheduleType === scheduleTypes.everyOtherWeekend && (
+        <BottomButton elClass={'green visible'} onClick={addEveryOtherWeekendToCalendar} iconName="event_available" bottom="100" />
+      )}
+
+      {/* SCREEN TITLE */}
       <p className="screen-title">Coparenting Space</p>
+
+      {/* PAGE CONTAINER */}
       <div id="coparenting-setup-container" className={`${currentUser?.settings?.theme} page-container form`}>
         {/* SECTIONS */}
         <div className="sections">
@@ -306,7 +459,7 @@ export default function CoparentingSpace() {
               <div className="note-container">
                 <Note
                   elClass={'mt-10'}
-                  message={'When you choose a visitation schedule, it will be visible in the calendar for you and chosen coparents to view'}
+                  message={'When you choose a visitation schedule, it will be visible in the calendar for you and chosen coparents to view.'}
                 />
               </div>
 
@@ -428,66 +581,26 @@ export default function CoparentingSpace() {
                       }}
                     />
                   </>
-
-                  {/* HOLIDAY SELECTION */}
-                  <Accordion>
-                    <label className="accordion-header" onClick={() => setFfAccordionExpanded(!ffAccordionExpanded)}>
-                      Select Holidays <b className="pr-5 pl-5">You</b> Have the Child(ren){' '}
-                      {ffAccordionExpanded ? (
-                        <span className="material-icons ml-auto">expand_less</span>
-                      ) : (
-                        <span className="material-icons ml-auto">expand_more</span>
-                      )}
-                    </label>
-                    <Accordion.Panel expanded={ffAccordionExpanded}>
-                      <CheckboxGroup
-                        boxWidth={50}
-                        elClass="mt-10"
-                        onCheck={handleHolidaySelection}
-                        skipNameFormatting={true}
-                        labels={holidayLabels.map((x) => x.name).sort()}
-                      />
-                    </Accordion.Panel>
-                  </Accordion>
-                  <div className="share-with-container mt-15">
-                    <label>
-                      <span className="material-icons-round warning mr-10">visibility</span> Who is allowed to see it?
-                      <span className="asterisk">*</span>
-                    </label>
-                    <CheckboxGroup
-                      dataPhone={currentUser.coparents.map((x) => x.phone)}
-                      labels={currentUser.coparents.map((x) => x.name)}
-                      onCheck={handleShareWithSelection}
-                    />
-                  </div>
-                  {/* BUTTONS */}
-                  <div className="button-group mt-15 bottom visible">
-                    <button className=" button default bottom visible" onClick={resetScreen}>
-                      <span className="material-icons-round pr-5">undo</span>
-                    </button>
-                    <button
-                      className="red button bottom visible"
-                      onClick={() => {
-                        setDeleteMessage('Deleting Existing Visitation Schedule')
-                      }}>
-                      <span className="material-icons">delete</span>
-                    </button>
-                    <button className="button bottom green visible" onClick={addFiftyFiftyToCal}>
-                      <span className="material-icons-round">event_available</span>
-                    </button>
-                  </div>
                 </>
               )}
 
-              {/* WEEKENDS SCHEDULE */}
-              {scheduleType === scheduleTypes.variableWeekends && (
+              {/* EVERY OTHER WEEKEND */}
+              {scheduleType === scheduleTypes.everyOtherWeekend && (
+                <>
+                  <label>Friday of the next weekend you have your child(ren)</label>
+                  <MobileDatePicker onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${currentUser?.settings?.theme} w-100 mt-0`} />
+                </>
+              )}
+
+              {/* SPECIFIC WEEKENDS SCHEDULE */}
+              {scheduleType === scheduleTypes.specificWeekends && (
                 <>
                   <div className="form mb-20">
                     <label>Which weekends will YOU have the child(ren)?</label>
                     <CheckboxGroup
                       boxWidth={50}
                       elClass={'mb-15'}
-                      onCheck={handleWeekendSelection}
+                      onCheck={handleSpecificWeekendSelection}
                       labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend']}
                     />
                     <label>If it is a month with 5 weekends, which additional weekend will YOU have the child(ren)?</label>
@@ -497,56 +610,55 @@ export default function CoparentingSpace() {
                       labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend']}
                     />
                   </div>
-                  {/* HOLIDAY SELECTION */}
-                  <label>Select the holidays YOU have the child(ren) this year</label>
-                  <CheckboxGroup boxWidth={50} onCheck={handleHolidaySelection} skipNameFormatting={true} labels={holidayLabels.map((x) => x.name)} />
-
-                  <div className="share-with-container">
-                    <label>
-                      <span className="material-icons-round warning mr-10">visibility</span> Who is allowed to see it?
-                      <span className="asterisk">*</span>
-                    </label>
-                    <CheckboxGroup
-                      dataPhone={currentUser.coparents.map((x) => x.phone)}
-                      labels={currentUser.coparents.map((x) => x.name)}
-                      onCheck={handleShareWithSelection}
-                    />
-                  </div>
-                  <div className="button-group bottom visible">
-                    <button className="bottom button default visible" onClick={resetScreen}>
-                      <span className="material-icons-round pr-5">undo</span>
-                    </button>
-                    <button className="button bottom submit green visible " onClick={addWeekendsToCalendar}>
-                      <span className="material-icons-round">event_available</span>
-                    </button>
-                    <button
-                      className=" button bottom cancel red visible"
-                      onClick={() => {
-                        setDeleteMessage('deleting schedule')
-                      }}>
-                      <span className="material-icons-round">delete</span>
-                    </button>
-                  </div>
-                  <label>Preferred Transfer Location (for primary/biological coparent)</label>
-                  <Autocomplete
-                    placeholder="Enter location..."
-                    apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                    options={{
-                      types: ['geocode', 'establishment'],
-                      componentRestrictions: { country: 'usa' },
-                    }}
-                    className="mb-15"
-                    onPlaceSelected={(place) => {
-                      updatePreferredLocation(
-                        place.formatted_address,
-                        `https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`
-                      )
-                    }}
-                  />
                 </>
               )}
             </Accordion.Panel>
           </Accordion>
+
+          {/* SHARE WITH */}
+          <div className="share-with-container mt-20">
+            <label>
+              <span className="material-icons-round warning mr-10">visibility</span> Who is allowed to see this visitation schedule?
+              <span className="asterisk">*</span>
+            </label>
+            <CheckboxGroup
+              dataPhone={currentUser.coparents.map((x) => x.phone)}
+              labels={currentUser.coparents.map((x) => x.name)}
+              onCheck={handleShareWithSelection}
+            />
+          </div>
+
+          {/* LOCATION */}
+          <label>Preferred Transfer Location (for primary/biological coparent)</label>
+          <Autocomplete
+            placeholder=""
+            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+            options={{
+              types: ['geocode', 'establishment'],
+              componentRestrictions: { country: 'usa' },
+            }}
+            className={`${currentUser?.settings?.theme} mb-15`}
+            onPlaceSelected={(place) => {
+              updatePreferredLocation(
+                place.formatted_address,
+                `https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`
+              ).then((r) => r)
+            }}
+          />
+          {/* HOLIDAY SELECTION */}
+          <label>Select the holidays YOU have the child(ren) this year</label>
+          <CheckboxGroup
+            elClass={'holiday-checkboxes'}
+            boxWidth={50}
+            onCheck={handleHolidaySelection}
+            skipNameFormatting={true}
+            labels={holidayLabels.map((x) => x.name).sort()}
+            dataDate={dataDates}
+          />
+
+          <button className="button default green center" onClick={() => setHolidaysInDatabase()}>
+            Update Holidays
+          </button>
         </div>
       </div>
     </div>

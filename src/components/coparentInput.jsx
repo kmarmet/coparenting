@@ -5,7 +5,7 @@ import globalState from '../context'
 
 export default function CoparentInputs({ add, coparentsLength = 1 }) {
   const { state, setState } = useContext(globalState)
-  const [name, setName] = useState('')
+  const [date, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [parentType, setParentType] = useState('')
   const [showAddButton, setShowAddButton] = useState(true)
@@ -26,7 +26,7 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
       <label>
         Name <span className="asterisk">*</span>
       </label>
-      <input type="text" className="coparent-name" onChange={(e) => setName(e.target.value)} />
+      <input type="text" className="coparent-date" onChange={(e) => setName(e.target.value)} />
       <label>
         Phone Number <span className="asterisk">*</span>
       </label>
@@ -41,12 +41,12 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
         <button
           className="button default green"
           onClick={() => {
-            if (name.length == 0 || phone.length === 0 || parentType.length === 0) {
-              setState({ ...state, showAlert: true, alertMessage: 'Please enter required fields' })
+            if (date.length == 0 || phone.length === 0 || parentType.length === 0) {
+              setState({ ...state, showAlert: true, alertMessage: 'Please enter required fields', alertType: 'error' })
               return false
             }
             setShowAddButton(false)
-            add({ name, phone, parentType })
+            add({ date, phone, parentType })
           }}>
           Add <span className="material-icons">check</span>
         </button>

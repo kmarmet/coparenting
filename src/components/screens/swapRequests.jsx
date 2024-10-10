@@ -148,13 +148,6 @@ export default function SwapRequests() {
                           <p className={request?.reason.length > 50 ? 'wrap reason-text' : 'reason-text'}>{request?.reason}</p>
                         </div>
                       )}
-
-                      {/* REASON BUTTON */}
-                      {request.phone === currentUser.phone && (
-                        <button id="reminder-button" className="button default reminder w-50" onClick={() => sendReminder(request)}>
-                          Send Reminder <span className="material-icons-round">notification_important</span>
-                        </button>
-                      )}
                     </div>
                   </div>
 
@@ -184,12 +177,20 @@ export default function SwapRequests() {
                     </>
                   )}
                   {request.recipientPhone !== currentUser.phone && (
-                    <button
-                      data-request-id={request.id}
-                      onClick={(e) => selectDecision(request, Decisions.delete)}
-                      className="button default delete red no-border no-border-radius w-100">
-                      Delete
-                    </button>
+                    <div className="flex">
+                      {/* REASON BUTTON */}
+                      {request.phone === currentUser.phone && (
+                        <button id="reminder-button" className="button default reminder w-50 no-border-radius" onClick={() => sendReminder(request)}>
+                          Send Reminder <span className="material-icons-round">notification_important</span>
+                        </button>
+                      )}
+                      <button
+                        data-request-id={request.id}
+                        onClick={(e) => selectDecision(request, Decisions.delete)}
+                        className="button default delete red no-border no-border-radius w-50">
+                        Delete
+                      </button>
+                    </div>
                   )}
                 </div>
               )

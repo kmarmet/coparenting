@@ -29,7 +29,7 @@ export default function Settings() {
 
   const submitShortcuts = async () => {
     if (shortcutsToSendToDb.length < 4 || shortcutsToSendToDb.length > 4) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose at least four (only four) shortcuts' })
+      setState({ ...state, showAlert: true, alertMessage: 'Please choose at least four (only four) shortcuts', alertType: 'error' })
       return false
     }
     const toSendToDb = createShortcutArray(shortcutsToSendToDb)

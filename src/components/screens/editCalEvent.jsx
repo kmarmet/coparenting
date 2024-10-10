@@ -295,7 +295,6 @@ export default function EditCalEvent() {
       })
     }
     if (eventCount === 'single') {
-      console.log(calEventToEdit)
       await DB.delete(DB.tables.calendarEvents, calEventToEdit.id).finally(whenDone)
     } else {
       let clonedEvents = await DB.getTable(DB.tables.calendarEvents)
@@ -383,7 +382,7 @@ export default function EditCalEvent() {
               await submit('single')
             } else {
               setTimeout(() => {
-                setState({ ...state, showAlert: true, alertMessage: 'Please' + ' fill out required fields' })
+                setState({ ...state, showAlert: true, alertMessage: 'Please' + ' fill out required fields', alertType: 'error' })
               }, 500)
             }
             setEditSingleConfirmTitle('')
@@ -416,7 +415,7 @@ export default function EditCalEvent() {
           onAccept={async () => {
             console.log(Manager.validation([eventTitle, eventShareWith]) > 0)
             if (Manager.validation([eventTitle, eventShareWith]) > 0) {
-              setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields' })
+              setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields', alertType: 'error' })
               return false
             }
             await submit('multiple')

@@ -30,7 +30,6 @@
 
     // Dropdown heaer
     .rs-panel-header {
-      background-color: var(--borderColor);
       padding: 10px;
       text-align: center;
     }
@@ -70,7 +69,6 @@
     .rs-dropdown-toggle,
     .rs-panel-header {
       font-weight: 400;
-      border: 1px solid var(--translucent);
       padding: 8px 20px;
       background-color: transparent;
       border-radius: 6px;
@@ -91,7 +89,7 @@
       }
 
       .rs-panel-title {
-        color: var(--textColor);
+        
         text-align: left;
       }
     }
@@ -109,7 +107,6 @@
       margin: 0 auto;
       line-height: 1.5;
       padding: 10px;
-      @include translucentBgWithBorder;
       &.ff-note {
         line-height: 0;
         padding: 0;
@@ -130,7 +127,6 @@
       .rs-panel-group {
         .accordion-label {
           font-weight: 400;
-          border: 1px solid var(--translucent);
           padding: 5px 20px;
           border-radius: 6px;
           display: flex;
@@ -184,13 +180,12 @@
             }
 
             input {
-              border-bottom: 1px solid var(--translucent);
               border-radius: 0;
-              color: var(--textColor);
+              
               width: 100%;
 
               &::placeholder {
-                color: var(--textColor);
+                
                 opacity: 0.7;
                 font-style: italic;
                 font-size: 16px;
@@ -209,7 +204,6 @@
           }
 
           ul {
-            background-color: var(--compColor);
             border: 1px solid red;
             border: 0;
             height: 400px;
@@ -217,7 +211,6 @@
 
             li {
               padding: 0 10px;
-              border-bottom: 1px solid var(--borderColor);
             }
           }
         }
@@ -231,7 +224,7 @@
 
             &:nth-child(2) {
               margin-left: 20px;
-              color: var(--textColor);
+              
               font-size: 20px;
             }
           }

@@ -55,22 +55,23 @@
       padding-top: 0;
 
       &.light {
-        .events, .search-results {
+        .events,
+        .search-results {
           &.search-results {
             .columns {
               margin-bottom: 10px;
               .details-container {
                 .event-details {
-                    .flex {
-                      &.parent {
-                        .content {
-                          background-color: $lightGrey;
-                          padding: 8px;
-                        }
+                  .flex {
+                    &.parent {
+                      .content {
+                        background-color: $lightGrey;
+                        padding: 8px;
                       }
                     }
                   }
                 }
+              }
             }
           }
           .columns {
@@ -79,7 +80,7 @@
                 .title {
                   color: $purple;
                 }
-                
+
                 .event-content {
                   background-color: $lightGrey;
                   padding-top: 8px;
@@ -123,7 +124,7 @@
       &.dark {
         #url-notes-container {
           background-color: $darkBlue;
-          
+
           input,
           textarea {
             background-color: $translucent;
@@ -133,7 +134,7 @@
       #event-title-input {
         width: 100%;
         background-color: $darkBlue;
-        
+
         &.no-radius {
           border-radius: $borderRadius $borderRadius $borderRadius 0;
         }
@@ -153,19 +154,35 @@
             .details-container {
               p {
                 color: white;
-                
+
                 &.title {
                   color: $lightPurple;
                 }
               }
+              #reminder-times {
+                span {
+                  border: 1px solid $mauve;
+                  opacity: 0.9;
+                  background: transparent;
+                  color: $mauve;
+                  font-weight: 200;
+                }
+              }
+              .child-name {
+                border: 1px solid $mauve;
+                opacity: 0.9;
+                background: transparent;
+                color: $mauve;
+                font-weight: 200;
+              }
             }
           }
-          
+
           .event-details {
             &.visitation {
               .title {
                 color: $green;
-                
+
                 b {
                   color: $green;
                 }
@@ -181,14 +198,16 @@
           }
           button {
             span {
-              color: white;
+              color: $red;
             }
           }
         }
         .search-results {
           .columns {
+            margin-bottom: 10px;
             .details-container {
               .event-details {
+                padding: 8px;
                 background-color: $darkBlue;
               }
             }
@@ -244,7 +263,8 @@
       display: block;
       transition: height 0.3s linear;
       #close-search-button {
-        margin-top: 10px;
+        color: $red;
+        margin-top: 8px;
       }
 
       /*#region  LIGHT THEME*/
@@ -252,11 +272,11 @@
         #cal-info-container {
           background-color: $lightGrey;
           box-shadow: none;
-          p, .small {
+          p,
+          .small {
             opacity: 1;
           }
           #calendar-legend {
-
             .column {
               color: $lightBlackLight;
               &.two {
@@ -279,6 +299,20 @@
 
       /*#region  DARK THEME*/
       &.dark {
+        p {
+          color: $offWhite;
+        }
+        #legend-title,
+        #tips-title {
+          color: $darkBlueMedium;
+        }
+        #cal-info-container {
+          .small {
+            span {
+              font-weight: 600;
+            }
+          }
+        }
         #filter-button {
           background-color: $darkBlue;
           color: white;
@@ -286,6 +320,14 @@
 
           span {
             color: $accent;
+          }
+        }
+        #calendar-legend {
+          .column {
+            &.one,
+            &.two {
+              color: $offWhite;
+            }
           }
         }
       }
@@ -452,7 +494,6 @@
         opacity: 0.6;
         line-height: 1;
         margin-left: auto;
-        color: var(--whiteOrBlue);
         z-index: 100;
       }
     }
@@ -543,7 +584,6 @@
       }
 
       .url-notes-header {
-        color: var(--textColor);
         font-weight: 500;
         display: flex;
         align-items: center;
@@ -598,8 +638,6 @@
             opacity: 0;
             width: 100%;
             transform: scale(0);
-            box-shadow: var(--shadowLight);
-            border-radius: 8px;
 
             &.active {
               opacity: 1;
@@ -683,6 +721,7 @@
               width: 100%;
               border-radius: 10px;
 
+              /*#region  DARK THEME*/
               &.dark {
                 background-color: $darkBlue;
 
@@ -701,6 +740,7 @@
                   }
                 }
               }
+              /*#endregion  DARK THEME*/
 
               .event-row {
                 display: flex;
@@ -713,29 +753,27 @@
                 &.reminders {
                   flex-wrap: nowrap;
                   align-items: center;
-                  #reminders-title {
-                  }
-                  #reminder-times {
-                    font-style: normal;
-                    position: relative;
-                    margin: 0 0 0 10px;
+                  #reminder-times-flex {
                     flex-wrap: wrap;
-                    justify-content: flex-start;
-                    gap: 8px;
-                    height: auto;
-                    span {
-                      text-align: center;
-                      display: inline-block;
-                      border-radius: 20px;
-                      padding: 3px 10px;
-                      color: $blue;
-                      font-weight: bold;
-                      font-size: 14px;
-                      opacity: 1;
+                    #reminder-times {
+                      font-style: normal;
                       position: relative;
-                      min-width: 50px;
-                      top: 0;
-                      line-height: 1;
+                      margin: 0 0 0 10px;
+                      justify-content: flex-start;
+                      gap: 8px;
+                      height: auto;
+                      span {
+                        text-align: center;
+                        display: inline-block;
+                        border-radius: 20px;
+                        padding: 3px 10px;
+                        font-size: 14px;
+                        opacity: 1;
+                        position: relative;
+                        min-width: 50px;
+                        top: 0;
+                        line-height: 1;
+                      }
                     }
                   }
                 }
@@ -880,7 +918,7 @@
               justify-self: flex-start;
               background-color: $green;
               font-weight: 500;
-              color: var(--textColor);
+
               border-radius: 100%;
               height: 20px;
               width: 20px;
