@@ -90,7 +90,7 @@ export default function ChildInfo() {
               </div>
             )}
 
-            <span className="child-date">{formatNameFirstNameOnly(selectedChild?.general?.name)}</span>
+            <span className="child-name">{formatNameFirstNameOnly(selectedChild?.general?.name)}</span>
           </>
         </div>
 

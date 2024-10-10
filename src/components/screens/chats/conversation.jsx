@@ -77,18 +77,18 @@ const Conversation = () => {
     // Messages
     conversationMessage.id = Manager.getUid()
     conversationMessage.timestamp = moment().format('MM/DD/yyyy hh:mma')
-    conversationMessage.sender = currentUser.phone
-    conversationMessage.recipient = messageToUser.phone
+    conversationMessage.sender = currentUser.name
+    conversationMessage.recipient = messageToUser.name
     conversationMessage.message = messageInputValue
     conversationMessage.readState = 'delivered'
     conversationMessage.notificationSent = false
     conversationMessage.saved = false
 
     //Thread
-    const { date, id, phone } = messageToUser
-    const { date: crName, id: crId, phone: crPhone } = currentUser
-    const memberTwo = { date: crName, id: crId, phone: crPhone }
-    const memberOne = { date, id, phone }
+    const { name, id, phone } = messageToUser
+    const { name: crName, id: crId, phone: crPhone } = currentUser
+    const memberTwo = { name: crName, id: crId, phone: crPhone }
+    const memberOne = { name, id, phone }
     conversation.id = Manager.getUid()
     conversation.members = [memberOne, memberTwo]
     conversation.timestamp = moment().format('MM/DD/yyyy hh:mma')
@@ -305,7 +305,7 @@ const Conversation = () => {
                     key={index}>
                     <p>{messageObj.message}</p>
                     <div className="flex under-message">
-                      <span className="from-date">From {sender} on&nbsp;</span>
+                      <span className="from-name">From {sender} on&nbsp;</span>
                       <span className="timestamp">{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}</span>
                     </div>
                   </div>
@@ -332,7 +332,7 @@ const Conversation = () => {
                     key={index}>
                     <p>{messageObj.message}</p>
                     <div className="flex under-message">
-                      <span className="from-date">From {sender} on&nbsp;</span>
+                      <span className="from-name">From {sender} on&nbsp;</span>
                       <span className="timestamp">{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}</span>
                     </div>
                   </div>

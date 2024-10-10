@@ -275,7 +275,7 @@ export default function ExpenseTracker() {
               <div className="options">
                 {/* ZELLE */}
                 <div className="option zelle">
-                  <p className="brand-date accent">Zelle</p>
+                  <p className="brand-name accent">Zelle</p>
                   <div className="flex">
                     <img className="active" src={require('../../img/brandLogos/zelle.png')} alt="" />
                     <div className="text">
@@ -296,7 +296,7 @@ export default function ExpenseTracker() {
 
                 {/* VENMO */}
                 <div className="option venmo">
-                  <p className="brand-date">Venmo</p>
+                  <p className="brand-name">Venmo</p>
                   <div className="flex">
                     <img className="active" src={require('../../img/brandLogos/venmo.png')} alt="" />
                     <div className="text">
@@ -319,7 +319,7 @@ export default function ExpenseTracker() {
                 </div>
                 {/* APPLE PAY */}
                 <div className="option apple-cash">
-                  <p className="brand-date">Apple Cash</p>
+                  <p className="brand-name">Apple Cash</p>
                   <div className="flex ">
                     <img className="active" src={require('../../img/brandLogos/applepay.png')} alt="" />
                     <div className="text">
@@ -333,7 +333,7 @@ export default function ExpenseTracker() {
 
                 {/* PAYPAL */}
                 <div className="option paypal">
-                  <p className="brand-date">PayPal</p>
+                  <p className="brand-name">PayPal</p>
                   <div className="flex">
                     <img className="active" src={require('../../img/brandLogos/paypal.png')} alt="" />
                     <div className="text">
@@ -347,7 +347,7 @@ export default function ExpenseTracker() {
 
                 {/* CASHAPP */}
                 <div className="option cashapp">
-                  <p className="brand-date">CashApp</p>
+                  <p className="brand-name">CashApp</p>
                   <div className="flex">
                     <img className="active" src={require('../../img/brandLogos/cashapp.png')} alt="" />
                     <div className="text">
@@ -409,11 +409,11 @@ export default function ExpenseTracker() {
                         <div className="flex">
                           <p
                             onBlur={(e) => {
-                              handleEditable(e, expense, 'date', e.currentTarget.innerHTML).then((r) => r)
+                              handleEditable(e, expense, 'name', e.currentTarget.innerHTML).then((r) => r)
                             }}
                             contentEditable
                             dangerouslySetInnerHTML={{ __html: expense.name.uppercaseFirstLetterOfAllWords() }}
-                            className="date"></p>
+                            className="name"></p>
                           <div className="flex amount-flex">
                             <span
                               className="amount"

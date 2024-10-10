@@ -5,7 +5,7 @@ import globalState from '../context'
 export default function ParentInput({ add, parentsLength = 1, labels }) {
   const { state, setState } = useContext(globalState)
   const [phone, setPhone] = useState('')
-  const [date, setName] = useState('')
+  const [name, setName] = useState('')
   const [showAddButton, setShowAddButton] = useState(true)
 
   return (
@@ -23,11 +23,11 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
         <button
           className="button center default green"
           onClick={() => {
-            if (date.length == 0 || phone.length === 0) {
+            if (name.length == 0 || phone.length === 0) {
               setState({ ...state, showAlert: true, alertMessage: 'Parent date and phone are required', alertType: 'error' })
               return false
             }
-            add({ date, phone })
+            add({ name, phone })
             setShowAddButton(false)
           }}>
           Add <span className="material-icons">add</span>
