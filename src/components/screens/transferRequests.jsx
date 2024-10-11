@@ -14,6 +14,7 @@ import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
 import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
+import SecurityManager from '../../managers/securityManager'
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
@@ -22,10 +23,9 @@ export default function TransferRequests() {
   const [rejectionReason, setRejectionReason] = useState('')
   const [recipients, setRecipients] = useState([])
 
-  const updateRequestsFromDb = async (requestsFromDb) => {
-    let allRequests = await DB.getFilteredRecords(requestsFromDb, currentUser).then((x) => x)
-    let allUsers = await DB.getTable(DB.tables.users)
-    allUsers = DB.convertKeyObjectToArray(allUsers)
+  const getSecuredRequests = async () => {
+    let allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
+    let allUsers = Manager.convertToArray(await DB.getTable(DB.tables.users))
     const found = allUsers.filter((y) => allRequests.filter((x) => x.recipientPhone === y.phone).length > 0)
     setRecipients(found)
 
@@ -72,7 +72,7 @@ export default function TransferRequests() {
 
     onValue(child(dbRef, DB.tables.transferChange), async (snapshot) => {
       const tableData = snapshot.val()
-      updateRequestsFromDb(await DB.getFilteredRecords(tableData, currentUser).then((x) => x))
+      getSecuredRequests().then((r) => r)
     })
 
     setTimeout(() => {

@@ -67,6 +67,51 @@ SecurityManager = {
       }
     }
     return returnRecords;
+  },
+  getTransferChangeRequests: async function(currentUser) {
+    var allRequests, i, len, request, returnRecords, shareWith;
+    returnRecords = [];
+    allRequests = Manager.convertToArray((await DB.getTable(DB.tables.transferChangeRequests))).flat();
+    for (i = 0, len = allRequests.length; i < len; i++) {
+      request = allRequests[i];
+      shareWith = request.shareWith;
+      if (Manager.isValid(shareWith, true)) {
+        if (shareWith.includes(currentUser.phone) || request.phone === currentUser.phone) {
+          returnRecords.push(request);
+        }
+      }
+    }
+    return returnRecords.flat();
+  },
+  getDocuments: async function(currentUser) {
+    var allDocs, doc, i, len, returnRecords, shareWith;
+    returnRecords = [];
+    allDocs = Manager.convertToArray((await DB.getTable(DB.tables.documents))).flat();
+    for (i = 0, len = allDocs.length; i < len; i++) {
+      doc = allDocs[i];
+      shareWith = doc.shareWith;
+      if (Manager.isValid(shareWith, true)) {
+        if (shareWith.includes(currentUser.phone) || doc.uploadedBy === currentUser.phone) {
+          returnRecords.push(doc);
+        }
+      }
+    }
+    return returnRecords.flat();
+  },
+  getMemories: async function(currentUser) {
+    var allMemories, i, len, memory, returnRecords, shareWith;
+    returnRecords = [];
+    allMemories = Manager.convertToArray((await DB.getTable(DB.tables.memories))).flat();
+    for (i = 0, len = allMemories.length; i < len; i++) {
+      memory = allMemories[i];
+      shareWith = memory.shareWith;
+      if (Manager.isValid(shareWith, true)) {
+        if (shareWith.includes(currentUser.phone) || memory.createdBy === currentUser.phone) {
+          returnRecords.push(memory);
+        }
+      }
+    }
+    return returnRecords.flat();
   }
 };
 

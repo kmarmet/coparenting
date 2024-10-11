@@ -10,6 +10,7 @@ import { Accordion, DatePicker } from 'rsuite'
 import ImageTheater from '../shared/imageTheater'
 import Memory from '../../models/memory'
 import manager from '@manager'
+import SecurityManager from '../../managers/securityManager'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -37,7 +38,7 @@ export default function Memories() {
 
   const getImages = async () => {
     setState({ ...state, isLoading: true })
-    let all = await DB.getAllFilteredRecords(DB.tables.users, currentUser, 'memories')
+    let all = await SecurityManager.getMemories(currentUser)
     if (Manager.isValid(all, true)) {
       const resolvedImages = async () =>
         await new Promise(async (resolve, reject) => {
@@ -88,6 +89,9 @@ export default function Memories() {
           Manager.toggleForModalOrNewForm('show')
         }
       }
+    } else {
+      setMemories([])
+      setState({ ...state, isLoading: false })
     }
   }
 
@@ -95,14 +99,11 @@ export default function Memories() {
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
 
     // Delete from Firebase Realtime DB
-    await DB.deleteImage(DB.tables.users, currentUser, record.id, 'memories')
-      .then(() => {
-        getImages()
-      })
-      .finally(async () => {
-        // Delete from Firebase Storage
-        await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser.id, imageName)
-      })
+    await DB.deleteImage(DB.tables.memories, record).then(async () => {
+      getImages().then((r) => r)
+      // Delete from Firebase Storage
+      await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser.id, imageName)
+    })
   }
 
   const addImageAnimation = async () => {

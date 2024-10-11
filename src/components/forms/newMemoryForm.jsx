@@ -72,7 +72,7 @@ function NewMemoryForm() {
             newMemory.shareWith = shareWith
             newMemory.creationDate = moment().format(DateFormats.dateForDb)
             newMemory.createdBy = currentUser.phone
-            await DB.addToUserMemories(currentUser, 'memories', newMemory).finally(() => {
+            await DB.add('memories', newMemory).finally(() => {
               setState({ ...state, isLoading: false, currentScreen: ScreenNames.memories })
             })
           }

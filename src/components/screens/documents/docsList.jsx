@@ -26,6 +26,7 @@ import {
   uniqueArray,
   getFileExtension,
 } from '../../../globalFunctions'
+import SecurityManager from '../../../managers/securityManager'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
@@ -34,8 +35,8 @@ export default function DocsList() {
   const [selectedDoc, setSelectedDoc] = useState(null)
   const [toDelete, setToDelete] = useState([])
 
-  const getDocs = async () => {
-    const allDocs = await DocumentsManager.getAllDocs(currentUser)
+  const getSecuredDocs = async () => {
+    const allDocs = await SecurityManager.getDocuments(currentUser)
     setDocs(allDocs)
   }
 
@@ -58,7 +59,7 @@ export default function DocsList() {
   }
 
   useEffect(() => {
-    getDocs().then((r) => r)
+    getSecuredDocs().then((r) => r)
     setState({ ...state, previousScreen: ScreenNames.docsList, showBackButton: false, showMenuButton: true })
     Manager.toggleForModalOrNewForm()
   }, [])

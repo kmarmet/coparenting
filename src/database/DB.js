@@ -9,7 +9,7 @@ const DB = {
     swapRequests: 'swapRequests',
     users: 'users',
     calendarEvents: 'calendarEvents',
-    transferChange: 'transferChange',
+    transferChangeRequests: 'transferChangeRequests',
     inbox: 'inbox',
     pushAlertSubscribers: 'pushAlertSubscribers',
     profilePics: 'profilePics',
@@ -18,6 +18,7 @@ const DB = {
     archivedChats: 'archivedChats',
     chatRecoveryRequests: 'chatRecoveryRequests',
     suggestions: 'suggestions',
+    memories: 'memories',
   },
   runQuery: async (table, query) => {
     const records = await DB.getTable(table)
@@ -276,35 +277,11 @@ const DB = {
     const eventsToAdd = [...currentEvents, [...newEvents]].filter((x) => x !== undefined).flat()
     set(child(dbRef, `${DB.tables.calendarEvents}`), eventsToAdd)
   },
-  deleteImage: async (tableName, currentUser, id, prop) => {
+  deleteImage: async (tableName, memory) => {
     const dbRef = ref(getDatabase())
     let toDeleteId
-    if (prop) {
-      let tableRecords = await DB.getTable(tableName)
-      tableRecords = DB.convertKeyObjectToArray(tableRecords)
-      let userToUpdate = tableRecords.filter((x) => x.phone === currentUser.phone)[0]
-      if (userToUpdate === undefined || userToUpdate[prop] === undefined || userToUpdate[prop].length === 0) {
-        userToUpdate[prop] = []
-      } else {
-        const asArray = Object.entries(userToUpdate[prop])
-        asArray.forEach((img, index) => {
-          if (img[1].id === id) {
-            toDeleteId = img[0]
-          }
-        })
-      }
-    } else {
-      await DB.getTable(tableName).then(async (data) => {
-        let tableData = []
-        if (data && data.length > 0) {
-          tableData = data.filter((x) => {
-            return x.id !== id
-          })
-        }
-        await set(child(dbRef, tableName), tableData)
-      })
-    }
-    remove(child(dbRef, `${tableName}/${currentUser.phone}/${prop}/${toDeleteId}/`))
+    const key = await DB.getSnapshotKey(tableName, memory, 'id')
+    remove(child(dbRef, `${DB.tables.memories}/${toDeleteId}/`))
   },
   getTable: async (tableName) => {
     const dbRef = ref(getDatabase())
