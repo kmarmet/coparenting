@@ -31,6 +31,17 @@ export contains = (itemToCheck, searchValue) ->
 export wordCount = (input) ->
   input.trim().split(/\s+/).length
 
+export getPositionOfWordInText = (word, text) ->
+  index = text.indexOf(word)
+  textLength = text.length
+  startOfTextToWord = text.substring(0, index)
+  indexAfterStartOfText = startOfTextToWord.length
+  endIndex = indexAfterStartOfText + textLength
+  returnObj =
+    start: indexAfterStartOfText
+    end: endIndex
+  returnObj
+
 export uppercaseFirstLetterOfAllWords = (input) ->
   words = input.toString()
   if words and words != undefined

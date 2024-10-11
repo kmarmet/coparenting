@@ -63,11 +63,18 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <ErrorBoundary
     fallback={
-      <PopupCard className="active" title={'<span>Uh oh!</span>'} closeable={false} onClose={() => {}}>
+      <PopupCard className="active error-boundary" title={'<span>Uh oh!</span>'} closeable={false} onClose={() => {}}>
         <p className="message mb-15">
           It looks like the app ran into an issue. <br /> Please <span className="emphasize">Clear the Cache</span> and then
           <span className="emphasize ml-5">Force Close</span> the application and reopen it.
         </p>
+        <div id="text-container" className="mb-20">
+          <div className="flex">
+            <p>If the steps below do not work, please email us at </p>
+            <a href="mailto:support@peaceful-coparenting.app">support@peaceful-coparenting.app</a>
+          </div>
+        </div>
+        <hr />
         <div id="text-container" className="mb-15">
           <p className="heading mb-5">How to Clear the Cache - iOS</p>
 
@@ -100,6 +107,7 @@ root.render(
             </p>
           </div>
         </div>
+        <hr />
         <div id="text-container" className="mb-15">
           <p className="heading mb-5">How to Clear the Cache - Android</p>
 
@@ -131,6 +139,19 @@ root.render(
           <div className="flex" id="steps">
             <span className="step-number">2.</span>
             <p>You should see your recently opened apps. Swipe up an app to close it</p>
+          </div>
+        </div>
+
+        <div id="text-container" className="mb-15">
+          <p className="heading mb-5">If the issue continues...</p>
+
+          <div className="flex mb-10" id="steps">
+            <span className="step-number">1.</span>
+            <p>Uninstall the app</p>
+          </div>
+          <div className="flex" id="steps">
+            <span className="step-number">2.</span>
+            <p>Reinstall the app</p>
           </div>
         </div>
       </PopupCard>

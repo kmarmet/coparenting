@@ -47,6 +47,20 @@ export var wordCount = function(input) {
   return input.trim().split(/\s+/).length;
 };
 
+export var getPositionOfWordInText = function(word, text) {
+  var endIndex, index, indexAfterStartOfText, returnObj, startOfTextToWord, textLength;
+  index = text.indexOf(word);
+  textLength = text.length;
+  startOfTextToWord = text.substring(0, index);
+  indexAfterStartOfText = startOfTextToWord.length;
+  endIndex = indexAfterStartOfText + textLength;
+  returnObj = {
+    start: indexAfterStartOfText,
+    end: endIndex
+  };
+  return returnObj;
+};
+
 export var uppercaseFirstLetterOfAllWords = function(input) {
   var words;
   words = input.toString();

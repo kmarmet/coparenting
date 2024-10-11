@@ -16,6 +16,7 @@ import {
   contains,
   uniqueArray,
   getFileExtension,
+  getPositionOfWordInText,
 } from '../globalFunctions'
 
 const DocumentConversionManager = {
@@ -122,12 +123,27 @@ const DocumentConversionManager = {
     const worker = await createWorker()
     await worker.recognize(imagePath).then((result) => {
       let confidence = result.confidence
-      let paragraphs = result.data.paragraphs
+      const { data } = result
+      const { symbols, lines, paragraphs } = data
+
+      // for (let line of lines) {
+      //   if (line.text.indexOf('Halloween') > -1) {
+      //     const wordPosition = getPositionOfWordInText('Halloween', line.text)
+      //     const { start, end } = wordPosition
+      //     console.log(start, end)
+      //     if (start > -1 && start > 0) {
+      //       console.log(start, end)
+      //       // console.log(line.text.substring(start, end))
+      //     }
+      //     line.text = `<span className="sub-header">${line.text}</span>`
+      //   }
+      // }
 
       paragraphs.forEach((par) => {
         if (DocumentConversionManager.hasNumbers(par.text) && par.text.trim().split(/\s+/).length <= 10) {
           par.text = `<span className="sub-header">${par.text}</span>`
         }
+
         const parEl = document.createElement('p')
         par.text = DocumentConversionManager.formatDocHeaders(par.text)
 
@@ -135,7 +151,6 @@ const DocumentConversionManager = {
         textContainer.appendChild(parEl)
       })
     })
-    console.log('done d')
   },
   addHeaderClass: (el) => {
     let strong = el.querySelector('strong')

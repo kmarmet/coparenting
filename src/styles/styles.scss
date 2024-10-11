@@ -1,5 +1,6 @@
 @import './_mixins.scss';
 
+
 #fallback {
   height: 100vh;
   width: 100vw;
@@ -279,7 +280,6 @@
     .title-suggestion-dropdown-wrapper {
       @include titleSuggestionDropdown;
     }
-
     .material-icons {
       font-family: 'Material Icons';
     }

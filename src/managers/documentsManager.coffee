@@ -19,7 +19,8 @@ import {
   removeFileExtension,
   contains,
   uniqueArray,
-  getFileExtension
+  getFileExtension,
+  getWordFromString
 } from "../globalFunctions"
 
 export default DocumentsManager =
