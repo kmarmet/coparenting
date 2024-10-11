@@ -16,6 +16,8 @@ import BottomCard from 'components/shared/bottomCard'
 import DateFormats from '../../constants/dateFormats'
 import { useSwipeable } from 'react-swipeable'
 import BottomButton from '../shared/bottomButton'
+import SecurityManager from '../../managers/securityManager'
+
 import {
   toCamelCase,
   getFirstWord,
@@ -68,15 +70,16 @@ export default function EventCalendar() {
     return dateArr
   }
 
-  const updateLogFromDb = async (selectedDay, selectedMonth, eventsFromDB) => {
-    let _allEvents = await DB.getFilteredRecords(eventsFromDB, currentUser).then((x) => x)
-    const eventsToAddDotsTo = _allEvents.sort((a, b) => {
+  const getSecuredEvents = async (selectedDay, selectedMonth) => {
+    let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
+    securedEvents = DateManager.sortCalendarEvents(securedEvents, 'fromDate', 'startTime')
+    const eventsToAddDotsTo = securedEvents.sort((a, b) => {
       return a.time + b.time
     })
 
-    setAllEventsFromDb(_allEvents)
+    setAllEventsFromDb(securedEvents)
     // Sort desc
-    _allEvents = _allEvents.sort((a, b) => {
+    securedEvents = securedEvents.sort((a, b) => {
       if (a.time < b.time) {
         return -1
       }
@@ -86,21 +89,26 @@ export default function EventCalendar() {
       return 0
     })
     if (selectedDay !== null) {
-      _allEvents = _allEvents.filter((x) => {
+      securedEvents = securedEvents.filter((x) => {
         if (x.date === selectedDay.toString() || x.fromDate === selectedDay.toString()) {
           return x
         }
       })
       let datesWithTime = []
       let datesWithoutTime = []
-      _allEvents.forEach((event) => {
+
+      // Sort dates with time
+      securedEvents.forEach((event) => {
         if (Manager.isValid(event.startTime, false, false, true)) {
           datesWithTime.push(event)
         } else {
           datesWithoutTime.push(event)
         }
       })
-      _allEvents = datesWithoutTime.concat(datesWithTime)
+
+      // Sort
+      datesWithTime = datesWithTime.sort((a, b) => moment(a.startTime, DateFormats.timeForDb).diff(moment(b.startTime, DateFormats.timeForDb)))
+      securedEvents = datesWithoutTime.concat(datesWithTime)
     }
     let eventsWithMultipleDays = []
     eventsToAddDotsTo.forEach((event, index) => {
@@ -130,8 +138,8 @@ export default function EventCalendar() {
           endTime: event.eventObj.endTime,
           children: event.eventObj.children,
         }
-        if (!_allEvents.includes(eventToAdd)) {
-          _allEvents.push(eventToAdd)
+        if (!securedEvents.includes(eventToAdd)) {
+          securedEvents.push(eventToAdd)
         }
       }
     })
@@ -139,17 +147,17 @@ export default function EventCalendar() {
     addDayIndicators(selectedMonth, eventsToAddDotsTo, eventsWithMultipleDays)
 
     // Filter out dupes by event title
-    let formattedDateArr = formatEvents(_allEvents)
+    let formattedDateArr = formatEvents(securedEvents)
     setExistingEvents(formattedDateArr)
-    document.querySelectorAll('.event-details').forEach((event) => event.classList.remove('active'))
     setTimeout(() => {
       addEventRowAnimation()
     }, 100)
 
     setState({ ...state, menuIsOpen: false })
+    scrollToTopOfEvents()
   }
 
-  const scrollToTopOfEvents = async () => {
+  const scrollToTopOfEvents = () => {
     let detailsContainer = document.querySelector('.details-container')
     if (detailsContainer) {
       detailsContainer.scroll(0, 0)
@@ -315,14 +323,9 @@ export default function EventCalendar() {
       onMonthChange: (selectedDates, dateStr, instance) => {
         disableSelectedDayBg()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-          const tableData = snapshot.val()
-          await DB.getFilteredRecords(tableData, currentUser).then((x) => {
-            updateLogFromDb(moment(`${instance.currentMonth + 1}/01/${instance.currentYear}`).format('MM/DD/yyyy'), instance.currentMonth + 1, x)
-          })
+          await getSecuredEvents(moment(`${instance.currentMonth + 1}/01/${instance.currentYear}`).format('MM/DD/yyyy'), instance.currentMonth + 1)
+          await scrollToTopOfEvents()
         })
-        const today = moment().format(DateFormats.flatpickr)
-
-        console.log(document.querySelector(`[aria-label='${today}']`))
         const monthSelectOption = document.querySelector(`[value='7']`)
         monthSelectOption.click()
       },
@@ -330,27 +333,14 @@ export default function EventCalendar() {
       onChange: async (e) => {
         const date = moment(e[0]).format('MM/DD/yyyy').toString()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-          let tableData = snapshot.val()
-          if (snapshot.exists()) {
-            await DB.getFilteredRecords(tableData, currentUser).then(async (events) => {
-              const sortedEvents = DateManager.sortCalendarEvents(events, 'fromDate', 'startTime')
-              await updateLogFromDb(date, moment(e[0]).format('MM'), sortedEvents)
-              await scrollToTopOfEvents()
-              setState({ ...state, selectedNewEventDay: moment(e[0]).format('MM/DD/yyyy').toString() })
-            })
-          }
+          await getSecuredEvents(date, moment(e[0]).format('MM'))
+          await scrollToTopOfEvents()
+          setState({ ...state, selectedNewEventDay: moment(e[0]).format('MM/DD/yyyy').toString() })
         })
       },
     })
     onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-      let calEvents = snapshot.val()
-      if (snapshot.exists()) {
-        calEvents = Manager.convertToArray(calEvents)
-        await DB.getFilteredRecords(calEvents, currentUser).then((events) => {
-          const sortedEvents = DateManager.sortCalendarEvents(events, 'fromDate', 'startTime')
-          updateLogFromDb(moment().format('MM/DD/yyyy'), null, sortedEvents)
-        })
-      }
+      await getSecuredEvents(moment().format('MM/DD/yyyy'), null)
     })
   }
 

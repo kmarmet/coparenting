@@ -18,6 +18,7 @@ import '../../prototypes.js'
 import BottomCard from '../shared/bottomCard'
 import ImageTheater from '../shared/imageTheater'
 import Expense from '../../models/expense'
+import SecurityManager from '../../managers/securityManager'
 
 const ViewTypes = {
   all: 'All',
@@ -95,7 +96,7 @@ export default function ExpenseTracker() {
         setCurrentExpense(false)
         setConfirmMessage('')
         await getExpensesFromDb().then((fromDb) => {
-          updateLogFromDb(fromDb).finally(whenDone)
+          getSecuredExpenses(fromDb).finally(whenDone)
         })
       })
     } else {
@@ -109,7 +110,7 @@ export default function ExpenseTracker() {
             setState({ ...state, showAlert: true, alertMessage: `All ${currentExpense.name} expenses have been deleted`, alertType: 'success' })
             await getExpensesFromDb()
               .then((fromDb) => {
-                updateLogFromDb(fromDb)
+                getSecuredExpenses(fromDb)
                 setViewType(ViewTypes.all)
               })
               .finally(whenDone)
@@ -119,8 +120,8 @@ export default function ExpenseTracker() {
     }
   }
 
-  const updateLogFromDb = async (expensesFromDb) => {
-    let allExpenses = await DB.getFilteredRecords(expensesFromDb, currentUser).then((x) => x)
+  const getSecuredExpenses = async () => {
+    let allExpenses = await SecurityManager.getExpenses(currentUser)
     allExpenses = Manager.getUniqueArrayOfObjects(allExpenses, 'id')
 
     if (viewType === ViewTypes.repeating) {
@@ -161,47 +162,25 @@ export default function ExpenseTracker() {
       value = moment(updatedDate).format(DateFormats.dateForDb)
     }
     await DB.updateRecord(DB.tables.expenseTracker, recordToUpdate, propName, value, 'id').finally(async () => {
-      await getExpensesFromDb().then((fromDb) => {
-        updateLogFromDb(fromDb)
-      })
+      await getSecuredExpenses()
     })
-  }
-
-  const getExpensesFromDb = async () => {
-    const promise = await DB.getTable(DB.tables.expenseTracker)
-    return promise
   }
 
   useEffect(() => {
-    getExpensesFromDb().then((expenses) => {
-      let _expenses = expenses
-      if (!Array.isArray(expenses)) {
-        _expenses = DB.convertKeyObjectToArray(_expenses)
-      }
-      updateLogFromDb(_expenses).then((r) => r)
-    })
+    getSecuredExpenses().then((r) => r)
   }, [viewType])
 
   useEffect(() => {
     const dbRef = ref(getDatabase())
 
-    onValue(child(dbRef, DB.tables.expenseTracker), (snapshot) => {
-      getExpensesFromDb().then((expenses) => {
-        let _expenses = expenses
-        if (!Array.isArray(expenses)) {
-          _expenses = DB.convertKeyObjectToArray(_expenses)
-        }
-        updateLogFromDb(_expenses).then((r) => r)
-      })
+    onValue(child(dbRef, DB.tables.expenseTracker), async (snapshot) => {
+      await getSecuredExpenses().then((r) => r)
     })
     Manager.toggleForModalOrNewForm('show')
 
     setTimeout(() => {
       setState({ ...state, showMenuButton: true, showBackButton: false })
     }, 500)
-    // setTimeout(() => {
-    //   setImages()
-    // }, 1000)
   }, [])
 
   useEffect(() => {

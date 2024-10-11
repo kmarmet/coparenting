@@ -20,6 +20,22 @@ import { MobileTimePicker } from '@mui/x-date-pickers'
 import DatetimePickerViews from '../../constants/datetimePickerViews'
 import BottomButton from '../shared/bottomButton'
 import Numpad from '../shared/numpad'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension,
+} from '../../globalFunctions'
 
 function NewExpenseForm() {
   const { state, setState } = useContext(globalState)
@@ -51,6 +67,7 @@ function NewExpenseForm() {
 
   const resetScreenAndGoBack = () => {
     resetNewExpense()
+    console.log(true)
     setState({
       ...state,
       currentScreen: ScreenNames.expenseTracker,
@@ -80,6 +97,7 @@ function NewExpenseForm() {
       setState({ ...state, alertMessage: 'Please select who can view this expense', showAlert: true, alertType: 'error' })
       return false
     }
+
     const newExpense = new Expense()
     newExpense.id = Manager.getUid()
     newExpense.name = expenseName
@@ -101,28 +119,36 @@ function NewExpenseForm() {
     }
 
     // Get coparent name
-    newExpense.recipientName = currentUser.name.formatNameFirstNameOnly()
+    newExpense.recipientName = formatNameFirstNameOnly(currentUser.name)
 
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
     if (activeRepeatIntervals.length > 0 && !expenseDueDate) {
-      setState({ ...state, alertMessage: 'If you have chosen a repeat interval, you must also set a due date', showAlert: true })
+      setState({ ...state, alertMessage: 'If you have chosen a repeat interval, you must also set a due date', showAlert: true, alertType: 'error' })
       return false
     }
 
     // Upload Image
     if (Manager.isValid(expenseImage?.name)) {
-      await FirebaseStorage.upload(FirebaseStorage.directories.expenseImages, newExpense.id, expenseImage, expenseImage.name).then((url) => {
+      await FirebaseStorage.upload(FirebaseStorage.directories.expenseImages, currentUser.id, expenseImage, expenseImage.name).then((url) => {
         newExpense.imageUrl = url
       })
     }
 
     // Add to DB
     await DB.add(tables.expenseTracker, newExpense).finally(async () => {
-      await addRepeatingExpensesToDb()
-      const subId = await NotificationManager.getUserSubId(payer.phone)
-      PushAlertApi.sendMessage(`New Expense`, `${currentUser.name.formatNameFirstNameOnly()} has created a new expense`, subId)
+      // Add repeating expense to DB
+      if (repeatInterval.length > 0 && repeatingEndDate.length > 0) {
+        await addRepeatingExpensesToDb()
+      }
 
+      // Send notification
+      const subId = await NotificationManager.getUserSubId(payer.phone)
+      if (subId) {
+        PushAlertApi.sendMessage(`New Expense`, `${formatNameFirstNameOnly(currentUser.name)} has created a new expense`, subId)
+      }
+
+      // Go back to expense screen
       resetScreenAndGoBack()
     })
   }
@@ -130,6 +156,7 @@ function NewExpenseForm() {
   const addRepeatingExpensesToDb = async () => {
     let expensesToPush = []
     let datesToRepeat = CalendarMapper.repeatingEvents(repeatInterval, expenseDueDate, repeatingEndDate)
+
     if (Manager.isValid(datesToRepeat, true)) {
       datesToRepeat.forEach((date) => {
         const newExpense = new Expense()
@@ -150,7 +177,6 @@ function NewExpenseForm() {
         expensesToPush.push(newExpense)
       })
       await DB_UserScoped.addMultipleExpenses(expensesToPush)
-      // Upload to DB
     }
   }
 
@@ -280,11 +306,14 @@ function NewExpenseForm() {
   return (
     <>
       <p className="screen-title ">New Expense</p>
+      {/* BOTTOM SUBMIT BUTTON */}
       {expenseAmount.length > 0 &&
         expenseName.length > 0 &&
         moment(expenseDueDate).format(DateFormats.dateForDb).length > 0 &&
         shareWith.length > 0 &&
         payer.name.length > 0 && <BottomButton elClass={'active visible'} type="submit" onClick={submitNewExpense} />}
+
+      {/* PAGE CONTAINER */}
       <div {...handlers} id="add-expense-form" className={`${currentUser?.settings?.theme} form page-container`}>
         {/* AMOUNT */}
         <label className="caption center-text">click below to add a custom amount</label>
@@ -397,6 +426,8 @@ function NewExpenseForm() {
             />
           </div>
         )}
+
+        {/* SHARE WITH */}
         {currentUser && (
           <div className="share-with-container">
             <label>
@@ -409,6 +440,7 @@ function NewExpenseForm() {
             />
           </div>
         )}
+
         {/* INCLUDING WHICH CHILDREN */}
         {currentUser && currentUser.children !== undefined && (
           <div className="share-with-container ">

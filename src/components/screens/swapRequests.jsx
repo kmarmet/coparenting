@@ -14,6 +14,7 @@ import PushAlertApi from '@api/pushAlert'
 import NotificationManager from '@managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
+import SecurityManager from '../../managers/securityManager'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -27,8 +28,8 @@ export default function SwapRequests() {
   const { viewSwapRequestForm, currentUser } = state
   const [rejectionReason, setRejectionReason] = useState('')
 
-  const updateRequestsFromDb = async (requestsFromDb) => {
-    let allRequests = await DB.getFilteredRecords(requestsFromDb, currentUser).then((x) => x)
+  const getSecuredRequests = async () => {
+    let allRequests = await SecurityManager.getSwapRequests(currentUser).then((x) => x)
 
     setExistingRequests(allRequests)
     setState({
@@ -73,13 +74,13 @@ export default function SwapRequests() {
     })
   }
 
-  useEffect(() => {
-    const dbRef = ref(getDatabase())
+  const getCoparent = async (recipientPhone) => {
+    const coparent = await DB_UserScoped.getCoparentByPhone(recipientPhone, currentUser)
+    return coparent
+  }
 
-    onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
-      const tableData = snapshot.val()
-      updateRequestsFromDb(await DB.getFilteredRecords(tableData, currentUser).then((x) => x))
-    })
+  useEffect(() => {
+    getSecuredRequests().then((r) => r)
     setTimeout(() => {
       setState({
         ...state,
@@ -105,8 +106,7 @@ export default function SwapRequests() {
         </>
 
         <div id="swap-requests-container">
-          {existingRequests &&
-            existingRequests.length > 0 &&
+          {Manager.isValid(existingRequests) &&
             existingRequests.map((request, index) => {
               return (
                 <div key={index} className="request w-100 mb-15">
@@ -129,14 +129,14 @@ export default function SwapRequests() {
                         `${DateManager.formatDate(request.fromDate)} - ${DateManager.formatDate(request.toDate)}`}
                     </p>
                   </div>
-                  <div className={`content ${request?.reason.length > 20 ? 'long-text' : ''}`}>
+                  <div className={`content ${request?.reason?.length > 20 ? 'long-text' : ''}`}>
                     <div className="flex top-details">
                       {/* SENT TO */}
                       <div className="flex row">
                         <p>
                           <b>Request Sent to:&nbsp;</b>
                         </p>
-                        <p>{currentUser.coparents.filter((x) => (x.phone = request.recipientPhone))[0].name}</p>
+                        <p>{currentUser.coparents.filter((x) => x.phone === request.recipientPhone)[0]?.name}</p>
                       </div>
 
                       {/* REASON */}

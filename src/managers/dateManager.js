@@ -23,6 +23,8 @@ const DateManager = {
     return moment(inputDate, inputFormatString).format(outputFormat)
   },
   sortCalendarEvents: (events, datePropertyName, timePropertyName) => {
+    const sorted = events.sort((a, b) => moment(a.startTime, DateFormats.timeForDb).diff(moment(b.startTime, DateFormats.timeForDb)))
+    // console.log(sorted)
     let nestedSort =
       (prop1, prop2 = null, direction = 'asc') =>
       (e1, e2) => {
