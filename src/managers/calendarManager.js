@@ -48,7 +48,7 @@ export default CalendarManager = {
   formatEventTitle: (title) => {
     if (title && title.length > 0) {
       title = uppercaseFirstLetterOfAllWords(title);
-      title = title.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the");
+      title = title.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and");
       return title;
     }
   },

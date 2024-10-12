@@ -2026,7 +2026,7 @@
   background-color: $darkBlueDarkest;
   position: fixed;
   z-index: -1;
-  border-radius: 20px 20px 0 0;
+  border-radius: 25px 25px 0 0;
   padding: 20px 20px 200px 20px;
   box-shadow:
     0px 100px 25px rgba(0, 0, 0, 0.56),
@@ -2067,14 +2067,18 @@
   .card-button {
     width: calc(100% - 40px);
     border-radius: $borderRadius;
-    padding: 10px 0;
+    padding: 12px 0;
     font-size: 18px;
     position: fixed;
     left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     right: 0;
-    bottom: 10px;
+    bottom: 20px;
     @include bestShadow;
     @include centerHoriz;
+    z-index: 10000;
   }
 
   &.success {

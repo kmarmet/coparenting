@@ -242,6 +242,8 @@ export default function EventCalendar() {
           })
           return exists
         }
+
+        // PAYDAY EMOJI
         if (events.filter((x) => x.fromDate === formattedDay && showPaydayEmoji(x.title)).length > 0) {
           const paydayEmoji = document.createElement('span')
           paydayEmoji.classList.add('payday-emoji')
@@ -249,27 +251,29 @@ export default function EventCalendar() {
           paydayEmoji.innerText = '$'
           day.append(paydayEmoji)
         }
-        // Add visitation border
-        if (events.filter((x) => x.fromDate === formattedDay && x.fromVisitationSchedule === true).length > 0) {
+
+        // VISITATION DOT
+        const currentUserName = formatNameFirstNameOnly(currentUser.name)
+        if (events.filter((x) => x.fromDate === formattedDay && x.fromVisitationSchedule === true && x.title.contains(currentUserName)).length > 0) {
           const visitationDot = document.createElement('span')
-          visitationDot.classList.add('visitation-dot')
+          visitationDot.classList.add('current-user-visitation-dot')
           visitationDot.classList.add('dot')
           dotWrapper.append(visitationDot)
         }
-        // Add purple event dot
+
+        if (events.filter((x) => x.fromDate === formattedDay && x.fromVisitationSchedule === true && !x.title.contains(currentUserName)).length > 0) {
+          const visitationDot = document.createElement('span')
+          visitationDot.classList.add('coparent-visitation-dot')
+          visitationDot.classList.add('dot')
+          dotWrapper.append(visitationDot)
+        }
+
+        // STANDARD EVENT DOT
         if (events.filter((x) => x.fromDate === formattedDay)) {
-          const dot = document.createElement('span')
           const standardEventDot = document.createElement('span')
           standardEventDot.classList.add('standard-event-dot')
           standardEventDot.classList.add('dot')
-          dot.classList.add('dot')
           dotWrapper.append(standardEventDot)
-          const visitationDot = day.querySelector('.visitation-dot')
-          if (!visitationDot) {
-            dot.classList.add('single')
-          }
-          dot.classList.add('dot')
-          dotWrapper.append(dot)
         }
         day.append(dotWrapper)
       } else {

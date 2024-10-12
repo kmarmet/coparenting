@@ -84,11 +84,7 @@ const Manager = {
   },
   // ON PAGE LOAD
   toggleForModalOrNewForm: (hideOrShow = 'show') => {
-    setTimeout(() => {
-      Manager.toggleScreenTitle(hideOrShow)
-    }, 300)
     Manager.centerDatepicker()
-    Manager.addSlideInButtonAnimation('button.bottom')
     if (hideOrShow === 'show') {
       Manager.showPageContainer()
       Manager.scrollToTopOfPage()

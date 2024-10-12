@@ -54,13 +54,13 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   const [isAllDay, setIsAllDay] = useState(false)
   const [eventStartTime, setEventStartTime] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
-  const [childrenAccIsExpanded, setChildrenAccIsExpanded] = useState(false)
-  const [repeatAccIsExpanded, setRepeatAccIsExpanded] = useState(false)
-  const [shareWithAccIsExpanded, setShareWithAccIsExpanded] = useState(false)
   const [showSubmitButton, setShowSubmitButton] = useState(false)
   const [titleSuggestions, setTitleSuggestions] = useState([])
   const [showCloneInput, setShowCloneInput] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
+  const [remindCoparents, setRemindCoparents] = useState(false)
+  const [includeChildren, setIncludeChildren] = useState(false)
+  const [repeating, setRepeating] = useState(false)
   const [errorFields, setErrorFields] = useState([])
   const [error, setError] = useState('')
 
@@ -97,9 +97,6 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
     setIsAllDay(false)
     setEventStartTime('')
     setEventEndTime('')
-    setChildrenAccIsExpanded(false)
-    setRepeatAccIsExpanded(false)
-    setShareWithAccIsExpanded(false)
     setShowSubmitButton(false)
     setTitleSuggestions([])
     setShowCloneInput(false)
@@ -168,6 +165,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
     setErrorFields(errors)
 
     if (errors.length > 0) {
+      scrollToError()
       return false
     }
 
@@ -201,10 +199,8 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   }
 
   const scrollToError = () => {
-    const title = document.getElementById('error')
-    if (title) {
-      title.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
+    var cardTitle = document.querySelector('.event-title')
+    cardTitle.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
   const removeError = (field) => {
@@ -608,12 +604,19 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
           {/* SEND NOTIFICATION TO */}
           {(!currentUser.accountType || currentUser.accountType === 'parent') && (
             <div className="share-with-container mb-5">
+              <div className="flex">
+                <p>Remind Coparent(s)</p>
+                <Toggle
+                  icons={{
+                    checked: <span className="material-icons-round">person</span>,
+                    unchecked: null,
+                  }}
+                  className={'ml-auto reminder-toggle'}
+                  onChange={(e) => setRemindCoparents(!remindCoparents)}
+                />
+              </div>
               <Accordion>
-                <label onClick={() => setShareWithAccIsExpanded(!shareWithAccIsExpanded)}>
-                  <span className="material-icons-round notifications mr-10">campaign</span>Set Notification Recipient(s)
-                  <span className={'material-icons-round plus-minus-symbol'}>{shareWithAccIsExpanded ? 'remove' : 'add'}</span>
-                </label>
-                <Accordion.Panel expanded={shareWithAccIsExpanded}>
+                <Accordion.Panel expanded={remindCoparents}>
                   <CheckboxGroup
                     elClass={`${currentUser?.settings?.theme} `}
                     dataPhone={
@@ -630,12 +633,19 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.isValid(currentUser.children !== undefined, true) && (
             <div className="share-with-container mb-5">
+              <div className="flex">
+                <p>Include Children</p>
+                <Toggle
+                  icons={{
+                    checked: <span className="material-icons-round">face</span>,
+                    unchecked: null,
+                  }}
+                  className={'ml-auto reminder-toggle'}
+                  onChange={(e) => setIncludeChildren(!includeChildren)}
+                />
+              </div>
               <Accordion>
-                <label onClick={() => setChildrenAccIsExpanded(!childrenAccIsExpanded)}>
-                  <span className="material-icons mr-10">face</span> Set Included Child(ren)
-                  <span className={'material-icons-round plus-minus-symbol'}>{childrenAccIsExpanded ? 'remove' : 'add'}</span>
-                </label>
-                <Accordion.Panel expanded={childrenAccIsExpanded}>
+                <Accordion.Panel expanded={includeChildren}>
                   <CheckboxGroup
                     elClass={`${currentUser?.settings?.theme} `}
                     labels={currentUser.children.map((x) => x['general'].name)}
@@ -651,12 +661,19 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
             <>
               {/* REPEATING */}
               <div className="share-with-container mb-5" id="repeating-container">
+                <div className="flex">
+                  <p>Repeating</p>
+                  <Toggle
+                    icons={{
+                      checked: <span className="material-icons-round">face</span>,
+                      unchecked: null,
+                    }}
+                    className={'ml-auto reminder-toggle'}
+                    onChange={(e) => setRepeating(!repeating)}
+                  />
+                </div>
                 <Accordion>
-                  <label onClick={() => setRepeatAccIsExpanded(!repeatAccIsExpanded)}>
-                    <span className="material-icons mr-10">event_repeat</span> Set Repeat Interval
-                    <span className={'material-icons-round plus-minus-symbol'}>{repeatAccIsExpanded ? 'remove' : 'add'}</span>
-                  </label>
-                  <Accordion.Panel expanded={repeatAccIsExpanded}>
+                  <Accordion.Panel expanded={repeating}>
                     <CheckboxGroup
                       elClass={`${currentUser?.settings?.theme} `}
                       boxWidth={35}
@@ -732,7 +749,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
           <textarea onChange={(e) => setNotes(e.target.value)}></textarea>
 
           <button className="button card-button" onClick={submit}>
-            Create Event
+            Create Event <span className="material-icons-round ml-10 fs-22">event_available</span>
           </button>
         </div>
       </BottomCard>
