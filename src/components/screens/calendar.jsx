@@ -33,6 +33,7 @@ import {
 } from '../../globalFunctions'
 import NewCalendarEvent from '../forms/newCalendarEvent'
 import EditCalEvent from './editCalEvent'
+import DB_UserScoped from '@userScoped'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -417,6 +418,7 @@ export default function EventCalendar() {
   useEffect(() => {
     addFlatpickrCalendar().then((r) => r)
     Manager.toggleForModalOrNewForm('show')
+    DB_UserScoped.updateUserRecord(currentUser.phone, `settings/theme`, 'light')
     setTimeout(() => {
       setState({ ...state, currentScreen: ScreenNames.calendar, isLoading: false, showBackButton: false, showMenuButton: true })
     }, 500)

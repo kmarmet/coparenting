@@ -428,7 +428,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
         title={'Add New Event'}>
         <div {...handlers} id="calendar-event-form-container" {...handlers} className={`form ${currentUser?.settings?.theme}`}>
           {/* Event Length */}
-          <div className="action-pills calendar-event mb-5">
+          <div className="action-pills calendar-event">
             <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
               <span className="material-icons-round">event</span>
               <p>Single Day</p>
@@ -579,7 +579,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
                   onChange={(e) => setShowReminders(!showReminders)}
                 />
               </div>
-              <div className="share-with-container mb-5">
+              <div className="share-with-container">
                 <Accordion>
                   <Accordion.Panel expanded={showReminders}>
                     <CheckboxGroup
@@ -600,7 +600,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
 
           {/* SEND NOTIFICATION TO */}
           {(!currentUser.accountType || currentUser.accountType === 'parent') && (
-            <div className="share-with-container mb-5">
+            <div className="share-with-container">
               <div className="flex">
                 <p>Remind Coparent(s)</p>
                 <Toggle
@@ -629,7 +629,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.isValid(currentUser.children !== undefined, true) && (
-            <div className="share-with-container mb-5">
+            <div className="share-with-container">
               <div className="flex">
                 <p>Include Children</p>
                 <Toggle
@@ -657,12 +657,12 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
           {(!currentUser.accountType || currentUser.accountType === 'parent') && (
             <>
               {/* REPEATING */}
-              <div className="share-with-container mb-5" id="repeating-container">
+              <div className="share-with-container" id="repeating-container">
                 <div className="flex">
                   <p>Repeating</p>
                   <Toggle
                     icons={{
-                      checked: <span className="material-icons-round">face</span>,
+                      checked: <span className="material-icons-round">event_repeat</span>,
                       unchecked: null,
                     }}
                     className={'ml-auto reminder-toggle'}

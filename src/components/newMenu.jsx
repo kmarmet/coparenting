@@ -19,6 +19,7 @@ import {
   uniqueArray,
   getFileExtension,
 } from '../globalFunctions'
+import DB_UserScoped from '@userScoped'
 
 export default function NewMenu() {
   const { state, setState } = useContext(globalState)
@@ -74,9 +75,32 @@ export default function NewMenu() {
     }
   }
 
+  const changeTheme = async () => {
+    let theme = 'dark'
+    if (currentUser.settings.theme === 'dark') {
+      theme = 'light'
+    }
+    await DB_UserScoped.updateUserRecord(currentUser.phone, `settings/theme`, theme)
+    window.location.reload()
+  }
+
   return (
     <>
       <div id="new-menu" className={`${currentUser?.settings?.theme} ${showShortcutMenu ? 'active' : ''}`}>
+        {menuIsOpen && (
+          <div className="flex" id="top-bar">
+            <div className="flex logo">
+              <img src={require('../img/logo.png')} alt="" />
+              <p id="brand-name">
+                Peaceful <span>co</span>Parenting
+              </p>
+            </div>
+            <span className="material-icons-round" id="new-menu-close-button" onClick={() => setState({ ...state, menuIsOpen: false })}>
+              close
+            </span>
+          </div>
+        )}
+
         {!menuIsOpen && (
           <div id="floating-menu" className="flex">
             <div
@@ -190,12 +214,23 @@ export default function NewMenu() {
             <span className="material-icons-round">settings</span>
             <p>Settings</p>
           </div>
-          <span onClick={() => setState({ ...state, menuIsOpen: false })} className="material-icons-round" id="close-icon">
-            expand_more
-          </span>
-          <div className={`full-menu-item logout`} onClick={logout}>
-            <span className="material-icons-round">logout</span>
-          </div>
+          {menuIsOpen && (
+            <div id="bottom-bar" className={currentUser?.settings?.theme}>
+              {currentUser?.settings?.theme === 'dark' && (
+                <p className="theme-text" onClick={changeTheme}>
+                  <span className="material-icons-round">light_mode</span>Switch to Light Mode
+                </p>
+              )}
+              {currentUser?.settings?.theme === 'light' && (
+                <p className="theme-text" onClick={changeTheme}>
+                  <span className="material-icons-round">nights_stay</span> Switch to Dark Mode
+                </p>
+              )}
+              <p className="logout full-menu-item" onClick={logout}>
+                Logout
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>
