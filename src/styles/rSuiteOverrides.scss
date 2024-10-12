@@ -5,6 +5,15 @@
     .flatpickr-day {
       color: white !important;
     }
+    .flatpickr-calendar {
+      .flatpickr-months {
+        
+        .flatpickr-current-month,
+        .flatpickr-monthDropdown-months {
+          color:white;
+        }
+      }
+    }
   }
   .light {
     .flatpickr-day {
@@ -23,7 +32,7 @@
       background-color: $darkBlue !important;
     }
   }
-  
+
   .rs-picker {
     /*#region  LIGHT THEME*/
     &.light {
@@ -66,9 +75,28 @@
   }
   // Color Palette
   #calendar-ui-container {
+    margin-top: 20px;
     /*#region  DARK THEME*/
     &.dark {
+      .flatpickr-months {
+        align-items: center;
+        .flatpickr-prev-month,
+        .flatpickr-next-month {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 10px;
+          height: 35px;
+          width: 35px;
+          border: 1px solid $translucentLightest;
+        }
+      }
       .flatpickr-calendar {
+        .calendar-arrow {
+          top: auto !important;
+          left: auto !important;
+          right: auto !important;
+        }
         .flatpickr-weekday {
           color: $offWhite;
         }
@@ -79,8 +107,7 @@
           -webkit-text-fill-color: $offWhite !important;
         }
       }
-S
-      .flatpickr-days {
+      S .flatpickr-days {
         .flatpickr-day {
           color: white;
 
@@ -90,9 +117,8 @@ S
         }
       }
     }
-  
     /*#endregion  DARK THEME*/
-    
+
     /*#region  LIGHT THEME*/
     &.light {
       .flatpickr-calendar {
@@ -169,44 +195,48 @@ S
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-wrap: wrap;
 
         &:hover {
           background-color: transparent;
           border: 0;
         }
 
-        .dot {
-          background-color: transparent;
-          height: 5px;
-          width: 5px;
-          border-radius: 100%;
-          position: absolute;
-          bottom: 10px;
-          left: 42%;
-          right: 50%;
-          transform: translateX(-50%);
+        /*#region  DOT INDICATORS*/
+        .invisible-dots {
+          width: 100%;
+        }
+        .dot-wrapper {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          position: relative;
+          top: -8px;
+          gap: 3px;
+          .dot {
+            margin: 0;
+            height: 5px;
+            border: 0;
+            width: 5px;
+            border-radius: 100%;
+            background-color: $purple;
+            display: block;
+          }
 
-          &.single {
-            left: 50%;
+          .visitation-dot {
+            background-color: $green;
+          }
+
+          .standard-event-dot {
+            background-color: $darkBlueLight;
           }
         }
-
-        .visitation-dot {
-          background-color: $green;
-          height: 5px;
-          width: 5px;
-          border-radius: 100%;
-          position: absolute;
-          bottom: 10px;
-          left: 58%;
-          right: 50%;
-          transform: translateX(-50%);
-        }
+        /*#endregion  */
 
         .holiday-emoji,
         .payday-emoji {
           position: absolute;
-          top: 8px;
+          top: 0;
           left: 55%;
           right: 50%;
           z-index: 100;
@@ -217,7 +247,6 @@ S
           border-radius: 50%;
           align-items: center;
           &.payday-emoji {
-//            top: -8px;
             color: $green !important;
             font-size: 14px;
             font-weight: bold !important;
@@ -239,7 +268,7 @@ S
 
         &.selected {
           border: 0;
-          border-radius: 100%;
+          border-radius: 12px;
           color: white !important;
           opacity: 0.8;
           transform-origin: center;
@@ -247,28 +276,15 @@ S
           position: relative;
           @include glow;
           max-width: 39px;
-          padding-bottom: 12px;
           margin: 0 8px;
           font-weight: bold !important;
-          top: 16px;
+          top: 0;
           padding-top: 8px;
           line-height: 1;
           background-color: $purple !important;
 
-          .dot {
-            top: 28px;
-            left: 38%;
-          }
-
-          .visitation-dot {
-            top: 28px;
-            left: 58%;
-          }
-          .payday-emoji {
-            @media screen and (min-width: 768px) {
-              top: -10px;
-              left: 40px;
-            }
+          .dot-wrapper {
+            margin-top: 25px;
           }
         }
 
@@ -373,7 +389,9 @@ S
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 5px;
+        margin-bottom: 20px;
+        height: 60px;
+        max-width: 297px;
       }
       .flatpickr-current-month,
       .flatpickr-monthDropdown-months {
@@ -382,8 +400,42 @@ S
         font-weight: 600 !important;
         transform: scale(1.1);
 
+        .arrowUp,
+        .arrowDown {
+          display: none;
+        }
+
         select {
           border: 0;
+          /* for Firefox */
+          -moz-appearance: none;
+          /* for Safari, Chrome, Opera */
+          -webkit-appearance: none;
+
+          &::-ms-expand {
+            display: none;
+          }
+        }
+
+        &.flatpickr-current-month {
+          flex-wrap: wrap;
+          justify-content: center;
+          * {
+            width: 100%;
+            text-align: center;
+            margin: 0;
+            max-width: 297px;
+            padding: 0;
+          }
+
+          .numInputWrapper {
+            .numInput {
+              &.cur-year {
+                font-size: 14px !important;
+                opacity: 0.6;
+              }
+            }
+          }
         }
 
         @media screen and (min-width: 1024px) {
@@ -393,8 +445,9 @@ S
       }
 
       .flatpickr-monthDropdown-months {
+        max-width: 297px;
+        font-size: 20px !important;
         option {
-          
           font-size: 16px;
           font-weight: 500;
         }
@@ -415,7 +468,6 @@ S
     .flatpickr-prev-month,
     .flatpickr-next-month {
       position: relative;
-      
       padding-left: 0;
       padding-right: 0;
       font-weight: bold !important;
@@ -428,7 +480,7 @@ S
       }
 
       &.flatpickr-prev-month {
-        left: 15px;
+        left: -5px;
 
         @media screen and (min-width: 800px) {
           left: 25px;
@@ -436,7 +488,7 @@ S
       }
 
       &.flatpickr-next-month {
-        right: 15px;
+        right: -5px;
 
         @media screen and (min-width: 800px) {
           right: 25px;
@@ -463,7 +515,6 @@ S
     outline: none;
 
     .rs-picker-toggle-placeholder {
-    
     }
   }
 
@@ -480,7 +531,6 @@ S
     vertical-align: baseline;
 
     &::placeholder {
-    
     }
   }
 
@@ -504,7 +554,6 @@ S
     outline: none;
 
     .rs-picker-label {
-      
       padding-left: 0;
       padding-right: 10px !important;
       font-weight: 300;
@@ -512,7 +561,6 @@ S
     }
 
     &::placeholder {
-    
     }
   }
 
@@ -550,7 +598,6 @@ S
     }
 
     .rs-picker-toggle-value {
-      
       outline: none;
     }
 
@@ -562,7 +609,6 @@ S
 
       li {
         span {
-        
         }
       }
     }
@@ -846,7 +892,6 @@ S
       }
 
       .rs-calendar-time-dropdown {
-
         .rs-calendar-time-dropdown-column-title {
         }
 
@@ -927,7 +972,6 @@ S
     outline: none;
 
     .rs-picker-toggle-placeholder {
-    
     }
   }
 
@@ -940,7 +984,6 @@ S
     vertical-align: baseline;
 
     &::placeholder {
-    
     }
   }
 
@@ -1020,12 +1063,11 @@ S
     .rs-btn-default {
       background-color: transparent !important;
       width: 100%;
-      
+
       font-weight: 300;
     }
 
     .rs-picker-toggle-value {
-      
       outline: none;
     }
 
@@ -1036,7 +1078,6 @@ S
 
       li {
         span {
-        
         }
       }
     }

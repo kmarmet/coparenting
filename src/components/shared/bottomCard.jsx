@@ -4,7 +4,7 @@ import '../../prototypes'
 import Manager from '@manager'
 import { useSwipeable } from 'react-swipeable'
 
-export default function BottomCard({ onClose, children, title, subtitle = '', showCard = false, className = '' }) {
+export default function BottomCard({ error = '', onClose, children, title, subtitle = '', showCard = false, className = '' }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, alertType } = state
 
@@ -35,6 +35,11 @@ export default function BottomCard({ onClose, children, title, subtitle = '', sh
         </p>
       )}
       {!className.contains('error') && <p id="title">{title}</p>}
+      {error.length > 0 && (
+        <p id="error" className="mb-10">
+          {error}
+        </p>
+      )}
       {!className.contains('error') && subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
       {children}
       {!isMobile && (

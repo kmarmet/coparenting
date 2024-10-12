@@ -9,6 +9,26 @@
       .toDate,
       #times {
         color: white;
+        opacity: .7;
+      }
+      .edit-icon {
+        margin-left: auto;
+        transform: scale(1.5);
+      }
+      .color-coded-event-dot {
+        border: 3px solid $darkBlueLight;
+        margin-right: 8px;
+        height: 10px;
+        width: 10px;
+        border-radius: 100%;
+        
+        &.currentUser {
+          border: 3px solid $purple;
+        }
+        
+        &.coparent {
+          border: 3px solid $green;
+        }
       }
     }
     .edit-cal {
@@ -156,7 +176,16 @@
                 color: white;
 
                 &.title {
-                  color: $lightPurple;
+                  b {
+                    color: $offWhite;
+//                    color: $darkBlueLight;
+//                    &.coparent {
+//                      color: $green;
+//                    }
+//                    &.currentUser {
+//                      color: $lightPurple;
+//                    }
+                  }
                 }
               }
               #reminder-times {
@@ -179,14 +208,15 @@
           }
 
           .event-details {
-            &.visitation {
               .title {
                 color: $green;
+                letter-spacing: 1.1px;
+                margin-top: 5px;
 
                 b {
+                  font-size: 20px;
                   color: $green;
                 }
-              }
             }
           }
         }
@@ -723,7 +753,7 @@
 
               /*#region  DARK THEME*/
               &.dark {
-                background-color: $darkBlue;
+                //                background-color: $darkBlue;
 
                 #reminders-title {
                   color: white;

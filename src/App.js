@@ -57,6 +57,7 @@ import ReviseChildTransferChangeRequest from './components/forms/reviseTransferR
 import './globalFunctions'
 import { wordCount, getFirstWord } from './globalFunctions'
 import emailjs from '@emailjs/browser'
+import NewMenu from './components/newMenu'
 
 const stateObj = {
   alertMessage: '',
@@ -67,6 +68,7 @@ const stateObj = {
   currentUser: {},
   calEventToEdit: {},
   docToView: '',
+  formToShow: '',
   previousScreen: '',
   isLoading: true,
   menuIsOpen: false,
@@ -77,7 +79,7 @@ const stateObj = {
   showAlert: false,
   showConfirm: false,
   showMenuButton: false,
-  showShortcutMenu: false,
+  showShortcutMenu: true,
   showBackButton: false,
   showOverlay: false,
   theme: 'dark',
@@ -99,6 +101,7 @@ const stateObj = {
   setDateToEdit: (date) => {},
   setDocToView: (doc) => {},
   setEventToEdit: (event) => {},
+  setFormToShow: (form) => {},
   setGoBackScreen: (screen) => {},
   setTransferRequestToEdit: (request) => {},
   setIsLoading: (bool) => {},
@@ -296,20 +299,22 @@ export default function App() {
           </div>
 
           {/* MENU  */}
-          {menuIsOpen && <Menu />}
+          {/*{menuIsOpen && <Menu />}*/}
 
           {/* SHORTCUT MENU */}
-          {showShortcutMenu && <ShortcutMenu />}
+          {/*{showShortcutMenu && <ShortcutMenu />}*/}
 
           {/* MENU BUTTON */}
-          {showMenuButton && currentScreen !== currentScreen.login && (
-            <button
-              id="menu-button"
-              className={showMenuButton ? 'button bottom visible' : 'button bottom hide'}
-              onClick={(e) => setState({ ...state, showShortcutMenu: true })}>
-              <span className="material-icons-round">menu</span>
-            </button>
-          )}
+          {/*{showMenuButton && currentScreen !== currentScreen.login && (*/}
+          {/*  <button*/}
+          {/*    id="menu-button"*/}
+          {/*    className={showMenuButton ? 'button bottom visible' : 'button bottom hide'}*/}
+          {/*    onClick={(e) => setState({ ...state, showShortcutMenu: true })}>*/}
+          {/*    <span className="material-icons-round">menu</span>*/}
+          {/*  </button>*/}
+          {/*)}*/}
+
+          <NewMenu />
         </globalState.Provider>
       </div>
     </LocalizationProvider>

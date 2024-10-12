@@ -359,6 +359,10 @@
     padding: 10px;
     border: 0;
 
+    &.required-field-error {
+      border-bottom: 2px solid $red;
+    }
+
     &.rs-input {
       margin-bottom: 0;
     }
@@ -2023,13 +2027,16 @@
   position: fixed;
   z-index: -1;
   border-radius: 20px 20px 0 0;
-  padding: 20px;
+  padding: 20px 20px 200px 20px;
   box-shadow:
     0px 100px 25px rgba(0, 0, 0, 0.56),
     00px -40px 15px rgba(0, 0, 0, 0.56);
   bottom: -30vh;
   transition: all 0.3s ease-in-out;
   opacity: 0;
+  max-height: 70vh;
+  overflow: auto;
+
 
   #swipe-line {
     height: 4px;
@@ -2044,6 +2051,30 @@
 
   #title {
     color: $lightPurple;
+    text-align: center;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+
+  #error:not(#title) {
+    margin: 0;
+    background-color: $bgRed;
+    color: $red;
+    padding: 8px;
+    font-weight: 500;
+  }
+
+  .card-button {
+    width: calc(100% - 40px);
+    border-radius: $borderRadius;
+    padding: 10px 0;
+    font-size: 18px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    @include bestShadow;
+    @include centerHoriz;
   }
 
   &.success {
@@ -2066,16 +2097,39 @@
   &.dark {
     background-color: $darkBlueDarkest;
 
-    p:not(#title) {
-      background-color: $darkBlue;
+    .card-button {
+      background-color: $purple;
       color: white;
+    }
+
+    #title {
+      color: white;
+    }
+
+    p:not(#title) {
+      background-color: transparent;
+      color: white;
+      padding-left: 0;
     }
   }
 
   &.active {
     opacity: 1;
     bottom: 0;
-    z-index: 100000;
+    z-index: $maxZIndex;
+  }
+
+  .action-pills {
+    .flex {
+      p:not(#title) {
+        margin-left: 5px;
+      }
+      &.active {
+        p:not(#title) {
+          color: $accent;
+        }
+      }
+    }
   }
 
   #button-group {
@@ -3074,6 +3128,128 @@
           height: 1px;
           background: linear-gradient(90deg, #fff, transparent);
         }
+      }
+    }
+  }
+}
+@mixin newMenu {
+  width: calc(100vw - 30px);
+  background-color: $purple;
+  position: fixed;
+  bottom: -50px;
+  max-height: 90vh;
+  overflow: auto;
+  z-index: $maxZIndex;
+  @include bestShadow;
+  @include centerHoriz;
+  border-radius: 12px;
+  opacity: 0;
+  transition: all .5s ease-in-out;
+  
+  &.active {
+    bottom: 20px;
+    opacity: 1;
+  }
+
+  #floating-menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    padding: 8px 0;
+    
+    #show-full-menu-icon {
+      transform: scale(1.7);
+    }
+
+    .menu-item {
+      opacity: 0.5;
+      transition: all 0.3s ease-in-out;
+      
+
+      &.active {
+        opacity: 1;
+        border-radius: 100%;
+        @include long-shadow('text', #383838, 7);
+      }
+
+      &.menu-button {
+        background-color: $green;
+        opacity: 1;
+        height: 45px;
+        width: 45px;
+        border-radius: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        @include shadow;
+
+        .material-icons-round {
+          color: white;
+          font-size: 40px;
+        }
+      }
+    }
+  }
+
+  .material-icons-round, .material-icons-outlined {
+    font-size: 30px;
+    color: white;
+  }
+  #full-menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-height: 0;
+    padding: 0;
+    transition: all .4s ease-in-out;
+    opacity: 0;
+    
+    &.active {
+      opacity: 1;
+      max-height: 1000px;
+      padding: 15px;
+      #close-icon {
+        display: inherit;
+      }
+    }
+    
+    #close-icon {
+      @include  centerHoriz;
+      position: fixed;
+      bottom: 0;
+      transform: scale(1.7);
+      opacity: .7;
+      display: none;
+    }
+
+    .full-menu-item {
+      width: 50%;
+      display: flex;
+      align-items: center;
+      opacity: 0.6;
+      margin-bottom: 10px;
+
+      &.logout {
+        align-self: center;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        opacity: 1;
+        padding: 0 5px 5px 0;
+        margin-bottom: 0;
+      }
+
+      &.active {
+        opacity: 1;
+      }
+      span {
+        margin-right: 5px;
+        font-size: 25px;
+      }
+      p {
+        color: white;
       }
     }
   }

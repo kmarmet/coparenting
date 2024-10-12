@@ -23,8 +23,9 @@ export default CalendarManager =
       obj[1]
   formatEventTitle: (title) =>
     if title and title.length > 0
-      title = title.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At","at")
-      return uppercaseFirstLetterOfAllWords(title)
+      title = uppercaseFirstLetterOfAllWords(title)
+      title = title.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At","at").replaceAll("From", "from").replaceAll("The", "the")
+      return title
   hideCalendar: () =>
     allCals = document.querySelectorAll(".flatpickr-calendar")
     if allCals && allCals.length > 0

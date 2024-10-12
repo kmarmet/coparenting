@@ -191,6 +191,10 @@
         font-size: 12px !important;
       }
     }
+    
+    #new-menu {
+      @include  newMenu;
+    }
 
     #numpad-wrapper {
       @include numpad;
@@ -338,6 +342,21 @@
 
     .yellow {
       color: $yellow;
+    }
+    
+    .required-field-error {
+      border-bottom: 2px solid $red;
+      border-radius: $borderRadius;
+    }
+    
+    .react-toggle {
+      .material-icons-round {
+        color:white;
+        font-size: 18px;
+        position: relative;
+        top: -6px;
+        left: -3px;
+      }
     }
 
     .white-text {

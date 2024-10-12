@@ -167,8 +167,8 @@ const Chats = () => {
   return (
     <>
       {/* SCREEN TITLES */}
-      {showNewThreadForm && <p className="screen-title pl-10">New Conversation</p>}
-      {!showNewThreadForm && <p className="screen-title pl-10">Chats</p>}
+      {/*{showNewThreadForm && <p className="screen-title pl-10">New Conversation</p>}*/}
+      {/*{!showNewThreadForm && <p className="screen-title pl-10">Chats</p>}*/}
 
       {/* DELETE CONFIRMATION */}
       <Confirm

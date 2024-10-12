@@ -65,7 +65,7 @@ export default function ChildInfo() {
 
   return (
     <>
-      <p className="screen-title ">Child Info</p>
+      {/*<p className="screen-title ">Child Info</p>*/}
       <CustomChildInfo selectedChild={selectedChild} showCard={showCard} hasDropdown={true} onClose={() => setShowCard(false)} />
 
       {/* NEW CHILD + */}

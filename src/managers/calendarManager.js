@@ -47,8 +47,9 @@ export default CalendarManager = {
   },
   formatEventTitle: (title) => {
     if (title && title.length > 0) {
-      title = title.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at");
-      return uppercaseFirstLetterOfAllWords(title);
+      title = uppercaseFirstLetterOfAllWords(title);
+      title = title.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the");
+      return title;
     }
   },
   hideCalendar: () => {

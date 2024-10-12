@@ -6,6 +6,10 @@
     border-radius: 15px;
     width: 95vw !important;
     
+    .MuiSvgIcon-root {
+      display: none;
+    }
+    
     * {
       color: white;
     }

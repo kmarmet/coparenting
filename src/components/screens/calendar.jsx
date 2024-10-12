@@ -31,10 +31,11 @@ import {
   formatNameFirstNameOnly,
   removeFileExtension,
 } from '../../globalFunctions'
+import NewCalendarEvent from '../forms/newCalendarEvent'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, menuIsOpen, currentScreen } = state
+  const { currentUser, menuIsOpen, formToShow } = state
   const [existingEvents, setExistingEvents] = useState([])
   const [showInfoContainer, setShowInfoContainer] = useState(false)
   const [showSearchInput, setShowSearchInput] = useState(false)
@@ -42,7 +43,7 @@ export default function EventCalendar() {
   const [showFilters, setShowFilters] = useState(false)
   const [searchResultsToUse, setSearchResultsToUse] = useState([])
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
-
+  const [showNewCalendarForm, setShowNewCalendarForm] = useState(false)
   // HANDLE SWIPE
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
@@ -154,7 +155,6 @@ export default function EventCalendar() {
     }, 100)
 
     setState({ ...state, menuIsOpen: false })
-    scrollToTopOfEvents()
   }
 
   const scrollToTopOfEvents = () => {
@@ -165,11 +165,17 @@ export default function EventCalendar() {
   }
 
   const addDayIndicators = (selectedMonth, events, eventsWithMultipleDays) => {
+    // Remove existing dot wrappers before adding them again
+    document.querySelectorAll('.dot-wrapper').forEach((wrapper) => wrapper.remove())
     if (selectedMonth) {
       selectedMonth = moment().add(1, 'M').format('MM')
     }
     // Loop through all calendar UI days
     document.querySelectorAll('.flatpickr-day').forEach((day, outerIndex) => {
+      const dotWrappers = document.querySelectorAll('.dot-wrapper')
+      if (Manager.isValid(dotWrappers, true)) {
+        // dotWrappers.forEach((wrapper) => wrapper.remove())
+      }
       let formattedDay = moment(day.getAttribute('aria-label')).format('MM/DD/yyyy')
       let holidayDate = moment(day.getAttribute('aria-label')).format('MM/DD')
       if (selectedMonth) {
@@ -178,7 +184,10 @@ export default function EventCalendar() {
 
       const dayHasEvent = events.filter((x) => x?.fromDate === formattedDay || x?.toDate === formattedDay).length > 0
 
+      // IF DAY HAS EVENT(S)
       if (dayHasEvent) {
+        const dotWrapper = document.createElement('span')
+        dotWrapper.classList.add('dot-wrapper')
         // Add holiday emoji
         if (events.filter((x) => x.fromDate === formattedDay && x.isHoliday === true).length > 0) {
           const hoildayEmoji = document.createElement('span')
@@ -236,6 +245,7 @@ export default function EventCalendar() {
         if (events.filter((x) => x.fromDate === formattedDay && showPaydayEmoji(x.title)).length > 0) {
           const paydayEmoji = document.createElement('span')
           paydayEmoji.classList.add('payday-emoji')
+
           paydayEmoji.innerText = '$'
           day.append(paydayEmoji)
         }
@@ -243,20 +253,30 @@ export default function EventCalendar() {
         if (events.filter((x) => x.fromDate === formattedDay && x.fromVisitationSchedule === true).length > 0) {
           const visitationDot = document.createElement('span')
           visitationDot.classList.add('visitation-dot')
-          visitationDot.style.backgroundColor = '#00b389'
-          day.append(visitationDot)
+          visitationDot.classList.add('dot')
+          dotWrapper.append(visitationDot)
         }
         // Add purple event dot
         if (events.filter((x) => x.fromDate === formattedDay)) {
           const dot = document.createElement('span')
+          const standardEventDot = document.createElement('span')
+          standardEventDot.classList.add('standard-event-dot')
+          standardEventDot.classList.add('dot')
+          dot.classList.add('dot')
+          dotWrapper.append(standardEventDot)
           const visitationDot = day.querySelector('.visitation-dot')
           if (!visitationDot) {
             dot.classList.add('single')
           }
           dot.classList.add('dot')
-          dot.style.backgroundColor = '#7b75ff'
-          day.append(dot)
+          dotWrapper.append(dot)
         }
+        day.append(dotWrapper)
+      } else {
+        // Add margin top spacer
+        const invisibleDots = document.createElement('span')
+        invisibleDots.classList.add('invisible-dots')
+        day.append(invisibleDots)
       }
       // Apply colors to multi-day events
       eventsWithMultipleDays.forEach((eventParentObj, index) => {
@@ -324,7 +344,6 @@ export default function EventCalendar() {
         disableSelectedDayBg()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(moment(`${instance.currentMonth + 1}/01/${instance.currentYear}`).format('MM/DD/yyyy'), instance.currentMonth + 1)
-          await scrollToTopOfEvents()
         })
         const monthSelectOption = document.querySelector(`[value='7']`)
         monthSelectOption.click()
@@ -334,7 +353,6 @@ export default function EventCalendar() {
         const date = moment(e[0]).format('MM/DD/yyyy').toString()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(date, moment(e[0]).format('MM'))
-          await scrollToTopOfEvents()
           setState({ ...state, selectedNewEventDay: moment(e[0]).format('MM/DD/yyyy').toString() })
         })
       },
@@ -410,17 +428,18 @@ export default function EventCalendar() {
 
   return (
     <>
-      <p className="screen-title">Shared Calendar</p>
+      {/*<p className="screen-title">Shared Calendar</p>*/}
 
       {/* ADD NEW BUTTON */}
-      <AddNewButton
-        canClose={true}
-        onClose={() => {}}
-        onClick={() => {
-          toggleCalendar('hide')
-          setState({ ...state, currentScreen: ScreenNames.newCalendarEvent })
-        }}
-      />
+      {/*<AddNewButton*/}
+      {/*  canClose={true}*/}
+      {/*  onClose={() => {}}*/}
+      {/*  onClick={() => {*/}
+      {/*    // toggleCalendar('hide')*/}
+      {/*    setShowNewCalendarForm(true)*/}
+      {/*    // setState({ ...state, currentScreen: ScreenNames.newCalendarEvent })*/}
+      {/*  }}*/}
+      {/*/>*/}
 
       {/* CLOSE SEARCH BUTTON */}
       {searchResultsToUse.length > 0 && (
@@ -451,6 +470,13 @@ export default function EventCalendar() {
           View Visitation Holidays ✨👦👧
         </p>
       </BottomCard>
+
+      {formToShow === ScreenNames.newCalendarEvent && (
+        <NewCalendarEvent
+          setShowNewEventForm={() => setShowNewCalendarForm(false)}
+          showNewCalendarForm={formToShow === ScreenNames.newCalendarEvent ? true : false}
+        />
+      )}
 
       {/* PAGE CONTAINER */}
       {/* CALENDAR */}
@@ -518,6 +544,7 @@ export default function EventCalendar() {
                 </div>
               )}
 
+              {/* SEARCH ICON */}
               <span
                 className="material-icons search-icon blue"
                 onClick={() => {
@@ -530,46 +557,6 @@ export default function EventCalendar() {
                 }}>
                 {showSearchInput ? '' : 'search'}
               </span>
-              <span className="material-icons help-icon info-icon blue" onClick={() => setShowInfoContainer(!showInfoContainer)}>
-                info
-              </span>
-
-              {/* TODAY BUTTON */}
-              {/*<button id="today-button" onClick={goToToday} className="button default ml-10">*/}
-              {/*  Today*/}
-              {/*</button>*/}
-              <div id="cal-info-container" className={`${showInfoContainer ? 'active' : ''} w-100`}>
-                {/* LEGEND */}
-                <div id="calendar-legend" className="mb-5">
-                  <p id="legend-title" className="blue">
-                    Legend
-                  </p>
-                  <div className="column one mr-15">
-                    <span className="visitation"></span>visitation day
-                  </div>
-                  <div className="column two">
-                    <span className="dot"></span>day with event(s)
-                  </div>
-                </div>
-
-                {/* INFO TEXT */}
-                <p id="tips-title" className="blue">
-                  Tips
-                </p>
-                <p className="small mb-5 mt-0">&#8226; Swipe left/right to change the current month</p>
-                <p
-                  className="small link mt-0 mb-5"
-                  onClick={() =>
-                    setState({
-                      ...state,
-                      currentScreen: ScreenNames.settings,
-                    })
-                  }>
-                  &#8226; Daily Summary reminder times can be set in the <span>Settings</span>
-                </p>
-                <p className="small mt-5 mb-5">&#8226; Tap calendar event to edit or delete</p>
-                <p className="small mt-0">&#8226; Scroll events below to view more</p>
-              </div>
             </div>
           </div>
 
@@ -691,36 +678,27 @@ export default function EventCalendar() {
                               readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
                             }
                           })
+                          let parentsVisitation = ''
+                          if (event.fromVisitationSchedule) {
+                            if (event.createdBy.toLowerCase().contains(currentUser.name.toLowerCase())) {
+                              parentsVisitation = 'currentUser'
+                            } else {
+                              parentsVisitation = 'coparent'
+                            }
+                          }
                           return (
                             <div
-                              onClick={(e) => {
-                                const elementType = e.target.tagName
-                                if (elementType.toLowerCase() !== 'a') {
-                                  if (AppManager.getAccountType() === 'parent' || AppManager.getAccountType() === undefined) {
-                                    toggleCalendar('hide')
-                                    setState({
-                                      ...state,
-                                      currentScreen: ScreenNames.editCalendarEvent,
-                                      calEventToEdit: event,
-                                    })
-                                  }
-                                }
-                              }}
                               key={index}
                               data-from-date={event.fromDate}
-                              className={event.fromVisitationSchedule ? 'event-details visitation' : 'event-details'}>
+                              className={event.fromVisitationSchedule ? 'event-details visitation flex' : 'event-details flex'}>
                               <div className="flex parent">
                                 <div className="flex content">
                                   <div className="text">
-                                    {/* TITLE */}
-                                    <p className="title mb-3" data-event-id={event.id}>
-                                      <b className="text-small-title">{CalendarManager.formatEventTitle(event.title)}</b>
-                                    </p>
-
+                                    {/* EVENT CONTENT */}
                                     <div className={`${currentUser?.settings?.theme} event-content`}>
                                       {/* DATE CONTAINER */}
                                       <div id="date-container" className={currentUser?.settings?.theme === 'dark' ? 'event-row pt-10' : 'event-row'}>
-                                        <span className={'material-icons-round event-icon'}>calendar_month</span>
+                                        <span className={`${parentsVisitation} color-coded-event-dot`}></span>
                                         {/* FROM DATE */}
                                         {!event.fromDate.contains('Invalid') && event.fromDate?.length > 0 && (
                                           <span className="fromDate">{moment(event.fromDate).format(DateFormats.readableDay)}</span>
@@ -750,7 +728,28 @@ export default function EventCalendar() {
                                             <span className="to-time"> - {event.endTime}</span>
                                           )}
                                         </span>
+                                        <span
+                                          onClick={(e) => {
+                                            const elementType = e.target.tagName
+                                            if (elementType.toLowerCase() !== 'a') {
+                                              if (AppManager.getAccountType() === 'parent' || AppManager.getAccountType() === undefined) {
+                                                toggleCalendar('hide')
+                                                setState({
+                                                  ...state,
+                                                  currentScreen: ScreenNames.editCalendarEvent,
+                                                  calEventToEdit: event,
+                                                })
+                                              }
+                                            }
+                                          }}
+                                          className="material-icons-round edit-icon">
+                                          more_horiz
+                                        </span>
                                       </div>
+                                      {/* TITLE */}
+                                      <p className="title mb-3" data-event-id={event.id}>
+                                        <b className={`event-title ${parentsVisitation}`}>{CalendarManager.formatEventTitle(event.title)}</b>
+                                      </p>
 
                                       {/* CHILDREN */}
                                       {event.children && event.children.length > 0 && (
