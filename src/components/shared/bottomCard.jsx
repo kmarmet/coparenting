@@ -6,8 +6,7 @@ import { useSwipeable } from 'react-swipeable'
 
 export default function BottomCard({ error = '', onClose, children, title, subtitle = '', showCard = false, className = '' }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, alertType, showNewForm } = state
-
+  const { currentUser, alertType, formToShow } = state
   const isMobile = window.screen.width < 800
 
   const cardClasses = () => {
@@ -27,7 +26,7 @@ export default function BottomCard({ error = '', onClose, children, title, subti
   })
 
   return (
-    <div {...handlers} id="bottom-card" className={`${cardClasses()} ${alertType} ${showNewForm ? 'active' : ''}`}>
+    <div {...handlers} id="bottom-card" className={`${cardClasses()} ${alertType} `}>
       <div id="swipe-line"></div>
       {className.contains('error') && (
         <p id="title">

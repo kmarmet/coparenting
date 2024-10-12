@@ -32,6 +32,7 @@ import {
   removeFileExtension,
 } from '../../globalFunctions'
 import NewCalendarEvent from '../forms/newCalendarEvent'
+import EditCalEvent from './editCalEvent'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -475,12 +476,9 @@ export default function EventCalendar() {
         </p>
       </BottomCard>
 
-      {formToShow === ScreenNames.newCalendarEvent && (
-        <NewCalendarEvent
-          setShowNewEventForm={() => setShowNewCalendarForm(false)}
-          showNewCalendarForm={formToShow === ScreenNames.newCalendarEvent ? true : false}
-        />
-      )}
+      {/* FORMS */}
+      <NewCalendarEvent />
+      <EditCalEvent />
 
       {/* PAGE CONTAINER */}
       {/* CALENDAR */}
@@ -732,15 +730,17 @@ export default function EventCalendar() {
                                             <span className="to-time"> - {event.endTime}</span>
                                           )}
                                         </span>
+
+                                        {/* EDIT ICON */}
                                         <span
                                           onClick={(e) => {
                                             const elementType = e.target.tagName
                                             if (elementType.toLowerCase() !== 'a') {
                                               if (AppManager.getAccountType() === 'parent' || AppManager.getAccountType() === undefined) {
-                                                toggleCalendar('hide')
                                                 setState({
                                                   ...state,
-                                                  currentScreen: ScreenNames.editCalendarEvent,
+                                                  formToShow: ScreenNames.editCalendarEvent,
+                                                  showShortcutMenu: false,
                                                   calEventToEdit: event,
                                                 })
                                               }

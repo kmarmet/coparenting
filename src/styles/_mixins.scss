@@ -2034,9 +2034,8 @@
   bottom: -30vh;
   transition: all 0.3s ease-in-out;
   opacity: 0;
-  max-height: 70vh;
+  max-height: 0;
   overflow: auto;
-
 
   #swipe-line {
     height: 4px;
@@ -2064,6 +2063,67 @@
     font-weight: 500;
   }
 
+  #card-confirm {
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 30px 14px;
+    border-radius: 20px;
+    padding: 0;
+    transition: all .3s ease-in-out;
+    opacity: 0;
+    max-height: 0;
+    top: 50vh;
+    position: relative;
+    
+    &.active {
+      padding: 20px;
+      top: 0;
+      transition: all .3s ease-in-out;
+      opacity: 1;
+      max-height: 1000px;
+    }
+
+    p:not(#title) {
+      &.title {
+        color: black;
+        padding-bottom: 0;
+        padding-top: 0;
+        font-weight: bold;
+        font-size: 20px;
+        text-align: center;
+      }
+      &.message {
+        color: $darkGrey;
+        margin: 0;
+        text-align: center;
+      }
+    }
+
+    .card-confirm-buttons {
+      display: flex;
+      justify-content: center;
+      z-index: 10000;
+      gap: 10px;
+
+      button {
+        border-radius: 8px;
+        padding: 5px 0;
+        font-size: 18px;
+        width: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+
+        &.confirm {
+          background-color: $green;
+        }
+        &.nevermind {
+          background: $red;
+        }
+      }
+    }
+  }
+
   .card-button {
     width: calc(100% - 40px);
     border-radius: $borderRadius;
@@ -2079,6 +2139,34 @@
     @include bestShadow;
     @include centerHoriz;
     z-index: 10000;
+  }
+
+  .buttons {
+    position: fixed;
+    left: inherit;
+    right: inherit;
+    bottom: 20px;
+    width: calc(100vw - 40px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    .card-button {
+      width: 50%;
+      position: relative;
+      -webkit-transform: none;
+      -moz-transform: none;
+      -ms-transform: none;
+      -o-transform: none;
+      transform: none;
+      left: inherit;
+      right: inherit;
+      bottom: inherit;
+
+      &.delete {
+        background: $red;
+      }
+    }
   }
 
   &.success {
@@ -2118,9 +2206,11 @@
   }
 
   &.active {
+    max-height: 70vh;
     opacity: 1;
     bottom: 0;
     z-index: $maxZIndex;
+    transition: all 0.4s ease-in-out;
   }
 
   .action-pills {
@@ -3148,8 +3238,8 @@
   @include centerHoriz;
   border-radius: 12px;
   opacity: 0;
-  transition: all .5s ease-in-out;
-  
+  transition: all 0.5s ease-in-out;
+
   &.active {
     bottom: 20px;
     opacity: 1;
@@ -3161,7 +3251,7 @@
     align-items: center;
     gap: 40px;
     padding: 8px 0;
-    
+
     #show-full-menu-icon {
       transform: scale(1.7);
     }
@@ -3169,7 +3259,6 @@
     .menu-item {
       opacity: 0.5;
       transition: all 0.3s ease-in-out;
-      
 
       &.active {
         opacity: 1;
@@ -3197,7 +3286,8 @@
     }
   }
 
-  .material-icons-round, .material-icons-outlined {
+  .material-icons-round,
+  .material-icons-outlined {
     font-size: 30px;
     color: white;
   }
@@ -3207,9 +3297,9 @@
     justify-content: space-between;
     max-height: 0;
     padding: 0;
-    transition: all .4s ease-in-out;
+    transition: all 0.4s ease-in-out;
     opacity: 0;
-    
+
     &.active {
       opacity: 1;
       max-height: 1000px;
@@ -3218,13 +3308,13 @@
         display: inherit;
       }
     }
-    
+
     #close-icon {
-      @include  centerHoriz;
+      @include centerHoriz;
       position: fixed;
       bottom: 0;
       transform: scale(1.7);
-      opacity: .7;
+      opacity: 0.7;
       display: none;
     }
 

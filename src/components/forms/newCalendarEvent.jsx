@@ -34,16 +34,17 @@ import '../../styles/reactToggle.css'
 export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventForm }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, selectedNewEventDay } = state
+  const { currentUser, selectedNewEventDay, formToShow } = state
 
   // COMPONENT STATE
   const [eventFromDate, setEventFromDate] = useState('')
-  const [repeatInterval, setRepeatInterval] = useState('')
   const [eventLocation, setEventLocation] = useState('')
   const [eventTitle, setEventTitle] = useState('')
   const [websiteUrl, setWebsiteUrl] = useState('')
   const [notes, setNotes] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
+  const [repeating, setRepeating] = useState(false)
+  const [repeatInterval, setRepeatInterval] = useState('')
   const [eventToDate, setEventToDate] = useState('')
   const [children, setChildren] = useState([])
   const [reminderTimes, setReminderTimes] = useState([])
@@ -60,16 +61,12 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   const [showReminders, setShowReminders] = useState(false)
   const [remindCoparents, setRemindCoparents] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
-  const [repeating, setRepeating] = useState(false)
   const [errorFields, setErrorFields] = useState([])
   const [error, setError] = useState('')
 
   // HANDLE SWIPE
   const handlers = useSwipeable({
-    onSwipedRight: (eventData) => {
-      console.log('User Swiped!', eventData)
-      setState({ ...state, currentScreen: ScreenNames.calendar })
-    },
+    onSwipedRight: (eventData) => {},
     onSwipedDown: () => {
       resetForm()
       setState({ ...state, formToShow: '', showShortcutMenu: true })
@@ -424,9 +421,9 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
       {/* BUTTONS */}
       {showSubmitButton && <BottomButton onClick={submit} elClass={'single visible active'} />}
       <BottomCard
-        className={`${currentUser?.settings?.theme} new-event-form`}
+        className={`${currentUser?.settings?.theme} new-event-form `}
         onClose={() => {}}
-        showCard={showNewCalendarForm}
+        showCard={formToShow === ScreenNames.newCalendarEvent}
         error={error}
         title={'Add New Event'}>
         <div {...handlers} id="calendar-event-form-container" {...handlers} className={`form ${currentUser?.settings?.theme}`}>

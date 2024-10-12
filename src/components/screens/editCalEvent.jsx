@@ -23,10 +23,31 @@ import DatetimePickerViews from '../../constants/datetimePickerViews'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import CalendarManager from '../../managers/calendarManager'
+import BottomCard from '../shared/bottomCard'
+import Toggle from 'react-toggle'
+
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension,
+} from '../../globalFunctions'
+import CardConfirm from '../shared/cardConfirm'
+import SecurityManager from '../../managers/securityManager'
 
 export default function EditCalEvent() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, calEventToEdit } = state
+  const { currentUser, calEventToEdit, formToShow } = state
   const [eventFromDate, setEventFromDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
   const [eventTitle, setEventTitle] = useState('')
@@ -38,28 +59,51 @@ export default function EditCalEvent() {
   const [eventChildren, setEventChildren] = useState([])
   const [eventReminderTimes, setEventReminderTimes] = useState([])
   const [eventShareWith, setEventShareWith] = useState([])
-  const [eventRepeatInterval, setEventRepeatInterval] = useState('')
   const [eventLength, setEventLength] = useState(EventLengths.single)
   const [deleteConfirmTitle, setDeleteConfirmTitle] = useState('')
   const [deleteRepeatingConfirmTitle, setDeleteRepeatingConfirmTitle] = useState('')
   const [editRepeatingConfirmTitle, setEditRepeatingConfirmTitle] = useState('')
   const [editSingleConfirmTitle, setEditSingleConfirmTitle] = useState('')
-  const [expandAccordion, setExpandAccordion] = useState(false)
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
   const [repeatingDatesToSubmit, setRepeatingDatesToSubmit] = useState([])
-  const [childrenAccIsExpanded, setChildrenAccIsExpanded] = useState(false)
-  const [reminderAccIsExpanded, setReminderAccIsExpanded] = useState(false)
-  const [repeatAccIsExpanded, setRepeatAccIsExpanded] = useState(false)
-  const [shareWithAccIsExpanded, setShareWithAccIsExpanded] = useState(false)
   const [isAllDay, setIsAllDay] = useState(false)
-  const [showCloneInput, setShowCloneInput] = useState(false)
+  const [error, setError] = useState('')
+  const [errorFields, setErrorFields] = useState([])
+  const [remindCoparents, setRemindCoparents] = useState(false)
+  const [includeChildren, setIncludeChildren] = useState(false)
+  const [showReminders, setShowReminders] = useState(false)
+  const [confirmTitle, setConfirmTitle] = useState('')
   const handlers = useSwipeable({
-    onSwipedRight: (eventData) => {
-      console.log('User Swiped!', eventData)
-      setState({ ...state, currentScreen: ScreenNames.calendar })
+    onSwipedRight: (eventData) => {},
+    onSwipedDown: () => {
+      resetForm()
+      setState({ ...state, formToShow: '', showShortcutMenu: true })
     },
     preventScrollOnSwipe: true,
   })
+
+  const resetForm = () => {
+    setEventFromDate('')
+    setEventLocation('')
+    setEventTitle('')
+    setEventWebsiteUrl('')
+    setEventStartTime('')
+    setEventNotes('')
+    setEventEndDate('')
+    setEventEndTime('')
+    setEventChildren([])
+    setEventReminderTimes([])
+    setEventShareWith([])
+    setEventLength(EventLengths.single)
+    setDeleteConfirmTitle('')
+    setDeleteRepeatingConfirmTitle('')
+    setEditRepeatingConfirmTitle('')
+    setEditSingleConfirmTitle('')
+    setClonedDatesToSubmit([])
+    setRepeatingDatesToSubmit([])
+    setIsAllDay(false)
+    setError('')
+  }
 
   // SUBMIT
   const submit = async (eventEditCount) => {
@@ -140,6 +184,11 @@ export default function EditCalEvent() {
     }
   }
 
+  const removeError = (field) => {
+    const filtered = errorFields.filter((x) => x !== field)
+    setErrorFields(filtered)
+  }
+
   const afterUpdateCallback = async () => {
     // Share with Notifications
     for (const phone of eventShareWith) {
@@ -196,36 +245,6 @@ export default function EditCalEvent() {
     )
   }
 
-  const handleRepeatingSelection = async (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      (e) => {
-        let selection = ''
-        if (e.toLowerCase().indexOf('week') > -1) {
-          selection = 'weekly'
-        }
-        if (e.toLowerCase().indexOf('bi') > -1) {
-          selection = 'biweekly'
-        }
-        if (e.toLowerCase().indexOf('daily') > -1) {
-          selection = 'daily'
-        }
-        if (e.toLowerCase().indexOf('monthly') > -1) {
-          selection = 'monthly'
-        }
-        setEventRepeatInterval(selection)
-        setShowCloneInput(false)
-      },
-      (e) => {
-        if (eventRepeatInterval.toLowerCase() === e.toLowerCase()) {
-          setEventRepeatInterval('')
-          setShowCloneInput(true)
-        }
-      },
-      false
-    )
-  }
-
   const handleAllDaySelection = async (e) => {
     Manager.handleCheckboxSelection(
       e,
@@ -247,35 +266,9 @@ export default function EditCalEvent() {
     setEventStartTime(calEventToEdit.startTime)
     setEventEndTime(calEventToEdit.endTime)
 
-    // CHECKBOXES
-    // All Day
-    if (calEventToEdit.startTime.length === 0) {
-      const allDayCheckbox = document.querySelector(`[data-label='All Day']`)
-      allDayCheckbox.querySelector('.box').classList.remove('active')
-    }
-
     // Coparent sharewith
-    const coparentCheckboxes = document.querySelector('.share-with-container.share-with').querySelectorAll('[data-phone]')
-    coparentCheckboxes.forEach((checkboxContainer) => {
-      const shareWithIsValid = Manager.isValid(calEventToEdit.shareWith, true, false, false)
-      if (shareWithIsValid && calEventToEdit.shareWith.includes(checkboxContainer.getAttribute('data-phone'))) {
-        checkboxContainer.querySelector('.box').classList.add('active')
-        setEventShareWith(Manager.getUniqueArray([...calEventToEdit.shareWith, checkboxContainer.getAttribute('data-phone')]) || [])
-      }
-    })
 
     // Children
-    const childrenShareWithContainer = document.querySelector('.share-with-container.children')
-    if (Manager.isValid(childrenShareWithContainer)) {
-      const childrenCheckboxes = childrenShareWithContainer.querySelectorAll('[data-label]')
-      childrenCheckboxes.forEach((childLabel) => {
-        const childrenIsValid = Manager.isValid(calEventToEdit.children, true, false, false)
-        if (childrenIsValid && calEventToEdit.children.includes(childLabel.getAttribute('data-label'))) {
-          childLabel.querySelector('.box').classList.add('active')
-          setEventChildren(Manager.getUniqueArray([...calEventToEdit.children, childLabel.getAttribute('data-label')]) || [])
-        }
-      })
-    }
 
     // Reminders
     const times = Manager.setDefaultCheckboxes('reminderTimes', calEventToEdit, 'reminderTimes', true)
@@ -287,14 +280,14 @@ export default function EditCalEvent() {
     }
   }
 
-  const deleteEvent = async (eventCount) => {
+  const deleteEvent = async () => {
     const whenDone = () => {
-      setState({
-        ...state,
-        currentScreen: ScreenNames.calendar,
-      })
+      setState({ ...state, formToShow: '' })
     }
-    if (eventCount === 'single') {
+
+    const allEvents = await SecurityManager.getCalendarEvents(currentUser)
+    const eventCount = allEvents.filter((x) => x.title === calEventToEdit.title).length
+    if (eventCount === 1) {
       await DB.delete(DB.tables.calendarEvents, calEventToEdit.id).finally(whenDone)
     } else {
       let clonedEvents = await DB.getTable(DB.tables.calendarEvents)
@@ -305,55 +298,13 @@ export default function EditCalEvent() {
     }
   }
 
-  const setClonedAndRepeating = (arr, type) => {
-    let returnArr = []
-
-    // Build date object
-    arr.forEach((date) => {
-      const dateObject = new CalendarEvent()
-      console.log(DateManager.dateIsValid(eventStartTime))
-      // Required
-      dateObject.title = calEventToEdit.title || eventTitle
-      dateObject.id = Manager.getUid()
-      dateObject.fromDate = DateManager.dateIsValid(eventFromDate) ? moment(eventFromDate).format(DateFormats.dateForDb) : ''
-      dateObject.toDate = DateManager.dateIsValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
-      dateObject.startTime = DateManager.dateIsValid(eventStartTime) ? moment(eventStartTime).format(DateFormats.timeForDb) : ''
-      dateObject.endTime = DateManager.dateIsValid(eventEndTime) ? moment(eventEndTime).format(DateFormats.timeForDb) : ''
-      dateObject.shareWith = eventShareWith
-      // Not Required
-      dateObject.phone = currentUser.phone
-      dateObject.createdBy = currentUser.name
-      dateObject.directionsLink = eventLocation || ''
-      dateObject.location = eventLocation || ''
-      dateObject.children = eventChildren || []
-      dateObject.notes = eventNotes || ''
-      dateObject.websiteUrl = eventWebsiteUrl || ''
-      dateObject.reminderTimes = eventReminderTimes || []
-      dateObject.sentReminders = []
-      dateObject.repeatInterval = eventRepeatInterval || ''
-      dateObject.fromVisitationSchedule = false
-      dateObject.morningSummaryReminderSent = false
-      dateObject.eveningSummaryReminderSent = false
-
-      // Push
-      returnArr.push(dateObject)
-    })
-
-    if (type === 'cloned') {
-      setClonedDatesToSubmit(returnArr)
-    } else {
-      setRepeatingDatesToSubmit(arr)
-    }
-    return returnArr
-  }
-
   useEffect(() => {
-    setDefaultValues()
+    if (calEventToEdit.hasOwnProperty('title') && calEventToEdit !== undefined) {
+      setDefaultValues()
+    }
     setState({
       ...state,
-      currentScreen: ScreenNames.editCalendarEvent,
-      previousScreen: ScreenNames.calendar,
-      showBackButton: true,
+      showBackButton: false,
       showMenuButton: false,
     })
     Manager.toggleForModalOrNewForm('show')
@@ -413,7 +364,6 @@ export default function EditCalEvent() {
         {/*  MULTIPLE CONFIRM - EDIT*/}
         <Confirm
           onAccept={async () => {
-            console.log(Manager.validation([eventTitle, eventShareWith]) > 0)
             if (Manager.validation([eventTitle, eventShareWith]) > 0) {
               setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields', alertType: 'error' })
               return false
@@ -458,80 +408,96 @@ export default function EditCalEvent() {
         iconName={'event_busy'}
         text="DELETE"
       />
-      <div {...handlers} id="edit-cal-event-container" className={`${currentUser?.settings?.theme} page-container form`}>
-        <div className="content">
-          {/* SINGLE DAY / MULTIPLE DAYS */}
-          <div className="action-pills calendar-event">
-            <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
-              <span className="material-icons-round">event</span>
-              <p>Single Day</p>
-            </div>
-            <div className={`flex right ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
-              <span className="material-icons-round">date_range</span>
-              <p>Multiple Days</p>
-            </div>
-          </div>
-
-          {/* TITLE */}
-          <label>
-            Title<span className="asterisk">*</span>
-          </label>
-          <input
-            id="event-title-input"
-            defaultValue={calEventToEdit.title}
-            className="mb-0 w-100"
-            type="text"
-            onChange={(e) => setEventTitle(e.target.value)}
+      <BottomCard
+        className={`${currentUser?.settings?.theme} edit-event-form`}
+        onClose={() => {}}
+        showCard={formToShow === ScreenNames.editCalendarEvent}
+        error={error}
+        title={`Edit ${calEventToEdit.title}`}>
+        <div {...handlers} id="edit-cal-event-container" className={`${currentUser?.settings?.theme} form`}>
+          <CardConfirm
+            className={confirmTitle.length > 0 ? 'active' : ''}
+            title={confirmTitle}
+            message={` Are you sure you would like to delete this event?`}
+            onAccept={deleteEvent}
+            nevermind={() => setConfirmTitle('')}
           />
-          {/* DATE */}
-          <div className="flex mt-15 mb-15" id={'date-input-container'}>
-            {eventLength === EventLengths.single && (
-              <>
-                <div className="w-100">
-                  <label>
-                    Date <span className="asterisk">*</span>
-                  </label>
-                  <MobileDatePicker
-                    className={`${currentUser?.settings?.theme} m-0 w-100 event-from-date`}
-                    onAccept={(e) => setEventFromDate(e)}
-                    defaultValue={moment(calEventToEdit.fromDate)}
-                  />
-                </div>
-              </>
-            )}
+          <div className="content">
+            {/* SINGLE DAY / MULTIPLE DAYS */}
+            <div className="action-pills calendar-event">
+              <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
+                <span className="material-icons-round">event</span>
+                <p>Single Day</p>
+              </div>
+              <div className={`flex right ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
+                <span className="material-icons-round">date_range</span>
+                <p>Multiple Days</p>
+              </div>
+            </div>
 
-            {eventLength === EventLengths.multiple && (
-              <>
-                <div>
-                  <label>
-                    Date Range <span className="asterisk">*</span>
-                  </label>
-                  <DateRangePicker
-                    showOneCalendar
-                    showHeader={false}
-                    editable={false}
-                    id="event-date"
-                    placement="auto"
-                    character=" to "
-                    className={`${currentUser?.settings?.theme} event-date-range m-0 w-100`}
-                    format={'MM/dd/yyyy'}
-                    onChange={(e) => {
-                      let formattedDates = []
-                      if (e && e?.length > 0) {
-                        e.forEach((date) => {
-                          formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                        })
-                        setEventFromDate(formattedDates[0])
-                        setEventEndDate(formattedDates[1])
-                      }
-                    }}
-                  />
-                </div>
-              </>
-            )}
+            {/* TITLE */}
+            <label>
+              Title<span className="asterisk">*</span>
+            </label>
+            <input
+              id="event-title-input"
+              defaultValue={calEventToEdit.title}
+              onChange={(e) => setEventTitle(e.target.value)}
+              className={`${errorFields.includes('title') ? 'required-field-error mb-0 w-100' : 'mb-0 w-100'}`}
+              type="text"
+            />
+            {/* DATE */}
+            <div className="flex mt-15 mb-15" id={'date-input-container'}>
+              {eventLength === EventLengths.single && (
+                <>
+                  <div className="w-100">
+                    <label className="mb-0">
+                      Date <span className="asterisk">*</span>
+                    </label>
+                    <MobileDatePicker
+                      defaultValue={moment(calEventToEdit.fromDate)}
+                      className={`${currentUser?.settings?.theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
+                      onAccept={(e) => {
+                        removeError('date')
+                        setEventFromDate(e)
+                      }}
+                    />
+                  </div>
+                </>
+              )}
 
+              {eventLength === EventLengths.multiple && (
+                <>
+                  <div>
+                    <label>
+                      Date Range <span className="asterisk">*</span>
+                    </label>
+                    <DateRangePicker
+                      showOneCalendar
+                      showHeader={false}
+                      editable={false}
+                      id="event-date"
+                      placement="auto"
+                      character=" to "
+                      className={`${currentUser?.settings?.theme} event-date-range m-0 w-100`}
+                      format={'MM/dd/yyyy'}
+                      onChange={(e) => {
+                        let formattedDates = []
+                        if (e && e?.length > 0) {
+                          e.forEach((date) => {
+                            formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
+                          })
+                          setEventFromDate(formattedDates[0])
+                          setEventEndDate(formattedDates[1])
+                        }
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
             {!isAllDay && (
-              <>
+              <div className="flex gap mb-15">
                 <div>
                   <label>Start time</label>
                   <MobileTimePicker
@@ -550,191 +516,163 @@ export default function EditCalEvent() {
                     defaultValue={DateManager.dateIsValid(calEventToEdit.endTime) ? moment(calEventToEdit?.endTime, DateFormats.timeForDb) : null}
                   />
                 </div>
-              </>
+              </div>
             )}
-          </div>
 
-          {/* ALL DAY / HAS END DATE */}
-          <CheckboxGroup
-            defaultLabel={!DateManager.dateIsValid(calEventToEdit?.startTime) ? 'All Day' : null}
-            labels={['All Day']}
-            skipNameFormatting={true}
-            onCheck={handleAllDaySelection}
-          />
+            {/* ALL DAY / HAS END DATE */}
+            <div className="flex">
+              <p>All Day</p>
+              <Toggle
+                icons={{
+                  // checked: <span className="material-icons-round">notifications</span>,
+                  unchecked: null,
+                }}
+                className={'ml-auto reminder-toggle'}
+                onChange={(e) => setIsAllDay(!isAllDay)}
+              />
+            </div>
 
-          {/* NOTES/LOCATION/URL */}
-          <Accordion className="mb-15">
-            <p
-              className={expandAccordion ? 'accordion-header open' : 'accordion-header'}
-              onClick={(e) => {
-                setExpandAccordion(!expandAccordion)
-              }}>
-              Add Website-Notes-Location <span className={'material-icons-round'}>{expandAccordion ? 'remove' : 'add'}</span>
-            </p>
-            <Accordion.Panel expanded={expandAccordion === true}>
-              <div id="url-notes-container">
-                <input
-                  placeholder={Manager.isValid(calEventToEdit.link, false, false, true) ? calEventToEdit.link : 'Website'}
-                  type="url"
-                  onChange={(e) => setEventWebsiteUrl(e.target.value)}
-                  className="mb-10"
-                />
-
-                {/* LOCATION/ADDRESS */}
-                <Autocomplete
-                  defaultValue={calEventToEdit.location}
-                  placeholder={`Location`}
-                  apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                  options={{
-                    types: ['geocode', 'establishment'],
-                    componentRestrictions: { country: 'usa' },
-                  }}
-                  className="mb-10"
-                  onPlaceSelected={(place) => {
-                    setEventLocation(place.formatted_address)
-                  }}
-                />
-                <textarea
-                  defaultValue={calEventToEdit?.notes}
-                  placeholder={Manager.isValid(calEventToEdit.notes, false, false, true) ? calEventToEdit.notes : 'Notes'}
-                  onChange={(e) => setEventNotes(e.target.value)}></textarea>
-              </div>
-            </Accordion.Panel>
-          </Accordion>
-
-          {/* SHARE WITH */}
-          <p className="requirement-text">Required</p>
-          <div className="share-with-container share-with">
-            <label>
-              <span className="material-icons-round warning">visibility</span> Who is allowed to see it? <span className="asterisk">*</span>
-            </label>
-            <CheckboxGroup
-              dataPhone={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)}
-              labels={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
-              onCheck={handleShareWithSelection}
-            />
-          </div>
-          <p className="requirement-text">Optional</p>
-
-          {/* REMINDER */}
-          {currentUser && !isAllDay && (
-            <>
-              <div className="share-with-container mb-5">
-                <Accordion>
-                  <label onClick={() => setReminderAccIsExpanded(!reminderAccIsExpanded)}>
-                    <span className="material-icons mr-10">notification_add</span> Set Reminders
-                    <span className={'material-icons-round plus-minus-symbol'}>{reminderAccIsExpanded ? 'remove' : 'add'}</span>
-                  </label>
-                  <Accordion.Panel expanded={reminderAccIsExpanded}>
-                    <CheckboxGroup
-                      boxWidth={50}
-                      skipNameFormatting={true}
-                      dataPhone={
-                        currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
-                      }
-                      labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
-                      onCheck={handleReminderSelection}
-                    />
-                  </Accordion.Panel>
-                </Accordion>
-              </div>
-            </>
-          )}
-
-          {/* NOTIFICATION */}
-          <div className="share-with-container mb-5">
-            <Accordion>
-              <label onClick={() => setShareWithAccIsExpanded(!shareWithAccIsExpanded)}>
-                <span className="material-icons-round notifications mr-10">campaign</span>Set Notification Recipient(s)
-                <span className={'material-icons-round plus-minus-symbol'}>{shareWithAccIsExpanded ? 'remove' : 'add'}</span>
-              </label>
-              <Accordion.Panel expanded={shareWithAccIsExpanded}>
+            {/* WHO IS ALLOWED TO SEE IT? */}
+            {(currentUser.coparents.length > 0 || currentUser.parents.length > 0) && (
+              <div className={`share-with-container `}>
+                <label>
+                  <span className="material-icons-round mr-10">visibility</span> Who is allowed to see it?
+                  <span className="asterisk">*</span>
+                </label>
                 <CheckboxGroup
+                  elClass={`${currentUser?.settings?.theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
                   dataPhone={
                     currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
                   }
                   labels={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
                   onCheck={handleShareWithSelection}
                 />
-              </Accordion.Panel>
-            </Accordion>
-          </div>
+              </div>
+            )}
 
-          {/* INCLUDING WHICH CHILDREN */}
-          {currentUser && Manager.isValid(currentUser.children, true) && (
-            <div className="share-with-container mb-5">
-              <Accordion>
-                <label onClick={() => setChildrenAccIsExpanded(!childrenAccIsExpanded)}>
-                  <span className="material-icons mr-10">face</span> Set Included Child(ren)
-                  <span className={'material-icons-round plus-minus-symbol'}>{childrenAccIsExpanded ? 'remove' : 'add'}</span>
-                </label>
-                <Accordion.Panel expanded={childrenAccIsExpanded}>
-                  <CheckboxGroup labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
-                </Accordion.Panel>
-              </Accordion>
-            </div>
-          )}
-
-          {/* REPEATING? */}
-          {currentUser.accountType === 'parent' && (
-            <>
-              {clonedDatesToSubmit.length === 0 && (
-                <div className="share-with-container" id="repeating-container">
+            {/* REMINDER */}
+            {(currentUser.coparents.length > 0 || currentUser.parents.length > 0) && !isAllDay && (
+              <>
+                <div className="flex">
+                  <p>Remind Me</p>
+                  <Toggle
+                    icons={{
+                      checked: <span className="material-icons-round">notifications</span>,
+                      unchecked: null,
+                    }}
+                    className={'ml-auto reminder-toggle'}
+                    onChange={(e) => setShowReminders(!showReminders)}
+                  />
+                </div>
+                <div className="share-with-container mb-5">
                   <Accordion>
-                    <label onClick={() => setRepeatAccIsExpanded(!repeatAccIsExpanded)}>
-                      <span className="material-icons mr-10">event_repeat</span> Set Repeat Interval
-                      <span className={'material-icons-round plus-minus-symbol'}>{repeatAccIsExpanded ? 'remove' : 'add'}</span>
-                    </label>
-                    {/* MONTH TO END REPEATING */}
-                    <Accordion.Panel expanded={repeatAccIsExpanded}>
-                      <CheckboxGroup onCheck={handleRepeatingSelection} labels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
-                      {eventRepeatInterval && (
-                        <MobileDatePicker
-                          className={'mt-0 w-100'}
-                          label={'Month to end repeating events'}
-                          format={DateFormats.readableMonth}
-                          views={DatetimePickerViews.monthAndYear}
-                          hasAmPm={false}
-                          onAccept={async (e) => {
-                            let datesToRepeat = CalendarMapper.repeatingEvents(eventRepeatInterval, eventFromDate, e)
-                            setClonedAndRepeating(datesToRepeat, 'repeating')
-                          }}
-                        />
-                      )}
+                    <Accordion.Panel expanded={showReminders}>
+                      <CheckboxGroup
+                        elClass={`${currentUser?.settings?.theme} `}
+                        boxWidth={50}
+                        skipNameFormatting={true}
+                        dataPhone={
+                          currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
+                        }
+                        labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                        onCheck={handleReminderSelection}
+                      />
                     </Accordion.Panel>
                   </Accordion>
                 </div>
-              )}
-              {/* ADD TO ANOTHER DATE? - CLONED */}
-              {eventRepeatInterval.length === 0 && (
-                <>
-                  <button
-                    className={`${currentUser?.settings?.theme} default center add-clone-button mt-20 mb-10`}
-                    onClick={() => setShowCloneInput(true)}>
-                    Copy Event to Other Dates
-                  </button>
-                  {showCloneInput && (
-                    <>
-                      <label>Set dates to add event to</label>
-                      <MultiDatePicker
-                        className="multidate-picker"
-                        placeholder=""
-                        placement="auto"
-                        label=""
-                        onOpen={() => Manager.hideKeyboard()}
-                        onChange={(e) => {
-                          const cloned = setClonedAndRepeating(e)
-                          setClonedDatesToSubmit(cloned, 'cloned')
-                        }}
-                      />
-                    </>
-                  )}
-                </>
-              )}
-            </>
-          )}
+              </>
+            )}
+
+            {/* SEND NOTIFICATION TO */}
+            {(!currentUser.accountType || currentUser.accountType === 'parent') && (
+              <div className="share-with-container mb-5">
+                <div className="flex">
+                  <p>Remind Coparent(s)</p>
+                  <Toggle
+                    icons={{
+                      checked: <span className="material-icons-round">person</span>,
+                      unchecked: null,
+                    }}
+                    className={'ml-auto reminder-toggle'}
+                    onChange={(e) => setRemindCoparents(!remindCoparents)}
+                  />
+                </div>
+                <Accordion>
+                  <Accordion.Panel expanded={remindCoparents}>
+                    <CheckboxGroup
+                      elClass={`${currentUser?.settings?.theme} `}
+                      dataPhone={
+                        currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
+                      }
+                      labels={
+                        currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)
+                      }
+                      onCheck={handleShareWithSelection}
+                    />
+                  </Accordion.Panel>
+                </Accordion>
+              </div>
+            )}
+
+            {/* INCLUDING WHICH CHILDREN */}
+            {Manager.isValid(currentUser.children !== undefined, true) && (
+              <div className="share-with-container mb-5">
+                <div className="flex">
+                  <p>Include Children</p>
+                  <Toggle
+                    icons={{
+                      checked: <span className="material-icons-round">face</span>,
+                      unchecked: null,
+                    }}
+                    className={'ml-auto reminder-toggle'}
+                    onChange={(e) => setIncludeChildren(!includeChildren)}
+                  />
+                </div>
+                <Accordion>
+                  <Accordion.Panel expanded={includeChildren}>
+                    <CheckboxGroup
+                      elClass={`${currentUser?.settings?.theme} `}
+                      labels={currentUser.children.map((x) => x['general'].name)}
+                      onCheck={handleChildSelection}
+                    />
+                  </Accordion.Panel>
+                </Accordion>
+              </div>
+            )}
+          </div>
+
+          {/* URL/WEBSITE */}
+          <label>URL/Website</label>
+          <input type="url" onChange={(e) => setEventWebsiteUrl(e.target.value)} className="mb-10" />
+
+          {/* LOCATION/ADDRESS */}
+          <label>Location</label>
+          <Autocomplete
+            placeholder={``}
+            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+            options={{
+              types: ['geocode', 'establishment'],
+              componentRestrictions: { country: 'usa' },
+            }}
+            className="mb-10"
+            onPlaceSelected={(place) => {
+              setEventLocation(place.formatted_address)
+            }}
+          />
+
+          {/* NOTES */}
+          <label>Notes</label>
+          <textarea onChange={(e) => setEventNotes(e.target.value)}></textarea>
+          <div className="flex buttons gap">
+            <button className="button card-button" onClick={submit}>
+              Done Editing <span className="material-icons-round ml-10 fs-22">check</span>
+            </button>
+            <button className="button card-button delete" onClick={async () => setConfirmTitle(`Deleting ${calEventToEdit.title}`)}>
+              Delete <span className="material-icons-round ml-10 fs-22">delete</span>
+            </button>
+          </div>
         </div>
-      </div>
+      </BottomCard>
     </div>
   )
 }
