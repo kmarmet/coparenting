@@ -15,7 +15,6 @@
 
 // PAGE CONTAINER
 @mixin pageContainer {
-  width: calc(100vw - 3px);
   max-height: 100vh;
   overflow: auto;
   max-width: 100vw;
@@ -26,6 +25,13 @@
   transition: all 0.5s ease-in-out;
   transition-timing-function: cubic-bezier(0.17, 0.67, 0.21, 0.95);
   margin-top: 100vh;
+
+  &.pushed {
+    &.active {
+      width: 20vw;
+      opacity: 0.6;
+    }
+  }
 
   &.light {
     background: $lightBg;
@@ -44,6 +50,7 @@
     margin-top: 0;
     padding-bottom: 300px;
     padding-top: 20px;
+    width: calc(100vw - 3px);
 
     &.conversation {
       padding-bottom: 0;
@@ -214,10 +221,10 @@
       padding: 5px 0;
       display: block;
       margin: 0;
-      height: 40px;
       border: 0;
       border-radius: 0;
       justify-content: flex-start;
+      width: 50%;
 
       &:first-child {
         margin-right: 20px;
@@ -323,6 +330,15 @@
       color: $offWhite;
     }
   }
+
+  /*#region  LIGHT THEME*/
+  &.light {
+    input,
+    textarea {
+      border: 1px solid $lightBorder;
+    }
+  }
+  /*#endregion  LIGHT THEME*/
   &.show {
     display: block;
   }
@@ -420,6 +436,17 @@
   font-weight: 500;
   color: white;
 
+  /*#region  LIGHT THEME*/
+  &.light {
+    &.default {
+      background-color: $lightBlue;
+      color: white;
+      font-weight: 300;
+    }
+  }
+  /*#endregion  LIGHT THEME*/
+
+  /*#region  DARK THEME*/
   &.dark {
     &.default {
       background-color: $darkBlue;
@@ -427,6 +454,7 @@
       font-weight: 300;
     }
   }
+  /*#endregion  DARK THEME*/
 
   span {
     margin-left: 8px;
@@ -447,8 +475,8 @@
 
     /*#region  LIGHT THEME*/
     &.light {
-      background-color: $lightGrey;
-      color: $lightBlackLight;
+      background-color: $lightBlue;
+      color: white;
     }
     /*#endregion  LIGHT THEME*/
     &.green {
@@ -778,9 +806,9 @@
   background-color: rgba(38, 38, 38, 0.3);
 }
 @mixin glow {
-  -webkit-box-shadow: 0px 0px 12px 0px rgba(124, 117, 255, 1);
-  -moz-box-shadow: 0px 0px 12px 0px rgba(124, 117, 255, 1);
-  box-shadow: 0px 0px 12px 0px rgba(124, 117, 255, 1);
+  -webkit-box-shadow: 0px 0px 12px 0px $lightBlueDark;
+  -moz-box-shadow: 0px 0px 12px 0px $lightBlueDark;
+  box-shadow: 0px 0px 12px 0px $lightBlueDark;
 }
 @mixin fadeBottom {
   mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
@@ -2075,13 +2103,15 @@
     max-height: 0;
     top: 50vh;
     position: relative;
-
+    width: calc(100vw - 50px);
+    @include centerHoriz;
     &.active {
       padding: 20px;
-      top: 0;
+      top: 35vh;
       transition: all 0.3s ease-in-out;
       opacity: 1;
       max-height: 1000px;
+      z-index: 100000;
     }
 
     p:not(#title) {
@@ -2091,11 +2121,11 @@
         padding-top: 0;
         font-weight: bold;
         font-size: 20px;
-        text-align: center;
+        text-align: left;
       }
       &.message {
         color: $darkGrey;
-        margin: 0;
+        margin: 0 0 15px 0;
         text-align: center;
       }
     }
@@ -2188,9 +2218,16 @@
     }
   }
 
+  .flex {
+    margin-bottom: 10px;
+    p {
+      padding-left: 0;
+    }
+  }
+
   // DARK
   &.dark {
-    background-color: $darkBlueDarkest;
+    background-color: $darkBg;
 
     .card-button {
       background-color: $purple;
@@ -2207,6 +2244,27 @@
       padding-left: 0;
     }
   }
+
+  /*#region  LIGHT THEME*/
+  &.light {
+    background-color: white;
+
+    #title {
+      color: $darkBg;
+    }
+
+    p:not(#title) {
+      background: transparent;
+      color: cornflowerblue;
+      padding: 0;
+    }
+
+    .card-button {
+      background-color: $lightBlueMedium;
+      color: white;
+    }
+  }
+  /*#endregion  LIGHT THEME*/
 
   &.active {
     max-height: 70vh;
@@ -3230,23 +3288,50 @@
   }
 }
 @mixin newMenu {
-  width: calc(100vw - 30px);
-  background-color: $purple;
+  width: 100vw;
+  background-color: white;
   position: fixed;
   bottom: -50px;
   max-height: 90vh;
   overflow: auto;
-  z-index: $maxZIndex;
-  @include bestShadow;
+  z-index: 100000000;
   @include centerHoriz;
-  border-radius: 12px;
   opacity: 0;
   transition: all 0.5s ease-in-out;
+  background-image: radial-gradient(circle at 36px 6px, transparent 36px, $lightBlueMedium 37px);
+  border-radius: 12px 12px 30px 30px;
+  background-position: 41.5vw center;
 
   &.active {
-    bottom: 20px;
+    bottom: 0;
     opacity: 1;
   }
+
+  /*#region  LIGHT THEME*/
+  &.light {
+    //    background: $lightBlueMedium;
+  }
+  /*#endregion  LIGHT THEME*/
+
+  /*#region  DARK THEME*/
+  &.dark {
+    background-image: radial-gradient(circle at 36px 6px, $darkBg 36px, white 37px);
+    .material-icons-round {
+      color: $darkBg;
+    }
+    #floating-menu {
+      .menu-item {
+        &.active {
+         
+          @include long-shadow('text', $lightBorder, 7);
+          .material-icons-round {
+            color: $lightBlue;
+          }
+        }
+      }
+    }
+  }
+  /*#endregion  DARK THEME*/
 
   #bottom-bar {
     display: flex;
@@ -3257,123 +3342,49 @@
     background-color: $purple;
     width: calc(100% - 15px);
     @include centerHoriz;
-    &.dark {
-      span {
-        color: $yellow;
-      }
-      .theme-text {
-        color: white;
-      }
-    }
-    &.light {
-      span {
-        color: $darkBg;
-      }
-      .theme-text {
-        color: $darkBg;
-        font-weight: 600;
-      }
-    }
-    .theme-text {
-      color: white;
-      display: flex;
-      align-items: center;
-      
-      span {
-      
-      padding-right: 8px;
-      }
-    }
-    .full-menu-item {
-      &.logout {
-        align-self: center;
-        display: flex;
-        justify-content: center;
-        opacity: 1;
-        font-weight: bold;
-        border-bottom: 1px solid white;
-        width: 75px;
-        padding: 0 5px 2px 0;
-        margin: 0 0 0 auto;
-        color: white;
-        margin-bottom: 0;
-      }
-    }
-  }
-
-  #top-bar {
-    padding-top: 10px;
-    position: relative;
-    padding-bottom: 8px;
-    border-bottom: 1px solid $darkPurple;
-
-    #new-menu-close-button {
-      margin-left: auto;
-      display: block;
-      text-align: right;
-      margin-right: 5px;
-      opacity: 0.7;
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
-
-    .logo {
-      margin-left: 12px;
-      #brand-name {
-        color: white;
-        font-size: 30px;
-        font-family: 'Damion', cursive;
-        span {
-          opacity: 0.6;
-          margin-left: 5px;
-          font-size: 18px;
-        }
-      }
-      img {
-        width: 45px;
-        height: auto;
-      }
-    }
   }
 
   #floating-menu {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 40px;
     padding: 8px 0;
+    overflow: auto;
 
     #show-full-menu-icon {
-      transform: scale(1.7);
     }
 
     .menu-item {
       opacity: 0.5;
       transition: all 0.3s ease-in-out;
+      width: calc(100% / 4);
+      text-align: center;
+      &.two {
+        justify-self: flex-start;
+
+        span {
+          text-align: left;
+          justify-self: flex-start;
+          display: flex;
+        }
+      }
+
+      &.three {
+        span {
+          text-align: center;
+          justify-self: flex-end;
+          display: flex;
+          width: 40px;
+          float: right;
+        }
+      }
 
       &.active {
         opacity: 1;
-        border-radius: 100%;
-        @include long-shadow('text', #383838, 7);
-      }
-
-      &.menu-button {
-        background-color: $green;
-        opacity: 1;
-        height: 45px;
-        width: 45px;
-        border-radius: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        @include long-shadow('text', $lightBlue, 7);
+        transform: scale(1.1);
         position: relative;
-        @include shadow;
-
-        .material-icons-round {
-          color: white;
-          font-size: 40px;
-        }
+        top: -3px;
       }
     }
   }
@@ -3382,60 +3393,6 @@
   .material-icons-outlined {
     font-size: 30px;
     color: white;
-  }
-  #full-menu {
-    flex-wrap: wrap;
-    justify-content: space-between;
-    max-height: 0;
-    padding: 0;
-    transition: all 0.4s ease-in-out;
-    opacity: 0;
-
-    overflow: auto;
-
-    &.active {
-      opacity: 1;
-      max-height: 70vh;
-      padding: 15px;
-      #close-icon {
-        display: inherit;
-      }
-    }
-
-    #close-icon {
-      @include centerHoriz;
-      position: fixed;
-      bottom: 0;
-      transform: scale(1.7);
-      opacity: 0.7;
-      display: none;
-    }
-
-    .full-menu-item {
-      display: flex;
-      align-items: center;
-      opacity: 0.6;
-      margin-bottom: 10px;
-
-      &.active {
-        opacity: 1;
-        background-color: $darkPurple;
-        padding-left: 5px;
-        border-radius: $borderRadius;
-
-        p {
-          font-weight: bold;
-        }
-      }
-      span {
-        margin-right: 10px;
-        font-size: 30px;
-      }
-      p {
-        color: white;
-        font-size: 18px;
-      }
-    }
   }
 }
 /*#endregion  MENU*/

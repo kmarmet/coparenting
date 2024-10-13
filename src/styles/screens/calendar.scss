@@ -102,7 +102,6 @@
                 }
 
                 .event-content {
-                  background-color: $lightGrey;
                   padding-top: 8px;
 
                   .event-row {
@@ -251,10 +250,9 @@
       border-radius: 40px;
       display: flex;
       align-items: center;
-      width: 105px;
       justify-content: space-between;
-      padding: 0 15px;
       height: 30px;
+      margin-left: 10px;
       font-weight: 600;
       font-size: 18px;
       position: relative;
@@ -316,12 +314,13 @@
           }
         }
         #filter-button {
-          background-color: $lightGrey;
           color: $darkBlueMedium;
           opacity: 1;
 
           span {
-            color: $accent;
+            color: $darkBlueMedium;
+            position: relative;
+            top: -2px;
           }
         }
       }
@@ -344,12 +343,13 @@
           }
         }
         #filter-button {
-          background-color: $darkBlue;
           color: white;
           opacity: 0.8;
 
           span {
             color: $accent;
+            position: relative;
+            top: -2px;
           }
         }
         #calendar-legend {

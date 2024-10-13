@@ -75,163 +75,38 @@ export default function NewMenu() {
     }
   }
 
-  const changeTheme = async () => {
-    let theme = 'dark'
-    if (currentUser.settings.theme === 'dark') {
-      theme = 'light'
-    }
-    await DB_UserScoped.updateUserRecord(currentUser.phone, `settings/theme`, theme)
-    window.location.reload()
-  }
-
   return (
     <>
+      {/* ADD NEW BUTTON */}
+      <div className={menuIsOpen ? '' : 'active'} onClick={addNew} id="menu-button">
+        <span className="material-icons-round">add</span>
+      </div>
       <div id="new-menu" className={`${currentUser?.settings?.theme} ${showShortcutMenu ? 'active' : ''}`}>
-        {menuIsOpen && (
-          <div className="flex" id="top-bar">
-            <div className="flex logo">
-              <img src={require('../img/logo.png')} alt="" />
-              <p id="brand-name">
-                Peaceful <span>co</span>Parenting
-              </p>
-            </div>
-            <span className="material-icons-round" id="new-menu-close-button" onClick={() => setState({ ...state, menuIsOpen: false })}>
-              close
-            </span>
-          </div>
-        )}
-
         {!menuIsOpen && (
           <div id="floating-menu" className="flex">
+            <div onClick={() => setState({ ...state, menuIsOpen: true })} className={` menu-item`}>
+              <span className="material-icons-round" id="show-full-menu-icon">
+                format_list_bulleted
+              </span>
+            </div>
             <div
               onClick={() => changeCurrentScreen(ScreenNames.calendar)}
-              className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
+              className={`${currentScreen === ScreenNames.calendar ? 'active menu-item two' : 'menu-item two'}`}>
               <span className="material-icons-round">calendar_month</span>
             </div>
             <div
               onClick={() => changeCurrentScreen(ScreenNames.chats)}
-              className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
+              className={`${currentScreen === ScreenNames.chats ? 'active menu-item three' : 'menu-item three'}`}>
               <span className="material-icons-round">question_answer</span>
             </div>
-            {/* ADD NEW BUTTON */}
-            <div onClick={addNew} className="menu-item menu-button">
-              <span className="material-icons-round">add</span>
-            </div>
-            <div
-              onClick={() => changeCurrentScreen(ScreenNames.childSelector)}
-              className={`${currentScreen === ScreenNames.childSelector ? 'active menu-item' : 'menu-item'}`}>
-              <span className="material-icons-round">face</span>
-            </div>
-            <div onClick={() => setState({ ...state, menuIsOpen: true })} className={` menu-item`}>
-              <span className="material-icons-round" id="show-full-menu-icon">
-                expand_less
+
+            <div className={`${currentScreen === ScreenNames.childSelector ? 'active menu-item' : 'menu-item'}`}>
+              <span onClick={() => changeCurrentScreen(ScreenNames.childSelector)} className="material-icons-round">
+                face
               </span>
             </div>
           </div>
         )}
-        <div id="full-menu" className={menuIsOpen ? 'active' : ''}>
-          <>
-            {AppManager.getAccountType(currentUser) === 'parent' && (
-              <>
-                <div
-                  className={`full-menu-item ${currentScreen === ScreenNames.coparentingSpace ? 'active' : ''}`}
-                  onClick={() => changeCurrentScreen(ScreenNames.coparentingSpace)}>
-                  <span className="material-icons-round">meeting_room</span>
-                  <p>Coparenting Space</p>
-                </div>
-                <div
-                  className={`full-menu-item ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
-                  onClick={() => changeCurrentScreen(ScreenNames.chats)}>
-                  <span className="material-icons-round">question_answer</span>
-                  <p className="text">Chat</p>
-                </div>
-              </>
-            )}
-            <>
-              <div
-                className={`full-menu-item ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.calendar)}>
-                <span className="material-icons-round">calendar_month</span>
-                <p>Calendar</p>
-              </div>
-            </>
-            {AppManager.getAccountType(currentUser) === 'parent' && (
-              <>
-                <div
-                  className={`full-menu-item ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
-                  onClick={() => changeCurrentScreen(ScreenNames.expenseTracker)}>
-                  <span className="material-icons-round">paid</span>
-                  <p>Expense Tracker</p>
-                </div>
-                <div
-                  className={`full-menu-item ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
-                  onClick={() => changeCurrentScreen(ScreenNames.swapRequests)}>
-                  <span className="material-icons-round">swap_horizontal_circle</span>
-                  <p>Swap Requests</p>
-                </div>
-                <div
-                  className={`full-menu-item ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
-                  onClick={() => changeCurrentScreen(ScreenNames.transferRequests)}>
-                  <span className="material-icons-round">update</span>
-                  <p>Transfer Change</p>
-                </div>
-                <div
-                  className={`full-menu-item ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
-                  onClick={() => changeCurrentScreen(ScreenNames.docsList)}>
-                  <span className="material-icons-round">description</span>
-                  <p>Documents</p>
-                </div>
-                <div
-                  className={`full-menu-item ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
-                  onClick={() => changeCurrentScreen(ScreenNames.memories)}>
-                  <span className="material-icons-round">collections</span>
-                  <p>Memories</p>
-                </div>
-                <div
-                  className={`full-menu-item ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
-                  onClick={() => changeCurrentScreen(ScreenNames.childSelector)}>
-                  <span className="material-icons-round">face</span>
-                  <p>Child Info</p>
-                </div>
-                <div
-                  className={`full-menu-item ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
-                  onClick={() => changeCurrentScreen(ScreenNames.coparents)}>
-                  <span className="material-icons-round">family_restroom</span>
-                  <p>Coparents</p>
-                </div>
-              </>
-            )}
-          </>
-          <div
-            className={`full-menu-item ${currentScreen === ScreenNames.account ? 'active' : ''}`}
-            onClick={() => changeCurrentScreen(ScreenNames.account)}>
-            <span className="material-icons-round">manage_accounts</span>
-            <p>Account</p>
-          </div>
-          <div
-            className={`full-menu-item ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
-            onClick={() => changeCurrentScreen(ScreenNames.settings)}>
-            <span className="material-icons-round">settings</span>
-            <p>Settings</p>
-          </div>
-          {menuIsOpen && (
-            <div id="bottom-bar" className={currentUser?.settings?.theme}>
-              {currentUser?.settings?.theme === 'dark' && (
-                <p className="theme-text" onClick={changeTheme}>
-                  <span className="material-icons-round">light_mode</span>Switch to Light Mode
-                </p>
-              )}
-              {currentUser?.settings?.theme === 'light' && (
-                <p className="theme-text" onClick={changeTheme}>
-                  <span className="material-icons-round">nights_stay</span> Switch to Dark Mode
-                </p>
-              )}
-              <p className="logout full-menu-item" onClick={logout}>
-                Logout
-              </p>
-            </div>
-          )}
-        </div>
       </div>
     </>
   )

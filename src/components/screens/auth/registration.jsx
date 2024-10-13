@@ -18,7 +18,23 @@ import DB_UserScoped from '@userScoped'
 import ChildUser from 'models/child/childUser.js'
 import { useSwipeable } from 'react-swipeable'
 import ParentInput from '../../parentInput'
-import '../../../prototypes'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  formatPhone,
+  getFileExtension,
+} from '../../../globalFunctions'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -64,13 +80,13 @@ export default function Registration() {
       newUser.id = Manager.getUid()
       newUser.email = email
       newUser.password = password
-      newUser.name = userName.uppercaseFirstLetterOfAllWords()
+      newUser.name = uppercaseFirstLetterOfAllWords(userName)
       newUser.accountType = 'parent'
       newUser.children = children
-      newUser.phone = phone.formatPhone()
+      newUser.phone = formatPhone(phone)
       newUser.coparents = coparents
       newUser.parentType = parentType
-      newUser.settings.theme = 'dark'
+      newUser.settings.theme = 'light'
       newUser.settings.eveningReminderSummaryHour = '8pm'
       newUser.settings.morningReminderSummaryHour = '10am'
 
@@ -95,12 +111,12 @@ export default function Registration() {
         let newUser = new ChildUser()
         newUser.id = Manager.getUid()
         newUser.phone = phone
-        newUser.name = userName.uppercaseFirstLetterOfAllWords()
+        newUser.name = uppercaseFirstLetterOfAllWords(userName)
         newUser.accountType = 'child'
         newUser.password = password
         newUser.parents = parents
         newUser.email = ''
-        newUser.settings.theme = 'dark'
+        newUser.settings.theme = 'light'
         newUser.settings.eveningReminderSummaryHour = '8pm'
         newUser.settings.morningReminderSummaryHour = '10am'
         const dbRef = ref(getDatabase())
@@ -255,7 +271,7 @@ export default function Registration() {
       <p className="screen-title ">Sign Up</p>
 
       {/* PAGE CONTAINER */}
-      <div id="registration-container" className="page-container dark" {...handlers}>
+      <div id="registration-container" className="page-container light form" {...handlers}>
         {/* SET ACCOUNT TYPE */}
         {!accountType && (
           <>
@@ -367,7 +383,7 @@ export default function Registration() {
                 <span className="material-icons-round fs-25 blue">insert_emoticon</span>
               </Accordion.Panel>
             </Accordion>
-            <CheckboxGroup labels={['Biological Parent', 'Step-Parent']} onCheck={handleParentType} />
+            <CheckboxGroup elClass={'light'} labels={['Biological Parent', 'Step-Parent']} onCheck={handleParentType} />
             <label>
               Name <span className="asterisk">*</span>
             </label>
@@ -403,9 +419,13 @@ export default function Registration() {
             {coparentInputs.map((input, index) => {
               return <span key={index}>{input}</span>
             })}
+
+            {/* COPARENTS */}
             <button id="add-coparent-button" className="button default w-60" onClick={addCoparentInput}>
               Add Another Co-Parent
             </button>
+
+            {/* CHILDREN */}
             <div className="children">
               {childrenInputs.map((input, index) => {
                 return <span key={index}>{input}</span>

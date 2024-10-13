@@ -1,25 +1,45 @@
 @import './mixins';
 
 #external-overrides {
+  .flatpickr-months {
+    align-items: center;
+  }
+  /*#region  DARK THEME*/
   .dark {
     .flatpickr-day {
       color: white !important;
+       &.selected {
+        background-color: $blue;
+      }
     }
     .flatpickr-calendar {
       .flatpickr-months {
-        
         .flatpickr-current-month,
         .flatpickr-monthDropdown-months {
-          color:white;
+          color: white;
         }
       }
     }
   }
+  
+  /*#endregion  DARK THEME*/
+  
+  /*#region  LIGHT THEME*/
   .light {
+    .flatpickr-calendar {
+      .flatpickr-weekday {
+        color: $lightBlackLight;
+      }
+    }
     .flatpickr-day {
       color: $lightBlackLight !important;
+      &.today, &.selected {
+        background-color: $blue;
+        box-shadow: 0 0 12px 0  $lightBlueDark;
+      }
     }
   }
+  /*#endregion  LIGHT THEME*/
   .MuiFormControl-root {
     &.light {
       input {
@@ -78,7 +98,6 @@
     /*#region  DARK THEME*/
     &.dark {
       .flatpickr-months {
-        align-items: center;
         .flatpickr-prev-month,
         .flatpickr-next-month {
           display: flex;
@@ -117,22 +136,6 @@
       }
     }
     /*#endregion  DARK THEME*/
-
-    /*#region  LIGHT THEME*/
-    &.light {
-      .flatpickr-calendar {
-        .flatpickr-weekday {
-          color: $lightBlackLight;
-        }
-      }
-      .flatpickr-day {
-        &.selected {
-          background-color: $darkBlueMedium;
-          box-shadow: 0 0 12px 0 $darkBlueMedium;
-        }
-      }
-    }
-    /*#endregion  LIGHT THEME*/
   }
 
   // Rest -> garbage
@@ -212,7 +215,7 @@
           position: relative;
           top: -8px;
           gap: 3px;
-          
+
           .dot {
             margin: 0;
             height: 5px;
@@ -221,7 +224,7 @@
             display: block;
             border-radius: 100%;
           }
-          
+
           .current-user-visitation-dot {
             background-color: $purple;
           }
@@ -261,7 +264,7 @@
           font-weight: bold !important;
           position: relative;
           top: 1px;
-          color: $accent !important;
+          color: $lightestBlue !important;
 
           .visitation-dot,
           .dot {
@@ -284,7 +287,6 @@
           top: 0;
           padding-top: 8px;
           line-height: 1;
-          background-color: $purple !important;
 
           .dot-wrapper {
             margin-top: 25px;
@@ -398,7 +400,6 @@
       }
       .flatpickr-current-month,
       .flatpickr-monthDropdown-months {
-        color: $lightPurple;
         padding: 0;
         font-weight: 600 !important;
         transform: scale(1.1);
@@ -427,8 +428,9 @@
             width: 100%;
             text-align: center;
             margin: 0;
-            max-width: 297px;
             padding: 0;
+            justify-content: center;
+            display: flex;
           }
 
           .numInputWrapper {

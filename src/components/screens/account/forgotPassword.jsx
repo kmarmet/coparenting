@@ -90,8 +90,8 @@ export default function ForgotPassword() {
 
   return (
     <>
-      <p className="screen-title ">Forgot Password</p>
-      <div {...handlers} id="forgot-password-container" className="page-container dark form">
+      {/*<p className="screen-title ">Forgot Password</p>*/}
+      <div {...handlers} id="forgot-password-container" className="page-container light form">
         <div className="form" autoComplete="off">
           <label>
             Phone<span className="asterisk">*</span>

@@ -24,7 +24,7 @@ export default function Login() {
       setState({ ...state, showAlert: true, alertMessage: 'Please fill out all fields', alertType: 'error' })
       return false
     }
-    document.body.classList.add('dark')
+    document.body.classList.add('light')
     if (foundUser) {
       console.log(foundUser)
       document.body.classList.add(foundUser?.settings.theme)
@@ -47,7 +47,7 @@ export default function Login() {
   const autoLogin = async () => {
     const foundUser = await tryGetCurrentUser()
     const rememberMeKey = localStorage.getItem('rememberKey')
-    document.body.classList.add('dark')
+    document.body.classList.add('light')
     if (foundUser) {
       subscribeUser(foundUser)
 
@@ -130,11 +130,7 @@ export default function Login() {
 
   useLayoutEffect(() => {
     setTimeout(() => {
-      const menuButton = document.querySelector('#menu-button')
-      if (menuButton) {
-        menuButton.classList.remove('visible')
-      }
-      setState({ ...state, showMenuButton: false, showBackArrow: false })
+      setState({ ...state, showMenuButton: false, showShortcutMenu: false, showBackArrow: false })
       autoLogin().then((r) => r)
       Manager.toggleForModalOrNewForm('show')
     }, 500)
@@ -146,22 +142,10 @@ export default function Login() {
       <InstallAppPopup />
 
       {/* SCREEN TITLE */}
-      <p className="screen-title  show center-text mt-20  mb-10 w-100 p-0">Login</p>
+      {/*<p className="screen-title  show center-text mt-20  mb-10 w-100 p-0">Login</p>*/}
 
       {/* PAGE CONTAINER */}
-      <div id="login-container" className={`dark page-container form`}>
-        {/* INSTALL BUTTON */}
-        <p
-          id="install-button"
-          className="mb-10 button mt-10"
-          onClick={() => {
-            setState({ ...state, menuIsOpen: false })
-            document.querySelector('.install-app').classList.add('active')
-            Manager.toggleForModalOrNewForm('hide')
-          }}>
-          Install App <span className="material-icons">install_mobile</span>
-        </p>
-
+      <div id="login-container" className={`light page-container form`}>
         {/* QUOTE CONTAINER */}
         <div id="quote-container">
           <span>
@@ -172,6 +156,18 @@ export default function Login() {
           </p>
           <p id="author">~ Heather Hetchler</p>
         </div>
+
+        {/* INSTALL BUTTON */}
+        <p
+          id="install-button"
+          className="mb-10 button mt-20"
+          onClick={() => {
+            setState({ ...state, menuIsOpen: false })
+            document.querySelector('.install-app').classList.add('active')
+            Manager.toggleForModalOrNewForm('hide')
+          }}>
+          Install App <span className="material-icons">install_mobile</span>
+        </p>
 
         {/* FORM/INPUTS */}
         <div className="flex form-container">
@@ -196,12 +192,12 @@ export default function Login() {
                 </span>
               )}
             </div>
-            <CheckboxGroup boxWidth={50} onCheck={toggleRememberMe} labels={['Remember Me']} skipNameFormatting={true} />
+            <CheckboxGroup elClass={'light'} boxWidth={50} onCheck={toggleRememberMe} labels={['Remember Me']} skipNameFormatting={true} />
             <div className="flex w-100 mb-15 gap">
               <button className="button default green w-50" onClick={manualLogin}>
                 Login <span className="material-icons-round">lock_open</span>
               </button>
-              <button className="button default w-50 " onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
+              <button className="button default w-50 light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
                 Register <span className="material-icons-round">person_add</span>
               </button>
             </div>

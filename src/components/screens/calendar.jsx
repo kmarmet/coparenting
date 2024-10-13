@@ -418,9 +418,15 @@ export default function EventCalendar() {
   useEffect(() => {
     addFlatpickrCalendar().then((r) => r)
     Manager.toggleForModalOrNewForm('show')
-    DB_UserScoped.updateUserRecord(currentUser.phone, `settings/theme`, 'light')
     setTimeout(() => {
-      setState({ ...state, currentScreen: ScreenNames.calendar, isLoading: false, showBackButton: false, showMenuButton: true })
+      setState({
+        ...state,
+        currentScreen: ScreenNames.calendar,
+        isLoading: false,
+        showShortcutMenu: true,
+        showBackButton: false,
+        showMenuButton: true,
+      })
     }, 500)
   }, [])
 
