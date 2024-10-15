@@ -29,8 +29,8 @@ const ChatManager = {
         resolve(scopedChats)
       })
     }),
-  getExistingMessages: async (currentUser, messageToUser) => {
-    const existingThread = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
+  getExistingMessages: async (currentUser, theme, messageToUser) => {
+    const existingThread = await ChatManager.getScopedChat(currentUser, theme, messageToUser.phone)
     if (existingThread) {
       const { key, chats } = existingThread
       let messages = chats.messages
@@ -61,7 +61,7 @@ const ChatManager = {
     }
     return activeChats
   },
-  getScopedChat: async (currentUser, messageToUserPhone) =>
+  getScopedChat: async (currentUser, theme, messageToUserPhone) =>
     await new Promise(async (resolve, reject) => {
       const dbRef = ref(getDatabase())
       await get(child(dbRef, `chats`))
@@ -82,18 +82,18 @@ const ChatManager = {
           reject(null)
         })
     }),
-  deleteAndArchive: async (currentUser, coparent) => {
+  deleteAndArchive: async (currentUser, theme, coparent) => {
     const dbRef = ref(getDatabase())
-    const scopedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
+    const scopedChat = await ChatManager.getScopedChat(currentUser, theme, coparent.phone)
     const { chats } = scopedChat
     await DB.add(DB.tables.archivedChats, chats).finally(async () => {
       const idToDelete = await DB.getSnapshotKey(DB.tables.chats, chats, 'id')
       remove(child(dbRef, `${DB.tables.chats}/${idToDelete}/`))
     })
   },
-  toggleMessageBookmark: async (currentUser, messageToUser, messageId, bookmarkState) => {
+  toggleMessageBookmark: async (currentUser, theme, messageToUser, messageId, bookmarkState) => {
     const database = getDatabase()
-    const scopedChat = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
+    const scopedChat = await ChatManager.getScopedChat(currentUser, theme, messageToUser.phone)
     const { key } = scopedChat
     await DB.getTable(`chats/${key}/messages`).then((snapshot) => {
       let asArray = DB.convertKeyObjectToArray(snapshot)
@@ -107,13 +107,13 @@ const ChatManager = {
       })
     })
   },
-  markMessagesRead: async (currentUser, messageToUser) => {
+  markMessagesRead: async (currentUser, theme, messageToUser) => {
     const dbRef = ref(getDatabase())
 
     const execute = async () =>
       new Promise(async (resolve) => {
         // Get threads where currentUser is a member
-        let currentUserChats = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
+        let currentUserChats = await ChatManager.getScopedChat(currentUser, theme, messageToUser.phone)
         const { key, chats } = currentUserChats
         if (!Manager.isValid(currentUserChats, false, true) || Object.keys(currentUserChats).length === 0) {
           return false

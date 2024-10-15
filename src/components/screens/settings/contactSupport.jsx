@@ -37,7 +37,7 @@ function ContactSupport() {
   return (
     <>
       <p className="screen-title ">Contact Support</p>
-      <div {...handlers} id="support-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div {...handlers} id="support-container" className={`${theme} page-container form`}>
         <div className="form">
           <label>
             What can we help you with? <span className="asterisk">*</span>

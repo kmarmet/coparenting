@@ -21,7 +21,7 @@ import ChatManager from '@managers/chatManager.js'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, messageToUser, previousScreen, currentScreen } = state
+  const { currentUser, theme, messageToUser, previousScreen, currentScreen } = state
   const [existingChat, setExistingChat] = useState(null)
   const [messagesToLoop, setMessagesToLoop] = useState(null)
   const [searchResults, setSearchResults] = useState([])
@@ -38,14 +38,14 @@ const Conversation = () => {
     const isSavedAlready = messageObject.context.saved
     toggleLongpressAnimation(el)
     if (isSavedAlready) {
-      ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, false).finally(() => {
+      ChatManager.toggleMessageBookmark(currentUser, theme, messageToUser, messageId, false).finally(() => {
         setTimeout(() => {
           getExistingMessages()
         }, 500)
         setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Bookmark Removed' })
       })
     } else {
-      ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, true).finally(() => {
+      ChatManager.toggleMessageBookmark(currentUser, theme, messageToUser, messageId, true).finally(() => {
         setTimeout(() => {
           getExistingMessages()
         }, 500)
@@ -145,7 +145,7 @@ const Conversation = () => {
   }
 
   const getExistingMessages = async () => {
-    const scopedChat = await ChatManager.getExistingMessages(currentUser, messageToUser)
+    const scopedChat = await ChatManager.getExistingMessages(currentUser, theme, messageToUser)
     const { key, messages, bookmarkedMessages, chats } = scopedChat
     setChatKey(key)
     if (messages.length > 0) {
@@ -208,7 +208,7 @@ const Conversation = () => {
   return (
     <>
       <p className="screen-title ml-auto mr-auto pt-15 center-text conversation">{messageToUser.name.formatNameFirstNameOnly()}</p>
-      <div {...handlers} id="message-thread-container" className={`${currentUser?.settings?.theme} page-container conversation`}>
+      <div {...handlers} id="message-thread-container" className={`${theme} page-container conversation`}>
         {/* TOP BAR */}
         {!showSearchInput && (
           <div className="flex top-buttons">
@@ -363,7 +363,7 @@ const Conversation = () => {
                 lazyLoadEmojis={true}
                 open={showEmojis}
                 emojiStyle="apple"
-                theme={currentUser?.settings?.theme || 'dark'}
+                theme={theme || 'dark'}
                 onEmojiClick={(e) => {
                   setShowEmojis(!showEmojis)
                   document.querySelector('#message-input').value += e.emoji

@@ -2,12 +2,13 @@
 var Coparent;
 
 export default Coparent = class Coparent {
-  constructor(name = '', parentType = '', phone = '', address = '', id = '') {
+  constructor(name = '', parentType = '', phone = '', address = '', id = '', relationshipToMe = '') {
     this.name = name;
     this.parentType = parentType;
     this.phone = phone;
     this.address = address;
     this.id = id;
+    this.relationshipToMe = relationshipToMe;
   }
 
 };

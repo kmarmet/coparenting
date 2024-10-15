@@ -19,6 +19,8 @@ import BottomCard from '../shared/bottomCard'
 import ImageTheater from '../shared/imageTheater'
 import Expense from '../../models/expense'
 import SecurityManager from '../../managers/securityManager'
+import NewExpenseForm from '../forms/newExpenseForm'
+import FirebaseStorage from '@firebaseStorage'
 
 const ViewTypes = {
   all: 'All',
@@ -28,8 +30,7 @@ const ViewTypes = {
 
 export default function ExpenseTracker() {
   const [expenseLog, setExpenseLog] = useState([])
-  // @ts-ignore
-  const { state, setState } = useContext(globalState)
+  const { state, setState, theme } = useContext(globalState)
   const { currentUser } = state
   const [currentExpense, setCurrentExpense] = useState(null)
   const [deleteConfirmTitle, setDeleteConfirmTitle] = useState('')
@@ -75,48 +76,25 @@ export default function ExpenseTracker() {
   }
 
   const deleteExpense = async (eventCount) => {
-    // DELETE IMAGE //todo
-    // TODO Delete Image
-    // const expenseContainer = el.currentTarget.closest('.content')
-    // const img = expenseContainer.querySelector('[data-img-id]')
-    // // Do not attempt to delete image if it is the placeholder
-    // if (img) {
-    //   if (img.style.display !== 'none') {
-    //     const imgId = img.dataset.imgId
-    //     FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, imgId)
-    //   }
-    // }
-    const whenDone = () => {
-      setTimeout(() => {
-        setState({ ...state, alertMessage: ``, showAlert: false, alertType: 'error' })
-      }, 1200)
+    if (currentExpense) {
+      await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser.id, currentExpense.imageName, currentExpense)
     }
     if (eventCount === 'single') {
       await DB.delete(DB.tables.expenseTracker, currentExpense.id).finally(async () => {
         setCurrentExpense(false)
         setConfirmMessage('')
-        await getExpensesFromDb().then((fromDb) => {
-          getSecuredExpenses(fromDb).finally(whenDone)
-        })
       })
     } else {
-      let existingExpenses = await DB.getTable(DB.tables.expenseTracker)
-      existingExpenses = expenseLog.filter((x) => x.name === currentExpense.name && x.repeating === true)
-      existingExpenses.forEach(async (expense) => {
+      let existingExpenses = expenseLog.filter((x) => x.name === currentExpense.name && x.repeating === true)
+      for (let expense of existingExpenses) {
         await DB.delete(DB.tables.expenseTracker, expense.id)
           .finally(async () => {
             setCurrentExpense(false)
             setDeleteConfirmTitle('')
             setState({ ...state, showAlert: true, alertMessage: `All ${currentExpense.name} expenses have been deleted`, alertType: 'success' })
-            await getExpensesFromDb()
-              .then((fromDb) => {
-                getSecuredExpenses(fromDb)
-                setViewType(ViewTypes.all)
-              })
-              .finally(whenDone)
           })
           .then((r) => r)
-      })
+      }
     }
   }
 
@@ -177,10 +155,6 @@ export default function ExpenseTracker() {
       await getSecuredExpenses().then((r) => r)
     })
     Manager.toggleForModalOrNewForm('show')
-
-    setTimeout(() => {
-      setState({ ...state, showMenuButton: true, showBackButton: false })
-    }, 500)
   }, [])
 
   useEffect(() => {
@@ -222,14 +196,6 @@ export default function ExpenseTracker() {
         />
       </>
 
-      {/* ADD NEW BUTTON */}
-      <AddNewButton
-        canClose={true}
-        onClick={() => {
-          setState({ ...state, currentScreen: ScreenNames.newExpense })
-        }}
-      />
-
       {/* EXPANDED IMAGE THEATER */}
       <ImageTheater
         showTheater={showImageTheater}
@@ -239,6 +205,9 @@ export default function ExpenseTracker() {
           setShowImageTheater(false)
         }}
       />
+
+      {/* NEW EXPENSE FORM */}
+      <NewExpenseForm />
 
       {/* PAYMENT OPTIONS */}
       <>
@@ -343,12 +312,9 @@ export default function ExpenseTracker() {
         )}
       </>
 
-      {/* SCREEN TITLE */}
-      <p className="screen-title ">Expense Tracker</p>
-
       {/* PAGE CONTAINER */}
-      <div id="expense-tracker" className={`${currentUser?.settings?.theme} page-container form`}>
-        <p className={`${currentUser?.settings?.theme}  text-screen-intro`}>
+      <div id="expense-tracker" className={`${theme} page-container form`}>
+        <p className={`${theme}  text-screen-intro`}>
           Add expenses to be paid by your coparent. If a new expense is created for you, you will have the opportunity to approve or reject it.
         </p>
         <p className="payment-options-link mb-20 mt-10" onClick={() => setShowPaymentOptionsCard(true)}>
@@ -369,7 +335,7 @@ export default function ExpenseTracker() {
                 elClass={'view-type'}
                 dataPhone={[]}
               />
-              <p className={`${currentUser?.settings?.theme} description`}>tap a field to edit - tap outside the field when you are done</p>
+              <p className={`${theme} description`}>tap a field to edit - tap outside the field when you are done</p>
             </>
           )}
         </>

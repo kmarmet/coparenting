@@ -26,6 +26,7 @@ export stringHasNumbers = (input) ->
   /\d/.test(input)
 
 export contains = (itemToCheck, searchValue) ->
+  if itemToCheck == undefined then return false
   itemToCheck.indexOf(searchValue) > -1
 
 export wordCount = (input) ->
@@ -58,6 +59,7 @@ export spaceBetweenWords = (input) ->
   input.toString().replace(/([a-z])([A-Z])/g, '$1 $2')
 
 export formatNameFirstNameOnly = (input)->
+  return input if !input
   returnString = input.toString()
   return returnString if !returnString  or returnString.length == 0
   returnString = returnString.split(' ')[0]

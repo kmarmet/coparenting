@@ -5,9 +5,9 @@ import DB from '@db'
 import '../prototypes'
 
 const DB_UserScoped = {
-  getCurrentUserRecords: (tableName, currentUser, objectName) => {
+  getCurrentUserRecords: (tableName, currentUser, theme, objectName) => {
     return new Promise((resolve, reject) => {
-      DB_UserScoped.getRecordsByUser(tableName, currentUser, objectName)
+      DB_UserScoped.getRecordsByUser(tableName, currentUser, theme, objectName)
         .then((currentUserRecord) => {
           if (!Array.isArray(currentUserRecord)) {
             currentUserRecord = DB.convertKeyObjectToArray(currentUserRecord)
@@ -27,9 +27,9 @@ const DB_UserScoped = {
         })
     })
   },
-  getAllUserRecords: (tableName, currentUser, objectName) => {
+  getAllUserRecords: (tableName, currentUser, theme, objectName) => {
     return new Promise((resolve, reject) => {
-      DB.getRecordsByUser(tableName, currentUser, objectName)
+      DB.getRecordsByUser(tableName, currentUser, theme, objectName)
         .then((currentUserRecord) => {
           if (!Array.isArray(currentUserRecord)) {
             currentUserRecord = DB.convertKeyObjectToArray(currentUserRecord)
@@ -49,7 +49,7 @@ const DB_UserScoped = {
         })
     })
   },
-  getPropFromUserRecord: (tableName, currentUser, propPath) =>
+  getPropFromUserRecord: (tableName, currentUser, theme, propPath) =>
     new Promise(async (resolve) => {
       const dbRef = ref(getDatabase())
       await get(child(dbRef, `${tableName}/${currentUser.phone}/${propPath}`)).then((snapshot) => {
@@ -76,7 +76,7 @@ const DB_UserScoped = {
 
     return user
   },
-  getUserImages: async (tableName, currentUser, objectName) => {
+  getUserImages: async (tableName, currentUser, theme, objectName) => {
     const dbRef = ref(getDatabase())
     let tableData = []
     await get(child(dbRef, `${tableName}/${currentUser.phone}/${objectName}`)).then((snapshot) => {
@@ -84,7 +84,7 @@ const DB_UserScoped = {
     })
     return tableData
   },
-  updateUserProp: async (currentUser, parentObjectName, prop, value) => {
+  updateUserProp: async (currentUser, theme, parentObjectName, prop, value) => {
     const database = getDatabase()
     let dbRef
     if (Manager.isValid(parentObjectName)) {
@@ -99,7 +99,7 @@ const DB_UserScoped = {
     const dbRef = ref(getDatabase())
     set(child(dbRef, `${DB.tables.users}/${phoneUid}/${propPath}`), value)
   },
-  getRecordsByUser: async (tableName, currentUser, objectName) => {
+  getRecordsByUser: async (tableName, currentUser, theme, objectName) => {
     return new Promise(async (resolve, reject) => {
       const dbRef = ref(getDatabase())
       await get(child(dbRef, `${tableName}/${currentUser.phone}/${objectName}`))
@@ -116,7 +116,7 @@ const DB_UserScoped = {
         })
     })
   },
-  getCoparentByPhone: async (coparentPhone, currentUser, getBioCoparent) => {
+  getCoparentByPhone: async (coparentPhone, currentUser, theme, getBioCoparent) => {
     return new Promise(async (resolve, reject) => {
       const dbRef = ref(getDatabase())
       await get(child(dbRef, `users`)).then((snapshot) => {
@@ -133,12 +133,22 @@ const DB_UserScoped = {
       })
     })
   },
-
   addMultipleExpenses: async (data) => {
     const dbRef = ref(getDatabase())
     const currentExpenses = await DB.getTable(DB.tables.expenseTracker)
     const toAdd = [...currentExpenses, [...data]].filter((x) => x !== undefined).flat()
     set(child(dbRef, `${DB.tables.expenseTracker}`), toAdd).catch((error) => {})
+  },
+  addUser: async (newUser) => {
+    const dbRef = ref(getDatabase())
+    const currentUsers = await DB.getTable(DB.tables.users)
+    const toAdd = [...currentUsers, [...newUser]].filter((x) => x !== undefined).flat()
+    set(child(dbRef, `${DB.tables.users}`), toAdd).catch((error) => {})
+  },
+  addCoparent: async (currentUser, newCoparent) => {
+    const updatedCoparents = [...currentUser.coparents, newCoparent]
+
+    await DB_UserScoped.updateUserRecord(currentUser.id, '/coparents', updatedCoparents)
   },
 }
 

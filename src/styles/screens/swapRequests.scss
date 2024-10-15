@@ -1,4 +1,4 @@
-@import '../mixins';
+    @import '../mixins';
 
 #swap-requests {
   /*#region  LIGHT THEME*/
@@ -332,40 +332,4 @@
     }
   }
   /*#endregion  DARK THEME*/
-
-  #duration-options {
-    padding: 0;
-    height: 45px;
-    display: flex;
-    gap: 20px;
-
-    .flex {
-      margin: 0;
-      height: 100%;
-      opacity: 0.6;
-      align-items: center;
-      justify-content: center;
-
-      p,
-      span {
-        text-align: center;
-        font-size: 18px;
-        font-weight: 200;
-      }
-
-      span {
-        margin-right: 5px;
-      }
-
-      &.active {
-        opacity: 1;
-
-        p,
-        span {
-          opacity: 1;
-          font-weight: bold;
-        }
-      }
-    }
-  }
 }

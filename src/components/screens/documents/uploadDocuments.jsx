@@ -85,7 +85,7 @@ export default function UploadDocuments() {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
       setShareWith(updated)
     })
   }
@@ -112,12 +112,12 @@ export default function UploadDocuments() {
       <p className="screen-title ">Upload Documents</p>
 
       {/* PAGE CONTAINER */}
-      <div id="upload-documents-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div id="upload-documents-container" className={`${theme} page-container form`}>
         <label>If uploading a document</label>
-        <p className={`${currentUser?.settings?.theme} text-screen-intro`}>
+        <p className={`${theme} text-screen-intro`}>
           Upload documents (.doc or .docx) , or images of documents you would like to save or share with a coparent.
         </p>
-        <p className={`${currentUser?.settings?.theme} text-screen-intro`}>
+        <p className={`${theme} text-screen-intro`}>
           The uploaded document <span className="accent">MUST</span> be of type <b>.docx</b>. If the document you are uploading is a different type is
           not .docx (.doc, .pdf, .txt, .etc) please click the link below to convert it to .docx for free.
         </p>

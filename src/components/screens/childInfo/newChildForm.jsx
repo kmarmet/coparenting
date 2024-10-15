@@ -61,7 +61,7 @@ const NewChildForm = () => {
   }
 
   const getExistingChildren = async () => {
-    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'children').then((children) => {
+    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'children').then((children) => {
       setExistingChildren(children)
     })
   }
@@ -83,7 +83,7 @@ const NewChildForm = () => {
   }, [])
 
   return (
-    <div {...handlers} id="new-child-container" className={`${currentUser?.settings?.theme} page-container form`}>
+    <div {...handlers} id="new-child-container" className={`${theme} page-container form`}>
       <div className="form new-child-form">
         <p className="screen-title pl-0">Add Child</p>
         {/* NAME */}

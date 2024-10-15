@@ -15,6 +15,7 @@ import NotificationManager from '@managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
 import SecurityManager from '../../managers/securityManager'
+import NewSwapRequest from '../forms/newSwapRequest'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -25,18 +26,12 @@ const Decisions = {
 export default function SwapRequests() {
   const { state, setState } = useContext(globalState)
   const [existingRequests, setExistingRequests] = useState([])
-  const { viewSwapRequestForm, currentUser } = state
+  const { currentUser, theme } = state
   const [rejectionReason, setRejectionReason] = useState('')
 
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getSwapRequests(currentUser).then((x) => x)
-
     setExistingRequests(allRequests)
-    setState({
-      ...state,
-      currentScreen: ScreenNames.swapRequests,
-      menuIsOpen: false,
-    })
   }
 
   const selectDecision = async (request, decision) => {
@@ -80,31 +75,23 @@ export default function SwapRequests() {
   }
 
   useEffect(() => {
-    getSecuredRequests().then((r) => r)
-    setTimeout(() => {
-      setState({
-        ...state,
-        currentScreen: ScreenNames.swapRequests,
-        menuIsOpen: false,
-        showBackButton: false,
-        showMenuButton: true,
-      })
-    }, 500)
+    const dbRef = ref(getDatabase())
+    onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
+      await getSecuredRequests().then((r) => r)
+    })
     Manager.toggleForModalOrNewForm('show')
   }, [])
 
   return (
     <>
-      <p className="screen-title ">Swap Requests</p>
-      <AddNewButton onClick={() => setState({ ...state, currentScreen: ScreenNames.newSwapRequest, showMenuButton: false })} />
-      <div id="swap-requests" className={`${currentUser?.settings?.theme} page-container`}>
+      <NewSwapRequest />
+      <div id="swap-requests" className={`${theme} page-container`}>
         <>
           <p className="text-screen-intro mb-15">
-            A Swap Request is a request for your child(ren) to stay with you during your coparent's scheduled time to have them.
+            A Swap Request is a request for your child(ren) to stay with you during your co-parent's scheduled time to have them.
           </p>
           {existingRequests.length === 0 && <p className="instructions center">There are currently no requests</p>}
         </>
-
         <div id="swap-requests-container">
           {Manager.isValid(existingRequests) &&
             existingRequests.map((request, index) => {

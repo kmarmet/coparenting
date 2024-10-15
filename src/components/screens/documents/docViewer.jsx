@@ -31,7 +31,7 @@ import DocumentsManager from '../../../managers/documentsManager'
 
 export default function DocViewer() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, previousScreen, currentScreen, docToView } = state
+  const { currentUser, theme, previousScreen, currentScreen, docToView } = state
   const [tocHeaders, setTocHeaders] = useState([])
   const [screenTitle, setScreenTitle] = useState('Document')
   const [showCard, setShowCard] = useState(false)
@@ -77,7 +77,7 @@ export default function DocViewer() {
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
 
     // Delete from Firebase Realtime DB
-    await DB.deleteImage(DB.tables.users, currentUser, record.id, 'documents')
+    await DB.deleteImage(DB.tables.users, currentUser, theme, record.id, 'documents')
       .then(() => {
         convertAndAppendDocOrImage()
       })
@@ -333,9 +333,9 @@ export default function DocViewer() {
       </p>
 
       {/* BOTTOM ACTIONS */}
-      <div className={`${currentUser?.settings?.theme} flex form`} id="bottom-actions">
+      <div className={`${theme} flex form`} id="bottom-actions">
         {showTocButton && Manager.isValid(document.querySelectorAll('.header'), true) && (
-          <div id="toc-button" className={`${currentUser?.settings?.theme}`} onClick={() => setShowCard(true)}>
+          <div id="toc-button" className={`${theme}`} onClick={() => setShowCard(true)}>
             Table of Contents <span className="pl-10 fs-20 material-icons-round">format_list_bulleted</span>
           </div>
         )}
@@ -404,7 +404,7 @@ export default function DocViewer() {
         </BottomCard>
       )}
 
-      <div id="documents-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div id="documents-container" className={`${theme} page-container form`}>
         <div id="text-container"></div>
       </div>
     </>

@@ -24,19 +24,6 @@ const DB = {
     const records = await DB.getTable(table)
     return records.filter(query)
   },
-  recordExists: async (tableName, record, identifier) =>
-    await new Promise(async (resolve) => {
-      const dbRef = ref(getDatabase())
-      await get(child(dbRef, tableName)).then((snapshot) => {
-        if (snapshot.exists()) {
-          snapshot.val().forEach((shot) => {
-            if (shot[identifier] === record[identifier]) {
-              resolve(true)
-            }
-          })
-        }
-      })
-    }),
   convertKeyObjectToArray: (keyObject) => {
     // console.log(keyObject)
     if (Manager.isValid(keyObject)) {
@@ -45,38 +32,7 @@ const DB = {
       return []
     }
   },
-  convertFirebaseObjectToObject: (firebaseObject) => {
-    return Object.entries(firebaseObject).flat()[1]
-  },
-  getFilteredRecords: async (records, currentUser) => {
-    let returnRecords = []
-    if (records && records !== undefined && records.length > 0) {
-      // Handle child records
-      if (Manager.isValid(currentUser.accountType) && currentUser.accountType === 'child') {
-        records.forEach((record, index) => {
-          // Filter by phone
-          record.shareWith.push(currentUser.phone)
-          const mergedPhoneArrays = Manager.getUniqueArray(record.shareWith).flat()
-          if (mergedPhoneArrays.includes(currentUser.phone) || record.phone === currentUser.phone) {
-            returnRecords.push(record)
-          }
-        })
-      }
-      // Handle parent records
-      else {
-        const coparentPhones = currentUser.coparents.map((x) => x.phone)
-        records.forEach((record, index) => {
-          // Filter by phone
-          const mergedPhoneArrays = Manager.getUniqueArray(coparentPhones.concat(record.shareWith)).flat()
-          if (mergedPhoneArrays.includes(currentUser.phone) || record.phone === currentUser.phone) {
-            returnRecords.push(record)
-          }
-        })
-      }
-    }
-    return returnRecords
-  },
-  getAllFilteredRecords: async (tableName, currentUser, objectName, type = 'by-phone') => {
+  getAllFilteredRecords: async (tableName, currentUser, theme, objectName, type = 'by-phone') => {
     const getRecords = new Promise(async (resolve, reject) => {
       const coparentPhones = currentUser.coparents.map((x) => x.phone)
 
@@ -104,7 +60,7 @@ const DB = {
         coparentRecords = await coparentsPromise
 
         // Current user Records
-        const currentUserRecords = Manager.convertToArray(await DB_UserScoped.getRecordsByUser(tableName, currentUser, objectName))
+        const currentUserRecords = Manager.convertToArray(await DB_UserScoped.getRecordsByUser(tableName, currentUser, theme, objectName))
         const allRecords = currentUserRecords.concat(coparentRecords).flat()
         resolve(allRecords)
       }
@@ -191,7 +147,7 @@ const DB = {
       resolve('')
       await set(child(dbRef, tableName), tableData)
     }),
-  addToUserMemories: async (currentUser, objectName, value, id) => {
+  addToUserMemories: async (currentUser, theme, objectName, value, id) => {
     const dbRef = ref(getDatabase())
     let tableRecords = await DB.getTable(DB.tables.users)
     tableRecords = DB.convertKeyObjectToArray(tableRecords)
@@ -209,7 +165,7 @@ const DB = {
       return toUpdate[objectName]
     }
   },
-  addProfilePicToChildRecord: async (currentUser, objectName, value, id) => {
+  addProfilePicToChildRecord: async (currentUser, theme, objectName, value, id) => {
     const dbRef = ref(getDatabase())
     let basePath = `${DB.tables.users}/${currentUser.phone}/children`
     await get(child(dbRef, basePath)).then(async (snapshot) => {
@@ -283,6 +239,11 @@ const DB = {
     const key = await DB.getSnapshotKey(tableName, memory, 'id')
     remove(child(dbRef, `${DB.tables.memories}/${toDeleteId}/`))
   },
+  deleteMemory: async (phoneUid, memory) => {
+    const dbRef = ref(getDatabase())
+    const key = await DB.getSnapshotKey(DB.tables.memories, memory, 'id')
+    remove(child(dbRef, `${DB.tables.memories}/${key}`))
+  },
   getTable: async (tableName) => {
     const dbRef = ref(getDatabase())
     let tableData = []
@@ -318,7 +279,7 @@ const DB = {
     update(ref(dbRef, path), newRecord)
     // update((ref(dbRef, tableName), { newRecord }))
   },
-  deleteChildInfoProp: async (tableName, currentUser, prop, parentObjectName, selectedChild) => {
+  deleteChildInfoProp: async (tableName, currentUser, theme, prop, parentObjectName, selectedChild) => {
     const dbRef = ref(getDatabase())
     let removalKey
     await get(child(dbRef, `${tableName}/${currentUser.phone}/children/`)).then((snapshot) => {
@@ -333,7 +294,7 @@ const DB = {
       remove(child(dbRef, `${tableName}/${currentUser.phone}/children/${removalKey}/${parentObjectName}/${prop}`))
     })
   },
-  deleteCoparentInfoProp: async (tableName, currentUser, prop, selectedCoparent) => {
+  deleteCoparentInfoProp: async (tableName, currentUser, theme, prop, selectedCoparent) => {
     const dbRef = ref(getDatabase())
     let removalKey
     await get(child(dbRef, `${tableName}/${currentUser.phone}/coparents/`)).then((snapshot) => {
@@ -348,7 +309,7 @@ const DB = {
       remove(child(dbRef, `${tableName}/${currentUser.phone}/coparents/${removalKey}/${prop}`))
     })
   },
-  updatePhoneOrEmail: async (currentUser, prop, valueObject) => {
+  updatePhoneOrEmail: async (currentUser, theme, prop, valueObject) => {
     const { phone, email } = valueObject
     const dbRef = ref(getDatabase())
 
@@ -484,7 +445,7 @@ const DB = {
     })
 
     // Update user phone
-    await DB_UserScoped.updateUserRecord(currentUser, 'phone', phone)
+    await DB_UserScoped.updateUserRecord(currentUser, theme, 'phone', phone)
   },
 }
 

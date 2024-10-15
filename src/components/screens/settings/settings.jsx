@@ -18,7 +18,7 @@ import DateFormats from '../../../constants/dateFormats'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme } = state
   const [defaultReminderTimes, setDefaultReminderTimes] = useState([])
   const [menuItemsList, setMenuItemsList] = useState([])
   const [shortcutsToSendToDb, setShortcutsToSendToDb] = useState([])
@@ -91,7 +91,7 @@ export default function Settings() {
   return (
     <>
       <p className="screen-title ">Settings</p>
-      <div id="settings-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div id="settings-container" className={`${theme} page-container form`}>
         {/* CALENDAR SETTINGS */}
         <div className="calendar-settings mb-10 form">
           <Accordion className=" w-100">
@@ -105,19 +105,11 @@ export default function Settings() {
                 <div className="input-container">
                   {/* MORNING SUMMARY */}
                   <label>Morning Summary Hour</label>
-                  <MobileTimePicker
-                    className={`${currentUser?.settings?.theme} mt-0 w-100`}
-                    views={['hours']}
-                    onAccept={(e) => setMorningSummaryTime(e)}
-                  />
+                  <MobileTimePicker className={`${theme} mt-0 w-100`} views={['hours']} onAccept={(e) => setMorningSummaryTime(e)} />
                   {/* EVENING SUMMARY */}
                   <div className="input-container">
                     <label>Evening Summary Hour</label>
-                    <MobileTimePicker
-                      className={`${currentUser?.settings?.theme} mt-0 w-100`}
-                      views={['hours']}
-                      onAccept={(e) => setEveningSummaryTime(e)}
-                    />
+                    <MobileTimePicker className={`${theme} mt-0 w-100`} views={['hours']} onAccept={(e) => setEveningSummaryTime(e)} />
                   </div>
                 </div>
               </div>

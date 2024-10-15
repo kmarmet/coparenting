@@ -2,11 +2,28 @@ import React, { useState, useEffect, useContext } from 'react'
 import globalState from '../../context'
 import Manager from '@manager'
 import { useSwipeable } from 'react-swipeable'
-
-function ImageTheater({ onOpen, showTheater = false, imgArray, title, subtitle = '', defaultImageIndex, className = '', onClose }) {
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension,
+} from '../../globalFunctions'
+import manager from '@manager'
+function ImageTheater({ onOpen, showTheater = false, imgArray, title, subtitle = '', defaultImageIndex = 0, className = '', onClose }) {
   const [popupImageIndex, setPopupImageIndex] = useState(defaultImageIndex)
-  const [imgHeight, setImgHeight] = useState(0)
   const allImages = document.querySelectorAll('.image-wrapper')
+
+  console.log(imgArray)
 
   const handlers = useSwipeable({
     onSwipedLeft: (eventData) => {
@@ -18,7 +35,7 @@ function ImageTheater({ onOpen, showTheater = false, imgArray, title, subtitle =
   })
 
   useEffect(() => {
-    if (!className.toString().contains('active')) {
+    if (contains(className.toString(), 'active')) {
       Manager.toggleForModalOrNewForm('show')
     } else {
       Manager.toggleForModalOrNewForm('hide')
@@ -30,6 +47,18 @@ function ImageTheater({ onOpen, showTheater = false, imgArray, title, subtitle =
       onOpen()
     }
   }, [])
+
+  useEffect(() => {
+    const allImages = document.querySelectorAll('.theater-image')
+    if (Manager.isValid(allImages, true)) {
+      allImages.forEach((img) => img.classList.remove('active'))
+      const nextImage = allImages[popupImageIndex]
+
+      if (nextImage) {
+        nextImage.classList.add('active')
+      }
+    }
+  }, [popupImageIndex])
 
   useEffect(() => {
     setPopupImageIndex(defaultImageIndex)
@@ -56,7 +85,7 @@ function ImageTheater({ onOpen, showTheater = false, imgArray, title, subtitle =
           imgArray.map((image, index) => {
             return (
               <div {...handlers} key={index} className={popupImageIndex === index ? 'active image-wrapper' : 'image-wrapper'}>
-                <img data-img-index={popupImageIndex} src={image.url} />
+                <img data-img-index={popupImageIndex} className={'theater-image'} src={image.url} />
               </div>
             )
           })}

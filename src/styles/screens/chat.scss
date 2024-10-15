@@ -62,7 +62,6 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      background: $purple;
       color: white;
       font-weight: bold !important;
       text-transform: uppercase;
@@ -87,7 +86,6 @@
     }
 
     .thread-item {
-      @include lineItem;
       color: $blue;
       justify-content: space-between;
       width: 100vw;

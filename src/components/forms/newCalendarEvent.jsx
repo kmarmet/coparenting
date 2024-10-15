@@ -34,7 +34,7 @@ import '../../styles/reactToggle.css'
 export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventForm }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, selectedNewEventDay, formToShow } = state
+  const { currentUser, theme, selectedNewEventDay, formToShow } = state
 
   // COMPONENT STATE
   const [eventFromDate, setEventFromDate] = useState('')
@@ -98,6 +98,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
     setTitleSuggestions([])
     setShowCloneInput(false)
     setShowReminders(false)
+    setState({ ...state, formToShow: '' })
   }
 
   const submit = async () => {
@@ -265,7 +266,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
       setShareWith(updated)
       removeError('share-with')
     })
@@ -405,15 +406,9 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   }, [shareWith.length, eventTitle.length, eventFromDate.length, eventFromDate])
 
   useEffect(() => {
-    // setState({
-    //   ...state,
-    //   currentScreen: ScreenNames.newCalendarEvent,
-    //   previousScreen: ScreenNames.calendar,
-    //   showMenuButton: false,
-    //   showBackButton: true,
-    // })
     Manager.toggleForModalOrNewForm('show')
     setDatetimeValue()
+    console.log(formToShow)
   }, [])
 
   return (
@@ -421,12 +416,12 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
       {/* BUTTONS */}
       {showSubmitButton && <BottomButton onClick={submit} elClass={'single visible active'} />}
       <BottomCard
-        className={`${currentUser?.settings?.theme} new-event-form `}
+        className={`${theme} new-event-form `}
         onClose={() => {}}
         showCard={formToShow === ScreenNames.newCalendarEvent}
         error={error}
         title={'Add New Event'}>
-        <div {...handlers} id="calendar-event-form-container" {...handlers} className={`form ${currentUser?.settings?.theme}`}>
+        <div {...handlers} id="calendar-event-form-container" {...handlers} className={`form ${theme}`}>
           {/* Event Length */}
           <div className="action-pills calendar-event">
             <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
@@ -484,7 +479,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
                   </label>
                   <MobileDatePicker
                     defaultValue={moment(selectedNewEventDay)}
-                    className={`${currentUser?.settings?.theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
+                    className={`${theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
                     onAccept={(e) => {
                       removeError('date')
                       setEventFromDate(e)
@@ -506,7 +501,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
                 id="event-date"
                 placement="auto"
                 character=" to "
-                className={`${currentUser?.settings?.theme} mb-15`}
+                className={`${theme} mb-15`}
                 format={'MM/dd/yyyy'}
                 onChange={(e) => {
                   let formattedDates = []
@@ -527,11 +522,11 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
             <div className={'flex gap mb-15'}>
               <div>
                 <label>Start time</label>
-                <MobileTimePicker minutesStep={5} className={`${currentUser?.settings?.theme} m-0`} onAccept={(e) => setEventStartTime(e)} />
+                <MobileTimePicker minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventStartTime(e)} />
               </div>
               <div>
                 <label>End time</label>
-                <MobileTimePicker minutesStep={5} className={`${currentUser?.settings?.theme} m-0`} onAccept={(e) => setEventEndTime(e)} />
+                <MobileTimePicker minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventEndTime(e)} />
               </div>
             </div>
           )}
@@ -557,7 +552,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
                 <span className="asterisk">*</span>
               </label>
               <CheckboxGroup
-                elClass={`${currentUser?.settings?.theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
+                elClass={`${theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
                 dataPhone={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)}
                 labels={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
                 onCheck={handleShareWithSelection}
@@ -583,7 +578,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
                 <Accordion>
                   <Accordion.Panel expanded={showReminders}>
                     <CheckboxGroup
-                      elClass={`${currentUser?.settings?.theme} `}
+                      elClass={`${theme} `}
                       boxWidth={50}
                       skipNameFormatting={true}
                       dataPhone={
@@ -615,7 +610,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
               <Accordion>
                 <Accordion.Panel expanded={remindCoparents}>
                   <CheckboxGroup
-                    elClass={`${currentUser?.settings?.theme} `}
+                    elClass={`${theme} `}
                     dataPhone={
                       currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
                     }
@@ -643,11 +638,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
               </div>
               <Accordion>
                 <Accordion.Panel expanded={includeChildren}>
-                  <CheckboxGroup
-                    elClass={`${currentUser?.settings?.theme} `}
-                    labels={currentUser.children.map((x) => x['general'].name)}
-                    onCheck={handleChildSelection}
-                  />
+                  <CheckboxGroup elClass={`${theme} `} labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
                 </Accordion.Panel>
               </Accordion>
             </div>
@@ -672,7 +663,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
                 <Accordion>
                   <Accordion.Panel expanded={repeating}>
                     <CheckboxGroup
-                      elClass={`${currentUser?.settings?.theme} `}
+                      elClass={`${theme} `}
                       boxWidth={35}
                       onCheck={handleRepeatingSelection}
                       labels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
@@ -693,16 +684,14 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
 
               {/* CLONED */}
               <div className="mt-15">
-                <button
-                  className={`${currentUser?.settings?.theme} default center add-clone-button mt-20 mb-15`}
-                  onClick={() => setShowCloneInput(true)}>
+                <button className={`${theme} default center add-clone-button mt-20 mb-15`} onClick={() => setShowCloneInput(true)}>
                   Copy Event to Other Dates
                 </button>
                 {showCloneInput && (
                   <div>
                     <label>Select Dates</label>
                     <MultiDatePicker
-                      className={`${currentUser?.settings?.theme} multidate-picker mb-15`}
+                      className={`${theme} multidate-picker mb-15`}
                       placeholder=""
                       placement="auto"
                       label=""
@@ -745,9 +734,16 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
           <label>Notes</label>
           <textarea onChange={(e) => setNotes(e.target.value)}></textarea>
 
-          <button className="button card-button" onClick={submit}>
-            Create Event <span className="material-icons-round ml-10 fs-22">event_available</span>
-          </button>
+          <div className="buttons gap">
+            {/*{showSubmitButton && (*/}
+            <button className="button card-button" onClick={submit}>
+              Create Event <span className="material-icons-round ml-10 fs-22">event_available</span>
+            </button>
+            {/*)}*/}
+            <button className="button card-button red" onClick={resetForm}>
+              Cancel
+            </button>
+          </div>
         </div>
       </BottomCard>
     </>

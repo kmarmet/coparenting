@@ -25,13 +25,13 @@ import {
 function ChildSelector() {
   // @ts-ignore
   const { state, setState } = useContext(globalState)
-  const { currentUser, selectedChild } = state
+  const { currentUser, theme, selectedChild } = state
   const [showPopup, setShowPopup] = useState(true)
   const [children, setChildren] = useState([])
   const [expandAccordion, setExpandAccordion] = useState(false)
 
   const getChildren = async () => {
-    const _children = await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'children')
+    const _children = await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'children')
     setChildren(_children)
   }
 

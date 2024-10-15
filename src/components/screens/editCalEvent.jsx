@@ -43,7 +43,7 @@ import SecurityManager from '../../managers/securityManager'
 
 export default function EditCalEvent() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, calEventToEdit, formToShow } = state
+  const { currentUser, theme, calEventToEdit, formToShow } = state
 
   // Event Details
   const [eventFromDate, setEventFromDate] = useState(calEventToEdit.fromDate)
@@ -217,7 +217,7 @@ export default function EditCalEvent() {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, eventShareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, theme, eventShareWith).then((updated) => {
       setEventShareWith(updated)
     })
   }
@@ -322,12 +322,12 @@ export default function EditCalEvent() {
 
   return (
     <BottomCard
-      className={`${currentUser?.settings?.theme} edit-event-form`}
+      className={`${theme} edit-event-form`}
       onClose={() => {}}
       showCard={formToShow === ScreenNames.editCalendarEvent}
       error={error}
       title={`Edit ${calEventToEdit.title}`}>
-      <div {...handlers} id="edit-cal-event-container" className={`${currentUser?.settings?.theme} form`}>
+      <div {...handlers} id="edit-cal-event-container" className={`${theme} form`}>
         <CardConfirm
           className={confirmTitle.length > 0 ? 'active' : ''}
           title={confirmTitle}
@@ -369,7 +369,7 @@ export default function EditCalEvent() {
                   </label>
                   <MobileDatePicker
                     defaultValue={moment(calEventToEdit.fromDate)}
-                    className={`${currentUser?.settings?.theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
+                    className={`${theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
                     onAccept={(e) => {
                       removeError('date')
                       setEventFromDate(e)
@@ -392,7 +392,7 @@ export default function EditCalEvent() {
                     id="event-date"
                     placement="auto"
                     character=" to "
-                    className={`${currentUser?.settings?.theme} event-date-range m-0 w-100`}
+                    className={`${theme} event-date-range m-0 w-100`}
                     format={'MM/dd/yyyy'}
                     onChange={(e) => {
                       let formattedDates = []
@@ -414,7 +414,7 @@ export default function EditCalEvent() {
               <div>
                 <label>Start time</label>
                 <MobileTimePicker
-                  className={`${currentUser?.settings?.theme} event-date-range m-0 w-100`}
+                  className={`${theme} event-date-range m-0 w-100`}
                   onAccept={(e) => setEventStartTime(e)}
                   minutesStep={5}
                   defaultValue={DateManager.dateIsValid(calEventToEdit.startTime) ? moment(calEventToEdit?.startTime, DateFormats.timeForDb) : null}
@@ -423,7 +423,7 @@ export default function EditCalEvent() {
               <div>
                 <label>End time</label>
                 <MobileTimePicker
-                  className={`${currentUser?.settings?.theme} event-date-range m-0 w-100`}
+                  className={`${theme} event-date-range m-0 w-100`}
                   minutesStep={5}
                   onAccept={(e) => setEventEndTime(e)}
                   defaultValue={DateManager.dateIsValid(calEventToEdit.endTime) ? moment(calEventToEdit?.endTime, DateFormats.timeForDb) : null}
@@ -453,7 +453,7 @@ export default function EditCalEvent() {
                 <span className="asterisk">*</span>
               </label>
               <CheckboxGroup
-                elClass={`${currentUser?.settings?.theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
+                elClass={`${theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
                 dataPhone={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)}
                 labels={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
                 onCheck={handleShareWithSelection}
@@ -479,7 +479,7 @@ export default function EditCalEvent() {
                 <Accordion>
                   <Accordion.Panel expanded={showReminders}>
                     <CheckboxGroup
-                      elClass={`${currentUser?.settings?.theme} `}
+                      elClass={`${theme} `}
                       boxWidth={50}
                       skipNameFormatting={true}
                       dataPhone={
@@ -511,7 +511,7 @@ export default function EditCalEvent() {
               <Accordion>
                 <Accordion.Panel expanded={remindCoparents}>
                   <CheckboxGroup
-                    elClass={`${currentUser?.settings?.theme} `}
+                    elClass={`${theme} `}
                     dataPhone={
                       currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
                     }
@@ -539,11 +539,7 @@ export default function EditCalEvent() {
               </div>
               <Accordion>
                 <Accordion.Panel expanded={includeChildren}>
-                  <CheckboxGroup
-                    elClass={`${currentUser?.settings?.theme} `}
-                    labels={currentUser.children.map((x) => x['general'].name)}
-                    onCheck={handleChildSelection}
-                  />
+                  <CheckboxGroup elClass={`${theme} `} labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
                 </Accordion.Panel>
               </Accordion>
             </div>

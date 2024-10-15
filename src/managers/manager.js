@@ -172,6 +172,20 @@ const Manager = {
 
     return object
   },
+  resetForm: () => {
+    const inputs = document.querySelectorAll('input')
+    if (Manager.isValid(inputs, true)) {
+      inputs.forEach((input) => {
+        input.value = ''
+        input.checked = false
+      })
+    }
+
+    const checkboxes = document.querySelectorAll('.box')
+    if (Manager.isValid(checkboxes, true)) {
+      document.querySelectorAll('.box').forEach((box) => box.classList.remove('active'))
+    }
+  },
   getDirectionsLink: (address) => {
     let directionsLink
     if (
@@ -229,7 +243,7 @@ const Manager = {
       if (checkCallback) checkCallback(label)
     }
   },
-  handleShareWithSelection: async (e, currentUser, shareWith) => {
+  handleShareWithSelection: async (e, currentUser, theme, shareWith) => {
     let returnValue = []
     const clickedEl = e.currentTarget
     const checkbox = clickedEl.querySelector('.share-with-container .box')

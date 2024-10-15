@@ -12,7 +12,7 @@ const defaultShortcuts = ['Calendar', 'Chats', 'Child Info', 'Memories']
 
 function ShortcutMenu() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, showShortcutMenu, menuIsOpen, currentScreen } = state
+  const { currentUser, theme, showShortcutMenu, menuIsOpen, currentScreen } = state
   const [firstHalfShortcutsFromDB, setFirstHalfShortcutsFromDB] = useState([])
   const [secondHalfShortcutsFromDB, setSecondHalfShortcutsFromDB] = useState([])
 
@@ -78,7 +78,7 @@ function ShortcutMenu() {
   }
 
   const setShortcuts = async () => {
-    let shortcuts = await DB_UserScoped.getRecordsByUser(DB.tables.users, currentUser, 'settings/shortcuts')
+    let shortcuts = await DB_UserScoped.getRecordsByUser(DB.tables.users, currentUser, theme, 'settings/shortcuts')
 
     if (shortcuts.length === 0) {
       shortcuts = createShortcutArray(defaultShortcuts)
@@ -110,7 +110,7 @@ function ShortcutMenu() {
 
   return (
     <div>
-      <div id="shortcuts" className={`${currentUser?.settings?.theme}`}>
+      <div id="shortcuts" className={`${theme}`}>
         {!menuIsOpen && (
           <div id="shortcut-menu-container">
             {/* SKY */}

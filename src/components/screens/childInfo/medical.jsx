@@ -8,12 +8,12 @@ import { child, getDatabase, onValue, ref, set, get } from 'firebase/database'
 
 function Medical() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, selectedChild } = state
+  const { currentUser, theme, selectedChild } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [medicalValues, setMedicalValues] = useState([])
 
   const deleteProp = async (prop) => {
-    await DB.deleteChildInfoProp(DB.tables.users, currentUser, prop, 'medical', selectedChild)
+    await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'medical', selectedChild)
     setSelectedChild()
   }
 

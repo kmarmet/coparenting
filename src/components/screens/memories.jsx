@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import DB from '@db'
 import FirebaseStorage from '@firebaseStorage'
 import ImageManager from '@managers/imageManager'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
 import Manager from '@manager'
 import AddNewButton from '@shared/addNewButton'
 import ScreenNames from 'constants/screenNames'
@@ -11,16 +12,18 @@ import ImageTheater from '../shared/imageTheater'
 import Memory from '../../models/memory'
 import manager from '@manager'
 import SecurityManager from '../../managers/securityManager'
+import NewMemoryForm from '../forms/newMemoryForm'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme, formToShow } = state
   const [memories, setMemories] = useState([])
   const [showImageTheater, setShowImageTheater] = useState(false)
   const [imgArray, setImgArray] = useState([])
   const [defaultTheaterIndex, setDefaultTheaterIndex] = useState(0)
   const inputFile = useRef(null)
   const [showFyiAccordion, setShowFyiAccordion] = useState(false)
+  const dbRef = ref(getDatabase())
 
   const expandImage = (e) => {
     const allImages = Array.from(document.querySelectorAll('.img-container .img-content-container'))
@@ -36,8 +39,8 @@ export default function Memories() {
     setShowImageTheater(true)
   }
 
-  const getImages = async () => {
-    setState({ ...state, isLoading: true })
+  const getSecuredMemories = async () => {
+    setState({ ...state, isLoading: true, formToShow: '' })
     let all = await SecurityManager.getMemories(currentUser)
     if (Manager.isValid(all, true)) {
       const resolvedImages = async () =>
@@ -67,12 +70,14 @@ export default function Memories() {
           let arr = []
           validImages.forEach((img) => {
             if (img) {
+              const imageName = FirebaseStorage.getImageNameFromUrl(img.url)
               const newMemory = new Memory()
               newMemory.id = img.id
               newMemory.notes = img.notes || ''
               newMemory.url = img.url
               newMemory.title = img.title || ''
               newMemory.createdBy = currentUser.phone
+              newMemory.memoryName = imageName
               arr.push(newMemory)
             }
           })
@@ -82,11 +87,9 @@ export default function Memories() {
           setTimeout(() => {
             addImageAnimation()
           }, 200)
-          Manager.toggleForModalOrNewForm('show')
         } else {
           setMemories([])
           setState({ ...state, isLoading: false })
-          Manager.toggleForModalOrNewForm('show')
         }
       }
     } else {
@@ -95,12 +98,11 @@ export default function Memories() {
     }
   }
 
-  const deleteMemory = async (path, record) => {
+  const deleteMemory = async (path, toDelete) => {
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
 
     // Delete from Firebase Realtime DB
-    await DB.deleteImage(DB.tables.memories, record).then(async () => {
-      getImages().then((r) => r)
+    await DB.deleteMemory(DB.tables.memories, toDelete).then(async () => {
       // Delete from Firebase Storage
       await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser.id, imageName)
     })
@@ -115,15 +117,12 @@ export default function Memories() {
   }
 
   useEffect(() => {
-    getImages().then((r) => r)
+    onValue(child(dbRef, DB.tables.memories), async (snapshot) => {
+      setState({ ...state, formToShow: '' })
+      await getSecuredMemories(currentUser)
+    })
     Manager.toggleForModalOrNewForm()
-    setTimeout(() => {
-      setState({ ...state, showMenuButton: true, showBackButton: false })
-    }, 500)
   }, [])
-  useEffect(() => {
-    console.log(showImageTheater)
-  }, [showImageTheater])
 
   return (
     <>
@@ -134,15 +133,12 @@ export default function Memories() {
         className={showImageTheater ? 'active' : ''}
         onClose={() => setShowImageTheater(false)}></ImageTheater>
 
-      {/* SCREEN TITLE */}
-      <p className="screen-title ">Memories</p>
-
-      {/* ADD NEW BUTTON */}
-      <AddNewButton icon="add_photo_alternate" onClick={() => setState({ ...state, currentScreen: ScreenNames.newMemory })} />
+      {/* NEW MEMORY FORM */}
+      <NewMemoryForm />
 
       {/* PAGE CONTAINER */}
-      <div id="memories-container" className={`${currentUser?.settings?.theme} page-container`}>
-        <p id="happy-subtitle" className={`${currentUser?.settings?.theme} mb-10 text-screen-intro`}>
+      <div id="memories-container" className={`${theme} page-container`}>
+        <p id="happy-subtitle" className={`${theme} mb-10 text-screen-intro`}>
           Upload photos of memories that are too good NOT to share <span className="material-icons heart">favorite</span>
         </p>
 

@@ -13,11 +13,11 @@ import ScreenNames from '@screenNames'
 
 function General() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, selectedChild } = state
+  const { currentUser, theme, selectedChild } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [generalValues, setGeneralValues] = useState([])
 
-  const deleteProp = async (prop) => await DB.deleteChildInfoProp(DB.tables.users, currentUser, prop, 'general', selectedChild)
+  const deleteProp = async (prop) => await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'general', selectedChild)
 
   const setSelectedChild = () => {
     if (Manager.isValid(selectedChild.general, false, true)) {

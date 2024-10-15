@@ -8,7 +8,7 @@ import moment from 'moment'
 import ScreenNames from '@screenNames'
 import { getDatabase, ref, set, get, child, onValue } from 'firebase/database'
 import SmsManager from '@managers/smsManager.js'
-import NewChildTransferChangeRequest from '../forms/newChildTransferChange.jsx'
+import NewChildTransferChangeRequest from '../forms/newTransferRequest.jsx'
 import AddNewButton from '@shared/addNewButton.jsx'
 import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
@@ -19,7 +19,7 @@ import SecurityManager from '../../managers/securityManager'
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
   const [existingRequests, setExistingRequests] = useState([])
-  const { viewTransferRequestForm, currentUser } = state
+  const { viewTransferRequestForm, currentUser, theme } = state
   const [rejectionReason, setRejectionReason] = useState('')
   const [recipients, setRecipients] = useState([])
 
@@ -70,7 +70,7 @@ export default function TransferRequests() {
   useEffect(() => {
     const dbRef = ref(getDatabase())
 
-    onValue(child(dbRef, DB.tables.transferChange), async (snapshot) => {
+    onValue(child(dbRef, DB.tables.transferChangeRequests), async (snapshot) => {
       const tableData = snapshot.val()
       getSecuredRequests().then((r) => r)
     })
@@ -92,7 +92,7 @@ export default function TransferRequests() {
     <>
       <p className="screen-title ">Transfer Change</p>
       <AddNewButton canClose={true} onClick={() => setState({ ...state, currentScreen: ScreenNames.newTransferRequest })} />
-      <div id="transfer-requests-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div id="transfer-requests-container" className={`${theme} page-container form`}>
         {!viewTransferRequestForm && (
           <>
             <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>

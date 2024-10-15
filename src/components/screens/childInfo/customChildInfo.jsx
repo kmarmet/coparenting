@@ -34,7 +34,7 @@ export default function CustomChildInfo({ selectedChild, showCard, onClose }) {
         onClose()
       }
     } else {
-      const children = await DB_UserScoped.getRecordsByUser(DB.tables.users, currentUser, 'children')
+      const children = await DB_UserScoped.getRecordsByUser(DB.tables.users, currentUser, theme, 'children')
       let key = null
       children.forEach((child, index) => {
         if (child.general.name === selectedChild.general.name) {

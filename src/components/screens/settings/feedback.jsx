@@ -8,7 +8,7 @@ import EmailManager from 'managers/emailManager'
 
 function Feedback() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, currentScreenTitle, theme, setTheme } = state
+  const { currentUser, theme, currentScreenTitle, setTheme } = state
   const [feedback, setFeedback] = useState('')
 
   const handlers = useSwipeable({
@@ -33,15 +33,12 @@ function Feedback() {
   useEffect(() => {
     setState({ ...state, previousScreen: ScreenNames.settings, showMenuButton: false, showBackButton: true })
     Manager.toggleForModalOrNewForm()
-    setTimeout(() => {
-      document.querySelector('.page-container').classList.add('active')
-    }, 100)
   }, [])
 
   return (
     <>
       <p className="screen-title ">App Feedback</p>
-      <div {...handlers} id="feature-request-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div {...handlers} id="feature-request-container" className={`${theme} page-container form`}>
         <div className="form">
           <label>
             Your Feedback <span className="asterisk">*</span>

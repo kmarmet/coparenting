@@ -14,9 +14,9 @@ export default function CheckboxGroup({
   boxWidth,
 }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { theme } = state
   return (
-    <div id="checkbox-group" className={`${currentUser?.settings?.theme} ${elClass}`}>
+    <div id="checkbox-group" className={`${theme} ${elClass}`}>
       {Manager.isValid(labels, true) &&
         labels.map((label, index) => {
           let thisPhone = null

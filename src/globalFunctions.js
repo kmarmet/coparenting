@@ -40,6 +40,9 @@ export var stringHasNumbers = function(input) {
 };
 
 export var contains = function(itemToCheck, searchValue) {
+  if (itemToCheck === void 0) {
+    return false;
+  }
   return itemToCheck.indexOf(searchValue) > -1;
 };
 
@@ -89,6 +92,9 @@ export var spaceBetweenWords = function(input) {
 
 export var formatNameFirstNameOnly = function(input) {
   var returnString;
+  if (!input) {
+    return input;
+  }
   returnString = input.toString();
   if (!returnString || returnString.length === 0) {
     return returnString;

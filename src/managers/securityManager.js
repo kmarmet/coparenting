@@ -30,9 +30,11 @@ SecurityManager = {
     for (i = 0, len = allEvents.length; i < len; i++) {
       event = allEvents[i];
       shareWith = event.shareWith;
-      if (Manager.isValid(shareWith, true)) {
-        if (shareWith.includes(currentUser.phone) || event.phone === currentUser.phone) {
-          returnRecords.push(event);
+      if (Manager.isValid(event.fromDate) && event.fromDate.length > 0) {
+        if (Manager.isValid(shareWith, true)) {
+          if (shareWith.includes(currentUser.phone) || event.phone === currentUser.phone) {
+            returnRecords.push(event);
+          }
         }
       }
     }

@@ -305,7 +305,7 @@ export default function CoparentingSpace() {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
       setShareWith(updated)
     })
   }
@@ -442,7 +442,7 @@ export default function CoparentingSpace() {
       <p className="screen-title">Coparenting Space</p>
 
       {/* PAGE CONTAINER */}
-      <div id="coparenting-setup-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div id="coparenting-setup-container" className={`${theme} page-container form`}>
         {/* SECTIONS */}
         <div className="sections">
           {/* VISITATION SCHEDULE */}
@@ -588,7 +588,7 @@ export default function CoparentingSpace() {
               {scheduleType === scheduleTypes.everyOtherWeekend && (
                 <>
                   <label>Friday of the next weekend you have your child(ren)</label>
-                  <MobileDatePicker onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${currentUser?.settings?.theme} w-100 mt-0`} />
+                  <MobileDatePicker onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100 mt-0`} />
                 </>
               )}
 
@@ -637,7 +637,7 @@ export default function CoparentingSpace() {
               types: ['geocode', 'establishment'],
               componentRestrictions: { country: 'usa' },
             }}
-            className={`${currentUser?.settings?.theme} mb-15`}
+            className={`${theme} mb-15`}
             onPlaceSelected={(place) => {
               updatePreferredLocation(
                 place.formatted_address,

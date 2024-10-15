@@ -29,7 +29,7 @@ import {
 export default function ChildInfo() {
   // @ts-ignore
   const { state, setState } = useContext(globalState)
-  const { currentUser, selectedChild } = state
+  const { currentUser, theme, selectedChild } = state
   const [showCard, setShowCard] = useState(false)
   const imgRef = useRef()
 
@@ -60,6 +60,10 @@ export default function ChildInfo() {
   }
 
   useEffect(() => {
+    const defaultChild = currentUser.children[0]
+    if (!Manager.isValid(selectedChild)) {
+      setState({ ...state, selectedChild: defaultChild })
+    }
     Manager.toggleForModalOrNewForm('show')
   }, [])
 
@@ -72,7 +76,7 @@ export default function ChildInfo() {
       <AddNewButton onClick={() => setState({ ...state, currentScreen: ScreenNames.newChild, showMenuButton: false })} />
 
       {/* PAGE CONTAINER */}
-      <div id="child-info-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div id="child-info-container" className={`${theme} page-container form`}>
         {/* PROFILE PICS */}
         <div id="children-container" className="mb-10">
           <>

@@ -24,9 +24,10 @@ SecurityManager =
     allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents)).flat()
     for event in allEvents
       shareWith = event.shareWith
-      if Manager.isValid(shareWith, true)
-        if shareWith.includes(currentUser.phone) or event.phone == currentUser.phone
-          returnRecords.push(event)
+      if Manager.isValid(event.fromDate) and event.fromDate.length > 0
+        if Manager.isValid(shareWith, true)
+          if shareWith.includes(currentUser.phone) or event.phone == currentUser.phone
+            returnRecords.push(event)
     return returnRecords
   getExpenses: (currentUser) ->
     returnRecords = []

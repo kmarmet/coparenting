@@ -3,12 +3,21 @@
 #external-overrides {
   .flatpickr-months {
     align-items: center;
+
+    * {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      max-width: 245px;
+    }
   }
   /*#region  DARK THEME*/
   .dark {
     .flatpickr-day {
       color: white !important;
-       &.selected {
+      &.selected {
         background-color: $blue;
       }
     }
@@ -21,9 +30,9 @@
       }
     }
   }
-  
+
   /*#endregion  DARK THEME*/
-  
+
   /*#region  LIGHT THEME*/
   .light {
     .flatpickr-calendar {
@@ -33,9 +42,9 @@
     }
     .flatpickr-day {
       color: $lightBlackLight !important;
-      &.today, &.selected {
+      &.selected {
         background-color: $blue;
-        box-shadow: 0 0 12px 0  $lightBlueDark;
+        box-shadow: 0 0 12px 0 $lightBlueDark;
       }
     }
   }

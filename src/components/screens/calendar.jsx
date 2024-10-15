@@ -28,6 +28,7 @@ import {
   wordCount,
   uppercaseFirstLetterOfAllWords,
   spaceBetweenWords,
+  contains,
   formatNameFirstNameOnly,
   removeFileExtension,
 } from '../../globalFunctions'
@@ -37,7 +38,7 @@ import DB_UserScoped from '@userScoped'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, menuIsOpen, formToShow } = state
+  const { currentUser, theme, menuIsOpen, formToShow } = state
   const [existingEvents, setExistingEvents] = useState([])
   const [showInfoContainer, setShowInfoContainer] = useState(false)
   const [showSearchInput, setShowSearchInput] = useState(false)
@@ -75,6 +76,7 @@ export default function EventCalendar() {
 
   const getSecuredEvents = async (selectedDay, selectedMonth) => {
     let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
+
     securedEvents = DateManager.sortCalendarEvents(securedEvents, 'fromDate', 'startTime')
     const eventsToAddDotsTo = securedEvents.sort((a, b) => {
       return a.time + b.time
@@ -128,7 +130,7 @@ export default function EventCalendar() {
     eventsWithMultipleDays.forEach((event) => {
       let dateRange = []
       for (let i = 0; i <= event.daysCount; i++) {
-        let formattedDay = moment(event.eventObj.fromDate).add(i, 'day').format('MM/DD/yyyy')
+        let formattedDay = moment(event.eventObj.fromDate).add(i, 'day').format(DateFormats.dateForDb)
         dateRange.push(formattedDay)
       }
       if (dateRange.includes(selectedDay)) {
@@ -167,21 +169,19 @@ export default function EventCalendar() {
   }
 
   const addDayIndicators = (selectedMonth, events, eventsWithMultipleDays) => {
-    // Remove existing dot wrappers before adding them again
+    // Remove existing icons/dots before adding them again
     document.querySelectorAll('.dot-wrapper').forEach((wrapper) => wrapper.remove())
+    document.querySelectorAll('.payday-emoji').forEach((emoji) => emoji.remove())
+    document.querySelectorAll('.holiday-emoji').forEach((emoji) => emoji.remove())
     if (selectedMonth) {
       selectedMonth = moment().add(1, 'M').format('MM')
     }
     // Loop through all calendar UI days
     document.querySelectorAll('.flatpickr-day').forEach((day, outerIndex) => {
-      const dotWrappers = document.querySelectorAll('.dot-wrapper')
-      if (Manager.isValid(dotWrappers, true)) {
-        // dotWrappers.forEach((wrapper) => wrapper.remove())
-      }
-      let formattedDay = moment(day.getAttribute('aria-label')).format('MM/DD/yyyy')
+      let formattedDay = moment(day.getAttribute('aria-label')).format(DateFormats.dateForDb)
       let holidayDate = moment(day.getAttribute('aria-label')).format('MM/DD')
       if (selectedMonth) {
-        formattedDay = moment(formattedDay).format('MM/DD/yyyy')
+        formattedDay = moment(formattedDay).format(DateFormats.dateForDb)
       }
 
       const dayHasEvent = events.filter((x) => x?.fromDate === formattedDay || x?.toDate === formattedDay).length > 0
@@ -256,14 +256,18 @@ export default function EventCalendar() {
 
         // VISITATION DOT
         const currentUserName = formatNameFirstNameOnly(currentUser.name)
-        if (events.filter((x) => x.fromDate === formattedDay && x.fromVisitationSchedule === true && x.title.contains(currentUserName)).length > 0) {
+        if (
+          events.filter((x) => x.fromDate === formattedDay && x.fromVisitationSchedule === true && contains(x?.title, currentUserName)).length > 0
+        ) {
           const visitationDot = document.createElement('span')
           visitationDot.classList.add('current-user-visitation-dot')
           visitationDot.classList.add('dot')
           dotWrapper.append(visitationDot)
         }
 
-        if (events.filter((x) => x.fromDate === formattedDay && x.fromVisitationSchedule === true && !x.title.contains(currentUserName)).length > 0) {
+        if (
+          events.filter((x) => x.fromDate === formattedDay && x.fromVisitationSchedule === true && !contains(x?.title, currentUserName)).length > 0
+        ) {
           const visitationDot = document.createElement('span')
           visitationDot.classList.add('coparent-visitation-dot')
           visitationDot.classList.add('dot')
@@ -289,9 +293,9 @@ export default function EventCalendar() {
         if (eventParentObj.eventObj.fromDate === formattedDay) {
           for (let i = 0; i <= eventParentObj.daysCount; i++) {
             document.querySelectorAll('.flatpickr-day').forEach((calDay) => {
-              let formattedDay = moment(day.getAttribute('aria-label')).add(i, 'day').format('MM/DD/yyyy')
+              let formattedDay = moment(day.getAttribute('aria-label')).add(i, 'day').format(DateFormats.dateForDb)
               const daySquare = calDay.getAttribute('aria-label')
-              if (moment(daySquare).format('MM/DD/yyyy') === formattedDay) {
+              if (moment(daySquare).format(DateFormats.dateForDb) === formattedDay) {
                 calDay.classList.add('multi')
                 calDay.classList.add(index.toString())
                 // Style first/last day of multi-range
@@ -335,42 +339,53 @@ export default function EventCalendar() {
 
   const addFlatpickrCalendar = async () => {
     const dbRef = ref(getDatabase())
-    Manager.toggleForModalOrNewForm('show')
+
     setState({ ...state, showMenuButton: true })
     toggleCalendar('show')
     flatpickr('#calendar-ui-container', {
       inline: true,
       defaultDate: new Date(),
-      onReady: () => {},
+      onReady: () => {
+        Manager.toggleForModalOrNewForm('show')
+        onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
+          await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
+          setState({ ...state, selectedNewEventDay: moment().format(DateFormats.dateForDb).toString() })
+        })
+      },
       nextArrow: '<span class="calendar-arrow right material-icons-round">arrow_forward_ios</span>',
       prevArrow: '<span class="calendar-arrow left material-icons-round">arrow_back_ios</span>',
       appendTo: document.getElementById('calendar-ui-container'),
       // On month change
       onMonthChange: (selectedDates, dateStr, instance) => {
+        console.log('chagned')
         disableSelectedDayBg()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-          await getSecuredEvents(moment(`${instance.currentMonth + 1}/01/${instance.currentYear}`).format('MM/DD/yyyy'), instance.currentMonth + 1)
+          await getSecuredEvents(
+            moment(`${instance.currentMonth + 1}/01/${instance.currentYear}`).format(DateFormats.dateForDb),
+            instance.currentMonth + 1
+          )
         })
         const monthSelectOption = document.querySelector(`[value='7']`)
         monthSelectOption.click()
       },
       // Firebase onValue change / date selection/click
       onChange: async (e) => {
-        const date = moment(e[0]).format('MM/DD/yyyy').toString()
+        const date = moment(e[0]).format(DateFormats.dateForDb).toString()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(date, moment(e[0]).format('MM'))
-          setState({ ...state, selectedNewEventDay: moment(e[0]).format('MM/DD/yyyy').toString() })
+          setState({ ...state, selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString() })
         })
       },
     })
-    onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-      await getSecuredEvents(moment().format('MM/DD/yyyy'), null)
-    })
+  }
+
+  const goToToday = async () => {
+    await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
   }
 
   const toggleAllHolidays = async () => {
     const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
-    const _holidays = allEvents.filter((x) => x.isHoliday === true).filter((x) => !x.title.toLowerCase().contains('visitation'))
+    const _holidays = allEvents.filter((x) => x.isHoliday === true).filter((x) => !contains(x?.title.toLowerCase(), 'visitation'))
     toggleCalendar('hide')
     setSearchResultsToUse(_holidays)
     setAllHolidays(_holidays)
@@ -380,7 +395,7 @@ export default function EventCalendar() {
   const toggleVisitationHolidays = async () => {
     const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
     let userVisitationHolidays = allEvents.filter(
-      (x) => x.isHoliday === true && x.phone === currentUser.phone && x.title.toLowerCase().contains('holiday')
+      (x) => x.isHoliday === true && x.phone === currentUser.phone && contains(x.title.toLowerCase(), 'holiday')
     )
     userVisitationHolidays.forEach((holiday) => {
       holiday.title += ` (${holiday?.holidayName})`
@@ -403,19 +418,23 @@ export default function EventCalendar() {
     }
   }
 
-  const goToToday = async () => {
-    const today = moment().format(DateFormats.flatpickr)
-    const monthNumber = moment().format('M') - 1
-    const monthSelectOption = document.querySelector(`.flatpickr-monthDropdown-months [value='${monthNumber}']`)
-    // console.log(monthSelectOption)
-    setTimeout(() => {
-      console.log(`[aria-label='${today}']`)
-      document.querySelector(`[aria-label='${today}']`).classList.add('selected')
-    }, 500)
-  }
-
   // ON PAGE LOAD
   useEffect(() => {
+    // const monthSelector = document.querySelector('.flatpickr-monthDropdown-months')
+    // if (monthSelector && monthSelector.options) {
+    //   monthSelector.options[0].selected = true
+    //   monthSelector.dispatchEvent(new Event('change'))
+    //   Manager.convertToArray(monthSelector.options).forEach((option) => {
+    //     // console.log(option.getAttribute('value'))
+    //     // console.log(monthSelector.options[0])
+    //
+    //     if (option.selected) {
+    //       // option.setAttribute('value', '2')
+    //       // option.value = '1'
+    //       console.log(option)
+    //     }
+    //   })
+    // }
     addFlatpickrCalendar().then((r) => r)
     Manager.toggleForModalOrNewForm('show')
     setTimeout(() => {
@@ -426,6 +445,7 @@ export default function EventCalendar() {
         showShortcutMenu: true,
         showBackButton: false,
         showMenuButton: true,
+        formToShow: '',
       })
     }, 500)
   }, [])
@@ -441,19 +461,6 @@ export default function EventCalendar() {
 
   return (
     <>
-      {/*<p className="screen-title">Shared Calendar</p>*/}
-
-      {/* ADD NEW BUTTON */}
-      {/*<AddNewButton*/}
-      {/*  canClose={true}*/}
-      {/*  onClose={() => {}}*/}
-      {/*  onClick={() => {*/}
-      {/*    // toggleCalendar('hide')*/}
-      {/*    setShowNewCalendarForm(true)*/}
-      {/*    // setState({ ...state, currentScreen: ScreenNames.newCalendarEvent })*/}
-      {/*  }}*/}
-      {/*/>*/}
-
       {/* CLOSE SEARCH BUTTON */}
       {searchResultsToUse.length > 0 && (
         <BottomButton
@@ -469,7 +476,7 @@ export default function EventCalendar() {
 
       {/* BOTTOM FILTER CARD */}
       <BottomCard
-        className={`${currentUser?.settings?.theme}`}
+        className={`${theme}`}
         onClose={viewAllEvents}
         showCard={showFilters}
         title={allHolidays.length > 0 ? 'Filter' : 'Filter Holidays ✨'}>
@@ -492,7 +499,7 @@ export default function EventCalendar() {
       {/* CALENDAR */}
       <div
         id="calendar-container"
-        className={`page-container calendar ${currentUser.settings.theme || 'dark'} `}
+        className={`page-container calendar ${theme} `}
         onClick={(e) =>
           menuIsOpen
             ? setState({
@@ -501,10 +508,11 @@ export default function EventCalendar() {
               })
             : ''
         }>
-        <div id="calendar-ui-container" className={`${currentUser?.settings?.theme}`} {...handlers}></div>
-        <div id="with-padding" className={`${currentUser?.settings?.theme}`}>
+        {/* PAGE CONTAINER */}
+        <div id="calendar-ui-container" className={`${theme}`} {...handlers}></div>
+        <div id="with-padding" className={theme}>
           {/* BELOW CALENDAR */}
-          <div id="below-calendar" className={`${currentUser.settings.theme} mt-10 ${showInfoContainer ? 'active' : ''}`}>
+          <div id="below-calendar" className={`${theme} mt-10 ${showInfoContainer ? 'active' : ''}`}>
             <div className="flex wrap">
               <p onClick={() => setShowFilters(!showFilters)} id="filter-button">
                 Filter
@@ -554,9 +562,14 @@ export default function EventCalendar() {
                 </div>
               )}
 
+              {/* TODAY BUTTON */}
+              {/*<button onClick={goToToday} id="go-to-today-button" className="button default ml-auto">*/}
+              {/*  Today*/}
+              {/*</button>*/}
+
               {/* SEARCH ICON */}
               <span
-                className="material-icons search-icon blue"
+                className="material-icons search-icon blue ml-auto"
                 onClick={() => {
                   setShowSearchInput(!showSearchInput)
                   addFlatpickrCalendar().then((r) => r)
@@ -574,7 +587,7 @@ export default function EventCalendar() {
 
           {/* MAP/LOOP SEARCH/HOLIDAY RESULTS */}
           {searchResultsToUse.length > 0 && (
-            <div className={`${currentUser?.settings?.theme} search-results`}>
+            <div className={`${theme} search-results`}>
               {Manager.isValid(searchResultsToUse, true) &&
                 searchResultsToUse.map((event, index) => {
                   return (
@@ -690,7 +703,7 @@ export default function EventCalendar() {
                           })
                           let parentsVisitation = ''
                           if (event.fromVisitationSchedule) {
-                            if (event.createdBy.toLowerCase().contains(currentUser.name.toLowerCase())) {
+                            if (contains(event.createdBy?.toLowerCase(), currentUser.name.toLowerCase())) {
                               parentsVisitation = 'currentUser'
                             } else {
                               parentsVisitation = 'coparent'
@@ -705,20 +718,20 @@ export default function EventCalendar() {
                                 <div className="flex content">
                                   <div className="text">
                                     {/* EVENT CONTENT */}
-                                    <div className={`${currentUser?.settings?.theme} event-content`}>
+                                    <div className={`${theme} event-content`}>
                                       {/* DATE CONTAINER */}
-                                      <div id="date-container" className={currentUser?.settings?.theme === 'dark' ? 'event-row pt-10' : 'event-row'}>
+                                      <div id="date-container" className={theme === 'dark' ? 'event-row pt-10' : 'event-row'}>
                                         <span className={`${parentsVisitation} color-coded-event-dot`}></span>
                                         {/* FROM DATE */}
-                                        {!event.fromDate.contains('Invalid') && event.fromDate?.length > 0 && (
-                                          <span className="fromDate">{moment(event.fromDate).format(DateFormats.readableDay)}</span>
+                                        {!contains(event.fromDate, 'Invalid') && event?.fromDate?.length > 0 && (
+                                          <span className="fromDate">{moment(event?.fromDate).format(DateFormats.readableDay)}</span>
                                         )}
                                         {/* TO WORD */}
-                                        {!event.toDate?.contains('Invalid') && event.toDate?.length > 0 && event.toDate !== event.fromDate && (
+                                        {!contains(event?.toDate, 'Invalid') && event?.toDate?.length > 0 && event?.toDate !== event?.fromDate && (
                                           <span className="toDate"> to </span>
                                         )}
                                         {/* TO DATE */}
-                                        {!event.toDate?.contains('Invalid') &&
+                                        {!contains(event.toDate, 'Invalid') &&
                                           event.toDate?.length > 0 &&
                                           event.toDate !== event.fromDate &&
                                           moment(event.toDate).format(DateFormats.readableDay)}
@@ -729,12 +742,12 @@ export default function EventCalendar() {
                                           event.toDate !== event.fromDate && <span className="toDate">&nbsp;- ALL DAY</span>}
                                         {/* TIMES */}
                                         <span id="times">
-                                          {!event.startTime?.contains('Invalid') && event.startTime?.length > 0 && (
+                                          {!contains(event?.startTime, 'Invalid') && event.startTime?.length > 0 && (
                                             <span className="from-time">
                                               <span className="at-symbol">&nbsp;@</span> {event.startTime}
                                             </span>
                                           )}
-                                          {!event.endTime?.contains('Invalid') && event.endTime?.length > 0 && event.endTime !== event.startTime && (
+                                          {!contains(event?.endTime, 'Invalid') && event.endTime?.length > 0 && event.endTime !== event.startTime && (
                                             <span className="to-time"> - {event.endTime}</span>
                                           )}
                                         </span>
@@ -748,7 +761,6 @@ export default function EventCalendar() {
                                                 setState({
                                                   ...state,
                                                   formToShow: ScreenNames.editCalendarEvent,
-                                                  showShortcutMenu: false,
                                                   calEventToEdit: event,
                                                 })
                                               }

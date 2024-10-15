@@ -18,7 +18,7 @@ import DateManager from '../../managers/dateManager'
 
 export default function ReviseChildTransferChangeRequest() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, transferRequestToRevise } = state
+  const { currentUser, theme, transferRequestToRevise } = state
   const [requestTime, setRequestTime] = useState('')
   const [requestLocation, setRequestLocation] = useState('')
   const [requestDate, setRequestDate] = useState('')
@@ -74,7 +74,7 @@ export default function ReviseChildTransferChangeRequest() {
   return (
     <>
       <p className="screen-title ">Revise Change Request</p>
-      <div id="transfer-change-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div id="transfer-change-container" className={`${theme} page-container form`}>
         <div className="form transfer-change">
           <div className="flex gap">
             <div>

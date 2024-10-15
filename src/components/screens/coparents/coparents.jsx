@@ -12,10 +12,11 @@ import DB_UserScoped from '@userScoped'
 import CustomCoparentInfo from './customCoparentInfo'
 import PopupCard from 'components/shared/popupCard'
 import BottomCard from '../../shared/bottomCard'
+import NewCoparentForm from './newCoparentForm'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme, formToShow } = state
 
   // State
   const [userCoparents, setUserCoparents] = useState([])
@@ -24,7 +25,17 @@ export default function Coparents() {
   const [customValues, setCustomValues] = useState([])
   const [confirmTitle, setConfirmTitle] = useState('')
 
-  const deleteProp = async (prop) => await DB.deleteCoparentInfoProp(DB.tables.users, currentUser, prop, selectedCoparent)
+  const resetForm = () => {
+    Manager.resetForm()
+    setUserCoparents([])
+    setSelectedCoparent(null)
+    setShowCustomInfoForm(false)
+    setCustomValues([])
+    setConfirmTitle('')
+    setState({ ...state, formToShow: '' })
+  }
+
+  const deleteProp = async (prop) => await DB.deleteCoparentInfoProp(DB.tables.users, currentUser, theme, prop, selectedCoparent)
 
   useEffect(() => {
     if (selectedCoparent) {
@@ -38,7 +49,7 @@ export default function Coparents() {
     const coparentPhone = activeCoparentEl.getAttribute('data-phone')
     let key = null
 
-    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'coparents').then((coparents) => {
+    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'coparents').then((coparents) => {
       coparents.forEach((coparent, index) => {
         if (coparent.phone === coparentPhone) {
           key = index
@@ -57,7 +68,7 @@ export default function Coparents() {
     const activeCoparentEl = document.querySelector('.coparent.active')
     const coparentPhone = activeCoparentEl.getAttribute('data-phone')
     let key = null
-    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'coparents').then((coparents) => {
+    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'coparents').then((coparents) => {
       coparents.forEach((coparent, index) => {
         if (coparent.phone === coparentPhone) {
           key = index
@@ -71,7 +82,7 @@ export default function Coparents() {
 
   const getCoparents = async () => {
     let all = []
-    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'coparents').then((coparent) => {
+    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'coparents').then((coparent) => {
       all.push(coparent)
     })
     all = all[0]
@@ -104,7 +115,6 @@ export default function Coparents() {
 
   return (
     <>
-      <p className="screen-title ">Coparents</p>
       <Confirm
         onAccept={() => {
           deleteCoparent()
@@ -115,22 +125,27 @@ export default function Coparents() {
         title={confirmTitle}
         message={`Are you sure you would like to delete ${Manager.isValid(selectedCoparent) ? selectedCoparent.name + '?' : ''}`}
       />
-      {/* ADD NEW BUTTON */}
-      <AddNewButton onClick={() => setState({ ...state, currentScreen: ScreenNames.newCoparent })} />
 
       {/* CUSTOM INFO FORM */}
-      <BottomCard title={'Add Custom Information'} className={showCustomInfoForm ? 'active' : ''} onClose={() => setShowCustomInfoForm(false)}>
+      <BottomCard
+        showCard={showCustomInfoForm}
+        title={'Add Custom Information'}
+        className={`${showCustomInfoForm ? 'active' : ''} ${theme}`}
+        onClose={() => setShowCustomInfoForm(false)}>
         <CustomCoparentInfo
           selectedChild={selectedCoparent}
-          showModal={showCustomInfoForm}
+          showForm={showCustomInfoForm}
           onClose={() => {
             setShowCustomInfoForm(false)
           }}
         />
       </BottomCard>
 
+      {/* NEW COPARENT FORM */}
+      <NewCoparentForm />
+
       {/* COPARENTS CONTAINER */}
-      <div id="coparents-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div id="coparents-container" className={`${theme} page-container form`}>
         {/* COPARENT ICONS CONTAINER */}
         <div id="coparent-container">
           {selectedCoparent &&

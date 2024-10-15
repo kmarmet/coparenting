@@ -7,12 +7,11 @@ import Manager from '@manager'
 import { getDatabase, ref, set, get, child, onValue } from 'firebase/database'
 import DB_UserScoped from '@userScoped'
 
-export default function CustomCoparentInfo({ selectedChild, showModal, onClose, hasDropdown = false }) {
+export default function CustomCoparentInfo({ selectedChild, showForm, onClose, hasDropdown = false }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme } = state
   const [title, setTitle] = useState(null)
   const [value, setValue] = useState(null)
-  const [showForm, setShowForm] = useState(false)
   const [infoSection, setInfoSection] = useState('Select Info Section')
   const [infoSectionIsExpanded, setInfoSectionIsExpanded] = useState(false)
 
@@ -34,7 +33,7 @@ export default function CustomCoparentInfo({ selectedChild, showModal, onClose, 
         onClose()
       }
     } else {
-      const children = await DB_UserScoped.getRecordsByUser(DB.tables.users, currentUser, 'children')
+      const children = await DB_UserScoped.getRecordsByUser(DB.tables.users, currentUser, theme, 'children')
       let key = null
       children.forEach((child, index) => {
         if (child.general.name === selectedChild.general.name) {
@@ -53,49 +52,49 @@ export default function CustomCoparentInfo({ selectedChild, showModal, onClose, 
   const sectionSelection = async (e) => {
     const section = e.target.innerText.toLowerCase()
     const accordionHeader = document.querySelector('.accordion-header')
-    console.log(accordionHeader)
     accordionHeader.innerText = section.uppercaseFirstLetterOfAllWords()
-    setShowForm(true)
     setInfoSection(section)
     setInfoSectionIsExpanded(false)
   }
 
   return (
     <>
-      <div className="form">
-        {hasDropdown && (
-          <Accordion className="mb-15">
-            <p onClick={() => setInfoSectionIsExpanded(!infoSectionIsExpanded)} className="accordion-header">
-              {infoSection.uppercaseFirstLetterOfAllWords()}
-            </p>
-            <Accordion.Panel expanded={infoSectionIsExpanded}>
-              <p onClick={sectionSelection} className="item">
-                General
+      {showForm && (
+        <div className={`${theme} form`}>
+          {hasDropdown && (
+            <Accordion className="mb-15">
+              <p onClick={() => setInfoSectionIsExpanded(!infoSectionIsExpanded)} className="accordion-header">
+                {infoSection.uppercaseFirstLetterOfAllWords()}
               </p>
-              <p onClick={sectionSelection} className="item">
-                Medical
-              </p>
-              <p onClick={sectionSelection} className="item">
-                Schooling
-              </p>
-              <p onClick={sectionSelection} className="item">
-                Behavior
-              </p>
-            </Accordion.Panel>
-          </Accordion>
-        )}
-        <>
-          <input className="mb-5" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
-          <input className="mb-5" type="text" placeholder="Value*" onChange={(e) => setValue(e.target.value)} />
-          {Manager.validation([title, value]) === 0 && (
-            <div id="button-group">
-              <button className="button green w-50 single center" onClick={add}>
-                Add<span className="ml-10 material-icons-outlined">auto_fix_high</span>
-              </button>
-            </div>
+              <Accordion.Panel expanded={infoSectionIsExpanded}>
+                <p onClick={sectionSelection} className="item">
+                  General
+                </p>
+                <p onClick={sectionSelection} className="item">
+                  Medical
+                </p>
+                <p onClick={sectionSelection} className="item">
+                  Schooling
+                </p>
+                <p onClick={sectionSelection} className="item">
+                  Behavior
+                </p>
+              </Accordion.Panel>
+            </Accordion>
           )}
-        </>
-      </div>
+          <>
+            <input className="mb-5" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
+            <input className="mb-5" type="text" placeholder="Value*" onChange={(e) => setValue(e.target.value)} />
+            {Manager.validation([title, value]) === 0 && (
+              <div id="button-group">
+                <button className="button green w-50 single center block mr-auto ml-auto" onClick={add}>
+                  Add<span className="ml-10 material-icons-outlined">auto_fix_high</span>
+                </button>
+              </div>
+            )}
+          </>
+        </div>
+      )}
     </>
   )
 }

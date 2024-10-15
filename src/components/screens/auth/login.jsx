@@ -24,10 +24,9 @@ export default function Login() {
       setState({ ...state, showAlert: true, alertMessage: 'Please fill out all fields', alertType: 'error' })
       return false
     }
-    document.body.classList.add('light')
+    // document.body.classList.add('light')
     if (foundUser) {
-      console.log(foundUser)
-      document.body.classList.add(foundUser?.settings.theme)
+      // document.body.classList.add(foundUser?.settings.theme)
       if (rememberMe) {
         localStorage.setItem('rememberKey', foundUser.id)
         await DB_UserScoped.updateUserRecord(foundUser.phone, 'rememberMe', true)
@@ -47,11 +46,11 @@ export default function Login() {
   const autoLogin = async () => {
     const foundUser = await tryGetCurrentUser()
     const rememberMeKey = localStorage.getItem('rememberKey')
-    document.body.classList.add('light')
+    // document.body.classList.add('light')
     if (foundUser) {
       subscribeUser(foundUser)
 
-      document.body.classList.add(foundUser?.settings.theme)
+      // document.body.classList.add(foundUser?.settings.theme)
 
       // SIGN USER IN BASED ON rememberMe KEY
       if (Manager.isValid(rememberMeKey)) {

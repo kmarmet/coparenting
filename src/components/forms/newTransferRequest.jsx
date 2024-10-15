@@ -16,9 +16,9 @@ import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 
-export default function NewChildTransferChangeRequest() {
+export default function NewTransferChangeRequest() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, currentScreen } = state
+  const { currentUser, theme, currentScreen } = state
   const [requestReason, setRequestReason] = useState('')
   const [shareWith, setShareWith] = useState([])
   const [requestTime, setRequestTime] = useState('')
@@ -74,7 +74,7 @@ export default function NewChildTransferChangeRequest() {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
       setShareWith(updated)
     })
   }
@@ -116,23 +116,20 @@ export default function NewChildTransferChangeRequest() {
   return (
     <>
       <p className="screen-title ">New Request</p>
-      <div id="transfer-change-container" className={`${currentUser?.settings?.theme} form page-container`}>
+      <div id="transfer-change-container" className={`${theme} form page-container`}>
         <div className="form transfer-change">
           <div className="flex gap">
             <div>
               <label className="mb-5">
                 Day<span className="asterisk">*</span>
               </label>
-              <MobileDatePicker
-                className={`${currentUser?.settings?.theme} mb-15 mt-0 w-100`}
-                onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
-              />
+              <MobileDatePicker className={`${theme} mb-15 mt-0 w-100`} onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))} />
             </div>
             <div>
               <label className="mt-0">
                 New Time <span>&nbsp;</span>
               </label>
-              <MobileTimePicker minutesStep={5} className={`${currentUser?.settings?.theme} mb-15 mt-0 w-100`} onChange={(e) => setRequestTime(e)} />
+              <MobileTimePicker minutesStep={5} className={`${theme} mb-15 mt-0 w-100`} onChange={(e) => setRequestTime(e)} />
             </div>
           </div>
 

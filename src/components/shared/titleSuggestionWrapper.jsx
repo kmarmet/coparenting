@@ -6,7 +6,7 @@ export default function TitleSuggestionWrapper({ suggestions = [], onClick, setS
   const { currentUser, theme, setTheme } = state
   return (
     <div
-      className={`${className} ${`${currentUser?.settings?.theme}`} title-suggestion-dropdown flex title-suggestion-dropdown-wrapper ${suggestions.length > 0 ? 'active ' : ''}`}>
+      className={`${className} ${`${theme}`} title-suggestion-dropdown flex title-suggestion-dropdown-wrapper ${suggestions.length > 0 ? 'active ' : ''}`}>
       <div className="suggestions">
         {Manager.isValid(suggestions, true) &&
           suggestions.map((suggestion, index) => {

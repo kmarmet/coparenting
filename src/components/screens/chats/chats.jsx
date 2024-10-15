@@ -31,10 +31,11 @@ import {
   contains,
   uniqueArray,
 } from '../../../globalFunctions'
+import BottomCard from '../../shared/bottomCard'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme, formToShow } = state
   const [showNewThreadForm, setShowNewThreadForm] = useState(false)
   const [threads, setThreads] = useState([])
   const [confirmTitle, setConfirmTitle] = useState('')
@@ -43,7 +44,7 @@ const Chats = () => {
 
   const openMessageThread = async (coparentPhone) => {
     const userCoparent = await DB_UserScoped.getCoparentByPhone(coparentPhone, currentUser)
-    setState({ ...state, currentScreen: ScreenNames.conversation, messageToUser: userCoparent })
+    setState({ ...state, currentScreen: ScreenNames.conversation, messageToUser: userCoparent, formToShow: '' })
   }
 
   const getChats = async () => {
@@ -59,7 +60,7 @@ const Chats = () => {
           if (parWithPhone) {
             const coparentPhoneNumber = parWithPhone.getAttribute('data-coparent-phone')
             const coparent = currentUser.coparents.filter((x) => x.phone === coparentPhoneNumber)[0]
-            const scopedChat = await ChatManager.getExistingMessages(currentUser, coparent)
+            const scopedChat = await ChatManager.getExistingMessages(currentUser, theme, coparent)
             const { messages } = scopedChat
             let scopedMessages = messages.filter((x) => x.sender.formatNameFirstNameOnly() === coparent.name)
             const lastScopedMessage = scopedMessages[scopedMessages.length - 1]?.message
@@ -85,52 +86,9 @@ const Chats = () => {
     }
   }
 
-  const setInboxUnreadCount = async () => {
-    const coparentElements = document.querySelectorAll('[data-coparent-phone]')
-    const dbRef = ref(getDatabase())
-
-    await get(child(dbRef, `${DB.tables.users}`)).then((users) => {
-      const usersVal = users.val()
-      const usersWithInbox = DB.convertKeyObjectToArray(usersVal).filter((x) => x.chats !== undefined)
-      coparentElements.forEach(async (el, elIndex) => {
-        const coparentPhone = el.getAttribute('data-coparent-phone')
-
-        usersWithInbox.forEach((userWithInbox, index) => {
-          const threads = DB.convertKeyObjectToArray(userWithInbox.chats)
-            .filter((x) => x.hasOwnProperty('members'))
-            .flat()
-          let threadToUse
-          threads.forEach((thread) => {
-            const members = thread.members
-            const currentUserIsValidMember = members.filter((x) => x.phone === currentUser.phone)
-            const coparentIsValidMember = members.filter((x) => x.phone === coparentPhone)
-            if (currentUserIsValidMember.length > 0 && coparentIsValidMember.length > 0) {
-              threadToUse = thread
-            }
-          })
-          if (Manager.isValid(threadToUse, false, true) && Manager.isValid(threadToUse.messages, true)) {
-            let messages = threadToUse.messages.filter(
-              (x) => x.readState === 'delivered' && x.toName === currentUser.name && x.fromName !== currentUser.name
-            )
-            const countSpan = el.nextSibling
-            if (messages.length > 0) {
-              if (countSpan && messages.length > 0) {
-                el.nextSibling.innerText = messages.length
-                countSpan.classList.add('active')
-              }
-            } else {
-              countSpan.style.display = 'none'
-            }
-            setState({ ...state, unreadMessages: messages.length })
-          }
-        })
-      })
-    })
-  }
-
   const archive = async () => {
     if (Manager.isValid(selectedCoparent)) {
-      await ChatManager.deleteAndArchive(currentUser, selectedCoparent)
+      await ChatManager.deleteAndArchive(currentUser, theme, selectedCoparent)
       setConfirmTitle('')
       await getChats()
       setSelectedCoparent(null)
@@ -200,7 +158,7 @@ const Chats = () => {
       )}
 
       {/* PAGE CONTAINER */}
-      <div id="chats-container" className={`${currentUser?.settings?.theme} page-container`}>
+      <div id="chats-container" className={`${theme} page-container`}>
         {/* THREAD LINE ITEM */}
         {!showNewThreadForm &&
           threads.length > 0 &&
@@ -248,17 +206,23 @@ const Chats = () => {
         {!showNewThreadForm && threads.length === 0 && <p className="instructions center">There are currently no conversations 🤷🏽‍♂️</p>}
 
         {/* NEW THREAD FORM */}
-        {showNewThreadForm &&
-          Manager.isValid(currentUser.coparents, true) &&
-          currentUser.coparents
-            .filter((x) => !activeChatsMembers.includes(x.phone))
-            .map((coparent, index) => {
-              return (
-                <p key={index} className="coparent-date thread-item blue" onClick={() => openMessageThread(coparent.phone)}>
-                  {coparent.name} <span className="material-icons">arrow_forward_ios</span>
-                </p>
-              )
-            })}
+        <BottomCard className="new-conversation" showCard={formToShow === 'newConversation'} title={'New Conversation'}>
+          {Manager.isValid(currentUser.coparents, true) &&
+            currentUser.coparents
+              .filter((x) => !activeChatsMembers.includes(x.phone))
+              .map((coparent, index) => {
+                return (
+                  <p
+                    key={index}
+                    className="coparent-name new-thread-coparent-name"
+                    onClick={() => {
+                      openMessageThread(coparent.phone).then((r) => r)
+                    }}>
+                    {coparent.name}
+                  </p>
+                )
+              })}
+        </BottomCard>
         {showNewThreadForm && (
           <button
             onClick={() => {

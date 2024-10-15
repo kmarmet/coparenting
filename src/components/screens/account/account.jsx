@@ -15,7 +15,7 @@ export default function Account() {
   return (
     <>
       <p className="screen-title ">Account</p>
-      <div id="account-container" className={`${currentUser?.settings?.theme} page-container`}>
+      <div id="account-container" className={`${theme} page-container`}>
         <p id="user-name">
           Hello {currentUser?.name?.formatNameFirstNameOnly()}! <span className="material-icons-outlined">sentiment_very_satisfied</span>
         </p>

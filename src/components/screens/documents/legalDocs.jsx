@@ -116,7 +116,7 @@ export default function ImageDocs() {
   return (
     <>
       <p className="screen-title ">Legal Documents</p>
-      <div id="legal-docs-container" className={`${currentUser?.settings?.theme} page-container form`} {...handlers}>
+      <div id="legal-docs-container" className={`${theme} page-container form`} {...handlers}>
         <div className="overlay"></div>
         <div className="form">
           <Modal elClass={!showTextContainer ? 'show dad-joke' : 'dad-joke'} hasClose={false}>

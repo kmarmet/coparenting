@@ -9,7 +9,7 @@ import { Within } from '@theme-toggles/react'
 export default function ThemeToggle() {
   const { state, setState } = useContext(globalState)
   const { currentUser } = state
-  const [isToggled, setToggle] = useState(currentUser?.settings?.theme !== 'dark')
+  const [isToggled, setToggle] = useState(theme !== 'dark')
 
   const changeTheme = async (themeColor) => {
     await DB_UserScoped.updateUserRecord(currentUser.phone, `settings/theme`, themeColor).finally(() => {

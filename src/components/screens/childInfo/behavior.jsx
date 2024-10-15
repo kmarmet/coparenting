@@ -8,11 +8,11 @@ import { child, getDatabase, onValue, ref, set, get } from 'firebase/database'
 
 function Behavior() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, selectedChild } = state
+  const { currentUser, theme, selectedChild } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [behaviorValues, setBehaviorValues] = useState([])
 
-  const deleteProp = async (prop) => await DB.deleteChildInfoProp(DB.tables.users, currentUser, prop, 'behavior', selectedChild)
+  const deleteProp = async (prop) => await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'behavior', selectedChild)
 
   const update = async (section, prop, value, isArray) => {
     const dbRef = ref(getDatabase())

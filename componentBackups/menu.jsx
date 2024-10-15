@@ -76,7 +76,7 @@ export default function Menu() {
 
   return (
     <>
-      <div id="menu" className={`${currentUser?.settings?.theme}`}>
+      <div id="menu" className={`${theme}`}>
         <div className="content">
           <ThemeToggle />
           <div id="menu-title">

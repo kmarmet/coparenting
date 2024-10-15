@@ -178,7 +178,7 @@ function ChatRecovery() {
       {!viewConvo && (
         <>
           <p className="screen-title ">Chat Recovery</p>
-          <div {...handlers} id="chat-request-container" className={`${currentUser?.settings?.theme} page-container form`}>
+          <div {...handlers} id="chat-request-container" className={`${theme} page-container form`}>
             <div className="form">
               {/* PHONE */}
               <label>
@@ -254,7 +254,7 @@ function ChatRecovery() {
       )}
       <div className="conversation-container">
         <p className="screen-title active">Conversation</p>
-        <div {...handlers} id="chat-request-container" className={`${currentUser?.settings?.theme} page-container active form`}>
+        <div {...handlers} id="chat-request-container" className={`${theme} page-container active form`}>
           {/* CONVO IMAGE */}
           <label>Below is an image of the entire conversation</label>
           <div id="image-wrapper" className="mt-5"></div>

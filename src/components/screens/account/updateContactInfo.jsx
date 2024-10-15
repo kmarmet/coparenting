@@ -41,7 +41,7 @@ export default function UpdateContactInfo() {
       })
       return false
     }
-    await DB.updatePhoneOrEmail(currentUser, contactInfoToUpdateType, contactInfoToUpdateType === 'phone' ? phone : email)
+    await DB.updatePhoneOrEmail(currentUser, theme, contactInfoToUpdateType, contactInfoToUpdateType === 'phone' ? phone : email)
     setState({ ...state, showAlert: true })
     setTimeout(() => {
       setState({ ...state, currentScreen: ScreenNames.settings })
@@ -56,7 +56,7 @@ export default function UpdateContactInfo() {
   return (
     <>
       <p className="screen-title ">Update Your Info</p>
-      <div {...handlers} id="update-contact-info-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div {...handlers} id="update-contact-info-container" className={`${theme} page-container form`}>
         <div className="form">
           {contactInfoToUpdateType === 'email' && (
             <>

@@ -1,4 +1,4 @@
 export default class Coparent
-  constructor: (@name = '', @parentType = '', @phone = '', @address = '', @id = '') ->
+  constructor: (@name = '', @parentType = '', @phone = '', @address = '', @id = '', @relationshipToMe ='') ->
 
 

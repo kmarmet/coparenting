@@ -30,7 +30,7 @@ import SecurityManager from '../../../managers/securityManager'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme } = state
   const [docs, setDocs] = useState([])
   const [selectedDoc, setSelectedDoc] = useState(null)
   const [toDelete, setToDelete] = useState([])
@@ -52,7 +52,7 @@ export default function DocsList() {
   }
 
   const deleteDocs = async () => {
-    DocumentsManager.deleteDocsWithIds(toDelete, currentUser, (docId) => {
+    DocumentsManager.deleteDocsWithIds(toDelete, currentUser, theme, (docId) => {
       setToDelete(toDelete.filter((x) => x !== docId))
       setDocs(docs.filter((x) => x.id !== docId))
     })
@@ -71,8 +71,8 @@ export default function DocsList() {
         onClose={() => setState({ ...state, currentScreen: ScreenNames.uploadDocuments })}
         onClick={() => setState({ ...state, currentScreen: ScreenNames.uploadDocuments })}
       />
-      <div id="doc-selection-container" className={`${currentUser?.settings?.theme} page-container`}>
-        {docs.length === 0 && <p className={`${currentUser?.settings?.theme} caption`}>there are currently no documents</p>}
+      <div id="doc-selection-container" className={`${theme} page-container`}>
+        {docs.length === 0 && <p className={`${theme} caption`}>there are currently no documents</p>}
         <p className="mb-10">If the document type you tap is an Image, the loading time may be a bit longer.</p>
         {!Manager.isValid(selectedDoc, false, true) && (
           <div className="sections">

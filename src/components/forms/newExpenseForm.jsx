@@ -20,6 +20,7 @@ import { MobileTimePicker } from '@mui/x-date-pickers'
 import DatetimePickerViews from '../../constants/datetimePickerViews'
 import BottomButton from '../shared/bottomButton'
 import Numpad from '../shared/numpad'
+import Toggle from 'react-toggle'
 import {
   toCamelCase,
   getFirstWord,
@@ -36,15 +37,20 @@ import {
   uniqueArray,
   getFileExtension,
 } from '../../globalFunctions'
+import BottomCard from '../shared/bottomCard'
+import UploadInputs from '../shared/uploadInputs'
+import DateManager from '../../managers/dateManager'
 
 function NewExpenseForm() {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme, formToShow } = state
   const [expenseName, setExpenseName] = useState('')
   const [expenseChildren, setExpenseChildren] = useState([])
   const [expenseDueDate, setExpenseDueDate] = useState('')
   const [expenseNotes, setExpenseNotes] = useState('')
   const [expenseImage, setExpenseImage] = useState('')
+  const [includeChildren, setIncludeChildren] = useState(false)
+  const [repeating, setRepeating] = useState(false)
   const [payer, setPayer] = useState({
     phone: '',
     name: '',
@@ -52,8 +58,6 @@ function NewExpenseForm() {
   const [shareWith, setShareWith] = useState([])
   const [repeatInterval, setRepeatInterval] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
-  const [childrenAccIsExpanded, setChildrenAccIsExpanded] = useState(false)
-  const [repeatAccIsExpanded, setRepeatAccIsExpanded] = useState(false)
   const [showNumpad, setShowNumpad] = useState(false)
   const [expenseAmount, setExpenseAmount] = useState('')
   const imgRef = useRef()
@@ -65,24 +69,30 @@ function NewExpenseForm() {
     },
   })
 
-  const resetScreenAndGoBack = () => {
-    resetNewExpense()
-    console.log(true)
-    setState({
-      ...state,
-      currentScreen: ScreenNames.expenseTracker,
-      alertMessage: '',
-      showAlert: false,
+  const resetForm = () => {
+    Manager.resetForm()
+    setExpenseName('')
+    setExpenseChildren([])
+    setExpenseDueDate('')
+    setExpenseNotes('')
+    setExpenseImage('')
+    setIncludeChildren(false)
+    setRepeating(false)
+    setPayer({
+      phone: '',
+      name: '',
     })
+    setShareWith([])
+    setRepeatInterval('')
+    setRepeatingEndDate('')
+    setShowNumpad(false)
+    setExpenseAmount('')
+    setState({ ...state, formToShow: '' })
   }
 
   const submitNewExpense = async () => {
     if (payer.name.length === 0) {
       setState({ ...state, alertMessage: 'Please select will be paying the expense', showAlert: true, alertType: 'error' })
-      return false
-    }
-    if (!expenseDueDate || expenseDueDate.length === 0) {
-      setState({ ...state, alertMessage: 'Please choose a due date', showAlert: true, alertType: 'error' })
       return false
     }
     if (expenseName.length === 0) {
@@ -97,18 +107,17 @@ function NewExpenseForm() {
       setState({ ...state, alertMessage: 'Please select who can view this expense', showAlert: true, alertType: 'error' })
       return false
     }
-
     const newExpense = new Expense()
     newExpense.id = Manager.getUid()
     newExpense.name = expenseName
     newExpense.children = expenseChildren
     newExpense.amount = expenseAmount
     newExpense.phone = currentUser.phone
-    newExpense.dueDate = moment(expenseDueDate).format(DateFormats.dateForDb) || ''
+    newExpense.dueDate = DateManager.dateIsValid(expenseDueDate) ? moment(expenseDueDate).format(DateFormats.dateForDb) : ''
     newExpense.dateAdded = Manager.getCurrentDate()
     newExpense.notes = expenseNotes
     newExpense.paidStatus = 'unpaid'
-    newExpense.imageName = ''
+    newExpense.imageName = expenseImage.name || ''
     newExpense.payer = payer
     newExpense.createdBy = currentUser.name
     newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
@@ -128,7 +137,8 @@ function NewExpenseForm() {
       return false
     }
 
-    // Upload Image
+    // IMAGE UPLOAD
+    console.log(expenseImage)
     if (Manager.isValid(expenseImage?.name)) {
       await FirebaseStorage.upload(FirebaseStorage.directories.expenseImages, currentUser.id, expenseImage, expenseImage.name).then((url) => {
         newExpense.imageUrl = url
@@ -149,7 +159,7 @@ function NewExpenseForm() {
       }
 
       // Go back to expense screen
-      resetScreenAndGoBack()
+      resetForm()
     })
   }
 
@@ -166,27 +176,18 @@ function NewExpenseForm() {
         newExpense.amount = expenseAmount
         newExpense.imageName = ''
         newExpense.phone = currentUser.phone
-        newExpense.dueDate = moment(date).format('MM/DD/yyyy')
+        newExpense.dueDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
         newExpense.dateAdded = Manager.getCurrentDate()
         newExpense.notes = expenseNotes
         newExpense.paidStatus = 'unpaid'
         newExpense.createdBy = currentUser.name
         newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
-        newExpense.recipientName = currentUser.name.formatNameFirstNameOnly()
+        newExpense.recipientName = formatNameFirstNameOnly(currentUser.name)
         newExpense.repeating = true
         expensesToPush.push(newExpense)
       })
       await DB_UserScoped.addMultipleExpenses(expensesToPush)
     }
-  }
-
-  const resetNewExpense = () => {
-    setExpenseAmount('')
-    setExpenseName('')
-    setExpenseChildren([])
-    setExpenseNotes('')
-    setExpenseDueDate('')
-    setExpenseImage('')
   }
 
   const handleChildSelection = (e) => {
@@ -205,7 +206,7 @@ function NewExpenseForm() {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
       setShareWith(updated)
     })
   }
@@ -305,7 +306,6 @@ function NewExpenseForm() {
 
   return (
     <>
-      <p className="screen-title ">New Expense</p>
       {/* BOTTOM SUBMIT BUTTON */}
       {expenseAmount.length > 0 &&
         expenseName.length > 0 &&
@@ -314,171 +314,187 @@ function NewExpenseForm() {
         payer.name.length > 0 && <BottomButton elClass={'active visible'} type="submit" onClick={submitNewExpense} />}
 
       {/* PAGE CONTAINER */}
-      <div {...handlers} id="add-expense-form" className={`${currentUser?.settings?.theme} form page-container`}>
-        {/* AMOUNT */}
-        <label className="caption center-text">click below to add a custom amount</label>
-        <div id="amount-input-wrapper" onClick={() => setShowNumpad(true)}>
-          <p id="amount-input">
-            <span className="flex defaults">
-              <span id="dollar-sign" className="pr-5">
-                <sup>$</sup>
+      <BottomCard title={'Add Expense'} showCard={formToShow === ScreenNames.newExpense}>
+        <div {...handlers} id="add-expense-form" className={`${theme} form`}>
+          {/* AMOUNT */}
+          <div id="amount-input-wrapper" onClick={() => setShowNumpad(true)}>
+            <p id="amount-input">
+              <span className="flex defaults">
+                <span id="dollar-sign" className="pr-5">
+                  <sup>$</sup>
+                </span>
+                <span id="zero" className={expenseAmount.length > 0 ? 'active' : ''}>
+                  {expenseAmount.length > 0 ? expenseAmount : '0'}
+                </span>
               </span>
-              <span id="zero" className={expenseAmount.length > 0 ? 'active' : ''}>
-                {expenseAmount.length > 0 ? expenseAmount : '0'}
-              </span>
-            </span>
-          </p>
-        </div>
-
-        {/* NUMPAD */}
-        <Numpad
-          onSubmit={() => setShowNumpad(false)}
-          onNumClick={(e) => onNumpadPress(e)}
-          onBackspace={deleteLastNumber}
-          className={showNumpad ? 'active mt-10' : ''}
-        />
-
-        <p className="mt-10 mb-10" id="or">
-          -or-
-        </p>
-
-        {/* DEFAULT EXPENSE AMOUNTS */}
-        <>
-          <div className="flex mb-15" id="default-expense-amounts">
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $10
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $20
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $30
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $40
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $50
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $60
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $70
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $80
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $90
-            </button>
-            <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
-              RESET
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $100
-            </button>
+            </p>
           </div>
-        </>
 
-        <div className="w-100">
-          <label>
-            Name<span className="asterisk">*</span>
-          </label>
-          <input type="text" className="mb-15 mt-0" onChange={(e) => setExpenseName(e.target.value)} />
-        </div>
+          {/* NUMPAD */}
+          <Numpad
+            onSubmit={() => setShowNumpad(false)}
+            onNumClick={(e) => onNumpadPress(e)}
+            onBackspace={deleteLastNumber}
+            className={showNumpad ? 'active mt-10' : ''}
+          />
 
-        {/* DUE DATE */}
-        <label>
-          Due Date<span className="asterisk">*</span>
-        </label>
-        <MobileDatePicker
-          className="mb-15 mt-0 w-100"
-          onChange={(e) => {
-            setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
-          }}
-        />
-        <div className="flex mb-20" id="upload-inputs">
-          <label htmlFor="upload-input" className="custom-file-upload w-50 button default">
-            Choose Image
-          </label>
-          <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
-          <button id="upload-button" className="button default green w-50">
-            Upload <span className="material-icons-round">file_upload</span>
-          </button>
-        </div>
-        <textarea name="expense-notes" placeholder="Notes" className="mb-15" onChange={(e) => setExpenseNotes(e.target.value)}></textarea>
-        {currentUser && (
-          <div className="share-with-container">
+          {/* DEFAULT EXPENSE AMOUNTS */}
+          <>
+            <div className="flex mb-15" id="default-expense-amounts">
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $10
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $20
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $30
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $40
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $50
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $60
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $70
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $80
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $90
+              </button>
+              <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
+                RESET
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $100
+              </button>
+            </div>
+          </>
+
+          {/* EXPENSE NAME */}
+          <div className="w-100">
             <label>
-              <span className="material-icons">request_quote</span>Who will be paying the expense?
-              <span className="asterisk">*</span>
+              Name<span className="asterisk">*</span>
             </label>
-            <CheckboxGroup
-              dataPhone={currentUser.coparents.map((x) => x.phone)}
-              labels={currentUser.coparents.map((x) => x.name)}
-              onCheck={(e) => {
-                const checkbox = e.target.closest('#checkbox-container')
-                document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
-                checkbox.classList.add('active')
-                handlePayerSelection(e).then((r) => r)
-              }}
-            />
+            <input type="text" className="mb-15 mt-0" onChange={(e) => setExpenseName(e.target.value)} />
           </div>
-        )}
 
-        {/* SHARE WITH */}
-        {currentUser && (
-          <div className="share-with-container">
-            <label>
-              <span className="material-icons-round">visibility</span> Who should see it?<span className="asterisk">*</span>
-            </label>
-            <CheckboxGroup
-              dataPhone={currentUser.coparents.map((x) => x.phone)}
-              labels={currentUser.coparents.map((x) => x.name)}
-              onCheck={handleShareWithSelection}
-            />
-          </div>
-        )}
+          {/* DUE DATE */}
+          <label>Due Date</label>
+          <MobileDatePicker
+            className="mb-15 mt-0 w-100"
+            onChange={(e) => {
+              setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
+            }}
+          />
 
-        {/* INCLUDING WHICH CHILDREN */}
-        {currentUser && currentUser.children !== undefined && (
-          <div className="share-with-container ">
-            <Accordion>
-              <label onClick={() => setChildrenAccIsExpanded(!childrenAccIsExpanded)}>
-                <span className="material-icons mr-10">face</span> Set Applicable Child(ren)
-                <span className={'material-icons-round plus-minus-symbol ml-auto'}>{childrenAccIsExpanded ? 'remove' : 'add'}</span>
+          {/* UPLOAD INPUTS */}
+          <UploadInputs containerClass={theme} actualUploadButtonText={'Upload'} uploadButtonText="Choose Image" upload={chooseImage} />
+          <textarea name="expense-notes" placeholder="Notes" className="mb-15" onChange={(e) => setExpenseNotes(e.target.value)}></textarea>
+          {currentUser && (
+            <div className="share-with-container">
+              <label>
+                <span className="material-icons">request_quote</span>Who will be paying the expense?
+                <span className="asterisk">*</span>
               </label>
-              <Accordion.Panel expanded={childrenAccIsExpanded}>
-                <CheckboxGroup labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
-              </Accordion.Panel>
-            </Accordion>
-          </div>
-        )}
+              <CheckboxGroup
+                dataPhone={currentUser.coparents.map((x) => x.phone)}
+                labels={currentUser.coparents.map((x) => x.name)}
+                onCheck={(e) => {
+                  const checkbox = e.target.closest('#checkbox-container')
+                  document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
+                  checkbox.classList.add('active')
+                  handlePayerSelection(e).then((r) => r)
+                }}
+              />
+            </div>
+          )}
 
-        {/* REPEATING? */}
-        <div className="share-with-container" id="repeating-container">
-          <Accordion className={'p-0'}>
-            <label onClick={() => setRepeatAccIsExpanded(!repeatAccIsExpanded)}>
-              <span className="material-icons mr-10">event_repeat</span> Set Repeat Interval
-              <span className={'material-icons-round plus-minus-symbol ml-auto'}>{repeatAccIsExpanded ? 'remove' : 'add'}</span>
-            </label>
-            <Accordion.Panel className={'p-0'} expanded={repeatAccIsExpanded}>
-              <CheckboxGroup onCheck={handleRepeatingSelection} labels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
-              <label className="mb-5">Month to end repeating expense</label>
-              {repeatInterval && (
-                <MobileDatePicker
-                  className={'mt-0 w-100'}
-                  format={DateFormats.readableMonth}
-                  views={DatetimePickerViews.monthAndYear}
-                  hasAmPm={false}
-                  onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
+          {/* SHARE WITH */}
+          {currentUser && (
+            <div className="share-with-container">
+              <label>
+                <span className="material-icons-round">visibility</span> Who should see it?<span className="asterisk">*</span>
+              </label>
+              <CheckboxGroup
+                dataPhone={currentUser.coparents.map((x) => x.phone)}
+                labels={currentUser.coparents.map((x) => x.name)}
+                onCheck={handleShareWithSelection}
+              />
+            </div>
+          )}
+
+          {/* INCLUDING WHICH CHILDREN */}
+          {currentUser && currentUser.children !== undefined && (
+            <div className="share-with-container ">
+              <div className="flex">
+                <p>Include Child(ren)</p>
+                <Toggle
+                  icons={{
+                    checked: <span className="material-icons-round">face</span>,
+                    unchecked: null,
+                  }}
+                  className={'ml-auto reminder-toggle'}
+                  onChange={(e) => setIncludeChildren(!includeChildren)}
                 />
+              </div>
+              {includeChildren && <CheckboxGroup labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />}
+            </div>
+          )}
+
+          {/* REPEATING? */}
+          <div className="share-with-container" id="repeating-container">
+            <div className="share-with-container ">
+              <div className="flex">
+                <p>Repeating</p>
+                <Toggle
+                  icons={{
+                    checked: <span className="material-icons-round">event_repeat</span>,
+                    unchecked: null,
+                  }}
+                  className={'ml-auto reminder-toggle'}
+                  onChange={(e) => setRepeating(!repeating)}
+                />
+              </div>
+              {repeating && (
+                <>
+                  <CheckboxGroup onCheck={handleRepeatingSelection} labels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
+                  <label className="mb-5">Month to end repeating expense</label>
+                  {repeatInterval && (
+                    <MobileDatePicker
+                      className={'mt-0 w-100'}
+                      format={DateFormats.readableMonth}
+                      views={DatetimePickerViews.monthAndYear}
+                      hasAmPm={false}
+                      onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
+                    />
+                  )}
+                </>
               )}
-            </Accordion.Panel>
-          </Accordion>
+            </div>
+          </div>
+
+          {/* BUTTONS */}
+          <div className="buttons gap">
+            {/*{showSubmitButton && (*/}
+            {expenseAmount.length > 0 && expenseName.length > 0 && shareWith.length > 0 && Manager.isValid(payer, false, true) && (
+              <button className="button card-button" onClick={submitNewExpense}>
+                Create Expense <span className="material-icons-round ml-10 fs-22">attach_money</span>
+              </button>
+            )}
+            {/*)}*/}
+            <button className="button card-button red" onClick={resetForm}>
+              Cancel
+            </button>
+          </div>
         </div>
-      </div>
+      </BottomCard>
     </>
   )
 }
