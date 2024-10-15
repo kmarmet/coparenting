@@ -31,15 +31,14 @@ import DocumentsManager from '../../../managers/documentsManager'
 
 export default function DocViewer() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, previousScreen, currentScreen, docToView } = state
+  const { currentUser, theme, formToShow, docToView } = state
   const [tocHeaders, setTocHeaders] = useState([])
-  const [screenTitle, setScreenTitle] = useState('Document')
   const [showCard, setShowCard] = useState(false)
   const [searchResults, setSearchResults] = useState([])
   const [searchResultsIndex, setSearchResultsIndex] = useState(1)
   const [showTocButton, setShowTocButton] = useState(true)
   const [showSearchInput, setShowSearchInput] = useState(false)
-
+  const [showSearch, setShowSearch] = useState(false)
   const scrollToHeader = (header) => {
     closeSearch()
     const firstChar = header.slice(0, 1)
@@ -151,30 +150,21 @@ export default function DocViewer() {
   }
 
   const closeSearch = () => {
-    if (!showTocButton) {
-      let allHeaders = document.querySelectorAll('.header')
-      let allPars = document.querySelectorAll('#text-container p')
-      document.getElementById('search-input').value = ''
-      allPars = Array.from(allPars)
-      allPars.forEach((par) => {
-        par.classList.remove('search-highlight')
-        par.classList.remove('low-opacity')
-      })
-      setSearchResults([])
-      setSearchResultsIndex(0)
-      allHeaders = Array.from(allHeaders)
-      if (Manager.isValid(allHeaders, true)) {
-        allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
-      }
-    }
-  }
-
-  const toggleSearch = () => {
-    setShowSearchInput(!showSearchInput)
+    Manager.resetForm()
+    document.getElementById('search-input').value = ''
+    let allHeaders = document.querySelectorAll('.header')
+    let allPars = document.querySelectorAll('#text-container p')
+    allPars = Array.from(allPars)
+    allPars.forEach((par) => {
+      par.classList.remove('search-highlight')
+      par.classList.remove('low-opacity')
+    })
     setSearchResults([])
-    setShowTocButton(!showTocButton)
-
-    closeSearch()
+    setSearchResultsIndex(0)
+    allHeaders = Array.from(allHeaders)
+    if (Manager.isValid(allHeaders, true)) {
+      allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
+    }
   }
 
   // Get/Append Doc
@@ -193,9 +183,6 @@ export default function DocViewer() {
       const relevantCoparent = coparentsFromObject.filter((x) => x.phone === uploadedByPhone)[0]
       userIdToUse = relevantCoparent.id
     }
-
-    // Set dynamic screen title
-    setScreenTitle(removeFileExtension(fileName))
 
     // Insert HTML
     const docHtml = await DocumentConversionManager.docToHtml(fileName, userIdToUse)
@@ -288,9 +275,6 @@ export default function DocViewer() {
 
   // Get/Append Image
   const getImage = async () => {
-    // Get Firebase images
-    setScreenTitle(removeFileExtension(docToView.name))
-
     const coparentDocsObjects = await DocumentsManager.getCoparentDocs(currentUser)
     const docsFromObject = coparentDocsObjects.map((x) => x.docs)
     const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
@@ -328,10 +312,6 @@ export default function DocViewer() {
 
   return (
     <>
-      <p className="screen-title documents" id="documents-screen-title">
-        {screenTitle}
-      </p>
-
       {/* BOTTOM ACTIONS */}
       <div className={`${theme} flex form`} id="bottom-actions">
         {showTocButton && Manager.isValid(document.querySelectorAll('.header'), true) && (
@@ -339,29 +319,34 @@ export default function DocViewer() {
             Table of Contents <span className="pl-10 fs-20 material-icons-round">format_list_bulleted</span>
           </div>
         )}
-        <div className="flex" id="search-wrapper">
-          {/* INPUT */}
-          {showSearchInput && <DebounceInput minLength={3} id="search-input" onChange={(e) => search(e.target.value)} debounceTimeout={500} />}
-          <span id="search-button" className="material-icons-round" onClick={toggleSearch}>
-            {showTocButton ? 'search' : 'close'}
-          </span>
-        </div>
       </div>
-
-      {/* SEARCH NAV */}
-      {searchResults.length > 0 && (
-        <div id="input-and-nav">
-          {/* NAVIGATION */}
-          <div className="flex">
-            <span className="material-icons-round ml-5 mr-15" onClick={() => searchTraverse('up')}>
-              arrow_upward
-            </span>
-            <span className="material-icons-round" onClick={() => searchTraverse('down')}>
-              arrow_downward
-            </span>
-          </div>
+      {/* INPUT */}
+      <BottomCard
+        className="form search-card"
+        showCard={formToShow === ScreenNames.docViewer}
+        title={'Search'}
+        onClose={() => {
+          setState({ ...state, formToShow: '' })
+          closeSearch()
+        }}>
+        <div className="flex">
+          <DebounceInput minLength={3} id="search-input" onChange={(e) => search(e.target.value)} debounceTimeout={500} />
+          {/* SEARCH NAV */}
+          {searchResults.length > 0 && (
+            <div id="input-and-nav">
+              {/* NAVIGATION */}
+              <div className="flex">
+                <span className="material-icons-round" onClick={() => searchTraverse('up')}>
+                  arrow_upward
+                </span>
+                <span className="material-icons-round" onClick={() => searchTraverse('down')}>
+                  arrow_downward
+                </span>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </BottomCard>
 
       {/* TABLE OF CONTENTS */}
       {Manager.isValid(document.querySelectorAll('.header'), true) && (

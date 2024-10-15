@@ -408,7 +408,6 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   useEffect(() => {
     Manager.toggleForModalOrNewForm('show')
     setDatetimeValue()
-    console.log(formToShow)
   }, [])
 
   return (

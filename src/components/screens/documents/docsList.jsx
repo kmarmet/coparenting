@@ -10,6 +10,9 @@ import DB_DocumentScoped from '@documentScoped'
 import AddNewButton from '../../shared/addNewButton'
 import FirebaseStorage from '@firebaseStorage'
 import DocumentsManager from '../../../managers/documentsManager'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
+import moment from 'moment'
+
 import {
   toCamelCase,
   getFirstWord,
@@ -27,6 +30,8 @@ import {
   getFileExtension,
 } from '../../../globalFunctions'
 import SecurityManager from '../../../managers/securityManager'
+import UploadDocuments from './uploadDocuments'
+import DateFormats from '../../../constants/dateFormats'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
@@ -52,27 +57,28 @@ export default function DocsList() {
   }
 
   const deleteDocs = async () => {
-    DocumentsManager.deleteDocsWithIds(toDelete, currentUser, theme, (docId) => {
+    DocumentsManager.deleteDocsWithIds(toDelete, currentUser, (docId) => {
       setToDelete(toDelete.filter((x) => x !== docId))
       setDocs(docs.filter((x) => x.id !== docId))
     })
   }
 
   useEffect(() => {
-    getSecuredDocs().then((r) => r)
-    setState({ ...state, previousScreen: ScreenNames.docsList, showBackButton: false, showMenuButton: true })
+    const dbRef = ref(getDatabase())
+    onValue(child(dbRef, DB.tables.documents), async (snapshot) => {
+      await getSecuredDocs(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
+      setState({ ...state, selectedNewEventDay: moment().format(DateFormats.dateForDb).toString() })
+    })
     Manager.toggleForModalOrNewForm()
   }, [])
 
   return (
     <div>
       <p className="screen-title ">Documents</p>
-      <AddNewButton
-        onClose={() => setState({ ...state, currentScreen: ScreenNames.uploadDocuments })}
-        onClick={() => setState({ ...state, currentScreen: ScreenNames.uploadDocuments })}
-      />
+      <UploadDocuments />
       <div id="doc-selection-container" className={`${theme} page-container`}>
         {docs.length === 0 && <p className={`${theme} caption`}>there are currently no documents</p>}
+        <p className="mb-10">Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise.</p>
         <p className="mb-10">If the document type you tap is an Image, the loading time may be a bit longer.</p>
         {!Manager.isValid(selectedDoc, false, true) && (
           <div className="sections">

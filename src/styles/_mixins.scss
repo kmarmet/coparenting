@@ -380,8 +380,8 @@
       font-size: 16px;
       opacity: 0.5;
     }
-    
-    &:focus{
+
+    &:focus {
       outline: none;
     }
   }
@@ -1025,7 +1025,7 @@
     border-radius: 0;
     width: 100%;
     justify-content: center;
-    
+
     &.active {
       span {
         color: $accent;
@@ -2090,34 +2090,34 @@
   opacity: 0;
   max-height: 0;
   overflow: auto;
-  
-.swipe-line-and-close {
-  margin: 0;
-  position: relative;
-  top: -15px;
-  
-  &.flex {
+
+  .swipe-line-and-close {
     margin: 0;
+    position: sticky;
+    top: -15px;
+
+    &.flex {
+      margin: 0;
+    }
+    #close-icon {
+      font-size: 30px;
+      opacity: 0.5;
+      justify-self: flex-end;
+      margin-left: auto;
+    }
+
+    #swipe-line {
+      height: 4px;
+      margin-left: auto;
+      width: 100px;
+      right: -15px;
+      background-color: black;
+      border-radius: 20px;
+      position: relative;
+      top: -8px;
+      opacity: 0.8;
+    }
   }
-  #close-icon {
-    font-size: 30px;
-    opacity: 0.5;
-    justify-self: flex-end;
-    margin-left: auto;
-  }
-  
-  #swipe-line {
-    height: 4px;
-    margin-left: auto;
-    width: 100px;
-    right: -15px;
-    background-color: black;
-    border-radius: 20px;
-    position: relative;
-    top: -8px;
-    opacity: 0.8;
-  }
-}
 
   #title {
     color: $lightPurple;
@@ -2294,6 +2294,10 @@
   /*#region  LIGHT THEME*/
   &.light {
     background-color: white;
+    
+    .swipe-line-and-close {
+      background: white;
+    }
 
     #title {
       color: $darkBg;
@@ -2309,7 +2313,7 @@
       background-color: $lightBlueMedium;
       color: white;
     }
-    
+
     &.new-conversation {
       .coparent-name {
         border: 1px solid $lightBorder;
@@ -2379,16 +2383,17 @@
   }
 
   p:not(#title) {
-    background-color: $darkBlue;
-    padding: 10px;
-    border-radius: 10px;
-    font-weight: 600;
-    color: $offWhite;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-
+    p:not(.text-screen-intro) {
+      background-color: $darkBlue;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: $offWhite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
     &#subtitle,
     &.description {
       font-weight: 400;
@@ -2435,6 +2440,30 @@
     }
   }
   
+  // DOC VIEWER SEARCH
+  &.search-card {
+    max-height: 200px;
+    min-height: 0;
+    padding: 20px ;
+    #input-and-nav {
+      .flex {
+        align-items: center;
+      }
+      span {
+        font-size: 30px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        top: 3px;
+        
+        &:first-child {
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+
   // NEW CONVERSATION
   &.new-conversation {
     .coparent-name {
@@ -2567,6 +2596,7 @@
 }
 /*#endregion  COMPONENTS*/
 
+/*#region  MENU*/
 @mixin slideOutMenu {
   height: 100vh;
   display: block;
@@ -2757,30 +2787,29 @@
     justify-content: space-between;
     align-items: center;
     overflow: auto;
-    padding: 0 10px;
+    padding: 8px 10px 20px 0;
 
     .menu-item {
       opacity: 0.5;
       transition: all 0.3s ease-in-out;
-//      width: calc(100% / 7);
       justify-content: center;
       display: flex;
       width: 40px;
-      
-      &.active {
+
+      &.active:not(#menu-button) {
         opacity: 1;
         border-top: 2px solid $lightBlue;
         color: $lightBlue;
-        padding-top: 8px;
-        
-        span {
+        position: relative;
+        top: -8px;
+
+        span:not(.menu-icon) {
           position: relative;
-          top: -6px;
+          top: 6px;
         }
       }
 
       &#menu-button {
-        background-color: $green;
         border-radius: 100%;
         display: flex;
         justify-content: center;
@@ -2788,6 +2817,9 @@
         height: 45px;
         width: 45px;
         border: 0;
+        opacity: 1;
+
+        @include shadow;
 
         /*#region  LIGHT THEME*/
         &.light {
@@ -2801,8 +2833,19 @@
         /*#endregion  DARK THEME*/
 
         .material-icons-round {
+          background-color: $green;
+          border-radius: 100%;
           color: white;
           font-size: 30px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 45px;
+          width: 45px;
+          border: 0;
+          padding: 0;
+          margin: 0;
+          line-height: 1;
         }
       }
     }
@@ -2810,7 +2853,7 @@
 
   .material-icons-round,
   .material-icons-outlined {
-    font-size: 25px;
+    font-size: 30px;
   }
 }
 /*#endregion  MENU*/

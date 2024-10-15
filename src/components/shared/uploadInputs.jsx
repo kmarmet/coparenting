@@ -7,6 +7,7 @@ function UploadInputs({
   containerClass = '',
   getImages = () => {},
   actualUploadButtonText = 'Upload',
+  uploadType = 'document',
 }) {
   return (
     <div id="upload-inputs" className={containerClass}>
@@ -21,7 +22,7 @@ function UploadInputs({
           name="file-upload"
           type="file"
           multiple
-          accept="image/*"
+          accept={uploadType === 'document' ? '.docx' : 'image/*'}
         />
       </button>
       <button

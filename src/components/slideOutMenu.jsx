@@ -27,7 +27,6 @@ export default function SlideOutMenu() {
   const { currentScreen, menuIsOpen, theme, currentUser, formToShow } = state
 
   const changeCurrentScreen = (screen) => {
-    console.log(screen)
     if (screen === ScreenNames.calendar) {
       const cal = document.querySelector('.flatpickr-calendar')
       if (cal) {

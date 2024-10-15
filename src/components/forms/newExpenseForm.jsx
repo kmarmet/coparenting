@@ -301,7 +301,6 @@ function NewExpenseForm() {
 
   useEffect(() => {
     Manager.toggleForModalOrNewForm('show')
-    setState({ ...state, previousScreen: ScreenNames.expenseTracker, showMenuButton: false, showBackButton: true })
   }, [])
 
   return (

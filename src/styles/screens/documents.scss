@@ -1,28 +1,13 @@
 @import '../mixins';
 
 #external-overrides {
-  #input-and-nav {
-    position: fixed;
-    bottom: 100px;
-    background-color: $darkBlueDarkest;
-    top: inherit;
-    z-index: 1000;
-    padding: 5px;
-    right: 10px;
-    border-radius: $borderRadius;
-    .flex {
-      span {
-        color: $accent;
-        font-size: 30px;
-      }
-    }
-  }
 
   #bottom-actions {
     padding-top: 10px;
     position: fixed;
-    bottom: 0;
+    bottom: 80px;
     z-index: 1000;
+    @include  centerHoriz;
     #toc-button,
     #search-button {
       position: fixed;
@@ -60,8 +45,6 @@
     }
 
     #search-wrapper {
-      width: 100vw;
-      height: 80px;
       #search-input {
         justify-self: flex-end;
         width: 70%;
@@ -80,17 +63,6 @@
     }
   }
 
-  #documents-screen-title {
-    &.screen-title {
-      font-size: 22px;
-      text-align: left;
-      display: flex;
-      line-height: 1.3;
-      padding: 10px 0 10px 10px;
-      height: auto;
-      align-items: center;
-    }
-  }
   #documents-container,
   #doc-selection-container {
     /*#region  LIGHT THEME*/

@@ -62,6 +62,12 @@ export default function NavBar() {
       case currentScreen === ScreenNames.coparents:
         setState({ ...state, formToShow: ScreenNames.newCoparent })
         break
+      case currentScreen === ScreenNames.docsList:
+        setState({ ...state, formToShow: ScreenNames.uploadDocuments })
+        break
+      case currentScreen === ScreenNames.docViewer:
+        setState({ ...state, formToShow: ScreenNames.docViewer })
+        break
     }
   }
 
@@ -70,16 +76,21 @@ export default function NavBar() {
       <div id="navbar" className={`${theme} ${showShortcutMenu ? 'active' : ''}`}>
         {!menuIsOpen && (
           <div id="menu-items" className="flex">
+            {/* FULL MENU  */}
             <div onClick={() => setState({ ...state, menuIsOpen: true })} className={` menu-item`}>
               <span className={`material-icons-outlined`} id="show-full-menu-icon">
                 menu
               </span>
             </div>
+
+            {/* CALENDAR */}
             <div
               onClick={() => changeCurrentScreen(ScreenNames.calendar)}
               className={`${currentScreen === ScreenNames.calendar ? 'active menu-item two' : 'menu-item two'}`}>
               <span className={`${currentScreen === ScreenNames.calendar ? 'material-icons-round' : 'material-icons-outlined'}`}>calendar_month</span>
             </div>
+
+            {/* CHATS */}
             <div
               onClick={() => changeCurrentScreen(ScreenNames.chats)}
               className={`${currentScreen === ScreenNames.chats ? 'active menu-item three' : 'menu-item three'}`}>
@@ -88,9 +99,10 @@ export default function NavBar() {
 
             {/* ADD NEW BUTTON */}
             <div className={`${menuIsOpen ? 'menu-item' : 'menu-item active'} ${theme}`} onClick={addNew} id="menu-button">
-              <span className={`material-icons-round`}>add</span>
+              <span className={`material-icons-round menu-icon`}>{currentScreen === ScreenNames.docViewer ? 'search' : 'add'}</span>
             </div>
 
+            {/* CHILD INFO */}
             <div className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>
               <span
                 onClick={() => changeCurrentScreen(ScreenNames.childInfo)}

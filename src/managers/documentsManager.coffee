@@ -25,7 +25,7 @@ import {
 
 export default DocumentsManager =
 
-  deleteDocsWithIds: (toDelete, currentUser, callback) ->
+  deleteDocsWithIds: (toDelete, currentUser, callback = () => {}) ->
     for docId in toDelete
       docs = await DB.getTable(DB.tables.documents)
       docs = Manager.convertToArray(docs).flat()
