@@ -4,7 +4,7 @@ import '../../prototypes'
 import Manager from '@manager'
 import { useSwipeable } from 'react-swipeable'
 
-export default function BottomCard({ error = '', onClose, children, title, subtitle = '', showCard = false, className = '' }) {
+export default function BottomCard({ resetKey = 0, error = '', onClose, children, title, subtitle = '', showCard = false, className = '' }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, alertType, formToShow } = state
   const isMobile = window.screen.width < 800

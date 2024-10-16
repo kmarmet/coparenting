@@ -10,17 +10,8 @@ export default function CardConfirm({ className = '', title = '', message = '', 
   const { showAlert, alertMessage, alertType } = state
 
   useEffect(() => {
-    if (alertMessage && alertMessage !== undefined && alertMessage.length > 0) {
-      setTimeout(() => {
-        setState({ ...state, showAlert: false, alertMessage: '', alertType: 'error' })
-      }, 2500)
-    }
-  }, [alertMessage])
-
-  useEffect(() => {
-    if (!showAlert) {
-      Manager.toggleForModalOrNewForm('show')
-    }
+    Manager.toggleForModalOrNewForm('show')
+    console.log(className)
   }, [showAlert])
 
   return (

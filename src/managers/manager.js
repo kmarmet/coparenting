@@ -5,6 +5,28 @@ import DB from '@db'
 import '../prototypes'
 
 const Manager = {
+  resetForm: (parentClass) => {
+    console.log(parentClass)
+    const inputs = document.querySelector(`.${parentClass}`).querySelectorAll('input, textarea')
+    const toggles = document.querySelector(`.${parentClass}`).querySelectorAll('.react-toggle--checked')
+    const checkboxes = document.querySelector(`.${parentClass}`).querySelectorAll('.box')
+    // Inputs/Textareas
+    if (Manager.isValid(inputs, true)) {
+      inputs.forEach((input) => {
+        input.value = ''
+      })
+    }
+
+    // Toggles
+    if (Manager.isValid(toggles, true)) {
+      toggles.forEach((toggle) => toggle.classList.remove('react-toggle--checked'))
+    }
+
+    // Checkboxes
+    if (Manager.isValid(checkboxes, true)) {
+      checkboxes.forEach((checkbox) => checkbox.classList.remove('active'))
+    }
+  },
   phoneNumberIsValid: (phone) => {
     const expr = /^(1[ -]?)?\d{3}[ -]?\d{3}[ -]?\d{4}$/
     return expr.test(phone)
@@ -14,17 +36,6 @@ const Manager = {
     setTimeout(() => {
       element.classList.remove('animate')
     }, 200)
-  },
-  addSlideInButtonAnimation: (elementSelector) => {
-    const elements = document.querySelectorAll(elementSelector)
-
-    if (elements && elements.length) {
-      elements.forEach((menuItem, i) => {
-        setTimeout(() => {
-          menuItem.classList.add('visible')
-        }, 60 * i)
-      })
-    }
   },
   getUid: () => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -68,19 +79,6 @@ const Manager = {
   },
   scrollToTopOfPage: () => {
     window.scrollTo(0, 0)
-  },
-  // TOGGLES
-  toggleScreenTitle: (stateAction) => {
-    const screenTitle = document.querySelector('.screen-title')
-    if (screenTitle) {
-      if (Manager.isValid(stateAction) && stateAction === 'show') {
-        screenTitle.classList.remove('hide')
-        screenTitle.classList.add('active')
-      } else if (Manager.isValid(stateAction) && stateAction === 'hide') {
-        screenTitle.classList.add('hide')
-        screenTitle.classList.remove('active')
-      }
-    }
   },
   // ON PAGE LOAD
   toggleForModalOrNewForm: (hideOrShow = 'show') => {
@@ -172,20 +170,6 @@ const Manager = {
 
     return object
   },
-  resetForm: () => {
-    const inputs = document.querySelectorAll('input')
-    if (Manager.isValid(inputs, true)) {
-      inputs.forEach((input) => {
-        input.value = ''
-        input.checked = false
-      })
-    }
-
-    const checkboxes = document.querySelectorAll('.box')
-    if (Manager.isValid(checkboxes, true)) {
-      document.querySelectorAll('.box').forEach((box) => box.classList.remove('active'))
-    }
-  },
   getDirectionsLink: (address) => {
     let directionsLink
     if (
@@ -244,6 +228,7 @@ const Manager = {
     }
   },
   handleShareWithSelection: async (e, currentUser, theme, shareWith) => {
+    console.log(shareWith)
     let returnValue = []
     const clickedEl = e.currentTarget
     const checkbox = clickedEl.querySelector('.share-with-container .box')

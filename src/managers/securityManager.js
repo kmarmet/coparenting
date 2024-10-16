@@ -114,6 +114,20 @@ SecurityManager = {
       }
     }
     return returnRecords.flat();
+  },
+  getTitleSuggestions: async function(currentUser) {
+    var i, len, returnRecords, suggestion, suggestions;
+    returnRecords = [];
+    suggestions = Manager.convertToArray((await DB.getTable(DB.tables.suggestions))).flat();
+    if (Manager.isValid(suggestions, true)) {
+      for (i = 0, len = suggestions.length; i < len; i++) {
+        suggestion = suggestions[i];
+        if (suggestion.ownerPhone === currentUser.phone) {
+          returnRecords.push(suggestion);
+        }
+      }
+    }
+    return returnRecords.flat();
   }
 };
 

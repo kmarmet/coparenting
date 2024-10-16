@@ -45,6 +45,7 @@ import {
   uniqueArray,
   getFileExtension,
 } from '../../globalFunctions'
+import SecurityManager from '../../managers/securityManager'
 
 // COMPONENT
 export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventForm }) {
@@ -71,7 +72,6 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   const [isAllDay, setIsAllDay] = useState(false)
   const [eventStartTime, setEventStartTime] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
-  const [showSubmitButton, setShowSubmitButton] = useState(false)
   const [titleSuggestions, setTitleSuggestions] = useState([])
   const [showCloneInput, setShowCloneInput] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
@@ -79,6 +79,8 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   const [includeChildren, setIncludeChildren] = useState(false)
   const [errorFields, setErrorFields] = useState([])
   const [error, setError] = useState('')
+
+  const [updateKey, setUpdateKey] = useState(0)
 
   // HANDLE SWIPE
   const handlers = useSwipeable({
@@ -91,6 +93,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   })
 
   const resetForm = () => {
+    Manager.resetForm('new-event-form')
     setError('')
     setErrorFields([])
     setEventFromDate('')
@@ -110,7 +113,6 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
     setIsAllDay(false)
     setEventStartTime('')
     setEventEndTime('')
-    setShowSubmitButton(false)
     setTitleSuggestions([])
     setShowCloneInput(false)
     setShowReminders(false)
@@ -150,12 +152,16 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
     newEvent.fromVisitationSchedule = false
 
     // Insert Suggestion
-    const newSuggestion = new TitleSuggestion()
-    newSuggestion.ownerPhone = currentUser.phone
-    newSuggestion.formName = 'calendar'
-    newSuggestion.suggestion = newEvent.title
+    const alreadyExists =
+      titleSuggestions.filter((x) => x.ownerPhone === currentUser.phone && x.suggestion.toLowerCase() === newEvent.title.toLowerCase()).length > 0
 
-    await DB.addSuggestion(newSuggestion)
+    if (!alreadyExists) {
+      const newSuggestion = new TitleSuggestion()
+      newSuggestion.ownerPhone = currentUser.phone
+      newSuggestion.formName = 'calendar'
+      newSuggestion.suggestion = newEvent.title
+      await DB.addSuggestion(newSuggestion)
+    }
 
     let errors = []
 
@@ -172,7 +178,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
       errors.push('title')
     }
 
-    if (moment(eventFromDate).toString() === 'Invalid date') {
+    if (eventFromDate.length === 0 || (eventFromDate, DateFormats.dateForDb).toString() === 'Invalid date') {
       errors.push('date')
     }
 
@@ -210,6 +216,8 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
         await navigator.setAppBadge(1)
       }
     })
+
+    resetForm()
   }
 
   const scrollToError = () => {
@@ -393,26 +401,19 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   }, [clonedDates.length])
 
   useEffect(() => {
-    const shouldShowButton =
-      shareWith.length > 0 && eventTitle.length > 0 && moment(eventFromDate).format(DateFormats.dateForDb).replace('Invalid date', '').length > 0
-    if (shouldShowButton) {
-      setShowSubmitButton(true)
-    }
-  }, [shareWith.length, eventTitle.length, eventFromDate.length, eventFromDate])
-
-  useEffect(() => {
     setEventFromDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
     Manager.toggleForModalOrNewForm('show')
   }, [])
 
   return (
-    <>
+    <div key={updateKey}>
       <BottomCard
         className={`${theme} new-event-form `}
         onClose={() => {}}
         showCard={formToShow === ScreenNames.newCalendarEvent}
         error={error}
         title={'Add New Event'}>
+        {/* FORM WRAPPER */}
         <div {...handlers} id="calendar-event-form-container" {...handlers} className={`form ${theme}`}>
           {/* Event Length */}
           <div className="action-pills calendar-event">
@@ -438,14 +439,17 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
               onChange={async (e) => {
                 const inputValue = e.target.value
                 if (inputValue.length > 1) {
-                  const dbSuggestions = await DB.getTable(DB.tables.suggestions)
-                  const matching = dbSuggestions.filter(
-                    (x) =>
-                      x.formName === 'calendar' &&
-                      x.ownerPhone === currentUser.phone &&
-                      contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
-                  )
-                  setTitleSuggestions(Manager.getUniqueArray(matching).flat())
+                  const dbSuggestions = await SecurityManager.getTitleSuggestions(currentUser)
+
+                  if (Manager.isValid(dbSuggestions, true)) {
+                    const matching = dbSuggestions.filter(
+                      (x) =>
+                        x.formName === 'calendar' &&
+                        x.ownerPhone === currentUser.phone &&
+                        contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
+                    )
+                    setTitleSuggestions(Manager.getUniqueArray(matching).flat())
+                  }
                   removeError('title')
                 } else {
                   setTitleSuggestions([])
@@ -741,6 +745,6 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
           </div>
         </div>
       </BottomCard>
-    </>
+    </div>
   )
 }

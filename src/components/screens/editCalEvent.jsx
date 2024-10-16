@@ -46,17 +46,17 @@ export default function EditCalEvent() {
   const { currentUser, theme, calEventToEdit, formToShow } = state
 
   // Event Details
-  const [eventFromDate, setEventFromDate] = useState(calEventToEdit.fromDate)
-  const [eventLocation, setEventLocation] = useState(calEventToEdit.location)
-  const [eventTitle, setEventTitle] = useState(calEventToEdit.title)
-  const [eventWebsiteUrl, setEventWebsiteUrl] = useState(calEventToEdit.websiteUrl)
-  const [eventStartTime, setEventStartTime] = useState(calEventToEdit.startTime)
-  const [eventNotes, setEventNotes] = useState(calEventToEdit.notes)
-  const [eventEndDate, setEventEndDate] = useState(calEventToEdit.toDate)
-  const [eventEndTime, setEventEndTime] = useState(calEventToEdit.endTime)
-  const [eventChildren, setEventChildren] = useState(calEventToEdit.children)
-  const [eventReminderTimes, setEventReminderTimes] = useState(calEventToEdit.reminderTimes)
-  const [eventShareWith, setEventShareWith] = useState(calEventToEdit.shareWith)
+  const [eventFromDate, setEventFromDate] = useState(calEventToEdit?.fromDate)
+  const [eventLocation, setEventLocation] = useState(calEventToEdit?.location)
+  const [eventTitle, setEventTitle] = useState(calEventToEdit?.title)
+  const [eventWebsiteUrl, setEventWebsiteUrl] = useState(calEventToEdit?.websiteUrl)
+  const [eventStartTime, setEventStartTime] = useState(calEventToEdit?.startTime)
+  const [eventNotes, setEventNotes] = useState(calEventToEdit?.notes)
+  const [eventEndDate, setEventEndDate] = useState(calEventToEdit?.toDate)
+  const [eventEndTime, setEventEndTime] = useState(calEventToEdit?.endTime)
+  const [eventChildren, setEventChildren] = useState(calEventToEdit?.children)
+  const [eventReminderTimes, setEventReminderTimes] = useState(calEventToEdit?.reminderTimes)
+  const [eventShareWith, setEventShareWith] = useState(calEventToEdit?.shareWith)
 
   // State
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
@@ -71,6 +71,7 @@ export default function EditCalEvent() {
   const [showReminders, setShowReminders] = useState(false)
   const [allEvents, setAllEvents] = useState([])
   const [confirmMessage, setConfirmMessage] = useState('')
+
   // Swipe Handler
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {},
@@ -82,6 +83,7 @@ export default function EditCalEvent() {
   })
 
   const resetForm = () => {
+    Manager.resetForm('edit-event-form')
     setEventFromDate('')
     setEventLocation('')
     setEventTitle('')
@@ -97,6 +99,8 @@ export default function EditCalEvent() {
     setClonedDatesToSubmit([])
     setRepeatingDatesToSubmit([])
     setIsAllDay(false)
+    setConfirmTitle('')
+    setConfirmMessage('')
     setError('')
   }
 
@@ -108,8 +112,8 @@ export default function EditCalEvent() {
     const eventToEdit = new CalendarEvent()
 
     // Required
-    eventToEdit.id = calEventToEdit.id
-    eventToEdit.title = Manager.isValid(eventTitle) ? calEventToEdit.title : ''
+    eventToEdit.id = calEventToEdit?.id
+    eventToEdit.title = Manager.isValid(eventTitle) ? calEventToEdit?.title : ''
     eventToEdit.shareWith = Manager.getUniqueArray(eventShareWith).flat()
     eventToEdit.fromDate = moment(eventFromDate).format(DateFormats.dateForDb)
     eventToEdit.toDate = moment(eventEndDate).format(DateFormats.dateForDb)
@@ -130,13 +134,13 @@ export default function EditCalEvent() {
       eventToEdit.title += ' 🎂'
     }
     eventToEdit.websiteUrl = eventWebsiteUrl
-    eventToEdit.repeatInterval = calEventToEdit.repeatInterval
+    eventToEdit.repeatInterval = calEventToEdit?.repeatInterval
     eventToEdit.fromVisitationSchedule = false
     eventToEdit.morningSummaryReminderSent = false
     eventToEdit.eveningSummaryReminderSent = false
     eventToEdit.sentReminders = []
 
-    const allEvents = await SecurityManager.getCalendarEvents(currentUser)
+    const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
 
     // Cloned Events
@@ -243,14 +247,16 @@ export default function EditCalEvent() {
   }
 
   const setDefaultValues = () => {
-    setEventTitle(calEventToEdit.title)
-    setEventFromDate(calEventToEdit.fromDate)
-    setEventEndDate(calEventToEdit.toDate)
-    setEventLocation(calEventToEdit.location)
-    setEventStartTime(calEventToEdit.startTime)
-    setEventEndTime(calEventToEdit.endTime)
-
-    // Coparent sharewith
+    setEventTitle(calEventToEdit?.title)
+    setEventFromDate(calEventToEdit?.fromDate)
+    setEventEndDate(calEventToEdit?.toDate)
+    setEventLocation(calEventToEdit?.location)
+    setEventStartTime(calEventToEdit?.startTime)
+    setEventEndTime(calEventToEdit?.endTime)
+    setEventShareWith(calEventToEdit?.shareWith)
+    setConfirmTitle('')
+    setConfirmMessage('')
+    setEventLength(EventLengths.single)
 
     // Children
 
@@ -259,7 +265,7 @@ export default function EditCalEvent() {
     setEventReminderTimes(times || [])
 
     // Repeating
-    if (Manager.isValid(calEventToEdit.repeatInterval) && calEventToEdit.repeatInterval.length > 0) {
+    if (Manager.isValid(calEventToEdit?.repeatInterval) && calEventToEdit?.repeatInterval.length > 0) {
       Manager.setDefaultCheckboxes('repeating', calEventToEdit, 'repeatInterval', false)
     }
   }
@@ -272,12 +278,14 @@ export default function EditCalEvent() {
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
     if (eventCount === 1) {
-      await DB.delete(DB.tables.calendarEvents, calEventToEdit.id).finally(whenDone)
+      await DB.delete(DB.tables.calendarEvents, calEventToEdit?.id).finally(whenDone)
     } else {
-      let clonedEvents = await DB.getTable(DB.tables.calendarEvents)
-      clonedEvents = clonedEvents.filter((x) => x.title === calEventToEdit.title)
-      for (const event of clonedEvents) {
-        await CalendarManager.deleteEvent(DB.tables.calendarEvents, event.id).finally(whenDone)
+      let clonedEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
+      if (Manager.isValid(clonedEvents, true)) {
+        clonedEvents = clonedEvents.filter((x) => x.title === calEventToEdit?.title)
+        for (const event of clonedEvents) {
+          await CalendarManager.deleteEvent(DB.tables.calendarEvents, event.id).finally(whenDone)
+        }
       }
     }
   }
@@ -307,26 +315,20 @@ export default function EditCalEvent() {
   }
 
   useEffect(() => {
-    if (calEventToEdit.hasOwnProperty('title') && calEventToEdit !== undefined) {
+    if (Manager.isValid(calEventToEdit) && calEventToEdit?.hasOwnProperty('title')) {
       setDefaultValues()
     }
-    setState({
-      ...state,
-      showBackButton: false,
-      showMenuButton: false,
-    })
     setAllCalEvents().then((r) => r)
     Manager.toggleForModalOrNewForm('show')
-    setEventLength(EventLengths.single)
   }, [])
 
   return (
     <BottomCard
       className={`${theme} edit-event-form`}
-      onClose={() => {}}
+      onClose={() => resetForm()}
       showCard={formToShow === ScreenNames.editCalendarEvent}
       error={error}
-      title={`Edit ${calEventToEdit.title}`}>
+      title={`Edit ${calEventToEdit?.title}`}>
       <div {...handlers} id="edit-cal-event-container" className={`${theme} form`}>
         <CardConfirm
           className={confirmTitle.length > 0 ? 'active' : ''}
@@ -368,7 +370,7 @@ export default function EditCalEvent() {
                     Date <span className="asterisk">*</span>
                   </label>
                   <MobileDatePicker
-                    defaultValue={moment(calEventToEdit.fromDate)}
+                    defaultValue={moment(calEventToEdit?.fromDate)}
                     className={`${theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
                     onAccept={(e) => {
                       removeError('date')
@@ -417,7 +419,7 @@ export default function EditCalEvent() {
                   className={`${theme} event-date-range m-0 w-100`}
                   onAccept={(e) => setEventStartTime(e)}
                   minutesStep={5}
-                  defaultValue={DateManager.dateIsValid(calEventToEdit.startTime) ? moment(calEventToEdit?.startTime, DateFormats.timeForDb) : null}
+                  defaultValue={DateManager.dateIsValid(calEventToEdit?.startTime) ? moment(calEventToEdit?.startTime, DateFormats.timeForDb) : null}
                 />
               </div>
               <div>
@@ -426,7 +428,7 @@ export default function EditCalEvent() {
                   className={`${theme} event-date-range m-0 w-100`}
                   minutesStep={5}
                   onAccept={(e) => setEventEndTime(e)}
-                  defaultValue={DateManager.dateIsValid(calEventToEdit.endTime) ? moment(calEventToEdit?.endTime, DateFormats.timeForDb) : null}
+                  defaultValue={DateManager.dateIsValid(calEventToEdit?.endTime) ? moment(calEventToEdit?.endTime, DateFormats.timeForDb) : null}
                 />
               </div>
             </div>
@@ -575,7 +577,7 @@ export default function EditCalEvent() {
           <button
             className="button card-button delete"
             onClick={() => {
-              setConfirmTitle(`Deleting ${calEventToEdit.title}`)
+              setConfirmTitle(`Deleting ${calEventToEdit?.title}`)
               setLocalConfirmMessage()
             }}>
             Delete <span className="material-icons-round ml-10 fs-22">delete</span>

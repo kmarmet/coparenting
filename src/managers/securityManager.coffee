@@ -74,5 +74,13 @@ SecurityManager =
         if shareWith.includes(currentUser.phone) or memory.createdBy == currentUser.phone
           returnRecords.push(memory)
     return returnRecords.flat()
+  getTitleSuggestions: (currentUser) ->
+    returnRecords = []
+    suggestions = Manager.convertToArray(await DB.getTable(DB.tables.suggestions)).flat()
+    if Manager.isValid(suggestions,true)
+      for suggestion in suggestions
+        if suggestion.ownerPhone == currentUser.phone
+          returnRecords.push(suggestion)
+    return returnRecords.flat()
 
 export default SecurityManager
