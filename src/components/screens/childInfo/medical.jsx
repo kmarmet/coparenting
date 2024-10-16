@@ -87,7 +87,7 @@ function Medical() {
                       }
                     }}
                   />
-                  <span className="material-icons delete-icon" onClick={() => deleteProp(infoLabel)}>
+                  <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
                     delete
                   </span>
                 </div>

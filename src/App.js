@@ -78,7 +78,7 @@ const stateObj = {
   showConfirm: false,
   showMenuButton: false,
   showOverlay: false,
-  showShortcutMenu: false,
+  showNavbar: true,
   theme: 'light',
   transferRequestToEdit: {},
   unreadMessages: null,
@@ -166,7 +166,7 @@ export default function App() {
 
   // ON PAGE LOAD
   useEffect(() => {
-    setState({ ...state, isLoading: true, showMenuButton: false })
+    setState({ ...state, isLoading: true, showMenuButton: false, showNavbar: true })
 
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
@@ -177,12 +177,6 @@ export default function App() {
     // throw new Error('Something went wrong')
     // AppManager.setHolidays()
   }, [])
-
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     setTheme(currentUser?.settings?.theme)
-  //   }
-  // }, [currentUser?.settings?.theme])
 
   useEffect(() => {
     if (menuIsOpen) {
@@ -202,45 +196,6 @@ export default function App() {
 
         <div id="page-overlay"></div>
 
-        {/* UPDATE POPUP */}
-        {/*<div className={menuIsOpen ? 'active overlay' : 'overlay'}></div>*/}
-
-        {/* BACK BUTTON */}
-        {/*{showBackButton && (*/}
-        {/*  <div id="previous-screen-button-container">*/}
-        {/*    <button*/}
-        {/*      onClick={() => {*/}
-        {/*        if (currentScreen === ScreenNames.newCalendarEvent) {*/}
-        {/*          setState({*/}
-        {/*            ...state,*/}
-        {/*            menuIsOpen: false,*/}
-        {/*            currentScreen: ScreenNames.chats,*/}
-        {/*          })*/}
-        {/*          setTimeout(() => {*/}
-        {/*            setState({*/}
-        {/*              ...state,*/}
-        {/*              menuIsOpen: false,*/}
-        {/*              currentScreen: ScreenNames.calendar,*/}
-        {/*              showBackButton: false,*/}
-        {/*              showMenuButton: true,*/}
-        {/*            })*/}
-        {/*          }, 100)*/}
-        {/*        } else {*/}
-        {/*          setState({*/}
-        {/*            ...state,*/}
-        {/*            currentScreen: previousScreen,*/}
-        {/*            showMenuButton: true,*/}
-        {/*            showBackButton: false,*/}
-        {/*          })*/}
-        {/*          Manager.toggleForModalOrNewForm('show')*/}
-        {/*        }*/}
-        {/*      }}*/}
-        {/*      className={`${theme} previous-screen-button`}>*/}
-        {/*      <span className="material-icons-round">arrow_back</span>*/}
-        {/*    </button>*/}
-        {/*  </div>*/}
-        {/*)}*/}
-
         {/* INSTALL APP MODAL */}
         <InstallAppPopup />
 
@@ -248,8 +203,10 @@ export default function App() {
           {/* SLIDE OUT MENU */}
           <SlideOutMenu />
 
-          {/* SHORTCUT MENU */}
+          {/* NAVBAR  */}
           <NavBar />
+
+          {/* ALERT */}
           <Alert />
 
           {/* SCREENS */}
@@ -264,7 +221,6 @@ export default function App() {
             {currentScreen === ScreenNames.docViewer && <DocViewer />}
 
             {/* UPLOAD */}
-            {currentScreen === ScreenNames.uploadAgreement && <UploadLegalDoc />}
             {currentScreen === ScreenNames.uploadDocuments && <UploadDocuments />}
 
             {/* NEW */}

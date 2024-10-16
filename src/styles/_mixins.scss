@@ -214,10 +214,7 @@
       border-radius: 0;
       justify-content: flex-start;
       width: 50%;
-
-      &:first-child {
-        margin-right: 20px;
-      }
+      align-items: center;
 
       &.close {
         min-width: 45%;
@@ -238,12 +235,13 @@
         padding: 0;
         margin: 0;
         position: relative;
-        top: -2px;
+        top: -7px;
       }
 
       p,
       span {
         text-align: center;
+        display: inline;
       }
     }
 
@@ -2143,13 +2141,11 @@
     transition: all 0.3s ease-in-out;
     opacity: 0;
     max-height: 0;
-    top: 50vh;
     position: relative;
     width: calc(100vw - 50px);
     @include centerHoriz;
     &.active {
       padding: 20px;
-      top: 35vh;
       transition: all 0.3s ease-in-out;
       opacity: 1;
       max-height: 1000px;
@@ -2625,6 +2621,7 @@
     }
   }
   &.light {
+    background-color: white;
     span {
       color: $lightBlueLightDark;
     }
@@ -2735,12 +2732,11 @@
   width: 100vw;
   background-color: white;
   position: fixed;
-  bottom: -50px;
+  bottom: 0;
   max-height: 90vh;
   overflow: auto;
   z-index: 100000000;
   @include centerHoriz;
-  opacity: 0;
   transition: all 0.5s ease-in-out;
   border-radius: 0 0 30px 30px;
   @include shadow;
@@ -2751,34 +2747,13 @@
 
   /*#region  LIGHT THEME*/
   &.light {
-    #floating-menu {
-      .menu-item {
-        &.active {
-          @include long-shadow('text', $lightBlueLightDark, 7);
-          .material-icons-round {
-            color: $lightBlue;
-          }
-        }
-      }
-    }
   }
   /*#endregion  LIGHT THEME*/
 
   /*#region  DARK THEME*/
   &.dark {
-    .material-icons-round {
-      color: $darkBg;
-    }
-    #floating-menu {
-      .menu-item {
-        &.active {
-          @include long-shadow('text', $lightBorder, 7);
-          .material-icons-round {
-            color: $lightBlue;
-          }
-        }
-      }
-    }
+    
+    background: $darkBg;
   }
   /*#endregion  DARK THEME*/
 
@@ -2787,7 +2762,7 @@
     justify-content: space-between;
     align-items: center;
     overflow: auto;
-    padding: 8px 10px 20px 0;
+    padding: 15px 10px;
 
     .menu-item {
       opacity: 0.5;
@@ -2801,11 +2776,11 @@
         border-top: 2px solid $lightBlue;
         color: $lightBlue;
         position: relative;
-        top: -8px;
+        top: -15px;
 
         span:not(.menu-icon) {
           position: relative;
-          top: 6px;
+          top: 15px;
         }
       }
 

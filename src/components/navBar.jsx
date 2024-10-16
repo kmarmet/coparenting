@@ -23,7 +23,7 @@ import DB_UserScoped from '@userScoped'
 
 export default function NavBar() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, currentUser, theme, showShortcutMenu } = state
+  const { currentScreen, menuIsOpen, currentUser, theme, showNavbar } = state
 
   const changeCurrentScreen = (screen) => {
     if (screen === ScreenNames.calendar) {
@@ -68,12 +68,15 @@ export default function NavBar() {
       case currentScreen === ScreenNames.docViewer:
         setState({ ...state, formToShow: ScreenNames.docViewer })
         break
+      case currentScreen === ScreenNames.transferRequests:
+        setState({ ...state, formToShow: ScreenNames.newTransferRequest })
+        break
     }
   }
 
   return (
     <>
-      <div id="navbar" className={`${theme} ${showShortcutMenu ? 'active' : ''}`}>
+      <div id="navbar" className={`${theme} ${showNavbar ? 'active' : ''}`}>
         {!menuIsOpen && (
           <div id="menu-items" className="flex">
             {/* FULL MENU  */}

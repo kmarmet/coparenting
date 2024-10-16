@@ -405,7 +405,6 @@
         justify-content: center;
         margin-bottom: 20px;
         height: 60px;
-        max-width: 297px;
       }
       .flatpickr-current-month,
       .flatpickr-monthDropdown-months {
@@ -433,16 +432,9 @@
         &.flatpickr-current-month {
           flex-wrap: wrap;
           justify-content: center;
-          * {
-            width: 100%;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            justify-content: center;
-            display: flex;
-          }
 
           .numInputWrapper {
+                width: 100%;
             .numInput {
               &.cur-year {
                 font-size: 14px !important;
@@ -459,7 +451,6 @@
       }
 
       .flatpickr-monthDropdown-months {
-        max-width: 297px;
         font-size: 20px !important;
         option {
           font-size: 16px;

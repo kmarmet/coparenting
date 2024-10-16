@@ -40,7 +40,7 @@ import {
 
 export default function CoparentingSpace() {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme } = state
   const [scheduleType, setScheduleType] = useState('')
   const [defaultSelectedWeekends, setDefaultSelectedWeekends] = useState([])
   const [fifthWeekendSelection, setFifthWeekendSelection] = useState('')

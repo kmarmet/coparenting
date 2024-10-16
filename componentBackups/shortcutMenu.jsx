@@ -12,7 +12,7 @@ const defaultShortcuts = ['Calendar', 'Chats', 'Child Info', 'Memories']
 
 function ShortcutMenu() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, showShortcutMenu, menuIsOpen, currentScreen } = state
+  const { currentUser, theme, showNavbar, menuIsOpen, currentScreen } = state
   const [firstHalfShortcutsFromDB, setFirstHalfShortcutsFromDB] = useState([])
   const [secondHalfShortcutsFromDB, setSecondHalfShortcutsFromDB] = useState([])
 
@@ -23,7 +23,7 @@ function ShortcutMenu() {
       setAlertMessage: '',
       setShowAlert: false,
       viewExpenseForm: false,
-      showShortcutMenu: false,
+      showNavbar: false,
     })
   }
 
@@ -130,7 +130,7 @@ function ShortcutMenu() {
               <span className="shooting-star"></span>
               <span className="shooting-star-two"></span>
               <span
-                onClick={() => setState({ ...state, currentScreen: ScreenNames.settings, showShortcutMenu: false })}
+                onClick={() => setState({ ...state, currentScreen: ScreenNames.settings, showNavbar: false })}
                 id="customize-button"
                 className="material-icons-round">
                 edit
@@ -151,7 +151,7 @@ function ShortcutMenu() {
                 })}
 
               {/* MENU BUTTON */}
-              <div className="menu-item menu-button" onClick={(e) => setState({ ...state, menuIsOpen: true, showShortcutMenu: false })}>
+              <div className="menu-item menu-button" onClick={(e) => setState({ ...state, menuIsOpen: true, showNavbar: false })}>
                 <span className="material-icons-round">menu</span>
               </div>
 

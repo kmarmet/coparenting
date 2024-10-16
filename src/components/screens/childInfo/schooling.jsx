@@ -72,7 +72,7 @@ function Schooling() {
               debounceTimeout={1000}
               onChange={(e) => update('schooling', 'schoolName', e.target.value)}
             />
-            <span className="material-icons delete-icon" onClick={() => deleteProp('schoolName')}>
+            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('schoolName')}>
               delete
             </span>
           </div>
@@ -85,7 +85,7 @@ function Schooling() {
               debounceTimeout={1000}
               onChange={(e) => update('schooling', 'grade', e.target.value)}
             />
-            <span className="material-icons delete-icon" onClick={() => deleteProp('grade')}>
+            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('grade')}>
               delete
             </span>
           </div>
@@ -110,7 +110,7 @@ function Schooling() {
                       }
                     }}
                   />
-                  <span className="material-icons delete-icon" onClick={() => deleteProp(infoLabel)}>
+                  <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
                     delete
                   </span>
                 </div>

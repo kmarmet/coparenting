@@ -15,6 +15,7 @@ import PushAlertApi from '@api/pushAlert'
 import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
 import SecurityManager from '../../managers/securityManager'
+import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
@@ -90,8 +91,7 @@ export default function TransferRequests() {
 
   return (
     <>
-      <p className="screen-title ">Transfer Change</p>
-      <AddNewButton canClose={true} onClick={() => setState({ ...state, currentScreen: ScreenNames.newTransferRequest })} />
+      <NewTransferChangeRequest />
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         {!viewTransferRequestForm && (
           <>

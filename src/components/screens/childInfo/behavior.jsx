@@ -72,7 +72,7 @@ function Behavior() {
               debounceTimeout={1000}
               onChange={(e) => update('behavior', 'counselorName', e.target.value)}
             />
-            <span className="material-icons delete-icon" onClick={() => deleteProp('counselorName')}>
+            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('counselorName')}>
               delete
             </span>
           </div>
@@ -85,7 +85,7 @@ function Behavior() {
               debounceTimeout={1000}
               onChange={(e) => update('behavior', 'issues', e.target.value, true)}
             />
-            <span className="material-icons delete-icon" onClick={() => deleteProp('issues')}>
+            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('issues')}>
               delete
             </span>
           </div>
@@ -111,7 +111,7 @@ function Behavior() {
                       }
                     }}
                   />
-                  <span className="material-icons delete-icon" onClick={() => deleteProp(infoLabel)}>
+                  <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
                     delete
                   </span>
                 </div>

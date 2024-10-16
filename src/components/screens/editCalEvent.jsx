@@ -76,7 +76,7 @@ export default function EditCalEvent() {
     onSwipedRight: (eventData) => {},
     onSwipedDown: () => {
       resetForm()
-      setState({ ...state, formToShow: '', showShortcutMenu: true })
+      setState({ ...state, formToShow: '', showNavbar: true })
     },
     preventScrollOnSwipe: true,
   })
@@ -269,7 +269,7 @@ export default function EditCalEvent() {
       setState({ ...state, formToShow: '' })
     }
 
-    const allEvents = await SecurityManager.getCalendarEvents(currentUser)
+    const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
     if (eventCount === 1) {
       await DB.delete(DB.tables.calendarEvents, calEventToEdit.id).finally(whenDone)

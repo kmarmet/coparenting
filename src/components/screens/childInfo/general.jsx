@@ -75,7 +75,7 @@ function General() {
           {/* DATE OF BIRTH */}
           <div className="flex input">
             <MobileDatePicker key={Manager.getUid()} className="dob mb-10 w-100" onChange={(e) => update('general', 'dateOfBirth', e)} />
-            <span className="material-icons delete-icon" onClick={() => deleteProp('dateOfBirth')}>
+            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('dateOfBirth')}>
               delete
             </span>
           </div>
@@ -95,7 +95,7 @@ function General() {
               }}
               placeholder={Manager.isValid(selectedChild.general.address) ? selectedChild.general.address : 'Location'}
             />
-            <span className="material-icons delete-icon" onClick={() => deleteProp('address')}>
+            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('address')}>
               delete
             </span>
           </div>
@@ -111,7 +111,7 @@ function General() {
               debounceTimeout={2000}
               onChange={(e) => update('general', 'phone', e.target.value)}
             />
-            <span className="material-icons delete-icon" onClick={() => deleteProp('phone')}>
+            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('phone')}>
               delete
             </span>
           </div>
@@ -139,7 +139,7 @@ function General() {
                       }
                     }}
                   />
-                  <span className="material-icons delete-icon" onClick={() => deleteProp(infoLabel)}>
+                  <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
                     delete
                   </span>
                 </div>

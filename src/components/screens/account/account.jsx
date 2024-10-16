@@ -5,7 +5,7 @@ import Manager from '@manager'
 
 export default function Account() {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme } = state
 
   useEffect(() => {
     setState({ ...state, currentScreen: ScreenNames.account, showMenuButton: true, showBackButton: false })

@@ -29,6 +29,22 @@ import TitleSuggestionWrapper from '../shared/titleSuggestionWrapper'
 import BottomCard from '../shared/bottomCard'
 import Toggle from 'react-toggle'
 import '../../styles/reactToggle.css'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension,
+} from '../../globalFunctions'
 
 // COMPONENT
 export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventForm }) {
@@ -69,7 +85,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
     onSwipedRight: (eventData) => {},
     onSwipedDown: () => {
       resetForm()
-      setState({ ...state, formToShow: '', showShortcutMenu: true })
+      setState({ ...state, formToShow: '', showNavbar: true })
     },
     preventScrollOnSwipe: true,
   })
@@ -189,7 +205,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
 
       // Repeating Events
       await addRepeatingEventsToDb()
-      setState({ ...state, formToShow: '', showShortcutMenu: true })
+      setState({ ...state, formToShow: '', showNavbar: true })
       if (navigator.setAppBadge) {
         await navigator.setAppBadge(1)
       }
@@ -293,19 +309,6 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
     )
   }
 
-  const handleAllDaySelection = async (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      (e) => {
-        setIsAllDay(true)
-      },
-      (e) => {
-        setIsAllDay(false)
-      },
-      false
-    )
-  }
-
   const handleRepeatingSelection = async (e) => {
     Manager.handleCheckboxSelection(
       e,
@@ -334,14 +337,6 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
       },
       false
     )
-  }
-
-  const setDatetimeValue = () => {
-    const datetimeInput = document.querySelector('.MuiInputBase-input')
-
-    if (datetimeInput) {
-      setEventFromDate(datetimeInput.value)
-    }
   }
 
   // Add cloned events
@@ -406,8 +401,8 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
   }, [shareWith.length, eventTitle.length, eventFromDate.length, eventFromDate])
 
   useEffect(() => {
+    setEventFromDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
     Manager.toggleForModalOrNewForm('show')
-    setDatetimeValue()
   }, [])
 
   return (
@@ -447,7 +442,10 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
                 if (inputValue.length > 1) {
                   const dbSuggestions = await DB.getTable(DB.tables.suggestions)
                   const matching = dbSuggestions.filter(
-                    (x) => x.formName === 'calendar' && x.ownerPhone === currentUser.phone && x.suggestion.toLowerCase().contains(inputValue)
+                    (x) =>
+                      x.formName === 'calendar' &&
+                      x.ownerPhone === currentUser.phone &&
+                      contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
                   )
                   setTitleSuggestions(Manager.getUniqueArray(matching).flat())
                   removeError('title')
@@ -477,7 +475,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
                     Date <span className="asterisk">*</span>
                   </label>
                   <MobileDatePicker
-                    defaultValue={moment(selectedNewEventDay)}
+                    value={moment(selectedNewEventDay)}
                     className={`${theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
                     onAccept={(e) => {
                       removeError('date')

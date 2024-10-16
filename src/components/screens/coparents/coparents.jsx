@@ -197,7 +197,7 @@ export default function Coparents() {
                         update('address', place.formatted_address)
                       }}
                     />
-                    <span className="material-icons delete-icon" onClick={() => deleteProp('address')}>
+                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('address')}>
                       delete
                     </span>
                   </div>
@@ -211,7 +211,7 @@ export default function Coparents() {
                       debounceTimeout={1000}
                       onChange={(e) => update('phone', e.target.value)}
                     />
-                    <span className="material-icons delete-icon" onClick={() => deleteProp('phone')}>
+                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('phone')}>
                       delete
                     </span>
                   </div>
@@ -238,7 +238,7 @@ export default function Coparents() {
                               }
                             }}
                           />
-                          <span className="material-icons delete-icon" onClick={() => deleteProp(infoLabel)}>
+                          <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
                             delete
                           </span>
                         </div>

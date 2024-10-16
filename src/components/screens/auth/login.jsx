@@ -50,7 +50,7 @@ export default function Login() {
     if (foundUser) {
       subscribeUser(foundUser)
 
-      // document.body.classList.add(foundUser?.settings.theme)
+      document.body.classList.add(foundUser?.settings.theme)
 
       // SIGN USER IN BASED ON rememberMe KEY
       if (Manager.isValid(rememberMeKey)) {
@@ -60,6 +60,7 @@ export default function Login() {
           currentScreen: ScreenNames.calendar,
           currentUser: foundUser,
           isLoading: false,
+          theme: foundUser?.settings?.theme,
         })
       }
     } else {
@@ -129,7 +130,7 @@ export default function Login() {
 
   useLayoutEffect(() => {
     setTimeout(() => {
-      setState({ ...state, showMenuButton: false, showShortcutMenu: false, showBackArrow: false })
+      setState({ ...state, showMenuButton: false, showNavbar: false, showBackArrow: false })
       autoLogin().then((r) => r)
       Manager.toggleForModalOrNewForm('show')
     }, 500)

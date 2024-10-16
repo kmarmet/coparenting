@@ -128,7 +128,7 @@ export default function SlideOutMenu() {
             </div>
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.childSelector)}>
+              onClick={() => changeCurrentScreen(ScreenNames.childInfo)}>
               <span className="material-icons-round">face</span>
               <p>Child Info</p>
             </div>

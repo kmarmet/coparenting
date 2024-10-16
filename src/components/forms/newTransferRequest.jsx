@@ -15,10 +15,11 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
+import BottomCard from '../shared/bottomCard'
 
 export default function NewTransferChangeRequest() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, currentScreen } = state
+  const { currentUser, theme, formToShow } = state
   const [requestReason, setRequestReason] = useState('')
   const [shareWith, setShareWith] = useState([])
   const [requestTime, setRequestTime] = useState('')
@@ -27,6 +28,19 @@ export default function NewTransferChangeRequest() {
   const [directionsLink, setDirectionsLink] = useState('')
   const [requestRecipientPhone, setRequestRecipientPhone] = useState('')
   const [preferredLocation, setPreferredLocation] = useState('')
+
+  const resetForm = () => {
+    Manager.resetForm()
+    setRequestReason('')
+    setShareWith([])
+    setRequestTime('')
+    setRequestLocation('')
+    setRequestDate('')
+    setDirectionsLink('')
+    setRequestRecipientPhone('')
+    setPreferredLocation('')
+    setState({ ...state, formToShow: '' })
+  }
 
   const submit = async () => {
     if (requestRecipientPhone.length === 0) {
@@ -115,83 +129,96 @@ export default function NewTransferChangeRequest() {
 
   return (
     <>
-      <p className="screen-title ">New Request</p>
-      <div id="transfer-change-container" className={`${theme} form page-container`}>
-        <div className="form transfer-change">
-          <div className="flex gap">
-            <div>
-              <label className="mb-5">
-                Day<span className="asterisk">*</span>
-              </label>
-              <MobileDatePicker className={`${theme} mb-15 mt-0 w-100`} onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))} />
+      <BottomCard
+        title={'Add Request'}
+        showCard={formToShow === ScreenNames.newTransferRequest}
+        className={theme}
+        onClose={() => setState({ ...state, formToShow: '' })}>
+        <div id="transfer-change-container" className={`${theme} form`}>
+          <div className="form transfer-change">
+            <div className="flex gap">
+              <div>
+                <label className="mb-5">
+                  Day<span className="asterisk">*</span>
+                </label>
+                <MobileDatePicker className={`${theme} mb-15 mt-0 w-100`} onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))} />
+              </div>
+              <div>
+                <label className="mt-0">
+                  New Time <span>&nbsp;</span>
+                </label>
+                <MobileTimePicker minutesStep={5} className={`${theme} mb-15 mt-0 w-100`} onChange={(e) => setRequestTime(e)} />
+              </div>
             </div>
-            <div>
-              <label className="mt-0">
-                New Time <span>&nbsp;</span>
-              </label>
-              <MobileTimePicker minutesStep={5} className={`${theme} mb-15 mt-0 w-100`} onChange={(e) => setRequestTime(e)} />
+
+            {/*  NEW LOCATION*/}
+            <label>New Location</label>
+            <Autocomplete
+              placeholder={''}
+              apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+              options={{
+                types: ['geocode', 'establishment'],
+                componentRestrictions: { country: 'usa' },
+              }}
+              className="mb-15"
+              onPlaceSelected={(place) => {
+                setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
+                setRequestLocation(place.formatted_address)
+              }}
+            />
+
+            <CheckboxGroup
+              boxWidth={100}
+              skipNameFormatting={true}
+              dataPhone={currentUser.coparents.map((x) => x.phone)}
+              labels={['Set as Preferred Transfer Location']}
+              onCheck={handlePreferredLocation}
+            />
+
+            {/* REASON */}
+            <label>Reason</label>
+            <textarea className="mb-15" onChange={(e) => setRequestReason(e.target.value)}></textarea>
+
+            {/* SEND REQUEST TO */}
+            {currentUser && (
+              <div className="share-with-container">
+                <label>
+                  <span className="material-icons-round notifications">notifications</span>Who is the request being sent to?
+                  <span className="asterisk">*</span>
+                </label>
+                <CheckboxGroup
+                  dataPhone={currentUser.coparents.map((x) => x.phone)}
+                  labels={currentUser.coparents.map((x) => x.name)}
+                  onCheck={handleRequestRecipient}
+                />
+              </div>
+            )}
+            {currentUser && (
+              <div className="share-with-container">
+                <label>
+                  <span className="material-icons-round">visibility</span> Who is allowed to see it? <span className="asterisk">*</span>
+                </label>
+                <CheckboxGroup
+                  dataPhone={currentUser.coparents.map((x) => x.phone)}
+                  labels={currentUser.coparents.map((x) => x.name)}
+                  onCheck={handleShareWithSelection}
+                />
+              </div>
+            )}
+            <div className="buttons gap">
+              {moment(requestDate).format(DateFormats.dateForDb).replace('Invalid date', '').length > 0 && requestRecipientPhone.length > 0 && (
+                <button className="button card-button" onClick={submit}>
+                  Create Request <span className="material-icons ml-10 fs-22">update</span>
+                </button>
+              )}
+              {/*)}*/}
+              <button className="button card-button red" onClick={resetForm}>
+                Cancel
+              </button>
             </div>
           </div>
-
-          {/*  NEW LOCATION*/}
-          <label>New Location</label>
-          <Autocomplete
-            placeholder={''}
-            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-            options={{
-              types: ['geocode', 'establishment'],
-              componentRestrictions: { country: 'usa' },
-            }}
-            className="mb-15"
-            onPlaceSelected={(place) => {
-              setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
-              setRequestLocation(place.formatted_address)
-            }}
-          />
-
-          <CheckboxGroup
-            boxWidth={100}
-            skipNameFormatting={true}
-            dataPhone={currentUser.coparents.map((x) => x.phone)}
-            labels={['Set as Preferred Transfer Location']}
-            onCheck={handlePreferredLocation}
-          />
-
-          {/* REASON */}
-          <label>Reason</label>
-          <textarea className="mb-15" onChange={(e) => setRequestReason(e.target.value)}></textarea>
-
-          {/* SEND REQUEST TO */}
-          {currentUser && (
-            <div className="share-with-container">
-              <label>
-                <span className="material-icons-round notifications">notifications</span>Who is the request being sent to?
-                <span className="asterisk">*</span>
-              </label>
-              <CheckboxGroup
-                dataPhone={currentUser.coparents.map((x) => x.phone)}
-                labels={currentUser.coparents.map((x) => x.name)}
-                onCheck={handleRequestRecipient}
-              />
-            </div>
-          )}
-          {currentUser && (
-            <div className="share-with-container">
-              <label>
-                <span className="material-icons-round">visibility</span> Who is allowed to see it? <span className="asterisk">*</span>
-              </label>
-              <CheckboxGroup
-                dataPhone={currentUser.coparents.map((x) => x.phone)}
-                labels={currentUser.coparents.map((x) => x.name)}
-                onCheck={handleShareWithSelection}
-              />
-            </div>
-          )}
-          {moment(requestDate).format(DateFormats.dateForDb).replace('Invalid date', '').length > 0 && requestRecipientPhone.length > 0 && (
-            <BottomButton text="Request Change" iconName="send" onClick={submit} elClass={'active visible'} />
-          )}
         </div>
-      </div>
+      </BottomCard>
     </>
   )
 }

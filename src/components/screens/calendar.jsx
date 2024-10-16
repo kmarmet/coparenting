@@ -357,30 +357,23 @@ export default function EventCalendar() {
       appendTo: document.getElementById('calendar-ui-container'),
       // On month change
       onMonthChange: (selectedDates, dateStr, instance) => {
-        console.log('chagned')
-        disableSelectedDayBg()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(
             moment(`${instance.currentMonth + 1}/01/${instance.currentYear}`).format(DateFormats.dateForDb),
             instance.currentMonth + 1
           )
+          setState({ ...state, formToShow: '' })
         })
-        const monthSelectOption = document.querySelector(`[value='7']`)
-        monthSelectOption.click()
       },
       // Firebase onValue change / date selection/click
       onChange: async (e) => {
         const date = moment(e[0]).format(DateFormats.dateForDb).toString()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(date, moment(e[0]).format('MM'))
-          setState({ ...state, selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString() })
+          setState({ ...state, formToShow: '', selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString() })
         })
       },
     })
-  }
-
-  const goToToday = async () => {
-    await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
   }
 
   const toggleAllHolidays = async () => {
@@ -411,41 +404,16 @@ export default function EventCalendar() {
     setShowFilters(false)
   }
 
-  const disableSelectedDayBg = async () => {
-    const selectedDay = document.querySelector('.flatpickr-day.selected')
-    if (selectedDay) {
-      selectedDay.classList.remove('selected')
-    }
-  }
-
   // ON PAGE LOAD
   useEffect(() => {
-    // const monthSelector = document.querySelector('.flatpickr-monthDropdown-months')
-    // if (monthSelector && monthSelector.options) {
-    //   monthSelector.options[0].selected = true
-    //   monthSelector.dispatchEvent(new Event('change'))
-    //   Manager.convertToArray(monthSelector.options).forEach((option) => {
-    //     // console.log(option.getAttribute('value'))
-    //     // console.log(monthSelector.options[0])
-    //
-    //     if (option.selected) {
-    //       // option.setAttribute('value', '2')
-    //       // option.value = '1'
-    //       console.log(option)
-    //     }
-    //   })
-    // }
     addFlatpickrCalendar().then((r) => r)
     Manager.toggleForModalOrNewForm('show')
     setTimeout(() => {
       setState({
         ...state,
-        currentScreen: ScreenNames.calendar,
-        isLoading: false,
-        showShortcutMenu: true,
-        showBackButton: false,
-        showMenuButton: true,
+        showNavbar: true,
         formToShow: '',
+        selectedNewEventDay: moment(),
       })
     }, 500)
   }, [])
@@ -561,11 +529,6 @@ export default function EventCalendar() {
                   </button>
                 </div>
               )}
-
-              {/* TODAY BUTTON */}
-              {/*<button onClick={goToToday} id="go-to-today-button" className="button default ml-auto">*/}
-              {/*  Today*/}
-              {/*</button>*/}
 
               {/* SEARCH ICON */}
               <span
