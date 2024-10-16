@@ -436,7 +436,7 @@ export default function EventCalendar() {
           elClass={'red visible'}
           bottom="160"
           onClick={() => {
-            viewAllEvents()
+            viewAllEvents().then((r) => r)
             setAllHolidays([])
           }}
         />

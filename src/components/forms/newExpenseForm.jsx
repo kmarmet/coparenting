@@ -305,13 +305,6 @@ function NewExpenseForm() {
 
   return (
     <>
-      {/* BOTTOM SUBMIT BUTTON */}
-      {expenseAmount.length > 0 &&
-        expenseName.length > 0 &&
-        moment(expenseDueDate).format(DateFormats.dateForDb).length > 0 &&
-        shareWith.length > 0 &&
-        payer.name.length > 0 && <BottomButton elClass={'active visible'} type="submit" onClick={submitNewExpense} />}
-
       {/* PAGE CONTAINER */}
       <BottomCard title={'Add Expense'} showCard={formToShow === ScreenNames.newExpense}>
         <div {...handlers} id="add-expense-form" className={`${theme} form`}>

@@ -407,8 +407,6 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
 
   return (
     <>
-      {/* BUTTONS */}
-      {showSubmitButton && <BottomButton onClick={submit} elClass={'single visible active'} />}
       <BottomCard
         className={`${theme} new-event-form `}
         onClose={() => {}}
