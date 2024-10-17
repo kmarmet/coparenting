@@ -27,13 +27,15 @@ SecurityManager = {
     var allEvents, event, i, len, returnRecords, shareWith;
     returnRecords = [];
     allEvents = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents))).flat();
-    for (i = 0, len = allEvents.length; i < len; i++) {
-      event = allEvents[i];
-      shareWith = event.shareWith;
-      if (Manager.isValid(event.fromDate) && event.fromDate.length > 0) {
-        if (Manager.isValid(shareWith, true)) {
-          if (shareWith.includes(currentUser.phone) || event.phone === currentUser.phone) {
-            returnRecords.push(event);
+    if (Manager.isValid(allEvents, true)) {
+      for (i = 0, len = allEvents.length; i < len; i++) {
+        event = allEvents[i];
+        shareWith = event.shareWith;
+        if (Manager.isValid(event.fromDate) && event.fromDate.length > 0) {
+          if (Manager.isValid(shareWith, true)) {
+            if (shareWith.includes(currentUser.phone) || event.phone === currentUser.phone) {
+              returnRecords.push(event);
+            }
           }
         }
       }
@@ -44,12 +46,14 @@ SecurityManager = {
     var allExpenses, expense, i, len, returnRecords, shareWith;
     returnRecords = [];
     allExpenses = Manager.convertToArray((await DB.getTable(DB.tables.expenseTracker))).flat();
-    for (i = 0, len = allExpenses.length; i < len; i++) {
-      expense = allExpenses[i];
-      shareWith = expense.shareWith;
-      if (Manager.isValid(shareWith, true)) {
-        if (shareWith.includes(currentUser.phone) || expense.phone === currentUser.phone) {
-          returnRecords.push(expense);
+    if (Manager.isValid(allExpenses, true)) {
+      for (i = 0, len = allExpenses.length; i < len; i++) {
+        expense = allExpenses[i];
+        shareWith = expense.shareWith;
+        if (Manager.isValid(shareWith, true)) {
+          if (shareWith.includes(currentUser.phone) || expense.phone === currentUser.phone) {
+            returnRecords.push(expense);
+          }
         }
       }
     }
@@ -59,27 +63,31 @@ SecurityManager = {
     var allRequests, i, len, request, returnRecords, shareWith;
     returnRecords = [];
     allRequests = Manager.convertToArray((await DB.getTable(DB.tables.swapRequests))).flat();
-    for (i = 0, len = allRequests.length; i < len; i++) {
-      request = allRequests[i];
-      shareWith = request.shareWith;
-      if (Manager.isValid(shareWith, true)) {
-        if (shareWith.includes(currentUser.phone) || request.phone === currentUser.phone) {
-          returnRecords.push(request);
+    if (Manager.isValid(allRequests, true)) {
+      for (i = 0, len = allRequests.length; i < len; i++) {
+        request = allRequests[i];
+        shareWith = request.shareWith;
+        if (Manager.isValid(shareWith, true)) {
+          if (shareWith.includes(currentUser.phone) || request.phone === currentUser.phone) {
+            returnRecords.push(request);
+          }
         }
       }
+      return returnRecords;
     }
-    return returnRecords;
   },
   getTransferChangeRequests: async function(currentUser) {
     var allRequests, i, len, request, returnRecords, shareWith;
     returnRecords = [];
     allRequests = Manager.convertToArray((await DB.getTable(DB.tables.transferChangeRequests))).flat();
-    for (i = 0, len = allRequests.length; i < len; i++) {
-      request = allRequests[i];
-      shareWith = request.shareWith;
-      if (Manager.isValid(shareWith, true)) {
-        if (shareWith.includes(currentUser.phone) || request.phone === currentUser.phone) {
-          returnRecords.push(request);
+    if (Manager.isValid(allRequests, true)) {
+      for (i = 0, len = allRequests.length; i < len; i++) {
+        request = allRequests[i];
+        shareWith = request.shareWith;
+        if (Manager.isValid(shareWith, true)) {
+          if (shareWith.includes(currentUser.phone) || request.phone === currentUser.phone) {
+            returnRecords.push(request);
+          }
         }
       }
     }
@@ -89,12 +97,14 @@ SecurityManager = {
     var allDocs, doc, i, len, returnRecords, shareWith;
     returnRecords = [];
     allDocs = Manager.convertToArray((await DB.getTable(DB.tables.documents))).flat();
-    for (i = 0, len = allDocs.length; i < len; i++) {
-      doc = allDocs[i];
-      shareWith = doc.shareWith;
-      if (Manager.isValid(shareWith, true)) {
-        if (shareWith.includes(currentUser.phone) || doc.uploadedBy === currentUser.phone) {
-          returnRecords.push(doc);
+    if (Manager.isValid(allDocs, true)) {
+      for (i = 0, len = allDocs.length; i < len; i++) {
+        doc = allDocs[i];
+        shareWith = doc.shareWith;
+        if (Manager.isValid(shareWith, true)) {
+          if (shareWith.includes(currentUser.phone) || doc.uploadedBy === currentUser.phone) {
+            returnRecords.push(doc);
+          }
         }
       }
     }
@@ -104,12 +114,14 @@ SecurityManager = {
     var allMemories, i, len, memory, returnRecords, shareWith;
     returnRecords = [];
     allMemories = Manager.convertToArray((await DB.getTable(DB.tables.memories))).flat();
-    for (i = 0, len = allMemories.length; i < len; i++) {
-      memory = allMemories[i];
-      shareWith = memory.shareWith;
-      if (Manager.isValid(shareWith, true)) {
-        if (shareWith.includes(currentUser.phone) || memory.createdBy === currentUser.phone) {
-          returnRecords.push(memory);
+    if (Manager.isValid(allMemories, true)) {
+      for (i = 0, len = allMemories.length; i < len; i++) {
+        memory = allMemories[i];
+        shareWith = memory.shareWith;
+        if (Manager.isValid(shareWith, true)) {
+          if (shareWith.includes(currentUser.phone) || memory.createdBy === currentUser.phone) {
+            returnRecords.push(memory);
+          }
         }
       }
     }
@@ -124,6 +136,24 @@ SecurityManager = {
         suggestion = suggestions[i];
         if (suggestion.ownerPhone === currentUser.phone) {
           returnRecords.push(suggestion);
+        }
+      }
+    }
+    return returnRecords.flat();
+  },
+  getChats: async function(currentUser) {
+    var chat, chats, i, j, len, len1, member, ref, returnRecords;
+    returnRecords = [];
+    chats = Manager.convertToArray((await DB.getTable(DB.tables.chats))).flat();
+    if (Manager.isValid(chats, true)) {
+      for (i = 0, len = chats.length; i < len; i++) {
+        chat = chats[i];
+        ref = chat.members;
+        for (j = 0, len1 = ref.length; j < len1; j++) {
+          member = ref[j];
+          if (member.phone === currentUser.phone) {
+            returnRecords.push(chat);
+          }
         }
       }
     }

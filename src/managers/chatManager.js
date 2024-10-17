@@ -5,6 +5,7 @@ import Manager from '@manager'
 import FirebaseStorage from '@firebaseStorage'
 import DB from '@db'
 import AppManager from '@managers/appManager'
+import SecurityManager from './securityManager'
 
 const ChatManager = {
   getChats: async (currentUser) =>
@@ -46,7 +47,7 @@ const ChatManager = {
     }
   },
   getActiveChats: async (currentUser) => {
-    const chats = await DB.getTable(DB.tables.chats)
+    const chats = await SecurityManager.getChats(currentUser)
     let activeChats = []
     if (Manager.isValid(chats, true)) {
       for (let chat of chats) {

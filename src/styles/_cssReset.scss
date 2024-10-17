@@ -55,7 +55,8 @@ body {
     
     .rc-tooltip {
       .rc-tooltip-inner {
-        background-color: $darkBlueMedium !important;
+        background-color: $lightBlueDark !important;
+        opacity: 1 !important;
       }
     }
   }

@@ -48,7 +48,7 @@ import {
 import SecurityManager from '../../managers/securityManager'
 
 // COMPONENT
-export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventForm }) {
+export default function NewCalendarEvent({ showCard, setShowCard }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, selectedNewEventDay, formToShow } = state
@@ -82,16 +82,6 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
 
   const [updateKey, setUpdateKey] = useState(0)
 
-  // HANDLE SWIPE
-  const handlers = useSwipeable({
-    onSwipedRight: (eventData) => {},
-    onSwipedDown: () => {
-      resetForm()
-      setState({ ...state, formToShow: '', showNavbar: true })
-    },
-    preventScrollOnSwipe: true,
-  })
-
   const resetForm = () => {
     Manager.resetForm('new-event-form')
     setError('')
@@ -116,7 +106,7 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
     setTitleSuggestions([])
     setShowCloneInput(false)
     setShowReminders(false)
-    setState({ ...state, formToShow: '' })
+    setShowCard(false)
   }
 
   const submit = async () => {
@@ -407,14 +397,9 @@ export default function NewCalendarEvent({ showNewCalendarForm, setShowNewEventF
 
   return (
     <div key={updateKey}>
-      <BottomCard
-        className={`${theme} new-event-form `}
-        onClose={() => {}}
-        showCard={formToShow === ScreenNames.newCalendarEvent}
-        error={error}
-        title={'Add New Event'}>
+      <BottomCard className={`${theme} new-event-form `} onClose={() => setShowCard(false)} showCard={showCard} error={error} title={'Add New Event'}>
         {/* FORM WRAPPER */}
-        <div {...handlers} id="calendar-event-form-container" {...handlers} className={`form ${theme}`}>
+        <div id="calendar-event-form-container" className={`form ${theme}`}>
           {/* Event Length */}
           <div className="action-pills calendar-event">
             <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>

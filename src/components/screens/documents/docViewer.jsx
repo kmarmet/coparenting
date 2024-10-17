@@ -28,16 +28,16 @@ import {
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
 import DocumentsManager from '../../../managers/documentsManager'
+import SecurityManager from '../../../managers/securityManager'
 
 export default function DocViewer() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow, docToView } = state
+  const { currentUser, theme, formToShow, docToView, navbarButton } = state
   const [tocHeaders, setTocHeaders] = useState([])
   const [showCard, setShowCard] = useState(false)
   const [searchResults, setSearchResults] = useState([])
   const [searchResultsIndex, setSearchResultsIndex] = useState(1)
   const [showTocButton, setShowTocButton] = useState(true)
-  const [showSearchInput, setShowSearchInput] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
   const scrollToHeader = (header) => {
     closeSearch()
@@ -150,7 +150,7 @@ export default function DocViewer() {
   }
 
   const closeSearch = () => {
-    Manager.resetForm()
+    Manager.resetForm('doc-viewer-container')
     document.getElementById('search-input').value = ''
     let allHeaders = document.querySelectorAll('.header')
     let allPars = document.querySelectorAll('#text-container p')
@@ -275,7 +275,7 @@ export default function DocViewer() {
 
   // Get/Append Image
   const getImage = async () => {
-    const coparentDocsObjects = await DocumentsManager.getCoparentDocs(currentUser)
+    const coparentDocsObjects = await SecurityManager.getDocuments(currentUser)
     const docsFromObject = coparentDocsObjects.map((x) => x.docs)
     const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
     const relevantDoc = docsFromObject.filter((x) => x.name === docToView.name)[0]
@@ -308,10 +308,22 @@ export default function DocViewer() {
     document.getElementById('text-container').innerText = ''
     Manager.toggleForModalOrNewForm('show')
     convertAndAppendDocOrImage().then((r) => r)
+
+    setState({
+      ...state,
+      navbarButton: {
+        action: () => {
+          console.log('here')
+          setShowSearch(true)
+        },
+        icon: 'search',
+        formToShow: 'search',
+      },
+    })
   }, [])
 
   return (
-    <>
+    <div className="doc-viewer-container">
       {/* BOTTOM ACTIONS */}
       <div className={`${theme} flex form`} id="bottom-actions">
         {showTocButton && Manager.isValid(document.querySelectorAll('.header'), true) && (
@@ -323,7 +335,7 @@ export default function DocViewer() {
       {/* INPUT */}
       <BottomCard
         className="form search-card"
-        showCard={formToShow === ScreenNames.docViewer}
+        showCard={showSearch}
         title={'Search'}
         onClose={() => {
           setState({ ...state, formToShow: '' })
@@ -392,6 +404,6 @@ export default function DocViewer() {
       <div id="documents-container" className={`${theme} page-container form`}>
         <div id="text-container"></div>
       </div>
-    </>
+    </div>
   )
 }

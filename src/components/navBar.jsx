@@ -23,7 +23,7 @@ import DB_UserScoped from '@userScoped'
 
 export default function NavBar() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, currentUser, theme, showNavbar } = state
+  const { currentScreen, menuIsOpen, currentUser, theme, showNavbar, navbarButton } = state
 
   const changeCurrentScreen = (screen) => {
     if (screen === ScreenNames.calendar) {
@@ -33,16 +33,11 @@ export default function NavBar() {
         cal.classList.remove('hide')
       }
     }
-    setState({
-      ...state,
-      currentScreen: screen,
-      menuIsOpen: false,
-      viewExpenseForm: false,
-    })
+    setState({ ...state, currentScreen: screen })
     Manager.toggleForModalOrNewForm('show')
   }
 
-  const addNew = async () => {
+  const addNew = () => {
     switch (true) {
       case currentScreen === ScreenNames.calendar:
         setState({ ...state, formToShow: ScreenNames.newCalendarEvent })
@@ -89,20 +84,27 @@ export default function NavBar() {
             {/* CALENDAR */}
             <div
               onClick={() => changeCurrentScreen(ScreenNames.calendar)}
-              className={`${currentScreen === ScreenNames.calendar ? 'active menu-item two' : 'menu-item two'}`}>
+              className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
               <span className={`${currentScreen === ScreenNames.calendar ? 'material-icons-round' : 'material-icons-outlined'}`}>calendar_month</span>
             </div>
 
             {/* CHATS */}
             <div
               onClick={() => changeCurrentScreen(ScreenNames.chats)}
-              className={`${currentScreen === ScreenNames.chats ? 'active menu-item three' : 'menu-item three'}`}>
+              className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
               <span className={`${currentScreen === ScreenNames.chats ? 'material-icons-round' : 'material-icons-outlined'}`}>question_answer</span>
             </div>
 
             {/* ADD NEW BUTTON */}
-            <div className={`${menuIsOpen ? 'menu-item' : 'menu-item active'} ${theme}`} onClick={addNew} id="menu-button">
-              <span className={`material-icons-round menu-icon`}>{currentScreen === ScreenNames.docViewer ? 'search' : 'add'}</span>
+            <div
+              className={`${menuIsOpen ? 'menu-item' : 'menu-item active'} ${theme}`}
+              onClick={() => {
+                if (navbarButton.action) {
+                  navbarButton.action()
+                }
+              }}
+              id="menu-button">
+              <span className={`material-icons-round menu-icon ${navbarButton.color}`}>{navbarButton.icon}</span>
             </div>
 
             {/* CHILD INFO */}

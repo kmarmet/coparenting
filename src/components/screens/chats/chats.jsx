@@ -32,55 +32,30 @@ import {
   uniqueArray,
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
+import SecurityManager from '../../../managers/securityManager'
 
-const Chats = () => {
+const Chats = ({ showCard }) => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow } = state
+  const { currentUser, theme, navbarButton } = state
   const [showNewThreadForm, setShowNewThreadForm] = useState(false)
   const [threads, setThreads] = useState([])
   const [confirmTitle, setConfirmTitle] = useState('')
   const [selectedCoparent, setSelectedCoparent] = useState(null)
   const [activeChatsMembers, setActiveChatsMembers] = useState([])
+  const [showNewConvoCard, setShowNewConvoCard] = useState(false)
 
   const openMessageThread = async (coparentPhone) => {
     const userCoparent = await DB_UserScoped.getCoparentByPhone(coparentPhone, currentUser)
-    setState({ ...state, currentScreen: ScreenNames.conversation, messageToUser: userCoparent, formToShow: '' })
+    setState({ ...state, currentScreen: ScreenNames.conversation, messageToUser: userCoparent })
   }
 
   const getChats = async () => {
-    let scopedChats = await ChatManager.getChats(currentUser)
-    if (Manager.isValid(scopedChats, true)) {
-      setThreads(scopedChats.flat())
-
-      // SET LAST MESSAGE
-      setTimeout(async () => {
-        const threadItems = document.querySelectorAll('.thread-item')
-        for (const item of threadItems) {
-          const parWithPhone = item.querySelector('.coparent-date')
-          if (parWithPhone) {
-            const coparentPhoneNumber = parWithPhone.getAttribute('data-coparent-phone')
-            const coparent = currentUser.coparents.filter((x) => x.phone === coparentPhoneNumber)[0]
-            const scopedChat = await ChatManager.getExistingMessages(currentUser, theme, coparent)
-            const { messages } = scopedChat
-            let scopedMessages = messages.filter((x) => x.sender.formatNameFirstNameOnly() === coparent.name)
-            const lastScopedMessage = scopedMessages[scopedMessages.length - 1]?.message
-            const existingLastMessage = document.querySelector('.last-message')
-            const existingTimestamp = document.querySelector('.timestamp')
-            if (existingTimestamp && existingLastMessage) {
-              existingTimestamp.remove()
-              existingLastMessage.remove()
-            }
-            if (Manager.isValid(lastScopedMessage)) {
-              const timestamp = scopedMessages[scopedMessages.length - 1].timestamp
-              parWithPhone.insertAdjacentHTML(
-                'beforeend',
-                `<p class="timestamp ml-auto">${moment(timestamp, DateFormats.fullDatetime).format(DateFormats.readableDatetime)}</p>`
-              )
-              parWithPhone.insertAdjacentHTML('beforeend', `<p class="last-message mt-0">${lastScopedMessage}</p>`)
-            }
-          }
-        }
-      }, 200)
+    let securedChats = await SecurityManager.getChats(currentUser)
+    const chatMembers = securedChats.flat().map((x) => x.members)
+    const chatMemberPhones = chatMembers.flat().map((x) => x.phone)
+    setActiveChatsMembers(chatMemberPhones)
+    if (Manager.isValid(securedChats, true)) {
+      setThreads(securedChats.flat())
     } else {
       setThreads([])
     }
@@ -95,22 +70,21 @@ const Chats = () => {
     }
   }
 
-  const getSetActiveChats = async () => {
-    const activeChats = Manager.convertToArray(await ChatManager.getActiveChats(currentUser))
-    const activeChatsMembers = activeChats.map((x) => x.memberPhones).flat()
-    setActiveChatsMembers(activeChatsMembers || [])
-  }
-
   useEffect(() => {
-    getSetActiveChats().then((r) => r)
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            setShowNewConvoCard(true)
+          },
+          color: 'green',
+          icon: 'add',
+        },
+      })
+    }, 500)
 
-    setState({
-      ...state,
-      currentScreen: ScreenNames.chats,
-      menuIsOpen: false,
-      showMenuButton: true,
-      showBackButton: false,
-    })
     if (currentUser.accountType === 'parent') {
       getChats().then((r) => r)
     }
@@ -120,42 +94,79 @@ const Chats = () => {
   useEffect(() => {
     Manager.toggleForModalOrNewForm('show')
     getChats().then((r) => r)
+
+    if (showNewThreadForm) {
+      setState({
+        ...state,
+        currentScreen: ScreenNames.chats,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            setShowNewConvoCard(false)
+          },
+          icon: 'close',
+          color: 'red',
+        },
+      })
+    } else {
+      setState({
+        ...state,
+        currentScreen: ScreenNames.chats,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            setShowNewThreadForm(true)
+          },
+          color: 'green',
+          icon: 'add',
+        },
+      })
+    }
   }, [showNewThreadForm])
+
+  const showDeleteIcon = async (coparent) => {
+    setState({
+      ...state,
+      navbarButton: {
+        ...navbarButton,
+        action: () => {
+          setConfirmTitle(`DELETING CONVERSATION WITH ${getFirstWord(coparent.name)}`)
+        },
+        color: 'red',
+        icon: 'delete',
+      },
+    })
+    selectedCoparent ? setSelectedCoparent(false) : setSelectedCoparent(coparent)
+
+    await getChats()
+  }
+
+  const hideDeleteIcon = () => {
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {},
+          color: 'green',
+          icon: 'add',
+        },
+      })
+    }, 300)
+    setConfirmTitle('')
+    setSelectedCoparent(null)
+  }
 
   return (
     <>
-      {/* SCREEN TITLES */}
-      {/*{showNewThreadForm && <p className="screen-title pl-10">New Conversation</p>}*/}
-      {/*{!showNewThreadForm && <p className="screen-title pl-10">Chats</p>}*/}
-
       {/* DELETE CONFIRMATION */}
       <Confirm
         onAccept={archive}
-        onCancel={async () => {
-          await getChats()
-          setConfirmTitle('')
-          setSelectedCoparent(null)
-        }}
-        onReject={async () => {
-          await getChats()
-          setSelectedCoparent(null)
-          setConfirmTitle('')
-        }}
+        onCancel={hideDeleteIcon}
+        onReject={hideDeleteIcon}
         title={confirmTitle}
-        message={'Are you sure? If you delete this message, it will be archived. However, you can submit a request to view it.'}
+        message={'Are you sure? If you delete this message, it will be archived. However, you can submit a request to recover it.'}
       />
-
-      {/* ADD NEW BUTTON */}
-      {!showNewThreadForm && (
-        <AddNewButton
-          scopedClass={'chats'}
-          onClick={() => {
-            setShowNewThreadForm(true)
-            setState({ ...state, currentScreenTitle: 'New Message' })
-          }}
-          icon={'add_comment'}
-        />
-      )}
 
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
@@ -164,6 +175,8 @@ const Chats = () => {
           threads.length > 0 &&
           threads.map((thread, index) => {
             const coparent = thread.members.filter((x) => x.phone !== currentUser.phone)[0]
+            const coparentMessages = Manager.convertToArray(thread.messages).filter((x) => x.sender === coparent.name)
+            const lastMessage = coparentMessages[coparentMessages.length - 1].message
             return (
               <div key={Manager.getUid()} className="flex thread-item">
                 {/* COPARENT NAME */}
@@ -176,29 +189,12 @@ const Chats = () => {
                   data-coparent-phone={coparent.phone}
                   className="coparent-name">
                   {formatNameFirstNameOnly(coparent.name)}
+                  {/* Last Message */}
+                  <span className="last-message">{lastMessage}</span>
                 </p>
-                <span
-                  className="material-icons-round"
-                  id="thread-action-button"
-                  onClick={async () => {
-                    selectedCoparent ? setSelectedCoparent(false) : setSelectedCoparent(coparent)
-                    await getChats()
-                  }}>
+                <span className="material-icons-round" id="thread-action-button" onClick={() => showDeleteIcon(coparent)}>
                   {selectedCoparent ? 'close' : 'more_vert'}
                 </span>
-                {selectedCoparent && (
-                  <BottomButton
-                    phoneDataAttribute={coparent.phone}
-                    bottom="162"
-                    type="delete"
-                    iconName="delete"
-                    elClass={'visible'}
-                    onClick={() => {
-                      setConfirmTitle(`DELETING CONVERSATION WITH ${selectedCoparent.name.getFirstWord()}`)
-                      // setSelectedCoparent(coparent)
-                    }}
-                  />
-                )}
               </div>
             )
           })}
@@ -206,7 +202,7 @@ const Chats = () => {
         {!showNewThreadForm && threads.length === 0 && <p className="instructions center">There are currently no conversations 🤷🏽‍♂️</p>}
 
         {/* NEW THREAD FORM */}
-        <BottomCard className="new-conversation" showCard={formToShow === 'newConversation'} title={'New Conversation'}>
+        <BottomCard className="new-conversation" onClose={() => setShowNewConvoCard(false)} showCard={showNewConvoCard} title={'New Conversation'}>
           {Manager.isValid(currentUser.coparents, true) &&
             currentUser.coparents
               .filter((x) => !activeChatsMembers.includes(x.phone))
@@ -223,16 +219,6 @@ const Chats = () => {
                 )
               })}
         </BottomCard>
-        {showNewThreadForm && (
-          <button
-            onClick={() => {
-              setShowNewThreadForm(false)
-              setSelectedCoparent(null)
-            }}
-            id="close-new-conversation-button">
-            <span className="material-icons-round">arrow_back</span>
-          </button>
-        )}
       </div>
     </>
   )

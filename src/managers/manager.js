@@ -6,7 +6,6 @@ import '../prototypes'
 
 const Manager = {
   resetForm: (parentClass) => {
-    console.log(parentClass)
     const inputs = document.querySelector(`.${parentClass}`).querySelectorAll('input, textarea')
     const toggles = document.querySelector(`.${parentClass}`).querySelectorAll('.react-toggle--checked')
     const checkboxes = document.querySelector(`.${parentClass}`).querySelectorAll('.box')

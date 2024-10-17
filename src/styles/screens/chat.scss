@@ -302,8 +302,8 @@
 
     .top-buttons {
       justify-content: flex-end;
-      position: relative;
-      top: 50px;
+      position: sticky;
+      top:0;
       z-index: 100000;
 
       #previous-screen-button {
@@ -347,8 +347,8 @@
       width: calc(100vw - 30px);
       position: fixed;
       overflow: auto;
-      top: 101px;
-      bottom: 85px;
+      top: 70px;
+      max-height: 74vh;
       padding: 0 5px;
 
       @media screen and (min-width: 800px) {
@@ -493,7 +493,7 @@
     .form {
       margin-top: 5px;
       position: fixed;
-      bottom: 0;
+      bottom: 60px;
       width: calc(100vw - 30px);
 
       #emoji-icon {

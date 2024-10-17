@@ -5,8 +5,7 @@ import globalState from '../../../context'
 import DB from '@db'
 import FirebaseStorage from '@firebaseStorage'
 import Manager from '@manager'
-import AddNewButton from '@shared/addNewButton'
-import CustomChildInfo from '@screens/childInfo/customChildInfo'
+import CustomChildInfo from '../../shared/customChildInfo'
 import Behavior from '../childInfo/behavior'
 import General from '../childInfo/general'
 import Medical from '../childInfo/medical'
@@ -25,14 +24,15 @@ import {
   removeFileExtension,
   uniqueArray,
 } from '../../../globalFunctions'
+import NewChildForm from './newChildForm'
 
 export default function ChildInfo() {
   // @ts-ignore
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, selectedChild } = state
+  const { currentUser, theme, selectedChild, navbarButton } = state
   const [showCard, setShowCard] = useState(false)
   const imgRef = useRef()
-
+  const [showInfoCard, setShowInfoCard] = useState(false)
   const uploadProfilePic = async (img) => {
     setState({ ...state, isLoading: true })
     // @ts-ignore
@@ -60,20 +60,34 @@ export default function ChildInfo() {
   }
 
   useEffect(() => {
+    setTimeout(() => {
+      setState({
+        ...state,
+        selectedChild: defaultChild,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            setShowCard(true)
+          },
+        },
+      })
+    }, 300)
     const defaultChild = currentUser.children[0]
-    if (!Manager.isValid(selectedChild)) {
-      setState({ ...state, selectedChild: defaultChild })
-    }
     Manager.toggleForModalOrNewForm('show')
   }, [])
 
   return (
     <>
-      {/*<p className="screen-title ">Child Info</p>*/}
-      <CustomChildInfo selectedChild={selectedChild} showCard={showCard} hasDropdown={true} onClose={() => setShowCard(false)} />
+      <CustomChildInfo
+        selectedChild={selectedChild}
+        showCard={showInfoCard}
+        hasDropdown={true}
+        setShowCard={() => setShowInfoCard(false)}
+        onClose={() => setShowInfoCard(false)}
+      />
 
       {/* NEW CHILD + */}
-      <AddNewButton onClick={() => setState({ ...state, currentScreen: ScreenNames.newChild, showMenuButton: false })} />
+      <NewChildForm showCard={showCard} setShowCard={() => setShowCard(!showCard)} />
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
@@ -110,7 +124,11 @@ export default function ChildInfo() {
               </div>
             )}
           </div>
-          <button className="button default center green white-text mt-20 w-60" onClick={() => setShowCard(true)}>
+          <button
+            className="button default center green white-text mt-20 w-60"
+            onClick={() => {
+              setShowInfoCard(true)
+            }}>
             Add Your Own Info <span className="material-icons">auto_fix_high</span>
           </button>
           <button onClick={() => setState({ ...state, currentScreen: ScreenNames.childSelector })} className="button default mt-10 center w-60">

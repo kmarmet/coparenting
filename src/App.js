@@ -51,80 +51,15 @@ import ReviseChildTransferChangeRequest from './components/forms/reviseTransferR
 import { wordCount, getFirstWord } from './globalFunctions'
 import emailjs from '@emailjs/browser'
 import './globalFunctions'
-
+import StateObj from './constants/stateObj'
 // Menus
 import NavBar from './components/navBar'
 import SlideOutMenu from './components/slideOutMenu'
 
-const stateObj = {
-  alertMessage: '',
-  alertType: '',
-  calEventToEdit: {},
-  confirmMessage: '',
-  contactInfoToUpdateType: 'email',
-  currentScreen: ScreenNames.login,
-  currentUser: {},
-  docToView: '',
-  formToShow: '',
-  isLoading: true,
-  menuIsOpen: false,
-  messageToUser: null,
-  modalIsOpen: false,
-  previousScreen: '',
-  selectedChild: null,
-  selectedNewEventDay: null,
-  showAlert: false,
-  showBackButton: false,
-  showConfirm: false,
-  showMenuButton: false,
-  showOverlay: false,
-  showNavbar: true,
-  theme: 'light',
-  transferRequestToEdit: {},
-  unreadMessages: null,
-  unreadMessagesCountSet: false,
-  userIsLoggedIn: false,
-  users: [],
-  viewExpenseForm: false,
-  viewSwapRequestForm: false,
-  viewTransferRequestForm: false,
-  setAlertMessage: (alertMessage) => {},
-  setAlertType: (type) => {},
-  setConfirmMessage: (message) => {},
-  setContactInfoToUpdateType: () => {},
-  setCurrentScreen: (screen) => {},
-  setCurrentUser: (user) => {},
-  setDateToEdit: (date) => {},
-  setDocToView: (doc) => {},
-  setEventToEdit: (event) => {},
-  setFormToShow: (form) => {},
-  setGoBackScreen: (screen) => {},
-  setIsLoading: (bool) => {},
-  setMenuIsOpen: (isOpen) => {},
-  setMessageToUser: (user) => {},
-  setModalIsOpen: (bool) => {},
-  setSelectedChild: (child) => {},
-  setSelectedNewEventDay: (day) => {},
-  setShowAlert: (bool) => {},
-  setShowBackButton: (bool) => {},
-  setShowMenuButton: () => {},
-  setShowOverlay: (bool) => {},
-  setShowShortcutMenu: (bool) => {},
-  setTheme: (theme) => {},
-  setTransferRequestToEdit: (request) => {},
-  setUnreadMessages: (count) => {},
-  setUnreadMessagesCountSet: (bool) => {},
-  setUserIsLoggedIn: (isLoggedIn) => {},
-  setUsers: (users) => {},
-  setViewExpenseForm: (show) => {},
-  setViewSwapRequestForm: (show) => {},
-  setViewTransferRequestForm: (show) => {},
-}
-
 export default function App() {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig)
-  const [state, setState] = useState(stateObj)
+  const [state, setState] = useState(StateObj)
   const stateToUpdate = { state, setState }
   const myCanvas = document.createElement('canvas')
   document.body.appendChild(myCanvas)

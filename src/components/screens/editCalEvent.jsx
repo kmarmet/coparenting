@@ -41,7 +41,7 @@ import {
 import CardConfirm from '../shared/cardConfirm'
 import SecurityManager from '../../managers/securityManager'
 
-export default function EditCalEvent() {
+export default function EditCalEvent({ showCard, setShowCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, calEventToEdit, formToShow } = state
 
@@ -72,16 +72,6 @@ export default function EditCalEvent() {
   const [allEvents, setAllEvents] = useState([])
   const [confirmMessage, setConfirmMessage] = useState('')
 
-  // Swipe Handler
-  const handlers = useSwipeable({
-    onSwipedRight: (eventData) => {},
-    onSwipedDown: () => {
-      resetForm()
-      setState({ ...state, formToShow: '', showNavbar: true })
-    },
-    preventScrollOnSwipe: true,
-  })
-
   const resetForm = () => {
     Manager.resetForm('edit-event-form')
     setEventFromDate('')
@@ -102,6 +92,7 @@ export default function EditCalEvent() {
     setConfirmTitle('')
     setConfirmMessage('')
     setError('')
+    setShowCard(false)
   }
 
   // SUBMIT
@@ -182,7 +173,6 @@ export default function EditCalEvent() {
         await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
       }
     }
-    setState({ ...state, formToShow: '' })
   }
 
   const removeError = (field) => {
@@ -323,13 +313,8 @@ export default function EditCalEvent() {
   }, [])
 
   return (
-    <BottomCard
-      className={`${theme} edit-event-form`}
-      onClose={() => resetForm()}
-      showCard={formToShow === ScreenNames.editCalendarEvent}
-      error={error}
-      title={`Edit ${calEventToEdit?.title}`}>
-      <div {...handlers} id="edit-cal-event-container" className={`${theme} form`}>
+    <BottomCard className={`${theme} edit-event-form`} onClose={resetForm} showCard={showCard} error={error} title={`Edit ${calEventToEdit?.title}`}>
+      <div id="edit-cal-event-container" className={`${theme} form`}>
         <CardConfirm
           className={confirmTitle.length > 0 ? 'active' : ''}
           title={confirmTitle}

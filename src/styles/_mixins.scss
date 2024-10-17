@@ -2290,7 +2290,7 @@
   /*#region  LIGHT THEME*/
   &.light {
     background-color: white;
-    
+
     .swipe-line-and-close {
       background: white;
     }
@@ -2435,12 +2435,38 @@
       color: $red;
     }
   }
-  
+
+  // CUSTOM INFO
+  &.custom-child-info-wrapper {
+    p:not(#title) {
+      &.item {
+        &.active {
+          background: transparent;
+        }
+      }
+    }
+    .form {
+      .flex {
+        align-items: center;
+
+        .item {
+          width: calc(100% / 4);
+          margin: 0;
+          opacity: .7;
+          &.active {
+            font-weight: bold;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+
   // DOC VIEWER SEARCH
   &.search-card {
     max-height: 200px;
     min-height: 0;
-    padding: 20px ;
+    padding: 20px;
     #input-and-nav {
       .flex {
         align-items: center;
@@ -2452,7 +2478,7 @@
         align-items: center;
         position: relative;
         top: 3px;
-        
+
         &:first-child {
           margin-left: 8px;
         }
@@ -2752,7 +2778,6 @@
 
   /*#region  DARK THEME*/
   &.dark {
-    
     background: $darkBg;
   }
   /*#endregion  DARK THEME*/
@@ -2793,7 +2818,6 @@
         width: 45px;
         border: 0;
         opacity: 1;
-
         @include shadow;
 
         /*#region  LIGHT THEME*/
@@ -2821,6 +2845,10 @@
           padding: 0;
           margin: 0;
           line-height: 1;
+
+          &.red {
+            background-color: $red;
+          }
         }
       }
     }

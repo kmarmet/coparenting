@@ -6,15 +6,30 @@ import Manager from '@manager'
 import { getDatabase, ref, set, get, child, onValue } from 'firebase/database'
 import DB_UserScoped from '@userScoped'
 import { Accordion } from 'rsuite'
+import BottomCard from './bottomCard'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension,
+} from '.././../globalFunctions'
 
-export default function CustomChildInfo({ selectedChild, showModal, onClose, hasDropdown = false }) {
+export default function CustomChildInfo({ selectedChild, setShowCard, showCard, onClose, hasDropdown = false }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme } = state
   const [title, setTitle] = useState(null)
   const [value, setValue] = useState(null)
-  const [showForm, setShowForm] = useState(false)
-  const [infoSection, setInfoSection] = useState('Select Info Section')
-  const [infoSectionIsExpanded, setInfoSectionIsExpanded] = useState(false)
+  const [infoSection, setInfoSection] = useState('general')
 
   const add = async () => {
     const dbRef = ref(getDatabase())
@@ -28,7 +43,7 @@ export default function CustomChildInfo({ selectedChild, showModal, onClose, has
         }
       })
 
-      const formattedTitle = title.removeSpacesAndLowerCase().toCamelCase()
+      const formattedTitle = removeSpacesAndLowerCase(title).toCamelCase()
       if (key !== null) {
         set(child(dbRef, `users/${currentUser.phone}/coparents/${key}/${formattedTitle}`), `${value}_custom`)
         onClose()
@@ -42,7 +57,7 @@ export default function CustomChildInfo({ selectedChild, showModal, onClose, has
         }
       })
 
-      const formattedTitle = title.removeSpacesAndLowerCase().toCamelCase()
+      const formattedTitle = removeSpacesAndLowerCase(title).toCamelCase()
       if (key !== null) {
         set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${formattedTitle}`), `${value}_custom`)
         onClose()
@@ -50,52 +65,48 @@ export default function CustomChildInfo({ selectedChild, showModal, onClose, has
     }
   }
 
-  const sectionSelection = async (e) => {
-    const section = e.target.innerText.toLowerCase()
-    const accordionHeader = document.querySelector('.accordion-header')
-    console.log(accordionHeader)
-    accordionHeader.innerText = section.uppercaseFirstLetterOfAllWords()
-    setShowForm(true)
-    setInfoSection(section)
-    setInfoSectionIsExpanded(false)
+  const resetForm = () => {
+    Manager.resetForm('custom-child-info-wrapper')
+    setTitle(null)
+    setValue(null)
+    setInfoSection('Select Info Section')
+    setShowCard()
   }
 
   return (
-    <>
+    <BottomCard className="custom-child-info-wrapper" onClose={setShowCard} title={'Add Custom Info'} showCard={showCard}>
       <div className="form">
         {hasDropdown && (
-          <Accordion className="mb-15">
-            <p onClick={() => setInfoSectionIsExpanded(!infoSectionIsExpanded)} className="accordion-header">
-              {infoSection.uppercaseFirstLetterOfAllWords()}
+          <div className="flex">
+            <p onClick={() => setInfoSection('general')} className={infoSection === 'general' ? 'active item' : 'item'}>
+              General
             </p>
-            <Accordion.Panel expanded={infoSectionIsExpanded}>
-              <p onClick={sectionSelection} className="item">
-                General
-              </p>
-              <p onClick={sectionSelection} className="item">
-                Medical
-              </p>
-              <p onClick={sectionSelection} className="item">
-                Schooling
-              </p>
-              <p onClick={sectionSelection} className="item">
-                Behavior
-              </p>
-            </Accordion.Panel>
-          </Accordion>
+            <p onClick={() => setInfoSection('medical')} className={infoSection === 'medical' ? 'active item' : 'item'}>
+              Medical
+            </p>
+            <p onClick={() => setInfoSection('schooling')} className={infoSection === 'schooling' ? 'active item' : 'item'}>
+              Schooling
+            </p>
+            <p onClick={() => setInfoSection('behavior')} className={infoSection === 'behavior' ? 'active item' : 'item'}>
+              Behavior
+            </p>
+          </div>
         )}
         <>
           <input className="mb-15" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
           <input className="mb-15" type="text" placeholder="Value*" onChange={(e) => setValue(e.target.value)} />
-          {Manager.validation([title, value]) === 0 && (
-            <div id="button-group">
-              <button className="button green w-50 single center" onClick={add}>
-                Add<span className="ml-10 material-icons-outlined">auto_fix_high</span>
-              </button>
-            </div>
-          )}
         </>
+        <div className="buttons">
+          {Manager.isValid(value) && Manager.isValid(title) && (
+            <button className="button card-button" onClick={add}>
+              Add<span className="ml-10 material-icons-outlined">auto_fix_high</span>
+            </button>
+          )}
+          <button className="button card-button red" onClick={resetForm}>
+            Cancel
+          </button>
+        </div>
       </div>
-    </>
+    </BottomCard>
   )
 }

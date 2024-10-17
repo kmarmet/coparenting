@@ -18,10 +18,11 @@ import Tooltip from 'rc-tooltip'
 import 'rc-tooltip/assets/bootstrap_white.css'
 import EmojiPicker from 'emoji-picker-react'
 import ChatManager from '@managers/chatManager.js'
+import DateFormats from '../../../constants/dateFormats'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, messageToUser, previousScreen, currentScreen } = state
+  const { currentUser, theme, messageToUser, previousScreen, navbarButton } = state
   const [existingChat, setExistingChat] = useState(null)
   const [messagesToLoop, setMessagesToLoop] = useState(null)
   const [searchResults, setSearchResults] = useState([])
@@ -176,19 +177,24 @@ const Conversation = () => {
   }
 
   useEffect(() => {
-    if (currentUser && messageToUser !== undefined) {
-      getExistingMessages().then((r) => r)
-      setTimeout(() => {
-        setState({
-          ...state,
-          currentScreen: ScreenNames.conversation,
-          menuIsOpen: false,
-          previousScreen: ScreenNames.chats,
-          showMenuButton: false,
-          showBackButton: false,
-        })
-      }, 500)
-    }
+    const dbRef = ref(getDatabase())
+
+    onValue(child(dbRef, DB.tables.chats), async (snapshot) => {
+      await getExistingMessages()
+      setState({ ...state, selectedNewEventDay: moment().format(DateFormats.dateForDb).toString() })
+    })
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            setShowSearchInput(true)
+          },
+          icon: 'search',
+        },
+      })
+    }, 300)
     scrollToLatestMessage()
     Manager.toggleForModalOrNewForm('show')
   }, [])
@@ -214,11 +220,7 @@ const Conversation = () => {
           <div className="flex top-buttons">
             <button
               onClick={() => {
-                setState({
-                  ...state,
-                  currentScreen: previousScreen,
-                  showMenuButton: true,
-                })
+                setState({ ...state, currentScreen: ScreenNames.chats })
                 Manager.toggleForModalOrNewForm('show')
               }}
               id="previous-screen-button">
@@ -241,17 +243,6 @@ const Conversation = () => {
                 bookmark
               </span>
             </Tooltip>
-            <span
-              className="material-icons search-icon blue"
-              id="conversation-search-icon"
-              onClick={() => {
-                setShowSearchInput(true)
-                setTimeout(() => {
-                  document.querySelector('.search-input').focus()
-                }, 100)
-              }}>
-              search
-            </span>
           </div>
         )}
 

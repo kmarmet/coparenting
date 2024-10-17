@@ -17,7 +17,13 @@ function General() {
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [generalValues, setGeneralValues] = useState([])
 
-  const deleteProp = async (prop) => await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'general', selectedChild)
+  const deleteProp = async (prop) => {
+    console.log(prop)
+    const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, selectedChild, 'id')
+    console.log(key)
+    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/general/${prop}`)
+    // await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'general', selectedChild)
+  }
 
   const setSelectedChild = () => {
     if (Manager.isValid(selectedChild.general, false, true)) {
@@ -48,7 +54,6 @@ function General() {
 
   useEffect(() => {
     Manager.toggleForModalOrNewForm()
-    setState({ ...state, showMenuButton: true, showBackButton: true, previousScreen: ScreenNames.childSelector })
     setSelectedChild()
   }, [])
 

@@ -38,7 +38,7 @@ import DB_UserScoped from '@userScoped'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, menuIsOpen, formToShow } = state
+  const { currentUser, theme, menuIsOpen, formToShow, navbarButton } = state
   const [existingEvents, setExistingEvents] = useState([])
   const [showInfoContainer, setShowInfoContainer] = useState(false)
   const [showSearchInput, setShowSearchInput] = useState(false)
@@ -46,7 +46,7 @@ export default function EventCalendar() {
   const [showFilters, setShowFilters] = useState(false)
   const [searchResultsToUse, setSearchResultsToUse] = useState([])
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
-  const [showNewCalendarForm, setShowNewCalendarForm] = useState(false)
+  const [showNewEventCard, setShowNewEventCard] = useState(false)
   // HANDLE SWIPE
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
@@ -411,9 +411,13 @@ export default function EventCalendar() {
     setTimeout(() => {
       setState({
         ...state,
-        showNavbar: true,
-        formToShow: '',
         selectedNewEventDay: moment(),
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            setShowNewEventCard(true)
+          },
+        },
       })
     }, 500)
   }, [])
@@ -427,21 +431,26 @@ export default function EventCalendar() {
     }
   }, [showSearchInput])
 
-  return (
-    <>
-      {/* CLOSE SEARCH BUTTON */}
-      {searchResultsToUse.length > 0 && (
-        <BottomButton
-          iconName="close"
-          elClass={'red visible'}
-          bottom="160"
-          onClick={() => {
+  useEffect(() => {
+    if (searchResultsToUse.length > 0) {
+      setState({
+        ...state,
+        navbarButton: {
+          action: () => {
             viewAllEvents().then((r) => r)
             setAllHolidays([])
-          }}
-        />
-      )}
+            document.querySelector('.search-input').value = ''
+            setShowSearchInput(false)
+          },
+          icon: 'close',
+          color: 'red',
+        },
+      })
+    }
+  }, [searchResultsToUse.length])
 
+  return (
+    <>
       {/* BOTTOM FILTER CARD */}
       <BottomCard
         className={`${theme}`}
@@ -460,7 +469,7 @@ export default function EventCalendar() {
       </BottomCard>
 
       {/* FORMS */}
-      <NewCalendarEvent />
+      <NewCalendarEvent showCard={showNewEventCard} setShowCard={(e) => setShowNewEventCard(e)} />
       <EditCalEvent />
 
       {/* PAGE CONTAINER */}
@@ -556,21 +565,7 @@ export default function EventCalendar() {
                   return (
                     <div className="flex columns" key={index}>
                       <div className="event search">
-                        <div
-                          className={'details-container search'}
-                          onClick={(e) => {
-                            // @ts-ignore
-                            const elementType = e.target.tagName
-                            if (elementType.toLowerCase() !== 'a') {
-                              if (AppManager.getAccountType() === 'parent' || AppManager.getAccountType() === undefined) {
-                                setState({
-                                  ...state,
-                                  currentScreen: ScreenNames.editCalendarEvent,
-                                  calEventToEdit: event,
-                                })
-                              }
-                            }
-                          }}>
+                        <div className={'details-container search'}>
                           <div className={`${searchResultsToUse.length > 0 ? 'active' : ''} event-details`}>
                             <div className="flex parent ">
                               <div className="flex content">
