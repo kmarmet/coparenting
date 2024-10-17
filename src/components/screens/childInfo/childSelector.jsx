@@ -1,10 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import ScreenNames from '@screenNames'
 import globalState from '../../../context'
-import DB from '@db'
-import DB_UserScoped from '@userScoped'
-import PopupCard from 'components/shared/popupCard'
-import { Accordion } from 'rsuite'
 import Manager from '@manager'
 import BottomCard from '../../shared/bottomCard'
 import {
@@ -22,30 +18,21 @@ import {
   uniqueArray,
 } from '../../../globalFunctions'
 
-function ChildSelector() {
-  // @ts-ignore
+function ChildSelector({ showCard, setShowCard, setActiveChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, selectedChild } = state
-  const [showPopup, setShowPopup] = useState(true)
+  const { currentUser, theme } = state
   const [children, setChildren] = useState([])
-  const [expandAccordion, setExpandAccordion] = useState(false)
-
-  const getChildren = async () => {
-    const _children = await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'children')
-    setChildren(_children)
-  }
 
   useEffect(() => {
-    getChildren().then((r) => r)
-    setState({ ...state, showAlert: true, alertType: 'success' })
+    setChildren(currentUser?.children)
   }, [])
 
   return (
     <BottomCard
-      // onClose={() => setState({ ...state, showAlert: false, alertMessage: '', alertType: 'error' })}
+      onClose={setShowCard}
       title={'Choose Child'}
       subtitle="Select which child you would like to view & edit"
-      showCard={true}
+      showCard={showCard}
       className={`success`}>
       <div className="flex gap wrap mt-15">
         {Manager.isValid(children, true) &&
@@ -54,16 +41,10 @@ function ChildSelector() {
               <p
                 className="child-name mt-0 w-30"
                 key={index}
-                onClick={(e) =>
-                  setState({
-                    ...state,
-                    selectedChild: child,
-                    currentScreen: ScreenNames.childInfo,
-                    showAlert: false,
-                    alertMessage: '',
-                    alertType: 'error',
-                  })
-                }>
+                onClick={(e) => {
+                  setActiveChild(child)
+                  setShowCard()
+                }}>
                 {formatNameFirstNameOnly(child.general.name)}
               </p>
             )

@@ -5,23 +5,41 @@ import globalState from '../../../context'
 import Manager from '@manager'
 import DB from '@db'
 import { child, getDatabase, onValue, ref, set, get } from 'firebase/database'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  camelCaseToString,
+  contains,
+  uniqueArray,
+  getFileExtension,
+  lowercaseShouldBeLowercase,
+} from '../../../globalFunctions'
 
-function Medical() {
+function Medical({ activeChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, selectedChild } = state
+  const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [medicalValues, setMedicalValues] = useState([])
 
   const deleteProp = async (prop) => {
-    await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'medical', selectedChild)
+    await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'medical', activeChild)
     setSelectedChild()
   }
 
   const update = async (section, prop, value, isArray) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, selectedChild, 'id')
+    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
 
-    let field = selectedChild[section][prop]
+    let field = activeChild[section][prop]
 
     if (field !== undefined) {
       if (isArray) {
@@ -39,8 +57,17 @@ function Medical() {
   }
 
   const setSelectedChild = () => {
-    if (Manager.isValid(selectedChild.medical, false, true)) {
-      setMedicalValues(Object.entries(selectedChild.medical).filter((x) => x[1].indexOf('custom') > -1))
+    if (Manager.isValid(activeChild.medical, false, true)) {
+      // Remove Custom Text from Property
+      for (let val in activeChild.medical) {
+        if (contains(activeChild.medical[val], '_custom')) {
+          activeChild.medical[val] = activeChild.medical[val].replace('_custom', '')
+        }
+      }
+
+      // Set info
+      let values = Object.entries(activeChild.medical)
+      setMedicalValues(values)
     }
   }
 
@@ -68,28 +95,31 @@ function Medical() {
         <Accordion.Panel expanded={expandAccordion === true ? true : false}>
           {Manager.isValid(medicalValues) &&
             medicalValues.map((prop, index) => {
-              const infoLabel = prop[0]
+              const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
               const value = prop[1].replace('_custom', '')
               return (
-                <div className="flex input mt-10" key={index}>
-                  <DebounceInput
-                    className="mb-10"
-                    value={value}
-                    placeholder={infoLabel.camelCaseToString(infoLabel)}
-                    minLength={2}
-                    debounceTimeout={1000}
-                    onChange={(e) => {
-                      const inputValue = e.target.value
-                      if (inputValue.length > 0) {
-                        update('medical', infoLabel, `${inputValue}_custom`).then((r) => r)
-                      } else {
-                        update('medical', infoLabel, '_custom').then((r) => r)
-                      }
-                    }}
-                  />
-                  <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
-                    delete
-                  </span>
+                <div key={index}>
+                  <label className="w-100">{infoLabel}</label>
+                  <div className="flex input mt-10">
+                    <DebounceInput
+                      className="mb-10"
+                      value={value}
+                      placeholder={camelCaseToString(infoLabel)}
+                      minLength={2}
+                      debounceTimeout={1000}
+                      onChange={(e) => {
+                        const inputValue = e.target.value
+                        if (inputValue.length > 0) {
+                          update('medical', infoLabel, `${inputValue}_custom`).then((r) => r)
+                        } else {
+                          update('medical', infoLabel, '_custom').then((r) => r)
+                        }
+                      }}
+                    />
+                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
+                      delete
+                    </span>
+                  </div>
                 </div>
               )
             })}

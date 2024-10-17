@@ -279,19 +279,18 @@ const DB = {
     update(ref(dbRef, path), newRecord)
     // update((ref(dbRef, tableName), { newRecord }))
   },
-  deleteChildInfoProp: async (tableName, currentUser, theme, prop, parentObjectName, selectedChild) => {
+  deleteChildInfoProp: async (tableName, currentUser, prop, parentObjectName, selectedChild) => {
     const dbRef = ref(getDatabase())
     let removalKey
-    await get(child(dbRef, `${tableName}/${currentUser.phone}/children/`)).then((snapshot) => {
+    await get(child(dbRef, `users/${currentUser.phone}/children/`)).then(async (snapshot) => {
       if (snapshot.exists()) {
-        snapshot.forEach((event) => {
-          let child = event.val()
-          if (child['general'].name === selectedChild['general'].name) {
-            removalKey = event.key
+        snapshot.val().forEach((child, index) => {
+          if (child.general?.name.replace('_custom', '') === selectedChild.general?.name.replace('_custom', '')) {
+            removalKey = index
           }
         })
       }
-      remove(child(dbRef, `${tableName}/${currentUser.phone}/children/${removalKey}/${parentObjectName}/${prop}`))
+      await remove(child(dbRef, `${tableName}/${currentUser.phone}/children/${removalKey}/${parentObjectName}/${prop.toLowerCase()}`))
     })
   },
   deleteCoparentInfoProp: async (tableName, currentUser, theme, prop, selectedCoparent) => {

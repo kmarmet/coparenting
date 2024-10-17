@@ -5,21 +5,41 @@ import globalState from '../../../context'
 import Manager from '@manager'
 import DB from '@db'
 import { child, getDatabase, onValue, ref, set, get } from 'firebase/database'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  camelCaseToString,
+  contains,
+  uniqueArray,
+  getFileExtension,
+  lowercaseShouldBeLowercase,
+} from '../../../globalFunctions'
 
-function Behavior() {
+function Behavior({ activeChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, selectedChild } = state
+  const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [behaviorValues, setBehaviorValues] = useState([])
 
-  const deleteProp = async (prop) => await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'behavior', selectedChild)
+  const deleteProp = async (prop) => {
+    await DB.deleteChildInfoProp(DB.tables.users, currentUser, prop, 'behavior', activeChild)
+    setSelectedChild()
+  }
 
   const update = async (section, prop, value, isArray) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, selectedChild, 'id')
-    console.log(key)
+    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
 
-    let field = selectedChild[section][prop]
+    let field = activeChild[section][prop]
 
     if (field !== undefined) {
       if (isArray) {
@@ -36,14 +56,23 @@ function Behavior() {
     }
   }
   const setSelectedChild = () => {
-    if (Manager.isValid(selectedChild.behavior, false, true)) {
-      setBehaviorValues(Object.entries(selectedChild.behavior).filter((x) => x[1].indexOf('custom') > -1))
+    if (Manager.isValid(activeChild.behavior, false, true)) {
+      // Remove Custom Text from Property
+      for (let val in activeChild.behavior) {
+        if (contains(activeChild.behavior[val], '_custom')) {
+          activeChild.behavior[val] = activeChild.behavior[val].replace('_custom', '')
+        }
+      }
+
+      // Set info
+      let values = Object.entries(activeChild.behavior)
+      setBehaviorValues(values)
     }
   }
 
   useEffect(() => {
     setSelectedChild()
-  }, [])
+  }, [activeChild])
 
   return (
     <div className="info-section section behavior">
@@ -63,57 +92,34 @@ function Behavior() {
           <span className="material-icons-round">psychology</span> Behavior <span className="material-icons-round"></span>
         </p>
         <Accordion.Panel expanded={expandAccordion === true ? true : false}>
-          <div className="flex input mt-10">
-            <DebounceInput
-              className="mb-10"
-              value={selectedChild.behavior.counselorName}
-              placeholder={'Counselor name'}
-              minLength={2}
-              debounceTimeout={1000}
-              onChange={(e) => update('behavior', 'counselorName', e.target.value)}
-            />
-            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('counselorName')}>
-              delete
-            </span>
-          </div>
-          <div className="flex input">
-            <DebounceInput
-              className="mb-10"
-              value={selectedChild.behavior.issues}
-              placeholder={'Primary behavior issue'}
-              minLength={2}
-              debounceTimeout={1000}
-              onChange={(e) => update('behavior', 'issues', e.target.value, true)}
-            />
-            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('issues')}>
-              delete
-            </span>
-          </div>
           {behaviorValues &&
             behaviorValues.map((prop, index) => {
-              const infoLabel = prop[0]
+              const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
               const value = prop[1].replaceAll('_custom', '')
               return (
-                <div key={Manager.getUid()} className="flex input">
-                  <DebounceInput
-                    className="mb-10"
-                    value={value}
-                    element={'input'}
-                    placeholder={infoLabel.camelCaseToString(infoLabel)}
-                    minLength={2}
-                    debounceTimeout={1000}
-                    onChange={(e) => {
-                      const inputValue = e.target.value
-                      if (inputValue.length > 0) {
-                        update('behavior', infoLabel, `${inputValue}_custom`)
-                      } else {
-                        update('behavior', infoLabel, '_custom')
-                      }
-                    }}
-                  />
-                  <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
-                    delete
-                  </span>
+                <div key={index}>
+                  <label className="w-100">{infoLabel}</label>
+                  <div className="flex input">
+                    <DebounceInput
+                      className="mb-10"
+                      value={value}
+                      element={'input'}
+                      placeholder={camelCaseToString(infoLabel)}
+                      minLength={2}
+                      debounceTimeout={1000}
+                      onChange={async (e) => {
+                        const inputValue = e.target.value
+                        if (inputValue.length > 0) {
+                          await update('behavior', infoLabel, `${inputValue}_custom`)
+                        } else {
+                          await update('behavior', infoLabel, '_custom')
+                        }
+                      }}
+                    />
+                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
+                      delete
+                    </span>
+                  </div>
                 </div>
               )
             })}

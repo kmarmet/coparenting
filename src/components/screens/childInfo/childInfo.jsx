@@ -25,14 +25,19 @@ import {
   uniqueArray,
 } from '../../../globalFunctions'
 import NewChildForm from './newChildForm'
+import ChildSelector from './childSelector'
+import DateFormats from '../../../constants/dateFormats'
 
 export default function ChildInfo() {
   // @ts-ignore
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, selectedChild, navbarButton } = state
+  const { currentUser, theme, navbarButton } = state
   const [showCard, setShowCard] = useState(false)
   const imgRef = useRef()
   const [showInfoCard, setShowInfoCard] = useState(false)
+  const [showSelectorCard, setShowSelectorCard] = useState(false)
+  const [activeChild, setActiveChild] = useState(null)
+
   const uploadProfilePic = async (img) => {
     setState({ ...state, isLoading: true })
     // @ts-ignore
@@ -43,10 +48,10 @@ export default function ChildInfo() {
     }
 
     // Upload -> Set child/general/profilePic
-    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, selectedChild.id, img, 'profilePic').then(async (url) => {
+    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, activeChild.id, img, 'profilePic').then(async (url) => {
       const dbRef = ref(getDatabase())
       await get(child(dbRef, `${DB.tables.users}/${currentUser.phone}/children`)).then(async (children) => {
-        const key = await DB.getNestedSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, selectedChild, 'id')
+        const key = await DB.getNestedSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
         set(child(dbRef, `${DB.tables.users}/${currentUser.phone}/children/${key}/general/profilePic`), url)
         setState({ ...state, isLoading: false })
       })
@@ -54,16 +59,14 @@ export default function ChildInfo() {
   }
 
   const chooseImage = async (e) => {
-    // @ts-ignore
     const img = document.querySelector('#upload-input').files[0]
-    uploadProfilePic(img)
+    await uploadProfilePic(img)
   }
 
   useEffect(() => {
     setTimeout(() => {
       setState({
         ...state,
-        selectedChild: defaultChild,
         navbarButton: {
           ...navbarButton,
           action: () => {
@@ -72,14 +75,27 @@ export default function ChildInfo() {
         },
       })
     }, 300)
-    const defaultChild = currentUser.children[0]
     Manager.toggleForModalOrNewForm('show')
+    const dbRef = ref(getDatabase())
+    onValue(child(dbRef, `users/${currentUser.phone}/children`), async (snapshot) => {
+      const children = snapshot.val()
+
+      if (!activeChild) {
+        setActiveChild(children[0])
+      } else {
+        setActiveChild(activeChild)
+      }
+    })
   }, [])
 
   return (
     <>
+      {/* CHILD SELECTOR */}
+      <ChildSelector setActiveChild={setActiveChild} showCard={showSelectorCard} setShowCard={() => setShowSelectorCard(false)} />
+
+      {/* CUSTOM INFO FORM */}
       <CustomChildInfo
-        selectedChild={selectedChild}
+        activeChild={activeChild}
         showCard={showInfoCard}
         hasDropdown={true}
         setShowCard={() => setShowInfoCard(false)}
@@ -91,36 +107,36 @@ export default function ChildInfo() {
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
-        {/* PROFILE PICS */}
+        {/* PROFILE PIC */}
         <div id="children-container" className="mb-10">
           <>
-            {Manager.isValid(selectedChild?.general?.profilePic) && (
-              <div className="profile-pic-container" style={{ backgroundImage: `url(${selectedChild.general?.profilePic})` }}>
+            {Manager.isValid(activeChild?.general?.profilePic) && (
+              <div className="profile-pic-container" style={{ backgroundImage: `url(${activeChild.general?.profilePic})` }}>
                 <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
                 <div className="after">
                   <span className="material-icons-outlined">flip_camera_ios</span>
                 </div>
               </div>
             )}
-            {!Manager.isValid(selectedChild?.general.profilePic) && (
+            {!Manager.isValid(activeChild?.general.profilePic) && (
               <div className="profile-pic-container no-image">
                 <p>Upload Image</p>
               </div>
             )}
 
-            <span className="child-name">{formatNameFirstNameOnly(selectedChild?.general?.name)}</span>
+            <span className="child-name">{formatNameFirstNameOnly(activeChild?.general?.name)}</span>
           </>
         </div>
 
         {/* INFO */}
         <>
           <div id="child-info">
-            {selectedChild && (
+            {activeChild && (
               <div className="form">
-                <General />
-                <Medical />
-                <Schooling />
-                <Behavior />
+                <General activeChild={activeChild} />
+                <Medical activeChild={activeChild} />
+                <Schooling activeChild={activeChild} />
+                <Behavior activeChild={activeChild} />
               </div>
             )}
           </div>
@@ -131,7 +147,7 @@ export default function ChildInfo() {
             }}>
             Add Your Own Info <span className="material-icons">auto_fix_high</span>
           </button>
-          <button onClick={() => setState({ ...state, currentScreen: ScreenNames.childSelector })} className="button default mt-10 center w-60">
+          <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center w-60">
             Different Child
           </button>
         </>

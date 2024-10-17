@@ -5,20 +5,38 @@ import globalState from '../../../context'
 import Manager from '@manager'
 import DB from '@db'
 import { child, getDatabase, onValue, ref, set, get } from 'firebase/database'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  camelCaseToString,
+  contains,
+  uniqueArray,
+  getFileExtension,
+  lowercaseShouldBeLowercase,
+} from '../../../globalFunctions'
 
-function Schooling() {
+function Schooling({ activeChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, selectedChild } = state
+  const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [schoolingValues, setSchoolingValues] = useState([])
 
-  const deleteProp = async (prop) => await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'schooling', selectedChild)
+  const deleteProp = async (prop) => await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'schooling', activeChild)
 
   const update = async (section, prop, value, isArray) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, selectedChild, 'id')
+    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
 
-    let field = selectedChild[section][prop]
+    let field = activeChild[section][prop]
 
     if (field !== undefined) {
       if (isArray) {
@@ -36,8 +54,17 @@ function Schooling() {
   }
 
   const setSelectedChild = () => {
-    if (Manager.isValid(selectedChild.schooling, false, true)) {
-      setSchoolingValues(Object.entries(selectedChild.schooling).filter((x) => x[1].indexOf('custom') > -1))
+    if (Manager.isValid(activeChild.schooling, false, true)) {
+      // Remove Custom Text from Property
+      for (let val in activeChild.schooling) {
+        if (contains(activeChild.schooling[val], '_custom')) {
+          activeChild.schooling[val] = activeChild.schooling[val].replace('_custom', '')
+        }
+      }
+
+      // Set info
+      let values = Object.entries(activeChild.schooling)
+      setSchoolingValues(values)
     }
   }
 
@@ -63,56 +90,33 @@ function Schooling() {
           <span className="material-icons-round">school</span> Schooling <span className="material-icons-round"></span>
         </p>
         <Accordion.Panel expanded={expandAccordion}>
-          <div className="flex input mt-10">
-            <DebounceInput
-              className="mb-10"
-              value={selectedChild.schooling.schoolName}
-              placeholder={'School name'}
-              minLength={2}
-              debounceTimeout={1000}
-              onChange={(e) => update('schooling', 'schoolName', e.target.value)}
-            />
-            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('schoolName')}>
-              delete
-            </span>
-          </div>
-          <div className="flex input">
-            <DebounceInput
-              className="mb-10"
-              value={selectedChild.schooling.grade}
-              placeholder={'Grade level'}
-              minLength={2}
-              debounceTimeout={1000}
-              onChange={(e) => update('schooling', 'grade', e.target.value)}
-            />
-            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('grade')}>
-              delete
-            </span>
-          </div>
           {Manager.isValid(schoolingValues, true) &&
             schoolingValues.map((prop, index) => {
-              const infoLabel = prop[0]
+              const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
               const value = prop.flat()[1].replaceAll('_custom', '')
               return (
-                <div key={Manager.getUid()} className="flex input">
-                  <DebounceInput
-                    className="mb-10"
-                    value={value}
-                    placeholder={infoLabel.camelCaseToString(infoLabel)}
-                    minLength={2}
-                    debounceTimeout={1000}
-                    onChange={(e) => {
-                      const inputValue = e.target.value
-                      if (inputValue.length > 0) {
-                        update('schooling', infoLabel, `${inputValue}_custom`).then((r) => r)
-                      } else {
-                        update('schooling', infoLabel, '_custom').then((r) => r)
-                      }
-                    }}
-                  />
-                  <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
-                    delete
-                  </span>
+                <div key={index}>
+                  <label className="w-100">{infoLabel}</label>
+                  <div className="flex input">
+                    <DebounceInput
+                      className="mb-10"
+                      value={value}
+                      placeholder={camelCaseToString(infoLabel)}
+                      minLength={2}
+                      debounceTimeout={1000}
+                      onChange={(e) => {
+                        const inputValue = e.target.value
+                        if (inputValue.length > 0) {
+                          update('schooling', infoLabel, `${inputValue}_custom`).then((r) => r)
+                        } else {
+                          update('schooling', infoLabel, '_custom').then((r) => r)
+                        }
+                      }}
+                    />
+                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
+                      delete
+                    </span>
+                  </div>
                 </div>
               )
             })}

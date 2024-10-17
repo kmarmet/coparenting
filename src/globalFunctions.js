@@ -113,6 +113,10 @@ export var formatPhone = function(input) {
   return input.toString().replace(/-/g, '').replace(/\s+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\+/g, '').replace(/\+1/g, '');
 };
 
+export var lowercaseShouldBeLowercase = function(input) {
+  return input.replace("Of", "of");
+};
+
 export var removeFileExtension = function(input) {
   return input.replace(/\.[^\/.]+$/, '');
 };

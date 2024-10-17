@@ -78,6 +78,10 @@ export formatPhone =  (input)->
     .replace(/\+/g, '')
     .replace(/\+1/g, '')
 
+export lowercaseShouldBeLowercase = (input) ->
+  input.replace("Of", "of")
+
+
 export removeFileExtension = (input) ->
   input.replace(/\.[^/.]+$/, '')
 

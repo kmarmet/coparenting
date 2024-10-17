@@ -24,7 +24,7 @@ import {
   getFileExtension,
 } from '.././../globalFunctions'
 
-export default function CustomChildInfo({ selectedChild, setShowCard, showCard, onClose, hasDropdown = false }) {
+export default function CustomChildInfo({ activeChild, setShowCard, showCard, onClose, hasDropdown = false }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [title, setTitle] = useState(null)
@@ -34,34 +34,17 @@ export default function CustomChildInfo({ selectedChild, setShowCard, showCard, 
   const add = async () => {
     const dbRef = ref(getDatabase())
 
-    if (selectedChild.hasOwnProperty('parentType')) {
-      const coparents = (await get(child(dbRef, `users/${currentUser.phone}/coparents`))).val()
-      let key = null
-      coparents.forEach((child, index) => {
-        if (child.phone === selectedChild.phone) {
-          key = index
-        }
-      })
-
-      const formattedTitle = removeSpacesAndLowerCase(title).toCamelCase()
-      if (key !== null) {
-        set(child(dbRef, `users/${currentUser.phone}/coparents/${key}/${formattedTitle}`), `${value}_custom`)
-        onClose()
+    let key = null
+    currentUser.children.forEach((child, index) => {
+      if (child.general.name.replace('_custom', '') === activeChild.general.name.replace('_custom', '')) {
+        key = index
       }
-    } else {
-      const children = await DB_UserScoped.getRecordsByUser(DB.tables.users, currentUser, theme, 'children')
-      let key = null
-      children.forEach((child, index) => {
-        if (child.general.name === selectedChild.general.name) {
-          key = index
-        }
-      })
+    })
 
-      const formattedTitle = removeSpacesAndLowerCase(title).toCamelCase()
-      if (key !== null) {
-        set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${formattedTitle}`), `${value}_custom`)
-        onClose()
-      }
+    const formattedTitle = removeSpacesAndLowerCase(title).toCamelCase()
+    if (key !== null) {
+      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${formattedTitle}`), `${value}_custom`)
+      onClose()
     }
   }
 
