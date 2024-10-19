@@ -23,7 +23,7 @@ import DB_UserScoped from '@userScoped'
 
 export default function NavBar() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, currentUser, theme, showNavbar, navbarButton } = state
+  const { currentScreen, menuIsOpen, screenChangeId, theme, showNavbar, navbarButton } = state
 
   const changeCurrentScreen = (screen) => {
     if (screen === ScreenNames.calendar) {
@@ -33,7 +33,7 @@ export default function NavBar() {
         cal.classList.remove('hide')
       }
     }
-    setState({ ...state, currentScreen: screen })
+    setState({ ...state, currentScreen: screen, screenChangeId: Manager.getUid() })
     Manager.toggleForModalOrNewForm('show')
   }
 

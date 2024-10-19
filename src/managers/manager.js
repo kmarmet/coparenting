@@ -3,8 +3,77 @@ import moment from 'moment'
 import ReminderTimes from 'constants/reminderTimes'
 import DB from '@db'
 import '../prototypes'
+import ModelNames from '../models/modelNames'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension,
+} from '../globalFunctions'
+import CalendarEvent from '../models/calendarEvent'
+import Expense from '../models/expense'
+import Memory from '../models/memory'
+import SwapRequest from '../models/swapRequest'
+import TransferChangeRequest from '../models/transferChangeRequest'
+import User from '../models/user'
+import TitleSuggestion from '../models/titleSuggestion'
+import Coparent from '../models/coparent'
 
 const Manager = {
+  cleanObject: (object, modelName) => {
+    let returnObject
+    switch (true) {
+      case modelName === ModelNames.calendarEvent:
+        returnObject = new CalendarEvent()
+        break
+      case modelName === ModelNames.expense:
+        returnObject = new Expense()
+        break
+      case modelName === ModelNames.memory:
+        returnObject = new Memory()
+        break
+      case modelName === ModelNames.transferChangeRequest:
+        returnObject = new TransferChangeRequest()
+        break
+      case modelName === ModelNames.swapRequest:
+        returnObject = new SwapRequest()
+        break
+      case modelName === ModelNames.titleSuggestion:
+        returnObject = new TitleSuggestion()
+        break
+      case modelName === ModelNames.user:
+        returnObject = new User()
+        break
+      case modelName === ModelNames.coparent:
+        returnObject = new Coparent()
+        break
+      default:
+    }
+
+    for (let prop in object) {
+      if (Array.isArray(object[prop])) {
+        if (object[prop] === undefined || object[prop] === null) {
+          object[prop] = []
+        }
+      } else {
+        if (object[prop] === undefined || object[prop] === null || object[prop].toString().toLowerCase().includes('invalid')) {
+          object[prop] = ''
+        }
+      }
+      returnObject[prop] = object[prop]
+    }
+    return returnObject
+  },
   resetForm: (parentClass) => {
     const inputs = document.querySelector(`.${parentClass}`).querySelectorAll('input, textarea')
     const toggles = document.querySelector(`.${parentClass}`).querySelectorAll('.react-toggle--checked')
@@ -123,14 +192,14 @@ const Manager = {
   },
   isValid: (variable, checkArrayLength, validateObject, checkStringLength) => {
     if (validateObject && typeof variable === 'object') {
-      if (!variable || variable === undefined) {
+      if (!variable) {
         return false
       }
       if (Object.keys(variable).length === 0) {
         return false
       }
       for (let prop in variable) {
-        if (!prop || prop === undefined) {
+        if (!prop) {
           return false
         }
         if (!variable[prop] || variable[prop] === undefined) {
@@ -138,13 +207,10 @@ const Manager = {
         }
       }
     } else {
-      if (!variable || variable === undefined) {
+      if (!variable) {
         return false
       } else {
-        if (checkArrayLength && variable.length <= 0) {
-          return false
-        }
-        if (checkStringLength && variable.length === 0) {
+        if ((checkArrayLength && variable.length <= 0) || (checkArrayLength && variable.length === 0)) {
           return false
         }
       }
@@ -226,8 +292,7 @@ const Manager = {
       if (checkCallback) checkCallback(label)
     }
   },
-  handleShareWithSelection: async (e, currentUser, theme, shareWith) => {
-    console.log(shareWith)
+  handleShareWithSelection: async (e, currentUser, shareWith) => {
     let returnValue = []
     const clickedEl = e.currentTarget
     const checkbox = clickedEl.querySelector('.share-with-container .box')
@@ -241,18 +306,22 @@ const Manager = {
     }
     // On check
     else {
-      if (currentUser.accountType === 'parent') {
-        currentUser.coparents.forEach((coparent) => {
+      if (currentUser?.accountType === 'parent') {
+        currentUser?.coparents.forEach((coparent) => {
           if (coparent.phone == selectedValue) {
-            if (shareWith.length === 0) {
+            if (shareWith?.length === 0) {
               shareWith = [coparent.phone]
             } else {
-              shareWith = [...shareWith, coparent.phone]
+              if (shareWith?.length > 0) {
+                shareWith = [...shareWith, coparent.phone]
+              } else {
+                shareWith = shareWith
+              }
             }
           }
         })
       } else {
-        currentUser.parents.forEach((parent) => {
+        currentUser?.parents.forEach((parent) => {
           if (parent.phone == selectedValue) {
             if (shareWith.length === 0) {
               shareWith = [parent.phone]
@@ -272,13 +341,29 @@ const Manager = {
       let repeatingEvents = await DB.getTable(DB.tables.calendarEvents)
       repeatingEvents = repeatingEvents.filter((x) => x.title === eventTitle)
       const repeatInterval = object['repeatInterval']
-      document.querySelector(`[data-label='${repeatInterval.uppercaseFirstLetterOfAllWords()}']`).querySelector('.box').classList.add('active')
+      document
+        .querySelector(`[data-label='${uppercaseFirstLetterOfAllWords(repeatInterval)}']`)
+        .querySelector('.box')
+        .classList.add('active')
       return repeatingEvents
     }
+    // Share With
+    if (checkboxGroupName === 'shareWith') {
+      let checkboxes = document.querySelectorAll(`[data-phone]`)
+      checkboxes.forEach((checkbox) => {
+        const dataPhone = checkbox.getAttribute('data-phone')
+        if (contains(object[propName], dataPhone)) {
+          checkbox.querySelector('.box').classList.add('active')
+        }
+      })
+    }
+
+    // Repeating
     if (checkboxGroupName === 'repeating') {
       const repeatingEvents = getRepeatingEvents()
       return repeatingEvents
     }
+
     // Reminder Times
     if (checkboxGroupName === 'reminderTimes') {
       const reminderIsValid = Manager.isValid(object[propName], isArray ? true : false)
@@ -303,6 +388,15 @@ const Manager = {
       }
       return reminderTimes
     }
+  },
+  dateIsValid: (date) => {
+    if (!Manager.isValid(date)) {
+      return false
+    }
+    if (moment(date).toString().toLowerCase().includes('invalid')) {
+      return false
+    }
+    return true
   },
 
   // TODO Remove any unused below

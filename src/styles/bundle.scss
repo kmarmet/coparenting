@@ -2,9 +2,11 @@
 @import "./colors";
 @import "./mixins";
 @import "./variables";
+@import "./muiOverrides";
+@import "./sweetAlertOverrides";
+@import "./rSuiteOverrides";
 @import "./utilityClasses";
 @import "./styles";
-@import "./rSuiteOverrides";
 @import "./screens/expenseTracker";
 @import "./screens/swapRequests";
 @import "./screens/transferRequests";
@@ -21,5 +23,4 @@
 @import "./screens/settings";
 @import "./screens/coparentingSpace.scss";
 @import "./screens/loginRegistration";
-@import "./muiOverrides";
 @import "./palette";

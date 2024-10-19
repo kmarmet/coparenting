@@ -40,23 +40,25 @@ import {
 } from '../../globalFunctions'
 import CardConfirm from '../shared/cardConfirm'
 import SecurityManager from '../../managers/securityManager'
+import ModelNames from '../../models/modelNames'
+import Swal from 'sweetalert2'
 
-export default function EditCalEvent({ showCard, setShowCard }) {
+export default function EditCalEvent({ event, showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, calEventToEdit, formToShow } = state
+  const { currentUser, theme } = state
 
   // Event Details
-  const [eventFromDate, setEventFromDate] = useState(calEventToEdit?.fromDate)
-  const [eventLocation, setEventLocation] = useState(calEventToEdit?.location)
-  const [eventTitle, setEventTitle] = useState(calEventToEdit?.title)
-  const [eventWebsiteUrl, setEventWebsiteUrl] = useState(calEventToEdit?.websiteUrl)
-  const [eventStartTime, setEventStartTime] = useState(calEventToEdit?.startTime)
-  const [eventNotes, setEventNotes] = useState(calEventToEdit?.notes)
-  const [eventEndDate, setEventEndDate] = useState(calEventToEdit?.toDate)
-  const [eventEndTime, setEventEndTime] = useState(calEventToEdit?.endTime)
-  const [eventChildren, setEventChildren] = useState(calEventToEdit?.children)
-  const [eventReminderTimes, setEventReminderTimes] = useState(calEventToEdit?.reminderTimes)
-  const [eventShareWith, setEventShareWith] = useState(calEventToEdit?.shareWith)
+  const [eventFromDate, setEventFromDate] = useState('')
+  const [eventLocation, setEventLocation] = useState('')
+  const [eventTitle, setEventTitle] = useState('')
+  const [eventWebsiteUrl, setEventWebsiteUrl] = useState('')
+  const [eventStartTime, setEventStartTime] = useState('')
+  const [eventNotes, setEventNotes] = useState('')
+  const [eventEndDate, setEventEndDate] = useState('')
+  const [eventEndTime, setEventEndTime] = useState('')
+  const [eventChildren, setEventChildren] = useState(event?.children || [])
+  const [eventReminderTimes, setEventReminderTimes] = useState('')
+  const [eventShareWith, setEventShareWith] = useState(event?.shareWith)
 
   // State
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
@@ -64,13 +66,11 @@ export default function EditCalEvent({ showCard, setShowCard }) {
   const [errorFields, setErrorFields] = useState([])
   const [eventLength, setEventLength] = useState(EventLengths.single)
   const [error, setError] = useState('')
-  const [confirmTitle, setConfirmTitle] = useState('')
   const [isAllDay, setIsAllDay] = useState(false)
   const [remindCoparents, setRemindCoparents] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [allEvents, setAllEvents] = useState([])
-  const [confirmMessage, setConfirmMessage] = useState('')
 
   const resetForm = () => {
     Manager.resetForm('edit-event-form')
@@ -89,10 +89,8 @@ export default function EditCalEvent({ showCard, setShowCard }) {
     setClonedDatesToSubmit([])
     setRepeatingDatesToSubmit([])
     setIsAllDay(false)
-    setConfirmTitle('')
-    setConfirmMessage('')
     setError('')
-    setShowCard(false)
+    hideCard()
   }
 
   // SUBMIT
@@ -103,8 +101,8 @@ export default function EditCalEvent({ showCard, setShowCard }) {
     const eventToEdit = new CalendarEvent()
 
     // Required
-    eventToEdit.id = calEventToEdit?.id
-    eventToEdit.title = Manager.isValid(eventTitle) ? calEventToEdit?.title : ''
+    eventToEdit.id = event?.id
+    eventToEdit.title = eventTitle
     eventToEdit.shareWith = Manager.getUniqueArray(eventShareWith).flat()
     eventToEdit.fromDate = moment(eventFromDate).format(DateFormats.dateForDb)
     eventToEdit.toDate = moment(eventEndDate).format(DateFormats.dateForDb)
@@ -125,22 +123,47 @@ export default function EditCalEvent({ showCard, setShowCard }) {
       eventToEdit.title += ' 🎂'
     }
     eventToEdit.websiteUrl = eventWebsiteUrl
-    eventToEdit.repeatInterval = calEventToEdit?.repeatInterval
+    eventToEdit.repeatInterval = event?.repeatInterval
     eventToEdit.fromVisitationSchedule = false
     eventToEdit.morningSummaryReminderSent = false
     eventToEdit.eveningSummaryReminderSent = false
     eventToEdit.sentReminders = []
 
+    const validation = DateManager.formValidation(eventTitle, eventShareWith, eventFromDate)
+    if (validation) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops',
+        text: validation,
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+        },
+      })
+      return false
+    }
+
+    const cleanedObject = Manager.cleanObject(eventToEdit, ModelNames.calendarEvent)
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
 
     // Cloned Events
     if (eventCount > 1) {
       // Get record key
-      const key = await DB.getSnapshotKey(DB.tables.calendarEvents, calEventToEdit, 'id')
+      const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
 
       // Update DB
-      await set(child(dbRef, `${DB.tables.calendarEvents}/${key}`), eventToEdit).finally(async () => {
+      await set(child(dbRef, `${DB.tables.calendarEvents}/${key}`), cleanedObject).finally(async () => {
         await afterUpdateCallback()
       })
 
@@ -158,8 +181,8 @@ export default function EditCalEvent({ showCard, setShowCard }) {
     // Update Single Event
     else {
       // Get record key and Update DB
-      const key = await DB.getSnapshotKey(DB.tables.calendarEvents, calEventToEdit, 'id')
-      await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, eventToEdit).then(async (result) => {
+      const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
+      await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, cleanedObject).then(async (result) => {
         await afterUpdateCallback()
       })
 
@@ -173,6 +196,25 @@ export default function EditCalEvent({ showCard, setShowCard }) {
         await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
       }
     }
+    Swal.fire({
+      text: 'Event has been created',
+      icon: 'success',
+      showClass: {
+        popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+      },
+      hideClass: {
+        popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+      },
+    })
+    resetForm()
   }
 
   const removeError = (field) => {
@@ -190,7 +232,6 @@ export default function EditCalEvent({ showCard, setShowCard }) {
     if (navigator.setAppBadge) {
       await navigator.setAppBadge(1)
     }
-    setState({ ...state, currentScreen: ScreenNames.calendar, showBackButton: false })
   }
 
   // CHECKBOX HANDLERS
@@ -211,7 +252,7 @@ export default function EditCalEvent({ showCard, setShowCard }) {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, theme, eventShareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, event.shareWith).then((updated) => {
       setEventShareWith(updated)
     })
   }
@@ -237,45 +278,38 @@ export default function EditCalEvent({ showCard, setShowCard }) {
   }
 
   const setDefaultValues = () => {
-    setEventTitle(calEventToEdit?.title)
-    setEventFromDate(calEventToEdit?.fromDate)
-    setEventEndDate(calEventToEdit?.toDate)
-    setEventLocation(calEventToEdit?.location)
-    setEventStartTime(calEventToEdit?.startTime)
-    setEventEndTime(calEventToEdit?.endTime)
-    setEventShareWith(calEventToEdit?.shareWith)
-    setConfirmTitle('')
-    setConfirmMessage('')
+    setEventTitle(event?.title)
+    setEventFromDate(event?.fromDate)
+    setEventEndDate(event?.toDate)
+    setEventLocation(event?.location)
+    setEventStartTime(event?.startTime)
+    setEventEndTime(event?.endTime)
     setEventLength(EventLengths.single)
 
-    // Children
-
     // Reminders
-    const times = Manager.setDefaultCheckboxes('reminderTimes', calEventToEdit, 'reminderTimes', true)
+    const times = Manager.setDefaultCheckboxes('reminderTimes', event, 'reminderTimes', true)
     setEventReminderTimes(times || [])
 
     // Repeating
-    if (Manager.isValid(calEventToEdit?.repeatInterval) && calEventToEdit?.repeatInterval.length > 0) {
-      Manager.setDefaultCheckboxes('repeating', calEventToEdit, 'repeatInterval', false)
+    if (Manager.isValid(event?.repeatInterval) && event?.repeatInterval.length > 0) {
+      Manager.setDefaultCheckboxes('repeating', event, 'repeatInterval', false)
     }
   }
 
   const deleteEvent = async () => {
-    const whenDone = () => {
-      setState({ ...state, formToShow: '' })
-    }
-
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
     if (eventCount === 1) {
-      await DB.delete(DB.tables.calendarEvents, calEventToEdit?.id).finally(whenDone)
+      await DB.delete(DB.tables.calendarEvents, event?.id)
+      hideCard()
     } else {
       let clonedEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
       if (Manager.isValid(clonedEvents, true)) {
-        clonedEvents = clonedEvents.filter((x) => x.title === calEventToEdit?.title)
+        clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
         for (const event of clonedEvents) {
-          await CalendarManager.deleteEvent(DB.tables.calendarEvents, event.id).finally(whenDone)
+          await CalendarManager.deleteEvent(DB.tables.calendarEvents, event.id)
         }
+        hideCard()
       }
     }
   }
@@ -286,42 +320,35 @@ export default function EditCalEvent({ showCard, setShowCard }) {
   }
 
   const setLocalConfirmMessage = () => {
-    // Are you sure you would like to delete ${getEventCount() > 1 ? 'these events' : 'this event'}?
     let message = 'Are you sure you want to delete this event?'
     const eventCount = getEventCount()
-    console.log(eventCount)
 
     if (eventCount > 1) {
       message = 'Are you sure you would like to delete ALL events with these details?'
     }
-    setConfirmMessage(message)
 
     return message
   }
 
   const setAllCalEvents = async () => {
-    const allEvents = await SecurityManager.getCalendarEvents(currentUser)
+    const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     setAllEvents(allEvents)
   }
 
   useEffect(() => {
-    if (Manager.isValid(calEventToEdit) && calEventToEdit?.hasOwnProperty('title')) {
+    if (Manager.isValid(event)) {
       setDefaultValues()
     }
+  }, [event])
+
+  useEffect(() => {
     setAllCalEvents().then((r) => r)
     Manager.toggleForModalOrNewForm('show')
   }, [])
 
   return (
-    <BottomCard className={`${theme} edit-event-form`} onClose={resetForm} showCard={showCard} error={error} title={`Edit ${calEventToEdit?.title}`}>
+    <BottomCard className={`${theme} edit-event-form`} onClose={resetForm} showCard={showCard} error={error} title={`Edit ${event?.title}`}>
       <div id="edit-cal-event-container" className={`${theme} form`}>
-        <CardConfirm
-          className={confirmTitle.length > 0 ? 'active' : ''}
-          title={confirmTitle}
-          message={confirmMessage}
-          onAccept={deleteEvent}
-          nevermind={() => setConfirmTitle('')}
-        />
         <div className="content">
           {/* SINGLE DAY / MULTIPLE DAYS */}
           <div className="action-pills calendar-event">
@@ -341,7 +368,7 @@ export default function EditCalEvent({ showCard, setShowCard }) {
           </label>
           <input
             id="event-title-input"
-            defaultValue={calEventToEdit.title}
+            defaultValue={eventTitle}
             onChange={(e) => setEventTitle(e.target.value)}
             className={`${errorFields.includes('title') ? 'required-field-error mb-0 w-100' : 'mb-0 w-100'}`}
             type="text"
@@ -355,7 +382,7 @@ export default function EditCalEvent({ showCard, setShowCard }) {
                     Date <span className="asterisk">*</span>
                   </label>
                   <MobileDatePicker
-                    defaultValue={moment(calEventToEdit?.fromDate)}
+                    defaultValue={moment(event?.fromDate)}
                     className={`${theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
                     onAccept={(e) => {
                       removeError('date')
@@ -404,7 +431,7 @@ export default function EditCalEvent({ showCard, setShowCard }) {
                   className={`${theme} event-date-range m-0 w-100`}
                   onAccept={(e) => setEventStartTime(e)}
                   minutesStep={5}
-                  defaultValue={DateManager.dateIsValid(calEventToEdit?.startTime) ? moment(calEventToEdit?.startTime, DateFormats.timeForDb) : null}
+                  defaultValue={DateManager.dateIsValid(event?.startTime) ? moment(event?.startTime, DateFormats.timeForDb) : null}
                 />
               </div>
               <div>
@@ -413,7 +440,7 @@ export default function EditCalEvent({ showCard, setShowCard }) {
                   className={`${theme} event-date-range m-0 w-100`}
                   minutesStep={5}
                   onAccept={(e) => setEventEndTime(e)}
-                  defaultValue={DateManager.dateIsValid(calEventToEdit?.endTime) ? moment(calEventToEdit?.endTime, DateFormats.timeForDb) : null}
+                  defaultValue={DateManager.dateIsValid(event?.endTime) ? moment(event?.endTime, DateFormats.timeForDb) : null}
                 />
               </div>
             </div>
@@ -433,7 +460,7 @@ export default function EditCalEvent({ showCard, setShowCard }) {
           </div>
 
           {/* WHO IS ALLOWED TO SEE IT? */}
-          {(currentUser.coparents.length > 0 || currentUser.parents.length > 0) && (
+          {(currentUser?.coparents?.length > 0 || currentUser?.parents?.length > 0) && (
             <div className={`share-with-container `}>
               <label>
                 <span className="material-icons-round mr-10">visibility</span> Who is allowed to see it?
@@ -562,8 +589,35 @@ export default function EditCalEvent({ showCard, setShowCard }) {
           <button
             className="button card-button delete"
             onClick={() => {
-              setConfirmTitle(`Deleting ${calEventToEdit?.title}`)
-              setLocalConfirmMessage()
+              Swal.fire({
+                showClass: {
+                  popup: `
+                    animate__animated
+                    animate__fadeInUp
+                    animate__faster
+                  `,
+                },
+                hideClass: {
+                  popup: `
+                    animate__animated
+                    animate__fadeOutDown
+                    animate__faster
+                  `,
+                },
+                title: setLocalConfirmMessage(),
+                showDenyButton: true,
+                showCancelButton: false,
+                confirmButtonText: "I'm Sure",
+                denyButtonText: `Nevermind`,
+                confirmButtonColor: '#00b389 !important',
+              }).then(async (result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                  hideCard()
+                  await deleteEvent()
+                  Swal.fire('Event Deleted', '', 'success')
+                }
+              })
             }}>
             Delete <span className="material-icons-round ml-10 fs-22">delete</span>
           </button>

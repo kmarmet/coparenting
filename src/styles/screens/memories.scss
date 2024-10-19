@@ -6,21 +6,21 @@
     #fyi-wrapper {
       p {
         color: $offWhite;
-        
+
         &.gallery {
           &.center-text {
             color: $darkGrey;
           }
         }
       }
-      
+
       .rs-panel-in {
         background-color: $darkBlue;
         padding: 10px;
       }
     }
     /*#endregion  DARK THEME*/
-    
+
     #fyi-wrapper {
       flex-wrap: wrap;
       width: 100%;
@@ -51,7 +51,6 @@
     }
 
     #happy-subtitle {
-      
       font-weight: 400;
       font-size: 16px;
       line-height: 1;
@@ -85,108 +84,108 @@
     }
 
     .instructions {
-      &.gallery {
+      &.light-gallery {
         margin-bottom: 10px;
-        
+
         opacity: 1;
         font-weight: 400;
         font-size: 14px;
       }
     }
 
-    .gallery {
-      #img-container {
-        position: relative;
+    .light-gallery {
+      margin: 0 auto;
 
-        img {
-          border-radius: $borderRadius;
-          box-shadow:
-            0 3px 6px rgba(0, 0, 0, 0.16),
-            0 3px 6px rgba(0, 0, 0, 0.23);
-          object-fit: cover;
-          max-height: 130px;
-          height: 130px;
-          width: 140px;
-          
-          border: 2px solid red;
-        }
+      &:after {
+        content: '';
+        display: block;
+        clear: both;
+      }
 
-        p {
-          color: $red;
-          text-align: center;
-          margin: 0 auto;
-          font-weight: 500;
-          padding: 5px 0;
-          display: none;
+      .grid-sizer,
+      .memory-image {
+        width: 33.33%;
+      }
+      
+      .memory-image {
+        float: left;
+        margin-bottom: 10px;
+        margin-right: 10px;
+
+      }
+
+      .memory-image img {
+        display: block;
+        max-width: 100%;
+        border-radius: $borderRadius;
+      }
+    }
+    #img-container {
+      position: relative;
+      max-height: 150px;
+      border-radius: $borderRadius;
+      overflow: hidden;
+
+      img {
+        border-radius: $borderRadius;
+        box-shadow:
+          0 3px 6px rgba(0, 0, 0, 0.16),
+          0 3px 6px rgba(0, 0, 0, 0.23);
+      }
+
+      p {
+        color: $red;
+        text-align: center;
+        margin: 0 auto;
+        font-weight: 500;
+        padding: 5px 0;
+        display: none;
+        font-size: 16px;
+
+        &.notes {
+          text-align: left;
+
+          width: 100%;
+          border: 0;
+          margin-right: 15px;
+          max-height: 150px;
+          font-weight: 400;
+          overflow: auto;
           font-size: 16px;
 
-          &.notes {
-            text-align: left;
-            
-            width: 100%;
-            border: 0;
-            margin-right: 15px;
-            max-height: 150px;
-            font-weight: 400;
-            overflow: auto;
-            font-size: 16px;
-
-            &.fade-bottom {
-              @include fadeBottom;
-            }
+          &.fade-bottom {
+            @include fadeBottom;
           }
-        }
-
-        .notes-icon {
-          color: white;
-          position: absolute;
-          font-size: 20px;
-          background-color: rgb(0, 0, 0, 0.6);
-          border-radius: $borderRadius 0 $borderRadius 0;
-          padding: 2px;
-          bottom: 24px;
-          right: 0;
         }
       }
 
-      .flex {
-        align-items: center;
+      .notes-icon {
+        color: white;
+        position: absolute;
+        font-size: 20px;
+        background-color: rgb(0, 0, 0, 0.6);
+        border-radius: $borderRadius 0 $borderRadius 0;
+        padding: 2px;
+        bottom: 24px;
+        right: 0;
       }
+    }
 
-      .instructions {
-        margin-top: 0;
-      }
+    .flex {
+      align-items: center;
+    }
 
-      &.active {
-        .img-container {
-          opacity: 0;
-          transition: all 0.3s ease-in-out;
+    .instructions {
+      margin-top: 0;
+    }
 
-          &.active {
-            opacity: 1;
-          }
-        }
+    &.active {
+      .img-container {
+        opacity: 0;
+        transition: all 0.3s ease-in-out;
 
-        #img-container {
-          width: calc(100vw - 30px);
-
-          .img-content-container {
-            @include shadow;
-            height: 200px;
-            width: 100%;
-            background-size: cover;
-            background-repeat: no-repeat;
-            border-radius: 12px;
-            background-position: center;
-          }
-
-          p {
-            display: block;
-          }
-          
-          @media screen and (min-width: 800px) {
-                width: 28vw;
-          }
+        &.active {
+          opacity: 1;
         }
       }
     }

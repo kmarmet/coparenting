@@ -1,0 +1,21 @@
+@import "./palette";
+
+div {
+  &:where(.swal2-container) {
+    button {
+      &:where(.swal2-styled):where(.swal2-confirm) {
+		background-color: $lightBlue !important;
+        width: 140px !important;
+      }
+    }
+  }
+}
+
+.swal2-confirm {
+//  background-color: $green !important;
+}
+
+.swal2-title {
+  font-size: 25px;
+  line-height: 1.3;
+}

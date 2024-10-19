@@ -32,31 +32,74 @@ import {
   getFileExtension,
 } from '../../globalFunctions'
 import SecurityManager from '../../managers/securityManager'
-
-function NewMemoryForm() {
+import ModelNames from '../../models/modelNames'
+import Swal from 'sweetalert2'
+function NewMemoryForm({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow } = state
+  const { currentUser, theme } = state
   const [shareWith, setShareWith] = useState([])
   const [memoryNotes, setMemoryNotes] = useState('')
   const [images, setImages] = useState([])
   const [memoryTitle, setMemoryTitle] = useState('')
   const inputFile = useRef(null)
 
+  const resetForm = () => {
+    Manager.resetForm('new-memory-wrapper')
+    setShareWith([])
+    setMemoryNotes('')
+    setImages([])
+    setMemoryTitle('')
+    hideCard()
+  }
+
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
       setShareWith(updated)
     })
   }
 
   const submit = async () => {
-    setState({ ...state, isLoading: true, formToShow: '' })
     if (images !== undefined && images.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose an image', isLoading: false, alertType: 'error' })
+      Swal.fire({
+        title: 'Please choose an image',
+        icon: 'error',
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+        },
+      })
       return false
     }
-
-    if (shareWith.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please select who can see this memory', isLoading: false, alertType: 'error' })
+    if (!Manager.isValid(shareWith, true)) {
+      console.log('err')
+      Swal.fire({
+        title: 'Please select who can see this memory',
+        icon: 'error',
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+        },
+      })
       return false
     }
 
@@ -65,7 +108,24 @@ function NewMemoryForm() {
     })
 
     if (notAnImage) {
-      setState({ ...state, isLoading: false, showAlert: true, alertMessage: 'Files uploaded MUST be images (.png, .jpg, .jpeg, etc.).' })
+      Swal.fire({
+        title: 'Files uploaded MUST be images (.png, .jpg, .jpeg, etc.).',
+        icon: 'error',
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+        },
+      })
       return false
     }
 
@@ -80,9 +140,30 @@ function NewMemoryForm() {
     })
 
     if (existingMemoriesFound) {
-      // error
+      Swal.fire({
+        title: 'This memory already exists',
+        icon: 'error',
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+        },
+      })
       return false
     }
+
+    MyConfetti.fire()
+
+    hideCard()
 
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser.id, images)
       .then(() => {
@@ -107,9 +188,10 @@ function NewMemoryForm() {
             newMemory.shareWith = shareWith
             newMemory.creationDate = moment().format(DateFormats.dateForDb)
             newMemory.createdBy = currentUser.phone
-            await DB.add('memories', newMemory).finally(() => {
-              setState({ ...state, isLoading: false })
-            })
+
+            const cleanedObject = Manager.cleanObject(newMemory, ModelNames.memory)
+
+            await DB.add('memories', cleanedObject)
           }
 
           // Send Notification
@@ -118,8 +200,8 @@ function NewMemoryForm() {
             PushAlertApi.sendMessage(`Memories Await!`, `${formatNameFirstNameOnly(currentUser.name)} has uploaded a new memory!`, subId)
           }
         })
-        MyConfetti.fire()
         AppManager.setAppBadge(1)
+        resetForm()
       })
   }
 
@@ -128,8 +210,8 @@ function NewMemoryForm() {
   }, [])
 
   return (
-    <>
-      <BottomCard title={'New Memory'} showCard={formToShow === ScreenNames.newMemory}>
+    <div className="new-memory-wrapper">
+      <BottomCard title={'New Memory'} onClose={hideCard} showCard={showCard}>
         <div id="new-memory-form-container" className={`${theme} form`}>
           <div className="form">
             {currentUser && (
@@ -158,9 +240,9 @@ function NewMemoryForm() {
             <textarea className="mb-15" onChange={(e) => setMemoryNotes(e.target.value)}></textarea>
             <UploadInputs
               containerClass={theme}
+              uploadType={'image'}
               actualUploadButtonText={'Upload Memory'}
               getImages={(files) => {
-                console.log(files)
                 setImages(files)
               }}
               uploadButtonText="Choose Image"
@@ -169,7 +251,7 @@ function NewMemoryForm() {
           </div>
         </div>
       </BottomCard>
-    </>
+    </div>
   )
 }
 

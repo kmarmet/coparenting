@@ -98,7 +98,7 @@ export default function ChildInfo() {
         activeChild={activeChild}
         showCard={showInfoCard}
         hasDropdown={true}
-        setShowCard={() => setShowInfoCard(false)}
+        hideCard={() => setShowInfoCard(false)}
         onClose={() => setShowInfoCard(false)}
       />
 

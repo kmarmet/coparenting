@@ -14,6 +14,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { useSwipeable } from 'react-swipeable'
 import BottomButton from '../../shared/bottomButton'
 import BottomCard from '../../shared/bottomCard'
+import Swal from 'sweetalert2'
 
 const NewChildForm = ({ showCard, setShowCard }) => {
   const { state, setState } = useContext(globalState)
@@ -41,7 +42,25 @@ const NewChildForm = ({ showCard, setShowCard }) => {
     const dbRef = ref(getDatabase())
 
     if (Manager.validation([name, dateOfBirth]) > 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields', alertType: 'error' })
+      // ERROR
+      Swal.fire({
+        title: 'Please fill out required fields',
+        icon: 'error',
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+        },
+      })
       return false
     } else {
       const newChild = new Child()
@@ -137,7 +156,7 @@ const NewChildForm = ({ showCard, setShowCard }) => {
             onClick={() => {
               setShowCard(false)
             }}>
-            Delete <span className="material-icons-round ml-10 fs-22">delete</span>
+            Cancel
           </button>
         </div>
       </div>

@@ -11,6 +11,7 @@
         <item url="file://$PROJECT_DIR$/src/constants/reminderTimes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
+        <item url="file://$PROJECT_DIR$/src/constants/stateObj.js" />
         <item url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
         <item url="file://$PROJECT_DIR$/src/globalFunctions.js" />
         <item url="file://$PROJECT_DIR$/src/managers/appManager.js" />
@@ -23,7 +24,9 @@
         <item url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
+        <item url="file://$PROJECT_DIR$/src/models/coparent.js" />
         <item url="file://$PROJECT_DIR$/src/models/memory.js" />
+        <item url="file://$PROJECT_DIR$/src/models/modelNames.js" />
         <item url="file://$PROJECT_DIR$/src/models/shortcut.js" />
         <item url="file://$PROJECT_DIR$/src/models/titleSuggestion.js" />
         <item url="file://$PROJECT_DIR$/src/prototypes.js" />
@@ -39,6 +42,7 @@
       <root url="file://$PROJECT_DIR$/src/constants/reminderTimes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
+      <root url="file://$PROJECT_DIR$/src/constants/stateObj.js" />
       <root url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
       <root url="file://$PROJECT_DIR$/src/globalFunctions.js" />
       <root url="file://$PROJECT_DIR$/src/managers/appManager.js" />
@@ -51,7 +55,9 @@
       <root url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
+      <root url="file://$PROJECT_DIR$/src/models/coparent.js" />
       <root url="file://$PROJECT_DIR$/src/models/memory.js" />
+      <root url="file://$PROJECT_DIR$/src/models/modelNames.js" />
       <root url="file://$PROJECT_DIR$/src/models/shortcut.js" />
       <root url="file://$PROJECT_DIR$/src/models/titleSuggestion.js" />
       <root url="file://$PROJECT_DIR$/src/prototypes.js" />

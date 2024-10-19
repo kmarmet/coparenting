@@ -4,25 +4,33 @@ import FirebaseStorage from '@firebaseStorage'
 import ImageManager from '@managers/imageManager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import Manager from '@manager'
-import AddNewButton from '@shared/addNewButton'
-import ScreenNames from 'constants/screenNames'
 import globalState from '../../context'
 import { Accordion, DatePicker } from 'rsuite'
 import ImageTheater from '../shared/imageTheater'
 import Memory from '../../models/memory'
-import manager from '@manager'
 import SecurityManager from '../../managers/securityManager'
 import NewMemoryForm from '../forms/newMemoryForm'
+import moment from 'moment'
+import ModelNames from '../../models/modelNames'
+import LightGallery from 'lightgallery/react'
+import lgShare from 'lightgallery/plugins/share'
+import imagesLoaded from 'imagesloaded'
+import Masonry from 'masonry-layout'
+import 'lightgallery/css/lightgallery.css'
+import 'lightgallery/css/lg-zoom.css'
+import 'lightgallery/css/lg-thumbnail.css'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow } = state
+  const { currentUser, theme, navbarButton } = state
   const [memories, setMemories] = useState([])
   const [showImageTheater, setShowImageTheater] = useState(false)
   const [imgArray, setImgArray] = useState([])
   const [defaultTheaterIndex, setDefaultTheaterIndex] = useState(0)
   const inputFile = useRef(null)
   const [showFyiAccordion, setShowFyiAccordion] = useState(false)
+  const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const dbRef = ref(getDatabase())
 
   const expandImage = (e) => {
@@ -40,7 +48,8 @@ export default function Memories() {
   }
 
   const getSecuredMemories = async () => {
-    setState({ ...state, isLoading: true, formToShow: '' })
+    console.log(true)
+    setIsLoading(true)
     let all = await SecurityManager.getMemories(currentUser)
     if (Manager.isValid(all, true)) {
       const resolvedImages = async () =>
@@ -73,28 +82,30 @@ export default function Memories() {
               const imageName = FirebaseStorage.getImageNameFromUrl(img.url)
               const newMemory = new Memory()
               newMemory.id = img.id
-              newMemory.notes = img.notes || ''
+              newMemory.notes = img.notes
               newMemory.url = img.url
-              newMemory.title = img.title || ''
+              newMemory.title = img.title
               newMemory.createdBy = currentUser.phone
               newMemory.memoryName = imageName
-              arr.push(newMemory)
+
+              const cleanedObject = Manager.cleanObject(newMemory, ModelNames.memory)
+              arr.push(cleanedObject)
             }
           })
           setImgArray(arr)
           setMemories(validImages)
-          setState({ ...state, isLoading: false })
+          setIsLoading(false)
           setTimeout(() => {
             addImageAnimation()
           }, 200)
         } else {
           setMemories([])
-          setState({ ...state, isLoading: false })
+          setIsLoading(false)
         }
       }
     } else {
       setMemories([])
-      setState({ ...state, isLoading: false })
+      setIsLoading(false)
     }
   }
 
@@ -118,10 +129,38 @@ export default function Memories() {
 
   useEffect(() => {
     onValue(child(dbRef, DB.tables.memories), async (snapshot) => {
-      setState({ ...state, formToShow: '' })
       await getSecuredMemories(currentUser)
+      // Navbar Button
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            setShowNewMemoryCard(true)
+          },
+        },
+      })
     })
     Manager.toggleForModalOrNewForm()
+  }, [])
+
+  useEffect(() => {
+    // Ensure the DOM element exists
+    const container = document.querySelector('.light-gallery')
+    if (container) {
+      // Initialize Masonry
+      const msnry = new Masonry(container, {
+        itemSelector: '.memory-image',
+        columnWidth: '.grid-sizer',
+        percentPosition: true,
+      })
+
+      // Use imagesLoaded with Masonry
+      imagesLoaded(container).on('progress', function () {
+        // Layout Masonry after each image loads
+        msnry.layout()
+      })
+    }
   }, [])
 
   return (
@@ -134,7 +173,7 @@ export default function Memories() {
         onClose={() => setShowImageTheater(false)}></ImageTheater>
 
       {/* NEW MEMORY FORM */}
-      <NewMemoryForm />
+      <NewMemoryForm showCard={showNewMemoryCard} hideCard={(e) => setShowNewMemoryCard(false)} />
 
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
@@ -159,26 +198,36 @@ export default function Memories() {
         )}
 
         {/* GALLERY */}
-        <div className={`gallery active`}>
-          {Manager.isValid(memories, true) &&
-            memories.map((imgObj, index) => {
-              return (
-                <div className="img-container mb-30" id="img-container" key={index}>
-                  <div
-                    data-id={imgObj.id}
-                    className="mb-10 img-content-container"
-                    onClick={(e) => expandImage(e)}
-                    style={{ backgroundImage: `url(${imgObj.url})` }}></div>
-                  {Manager.isValid(imgObj?.shareWith, true) && !imgObj?.shareWith.includes(currentUser.phone) && (
-                    <button onClick={() => deleteMemory(imgObj.url, imgObj)} className="button red default w-30 center">
-                      DELETE
-                    </button>
-                  )}
-                </div>
-              )
-            })}
-        </div>
+        <LightGallery elementClassNames={'light-gallery'} speed={500}>
+          <>
+            {Manager.isValid(memories, true) &&
+              memories.map((imgObj, index) => {
+                return (
+                  <div key={index} className="memory-image" data-src={imgObj.url}>
+                    <div className="grid-sizer"></div>
+                    <img data-id={imgObj.id} onClick={(e) => {}} data-src={imgObj.url} src={imgObj.url} alt={imgObj.memoryName} />
+                  </div>
+                )
+              })}
+          </>
+        </LightGallery>
       </div>
     </>
   )
+}
+// DELETE BUTTON
+{
+  /*{Manager.isValid(imgObj?.shareWith, true) && !imgObj?.shareWith.includes(currentUser.phone) && (*/
+}
+{
+  /*  <button onClick={() => deleteMemory(imgObj.url, imgObj)} className="button red default w-30 center">*/
+}
+{
+  /*    DELETE*/
+}
+{
+  /*  </button>*/
+}
+{
+  /*)}*/
 }

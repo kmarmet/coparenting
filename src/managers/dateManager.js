@@ -11,6 +11,18 @@ const DateManager = {
     oneHour: 'hour',
     halfHour: 'halfHour',
   },
+  formValidation: (title, shareWith, fromDate) => {
+    if (!Manager.isValid(title)) {
+      return 'Please enter an event title'
+    }
+    if (!Manager.isValid(shareWith, true)) {
+      return 'Please select who you would like to share this event with'
+    }
+    if (!Manager.dateIsValid(fromDate)) {
+      return 'Please select an event date'
+    }
+    return null
+  },
   formatDate: (inputDate, inputFormat = 'M-DD-YYYY', outputFormat = 'dddd, MMM DD') => {
     let inputFormatString = inputFormat
     let inputString = inputDate

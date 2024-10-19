@@ -9,6 +9,7 @@ import DB from '@db'
 import firebaseConfig from './firebaseConfig.js'
 import Manager from '@manager'
 import moment from 'moment'
+import Swal from 'sweetalert2'
 
 // Screens
 import EventCalendar from '@screens/calendar.jsx'
@@ -83,7 +84,7 @@ export default function App() {
   })
 
   // State to include in App.js
-  const { setTheme, isLoading, theme, previousScreen, calEventToEdit, currentScreen, menuIsOpen, showBackButton, currentUser } = state
+  const { setTheme, isLoading, theme, previousScreen, currentScreen, menuIsOpen, showBackButton, currentUser } = state
 
   const deleteMenuAnimation = () => {
     document.querySelectorAll('.slide-out-menu-item').forEach((menuItem, i) => {
@@ -127,7 +128,7 @@ export default function App() {
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div className="App" id="app-container">
         {/* LOADING */}
-        <Loading isLoading={isLoading} />
+        {/*<Loading isLoading={isLoading} />*/}
 
         <div id="page-overlay"></div>
 
@@ -147,7 +148,7 @@ export default function App() {
           {/* SCREENS */}
           <>
             {/* UPDATE/EDIT */}
-            {currentScreen === ScreenNames.editCalendarEvent && Manager.isValid(calEventToEdit) && <EditCalEvent />}
+            {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}
             {currentScreen === ScreenNames.updateContactInfo && <UpdateContactInfo />}
             {currentScreen === ScreenNames.reviseTransferRequest && <ReviseChildTransferChangeRequest />}
 

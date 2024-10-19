@@ -95,7 +95,7 @@ function Behavior({ activeChild }) {
           {behaviorValues &&
             behaviorValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
-              const value = prop[1].replaceAll('_custom', '')
+              const value = prop[1]
               return (
                 <div key={index}>
                   <label className="w-100">{infoLabel}</label>

@@ -3,7 +3,6 @@ import ScreenNames from "./screenNames"
 StateObj =
   alertMessage: ''
   alertType: ''
-  calEventToEdit: {}
   confirmMessage: ''
   contactInfoToUpdateType: 'email'
   currentScreen: ScreenNames.login

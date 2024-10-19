@@ -63,7 +63,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <ErrorBoundary
     fallback={
-      <PopupCard className="active error-boundary" title={'<span>Uh oh!</span>'} closeable={false} onClose={() => {}}>
+      <PopupCard className="active error-boundary" title={'<span>Oops</span>'} closeable={false} onClose={() => {}}>
         <p className="message mb-15">
           It looks like the app ran into an issue. <br /> Please <span className="emphasize">Clear the Cache</span> and then
           <span className="emphasize ml-5">Force Close</span> the application and reopen it.

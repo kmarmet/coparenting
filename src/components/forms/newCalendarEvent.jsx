@@ -46,12 +46,14 @@ import {
   getFileExtension,
 } from '../../globalFunctions'
 import SecurityManager from '../../managers/securityManager'
+import ModelNames from '../../models/modelNames'
+import Swal from 'sweetalert2'
 
 // COMPONENT
-export default function NewCalendarEvent({ showCard, setShowCard }) {
+export default function NewCalendarEvent({ showCard, hideCard }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, selectedNewEventDay, formToShow } = state
+  const { currentUser, theme, selectedNewEventDay } = state
 
   // COMPONENT STATE
   const [eventFromDate, setEventFromDate] = useState('')
@@ -77,15 +79,10 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
   const [showReminders, setShowReminders] = useState(false)
   const [remindCoparents, setRemindCoparents] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
-  const [errorFields, setErrorFields] = useState([])
   const [error, setError] = useState('')
-
-  const [updateKey, setUpdateKey] = useState(0)
 
   const resetForm = () => {
     Manager.resetForm('new-event-form')
-    setError('')
-    setErrorFields([])
     setEventFromDate('')
     setRepeatInterval('')
     setEventLocation('')
@@ -106,12 +103,10 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
     setTitleSuggestions([])
     setShowCloneInput(false)
     setShowReminders(false)
-    setShowCard(false)
+    hideCard(false)
   }
 
   const submit = async () => {
-    setErrorFields('')
-    setError('')
     const newEvent = new CalendarEvent()
 
     // Required
@@ -119,7 +114,7 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
     if (Manager.isValid(newEvent.title) && newEvent.title.toLowerCase().indexOf('birthday') > -1) {
       newEvent.title += ' 🎂'
     }
-
+    console.log(eventFromDate)
     newEvent.fromDate = DateManager.dateIsValid(eventFromDate) ? moment(eventFromDate).format(DateFormats.dateForDb) : ''
     newEvent.toDate = DateManager.dateIsValid(eventToDate) ? moment(eventToDate).format(DateFormats.dateForDb) : ''
     newEvent.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
@@ -153,42 +148,42 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
       await DB.addSuggestion(newSuggestion)
     }
 
-    let errors = []
-
     // Repeating Events Validation
     if (repeatingEndDate.length === 0 && repeatInterval.length > 0) {
-      errors.push('repeating-end-month')
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops',
+        text: 'If you have chose to repeat this event, please select an end month',
+      })
+      return false
     }
 
-    if (shareWith.length === 0) {
-      errors.push('share-with')
-    }
-
-    if (eventTitle.length === 0) {
-      errors.push('title')
-    }
-
-    if (eventFromDate.length === 0 || (eventFromDate, DateFormats.dateForDb).toString() === 'Invalid date') {
-      errors.push('date')
-    }
-
-    setErrorFields(errors)
-
-    if (errors.length > 0) {
-      scrollToError()
+    const validation = DateManager.formValidation(eventTitle, shareWith, eventFromDate)
+    if (validation) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops',
+        text: validation,
+      })
+      // TODO Display Error
       return false
     }
 
     if (reminderTimes.length > 0 && eventStartTime.length === 0) {
-      setError('If you set reminder times, please also uncheck All Day and add a start time')
-      scrollToError()
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops',
+        text: 'If you set reminder times, please also uncheck All Day and add a start time',
+      })
       return false
     }
+
+    const cleanedObject = Manager.cleanObject(newEvent, ModelNames.calendarEvent)
 
     MyConfetti.fire()
 
     // Add first/initial date before adding repeating/cloned
-    await CalendarManager.addCalendarEvent(newEvent).finally(async () => {
+    await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
       for (const toShareWith of shareWith) {
         const subId = await PushAlertApi.getSubId(toShareWith)
         await PushAlertApi.sendMessage(`New Calendar Event`, `${eventTitle} on ${moment(eventFromDate).format('ddd DD')}`, subId)
@@ -201,23 +196,12 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
 
       // Repeating Events
       await addRepeatingEventsToDb()
-      setState({ ...state, formToShow: '', showNavbar: true })
       if (navigator.setAppBadge) {
         await navigator.setAppBadge(1)
       }
     })
 
     resetForm()
-  }
-
-  const scrollToError = () => {
-    var cardTitle = document.querySelector('.event-title')
-    cardTitle.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }
-
-  const removeError = (field) => {
-    const filtered = errorFields.filter((x) => x !== field)
-    setErrorFields(filtered)
   }
 
   const addRepeatingEventsToDb = async () => {
@@ -280,9 +264,8 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
       setShareWith(updated)
-      removeError('share-with')
     })
   }
 
@@ -396,8 +379,8 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
   }, [])
 
   return (
-    <div key={updateKey}>
-      <BottomCard className={`${theme} new-event-form `} onClose={() => setShowCard(false)} showCard={showCard} error={error} title={'Add New Event'}>
+    <div>
+      <BottomCard className={`${theme} new-event-form `} onClose={() => hideCard(false)} showCard={showCard} error={error} title={'Add New Event'}>
         {/* FORM WRAPPER */}
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           {/* Event Length */}
@@ -419,7 +402,7 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
           </label>
           <div className="title-suggestion-wrapper">
             <input
-              className={`${errorFields.includes('title') ? 'required-field-error' : ''} event-title event-title-input mb-0 ${titleSuggestions.length > 0 ? 'no-radius' : ''}`}
+              className={`event-title event-title-input mb-0 ${titleSuggestions.length > 0 ? 'no-radius' : ''}`}
               type="text"
               onChange={async (e) => {
                 const inputValue = e.target.value
@@ -435,7 +418,6 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
                     )
                     setTitleSuggestions(Manager.getUniqueArray(matching).flat())
                   }
-                  removeError('title')
                 } else {
                   setTitleSuggestions([])
                 }
@@ -463,9 +445,8 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
                   </label>
                   <MobileDatePicker
                     value={moment(selectedNewEventDay)}
-                    className={`${theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
+                    className={`${theme} m-0 w-100 event-from-date mui-input`}
                     onAccept={(e) => {
-                      removeError('date')
                       setEventFromDate(e)
                     }}
                   />
@@ -536,7 +517,7 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
                 <span className="asterisk">*</span>
               </label>
               <CheckboxGroup
-                elClass={`${theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
+                elClass={`${theme}`}
                 dataPhone={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)}
                 labels={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
                 onCheck={handleShareWithSelection}
@@ -654,7 +635,7 @@ export default function NewCalendarEvent({ showCard, setShowCard }) {
                     />
                     {repeatInterval && (
                       <DatetimePicker
-                        className={`${errorFields.includes('repeating-end-month') ? 'required-field-error mt-0 w-100' : 'mt-0 w-100'}`}
+                        className={`mt-0 w-100`}
                         label={'Month to end repeating events'}
                         format={DateFormats.readableMonth}
                         views={DatetimePickerViews.monthAndYear}

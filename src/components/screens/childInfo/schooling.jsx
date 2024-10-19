@@ -93,7 +93,7 @@ function Schooling({ activeChild }) {
           {Manager.isValid(schoolingValues, true) &&
             schoolingValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
-              const value = prop.flat()[1].replaceAll('_custom', '')
+              const value = prop.flat()[1]
               return (
                 <div key={index}>
                   <label className="w-100">{infoLabel}</label>

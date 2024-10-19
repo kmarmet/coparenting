@@ -24,7 +24,7 @@ import {
   getFileExtension,
 } from '.././../globalFunctions'
 
-export default function CustomChildInfo({ activeChild, setShowCard, showCard, onClose, hasDropdown = false }) {
+export default function CustomChildInfo({ activeChild, showCard, hideCard, onClose, hasDropdown = false }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [title, setTitle] = useState(null)
@@ -36,14 +36,14 @@ export default function CustomChildInfo({ activeChild, setShowCard, showCard, on
 
     let key = null
     currentUser.children.forEach((child, index) => {
-      if (child.general.name.replace('_custom', '') === activeChild.general.name.replace('_custom', '')) {
+      if (child.general.name === activeChild.general.name) {
         key = index
       }
     })
 
     const formattedTitle = removeSpacesAndLowerCase(title).toCamelCase()
     if (key !== null) {
-      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${formattedTitle}`), `${value}_custom`)
+      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${formattedTitle}`), `${value}`)
       onClose()
     }
   }
@@ -53,11 +53,11 @@ export default function CustomChildInfo({ activeChild, setShowCard, showCard, on
     setTitle(null)
     setValue(null)
     setInfoSection('Select Info Section')
-    setShowCard()
+    hideCard(false)
   }
 
   return (
-    <BottomCard className="custom-child-info-wrapper" onClose={setShowCard} title={'Add Custom Info'} showCard={showCard}>
+    <BottomCard className="custom-child-info-wrapper" onClose={hideCard} title={'Add Custom Info'} showCard={showCard}>
       <div className="form">
         {hasDropdown && (
           <div className="flex">

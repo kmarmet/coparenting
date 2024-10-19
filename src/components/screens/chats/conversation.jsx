@@ -19,6 +19,8 @@ import 'rc-tooltip/assets/bootstrap_white.css'
 import EmojiPicker from 'emoji-picker-react'
 import ChatManager from '@managers/chatManager.js'
 import DateFormats from '../../../constants/dateFormats'
+import ModelNames from '../../../models/modelNames'
+import Swal from 'sweetalert2'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -67,7 +69,25 @@ const Conversation = () => {
     let messageInputValue = document.querySelector('#message-input').value
 
     if (messageInputValue.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please enter a message', alertType: 'error' })
+      // ERROR
+      Swal.fire({
+        title: 'Please enter a message',
+        icon: 'error',
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+        },
+      })
       return false
     }
 
@@ -85,6 +105,8 @@ const Conversation = () => {
     conversationMessage.notificationSent = false
     conversationMessage.saved = false
 
+    const cleanMessages = Manager.cleanObject(conversationMessage, ModelNames.conversationMessage)
+    const cleanThread = Manager.cleanObject(conversation, ModelNames.conversation)
     //Thread
     const { name, id, phone } = messageToUser
     const { name: crName, id: crId, phone: crPhone } = currentUser
@@ -93,24 +115,24 @@ const Conversation = () => {
     conversation.id = Manager.getUid()
     conversation.members = [memberOne, memberTwo]
     conversation.timestamp = moment().format('MM/DD/yyyy hh:mma')
-    conversation.messages = [conversationMessage]
+    conversation.messages = [cleanMessages]
 
     const existingChatFromDB = existingChat
 
     // Existing chat
     if (Manager.isValid(existingChatFromDB)) {
-      ChatManager.addMessage(chatKey, conversation.messages[0])
+      ChatManager.addMessage(chatKey, cleanThread.messages[0])
     }
     // Create new chat (if one doesn't exist between members)
     else {
-      if (Manager.isValid(conversation.messages)) {
-        conversation.firstMessageFrom = currentUser.phone
+      if (Manager.isValid(cleanThread.messages)) {
+        cleanThread.firstMessageFrom = currentUser.phone
         let existingChats = await DB.getTable('chats')
         if (Array.isArray(existingChats) && existingChats.length > 0) {
           existingChats = existingChats.filter((x) => x)
-          set(child(dbRef, `chats`), [...existingChats, conversation])
+          set(child(dbRef, `chats`), [...existingChats, cleanThread])
         } else {
-          await DB.add(DB.tables.chats, conversation)
+          await DB.add(DB.tables.chats, cleanThread)
         }
       }
     }
@@ -121,7 +143,7 @@ const Conversation = () => {
       if (!Array.isArray(updatedMessages)) {
         updatedMessages = DB.convertKeyObjectToArray(updatedMessages)
       }
-      setMessagesToLoop([...updatedMessages, conversation.messages[0]])
+      setMessagesToLoop([...updatedMessages, cleanThread.messages[0]])
     } else {
       setMessagesToLoop([])
     }
@@ -129,7 +151,7 @@ const Conversation = () => {
     const subId = await NotificationManager.getUserSubId(messageToUser.phone)
     PushAlertApi.sendMessage('New Message', `You have an unread message in a conversation`, subId)
     await getExistingMessages()
-    // AppManager.setAppBadge(1)
+    AppManager.setAppBadge(1)
     scrollToLatestMessage()
   }
 
@@ -363,8 +385,8 @@ const Conversation = () => {
               <span
                 className="material-icons-round "
                 id="message-icon"
-                onClick={() => {
-                  submitMessage()
+                onClick={async () => {
+                  await submitMessage()
                 }}>
                 send
               </span>

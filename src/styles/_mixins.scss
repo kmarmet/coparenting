@@ -702,7 +702,7 @@
   }
 }
 @mixin bgEffect {
-  background: linear-gradient(-45deg, $translucent, $darkBlue, $mainBlue);
+  background: linear-gradient(-45deg, $translucent, $lightBlue, $mainBlue);
   background-size: 400% 400%;
   animation: gradient 7s ease infinite;
 }
