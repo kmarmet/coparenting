@@ -28,6 +28,7 @@ import {
   formatNameFirstNameOnly,
   removeFileExtension,
   contains,
+  displayAlert,
   uniqueArray,
   getFileExtension,
 } from '../../globalFunctions'
@@ -162,7 +163,7 @@ function NewMemoryForm({ showCard, hideCard }) {
 
     MyConfetti.fire()
 
-    setShowCard(false)
+    hideCard()
 
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser.id, images)
       .then(() => {

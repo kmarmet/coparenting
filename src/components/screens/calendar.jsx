@@ -29,6 +29,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   spaceBetweenWords,
   contains,
+  displayAlert,
   formatNameFirstNameOnly,
   removeFileExtension,
 } from '../../globalFunctions'

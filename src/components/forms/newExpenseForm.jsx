@@ -34,14 +34,17 @@ import {
   formatNameFirstNameOnly,
   removeFileExtension,
   contains,
+  displayAlert,
   uniqueArray,
   getFileExtension,
 } from '../../globalFunctions'
 import BottomCard from '../shared/bottomCard'
 import UploadInputs from '../shared/uploadInputs'
 import DateManager from '../../managers/dateManager'
+import ModelNames from '../../models/modelNames'
+import Swal from 'sweetalert2'
 
-function NewExpenseForm() {
+function NewExpenseForm({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, formToShow } = state
   const [expenseName, setExpenseName] = useState('')
@@ -62,15 +65,8 @@ function NewExpenseForm() {
   const [expenseAmount, setExpenseAmount] = useState('')
   const imgRef = useRef()
 
-  const handlers = useSwipeable({
-    onSwipedRight: (eventData) => {
-      console.log('User Swiped!', eventData)
-      setState({ ...state, currentScreen: ScreenNames.expenseTracker })
-    },
-  })
-
   const resetForm = () => {
-    Manager.resetForm()
+    Manager.resetForm('expenses-wrapper')
     setExpenseName('')
     setExpenseChildren([])
     setExpenseDueDate('')
@@ -87,24 +83,24 @@ function NewExpenseForm() {
     setRepeatingEndDate('')
     setShowNumpad(false)
     setExpenseAmount('')
-    setState({ ...state, formToShow: '' })
+    hideCard()
   }
 
   const submitNewExpense = async () => {
     if (payer.name.length === 0) {
-      setState({ ...state, alertMessage: 'Please select will be paying the expense', showAlert: true, alertType: 'error' })
+      throwError('Please select will be paying the expense')
       return false
     }
     if (expenseName.length === 0) {
-      setState({ ...state, alertMessage: 'Please add an expense name', showAlert: true, alertType: 'error' })
+      throwError('Please add an expense name')
       return false
     }
     if (expenseAmount.length === 0) {
-      setState({ ...state, alertMessage: 'Please add an expense expenseAmount', showAlert: true, alertType: 'error' })
+      throwError('Please add an expense expenseAmount')
       return false
     }
     if (shareWith.length === 0) {
-      setState({ ...state, alertMessage: 'Please select who can view this expense', showAlert: true, alertType: 'error' })
+      throwError('Please select who can view this expense')
       return false
     }
     const newExpense = new Expense()
@@ -130,15 +126,16 @@ function NewExpenseForm() {
     // Get coparent name
     newExpense.recipientName = formatNameFirstNameOnly(currentUser.name)
 
+    const cleanObject = Manager.cleanObject(newExpense, ModelNames.expense)
+
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
     if (activeRepeatIntervals.length > 0 && !expenseDueDate) {
-      setState({ ...state, alertMessage: 'If you have chosen a repeat interval, you must also set a due date', showAlert: true, alertType: 'error' })
+      throwError('If you have chosen a repeat interval, you must also set a due date')
       return false
     }
 
     // IMAGE UPLOAD
-    console.log(expenseImage)
     if (Manager.isValid(expenseImage?.name)) {
       await FirebaseStorage.upload(FirebaseStorage.directories.expenseImages, currentUser.id, expenseImage, expenseImage.name).then((url) => {
         newExpense.imageUrl = url
@@ -146,7 +143,7 @@ function NewExpenseForm() {
     }
 
     // Add to DB
-    await DB.add(tables.expenseTracker, newExpense).finally(async () => {
+    await DB.add(tables.expenseTracker, cleanObject).finally(async () => {
       // Add repeating expense to DB
       if (repeatInterval.length > 0 && repeatingEndDate.length > 0) {
         await addRepeatingExpensesToDb()
@@ -160,6 +157,27 @@ function NewExpenseForm() {
 
       // Go back to expense screen
       resetForm()
+    })
+  }
+
+  const throwError = (title) => {
+    Swal.fire({
+      title: title,
+      icon: 'error',
+      showClass: {
+        popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+      },
+      hideClass: {
+        popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+      },
     })
   }
 
@@ -304,10 +322,10 @@ function NewExpenseForm() {
   }, [])
 
   return (
-    <>
+    <div className="expenses-wrapper">
       {/* PAGE CONTAINER */}
-      <BottomCard title={'Add Expense'} showCard={formToShow === ScreenNames.newExpense}>
-        <div {...handlers} id="add-expense-form" className={`${theme} form`}>
+      <BottomCard title={'Add Expense'} showCard={showCard}>
+        <div id="add-expense-form" className={`${theme} form`}>
           {/* AMOUNT */}
           <div id="amount-input-wrapper" onClick={() => setShowNumpad(true)}>
             <p id="amount-input">
@@ -387,7 +405,18 @@ function NewExpenseForm() {
           />
 
           {/* UPLOAD INPUTS */}
-          <UploadInputs containerClass={theme} actualUploadButtonText={'Upload'} uploadButtonText="Choose Image" upload={chooseImage} />
+          <UploadInputs
+            uploadType="image"
+            getImages={(files) => {
+              if (files.length === 0) {
+                throwError('Please choose an image first')
+              }
+            }}
+            containerClass={theme}
+            actualUploadButtonText={'Upload'}
+            uploadButtonText="Choose Image"
+            upload={chooseImage}
+          />
           <textarea name="expense-notes" placeholder="Notes" className="mb-15" onChange={(e) => setExpenseNotes(e.target.value)}></textarea>
           {currentUser && (
             <div className="share-with-container">
@@ -487,7 +516,7 @@ function NewExpenseForm() {
           </div>
         </div>
       </BottomCard>
-    </>
+    </div>
   )
 }
 

@@ -30,7 +30,7 @@ const ViewTypes = {
 
 export default function ExpenseTracker() {
   const [expenseLog, setExpenseLog] = useState([])
-  const { state, setState, theme } = useContext(globalState)
+  const { state, setState, theme, navbarButton } = useContext(globalState)
   const { currentUser } = state
   const [currentExpense, setCurrentExpense] = useState(null)
   const [deleteConfirmTitle, setDeleteConfirmTitle] = useState('')
@@ -42,6 +42,7 @@ export default function ExpenseTracker() {
   const [imageName, setImageName] = useState('')
   const [dueDates, setDueDates] = useState([])
   const [theaterImages, setTheaterImages] = useState([])
+  const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
   const imgRef = useRef()
   let contentEditable = useRef()
 
@@ -144,6 +145,20 @@ export default function ExpenseTracker() {
     })
   }
 
+  const setNavbarButton = (action, icon = 'add', color = 'green') => {
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => action(),
+          icon: icon,
+          color: color,
+        },
+      })
+    }, 500)
+  }
+
   useEffect(() => {
     getSecuredExpenses().then((r) => r)
   }, [viewType])
@@ -155,6 +170,7 @@ export default function ExpenseTracker() {
       await getSecuredExpenses().then((r) => r)
     })
     Manager.toggleForModalOrNewForm('show')
+    setNavbarButton(() => setShowNewExpenseCard(true))
   }, [])
 
   useEffect(() => {
@@ -207,7 +223,7 @@ export default function ExpenseTracker() {
       />
 
       {/* NEW EXPENSE FORM */}
-      <NewExpenseForm />
+      <NewExpenseForm showCard={showNewExpenseCard} hideCard={(e) => setShowNewExpenseCard(false)} />
 
       {/* PAYMENT OPTIONS */}
       <>

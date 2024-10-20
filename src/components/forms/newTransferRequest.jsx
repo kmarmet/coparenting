@@ -17,7 +17,7 @@ import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import BottomCard from '../shared/bottomCard'
 
-export default function NewTransferChangeRequest() {
+export default function NewTransferChangeRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, formToShow } = state
   const [requestReason, setRequestReason] = useState('')
@@ -30,7 +30,7 @@ export default function NewTransferChangeRequest() {
   const [preferredLocation, setPreferredLocation] = useState('')
 
   const resetForm = () => {
-    Manager.resetForm()
+    Manager.resetForm('transfer-request-wrapper')
     setRequestReason('')
     setShareWith([])
     setRequestTime('')
@@ -39,7 +39,7 @@ export default function NewTransferChangeRequest() {
     setDirectionsLink('')
     setRequestRecipientPhone('')
     setPreferredLocation('')
-    setState({ ...state, formToShow: '' })
+    hideCard()
   }
 
   const submit = async () => {
@@ -123,17 +123,12 @@ export default function NewTransferChangeRequest() {
   }
 
   useEffect(() => {
-    setState({ ...state, previousScreen: ScreenNames.transferRequests, showMenuButton: false, showBackButton: true })
     Manager.toggleForModalOrNewForm('show')
   }, [])
 
   return (
-    <>
-      <BottomCard
-        title={'Add Request'}
-        showCard={formToShow === ScreenNames.newTransferRequest}
-        className={theme}
-        onClose={() => setState({ ...state, formToShow: '' })}>
+    <div className="transfer-request-wrapper">
+      <BottomCard title={'Add Request'} showCard={showCard} className={theme} onClose={() => hideCard()}>
         <div id="transfer-change-container" className={`${theme} form`}>
           <div className="form transfer-change">
             <div className="flex gap">
@@ -219,6 +214,6 @@ export default function NewTransferChangeRequest() {
           </div>
         </div>
       </BottomCard>
-    </>
+    </div>
   )
 }

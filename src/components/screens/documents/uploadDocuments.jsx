@@ -25,6 +25,7 @@ import {
   formatNameFirstNameOnly,
   removeFileExtension,
   contains,
+  displayAlert,
   uniqueArray,
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'

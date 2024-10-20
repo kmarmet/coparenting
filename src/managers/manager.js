@@ -17,6 +17,7 @@ import {
   formatNameFirstNameOnly,
   removeFileExtension,
   contains,
+  displayAlert,
   uniqueArray,
   getFileExtension,
 } from '../globalFunctions'

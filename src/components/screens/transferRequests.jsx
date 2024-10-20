@@ -20,10 +20,10 @@ import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
   const [existingRequests, setExistingRequests] = useState([])
-  const { viewTransferRequestForm, currentUser, theme } = state
+  const { viewTransferRequestForm, currentUser, theme, navbarButton } = state
   const [rejectionReason, setRejectionReason] = useState('')
   const [recipients, setRecipients] = useState([])
-
+  const [showCard, setShowCard] = useState(false)
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
     let allUsers = Manager.convertToArray(await DB.getTable(DB.tables.users))
@@ -68,30 +68,34 @@ export default function TransferRequests() {
     })
   }
 
+  const setNavbarButton = (action, icon = 'add', color = 'green') => {
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => action(),
+          icon: icon,
+          color: color,
+        },
+      })
+    }, 500)
+  }
+
   useEffect(() => {
     const dbRef = ref(getDatabase())
-
+    setNavbarButton(() => setShowCard(true))
     onValue(child(dbRef, DB.tables.transferChangeRequests), async (snapshot) => {
       const tableData = snapshot.val()
       getSecuredRequests().then((r) => r)
     })
-
-    setTimeout(() => {
-      setState({
-        ...state,
-        currentScreen: ScreenNames.transferRequests,
-        menuIsOpen: false,
-        showBackButton: false,
-        showMenuButton: true,
-      })
-    }, 500)
 
     Manager.toggleForModalOrNewForm('show')
   }, [])
 
   return (
     <>
-      <NewTransferChangeRequest />
+      <NewTransferChangeRequest showCard={showCard} hideCard={() => setShowCard(false)} />
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         {!viewTransferRequestForm && (
           <>

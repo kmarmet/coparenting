@@ -1,3 +1,5 @@
+import Swal from "sweetalert2"
+
 # Strings
 export toCamelCase = (input) ->
   input.toString().replace /(?:^\w|[A-Z]|\b\w)/g, (word, index) ->
@@ -88,4 +90,43 @@ export removeFileExtension = (input) ->
 # Arrays
 export uniqueArray = (array) ->
   Array.from(new Set(array))
+
+export displayAlert = (type, title, text = '') ->
+  switch (true)
+    when type is "error" then ->
+      Swal.fire
+        title: title
+        icon: 'error'
+        showClass:
+          popup: """
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          """
+        hideClass:
+          popup: """
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          """
+    when type is 'success' then ->
+      Swal.fire
+        text: text
+        icon: "success"
+        showClass:
+          popup: """
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          """
+        hideClass:
+          popup: """
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          """
+
+
+
+
 

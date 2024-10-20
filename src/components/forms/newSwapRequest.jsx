@@ -28,11 +28,15 @@ import {
   formatNameFirstNameOnly,
   removeFileExtension,
   contains,
+  displayAlert,
   uniqueArray,
   getFileExtension,
 } from '../../globalFunctions'
 
-export default function NewSwapRequest() {
+import Swal from 'sweetalert2'
+import ModelNames from '../../models/modelNames'
+
+export default function NewSwapRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, formToShow } = state
   const [requestRange, setRequestRange] = useState([])
@@ -46,7 +50,7 @@ export default function NewSwapRequest() {
   const [includeChildren, setIncludeChildren] = useState(false)
 
   const resetForm = () => {
-    Manager.resetForm()
+    Manager.resetForm('swap-request-wrapper')
     setRequestRange([])
     setRequestReason('')
     setRequestChildren([])
@@ -56,12 +60,33 @@ export default function NewSwapRequest() {
     setRequestToHour('')
     setSwapDuration('single')
     setIncludeChildren(false)
-    setState({ ...state, formToShow: '' })
+    hideCard()
+  }
+
+  const throwError = (title) => {
+    Swal.fire({
+      title: title,
+      icon: 'error',
+      showClass: {
+        popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+      },
+      hideClass: {
+        popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+      },
+    })
   }
 
   const submit = async () => {
     if (requestRange.length === 0 || shareWith.length === 0 || recipientName.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please fill out required fields', alertType: 'error' })
+      throwError('Please fill out required fields')
       return false
     } else {
       let newRequest = new SwapRequest()
@@ -83,11 +108,13 @@ export default function NewSwapRequest() {
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
       newRequest.recipientPhone = currentUser.coparents.filter((x) => x.name.contains(recipientName))[0].phone || ''
 
+      const cleanObject = Manager.cleanObject(newRequest, ModelNames.swapRequest)
+
       // Send Notification
-      await DB.add(DB.tables.swapRequests, newRequest).finally(() => {
+      await DB.add(DB.tables.swapRequests, cleanObject).finally(() => {
         shareWith.forEach(async (coparentPhone) => {
           const subId = await NotificationManager.getUserSubId(coparentPhone)
-          PushAlertApi.sendMessage(`New Swap Request`, `${currentUser.name.formatNameFirstNameOnly()} has created a new Swap Request`, subId)
+          PushAlertApi.sendMessage(`New Swap Request`, `${formatNameFirstNameOnly(currentUser.name)} has created a new Swap Request`, subId)
         })
         setSwapDuration(SwapDurations.single)
       })
@@ -137,8 +164,8 @@ export default function NewSwapRequest() {
   }, [])
 
   return (
-    <>
-      <BottomCard title={'Add Swap Request'} showCard={formToShow === ScreenNames.newSwapRequest}>
+    <div className="swap-request-wrapper">
+      <BottomCard title={'Add Swap Request'} showCard={showCard} onClose={() => hideCard()}>
         <div id="new-swap-request-container" className={`${theme} form`}>
           <div id="duration-options" className="swap-request action-pills">
             <div className={`flex ${swapDuration === 'single' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.single)}>
@@ -284,6 +311,6 @@ export default function NewSwapRequest() {
           </div>
         </div>
       </BottomCard>
-    </>
+    </div>
   )
 }

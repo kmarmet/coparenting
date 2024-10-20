@@ -25,10 +25,10 @@ const Decisions = {
 
 export default function SwapRequests() {
   const { state, setState } = useContext(globalState)
-  const [existingRequests, setExistingRequests] = useState([])
+  const [existingRequests, setExistingRequests, navbarButton] = useState([])
   const { currentUser, theme } = state
   const [rejectionReason, setRejectionReason] = useState('')
-
+  const [showCard, setShowCard] = useState(false)
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getSwapRequests(currentUser).then((x) => x)
     setExistingRequests(allRequests)
@@ -73,18 +73,31 @@ export default function SwapRequests() {
     const coparent = await DB_UserScoped.getCoparentByPhone(recipientPhone, currentUser)
     return coparent
   }
-
+  const setNavbarButton = (action, icon = 'add', color = 'green') => {
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => action(),
+          icon: icon,
+          color: color,
+        },
+      })
+    }, 500)
+  }
   useEffect(() => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
       await getSecuredRequests().then((r) => r)
     })
     Manager.toggleForModalOrNewForm('show')
+    setNavbarButton(() => setShowCard(true))
   }, [])
 
   return (
     <>
-      <NewSwapRequest />
+      <NewSwapRequest showCard={showCard} hideCard={() => setShowCard(false)} />
       <div id="swap-requests" className={`${theme} page-container`}>
         <>
           <p className="text-screen-intro mb-15">
