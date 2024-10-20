@@ -1,0 +1,33 @@
+@import './palette';
+@import "./variables";
+@import "./mixins";
+
+.lg-react-element {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  .memory-image {
+    flex-basis: 30%;
+    width: 100px !important;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top center;
+    border-radius: $borderRadius;
+    float: none !important;
+	min-height: 250px;
+	@include shadow;
+	
+	@media screen and (min-width: 1100px) {
+	  flex-basis: 20%;
+	  max-width: 300px ;
+	}
+	
+	@media screen and (max-width: 800px) {
+	  flex-basis: 40%;
+	}
+	
+	@media screen and (max-width: 600px) {
+	  flex-basis: 100%;
+	}
+  }
+}

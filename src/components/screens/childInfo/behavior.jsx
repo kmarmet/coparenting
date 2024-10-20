@@ -24,15 +24,16 @@ import {
   lowercaseShouldBeLowercase,
 } from '../../../globalFunctions'
 
-function Behavior({ activeChild }) {
+function Behavior({ activeChild, refreshUpdateKey }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [behaviorValues, setBehaviorValues] = useState([])
 
   const deleteProp = async (prop) => {
-    await DB.deleteChildInfoProp(DB.tables.users, currentUser, prop, 'behavior', activeChild)
-    setSelectedChild()
+    const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, activeChild, 'id')
+    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/behavior/${prop.toLowerCase()}`)
+    refreshUpdateKey()
   }
 
   const update = async (section, prop, value, isArray) => {
@@ -53,6 +54,7 @@ function Behavior({ activeChild }) {
     if (key !== null) {
       setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Updated!' })
       await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop}`), value)
+      refreshUpdateKey()
     }
   }
   const setSelectedChild = () => {
@@ -72,20 +74,22 @@ function Behavior({ activeChild }) {
 
   useEffect(() => {
     setSelectedChild()
-  }, [activeChild])
+  }, [])
 
   return (
     <div className="info-section section behavior">
       <Accordion>
         <p
-          className="header behavior"
+          className={activeChild.behavior === undefined ? 'disabled header behavior' : 'header behavior'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.behavior')
 
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
             } else {
-              parent.classList.add('active')
+              if (activeChild.behavior !== undefined) {
+                parent.classList.add('active')
+              }
             }
             setExpandAccordion(!expandAccordion)
           }}>

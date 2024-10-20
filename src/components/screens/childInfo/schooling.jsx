@@ -23,14 +23,19 @@ import {
   getFileExtension,
   lowercaseShouldBeLowercase,
 } from '../../../globalFunctions'
+import DateFormats from '../../../constants/dateFormats'
 
-function Schooling({ activeChild }) {
+function Schooling({ activeChild, refreshUpdateKey }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [schoolingValues, setSchoolingValues] = useState([])
 
-  const deleteProp = async (prop) => await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'schooling', activeChild)
+  const deleteProp = async (prop) => {
+    const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, activeChild, 'id')
+    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/schooling/${prop.toLowerCase()}`)
+    refreshUpdateKey()
+  }
 
   const update = async (section, prop, value, isArray) => {
     const dbRef = ref(getDatabase())
@@ -50,18 +55,12 @@ function Schooling({ activeChild }) {
     if (key !== null) {
       setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Updated!' })
       await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop}`), value)
+      refreshUpdateKey()
     }
   }
 
   const setSelectedChild = () => {
     if (Manager.isValid(activeChild.schooling, false, true)) {
-      // Remove Custom Text from Property
-      for (let val in activeChild.schooling) {
-        if (contains(activeChild.schooling[val], '_custom')) {
-          activeChild.schooling[val] = activeChild.schooling[val].replace('_custom', '')
-        }
-      }
-
       // Set info
       let values = Object.entries(activeChild.schooling)
       setSchoolingValues(values)
@@ -69,25 +68,31 @@ function Schooling({ activeChild }) {
   }
 
   useEffect(() => {
-    setSelectedChild()
+    const dbRef = ref(getDatabase())
+
+    onValue(child(dbRef, `users/${currentUser.phone}/children`), async (snapshot) => {
+      setSelectedChild()
+    })
   }, [])
 
   return (
     <div className="info-section section schooling">
       <Accordion>
         <p
-          className="header schooling"
+          className={activeChild.schooling === undefined ? 'disabled header schooling' : 'header schooling'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.schooling')
-
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
             } else {
-              parent.classList.add('active')
+              if (activeChild.schooling !== undefined) {
+                parent.classList.add('active')
+              }
             }
             setExpandAccordion(!expandAccordion)
           }}>
-          <span className="material-icons-round">school</span> Schooling <span className="material-icons-round"></span>
+          <span className="material-icons-round">school</span> Schooling {activeChild.schooling === undefined ? '- No Info' : ''}
+          <span className="material-icons-round"></span>
         </p>
         <Accordion.Panel expanded={expandAccordion}>
           {Manager.isValid(schoolingValues, true) &&
@@ -106,11 +111,7 @@ function Schooling({ activeChild }) {
                       debounceTimeout={1000}
                       onChange={(e) => {
                         const inputValue = e.target.value
-                        if (inputValue.length > 0) {
-                          update('schooling', infoLabel, `${inputValue}_custom`).then((r) => r)
-                        } else {
-                          update('schooling', infoLabel, '_custom').then((r) => r)
-                        }
+                        update('schooling', infoLabel, `${inputValue}`).then((r) => r)
                       }}
                     />
                     <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>

@@ -38,7 +38,7 @@ import DB_UserScoped from '@userScoped'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, menuIsOpen, currentScreen, navbarButton } = state
+  const { theme, menuIsOpen, currentUser, selectedNewEventDay, navbarButton } = state
   const [existingEvents, setExistingEvents] = useState([])
   const [showSearchInput, setShowSearchInput] = useState(false)
   const [allHolidays, setAllHolidays] = useState([])
@@ -336,6 +336,7 @@ export default function EventCalendar() {
     return url.slice(0, url.indexOf('com') + 3)
   }
 
+  // ADD FLATPICKR CALENDAR
   const addFlatpickrCalendar = async () => {
     const dbRef = ref(getDatabase())
     toggleCalendar('show')
@@ -363,7 +364,9 @@ export default function EventCalendar() {
       },
       // Firebase onValue change / date selection/click
       onChange: async (e) => {
-        console.log('change')
+        setNavbarButton(() => {
+          setShowNewEventCard(true)
+        })
         const date = moment(e[0]).format(DateFormats.dateForDb).toString()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(date, moment(e[0]).format('MM'))
@@ -401,14 +404,24 @@ export default function EventCalendar() {
     setShowFilters(false)
   }
 
+  const setNavbarButton = (action, icon = 'add', color = 'green') => {
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => action(),
+          icon: icon,
+          color: color,
+        },
+      })
+    }, 500)
+  }
+
   // ON PAGE LOAD
   useEffect(() => {
     addFlatpickrCalendar().then((r) => r)
     Manager.toggleForModalOrNewForm('show')
-  }, [])
-
-  // Navbar Button
-  useEffect(() => {
     setTimeout(() => {
       setState({
         ...state,
@@ -422,6 +435,8 @@ export default function EventCalendar() {
       })
     }, 500)
   }, [])
+
+  // Navbar Button
 
   // TOGGLE SEARCH INPUT
   useEffect(() => {
@@ -473,24 +488,7 @@ export default function EventCalendar() {
       </BottomCard>
 
       {/* FORMS */}
-      <NewCalendarEvent
-        showCard={showNewEventCard}
-        hideCard={(e) => {
-          setShowNewEventCard(false)
-          setTimeout(() => {
-            setState({
-              ...state,
-              selectedNewEventDay: moment(),
-              navbarButton: {
-                ...navbarButton,
-                action: () => {
-                  setShowNewEventCard(true)
-                },
-              },
-            })
-          }, 500)
-        }}
-      />
+      <NewCalendarEvent showCard={showNewEventCard} hideCard={() => setShowNewEventCard(false)} />
       <EditCalEvent
         event={eventToEdit}
         showCard={showEditCard}

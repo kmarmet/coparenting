@@ -33,8 +33,9 @@ import {
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
+import Swal from 'sweetalert2'
 
-const Chats = ({ showCard }) => {
+const Chats = () => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, navbarButton } = state
   const [showNewThreadForm, setShowNewThreadForm] = useState(false)
@@ -71,25 +72,28 @@ const Chats = ({ showCard }) => {
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            setShowNewConvoCard(true)
+    if (!selectedCoparent) {
+      setTimeout(() => {
+        setState({
+          ...state,
+          navbarButton: {
+            ...navbarButton,
+            action: () => {
+              setShowNewConvoCard(true)
+            },
+            color: 'green',
+            icon: 'add',
           },
-          color: 'green',
-          icon: 'add',
-        },
-      })
-    }, 500)
+        })
+      }, 300)
+    } else {
+    }
 
     if (currentUser.accountType === 'parent') {
       getChats().then((r) => r)
     }
     Manager.toggleForModalOrNewForm('show')
-  }, [])
+  }, [selectedCoparent])
 
   useEffect(() => {
     Manager.toggleForModalOrNewForm('show')
@@ -157,6 +161,22 @@ const Chats = ({ showCard }) => {
     setSelectedCoparent(null)
   }
 
+  const setNavbarButton = (action, color, icon) => {
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            action()
+          },
+          color: color,
+          icon: icon,
+        },
+      })
+    }, 100)
+  }
+
   return (
     <>
       {/* DELETE CONFIRMATION */}
@@ -192,7 +212,16 @@ const Chats = ({ showCard }) => {
                   {/* Last Message */}
                   <span className="last-message">{lastMessage}</span>
                 </p>
-                <span className="material-icons-round" id="thread-action-button" onClick={() => showDeleteIcon(coparent)}>
+                <span
+                  className="material-icons-round"
+                  id="thread-action-button"
+                  onClick={(e) => {
+                    if (e.target.textContent === 'close') {
+                      setSelectedCoparent(null)
+                    } else {
+                      showDeleteIcon(coparent).then((r) => r)
+                    }
+                  }}>
                   {selectedCoparent ? 'close' : 'more_vert'}
                 </span>
               </div>
@@ -202,7 +231,13 @@ const Chats = ({ showCard }) => {
         {!showNewThreadForm && threads.length === 0 && <p className="instructions center">There are currently no conversations 🤷🏽‍♂️</p>}
 
         {/* NEW THREAD FORM */}
-        <BottomCard className="new-conversation" onClose={() => setShowNewConvoCard(false)} showCard={showNewConvoCard} title={'New Conversation'}>
+        <BottomCard
+          className="new-conversation"
+          onClose={() => {
+            setShowNewConvoCard(false)
+          }}
+          showCard={showNewConvoCard}
+          title={'New Conversation'}>
           {Manager.isValid(currentUser.coparents, true) &&
             currentUser.coparents
               .filter((x) => !activeChatsMembers.includes(x.phone))

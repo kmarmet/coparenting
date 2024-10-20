@@ -29,7 +29,7 @@ import {
   lowercaseShouldBeLowercase,
 } from '../../../globalFunctions'
 
-function General({ activeChild }) {
+function General({ activeChild, refreshUpdateKey }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
@@ -37,21 +37,12 @@ function General({ activeChild }) {
 
   const deleteProp = async (prop) => {
     const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, activeChild, 'id')
-    // console.log(prop)
-    // console.log(key)
-    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/general/${prop}`)
-    // await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'general', activeChild)
+    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/general/${prop.toLowerCase()}`)
+    refreshUpdateKey()
   }
 
   const setSelectedChild = () => {
     if (Manager.isValid(activeChild.general, false, true)) {
-      // Remove Custom Text from Property
-      for (let val in activeChild.general) {
-        if (contains(activeChild.general[val], '_custom')) {
-          activeChild.general[val] = activeChild.general[val].replace('_custom', '')
-        }
-      }
-
       // Set info
       let values = Object.entries(activeChild.general)
       setGeneralValues(values.filter((x) => x[0] !== 'profilePic'))
@@ -76,12 +67,9 @@ function General({ activeChild }) {
     if (key !== null) {
       setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Updated!' })
       await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${removeSpacesAndLowerCase(prop)}`), value)
+      refreshUpdateKey()
     }
   }
-
-  useEffect(() => {
-    setSelectedChild()
-  }, [activeChild])
 
   useEffect(() => {
     Manager.toggleForModalOrNewForm()
@@ -93,7 +81,7 @@ function General({ activeChild }) {
       <Accordion>
         {/* EXPAND ACCORDION */}
         <p
-          className="header general asdf"
+          className={activeChild.general === undefined ? 'disabled header general' : 'header general'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.general')
 
@@ -141,11 +129,7 @@ function General({ activeChild }) {
                         debounceTimeout={1000}
                         onChange={async (e) => {
                           const inputValue = e.target.value
-                          if (inputValue.length > 0) {
-                            await update('general', infoLabel, `${inputValue}_custom`)
-                          } else {
-                            await update('general', infoLabel, '_custom')
-                          }
+                          await update('general', infoLabel, `${inputValue}`)
                         }}
                       />
                     )}

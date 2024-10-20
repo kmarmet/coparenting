@@ -38,7 +38,6 @@ import {
   uniqueArray,
   getFileExtension,
 } from '../../globalFunctions'
-import CardConfirm from '../shared/cardConfirm'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import Swal from 'sweetalert2'
@@ -59,7 +58,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   const [eventChildren, setEventChildren] = useState(event?.children || [])
   const [eventReminderTimes, setEventReminderTimes] = useState('')
   const [eventShareWith, setEventShareWith] = useState(event?.shareWith)
-
   // State
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
   const [repeatingDatesToSubmit, setRepeatingDatesToSubmit] = useState([])

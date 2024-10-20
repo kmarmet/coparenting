@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import DB from '@db'
 import FirebaseStorage from '@firebaseStorage'
-import ImageManager from '@managers/imageManager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import Manager from '@manager'
 import globalState from '../../context'
-import { Accordion, DatePicker } from 'rsuite'
+import { Accordion } from 'rsuite'
 import ImageTheater from '../shared/imageTheater'
 import Memory from '../../models/memory'
 import SecurityManager from '../../managers/securityManager'
@@ -13,12 +12,24 @@ import NewMemoryForm from '../forms/newMemoryForm'
 import moment from 'moment'
 import ModelNames from '../../models/modelNames'
 import LightGallery from 'lightgallery/react'
-import lgShare from 'lightgallery/plugins/share'
 import imagesLoaded from 'imagesloaded'
 import Masonry from 'masonry-layout'
 import 'lightgallery/css/lightgallery.css'
-import 'lightgallery/css/lg-zoom.css'
-import 'lightgallery/css/lg-thumbnail.css'
+
+function Image({ url }) {
+  return (
+    <>
+      {Manager.isValid(url) && (
+        <div
+          className="memory-image"
+          data-src={url}
+          style={{
+            backgroundImage: `url(${url}), url('https://res.cloudinary.com/dizexseir/image/upload/v1693489844/Common/ImageNotAvailable_hym9j2.png')`,
+          }}></div>
+      )}
+    </>
+  )
+}
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -31,24 +42,10 @@ export default function Memories() {
   const [showFyiAccordion, setShowFyiAccordion] = useState(false)
   const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [imageElements, setImageElements] = useState([])
   const dbRef = ref(getDatabase())
 
-  const expandImage = (e) => {
-    const allImages = Array.from(document.querySelectorAll('.img-container .img-content-container'))
-    let defaultImageIndex = 0
-    const imageId = e.target.getAttribute('data-id')
-    allImages.forEach((img, index) => {
-      const _imgId = img.getAttribute('data-id')
-      if (_imgId === imageId) {
-        defaultImageIndex = index
-      }
-    })
-    setDefaultTheaterIndex(defaultImageIndex)
-    setShowImageTheater(true)
-  }
-
   const getSecuredMemories = async () => {
-    console.log(true)
     setIsLoading(true)
     let all = await SecurityManager.getMemories(currentUser)
     if (Manager.isValid(all, true)) {
@@ -103,6 +100,13 @@ export default function Memories() {
           setIsLoading(false)
         }
       }
+      let arr = []
+      validImages.forEach((img) => {
+        if (Manager.isValid(img)) {
+          arr.push(<Image url={img.url} />)
+        }
+      })
+      setImageElements(arr)
     } else {
       setMemories([])
       setIsLoading(false)
@@ -127,6 +131,7 @@ export default function Memories() {
     })
   }
 
+  // Light Gallery
   useEffect(() => {
     onValue(child(dbRef, DB.tables.memories), async (snapshot) => {
       await getSecuredMemories(currentUser)
@@ -142,10 +147,6 @@ export default function Memories() {
       })
     })
     Manager.toggleForModalOrNewForm()
-  }, [])
-
-  useEffect(() => {
-    // Ensure the DOM element exists
     const container = document.querySelector('.light-gallery')
     if (container) {
       // Initialize Masonry
@@ -196,18 +197,15 @@ export default function Memories() {
             </Accordion>
           </div>
         )}
-
         {/* GALLERY */}
         <LightGallery elementClassNames={'light-gallery'} speed={500}>
           <>
             {Manager.isValid(memories, true) &&
-              memories.map((imgObj, index) => {
-                return (
-                  <div key={index} className="memory-image" data-src={imgObj.url}>
-                    <div className="grid-sizer"></div>
-                    <img data-id={imgObj.id} onClick={(e) => {}} data-src={imgObj.url} src={imgObj.url} alt={imgObj.memoryName} />
-                  </div>
-                )
+              // memories.map((imgObj, index) => {
+              //   return <div style={{ backgroundImage: `url(${imgObj.url})` }} key={index} className="memory-image" data-src={imgObj.url}></div>
+              // })}
+              imageElements.map((el) => {
+                return el
               })}
           </>
         </LightGallery>

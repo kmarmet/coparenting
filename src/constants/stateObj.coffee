@@ -9,6 +9,7 @@ StateObj =
   currentUser: {}
   docToView: ''
   formToShow: ''
+  changeKey: 0,
   isLoading: true
   menuIsOpen: false
   messageToUser: null
@@ -41,6 +42,7 @@ StateObj =
   setContactInfoToUpdateType: ->
   setCurrentScreen: (screen) ->
   setCurrentUser: (user) ->
+  setChangeKey: (key) ->
   setDateToEdit: (date) ->
   setDocToView: (doc) ->
   setEventToEdit: (event) ->

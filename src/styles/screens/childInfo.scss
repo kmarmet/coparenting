@@ -294,6 +294,10 @@
           overflow: hidden;
           height: 45px;
           align-items: center;
+          
+          &.disabled {
+            opacity: .5;
+          }
 
           &.behavior {
             span {

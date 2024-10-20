@@ -23,8 +23,6 @@ function ImageTheater({ onOpen, showTheater = false, imgArray, title, subtitle =
   const [popupImageIndex, setPopupImageIndex] = useState(defaultImageIndex)
   const allImages = document.querySelectorAll('.image-wrapper')
 
-  console.log(imgArray)
-
   const handlers = useSwipeable({
     onSwipedLeft: (eventData) => {
       setPopupImageIndex((popupImageIndex) => popupImageIndex - 1)

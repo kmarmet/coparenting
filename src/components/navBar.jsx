@@ -23,17 +23,16 @@ import DB_UserScoped from '@userScoped'
 
 export default function NavBar() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, screenChangeId, theme, showNavbar, navbarButton } = state
+  const { currentScreen, menuIsOpen, updateKey, theme, showNavbar, navbarButton } = state
 
   const changeCurrentScreen = (screen) => {
     if (screen === ScreenNames.calendar) {
       const cal = document.querySelector('.flatpickr-calendar')
       if (cal) {
-        // @ts-ignore
         cal.classList.remove('hide')
       }
     }
-    setState({ ...state, currentScreen: screen, screenChangeId: Manager.getUid() })
+    setState({ ...state, currentScreen: screen, updateKey: Manager.getUid() })
     Manager.toggleForModalOrNewForm('show')
   }
 

@@ -24,15 +24,16 @@ import {
   lowercaseShouldBeLowercase,
 } from '../../../globalFunctions'
 
-function Medical({ activeChild }) {
+function Medical({ activeChild, refreshUpdateKey }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [medicalValues, setMedicalValues] = useState([])
 
   const deleteProp = async (prop) => {
-    await DB.deleteChildInfoProp(DB.tables.users, currentUser, theme, prop, 'medical', activeChild)
-    setSelectedChild()
+    const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, activeChild, 'id')
+    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/medical/${prop.toLowerCase()}`)
+    refreshUpdateKey()
   }
 
   const update = async (section, prop, value, isArray) => {
@@ -53,18 +54,12 @@ function Medical({ activeChild }) {
     if (key !== null) {
       setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Updated!' })
       await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop}`), value)
+      refreshUpdateKey()
     }
   }
 
   const setSelectedChild = () => {
     if (Manager.isValid(activeChild.medical, false, true)) {
-      // Remove Custom Text from Property
-      for (let val in activeChild.medical) {
-        if (contains(activeChild.medical[val], '_custom')) {
-          activeChild.medical[val] = activeChild.medical[val].replace('_custom', '')
-        }
-      }
-
       // Set info
       let values = Object.entries(activeChild.medical)
       setMedicalValues(values)
@@ -79,14 +74,16 @@ function Medical({ activeChild }) {
     <div className="info-section section medical">
       <Accordion>
         <p
-          className="header medical"
+          className={activeChild.medical === undefined ? 'disabled header medical' : 'header medical'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.medical')
 
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
             } else {
-              parent.classList.add('active')
+              if (activeChild.medical !== undefined) {
+                parent.classList.add('active')
+              }
             }
             setExpandAccordion(!expandAccordion)
           }}>
@@ -96,7 +93,7 @@ function Medical({ activeChild }) {
           {Manager.isValid(medicalValues) &&
             medicalValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
-              const value = prop[1].replace('_custom', '')
+              const value = prop[1]
               return (
                 <div key={index}>
                   <label className="w-100">{infoLabel}</label>
@@ -109,11 +106,7 @@ function Medical({ activeChild }) {
                       debounceTimeout={1000}
                       onChange={(e) => {
                         const inputValue = e.target.value
-                        if (inputValue.length > 0) {
-                          update('medical', infoLabel, `${inputValue}_custom`).then((r) => r)
-                        } else {
-                          update('medical', infoLabel, '_custom').then((r) => r)
-                        }
+                        update('medical', infoLabel, `${inputValue}`).then((r) => r)
                       }}
                     />
                     <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>

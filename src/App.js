@@ -63,7 +63,6 @@ export default function App() {
   const [state, setState] = useState(StateObj)
   const stateToUpdate = { state, setState }
   const myCanvas = document.createElement('canvas')
-  document.body.appendChild(myCanvas)
 
   emailjs.init({
     publicKey: 'khikD1NoIHmBPlckL',
@@ -112,6 +111,7 @@ export default function App() {
     AppManager.deleteExpiredMemories().then((r) => r)
     // throw new Error('Something went wrong')
     // AppManager.setHolidays()
+    document.body.appendChild(myCanvas)
   }, [])
 
   useEffect(() => {

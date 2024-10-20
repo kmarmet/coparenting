@@ -58,6 +58,7 @@ export default function BottomCard({ error = '', onClose, children, title, subti
           id="close-icon"
           onClick={() => {
             if (onClose) {
+              setState({ ...state, updateKey: Manager.getUid() })
               onClose()
             }
             Manager.toggleForModalOrNewForm('show')

@@ -37,7 +37,7 @@ export default function ChildInfo() {
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showSelectorCard, setShowSelectorCard] = useState(false)
   const [activeChild, setActiveChild] = useState(null)
-
+  const [updateKey, setUpdateKey] = useState(0)
   const uploadProfilePic = async (img) => {
     setState({ ...state, isLoading: true })
     // @ts-ignore
@@ -89,7 +89,7 @@ export default function ChildInfo() {
   }, [])
 
   return (
-    <>
+    <div key={updateKey}>
       {/* CHILD SELECTOR */}
       <ChildSelector setActiveChild={setActiveChild} showCard={showSelectorCard} setShowCard={() => setShowSelectorCard(false)} />
 
@@ -98,7 +98,10 @@ export default function ChildInfo() {
         activeChild={activeChild}
         showCard={showInfoCard}
         hasDropdown={true}
-        hideCard={() => setShowInfoCard(false)}
+        hideCard={() => {
+          setShowInfoCard(false)
+          setUpdateKey(Manager.getUid())
+        }}
         onClose={() => setShowInfoCard(false)}
       />
 
@@ -133,10 +136,10 @@ export default function ChildInfo() {
           <div id="child-info">
             {activeChild && (
               <div className="form">
-                <General activeChild={activeChild} />
-                <Medical activeChild={activeChild} />
-                <Schooling activeChild={activeChild} />
-                <Behavior activeChild={activeChild} />
+                <General activeChild={activeChild} refreshUpdateKey={(e) => setUpdateKey(Manager.getUid())} />
+                <Medical activeChild={activeChild} refreshUpdateKey={(e) => setUpdateKey(Manager.getUid())} />
+                <Schooling activeChild={activeChild} refreshUpdateKey={(e) => setUpdateKey(Manager.getUid())} />
+                <Behavior activeChild={activeChild} refreshUpdateKey={(e) => setUpdateKey(Manager.getUid())} />
               </div>
             )}
           </div>
@@ -152,6 +155,6 @@ export default function ChildInfo() {
           </button>
         </>
       </div>
-    </>
+    </div>
   )
 }

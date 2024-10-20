@@ -27,8 +27,8 @@ import {
 export default function CustomChildInfo({ activeChild, showCard, hideCard, onClose, hasDropdown = false }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
-  const [title, setTitle] = useState(null)
-  const [value, setValue] = useState(null)
+  const [title, setTitle] = useState('')
+  const [value, setValue] = useState('')
   const [infoSection, setInfoSection] = useState('general')
 
   const add = async () => {
@@ -44,14 +44,14 @@ export default function CustomChildInfo({ activeChild, showCard, hideCard, onClo
     const formattedTitle = removeSpacesAndLowerCase(title).toCamelCase()
     if (key !== null) {
       await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${formattedTitle}`), `${value}`)
-      onClose()
+      resetForm()
     }
   }
 
   const resetForm = () => {
     Manager.resetForm('custom-child-info-wrapper')
-    setTitle(null)
-    setValue(null)
+    setTitle('')
+    setValue('')
     setInfoSection('Select Info Section')
     hideCard(false)
   }

@@ -53,7 +53,7 @@ import Swal from 'sweetalert2'
 export default function NewCalendarEvent({ showCard, hideCard }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, selectedNewEventDay } = state
+  const { currentUser, theme, selectedNewEventDay, navbarButton } = state
 
   // COMPONENT STATE
   const [eventFromDate, setEventFromDate] = useState('')
@@ -114,7 +114,6 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
     if (Manager.isValid(newEvent.title) && newEvent.title.toLowerCase().indexOf('birthday') > -1) {
       newEvent.title += ' 🎂'
     }
-    console.log(eventFromDate)
     newEvent.fromDate = DateManager.dateIsValid(eventFromDate) ? moment(eventFromDate).format(DateFormats.dateForDb) : ''
     newEvent.toDate = DateManager.dateIsValid(eventToDate) ? moment(eventToDate).format(DateFormats.dateForDb) : ''
     newEvent.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
@@ -380,7 +379,7 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
 
   return (
     <div>
-      <BottomCard className={`${theme} new-event-form `} onClose={() => hideCard(false)} showCard={showCard} error={error} title={'Add New Event'}>
+      <BottomCard className={`${theme} new-event-form `} onClose={hideCard} showCard={showCard} error={error} title={'Add New Event'}>
         {/* FORM WRAPPER */}
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           {/* Event Length */}
