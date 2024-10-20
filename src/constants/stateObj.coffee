@@ -5,7 +5,7 @@ StateObj =
   alertType: ''
   confirmMessage: ''
   contactInfoToUpdateType: 'email'
-  currentScreen: ScreenNames.login
+  currentScreen: ScreenNames.firebaseLogin
   currentUser: {}
   docToView: ''
   formToShow: ''

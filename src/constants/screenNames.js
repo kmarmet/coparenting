@@ -41,7 +41,8 @@ ScreenNames = {
   newTransferRequest: 'newTransferRequest',
   newCoparent: 'newCoparent',
   childSelector: 'childSelector',
-  reviseTransferRequest: 'reviseTransferRequest'
+  reviseTransferRequest: 'reviseTransferRequest',
+  firebaseLogin: "firebaseLogin"
 };
 
 export default ScreenNames;

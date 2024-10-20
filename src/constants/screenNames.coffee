@@ -39,4 +39,5 @@ ScreenNames=
   newCoparent: 'newCoparent'
   childSelector: 'childSelector'
   reviseTransferRequest: 'reviseTransferRequest'
+  firebaseLogin: "firebaseLogin"
 export default ScreenNames

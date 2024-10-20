@@ -10,6 +10,7 @@ import firebaseConfig from './firebaseConfig.js'
 import Manager from '@manager'
 import moment from 'moment'
 import Swal from 'sweetalert2'
+import { LogtoProvider, LogtoConfig, useLogto } from '@logto/react'
 
 // Screens
 import EventCalendar from '@screens/calendar.jsx'
@@ -39,6 +40,7 @@ import AppManager from '@managers/appManager.js'
 import ChatRecovery from '@screens/account/chatRecovery'
 import EditCalEvent from '@components/screens/editCalEvent.jsx'
 import NewCalendarEvent from '@components/forms/newCalendarEvent.jsx'
+import FirebaseLogin from './components/screens/auth/firebaseLogin'
 import NewChildForm from 'components/screens/childInfo/newChildForm.jsx'
 import NewMemoryForm from 'components/forms/newMemoryForm.jsx'
 import NewExpenseForm from 'components/forms/newExpenseForm.jsx'
@@ -147,6 +149,11 @@ export default function App() {
 
           {/* SCREENS */}
           <>
+            {/* AUTHENTICATION */}
+            {currentScreen === ScreenNames.firebaseLogin && <FirebaseLogin />}
+            {currentScreen === ScreenNames.login && <Login />}
+            {currentScreen === ScreenNames.registration && <Registration />}
+
             {/* UPDATE/EDIT */}
             {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}
             {currentScreen === ScreenNames.updateContactInfo && <UpdateContactInfo />}
@@ -173,8 +180,6 @@ export default function App() {
             {currentScreen === ScreenNames.settings && <Settings />}
             {currentScreen === ScreenNames.account && <Account />}
             {currentScreen === ScreenNames.contactSupport && <ContactSupport />}
-            {currentScreen === ScreenNames.login && <Login />}
-            {currentScreen === ScreenNames.registration && <Registration />}
             {currentScreen === ScreenNames.expenseTracker && <ExpenseTracker />}
             {currentScreen === ScreenNames.swapRequests && <SwapRequests />}
             {currentScreen === ScreenNames.forgotPassword && <ForgotPassword />}
