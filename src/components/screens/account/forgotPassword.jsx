@@ -75,9 +75,14 @@ export default function ForgotPassword() {
             Email<span className="asterisk">*</span>
           </label>
           <input autoComplete="off" className="mb-15" value={email} type="email" onChange={(e) => setEmail(e.target.value)} />
-          <button className="button default green" onClick={sendResetLink}>
-            Reset
-          </button>
+          <div className="flex gap">
+            <button className="button default green" onClick={sendResetLink}>
+              Reset
+            </button>
+            <button className="button default" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+              Nevermind
+            </button>
+          </div>
         </div>
       </div>
     </>

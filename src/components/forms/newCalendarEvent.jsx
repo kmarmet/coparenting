@@ -430,14 +430,12 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
                   <label className="mb-0">
                     Date <span className="asterisk">*</span>
                   </label>
-                  {eventFromDate && (
-                    <MobileDatePicker
-                      className={`${theme} m-0 w-100 event-from-date mui-input`}
-                      onAccept={(e) => {
-                        setEventFromDate(e)
-                      }}
-                    />
-                  )}
+                  <MobileDatePicker
+                    className={`${theme} m-0 w-100 event-from-date mui-input`}
+                    onAccept={(e) => {
+                      setEventFromDate(e)
+                    }}
+                  />
                 </div>
               </>
             )}

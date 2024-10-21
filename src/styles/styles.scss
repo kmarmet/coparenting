@@ -296,6 +296,8 @@
     .material-icons {
       font-family: 'Material Icons';
     }
+    
+    .dead-center {@include deadCenter}
 
     .loading-overlay {
       top: 0;

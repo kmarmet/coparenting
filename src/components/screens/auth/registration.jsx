@@ -40,6 +40,7 @@ import ModelNames from '../../../models/modelNames'
 import { getAuth, setPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
+import InstallAppPopup from '../../installAppPopup'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -52,11 +53,10 @@ export default function Registration() {
   const [parentType, setParentType] = useState('')
   const [accountType, setAccountType] = useState('')
   const [parentPhone, setParentPhone] = useState('')
-  const [verificationCode, setVerificationCode] = useState(Manager.getUid().slice(0, 4))
-  const [verificationCodeSent, setVerificationCodeSent] = useState(false)
   const [parents, setParents] = useState([])
   const [coparents, setCoparents] = useState([])
   const [parentTypeAccExpanded, setParentTypeAccExpanded] = useState(false)
+  const [accountAlreadyExists, setAccountAlreadyExists] = useState(false)
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
@@ -68,47 +68,46 @@ export default function Registration() {
 
   // SUBMIT PARENT
   const submit = async () => {
-    await validateParentForm() // Check for existing account
-    let newUser = new User()
-    newUser.id = Manager.getUid()
-    newUser.email = email
-    newUser.name = uppercaseFirstLetterOfAllWords(userName)
-    newUser.accountType = 'parent'
-    newUser.children = children
-    newUser.phone = formatPhone(userPhone)
-    newUser.coparents = coparents
-    newUser.parentType = parentType
-    newUser.settings.theme = 'light'
-    newUser.settings.eveningReminderSummaryHour = '8pm'
-    newUser.settings.morningReminderSummaryHour = '10am'
+    const validForm = await formIsValid() // Check for existing account
 
-    const cleanUser = Manager.cleanObject(newUser, ModelNames.user)
+    if (validForm) {
+      let newUser = new User()
+      newUser.id = Manager.getUid()
+      newUser.email = email
+      newUser.name = uppercaseFirstLetterOfAllWords(userName)
+      newUser.accountType = 'parent'
+      newUser.children = children
+      newUser.phone = formatPhone(userPhone)
+      newUser.coparents = coparents
+      newUser.parentType = parentType
+      newUser.settings.theme = 'light'
+      newUser.settings.eveningReminderSummaryHour = '8pm'
+      newUser.settings.morningReminderSummaryHour = '10am'
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        // Signed up successfully
-        const user = userCredential.user
-        console.log('Signed up as:', user.email)
-        await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
-      })
-      .catch((error) => {
-        console.error('Sign up error:', error.message)
-      })
+      const cleanUser = Manager.cleanObject(newUser, ModelNames.user)
 
-    const dbRef = ref(getDatabase())
-    const subId = await NotificationManager.getUserSubId('3307494534')
-    PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone} | Name: ${userName}`, subId)
-    setState({ ...state, currentScreen: ScreenNames.emailVerification })
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
+          // Signed up successfully
+          const user = userCredential.user
+          console.log('Signed up as:', user.email)
+          await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
+        })
+        .catch((error) => {
+          console.error('Sign up error:', error.message)
+        })
+
+      const dbRef = ref(getDatabase())
+      const subId = await NotificationManager.getUserSubId('3307494534')
+      PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone} \n Name: ${userName}`, subId)
+      setState({ ...state, currentScreen: ScreenNames.emailVerification })
+    }
   }
 
   // SUBMIT CHILD
   const submitChild = async () => {
-    const isValid = validateChildForm()
+    const isValid = await validateChildForm()
     if (isValid) {
-      if (!verificationCode || verificationCode?.length === 0) {
-        displayAlert('error', 'Verification code is required')
-        return false
-      }
       let parent = await DB_UserScoped.getUser(DB.tables.users, parentPhone)
       if (Manager.isValid(parent)) {
         let newUser = new ChildUser()
@@ -146,70 +145,87 @@ export default function Registration() {
   }
 
   const validateChildForm = async () => {
+    let isValid = true
     await DB.getTable(DB.tables.users).then((users) => {
       users = Manager.convertToArray(users)
-      const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)
+      let foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)
       if (foundUser) {
         displayAlert('error', 'Account already exists, please login')
-        return false
+        isValid = false
+        setAccountAlreadyExists(true)
+      } else {
+        let foundParent = users?.filter((x) => x?.phone === parentPhone)
+        if (foundParent) {
+          displayAlert('error', "Your phone number cannot be the same as your parent's phone number")
+          isValid = false
+        }
       }
     })
     if (userPhone.length === 0 || !validatePhone()) {
       displayAlert('error', 'Phone number is not valid')
-      return false
+      isValid = false
     }
+    return isValid
     if (userName.length === 0) {
       displayAlert('error', 'Your name is required')
-      return false
+      isValid = false
     }
+    return isValid
     if (password.length === 0) {
       displayAlert('error', 'Your password is required')
-      return false
+      isValid = false
     }
+    return isValid
     if (confirmedPassword.length === 0) {
       displayAlert('error', 'Confirmed password is required')
-      return false
+      isValid = false
     }
+    return isValid
     if (confirmedPassword !== password) {
       displayAlert('error', 'Password and confirmed password do not match')
-      return false
+      isValid = false
     }
+    return isValid
   }
 
-  const validateParentForm = async () => {
+  const formIsValid = async () => {
+    let isValid = true
     await DB.getTable(DB.tables.users).then((users) => {
       users = Manager.convertToArray(users)
       const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
       if (foundUser) {
         displayAlert('error', 'Account already exists, please login')
-        return false
+        setAccountAlreadyExists(true)
+        isValid = false
       }
     })
 
     if (userPhone.length === 0 || !validatePhone()) {
       displayAlert('error', 'Phone number is not valid')
-      return false
+      isValid = false
     }
 
     if (parentType.length === 0) {
       displayAlert('error', 'Please select your parent type')
-      return false
+      isValid = false
     }
 
     if (Manager.validation([userName, email, parentType]) > 0) {
       displayAlert('error', 'Please fill out all fields')
-      return false
+      isValid = false
     }
 
     if (children.length === 0) {
       displayAlert('error', 'Please enter at least one child')
-      return false
+      isValid = false
     }
 
     if (coparents.length === 0) {
       displayAlert('error', 'Please enter at least one co-parent')
-      return false
+      isValid = false
     }
+
+    return isValid
   }
 
   const handleParentType = (e) => Manager.handleCheckboxSelection(e, setParentType(null), setParentType(e.currentTarget.dataset.label))
@@ -245,16 +261,36 @@ export default function Registration() {
 
   return (
     <>
-      {/* SCREEN TITLE */}
-      <p className="screen-title ">Sign Up</p>
-
       {/* PAGE CONTAINER */}
       <div id="registration-container" className="page-container light form">
+        {accountAlreadyExists && (
+          <button className="button default dead-center h-40 w-80" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+            Login
+          </button>
+        )}
         {/* SET ACCOUNT TYPE */}
         {!accountType && (
           <>
+            <p className="mt-15">
+              It is <b>HIGHLY</b> recommended to install the application <b>AFTER registration is complete</b> for the best experience.
+            </p>
+            <p>
+              Click <b>Install App</b> button below to read the extremely fast installation steps.
+            </p>
+            {/* INSTALL BUTTON */}
+            <p
+              id="install-button"
+              className="mb-10 button mt-20"
+              onClick={() => {
+                setState({ ...state, menuIsOpen: false })
+                document.querySelector('.install-app').classList.add('active')
+                Manager.toggleForModalOrNewForm('hide')
+              }}>
+              Install App <span className="material-icons">install_mobile</span>
+            </p>
+            <InstallAppPopup />
             <label className="account-type-label mb-10 mt-15">
-              Account Type <span className="asterisk">*</span>
+              Choose your Account Type <span className="asterisk">*</span>
             </label>
             <div className="button-group flex">
               <button className="button default w-50 mr-10" onClick={() => setAccountType('parent')}>
@@ -267,20 +303,25 @@ export default function Registration() {
           </>
         )}
 
-        {accountType && accountType === 'child' && !verificationCodeSent && (
+        {/* CHILD FORM */}
+        {!accountAlreadyExists && accountType && accountType === 'child' && (
           <div className="form mb-20">
             <label>
               Name <span className="asterisk">*</span>
             </label>
             <input className="mb-10" type="text" onChange={(e) => setUserName(e.target.value)} />
             <label>
+              Email <span className="asterisk">*</span>
+            </label>
+            <input type="email" className="mb-10" />
+            <label>
               Your Phone Number <span className="asterisk">*</span>
             </label>
-            <input className="mb-10" type="number" pattern="[0-9]*" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
+            <input className="mb-10" type="phone" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
             <label>
-              Phone Number of parent that has App <span className="asterisk">*</span>
+              Phone Number of Parent that has the App <span className="asterisk">*</span>
             </label>
-            <input className="mb-10" type="number" pattern="[0-9]*" inputMode="numeric" onChange={(e) => setParentPhone(e.target.value)} />
+            <input className="mb-10" type="phone" inputMode="numeric" onChange={(e) => setParentPhone(e.target.value)} />
             <label>
               Password<span className="asterisk">*</span>
             </label>
@@ -304,14 +345,27 @@ export default function Registration() {
             {parentInputs.map((input, index) => {
               return <span key={index}>{input}</span>
             })}
-            <button id="add-parent-button" className="button default w-60" onClick={addParentInput}>
-              Add Another Parent
+            {parents.length > 0 && (
+              <button id="add-parent-button" className="button default w-60" onClick={addParentInput}>
+                Add Another Parent
+              </button>
+            )}
+            <button
+              className="button default w-60 green"
+              onClick={async () => {
+                const isValidForm = await validateChildForm()
+                if (isValidForm) {
+                  await submitChild()
+                  setState({ ...state, currentScreen: ScreenNames.emailVerification })
+                }
+              }}>
+              Verify Email<span className="material-icons-round fs-22">mark_email_read</span>
             </button>
           </div>
         )}
 
         {/* PARENT FORM */}
-        {accountType && accountType === 'parent' && !verificationCodeSent && (
+        {!accountAlreadyExists && accountType && accountType === 'parent' && (
           <div className="form mb-20">
             <Accordion>
               <label>
@@ -372,9 +426,11 @@ export default function Registration() {
             })}
 
             {/* COPARENTS */}
-            <button id="add-coparent-button" className="button default w-60" onClick={addCoparentInput}>
-              Add Another Co-Parent
-            </button>
+            {coparents.length > 0 && (
+              <button id="add-coparent-button" className="button default w-60" onClick={addCoparentInput}>
+                Add Another Co-Parent
+              </button>
+            )}
 
             {/* CHILDREN */}
             <div className="children">
@@ -382,14 +438,19 @@ export default function Registration() {
                 return <span key={index}>{input}</span>
               })}
             </div>
-            <button id="add-child-button" className="button default w-60" onClick={addChildInput}>
-              Add Another Child
-            </button>
+            {children.length > 0 && (
+              <button id="add-child-button" className="button default w-60" onClick={addChildInput}>
+                Add Another Child
+              </button>
+            )}
             <button
               className="button default w-60 green"
               onClick={async () => {
-                await submit()
-                setState({ ...state, currentScreen: ScreenNames.emailVerification })
+                const isValidForm = await formIsValid()
+                if (isValidForm) {
+                  await submit()
+                  setState({ ...state, currentScreen: ScreenNames.emailVerification })
+                }
               }}>
               Verify Email<span className="material-icons-round fs-22">mark_email_read</span>
             </button>

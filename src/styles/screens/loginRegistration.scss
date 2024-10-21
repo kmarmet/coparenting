@@ -16,6 +16,25 @@
         background-color: white;
       }
     }
+    
+    #install-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      width: 150px;
+      font-size: 12px;
+      margin: 0 auto 0 auto;
+      min-width: 0;
+      padding: 0 10px;
+      height: 30px;
+      z-index: 10000;
+      color: white;
+      background-color: $purple;
+      @include glow();
+      border-radius: $borderRadius;
+      animation: beat 2s infinite;
+    }
 
     #password-validation {
       margin: 10px 0 !important;
