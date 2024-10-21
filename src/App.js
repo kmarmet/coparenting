@@ -42,7 +42,7 @@ import AppManager from '@managers/appManager.js'
 import ChatRecovery from '@screens/account/chatRecovery'
 import EditCalEvent from '@components/screens/editCalEvent.jsx'
 import NewCalendarEvent from '@components/forms/newCalendarEvent.jsx'
-import FirebaseLogin from './components/screens/auth/firebaseLogin'
+import EmailVerification from './components/screens/auth/emailVerification'
 import NewChildForm from 'components/screens/childInfo/newChildForm.jsx'
 import NewMemoryForm from 'components/forms/newMemoryForm.jsx'
 import NewExpenseForm from 'components/forms/newExpenseForm.jsx'
@@ -67,7 +67,7 @@ export default function App() {
   const auth = getAuth(app)
   const [state, setState] = useState(StateObj)
   const stateToUpdate = { state, setState }
-  const { userIsLoggedIn } = state
+  const { userIsLoggedIn, firebaseUser, setFirebaseUser } = state
 
   const myCanvas = document.createElement('canvas')
 
@@ -125,7 +125,6 @@ export default function App() {
         console.log(user)
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
-
         console.log('signed in')
       } else {
         console.log('signed out')
@@ -174,9 +173,9 @@ export default function App() {
           {/* SCREENS */}
           <>
             {/* AUTHENTICATION */}
-            {currentScreen === ScreenNames.firebaseLogin && <FirebaseLogin />}
             {currentScreen === ScreenNames.login && <Login />}
             {currentScreen === ScreenNames.registration && <Registration />}
+            {currentScreen === ScreenNames.emailVerification && <EmailVerification />}
 
             {/* UPDATE/EDIT */}
             {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}

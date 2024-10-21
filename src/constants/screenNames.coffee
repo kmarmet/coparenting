@@ -40,4 +40,5 @@ ScreenNames=
   childSelector: 'childSelector'
   reviseTransferRequest: 'reviseTransferRequest'
   firebaseLogin: "firebaseLogin"
+  emailVerification: 'emailVerification'
 export default ScreenNames

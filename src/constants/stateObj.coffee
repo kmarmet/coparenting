@@ -9,6 +9,7 @@ StateObj =
   currentUser: {}
   docToView: ''
   formToShow: ''
+  firebaseUser: null,
   changeKey: 0,
   isLoading: true
   menuIsOpen: false
@@ -48,6 +49,7 @@ StateObj =
   setDocToView: (doc) ->
   setEventToEdit: (event) ->
   setFormToShow: (form) ->
+  setFirebaseUser: (user) ->
   setGoBackScreen: (screen) ->
   setIsLoading: (bool) ->
   setMenuIsOpen: (isOpen) ->

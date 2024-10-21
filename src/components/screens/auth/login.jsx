@@ -48,11 +48,13 @@ export default function Login() {
 
       // SIGN USER IN BASED ON rememberMe KEY
       if (Manager.isValid(rememberMeKey)) {
+        console.log(auth.currentUser)
         setState({
           ...state,
           userIsLoggedIn: true,
           currentScreen: ScreenNames.calendar,
           currentUser: foundUser,
+          firebaseUser: auth.currentUser,
           isLoading: false,
           theme: foundUser?.settings?.theme,
         })
@@ -157,6 +159,25 @@ export default function Login() {
     }
   }
 
+  const sendResetLink = async () => {
+    await sendPasswordResetEmail(auth, firebaseUser.email)
+      .then(async (link) => {
+        const users = await DB.getTable(DB.tables.users)
+        const foundUser = users.filter((x) => x.email === firebaseUser.email)
+        console.log(foundUser)
+        setState({
+          ...state,
+          currentScreen: ScreenNames.login,
+          currentUser: foundUser,
+          userIsLoggedIn: true,
+        })
+      })
+
+      .catch((error) => {
+        // Some error occurred.
+      })
+  }
+
   useLayoutEffect(() => {
     autoLogin().then((r) => r)
     Manager.toggleForModalOrNewForm('show')
@@ -170,6 +191,7 @@ export default function Login() {
 
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`light page-container form`}>
+        <img className="ml-auto mr-auto" src={require('../../../img/logo.png')} alt="Peaceful coParenting" />
         {/* QUOTE CONTAINER */}
         <div id="quote-container">
           <span>

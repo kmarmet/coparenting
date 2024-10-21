@@ -16,7 +16,7 @@ import PushAlertApi from '@api/pushAlert'
 import MyConfetti from '@shared/myConfetti.js'
 import DB_UserScoped from '@userScoped'
 import ChildUser from 'models/child/childUser.js'
-import { useSwipeable } from 'react-swipeable'
+import { phone } from 'phone'
 import ParentInput from '../../parentInput'
 import {
   toCamelCase,
@@ -47,7 +47,7 @@ export default function Registration() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmedPassword, setConfirmedPassword] = useState('')
-  const [phone, setPhone] = useState('')
+  const [userPhone, setUserPhone] = useState('')
   const [children, setChildren] = useState([])
   const [parentType, setParentType] = useState('')
   const [accountType, setAccountType] = useState('')
@@ -60,51 +60,45 @@ export default function Registration() {
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
+  const validatePhone = () => {
+    const validatePhone = phone(`+1${formatPhone(userPhone)}`)
+    const { isValid } = validatePhone
+    return isValid
+  }
+
   // SUBMIT PARENT
   const submit = async () => {
-    const isValid = validateParentForm()
-    if (isValid) {
-      // Check for existing account
-      await DB.getTable(DB.tables.users).then((users) => {
-        users = Manager.convertToArray(users)
-        const foundUser = users?.filter((x) => x?.email === email || x?.phone === phone)
-        if (foundUser) {
-          displayAlert('error', 'Account already exists, please login')
-          return false
-        }
+    await validateParentForm() // Check for existing account
+    let newUser = new User()
+    newUser.id = Manager.getUid()
+    newUser.email = email
+    newUser.name = uppercaseFirstLetterOfAllWords(userName)
+    newUser.accountType = 'parent'
+    newUser.children = children
+    newUser.phone = formatPhone(userPhone)
+    newUser.coparents = coparents
+    newUser.parentType = parentType
+    newUser.settings.theme = 'light'
+    newUser.settings.eveningReminderSummaryHour = '8pm'
+    newUser.settings.morningReminderSummaryHour = '10am'
+
+    const cleanUser = Manager.cleanObject(newUser, ModelNames.user)
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        // Signed up successfully
+        const user = userCredential.user
+        console.log('Signed up as:', user.email)
+        await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
+      })
+      .catch((error) => {
+        console.error('Sign up error:', error.message)
       })
 
-      let newUser = new User()
-      newUser.id = Manager.getUid()
-      newUser.email = email
-      newUser.name = uppercaseFirstLetterOfAllWords(userName)
-      newUser.accountType = 'parent'
-      newUser.children = children
-      newUser.phone = formatPhone(phone)
-      newUser.coparents = coparents
-      newUser.parentType = parentType
-      newUser.settings.theme = 'light'
-      newUser.settings.eveningReminderSummaryHour = '8pm'
-      newUser.settings.morningReminderSummaryHour = '10am'
-
-      const cleanUser = Manager.cleanObject(newUser, ModelNames.user)
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed up successfully
-          const user = userCredential.user
-          console.log('Signed up as:', user.email)
-        })
-        .catch((error) => {
-          console.error('Sign up error:', error.message)
-        })
-
-      const dbRef = ref(getDatabase())
-      const subId = await NotificationManager.getUserSubId('3307494534')
-      PushAlertApi.sendMessage('New Registration', `Phone: ${phone} | Name: ${userName}`, subId)
-      await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
-      setState({ ...state, currentScreen: ScreenNames.login })
-    }
+    const dbRef = ref(getDatabase())
+    const subId = await NotificationManager.getUserSubId('3307494534')
+    PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone} | Name: ${userName}`, subId)
+    setState({ ...state, currentScreen: ScreenNames.emailVerification })
   }
 
   // SUBMIT CHILD
@@ -119,7 +113,7 @@ export default function Registration() {
       if (Manager.isValid(parent)) {
         let newUser = new ChildUser()
         newUser.id = Manager.getUid()
-        newUser.phone = phone
+        newUser.phone = userPhone
         newUser.name = uppercaseFirstLetterOfAllWords(userName)
         newUser.accountType = 'child'
         newUser.parents = parents
@@ -129,7 +123,7 @@ export default function Registration() {
         newUser.settings.morningReminderSummaryHour = '10am'
         const cleanedUser = Manager.cleanObject(newUser, ModelNames.childUser)
         const dbRef = ref(getDatabase())
-        await set(child(dbRef, `users/${phone}`), cleanedUser)
+        await set(child(dbRef, `users/${userPhone}`), cleanedUser)
         MyConfetti.fire()
         setState({ ...state, currentScreen: ScreenNames.login })
 
@@ -138,107 +132,90 @@ export default function Registration() {
         const parentSubId = await NotificationManager.getUserSubId(parentPhone)
         PushAlertApi.sendMessage(`${userName} has registered.`, parentSubId)
         // Send to child
-        const childSubId = await NotificationManager.getUserSubId(phone)
+        const childSubId = await NotificationManager.getUserSubId(userPhone)
         PushAlertApi.sendMessage(`${userName} has registered.`, childSubId)
         // Send to me
         const mySubId = await NotificationManager.getUserSubId('3307494534')
-        PushAlertApi.sendMessage('New Registration', `Phone: ${phone}`, mySubId)
+        PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone}`, mySubId)
       } else {
         // Parent account does not exist
         displayAlert('error', `There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`)
         return false
       }
-
-      SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate())
     }
   }
 
-  const validateChildForm = () => {
-    let valid = true
-    if (!parentPhone || parentPhone?.length === 0) {
-      displayAlert('error', "Parent's phone number is required")
-      valid = false
-    }
-    if (!Manager.phoneNumberIsValid(parentPhone)) {
+  const validateChildForm = async () => {
+    await DB.getTable(DB.tables.users).then((users) => {
+      users = Manager.convertToArray(users)
+      const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)
+      if (foundUser) {
+        displayAlert('error', 'Account already exists, please login')
+        return false
+      }
+    })
+    if (userPhone.length === 0 || !validatePhone()) {
       displayAlert('error', 'Phone number is not valid')
       return false
     }
     if (userName.length === 0) {
       displayAlert('error', 'Your name is required')
-      valid = false
+      return false
     }
     if (password.length === 0) {
       displayAlert('error', 'Your password is required')
-      valid = false
+      return false
     }
     if (confirmedPassword.length === 0) {
       displayAlert('error', 'Confirmed password is required')
-      valid = false
+      return false
     }
     if (confirmedPassword !== password) {
       displayAlert('error', 'Password and confirmed password do not match')
-      valid = false
+      return false
     }
-
-    return valid
   }
 
-  const validateParentForm = () => {
-    let valid = true
+  const validateParentForm = async () => {
+    await DB.getTable(DB.tables.users).then((users) => {
+      users = Manager.convertToArray(users)
+      const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
+      if (foundUser) {
+        displayAlert('error', 'Account already exists, please login')
+        return false
+      }
+    })
 
-    if (!Manager.phoneNumberIsValid(phone)) {
+    if (userPhone.length === 0 || !validatePhone()) {
       displayAlert('error', 'Phone number is not valid')
       return false
     }
 
     if (parentType.length === 0) {
-      displayAlert('error', 'Select your parent type')
-      valid = false
+      displayAlert('error', 'Please select your parent type')
+      return false
     }
 
-    if (Manager.validation([userName, email, phone, parentType]) > 0) {
+    if (Manager.validation([userName, email, parentType]) > 0) {
       displayAlert('error', 'Please fill out all fields')
-      valid = false
-    }
-
-    if (!Manager.formatPhoneNumber(phone)) {
-      displayAlert('error', 'Enter a valid phone number')
+      return false
     }
 
     if (children.length === 0) {
-      displayAlert('error', 'Please enter at least 1 child')
-      valid = false
+      displayAlert('error', 'Please enter at least one child')
+      return false
     }
 
     if (coparents.length === 0) {
       displayAlert('error', 'Please enter at least one co-parent')
-      valid = false
-    }
-
-    return valid
-  }
-
-  // SEND VERIFICATION CODE
-  const sendChildVerificationCode = () => {
-    const isValidated = validateChildForm()
-    if (isValidated) {
-      SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, verificationCode))
-      setVerificationCodeSent(true)
-    }
-  }
-
-  const sendParentVerificationCode = () => {
-    const isValidated = validateParentForm()
-    if (isValidated) {
-      SmsManager.send(phone, SmsManager.getRegistrationVerificationTemplate(userName, verificationCode))
-      setVerificationCodeSent(true)
+      return false
     }
   }
 
   const handleParentType = (e) => Manager.handleCheckboxSelection(e, setParentType(null), setParentType(e.currentTarget.dataset.label))
 
   // CHILDREN
-  const addChild = (parentObject) => setChildren([...children, parentObject])
+  const addChild = (childObject) => setChildren([...children, childObject])
   const [childrenInputs, setChildrenInputs] = useState([
     <ChildrenInput add={addChild} childrenCount={1} onChange={(e) => setChildren([...children, e.target.value])} />,
   ])
@@ -262,9 +239,6 @@ export default function Registration() {
         ...state,
         currentScreen: ScreenNames.registration,
         isLoading: false,
-        previousScreen: ScreenNames.login,
-        showBackButton: true,
-        showMenuButton: false,
       })
     }, 500)
   }, [])
@@ -293,29 +267,6 @@ export default function Registration() {
           </>
         )}
 
-        {/* CHILD VERIFICATION CODE INPUT */}
-        {verificationCodeSent && accountType === 'child' && (
-          <div className="form">
-            <label>To ensure privacy and security, please enter the verification code from your parent</label>
-            <input type="text" className="verification-code mb-20" onChange={(e) => setVerificationCode(e.target.value)} />
-            <button className="button default green center" onClick={submitChild}>
-              Register <span className="material-icons-round">person_add</span>
-            </button>
-          </div>
-        )}
-
-        {/* PARENT VERIFICATION CODE INPUT */}
-        {verificationCodeSent && accountType === 'parent' && (
-          <div className="form">
-            <label>To ensure privacy and security, please enter the verification code you received via text message</label>
-            <input type="text" className="verification-code mb-20" onChange={(e) => setVerificationCode(e.target.value)} />
-            <button className="button default green center" onClick={submit}>
-              Register <span className="material-icons-round">person_add</span>
-            </button>
-          </div>
-        )}
-
-        {/* CHILD FORM */}
         {accountType && accountType === 'child' && !verificationCodeSent && (
           <div className="form mb-20">
             <label>
@@ -325,7 +276,7 @@ export default function Registration() {
             <label>
               Your Phone Number <span className="asterisk">*</span>
             </label>
-            <input className="mb-10" type="number" pattern="[0-9]*" inputMode="numeric" onChange={(e) => setPhone(e.target.value)} />
+            <input className="mb-10" type="number" pattern="[0-9]*" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
             <label>
               Phone Number of parent that has App <span className="asterisk">*</span>
             </label>
@@ -355,10 +306,6 @@ export default function Registration() {
             })}
             <button id="add-parent-button" className="button default w-60" onClick={addParentInput}>
               Add Another Parent
-            </button>
-
-            <button className="button default green" onClick={sendChildVerificationCode}>
-              Continue<span className="material-icons-outlined">arrow_forward</span>
             </button>
           </div>
         )}
@@ -399,7 +346,7 @@ export default function Registration() {
             <label>
               Phone Number <span className="asterisk">*</span>
             </label>
-            <input className="mb-10" type="number" pattern="[0-9]*" inputMode="numeric" onChange={(e) => setPhone(e.target.value)} />
+            <input className="mb-10" type="phone" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
             <label>
               Password <span className="asterisk">*</span>
             </label>
@@ -438,8 +385,13 @@ export default function Registration() {
             <button id="add-child-button" className="button default w-60" onClick={addChildInput}>
               Add Another Child
             </button>
-            <button className="button default green" onClick={sendParentVerificationCode}>
-              Continue<span className="material-icons-outlined">arrow_forward</span>
+            <button
+              className="button default w-60 green"
+              onClick={async () => {
+                await submit()
+                setState({ ...state, currentScreen: ScreenNames.emailVerification })
+              }}>
+              Verify Email<span className="material-icons-round fs-22">mark_email_read</span>
             </button>
           </div>
         )}
