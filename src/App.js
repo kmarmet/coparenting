@@ -3,6 +3,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { initializeApp } from 'firebase/app'
 import { child, get, getDatabase, onValue, ref, set } from 'firebase/database'
+import { getAuth, setPersistence, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
+
 import ScreenNames from '@screenNames'
 import globalState from './context.js'
 import DB from '@db'
@@ -62,8 +64,11 @@ import SlideOutMenu from './components/slideOutMenu'
 export default function App() {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
   const [state, setState] = useState(StateObj)
   const stateToUpdate = { state, setState }
+  const { userIsLoggedIn } = state
+
   const myCanvas = document.createElement('canvas')
 
   emailjs.init({
@@ -104,7 +109,7 @@ export default function App() {
   // ON PAGE LOAD
   useEffect(() => {
     setState({ ...state, isLoading: true, showMenuButton: false, showNavbar: true })
-
+    const user = auth.currentUser
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
     }
@@ -114,6 +119,21 @@ export default function App() {
     // throw new Error('Something went wrong')
     // AppManager.setHolidays()
     document.body.appendChild(myCanvas)
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(user)
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+
+        console.log('signed in')
+      } else {
+        console.log('signed out')
+        console.log(user)
+        // User is signed out
+        // ...
+      }
+    })
   }, [])
 
   useEffect(() => {
@@ -130,7 +150,7 @@ export default function App() {
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div className="App" id="app-container">
         {/* LOADING */}
-        {/*<Loading isLoading={isLoading} />*/}
+        <Loading isLoading={isLoading} />
 
         <div id="page-overlay"></div>
 
@@ -138,11 +158,15 @@ export default function App() {
         <InstallAppPopup />
 
         <globalState.Provider value={stateToUpdate}>
-          {/* SLIDE OUT MENU */}
-          <SlideOutMenu />
+          {userIsLoggedIn && (
+            <>
+              {/* SLIDE OUT MENU */}
+              <SlideOutMenu />
 
-          {/* NAVBAR  */}
-          <NavBar />
+              {/* NAVBAR  */}
+              <NavBar />
+            </>
+          )}
 
           {/* ALERT */}
           <Alert />

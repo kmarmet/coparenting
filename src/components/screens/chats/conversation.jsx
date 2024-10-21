@@ -21,6 +21,23 @@ import ChatManager from '@managers/chatManager.js'
 import DateFormats from '../../../constants/dateFormats'
 import ModelNames from '../../../models/modelNames'
 import Swal from 'sweetalert2'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  uniqueArray,
+  getFileExtension,
+} from '../../../globalFunctions'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -45,14 +62,14 @@ const Conversation = () => {
         setTimeout(() => {
           getExistingMessages()
         }, 500)
-        setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Bookmark Removed' })
+        displayAlert('success', '', 'Bookmark Removed')
       })
     } else {
+      displayAlert('success', '', 'Message Bookmarked!')
       ChatManager.toggleMessageBookmark(currentUser, theme, messageToUser, messageId, true).finally(() => {
         setTimeout(() => {
           getExistingMessages()
         }, 500)
-        setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Message Bookmarked!' })
       })
     }
   })
@@ -69,25 +86,7 @@ const Conversation = () => {
     let messageInputValue = document.querySelector('#message-input').value
 
     if (messageInputValue.length === 0) {
-      // ERROR
-      Swal.fire({
-        title: 'Please enter a message',
-        icon: 'error',
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-        },
-      })
+      displayAlert('error', 'Please enter a message')
       return false
     }
 
@@ -104,9 +103,7 @@ const Conversation = () => {
     conversationMessage.readState = 'delivered'
     conversationMessage.notificationSent = false
     conversationMessage.saved = false
-
     const cleanMessages = Manager.cleanObject(conversationMessage, ModelNames.conversationMessage)
-    const cleanThread = Manager.cleanObject(conversation, ModelNames.conversation)
     //Thread
     const { name, id, phone } = messageToUser
     const { name: crName, id: crId, phone: crPhone } = currentUser
@@ -116,6 +113,8 @@ const Conversation = () => {
     conversation.members = [memberOne, memberTwo]
     conversation.timestamp = moment().format('MM/DD/yyyy hh:mma')
     conversation.messages = [cleanMessages]
+
+    const cleanThread = Manager.cleanObject(conversation, ModelNames.conversationThread)
 
     const existingChatFromDB = existingChat
 

@@ -23,7 +23,9 @@
   }
 }
 
-.react-toggle--checked,.react-toggle--focus, .react-toggle-thumb {
+.react-toggle--checked,
+.react-toggle--focus,
+.react-toggle-thumb {
   box-shadow: none !important;
 }
 
@@ -40,7 +42,7 @@
     display: flex;
     opacity: 1;
     justify-content: flex-start;
-    
+
     &.pushed {
       max-width: 1000px;
       width: 1000px;
@@ -115,7 +117,6 @@
           color: $darkBlueMedium;
           font-weight: 600;
         }
-
 
         .note {
           background-color: $lightGrey;
@@ -303,7 +304,7 @@
       right: 0;
       position: fixed;
       @include blurredBg;
-      background-color: #050505;
+      background-color: white;
       z-index: $maxZIndex;
       display: none;
 

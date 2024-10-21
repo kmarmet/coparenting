@@ -6,7 +6,6 @@ export default class User
     _id = ''
     _allowNotifications = 'Yes'
     _email = 'email'
-    _password = 'password'
     _coparents = []
     _children = 'children'
     _phone = 'phone'
@@ -20,7 +19,6 @@ export default class User
     @name = _name
     @email = _email
     @phone = _phone
-    @password = _password
     @children = _children
     @coparents = _coparents
     @parentType = _parentType

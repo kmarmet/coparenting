@@ -6,51 +6,45 @@ import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup.jsx'
 import DB_UserScoped from '@userScoped'
 import InstallAppPopup from 'components/installAppPopup.jsx'
-import ThemeManager from '../../../managers/themeManager'
 import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
-import doc from '../../../models/doc'
+import { getAuth, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
+import firebaseConfig from '../../../firebaseConfig'
+import { initializeApp } from 'firebase/app'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  displayAlert,
+  removeFileExtension,
+  contains,
+  uniqueArray,
+  getFileExtension,
+} from '../../../globalFunctions'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
-
-  const [phone, setPhone] = useState('')
-  const [password, setPassword] = useState('')
+  const { theme } = state
+  const [email, setEmail] = useState(null)
+  const [phone, setPhone] = useState(null)
+  const [password, setPassword] = useState(null)
   const [rememberMe, setRememberMe] = useState(false)
   const [viewPassword, setViewPassword] = useState(false)
 
-  const manualLogin = async () => {
-    const foundUser = await tryGetCurrentUser()
-    if (Manager.validation([phone, password]) > 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please fill out all fields', alertType: 'error' })
-      return false
-    }
-    // document.body.classList.add('light')
-    if (foundUser) {
-      // document.body.classList.add(foundUser?.settings.theme)
-      if (rememberMe) {
-        localStorage.setItem('rememberKey', foundUser.id)
-        await DB_UserScoped.updateUserRecord(foundUser.phone, 'rememberMe', true)
-      }
-      setState({
-        ...state,
-        userIsLoggedIn: true,
-        currentScreen: ScreenNames.calendar,
-        currentUser: foundUser,
-        isLoading: false,
-      })
-    } else {
-      setState({ ...state, showAlert: true, alertMessage: 'Incorrect phone and/or password', alertType: 'error' })
-    }
-  }
+  const app = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
 
   const autoLogin = async () => {
     const foundUser = await tryGetCurrentUser()
     const rememberMeKey = localStorage.getItem('rememberKey')
-    // document.body.classList.add('light')
     if (foundUser) {
       subscribeUser(foundUser)
-
-      document.body.classList.add(foundUser?.settings.theme)
 
       // SIGN USER IN BASED ON rememberMe KEY
       if (Manager.isValid(rememberMeKey)) {
@@ -71,14 +65,14 @@ export default function Login() {
   const tryGetCurrentUser = async () =>
     new Promise(async (resolve) => {
       await DB.getTable(DB.tables.users).then(async (users) => {
-        users = DB.convertKeyObjectToArray(users)
+        users = Manager.convertToArray(users)
         const rememberMeKey = localStorage.getItem('rememberKey')
         let foundUser
         foundUser = users.filter((user) => user.id === rememberMeKey)[0]
         if (foundUser) {
           resolve(foundUser || null)
         } else {
-          foundUser = users.filter((user) => user.phone === phone && user.password === password)[0]
+          foundUser = users.filter((user) => user.email === email)[0]
           resolve(foundUser || null)
         }
       })
@@ -116,6 +110,41 @@ export default function Login() {
     }
   }
 
+  const signIn = async () => {
+    const foundUser = await tryGetCurrentUser()
+    if (Manager.validation([email, password]) > 0) {
+      displayAlert('error', 'Please fill out all fields')
+      return false
+    }
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user
+        if (foundUser) {
+          // console.log(user)
+          console.log('Signed in as:', user.email)
+          const rememberMeKey = localStorage.getItem('rememberKey')
+
+          if (rememberMeKey) {
+            localStorage.setItem('rememberKey', foundUser.id)
+            DB_UserScoped.updateUserRecord(foundUser.phone, 'rememberMe', true)
+          } else {
+            localStorage.setItem('rememberKey', foundUser.id)
+          }
+          setState({
+            ...state,
+            userIsLoggedIn: true,
+            currentScreen: ScreenNames.calendar,
+            currentUser: foundUser,
+          })
+        } else {
+          console.log('no user')
+        }
+      })
+      .catch((error) => {
+        console.error('Sign in error:', error.message)
+        displayAlert('error', 'Incorrect phone and/or password')
+      })
+  }
   const toggleRememberMe = (e) => {
     const clickedEl = e.currentTarget
     const checkbox = clickedEl.querySelector('.box')
@@ -129,20 +158,15 @@ export default function Login() {
   }
 
   useLayoutEffect(() => {
-    setTimeout(() => {
-      setState({ ...state, showMenuButton: false, showNavbar: false, showBackArrow: false })
-      autoLogin().then((r) => r)
-      Manager.toggleForModalOrNewForm('show')
-    }, 500)
+    autoLogin().then((r) => r)
+    Manager.toggleForModalOrNewForm('show')
+    document.querySelector('.App').classList.remove('pushed')
   }, [])
 
   return (
     <>
       {/* INSTALL APP MODAL */}
       <InstallAppPopup />
-
-      {/* SCREEN TITLE */}
-      {/*<p className="screen-title  show center-text mt-20  mb-10 w-100 p-0">Login</p>*/}
 
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`light page-container form`}>
@@ -172,15 +196,18 @@ export default function Login() {
         {/* FORM/INPUTS */}
         <div className="flex form-container">
           <div className="form w-80">
+            {/* EMAIL */}
             <label>
-              Phone Number <span className="asterisk">*</span>
+              Email Address <span className="asterisk">*</span>
             </label>
-            <input className="mb-15" type="number" pattern="[0-9]*" inputMode="numeric" onChange={(e) => setPhone(e.target.value)} />
+            <input required={true} className="mb-15" type="email" onChange={(e) => setEmail(e.target.value)} />
+
+            {/* PASSWORD */}
             <label>
               Password <span className="asterisk">*</span>
             </label>
             <div className="flex inputs mb-20">
-              <input type={viewPassword ? 'text' : 'password'} onChange={(e) => setPassword(e.target.value)} />
+              <input required={true} type={viewPassword ? 'text' : 'password'} onChange={(e) => setPassword(e.target.value)} />
               {!viewPassword && (
                 <span className="material-icons-round accent" onClick={() => setViewPassword(true)}>
                   visibility
@@ -192,9 +219,11 @@ export default function Login() {
                 </span>
               )}
             </div>
+
+            {/* REMEMBER ME */}
             <CheckboxGroup elClass={'light'} boxWidth={50} onCheck={toggleRememberMe} labels={['Remember Me']} skipNameFormatting={true} />
             <div className="flex w-100 mb-15 gap">
-              <button className="button default green w-50" onClick={manualLogin}>
+              <button className="button default green w-50" onClick={signIn}>
                 Login <span className="material-icons-round">lock_open</span>
               </button>
               <button className="button default w-50 light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>

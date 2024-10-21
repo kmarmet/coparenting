@@ -46,12 +46,8 @@ export default AppManager =
           await DB.delete(DB.tables.calendarEvents, event.id)
           return
   deleteExpiredMemories: ->
-    users = await DB.getTable(DB.tables.users)
-    users = DB.convertKeyObjectToArray(users) unless Array.isArray(users)
-    for user in users
-      if Manager.isValid(user.memories, true)
-        memories = DB.convertKeyObjectToArray(user.memories) unless Array.isArray(user.memories)
-        for memory in memories
-          if DateManager.getDuration("days", moment(memory?.creationDate), moment()) > 28
-            key = await DB.getNestedSnapshotKey("users/#{user.phone}/memories", memory, "id")
-            await DB.deleteByPath( "users/#{user.phone}/memories/#{key}")
+    memories = await DB.getTable(DB.tables.memories)
+    for memory in memories
+      if DateManager.getDuration("days", moment(memory?.creationDate), moment()) > 28
+        key = await DB.getNestedSnapshotKey("memories", memory, "id")
+        await DB.deleteByPath( "memories/#{key}")

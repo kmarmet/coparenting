@@ -128,42 +128,66 @@ export var uniqueArray = function(array) {
   return Array.from(new Set(array));
 };
 
-export var displayAlert = function(type, title, text = '') {
+export var displayAlert = function(type, title, text = '', onConfirm) {
   switch (true) {
     case type === "error":
-      return function() {
-        return Swal.fire({
-          title: title,
-          icon: 'error',
-          showClass: {
-            popup: `animate__animated
+      return Swal.fire({
+        title: title,
+        text: text,
+        icon: 'error',
+        showClass: {
+          popup: `animate__animated
 animate__fadeInUp
 animate__faster`
-          },
-          hideClass: {
-            popup: `animate__animated
+        },
+        hideClass: {
+          popup: `animate__animated
 animate__fadeOutDown
 animate__faster`
+        }
+      });
+    case type === "confirm":
+      return Swal.fire({
+        showClass: {
+          popup: `animate__animated
+animate__fadeInUp
+animate__faster`
+        },
+        hideClass: {
+          popup: `animate__animated
+animate__fadeOutDown
+animate__faster`
+        },
+        title: title,
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: "I'm Sure",
+        denyButtonText: "Nevermind",
+        confirmButtonColor: '#00b389 !important'
+      }).then(function(result) {
+        if (result.isConfirmed) {
+          if (onConfirm) {
+            return onConfirm();
           }
-        });
-      };
+        }
+      });
     case type === 'success':
-      return function() {
-        return Swal.fire({
-          text: text,
-          icon: "success",
-          showClass: {
-            popup: `animate__animated
+      return Swal.fire({
+        text: text,
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+        showClass: {
+          popup: `animate__animated
 animate__fadeInUp
 animate__faster`
-          },
-          hideClass: {
-            popup: `animate__animated
+        },
+        hideClass: {
+          popup: `animate__animated
 animate__fadeOutDown
 animate__faster`
-          }
-        });
-      };
+        }
+      });
   }
 };
 

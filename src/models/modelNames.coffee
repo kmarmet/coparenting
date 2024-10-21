@@ -1,3 +1,4 @@
+
 ModelNames =
   calendarEvent: "calendarEvent"
   conversation: "conversation"
@@ -8,5 +9,10 @@ ModelNames =
   titleSuggestion: 'titleSuggestion'
   user: "user"
   conversationMessage: 'conversationMessage'
+  transferChangeRequest: 'transferChangeRequest'
+  conversationMessage: "conversationMessage"
+  conversationThread: "conversationThread"
+  childUser: 'childUser'
+
 
 export default ModelNames

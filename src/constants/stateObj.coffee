@@ -5,7 +5,7 @@ StateObj =
   alertType: ''
   confirmMessage: ''
   contactInfoToUpdateType: 'email'
-  currentScreen: ScreenNames.firebaseLogin
+  currentScreen: ScreenNames.login
   currentUser: {}
   docToView: ''
   formToShow: ''
@@ -27,6 +27,7 @@ StateObj =
   showMenuButton: false
   showOverlay: false
   showNavbar: true
+  showCenterNavbarButton: true
   theme: 'light'
   transferRequestToEdit: {}
   unreadMessages: null
@@ -57,6 +58,7 @@ StateObj =
   setSelectedNewEventDay: (day) ->
   setShowAlert: (bool) ->
   setShowBackButton: (bool) ->
+  setShowCenterNavbarButton: (bool) ->
   setShowMenuButton: ->
   setShowOverlay: (bool) ->
   setShowShortcutMenu: (bool) ->

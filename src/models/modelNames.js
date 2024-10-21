@@ -10,7 +10,11 @@ ModelNames = {
   swapRequest: 'swapRequest',
   titleSuggestion: 'titleSuggestion',
   user: "user",
-  conversationMessage: 'conversationMessage'
+  conversationMessage: 'conversationMessage',
+  transferChangeRequest: 'transferChangeRequest',
+  conversationMessage: "conversationMessage",
+  conversationThread: "conversationThread",
+  childUser: 'childUser'
 };
 
 export default ModelNames;

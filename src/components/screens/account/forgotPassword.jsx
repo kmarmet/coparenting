@@ -6,10 +6,26 @@ import Manager from '@manager'
 import SmsManager from '@managers/smsManager'
 import ScreenNames from '@screenNames'
 import { useSwipeable } from 'react-swipeable'
-
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  uniqueArray,
+  getFileExtension,
+} from '../../../globalFunctions'
 export default function ForgotPassword() {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme } = state
 
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
@@ -30,7 +46,7 @@ export default function ForgotPassword() {
     validateInputs()
 
     if (password !== confirmPassword) {
-      setState({ ...state, showAlert: true, alertMessage: 'Passwords do not match', alertType: 'error' })
+      displayAlert('error', 'Passwords do not match')
       return false
     }
     await DB.getTable(DB.tables.users).then((people) => {
@@ -84,7 +100,6 @@ export default function ForgotPassword() {
   }
 
   useEffect(() => {
-    setState({ ...state, previousScreen: ScreenNames.login, showMenuButton: false, showBackButton: true })
     Manager.toggleForModalOrNewForm()
   }, [])
 

@@ -7,6 +7,8 @@ import PopupCard from 'components/shared/popupCard'
 
 if ('serviceWorker' in navigator) {
   const cacheAllowlist = ['v2']
+  const cacheName = 'appCache'
+  const precachedResources = ['/', '/App.js', '/main.css']
   // Register PWA
   navigator.serviceWorker
     .register(`${process.env.PUBLIC_URL}/sw.js`)
@@ -20,7 +22,12 @@ if ('serviceWorker' in navigator) {
   // eslint-disable-next-line no-restricted-globals
   self.addEventListener('install', (event) => {
     // eslint-disable-next-line no-restricted-globals
-    self.skipWaiting()
+    event.waitUntil(
+      caches.open('appCache').then((cache) => {
+        return cache.addAll(precachedResources)
+      })
+    )
+    // self.skipWaiting()
   })
   // eslint-disable-next-line no-restricted-globals
   self.addEventListener('activate', (event) => {

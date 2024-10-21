@@ -94,7 +94,7 @@ function Behavior({ activeChild, refreshUpdateKey }) {
             }
             setExpandAccordion(!expandAccordion)
           }}>
-          <span className="material-icons-round">psychology</span> Behavior <span className="material-icons-round"></span>
+          <span className="material-icons-round">psychology</span> Behavior {activeChild.behavior === undefined ? '- No Info' : ''}
         </p>
         <Accordion.Panel expanded={expandAccordion === true ? true : false}>
           {behaviorValues &&

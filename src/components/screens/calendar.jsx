@@ -49,6 +49,7 @@ export default function EventCalendar() {
   const [showNewEventCard, setShowNewEventCard] = useState(false)
   const [showEditCard, setShowEditCard] = useState(false)
   const [eventToEdit, setEventToEdit] = useState(null)
+  const [selectedDay, setSelectedDay] = useState(null)
   // HANDLE SWIPE
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
@@ -762,7 +763,14 @@ export default function EventCalendar() {
                                       </div>
                                       {/* TITLE */}
                                       <p className="title mb-3" data-event-id={event.id}>
-                                        <b className={`event-title ${parentsVisitation}`}>{CalendarManager.formatEventTitle(event.title)}</b>
+                                        <b className={`event-title ${parentsVisitation}`}>
+                                          {CalendarManager.formatEventTitle(event.title)}
+                                          {event?.repeatInterval?.length > 0 ? (
+                                            <span className="material-icons-round fs-20 ml-10">event_repeat</span>
+                                          ) : (
+                                            ''
+                                          )}
+                                        </b>
                                       </p>
 
                                       {/* CHILDREN */}

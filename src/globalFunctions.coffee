@@ -91,11 +91,12 @@ export removeFileExtension = (input) ->
 export uniqueArray = (array) ->
   Array.from(new Set(array))
 
-export displayAlert = (type, title, text = '') ->
+export displayAlert = (type, title, text = '', onConfirm) ->
   switch (true)
-    when type is "error" then ->
+    when type is "error"
       Swal.fire
         title: title
+        text: text
         icon: 'error'
         showClass:
           popup: """
@@ -109,10 +110,35 @@ export displayAlert = (type, title, text = '') ->
             animate__fadeOutDown
             animate__faster
           """
-    when type is 'success' then ->
+    when type is "confirm"
+      Swal.fire
+        showClass:
+          popup: """
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          """
+        hideClass:
+          popup: """
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          """
+        title: title
+        showDenyButton: true
+        showCancelButton: false
+        confirmButtonText: "I'm Sure"
+        denyButtonText: "Nevermind"
+        confirmButtonColor: '#00b389 !important'
+      .then (result) ->
+        if result.isConfirmed
+          if onConfirm then onConfirm()
+    when type is 'success'
       Swal.fire
         text: text
         icon: "success"
+        timer: 1500
+        showConfirmButton: false
         showClass:
           popup: """
             animate__animated

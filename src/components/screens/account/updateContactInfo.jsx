@@ -10,7 +10,7 @@ import BottomButton from '../../shared/bottomButton'
 
 export default function UpdateContactInfo() {
   const { state, setState } = useContext(globalState)
-  const { contactInfoToUpdateType, currentUser } = state
+  const { contactInfoToUpdateType, currentUser, theme } = state
 
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')

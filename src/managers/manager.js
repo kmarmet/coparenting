@@ -29,6 +29,10 @@ import TransferChangeRequest from '../models/transferChangeRequest'
 import User from '../models/user'
 import TitleSuggestion from '../models/titleSuggestion'
 import Coparent from '../models/coparent'
+import Conversation from '../components/screens/chats/conversation'
+import ConversationMessage from '../models/conversationMessage'
+import ConversationThread from '../models/conversationThread'
+import ChildUser from '../models/child/childUser'
 
 const Manager = {
   cleanObject: (object, modelName) => {
@@ -57,6 +61,15 @@ const Manager = {
         break
       case modelName === ModelNames.coparent:
         returnObject = new Coparent()
+        break
+      case modelName === ModelNames.conversationThread:
+        returnObject = new ConversationThread()
+        break
+      case modelName === ModelNames.conversationMessage:
+        returnObject = new ConversationMessage()
+        break
+      case modelName === ModelNames.childUser:
+        returnObject = new ChildUser()
         break
       default:
     }

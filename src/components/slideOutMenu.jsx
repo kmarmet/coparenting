@@ -3,6 +3,8 @@ import globalState from '../context'
 import ScreenNames from '@screenNames'
 import Manager from '@manager'
 import AppManager from '@managers/appManager'
+import { getAuth, signOut } from 'firebase/auth'
+
 import {
   toCamelCase,
   getFirstWord,
@@ -22,10 +24,13 @@ import {
 } from '../globalFunctions'
 
 import DB_UserScoped from '@userScoped'
+import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
 
 export default function SlideOutMenu() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, theme, currentUser, formToShow } = state
+  const { currentScreen, menuIsOpen, theme, currentUser, showCenterNavbarButton } = state
+
+  const auth = getAuth()
 
   const changeCurrentScreen = (screen) => {
     if (screen === ScreenNames.calendar) {
@@ -34,11 +39,12 @@ export default function SlideOutMenu() {
         cal.classList.remove('hide')
       }
     }
-    setState({
-      ...state,
-      currentScreen: screen,
-      menuIsOpen: false,
-    })
+
+    if (ScreensToHideCenterNavbarButton.includes(screen)) {
+      setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), menuIsOpen: false, showCenterNavbarButton: false })
+    } else {
+      setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), menuIsOpen: false, showCenterNavbarButton: true })
+    }
     Manager.toggleForModalOrNewForm('show')
   }
 
@@ -50,14 +56,21 @@ export default function SlideOutMenu() {
 
   const logout = () => {
     localStorage.removeItem('rememberKey')
-    setState({
-      ...state,
-      currentScreen: ScreenNames.login,
-      currentUser: null,
-      userIsLoggedIn: false,
-      menuIsOpen: false,
-      showMenuButton: false,
-    })
+
+    signOut(auth)
+      .then(() => {
+        setState({
+          ...state,
+          currentScreen: ScreenNames.login,
+          currentUser: null,
+          userIsLoggedIn: false,
+        })
+        // Sign-out successful.
+        console.log('User signed out')
+      })
+      .catch((error) => {
+        // An error happened.
+      })
   }
 
   return (
@@ -66,9 +79,6 @@ export default function SlideOutMenu() {
         <div className="flex" id="top-bar">
           <div className="flex logo">
             <img src={require('../img/logo.png')} alt="" />
-            <p id="brand-name">
-              Peaceful <span>co</span>Parenting
-            </p>
           </div>
         </div>
         {AppManager.getAccountType(currentUser) === 'parent' && (

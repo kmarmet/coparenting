@@ -346,7 +346,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   }, [])
 
   return (
-    <BottomCard className={`${theme} edit-event-form`} onClose={resetForm} showCard={showCard} error={error} title={`Edit ${event?.title}`}>
+    <BottomCard className={`${theme} edit-event-form`} onClose={resetForm} showCard={showCard} error={error} title={`Edit Event`}>
       <div id="edit-cal-event-container" className={`${theme} form`}>
         <div className="content">
           {/* SINGLE DAY / MULTIPLE DAYS */}
@@ -367,7 +367,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
           </label>
           <input
             id="event-title-input"
-            defaultValue={eventTitle}
+            value={eventTitle.length > 0 ? eventTitle : ''}
             onChange={(e) => setEventTitle(e.target.value)}
             className={`${errorFields.includes('title') ? 'required-field-error mb-0 w-100' : 'mb-0 w-100'}`}
             type="text"
@@ -588,34 +588,10 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
           <button
             className="button card-button delete"
             onClick={() => {
-              Swal.fire({
-                showClass: {
-                  popup: `
-                    animate__animated
-                    animate__fadeInUp
-                    animate__faster
-                  `,
-                },
-                hideClass: {
-                  popup: `
-                    animate__animated
-                    animate__fadeOutDown
-                    animate__faster
-                  `,
-                },
-                title: setLocalConfirmMessage(),
-                showDenyButton: true,
-                showCancelButton: false,
-                confirmButtonText: "I'm Sure",
-                denyButtonText: `Nevermind`,
-                confirmButtonColor: '#00b389 !important',
-              }).then(async (result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                  hideCard()
-                  await deleteEvent()
-                  Swal.fire('Event Deleted', '', 'success')
-                }
+              displayAlert('confirm', setLocalConfirmMessage(), setLocalConfirmMessage(), async () => {
+                hideCard()
+                await deleteEvent()
+                displayAlert('success', 'Event Deleted', 'Event Deleted')
               })
             }}>
             Delete <span className="material-icons-round ml-10 fs-22">delete</span>

@@ -88,7 +88,7 @@ function Medical({ activeChild, refreshUpdateKey }) {
             }
             setExpandAccordion(!expandAccordion)
           }}>
-          <span className="material-icons-round">medical_information</span> Medical
+          <span className="material-icons-round">medical_information</span> Medical {activeChild.medical === undefined ? '- No Info' : ''}
         </p>
         <Accordion.Panel expanded={expandAccordion === true ? true : false}>
           {Manager.isValid(medicalValues) &&

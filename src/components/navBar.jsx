@@ -21,10 +21,11 @@ import {
   getFileExtension,
 } from '../globalFunctions'
 import DB_UserScoped from '@userScoped'
+import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
 
 export default function NavBar() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, updateKey, theme, showNavbar, navbarButton } = state
+  const { currentScreen, menuIsOpen, showCenterNavbarButton, theme, showNavbar, navbarButton } = state
 
   const changeCurrentScreen = (screen) => {
     if (screen === ScreenNames.calendar) {
@@ -33,7 +34,12 @@ export default function NavBar() {
         cal.classList.remove('hide')
       }
     }
-    setState({ ...state, currentScreen: screen, updateKey: Manager.getUid() })
+    if (ScreensToHideCenterNavbarButton.includes(screen)) {
+      setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), showCenterNavbarButton: false })
+    } else {
+      setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), showCenterNavbarButton: true })
+    }
+
     Manager.toggleForModalOrNewForm('show')
   }
 
@@ -96,16 +102,18 @@ export default function NavBar() {
             </div>
 
             {/* ADD NEW BUTTON */}
-            <div
-              className={`${menuIsOpen ? 'menu-item' : 'menu-item active'} ${theme}`}
-              onClick={() => {
-                if (navbarButton.action) {
-                  navbarButton.action()
-                }
-              }}
-              id="menu-button">
-              <span className={`material-icons-round menu-icon ${navbarButton.color}`}>{navbarButton.icon}</span>
-            </div>
+            {showCenterNavbarButton && (
+              <div
+                className={`${menuIsOpen ? 'menu-item' : 'menu-item active'} ${theme}`}
+                onClick={() => {
+                  if (navbarButton.action) {
+                    navbarButton.action()
+                  }
+                }}
+                id="menu-button">
+                <span className={`material-icons-round menu-icon ${navbarButton.color}`}>{navbarButton.icon}</span>
+              </div>
+            )}
 
             {/* CHILD INFO */}
             <div className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>

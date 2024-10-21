@@ -6,7 +6,6 @@ export default class ChildUser
     _id = ''
     _allowNotifications = 'Yes'
     _email = 'email'
-    _password = 'password'
     _phone = 'phone'
     _accountType = 'child'
     _parents = []
@@ -20,7 +19,6 @@ export default class ChildUser
     @email = _email
     @phone = _phone
     @accountType = _accountType
-    @password = _password
     @allowNotifications = _allowNotifications
     @id = Manager.getUid()
     @settings = _settings

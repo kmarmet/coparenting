@@ -36,6 +36,10 @@ import {
   formatPhone,
   getFileExtension,
 } from '../../../globalFunctions'
+import ModelNames from '../../../models/modelNames'
+import { getAuth, setPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import firebaseConfig from '../../../firebaseConfig'
+import { initializeApp } from 'firebase/app'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -53,13 +57,8 @@ export default function Registration() {
   const [parents, setParents] = useState([])
   const [coparents, setCoparents] = useState([])
   const [parentTypeAccExpanded, setParentTypeAccExpanded] = useState(false)
-
-  const handlers = useSwipeable({
-    onSwipedRight: (eventData) => {
-      console.log('User Swiped!', eventData)
-      setState({ ...state, currentScreen: ScreenNames.calendar })
-    },
-  })
+  const app = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
 
   // SUBMIT PARENT
   const submit = async () => {
@@ -67,12 +66,10 @@ export default function Registration() {
     if (isValid) {
       // Check for existing account
       await DB.getTable(DB.tables.users).then((users) => {
-        if (!Array.isArray()) {
-          users = DB.convertKeyObjectToArray(users)
-        }
-        const foundUser = users.filter((x) => x.email === email || x.phone === phone)
+        users = Manager.convertToArray(users)
+        const foundUser = users?.filter((x) => x?.email === email || x?.phone === phone)
         if (foundUser) {
-          setState({ ...state, showAlert: true, alertMessage: 'Account already exists, please login', alertType: 'error' })
+          displayAlert('error', 'Account already exists, please login')
           return false
         }
       })
@@ -80,7 +77,6 @@ export default function Registration() {
       let newUser = new User()
       newUser.id = Manager.getUid()
       newUser.email = email
-      newUser.password = password
       newUser.name = uppercaseFirstLetterOfAllWords(userName)
       newUser.accountType = 'parent'
       newUser.children = children
@@ -91,10 +87,22 @@ export default function Registration() {
       newUser.settings.eveningReminderSummaryHour = '8pm'
       newUser.settings.morningReminderSummaryHour = '10am'
 
+      const cleanUser = Manager.cleanObject(newUser, ModelNames.user)
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed up successfully
+          const user = userCredential.user
+          console.log('Signed up as:', user.email)
+        })
+        .catch((error) => {
+          console.error('Sign up error:', error.message)
+        })
+
       const dbRef = ref(getDatabase())
       const subId = await NotificationManager.getUserSubId('3307494534')
       PushAlertApi.sendMessage('New Registration', `Phone: ${phone} | Name: ${userName}`, subId)
-      await set(child(dbRef, `users/${newUser.phone}`), newUser)
+      await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
       setState({ ...state, currentScreen: ScreenNames.login })
     }
   }
@@ -104,7 +112,7 @@ export default function Registration() {
     const isValid = validateChildForm()
     if (isValid) {
       if (!verificationCode || verificationCode?.length === 0) {
-        setState({ ...state, showAlert: true, alertMessage: 'Verification code is required', alertType: 'error' })
+        displayAlert('error', 'Verification code is required')
         return false
       }
       let parent = await DB_UserScoped.getUser(DB.tables.users, parentPhone)
@@ -114,14 +122,14 @@ export default function Registration() {
         newUser.phone = phone
         newUser.name = uppercaseFirstLetterOfAllWords(userName)
         newUser.accountType = 'child'
-        newUser.password = password
         newUser.parents = parents
         newUser.email = ''
         newUser.settings.theme = 'light'
         newUser.settings.eveningReminderSummaryHour = '8pm'
         newUser.settings.morningReminderSummaryHour = '10am'
+        const cleanedUser = Manager.cleanObject(newUser, ModelNames.childUser)
         const dbRef = ref(getDatabase())
-        await set(child(dbRef, `users/${phone}`), newUser)
+        await set(child(dbRef, `users/${phone}`), cleanedUser)
         MyConfetti.fire()
         setState({ ...state, currentScreen: ScreenNames.login })
 
@@ -137,12 +145,7 @@ export default function Registration() {
         PushAlertApi.sendMessage('New Registration', `Phone: ${phone}`, mySubId)
       } else {
         // Parent account does not exist
-        setState({
-          ...state,
-          showAlert: true,
-          alertMessage: `There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`,
-          alertType: 'error',
-        })
+        displayAlert('error', `There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`)
         return false
       }
 
@@ -153,27 +156,27 @@ export default function Registration() {
   const validateChildForm = () => {
     let valid = true
     if (!parentPhone || parentPhone?.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: "Parent's phone number is required", alertType: 'error' })
+      displayAlert('error', "Parent's phone number is required")
       valid = false
     }
     if (!Manager.phoneNumberIsValid(parentPhone)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid', alertType: 'error' })
+      displayAlert('error', 'Phone number is not valid')
       return false
     }
     if (userName.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Your name is required', alertType: 'error' })
+      displayAlert('error', 'Your name is required')
       valid = false
     }
     if (password.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Your password is required', alertType: 'error' })
+      displayAlert('error', 'Your password is required')
       valid = false
     }
     if (confirmedPassword.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Confirmed password is required', alertType: 'error' })
+      displayAlert('error', 'Confirmed password is required')
       valid = false
     }
     if (confirmedPassword !== password) {
-      setState({ ...state, showAlert: true, alertMessage: 'Password and confirmed password do not match', alertType: 'error' })
+      displayAlert('error', 'Password and confirmed password do not match')
       valid = false
     }
 
@@ -184,31 +187,31 @@ export default function Registration() {
     let valid = true
 
     if (!Manager.phoneNumberIsValid(phone)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid', alertType: 'error' })
+      displayAlert('error', 'Phone number is not valid')
       return false
     }
 
     if (parentType.length === 0) {
-      setState({ ...state, alertMessage: 'Select your parent type', showAlert: true, alertType: 'error' })
+      displayAlert('error', 'Select your parent type')
       valid = false
     }
 
     if (Manager.validation([userName, email, phone, parentType]) > 0) {
-      setState({ ...state, alertMessage: 'Please fill out all fields', showAlert: true, alertType: 'error' })
+      displayAlert('error', 'Please fill out all fields')
       valid = false
     }
 
     if (!Manager.formatPhoneNumber(phone)) {
-      setState({ ...state, alertMessage: 'Enter a valid phone number', showAlert: true, alertType: 'error' })
+      displayAlert('error', 'Enter a valid phone number')
     }
 
     if (children.length === 0) {
-      setState({ ...state, alertMessage: 'Please enter at least 1 child', showAlert: true, alertType: 'error' })
+      displayAlert('error', 'Please enter at least 1 child')
       valid = false
     }
 
     if (coparents.length === 0) {
-      setState({ ...state, alertMessage: 'Please enter at least 1 coparent', showAlert: true })
+      displayAlert('error', 'Please enter at least one co-parent')
       valid = false
     }
 
@@ -272,7 +275,7 @@ export default function Registration() {
       <p className="screen-title ">Sign Up</p>
 
       {/* PAGE CONTAINER */}
-      <div id="registration-container" className="page-container light form" {...handlers}>
+      <div id="registration-container" className="page-container light form">
         {/* SET ACCOUNT TYPE */}
         {!accountType && (
           <>

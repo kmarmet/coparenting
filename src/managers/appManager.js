@@ -91,32 +91,14 @@ export default AppManager = {
     }
   },
   deleteExpiredMemories: async function() {
-    var i, key, len, memories, memory, results, user, users;
-    users = (await DB.getTable(DB.tables.users));
-    if (!Array.isArray(users)) {
-      users = DB.convertKeyObjectToArray(users);
-    }
+    var i, key, len, memories, memory, results;
+    memories = (await DB.getTable(DB.tables.memories));
     results = [];
-    for (i = 0, len = users.length; i < len; i++) {
-      user = users[i];
-      if (Manager.isValid(user.memories, true)) {
-        if (!Array.isArray(user.memories)) {
-          memories = DB.convertKeyObjectToArray(user.memories);
-        }
-        results.push((await (async function() {
-          var j, len1, results1;
-          results1 = [];
-          for (j = 0, len1 = memories.length; j < len1; j++) {
-            memory = memories[j];
-            if (DateManager.getDuration("days", moment(memory != null ? memory.creationDate : void 0), moment()) > 28) {
-              key = (await DB.getNestedSnapshotKey(`users/${user.phone}/memories`, memory, "id"));
-              results1.push((await DB.deleteByPath(`users/${user.phone}/memories/${key}`)));
-            } else {
-              results1.push(void 0);
-            }
-          }
-          return results1;
-        })()));
+    for (i = 0, len = memories.length; i < len; i++) {
+      memory = memories[i];
+      if (DateManager.getDuration("days", moment(memory != null ? memory.creationDate : void 0), moment()) > 28) {
+        key = (await DB.getNestedSnapshotKey("memories", memory, "id"));
+        results.push((await DB.deleteByPath(`memories/${key}`)));
       } else {
         results.push(void 0);
       }

@@ -54,7 +54,7 @@ import Swal from 'sweetalert2'
 export default function NewCalendarEvent({ showCard, hideCard }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, selectedNewEventDay, navbarButton } = state
+  const { currentUser, theme } = state
 
   // COMPONENT STATE
   const [eventFromDate, setEventFromDate] = useState('')
@@ -150,37 +150,25 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
 
     // Repeating Events Validation
     if (repeatingEndDate.length === 0 && repeatInterval.length > 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops',
-        text: 'If you have chose to repeat this event, please select an end month',
-      })
+      displayAlert('error', 'Oops', 'If you have chose to repeat this event, please select an end month')
       return false
     }
 
     const validation = DateManager.formValidation(eventTitle, shareWith, eventFromDate)
     if (validation) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops',
-        text: validation,
-      })
-      // TODO Display Error
+      displayAlert('error', 'Oops', validation)
       return false
     }
 
     if (reminderTimes.length > 0 && eventStartTime.length === 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops',
-        text: 'If you set reminder times, please also uncheck All Day and add a start time',
-      })
+      displayAlert('error', 'Oops', 'If you set reminder times, please also uncheck All Day and add a start time')
       return false
     }
 
     const cleanedObject = Manager.cleanObject(newEvent, ModelNames.calendarEvent)
 
     MyConfetti.fire()
+    hideCard()
 
     // Add first/initial date before adding repeating/cloned
     await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
@@ -374,7 +362,6 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
   }, [clonedDates.length])
 
   useEffect(() => {
-    setEventFromDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
     Manager.toggleForModalOrNewForm('show')
   }, [])
 
@@ -443,13 +430,14 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
                   <label className="mb-0">
                     Date <span className="asterisk">*</span>
                   </label>
-                  <MobileDatePicker
-                    value={moment(selectedNewEventDay)}
-                    className={`${theme} m-0 w-100 event-from-date mui-input`}
-                    onAccept={(e) => {
-                      setEventFromDate(e)
-                    }}
-                  />
+                  {eventFromDate && (
+                    <MobileDatePicker
+                      className={`${theme} m-0 w-100 event-from-date mui-input`}
+                      onAccept={(e) => {
+                        setEventFromDate(e)
+                      }}
+                    />
+                  )}
                 </div>
               </>
             )}
