@@ -7,6 +7,14 @@
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "display_override": ["fullscreen", "minimal-ui"],
+  "name": "Peaceful coParenting",
+  "short_name": "Peaceful coParenting",
+  "start_url": "https://peaceful-coparenting.app/",
+  "id": "https://peaceful-coparenting.app/",
+  "display": "fullscreen",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "display_override": ["fullscreen", "minimal-ui"],
   "icons": [
     {
       "src": "./assets/icons/android/android-launchericon-512-512.png",
@@ -137,4 +145,3 @@
       "sizes": "1024x1024"
     }
   ]
-}
