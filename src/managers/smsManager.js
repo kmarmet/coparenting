@@ -44,7 +44,7 @@ export default SmsManager = {
     return `A new Child Transfer Request has been created by ${createdBy} for ${request.date} at ${request.time} ${SmsManager.lineBreak}${SmsManager.signature}`;
   },
   getParentVerificationTemplate: function(childName, verificationCode) {
-    return `${childName} is registering for an account and needs your permission for access. If you accept, please share this code with them: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;
+    return `${childName} is registering for an account and requires your permission for access. ${SmsManager.lineBreak}${SmsManager.lineBreak}If you accept, please share this code with them: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;
   },
   getRegistrationVerificationTemplate: function(userName, verificationCode) {
     return `${userName} ,please enter this code to continue registration: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;

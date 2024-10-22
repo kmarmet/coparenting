@@ -29,7 +29,7 @@ export default function CustomCoparentInfo({ selectedChild, showForm, onClose, h
 
       const formattedTitle = title.removeSpacesAndLowerCase().toCamelCase()
       if (key !== null) {
-        set(child(dbRef, `users/${currentUser.phone}/coparents/${key}/${formattedTitle}`), `${value}_custom`)
+        set(child(dbRef, `users/${currentUser.phone}/coparents/${key}/${formattedTitle}`), `${value}`)
         onClose()
       }
     } else {
@@ -43,7 +43,7 @@ export default function CustomCoparentInfo({ selectedChild, showForm, onClose, h
 
       const formattedTitle = title.removeSpacesAndLowerCase().toCamelCase()
       if (key !== null) {
-        set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${formattedTitle}`), `${value}_custom`)
+        set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${formattedTitle}`), `${value}`)
         onClose()
       }
     }

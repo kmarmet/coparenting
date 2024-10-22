@@ -1,7 +1,7 @@
 {
   "name": "Peaceful coParenting",
   "short_name": "Peaceful coParenting",
-  "start_url": "https://peaceful-coparenting.app/",
+  "start_url": "/",
   "id": "https://peaceful-coparenting.app/",
   "display": "fullscreen",
   "background_color": "#ffffff",

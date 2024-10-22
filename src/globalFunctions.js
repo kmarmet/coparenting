@@ -130,6 +130,31 @@ export var uniqueArray = function(array) {
 
 export var displayAlert = function(type, title, text = '', onConfirm) {
   switch (true) {
+    case type === "input":
+      return Swal.fire({
+        title: title,
+        text: text,
+        icon: '',
+        input: 'text',
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        showClass: {
+          popup: `animate__animated
+animate__fadeInUp
+animate__faster`
+        },
+        hideClass: {
+          popup: `animate__animated
+animate__fadeOutDown
+animate__faster`
+        }
+      }).then(function(result) {
+        if (result.isConfirmed) {
+          if (onConfirm) {
+            return onConfirm(result);
+          }
+        }
+      });
     case type === "error":
       return Swal.fire({
         title: title,

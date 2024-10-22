@@ -33,17 +33,17 @@ import UploadInputs from '../../shared/uploadInputs'
 import DateFormats from '../../../constants/dateFormats'
 import SecurityManager from '../../../managers/securityManager'
 
-export default function UploadDocuments() {
+export default function UploadDocuments({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, formToShow } = state
   const [shareWith, setShareWith] = useState([])
   const [docType, setDocType] = useState(null)
   const [image, setImage] = useState('')
   const resetForm = async () => {
-    Manager.resetForm()
+    Manager.resetForm('upload-doc-wrapper')
     setShareWith([])
     setDocType(null)
-    setState({ ...state, formToShow: '' })
+    hideCard()
   }
 
   const upload = async () => {
@@ -52,15 +52,18 @@ export default function UploadDocuments() {
 
     // Validation
     if (files.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose a file to upload', alertType: 'error' })
+      displayAlert('error', 'Please choose a file to upload')
+      setState({ ...state, isLoading: false })
       return false
     }
     if (!Manager.isValid(shareWith, true) || !Manager.isValid(docType)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Document Type and Who should see it? are required', alertType: 'error' })
+      displayAlert('error', 'Document Type and Who should see it? are required')
+      setState({ ...state, isLoading: false })
       return false
     }
     if (docType === 'document' && Object.entries(files).map((x) => !x[1].name.contains('.docx'))[0]) {
-      setState({ ...state, showAlert: true, alertMessage: 'Uploaded file MUST be of type .docx', alertType: 'error' })
+      displayAlert('error', 'Uploaded file MUST be of type .docx')
+      setState({ ...state, isLoading: false })
       return false
     }
 
@@ -129,9 +132,9 @@ export default function UploadDocuments() {
   }, [])
 
   return (
-    <>
+    <div className="upload-doc-wrapper">
       {/* PAGE CONTAINER */}
-      <BottomCard showCard={formToShow === ScreenNames.uploadDocuments} title={'Add Document'} onClose={() => setState({ ...state, formToShow: '' })}>
+      <BottomCard showCard={showCard} title={'Add Document'} onClose={hideCard}>
         <div id="upload-documents-container" className={`${theme} form`}>
           <p className={`${theme} text-screen-intro`}>If uploading a document</p>
           <p className={`${theme} text-screen-intro`}>
@@ -179,14 +182,8 @@ export default function UploadDocuments() {
             uploadType={docType}
             upload={upload}
           />
-
-          <div className="buttons gap">
-            <button className="button card-button red" onClick={resetForm}>
-              Cancel
-            </button>
-          </div>
         </div>
       </BottomCard>
-    </>
+    </div>
   )
 }

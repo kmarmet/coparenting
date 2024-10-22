@@ -60,13 +60,6 @@ function Behavior({ activeChild, refreshUpdateKey }) {
   }
   const setSelectedChild = () => {
     if (Manager.isValid(activeChild.behavior, false, true)) {
-      // Remove Custom Text from Property
-      for (let val in activeChild.behavior) {
-        if (contains(activeChild.behavior[val], '_custom')) {
-          activeChild.behavior[val] = activeChild.behavior[val].replace('_custom', '')
-        }
-      }
-
       // Set info
       let values = Object.entries(activeChild.behavior)
       setBehaviorValues(values)
@@ -114,11 +107,7 @@ function Behavior({ activeChild, refreshUpdateKey }) {
                       debounceTimeout={1000}
                       onChange={async (e) => {
                         const inputValue = e.target.value
-                        if (inputValue.length > 0) {
-                          await update('behavior', infoLabel, `${inputValue}_custom`)
-                        } else {
-                          await update('behavior', infoLabel, '_custom')
-                        }
+                        await update('behavior', infoLabel, `${inputValue}`)
                       }}
                     />
                     <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>

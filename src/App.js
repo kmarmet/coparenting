@@ -57,6 +57,7 @@ import { wordCount, getFirstWord } from './globalFunctions'
 import emailjs from '@emailjs/browser'
 import './globalFunctions'
 import StateObj from './constants/stateObj'
+// import smtp from 'smtp.js'
 // Menus
 import NavBar from './components/navBar'
 import SlideOutMenu from './components/slideOutMenu'
@@ -122,7 +123,6 @@ export default function App() {
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(user)
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
         console.log('signed in')

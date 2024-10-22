@@ -60,46 +60,11 @@ function NewMemoryForm({ showCard, hideCard }) {
 
   const submit = async () => {
     if (images !== undefined && images.length === 0) {
-      Swal.fire({
-        title: 'Please choose an image',
-        icon: 'error',
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-        },
-      })
+      displayAlert('error', 'Please choose an image')
       return false
     }
     if (!Manager.isValid(shareWith, true)) {
-      console.log('err')
-      Swal.fire({
-        title: 'Please select who can see this memory',
-        icon: 'error',
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-        },
-      })
+      displayAlert('error', 'Please select who can see this memory')
       return false
     }
 
@@ -108,26 +73,11 @@ function NewMemoryForm({ showCard, hideCard }) {
     })
 
     if (notAnImage) {
-      Swal.fire({
-        title: 'Files uploaded MUST be images (.png, .jpg, .jpeg, etc.).',
-        icon: 'error',
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-        },
-      })
+      displayAlert('error', 'Files uploaded MUST be images (.png, .jpg, .jpeg, etc.).')
       return false
     }
+
+    setState({ ...state, isLoading: true })
 
     // Check for existing memory
     const securedMemories = await SecurityManager.getMemories(currentUser)
@@ -140,29 +90,13 @@ function NewMemoryForm({ showCard, hideCard }) {
     })
 
     if (existingMemoriesFound) {
-      Swal.fire({
-        title: 'This memory already exists',
-        icon: 'error',
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-        },
-      })
+      displayAlert('error', 'This memory already exists')
       return false
     }
 
     MyConfetti.fire()
 
+    setState({ ...state, isLoading: false })
     hideCard()
 
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser.id, images)

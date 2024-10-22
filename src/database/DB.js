@@ -19,6 +19,7 @@ const DB = {
     chatRecoveryRequests: 'chatRecoveryRequests',
     suggestions: 'suggestions',
     memories: 'memories',
+    parentPermissionCodes: 'parentPermissionCodes',
   },
   runQuery: async (table, query) => {
     const records = await DB.getTable(table)
@@ -31,6 +32,16 @@ const DB = {
     } else {
       return []
     }
+  },
+  getFlatTableKey: async (table, id) => {
+    const records = Manager.convertToArray(await DB.getTable(table))
+    let key
+    records.forEach((record, index) => {
+      if (record.id === id) {
+        key = index
+      }
+    })
+    return key
   },
   getAllFilteredRecords: async (tableName, currentUser, theme, objectName, type = 'by-phone') => {
     const getRecords = new Promise(async (resolve, reject) => {
@@ -285,7 +296,7 @@ const DB = {
     await get(child(dbRef, `users/${currentUser.phone}/children/`)).then(async (snapshot) => {
       if (snapshot.exists()) {
         snapshot.val().forEach((child, index) => {
-          if (child.general?.name.replace('_custom', '') === selectedChild.general?.name.replace('_custom', '')) {
+          if (child.general?.name === selectedChild.general?.name) {
             removalKey = index
           }
         })

@@ -159,25 +159,6 @@ export default function Login() {
     }
   }
 
-  const sendResetLink = async () => {
-    await sendPasswordResetEmail(auth, firebaseUser.email)
-      .then(async (link) => {
-        const users = await DB.getTable(DB.tables.users)
-        const foundUser = users.filter((x) => x.email === firebaseUser.email)
-        console.log(foundUser)
-        setState({
-          ...state,
-          currentScreen: ScreenNames.login,
-          currentUser: foundUser,
-          userIsLoggedIn: true,
-        })
-      })
-
-      .catch((error) => {
-        // Some error occurred.
-      })
-  }
-
   useLayoutEffect(() => {
     autoLogin().then((r) => r)
     Manager.toggleForModalOrNewForm('show')
@@ -190,7 +171,7 @@ export default function Login() {
       <InstallAppPopup />
 
       {/* PAGE CONTAINER */}
-      <div id="login-container" className={`light page-container form`}>
+      <div id="login-container" className={`light page-container form login`}>
         <img className="ml-auto mr-auto" src={require('../../../img/logo.png')} alt="Peaceful coParenting" />
         {/* QUOTE CONTAINER */}
         <div id="quote-container">

@@ -219,7 +219,7 @@ export default function Coparents() {
                     customValues.length > 0 &&
                     customValues.map((prop, index) => {
                       const infoLabel = prop[0]
-                      const value = prop[1].replace('_custom', '')
+                      const value = prop[1]
                       return (
                         <div key={index} className="flex input">
                           <DebounceInput
@@ -229,13 +229,9 @@ export default function Coparents() {
                             placeholder={infoLabel.camelCaseToString(infoLabel)}
                             minLength={2}
                             debounceTimeout={1000}
-                            onChange={(e) => {
+                            onChange={async (e) => {
                               const inputValue = e.target.value
-                              if (inputValue.length > 0) {
-                                update(infoLabel, `${inputValue}_custom`)
-                              } else {
-                                update(infoLabel, '_custom')
-                              }
+                              await update(infoLabel, `${inputValue}`)
                             }}
                           />
                           <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>

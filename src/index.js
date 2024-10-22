@@ -4,7 +4,15 @@ import '../src/styles/bundle.scss'
 import App from './App'
 import { ErrorBoundary } from 'react-error-boundary'
 import PopupCard from 'components/shared/popupCard'
-
+const a = document.getElementsByTagName('a')
+for (let i = 0; i < a.length; i++) {
+  if (!a[i].onclick && a[i].getAttribute('target') != '_blank') {
+    a[i].onclick = function () {
+      window.location = this.getAttribute('href')
+      return false
+    }
+  }
+}
 if ('serviceWorker' in navigator) {
   // Register PWA
 

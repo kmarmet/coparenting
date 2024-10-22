@@ -28,8 +28,8 @@ export default SmsManager =
   getTransferRequestTemplate: (request, createdBy) ->
     "A new Child Transfer Request has been created by #{createdBy} for #{request.date} at #{request.time} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getParentVerificationTemplate: (childName, verificationCode) ->
-    "#{childName} is registering for an account and needs your permission
- for access. If you accept, please share this code with them: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
+    "#{childName} is registering for an account and requires your permission
+ for access. #{SmsManager.lineBreak}#{SmsManager.lineBreak}If you accept, please share this code with them: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getRegistrationVerificationTemplate: (userName, verificationCode) ->
     "#{userName} ,please enter this code to continue registration: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   send: (phoneNumber, message) =>

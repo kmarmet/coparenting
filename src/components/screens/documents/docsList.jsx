@@ -36,11 +36,11 @@ import DateFormats from '../../../constants/dateFormats'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, navbarButton } = state
   const [docs, setDocs] = useState([])
   const [selectedDoc, setSelectedDoc] = useState(null)
   const [toDelete, setToDelete] = useState([])
-
+  const [showCard, setShowCard] = useState(false)
   const getSecuredDocs = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)
     setDocs(allDocs)
@@ -68,15 +68,25 @@ export default function DocsList() {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.documents), async (snapshot) => {
       await getSecuredDocs(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
-      setState({ ...state, selectedNewEventDay: moment().format(DateFormats.dateForDb).toString() })
     })
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            setShowCard(true)
+          },
+        },
+      })
+    }, 500)
     Manager.toggleForModalOrNewForm()
   }, [])
 
   return (
     <div>
       <p className="screen-title ">Documents</p>
-      <UploadDocuments />
+      <UploadDocuments showCard={showCard} hideCard={() => setShowCard(false)} />
       <div id="doc-selection-container" className={`${theme} page-container`}>
         {docs.length === 0 && <p className={`${theme} caption`}>there are currently no documents</p>}
         <p className="mb-10">Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise.</p>

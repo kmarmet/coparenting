@@ -221,6 +221,9 @@ const DateManager = {
     if (timeInterval === 'seconds') {
       return moment.duration(moment(end).diff(moment(start))).asSeconds()
     }
+    if (timeInterval === 'minutes') {
+      return moment.duration(moment(end).diff(moment(start))).asMinutes()
+    }
   },
   getJsDate: (inputDate) => {
     const month = moment(inputDate).format('MM')

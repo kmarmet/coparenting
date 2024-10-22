@@ -45,10 +45,11 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
       false
     )
   }
+
   return (
     <div id="coparent-input-container">
       <p id="coparent-label">
-        Co-Parent #{coparentsLength} {`-${uppercaseFirstLetterOfAllWords(name)}`}
+        Co-Parent #{coparentsLength} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
       </p>
       <label>
         Name <span className="asterisk">*</span>

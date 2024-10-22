@@ -39,7 +39,7 @@ export default function ChildrenInput({ add, childrenCount }) {
   return (
     <div id="child-input-container">
       <p id="child-label">
-        Child #{childrenCount} {`-${uppercaseFirstLetterOfAllWords(name)}`}
+        Child #{childrenCount} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
       </p>
       <label>
         Name <span className="asterisk">*</span>

@@ -16,21 +16,6 @@ import imagesLoaded from 'imagesloaded'
 import Masonry from 'masonry-layout'
 import 'lightgallery/css/lightgallery.css'
 
-function Image({ url }) {
-  return (
-    <>
-      {Manager.isValid(url) && (
-        <div
-          className="memory-image"
-          data-src={url}
-          style={{
-            backgroundImage: `url(${url}), url('https://res.cloudinary.com/dizexseir/image/upload/v1693489844/Common/ImageNotAvailable_hym9j2.png')`,
-          }}></div>
-      )}
-    </>
-  )
-}
-
 export default function Memories() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, navbarButton } = state
@@ -46,7 +31,7 @@ export default function Memories() {
   const dbRef = ref(getDatabase())
 
   const getSecuredMemories = async () => {
-    setIsLoading(true)
+    setState({ ...state, isLoading: true })
     let all = await SecurityManager.getMemories(currentUser)
     if (Manager.isValid(all, true)) {
       const resolvedImages = async () =>
@@ -100,16 +85,10 @@ export default function Memories() {
           setIsLoading(false)
         }
       }
-      let arr = []
-      validImages.forEach((img) => {
-        if (Manager.isValid(img)) {
-          arr.push(<Image url={img.url} />)
-        }
-      })
-      setImageElements(arr)
+      setState({ ...state, isLoading: true })
     } else {
       setMemories([])
-      setIsLoading(false)
+      setState({ ...state, isLoading: true })
     }
   }
 
@@ -201,11 +180,8 @@ export default function Memories() {
         <LightGallery elementClassNames={'light-gallery'} speed={500}>
           <>
             {Manager.isValid(memories, true) &&
-              // memories.map((imgObj, index) => {
-              //   return <div style={{ backgroundImage: `url(${imgObj.url})` }} key={index} className="memory-image" data-src={imgObj.url}></div>
-              // })}
-              imageElements.map((el) => {
-                return el
+              memories.map((imgObj, index) => {
+                return <div style={{ backgroundImage: `url(${imgObj.url})` }} key={index} className="memory-image" data-src={imgObj.url}></div>
               })}
           </>
         </LightGallery>

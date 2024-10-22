@@ -93,6 +93,29 @@ export uniqueArray = (array) ->
 
 export displayAlert = (type, title, text = '', onConfirm) ->
   switch (true)
+    when type is "input"
+      Swal.fire
+        title: title
+        text: text
+        icon: ''
+        input: 'text'
+        showCancelButton: true
+        confirmButtonText: "Confirm"
+        showClass:
+          popup: """
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          """
+        hideClass:
+          popup: """
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          """
+      .then (result) ->
+        if result.isConfirmed
+          if onConfirm then onConfirm(result)
     when type is "error"
       Swal.fire
         title: title

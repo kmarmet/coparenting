@@ -13,7 +13,6 @@ import DB from '@db'
 import SmsManager from '@managers/smsManager.js'
 import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
-import MyConfetti from '@shared/myConfetti.js'
 import DB_UserScoped from '@userScoped'
 import ChildUser from 'models/child/childUser.js'
 import { phone } from 'phone'
@@ -36,11 +35,16 @@ import {
   formatPhone,
   getFileExtension,
 } from '../../../globalFunctions'
+import moment from 'moment'
 import ModelNames from '../../../models/modelNames'
 import { getAuth, setPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import InstallAppPopup from '../../installAppPopup'
+import db_userScoped from '@userScoped'
+import ParentPermissionCode from '../../../models/parentPermissionCode'
+import DateFormats from '../../../constants/dateFormats'
+import DateManager from '../../../managers/dateManager'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -56,14 +60,68 @@ export default function Registration() {
   const [parents, setParents] = useState([])
   const [coparents, setCoparents] = useState([])
   const [parentTypeAccExpanded, setParentTypeAccExpanded] = useState(false)
+  const [verificationCode, setVerificationCode] = useState(Manager.getUid().slice(0, 4))
   const [accountAlreadyExists, setAccountAlreadyExists] = useState(false)
+  const [verificationCodeSent, setVerificationCodeSent] = useState(false)
+
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
-  const validatePhone = () => {
+  const phoneIsValid = () => {
     const validatePhone = phone(`+1${formatPhone(userPhone)}`)
     const { isValid } = validatePhone
     return isValid
+  }
+
+  // SEND VERIFICATION CODE
+  const sendChildVerificationCode = async () => {
+    const validPhone = phoneIsValid()
+    if (validPhone) {
+      const permissionCode = Manager.getUid().slice(0, 6)
+      SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, permissionCode))
+      setVerificationCodeSent(true)
+
+      // Add Parent Permission record to DB
+      const parentPermissionCode = new ParentPermissionCode()
+      parentPermissionCode.code = permissionCode
+      parentPermissionCode.parentPhone = parentPhone
+      parentPermissionCode.childPhone = userPhone
+      parentPermissionCode.expiration = moment().add(10, 'minutes').format(DateFormats.fullDatetime)
+      setVerificationCode(permissionCode)
+      await DB.add(DB.tables.parentPermissionCodes, parentPermissionCode)
+      const expirationMessage = ` The code will expire at ${moment().add(5, 'minutes').format('hh:mma')}.`
+      // Enter code alert
+      displayAlert(
+        'input',
+        'Enter the Code Provided by your Parent',
+        `If the code has expired, please register again to send another code. ${expirationMessage}`,
+        async (e) => {
+          const existingCodes = Manager.convertToArray(await DB.getTable(DB.tables.parentPermissionCodes))
+
+          if (Manager.isValid(existingCodes, true)) {
+            const existingCode = existingCodes.filter((x) => x.parentPhone === parentPhone && x.childPhone === userPhone)[0]
+
+            // Existing code already exists, check expiration
+            if (Manager.isValid(existingCode)) {
+              const expirationTime = moment(existingCode.expiration, DateFormats.fullDatetime).minute()
+              const now = moment().minute()
+              const duration = expirationTime - now
+
+              // Expired
+              if (duration >= 5) {
+                displayAlert('error', 'The code has expired, please send another code')
+                const deleteKey = await DB.getFlatTableKey(DB.tables.parentPermissionCodes)
+                await DB.deleteByPath(`${DB.tables.parentPermissionCodes}/${deleteKey}`)
+              } else {
+                if (verificationCode === existingCode.code) {
+                  await submitChild()
+                }
+              }
+            }
+          }
+        }
+      )
+    }
   }
 
   // SUBMIT PARENT
@@ -110,21 +168,32 @@ export default function Registration() {
     if (isValid) {
       let parent = await DB_UserScoped.getUser(DB.tables.users, parentPhone)
       if (Manager.isValid(parent)) {
-        let newUser = new ChildUser()
-        newUser.id = Manager.getUid()
-        newUser.phone = userPhone
-        newUser.name = uppercaseFirstLetterOfAllWords(userName)
-        newUser.accountType = 'child'
-        newUser.parents = parents
-        newUser.email = ''
-        newUser.settings.theme = 'light'
-        newUser.settings.eveningReminderSummaryHour = '8pm'
-        newUser.settings.morningReminderSummaryHour = '10am'
-        const cleanedUser = Manager.cleanObject(newUser, ModelNames.childUser)
+        let childUser = new ChildUser()
+        childUser.id = Manager.getUid()
+        childUser.phone = userPhone
+        childUser.name = uppercaseFirstLetterOfAllWords(userName)
+        childUser.accountType = 'child'
+        childUser.parents = parents
+        childUser.email = ''
+        childUser.settings.theme = 'light'
+        childUser.settings.eveningReminderSummaryHour = '8pm'
+        childUser.settings.morningReminderSummaryHour = '10am'
+        childUser.general.name = userName
+        childUser.general.phone = userPhone
+        const cleanChild = Manager.cleanObject(childUser, ModelNames.childUser)
         const dbRef = ref(getDatabase())
-        await set(child(dbRef, `users/${userPhone}`), cleanedUser)
-        MyConfetti.fire()
-        setState({ ...state, currentScreen: ScreenNames.login })
+        await set(child(dbRef, `users/${userPhone}`), cleanChild)
+        console.log('Email', email)
+        createUserWithEmailAndPassword(auth, email, password)
+          .then(async (userCredential) => {
+            // Signed up successfully
+            const user = userCredential.user
+            console.log('Signed up as:', user.email)
+            await set(child(dbRef, `users/${cleanChild.phone}`), cleanChild)
+          })
+          .catch((error) => {
+            console.error('Sign up error:', error.message)
+          })
 
         // SEND SMS MESSAGES
         // Send to parent
@@ -136,6 +205,8 @@ export default function Registration() {
         // Send to me
         const mySubId = await NotificationManager.getUserSubId('3307494534')
         PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone}`, mySubId)
+        displayAlert('success', '', `Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
+        setState({ ...state, currentScreen: ScreenNames.login })
       } else {
         // Parent account does not exist
         displayAlert('error', `There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`)
@@ -148,20 +219,19 @@ export default function Registration() {
     let isValid = true
     await DB.getTable(DB.tables.users).then((users) => {
       users = Manager.convertToArray(users)
-      let foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)
+      let foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
       if (foundUser) {
         displayAlert('error', 'Account already exists, please login')
         isValid = false
         setAccountAlreadyExists(true)
       } else {
-        let foundParent = users?.filter((x) => x?.phone === parentPhone)
-        if (foundParent) {
+        if (userPhone === parentPhone) {
           displayAlert('error', "Your phone number cannot be the same as your parent's phone number")
           isValid = false
         }
       }
     })
-    if (userPhone.length === 0 || !validatePhone()) {
+    if (userPhone.length === 0 || !phoneIsValid()) {
       displayAlert('error', 'Phone number is not valid')
       isValid = false
     }
@@ -200,7 +270,7 @@ export default function Registration() {
       }
     })
 
-    if (userPhone.length === 0 || !validatePhone()) {
+    if (userPhone.length === 0 || !phoneIsValid()) {
       displayAlert('error', 'Phone number is not valid')
       isValid = false
     }
@@ -272,7 +342,8 @@ export default function Registration() {
         {!accountType && (
           <>
             <p className="mt-15">
-              It is <b>HIGHLY</b> recommended to install the application <b>AFTER registration is complete</b> for the best experience.
+              It is <b>HIGHLY</b> recommended to install the application for the best experience. You can register/login once the application is
+              installed as well.
             </p>
             <p>
               Click <b>Install App</b> button below to read the extremely fast installation steps.
@@ -306,6 +377,7 @@ export default function Registration() {
         {/* CHILD FORM */}
         {!accountAlreadyExists && accountType && accountType === 'child' && (
           <div className="form mb-20">
+            <p className="mb-20">A parent is required to have Peaceful coParenting installed before you can register, to provide you with access.</p>
             <label>
               Name <span className="asterisk">*</span>
             </label>
@@ -350,16 +422,20 @@ export default function Registration() {
                 Add Another Parent
               </button>
             )}
+            <p className="mt-20">
+              <b>Request Parent Sharing Permissions</b>
+            </p>
+            <p>A text message will be sent to your parent with a code. Once they provide the code to you, you will have access to the application.</p>
+
             <button
-              className="button default w-60 green"
+              className="button default w-10 green"
               onClick={async () => {
-                const isValidForm = await validateChildForm()
-                if (isValidForm) {
-                  await submitChild()
-                  setState({ ...state, currentScreen: ScreenNames.emailVerification })
-                }
+                await sendChildVerificationCode()
               }}>
-              Verify Email<span className="material-icons-round fs-22">mark_email_read</span>
+              <span className="material-icons-round fs-22">send</span>
+            </button>
+            <button className="button default w-60" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+              Back to Login
             </button>
           </div>
         )}
@@ -452,7 +528,10 @@ export default function Registration() {
                   setState({ ...state, currentScreen: ScreenNames.emailVerification })
                 }
               }}>
-              Verify Email<span className="material-icons-round fs-22">mark_email_read</span>
+              Verify Email<span className="material-icons-round fs-20">mark_email_read</span>
+            </button>
+            <button className="button default w-60" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+              Back to Login
             </button>
           </div>
         )}

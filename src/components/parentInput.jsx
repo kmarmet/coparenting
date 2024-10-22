@@ -35,7 +35,9 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
 
   return (
     <div id="parent-input-container">
-      <p id="parent-label">Parent #{parentsLength}</p>
+      <p id="parent-label">
+        Parent #{parentsLength} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
+      </p>
       <label>
         Name <span className="asterisk">*</span>
       </label>

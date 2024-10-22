@@ -29,6 +29,7 @@
         <item url="file://$PROJECT_DIR$/src/models/coparent.js" />
         <item url="file://$PROJECT_DIR$/src/models/memory.js" />
         <item url="file://$PROJECT_DIR$/src/models/modelNames.js" />
+        <item url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
         <item url="file://$PROJECT_DIR$/src/models/shortcut.js" />
         <item url="file://$PROJECT_DIR$/src/models/titleSuggestion.js" />
         <item url="file://$PROJECT_DIR$/src/models/user.js" />
@@ -63,6 +64,7 @@
       <root url="file://$PROJECT_DIR$/src/models/coparent.js" />
       <root url="file://$PROJECT_DIR$/src/models/memory.js" />
       <root url="file://$PROJECT_DIR$/src/models/modelNames.js" />
+      <root url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
       <root url="file://$PROJECT_DIR$/src/models/shortcut.js" />
       <root url="file://$PROJECT_DIR$/src/models/titleSuggestion.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
