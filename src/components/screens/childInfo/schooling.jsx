@@ -26,37 +26,29 @@ import {
 } from '../../../globalFunctions'
 import DateFormats from '../../../constants/dateFormats'
 
-function Schooling({ activeChild, refreshUpdateKey }) {
+function Schooling({ activeChild, updateActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [schoolingValues, setSchoolingValues] = useState([])
-
+  const [arrowDirection, setArrowDirection] = useState('down')
   const deleteProp = async (prop) => {
     const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, activeChild, 'id')
     await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/schooling/${prop.toLowerCase()}`)
-    refreshUpdateKey()
+    updateActiveChild()
+    setSelectedChild()
+    setArrowDirection('down')
   }
 
-  const update = async (section, prop, value, isArray) => {
+  const update = async (section, prop, value) => {
     const dbRef = ref(getDatabase())
     let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
 
-    let field = activeChild[section][prop]
-
-    if (field !== undefined) {
-      if (isArray) {
-        if (field) {
-          value = value.split(',')
-        }
-      }
-    }
-
     // Update DB
     if (key !== null) {
-      setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Updated!' })
-      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop}`), value)
-      refreshUpdateKey()
+      displayAlert('success', '', 'Updated!')
+      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop.toLowerCase()}`), value)
+      updateActiveChild()
     }
   }
 
@@ -65,15 +57,17 @@ function Schooling({ activeChild, refreshUpdateKey }) {
       // Set info
       let values = Object.entries(activeChild.schooling)
       setSchoolingValues(values)
+    } else {
+      setSchoolingValues([])
     }
   }
 
   useEffect(() => {
-    const dbRef = ref(getDatabase())
+    setSelectedChild()
+  }, [activeChild])
 
-    onValue(child(dbRef, `users/${currentUser.phone}/children`), async (snapshot) => {
-      setSelectedChild()
-    })
+  useEffect(() => {
+    setSelectedChild()
   }, [])
 
   return (
@@ -83,6 +77,7 @@ function Schooling({ activeChild, refreshUpdateKey }) {
           className={activeChild.schooling === undefined ? 'disabled header schooling' : 'header schooling'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.schooling')
+            setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
             } else {
@@ -93,7 +88,7 @@ function Schooling({ activeChild, refreshUpdateKey }) {
             setExpandAccordion(!expandAccordion)
           }}>
           <span className="material-icons-round">school</span> Schooling {activeChild.schooling === undefined ? '- No Info' : ''}
-          <span className="material-icons-round"></span>
+          <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
         </p>
         <Accordion.Panel expanded={expandAccordion}>
           {Manager.isValid(schoolingValues, true) &&

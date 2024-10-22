@@ -211,11 +211,14 @@ const Conversation = () => {
           ...navbarButton,
           action: () => {
             setShowSearchInput(true)
+            setTimeout(() => {
+              document.querySelector('.search-input').focus()
+            }, 200)
           },
           icon: 'search',
         },
       })
-    }, 300)
+    }, 500)
     scrollToLatestMessage()
     Manager.toggleForModalOrNewForm('show')
   }, [])

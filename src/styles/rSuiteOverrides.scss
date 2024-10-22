@@ -45,6 +45,11 @@
       &.selected {
         background-color: $blue;
         box-shadow: 0 0 12px 0 $lightBlueDark;
+        &:hover {
+          transform: none;
+          pointer-events: none;
+        background-color: $blue;
+        }
       }
     }
   }
@@ -175,14 +180,6 @@
       max-width: 600px;
     }
 
-    .flatpickr-monthDropdown-months {
-      option {
-        &.selected {
-          background-color: $darkBlueDarkest !important;
-        }
-        background-color: $darkBlueDarkest !important;
-      }
-    }
 
     @media screen and (min-width: 768px) {
       max-width: 600px;
@@ -199,7 +196,6 @@
     .flatpickr-days {
       .flatpickr-day {
         max-width: 100px;
-
         font-weight: 400;
         position: relative;
         transform: scale(1.1);
@@ -209,8 +205,14 @@
         flex-wrap: wrap;
 
         &:hover {
-          background-color: transparent;
-          border: 0;
+          background: transparent !important;
+          border: 0 !important;
+          height: auto !important;
+          transform: none !important;
+          &.selected {
+            background: $lightBlue !important;
+            height: 39px !important;
+          }
         }
 
         /*#region  DOT INDICATORS*/
@@ -952,6 +954,12 @@
       opacity: 0.9;
       border-radius: 0;
       height: 60px;
+      &:hover {
+        background: transparent !important;
+        border: 0 !important;
+        height: auto !important;
+        transform: none !important;
+      }
 
       &.prevMonthDay {
         opacity: 0.5;
@@ -962,6 +970,7 @@
         top: 15px;
         display: flex;
         align-items: center;
+        background: $lightBlue !important;
 
         .holiday-emoji,
         .payday-emoji {

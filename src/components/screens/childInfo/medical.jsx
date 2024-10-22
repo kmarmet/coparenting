@@ -25,37 +25,29 @@ import {
   lowercaseShouldBeLowercase,
 } from '../../../globalFunctions'
 
-function Medical({ activeChild, refreshUpdateKey }) {
+function Medical({ activeChild, updateActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [medicalValues, setMedicalValues] = useState([])
-
+  const [arrowDirection, setArrowDirection] = useState('down')
   const deleteProp = async (prop) => {
     const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, activeChild, 'id')
     await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/medical/${prop.toLowerCase()}`)
-    refreshUpdateKey()
+    updateActiveChild()
+    setSelectedChild()
+    setArrowDirection('down')
   }
 
   const update = async (section, prop, value, isArray) => {
     const dbRef = ref(getDatabase())
     let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
 
-    let field = activeChild[section][prop]
-
-    if (field !== undefined) {
-      if (isArray) {
-        if (field && field !== undefined) {
-          value = value.split(',')
-        }
-      }
-    }
-
     // Update DB
     if (key !== null) {
-      setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Updated!' })
+      displayAlert('success', '', 'Updated!')
       await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop}`), value)
-      refreshUpdateKey()
+      updateActiveChild()
     }
   }
 
@@ -64,8 +56,14 @@ function Medical({ activeChild, refreshUpdateKey }) {
       // Set info
       let values = Object.entries(activeChild.medical)
       setMedicalValues(values)
+    } else {
+      setMedicalValues([])
     }
   }
+
+  useEffect(() => {
+    setSelectedChild()
+  }, [activeChild])
 
   useEffect(() => {
     setSelectedChild()
@@ -78,6 +76,7 @@ function Medical({ activeChild, refreshUpdateKey }) {
           className={activeChild.medical === undefined ? 'disabled header medical' : 'header medical'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.medical')
+            setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
 
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
@@ -89,6 +88,7 @@ function Medical({ activeChild, refreshUpdateKey }) {
             setExpandAccordion(!expandAccordion)
           }}>
           <span className="material-icons-round">medical_information</span> Medical {activeChild.medical === undefined ? '- No Info' : ''}
+          <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
         </p>
         <Accordion.Panel expanded={expandAccordion === true ? true : false}>
           {Manager.isValid(medicalValues) &&

@@ -63,6 +63,16 @@ export default function ChildInfo() {
     await uploadProfilePic(img)
   }
 
+  const updateActiveChild = async () => {
+    const children = Manager.convertToArray(await DB.getTable(`users/${currentUser.phone}/children`))
+    for (let child of children) {
+      if (child.general.id === activeChild.general.id) {
+        setActiveChild(child)
+        break
+      }
+    }
+  }
+
   useEffect(() => {
     setTimeout(() => {
       setState({
@@ -76,16 +86,7 @@ export default function ChildInfo() {
       })
     }, 300)
     Manager.toggleForModalOrNewForm('show')
-    const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `users/${currentUser.phone}/children`), async (snapshot) => {
-      const children = snapshot.val()
-
-      if (!activeChild) {
-        setActiveChild(children[0])
-      } else {
-        setActiveChild(activeChild)
-      }
-    })
+    setActiveChild(currentUser.children[0])
   }, [])
 
   return (
@@ -97,12 +98,10 @@ export default function ChildInfo() {
       <CustomChildInfo
         activeChild={activeChild}
         showCard={showInfoCard}
-        hasDropdown={true}
-        hideCard={() => {
+        hideCard={async () => {
           setShowInfoCard(false)
-          setUpdateKey(Manager.getUid())
+          await updateActiveChild()
         }}
-        onClose={() => setShowInfoCard(false)}
       />
 
       {/* NEW CHILD + */}
@@ -136,10 +135,10 @@ export default function ChildInfo() {
           <div id="child-info">
             {activeChild && (
               <div className="form">
-                <General activeChild={activeChild} refreshUpdateKey={(e) => setUpdateKey(Manager.getUid())} />
-                <Medical activeChild={activeChild} refreshUpdateKey={(e) => setUpdateKey(Manager.getUid())} />
-                <Schooling activeChild={activeChild} refreshUpdateKey={(e) => setUpdateKey(Manager.getUid())} />
-                <Behavior activeChild={activeChild} refreshUpdateKey={(e) => setUpdateKey(Manager.getUid())} />
+                <General updateActiveChild={updateActiveChild} activeChild={activeChild} />
+                <Medical updateActiveChild={updateActiveChild} activeChild={activeChild} />
+                <Schooling updateActiveChild={updateActiveChild} activeChild={activeChild} />
+                <Behavior updateActiveChild={updateActiveChild} activeChild={activeChild} />
               </div>
             )}
           </div>

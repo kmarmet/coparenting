@@ -30,16 +30,19 @@ import {
   lowercaseShouldBeLowercase,
 } from '../../../globalFunctions'
 
-function General({ activeChild, refreshUpdateKey }) {
+function General({ activeChild, updateActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [generalValues, setGeneralValues] = useState([])
+  const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
     const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, activeChild, 'id')
     await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/general/${prop.toLowerCase()}`)
-    refreshUpdateKey()
+    updateActiveChild()
+    setSelectedChild()
+    setArrowDirection('down')
   }
 
   const setSelectedChild = () => {
@@ -54,28 +57,22 @@ function General({ activeChild, refreshUpdateKey }) {
     const dbRef = ref(getDatabase())
     let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
 
-    let field = activeChild[section][prop]
-
-    if (field !== undefined) {
-      if (isArray) {
-        if (field) {
-          value = value.split(',')
-        }
-      }
-    }
-
     // Update DB
     if (key !== null) {
-      setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Updated!' })
+      displayAlert('success', '', 'Updated!')
       await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${removeSpacesAndLowerCase(prop)}`), value)
-      refreshUpdateKey()
+      updateActiveChild()
     }
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm()
+    console.log(activeChild)
     setSelectedChild()
   }, [])
+
+  useEffect(() => {
+    setSelectedChild()
+  }, [activeChild])
 
   return (
     <div className="info-section section general form">
@@ -85,7 +82,7 @@ function General({ activeChild, refreshUpdateKey }) {
           className={activeChild.general === undefined ? 'disabled header general' : 'header general'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.general')
-
+            setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
             } else {
@@ -94,7 +91,7 @@ function General({ activeChild, refreshUpdateKey }) {
             setExpandAccordion(!expandAccordion)
           }}>
           <span className="material-icons-round">perm_contact_calendar</span>
-          General
+          General <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
         </p>
         <Accordion.Panel expanded={expandAccordion}>
           {/* LOOP INFO */}
@@ -125,7 +122,6 @@ function General({ activeChild, refreshUpdateKey }) {
                       <DebounceInput
                         className="mb-15"
                         value={value}
-                        placeholder={camelCaseToString(infoLabel)}
                         minLength={2}
                         debounceTimeout={1000}
                         onChange={async (e) => {
@@ -134,9 +130,11 @@ function General({ activeChild, refreshUpdateKey }) {
                         }}
                       />
                     )}
-                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
-                      delete
-                    </span>
+                    {infoLabel.toLowerCase() !== 'name' && (
+                      <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
+                        delete
+                      </span>
+                    )}
                   </div>
                 </div>
               )

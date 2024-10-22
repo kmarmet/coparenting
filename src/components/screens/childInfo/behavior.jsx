@@ -25,37 +25,30 @@ import {
   lowercaseShouldBeLowercase,
 } from '../../../globalFunctions'
 
-function Behavior({ activeChild, refreshUpdateKey }) {
+function Behavior({ activeChild, updateActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [behaviorValues, setBehaviorValues] = useState([])
+  const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
     const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, activeChild, 'id')
     await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/behavior/${prop.toLowerCase()}`)
-    refreshUpdateKey()
+    updateActiveChild()
+    setSelectedChild()
+    setArrowDirection('down')
   }
 
   const update = async (section, prop, value, isArray) => {
     const dbRef = ref(getDatabase())
     let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
 
-    let field = activeChild[section][prop]
-
-    if (field !== undefined) {
-      if (isArray) {
-        if (field && field !== undefined) {
-          value = value.split(',')
-        }
-      }
-    }
-
     // Update DB
     if (key !== null) {
       setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Updated!' })
       await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop}`), value)
-      refreshUpdateKey()
+      updateActiveChild()
     }
   }
   const setSelectedChild = () => {
@@ -70,6 +63,10 @@ function Behavior({ activeChild, refreshUpdateKey }) {
     setSelectedChild()
   }, [])
 
+  useEffect(() => {
+    setSelectedChild()
+  }, [activeChild])
+
   return (
     <div className="info-section section behavior">
       <Accordion>
@@ -77,7 +74,7 @@ function Behavior({ activeChild, refreshUpdateKey }) {
           className={activeChild.behavior === undefined ? 'disabled header behavior' : 'header behavior'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.behavior')
-
+            setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
             } else {
@@ -88,6 +85,7 @@ function Behavior({ activeChild, refreshUpdateKey }) {
             setExpandAccordion(!expandAccordion)
           }}>
           <span className="material-icons-round">psychology</span> Behavior {activeChild.behavior === undefined ? '- No Info' : ''}
+          <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
         </p>
         <Accordion.Panel expanded={expandAccordion === true ? true : false}>
           {behaviorValues &&

@@ -25,7 +25,7 @@ import {
   getFileExtension,
 } from '.././../globalFunctions'
 
-export default function CustomChildInfo({ activeChild, showCard, hideCard, onClose, hasDropdown = false }) {
+export default function CustomChildInfo({ activeChild, showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [title, setTitle] = useState('')
@@ -35,16 +35,9 @@ export default function CustomChildInfo({ activeChild, showCard, hideCard, onClo
   const add = async () => {
     const dbRef = ref(getDatabase())
 
-    let key = null
-    currentUser.children.forEach((child, index) => {
-      if (child.general.name === activeChild.general.name) {
-        key = index
-      }
-    })
-
-    const formattedTitle = removeSpacesAndLowerCase(title).toCamelCase()
+    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
     if (key !== null) {
-      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${formattedTitle}`), `${value}`)
+      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${title.toLowerCase()}`), `${value}`)
       resetForm()
     }
   }
@@ -54,28 +47,26 @@ export default function CustomChildInfo({ activeChild, showCard, hideCard, onClo
     setTitle('')
     setValue('')
     setInfoSection('Select Info Section')
-    hideCard(false)
+    hideCard()
   }
 
   return (
     <BottomCard className="custom-child-info-wrapper" onClose={hideCard} title={'Add Custom Info'} showCard={showCard}>
       <div className="form">
-        {hasDropdown && (
-          <div className="flex">
-            <p onClick={() => setInfoSection('general')} className={infoSection === 'general' ? 'active item' : 'item'}>
-              General
-            </p>
-            <p onClick={() => setInfoSection('medical')} className={infoSection === 'medical' ? 'active item' : 'item'}>
-              Medical
-            </p>
-            <p onClick={() => setInfoSection('schooling')} className={infoSection === 'schooling' ? 'active item' : 'item'}>
-              Schooling
-            </p>
-            <p onClick={() => setInfoSection('behavior')} className={infoSection === 'behavior' ? 'active item' : 'item'}>
-              Behavior
-            </p>
-          </div>
-        )}
+        <div className="flex">
+          <p onClick={() => setInfoSection('general')} className={infoSection === 'general' ? 'active item' : 'item'}>
+            General
+          </p>
+          <p onClick={() => setInfoSection('medical')} className={infoSection === 'medical' ? 'active item' : 'item'}>
+            Medical
+          </p>
+          <p onClick={() => setInfoSection('schooling')} className={infoSection === 'schooling' ? 'active item' : 'item'}>
+            Schooling
+          </p>
+          <p onClick={() => setInfoSection('behavior')} className={infoSection === 'behavior' ? 'active item' : 'item'}>
+            Behavior
+          </p>
+        </div>
         <>
           <input className="mb-15" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
           <input className="mb-15" type="text" placeholder="Value*" onChange={(e) => setValue(e.target.value)} />
