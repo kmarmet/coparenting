@@ -47,7 +47,8 @@ export default AppManager =
           return
   deleteExpiredMemories: ->
     memories = await DB.getTable(DB.tables.memories)
-    for memory in memories
-      if DateManager.getDuration("days", moment(memory?.creationDate), moment()) > 28
-        key = await DB.getNestedSnapshotKey("memories", memory, "id")
-        await DB.deleteByPath( "memories/#{key}")
+    if Manager.isValid(memories, true)
+      for memory in memories
+        if DateManager.getDuration("days", moment(memory?.creationDate), moment()) > 28
+          key = await DB.getNestedSnapshotKey("memories", memory, "id")
+          await DB.deleteByPath( "memories/#{key}")

@@ -93,17 +93,19 @@ export default AppManager = {
   deleteExpiredMemories: async function() {
     var i, key, len, memories, memory, results;
     memories = (await DB.getTable(DB.tables.memories));
-    results = [];
-    for (i = 0, len = memories.length; i < len; i++) {
-      memory = memories[i];
-      if (DateManager.getDuration("days", moment(memory != null ? memory.creationDate : void 0), moment()) > 28) {
-        key = (await DB.getNestedSnapshotKey("memories", memory, "id"));
-        results.push((await DB.deleteByPath(`memories/${key}`)));
-      } else {
-        results.push(void 0);
+    if (Manager.isValid(memories, true)) {
+      results = [];
+      for (i = 0, len = memories.length; i < len; i++) {
+        memory = memories[i];
+        if (DateManager.getDuration("days", moment(memory != null ? memory.creationDate : void 0), moment()) > 28) {
+          key = (await DB.getNestedSnapshotKey("memories", memory, "id"));
+          results.push((await DB.deleteByPath(`memories/${key}`)));
+        } else {
+          results.push(void 0);
+        }
       }
+      return results;
     }
-    return results;
   }
 };
 

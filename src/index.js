@@ -6,43 +6,29 @@ import { ErrorBoundary } from 'react-error-boundary'
 import PopupCard from 'components/shared/popupCard'
 
 if ('serviceWorker' in navigator) {
-  const cacheAllowlist = ['v2']
-  const cacheName = 'appCache'
-  const precachedResources = ['/', '/App.js', '/main.css']
   // Register PWA
+
   navigator.serviceWorker
+
     .register(`${process.env.PUBLIC_URL}/sw.js`)
+
     .then((registration) => {
       // console.log(registration);
+
       console.log('[SW] service Worker is registered at', registration.scope)
     })
+
     .catch((err) => {
       console.error('[SW] service Worker registration failed:', err)
     })
+
+  // eslint-disable-next-line no-restricted-globals
+
   // eslint-disable-next-line no-restricted-globals
   self.addEventListener('install', (event) => {
     // eslint-disable-next-line no-restricted-globals
-    event.waitUntil(
-      caches.open('appCache').then((cache) => {
-        return cache.addAll(precachedResources)
-      })
-    )
-    // self.skipWaiting()
-  })
-  // eslint-disable-next-line no-restricted-globals
-  self.addEventListener('activate', (event) => {
-    event.waitUntil(
-      caches.keys().then((keyList) =>
-        Promise.all(
-          keyList.map((key) => {
-            if (!cacheAllowlist.includes(key)) {
-              console.log('PWA Cache Cleared')
-              return caches.delete(key)
-            }
-          })
-        )
-      )
-    )
+    // eslint-disable-next-line no-restricted-globals
+    self.skipWaiting()
   })
 
   // Update content
