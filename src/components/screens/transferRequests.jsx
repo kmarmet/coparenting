@@ -16,6 +16,7 @@ import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
 import SecurityManager from '../../managers/securityManager'
 import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
+import ReviseChildTransferChangeRequest from '../forms/reviseTransferRequest'
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
@@ -23,7 +24,8 @@ export default function TransferRequests() {
   const { viewTransferRequestForm, currentUser, theme, navbarButton } = state
   const [rejectionReason, setRejectionReason] = useState('')
   const [recipients, setRecipients] = useState([])
-  const [showCard, setShowCard] = useState(false)
+  const [showNewRequestCard, setShowNewRequestCard] = useState(false)
+  const [showRevisionCard, setShowRevisionCard] = useState(false)
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
     let allUsers = Manager.convertToArray(await DB.getTable(DB.tables.users))
@@ -39,7 +41,7 @@ export default function TransferRequests() {
   }
 
   const reject = async (request) => {
-    await DB.delete(DB.tables.transferChange, request.id).finally(async () => {
+    await DB.delete(DB.tables.transferChangeRequests, request.id).finally(async () => {
       await DB_UserScoped.getCoparentByPhone(request.recipientName, currentUser).then(async (cop) => {
         const subId = await NotificationManager.getUserSubId(cop.phone)
         PushAlertApi.sendMessage(
@@ -52,7 +54,7 @@ export default function TransferRequests() {
   }
 
   const approve = async (request) => {
-    await DB.delete(DB.tables.transferChange, request.id).finally(async () => {
+    await DB.delete(DB.tables.transferChangeRequests, request.id).finally(async () => {
       await DB_UserScoped.getCoparentByPhone(request.recipientName, currentUser).then(async (cop) => {
         const subId = await NotificationManager.getUserSubId(cop.phone)
 
@@ -84,9 +86,9 @@ export default function TransferRequests() {
 
   useEffect(() => {
     const dbRef = ref(getDatabase())
-    setNavbarButton(() => setShowCard(true))
+    setNavbarButton(() => setShowNewRequestCard(true))
     onValue(child(dbRef, DB.tables.transferChangeRequests), async (snapshot) => {
-      const tableData = snapshot.val()
+      setNavbarButton(() => setShowNewRequestCard(true))
       getSecuredRequests().then((r) => r)
     })
 
@@ -95,7 +97,8 @@ export default function TransferRequests() {
 
   return (
     <>
-      <NewTransferChangeRequest showCard={showCard} hideCard={() => setShowCard(false)} />
+      <NewTransferChangeRequest showCard={showNewRequestCard} hideCard={() => setShowNewRequestCard(false)} />
+      <ReviseChildTransferChangeRequest showCard={showRevisionCard} hideCard={() => setShowRevisionCard(false)} />
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         {!viewTransferRequestForm && (
           <>
@@ -110,7 +113,6 @@ export default function TransferRequests() {
             {existingRequests &&
               existingRequests.length > 0 &&
               existingRequests.map((request, index) => {
-                console.log(request.location)
                 return (
                   <div key={index} data-request-id={request.id} className="request open mb-15">
                     <div className="request-date-container">
@@ -178,7 +180,8 @@ export default function TransferRequests() {
                       </button>
                       <button
                         onClick={(e) => {
-                          setState({ ...state, transferRequestToRevise: request, currentScreen: ScreenNames.reviseTransferRequest })
+                          setShowRevisionCard(true)
+                          setState({ ...state, transferRequestToRevise: request })
                         }}
                         className="revise w-100  button default  no-border">
                         Revise

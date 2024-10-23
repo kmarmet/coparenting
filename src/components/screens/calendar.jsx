@@ -392,7 +392,8 @@ export default function EventCalendar() {
       (x) => x.isHoliday === true && x.phone === currentUser.phone && contains(x.title.toLowerCase(), 'holiday')
     )
     userVisitationHolidays.forEach((holiday) => {
-      holiday.title += ` (${holiday?.holidayName})`
+      const holidayName = CalendarMapper.holidayDateToName(moment(holiday.fromDate).format('MM/DD'))
+      holiday.title += ` (${holidayName})`
     })
     setSearchResultsToUse(userVisitationHolidays)
     setShowFilters(!showFilters)
@@ -457,7 +458,11 @@ export default function EventCalendar() {
           action: () => {
             viewAllEvents().then((r) => r)
             setAllHolidays([])
-            document.querySelector('.search-input').value = ''
+            const input = document.querySelector('.search-input')
+
+            if (Manager.isValid(input)) {
+              input.value = ''
+            }
             setTimeout(() => {
               setShowSearchInput(false)
             }, 300)
@@ -601,7 +606,7 @@ export default function EventCalendar() {
               {Manager.isValid(searchResultsToUse, true) &&
                 searchResultsToUse.map((event, index) => {
                   return (
-                    <div className={`${searchResultsToUse.length > 0 ? 'active' : ''} event-row`}>
+                    <div key={index} className={`${searchResultsToUse.length > 0 ? 'active' : ''} event-row`}>
                       <div className="text">
                         <p className="title text-small-title">
                           <b className="text-small-title">{CalendarManager.formatEventTitle(event.title.toString())}</b>

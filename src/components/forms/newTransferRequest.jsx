@@ -16,6 +16,23 @@ import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import BottomCard from '../shared/bottomCard'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  uniqueArray,
+  getFileExtension,
+} from '../../globalFunctions'
 
 export default function NewTransferChangeRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -74,21 +91,16 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
 
       // Notify
       const subId = await NotificationManager.getUserSubId(requestRecipientPhone)
-      PushAlertApi.sendMessage(
-        `Transfer Change Request`,
-        `${currentUser.name.formatNameFirstNameOnly()} has created a Transfer Change request`,
-        subId
-      )
+      PushAlertApi.sendMessage(`Transfer Change Request`, `${formatNameFirstNameOnly(currentUser.name)} has created a Transfer Change request`, subId)
 
       // // Add record
-      await DB.add(DB.tables.transferChange, newRequest).finally(() => {
-        setState({ ...state, currentScreen: ScreenNames.transferRequests })
-      })
+      await DB.add(DB.tables.transferChangeRequests, newRequest)
+      resetForm()
     }
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
       setShareWith(updated)
     })
   }
