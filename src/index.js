@@ -64,11 +64,15 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <ErrorBoundary
     fallback={
-      <PopupCard className="active error-boundary" title={'<span>Oops</span>'} closeable={false} onClose={() => {}}>
+      <div className="active error-boundary" id="error-screen">
+        <p id="screen-title" className="mb-15">
+          Oops! It looks like the app ran into an issue. Troubleshooting steps below...
+        </p>
         <p className="message mb-15">
-          It looks like the app ran into an issue. <br /> Please <span className="emphasize">Clear the Cache</span> and then
+          Please <span className="emphasize">Clear the Cache</span> and then
           <span className="emphasize ml-5">Force Close</span> the application and reopen it.
         </p>
+
         <div id="text-container" className="mb-20">
           <div className="flex">
             <p>If the steps below do not work, please email us at </p>
@@ -76,6 +80,7 @@ root.render(
           </div>
         </div>
         <hr />
+        {/* CLEAR CACHE - IOS */}
         <div id="text-container" className="mb-15">
           <p className="heading mb-5">How to Clear the Cache - iOS</p>
 
@@ -89,7 +94,7 @@ root.render(
           <div className="flex mb-5" id="steps">
             <span className="step-number">2.</span>
             <p>
-              Tap more <span className="material-icons">more_vert</span>
+              Search for and tap on Safari <img src={require('../src/img/safari.png')} alt="Safari" id="safari-icon" />
             </p>
           </div>
           <div className="flex" id="steps">
@@ -155,7 +160,7 @@ root.render(
             <p>Reinstall the app</p>
           </div>
         </div>
-      </PopupCard>
+      </div>
     }>
     <App />
   </ErrorBoundary>

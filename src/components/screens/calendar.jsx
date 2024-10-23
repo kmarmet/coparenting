@@ -49,7 +49,6 @@ export default function EventCalendar() {
   const [showNewEventCard, setShowNewEventCard] = useState(false)
   const [showEditCard, setShowEditCard] = useState(false)
   const [eventToEdit, setEventToEdit] = useState(null)
-  const [selectedDay, setSelectedDay] = useState(null)
   // HANDLE SWIPE
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
@@ -156,7 +155,7 @@ export default function EventCalendar() {
 
     // Filter out dupes by event title
     let formattedDateArr = formatEvents(securedEvents)
-    setExistingEvents(formattedDateArr)
+    setExistingEvents(formattedDateArr.flat())
     setTimeout(() => {
       addEventRowAnimation()
     }, 100)
@@ -580,7 +579,7 @@ export default function EventCalendar() {
 
               {/* SEARCH ICON */}
               <span
-                className="material-icons search-icon blue ml-auto"
+                className="material-icons search-icon blue"
                 onClick={() => {
                   setShowSearchInput(!showSearchInput)
                   addFlatpickrCalendar().then((r) => r)
@@ -602,81 +601,68 @@ export default function EventCalendar() {
               {Manager.isValid(searchResultsToUse, true) &&
                 searchResultsToUse.map((event, index) => {
                   return (
-                    <div className="flex columns" key={index}>
-                      <div className="event search">
-                        <div className={'details-container search'}>
-                          <div className={`${searchResultsToUse.length > 0 ? 'active' : ''} event-details`}>
-                            <div className="flex parent ">
-                              <div className="flex content">
-                                <div className="text">
-                                  <p className="title text-small-title">
-                                    <b className="text-small-title">{CalendarManager.formatEventTitle(event.title.toString())}</b>
-                                  </p>
+                    <div className={`${searchResultsToUse.length > 0 ? 'active' : ''} event-row`}>
+                      <div className="text">
+                        <p className="title text-small-title">
+                          <b className="text-small-title">{CalendarManager.formatEventTitle(event.title.toString())}</b>
+                        </p>
 
-                                  {/* CHILDREN */}
-                                  {event.children && event.children.length > 0 && <p className="children">with {event.children.join(', ')} </p>}
+                        {/* CHILDREN */}
+                        {event.children && event.children.length > 0 && <p className="children">with {event.children.join(', ')} </p>}
 
-                                  {/* DATE CONTAINER */}
-                                  <div id="date-container">
-                                    {/* fromDate */}
-                                    {event && Manager.isValid(event.fromDate) && (
-                                      <span className="fromDate">{moment(event.fromDate).format('dddd MM/DD')}</span>
-                                    )}
-                                    {/* toDate */}
-                                    {event && Manager.isValid(event.toDate) && event.toDate !== event.fromDate && (
-                                      <span className="toDate"> to </span>
-                                    )}
-                                    {event && Manager.isValid(event.toDate) && event.toDate !== event.fromDate && (
-                                      <span className="toDate">{moment(event.toDate).format('ddd MM/DD')}</span>
-                                    )}
-                                    {/* ALL DAY */}
-                                    {event &&
-                                      Manager.isValid(event.toDate) &&
-                                      event.toDate.indexOf('Invalid') === -1 &&
-                                      event.toDate !== event.fromDate && <span className="toDate"> to </span>}
-                                    {event &&
-                                      !Manager.isValid(event.startTime) &&
-                                      (!Manager.isValid(event.toDate) || event.toDate.indexOf('Invalid') > -1) &&
-                                      event.toDate !== event.fromDate && <span className="toDate"> - ALL DAY</span>}
-                                    {/* Times */}
-                                    <span id="times">
-                                      {event.startTime && (
-                                        <span className="from-time">
-                                          <span className="at-symbol">&nbsp;@</span> {event.startTime}
-                                        </span>
-                                      )}
-                                      {event.endTime && event.endTime !== event.startTime && <span> - </span>}
-                                      {event.endTime && event.endTime !== event.startTime && <span className="to-time"> {event.endTime}</span>}
-                                    </span>
-                                  </div>
-
-                                  {/* NOTES */}
-                                  {Manager.isValid(event.notes) && event.notes.length > 0 && <p className="notes">{event.notes}</p>}
-
-                                  {/* EVENT LINK */}
-                                  {event.link && event.link !== undefined && event.link.length > 0 && (
-                                    <div id="website-url-container" className="flex">
-                                      <p className="website-url-label">&#8226; Website:</p>
-                                      <a target="_blank" href={event.link} className="website-url">
-                                        {formatWebsiteUrl(event.link)}
-                                        <span className="material-icons-round link-icon">open_in_new</span>
-                                      </a>
-                                    </div>
-                                  )}
-
-                                  {/* DIRECTIONS LINK */}
-                                  {event.location && event.location.length > 0 && (
-                                    <div className="flex" id="directions-container">
-                                      <p>&#8226; Directions:</p>
-                                      <a href={Manager.getDirectionsLink(event.location)}>{event.location.replace(', USA', '')}</a>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                        {/* DATE CONTAINER */}
+                        <div id="date-container">
+                          {/* fromDate */}
+                          {event && Manager.isValid(event.fromDate) && (
+                            <span className="fromDate">{moment(event.fromDate).format('dddd MM/DD')}</span>
+                          )}
+                          {/* toDate */}
+                          {event && Manager.isValid(event.toDate) && event.toDate !== event.fromDate && <span className="toDate"> to </span>}
+                          {event && Manager.isValid(event.toDate) && event.toDate !== event.fromDate && (
+                            <span className="toDate">{moment(event.toDate).format('ddd MM/DD')}</span>
+                          )}
+                          {/* ALL DAY */}
+                          {event && Manager.isValid(event.toDate) && event.toDate.indexOf('Invalid') === -1 && event.toDate !== event.fromDate && (
+                            <span className="toDate"> to </span>
+                          )}
+                          {event &&
+                            !Manager.isValid(event.startTime) &&
+                            (!Manager.isValid(event.toDate) || event.toDate.indexOf('Invalid') > -1) &&
+                            event.toDate !== event.fromDate && <span className="toDate"> - ALL DAY</span>}
+                          {/* Times */}
+                          <span id="times">
+                            {event.startTime && (
+                              <span className="from-time">
+                                <span className="at-symbol">&nbsp;@</span> {event.startTime}
+                              </span>
+                            )}
+                            {event.endTime && event.endTime !== event.startTime && <span> - </span>}
+                            {event.endTime && event.endTime !== event.startTime && <span className="to-time"> {event.endTime}</span>}
+                          </span>
                         </div>
+
+                        {/* NOTES */}
+                        {Manager.isValid(event.notes) && event.notes.length > 0 && <p className="notes">{event.notes}</p>}
+
+                        {/* EVENT LINK */}
+                        {event.link && event.link !== undefined && event.link.length > 0 && (
+                          <div id="website-url-container" className="flex">
+                            <p className="website-url-label">&#8226; Website:</p>
+                            <a target="_blank" href={event.link} className="website-url">
+                              {formatWebsiteUrl(event.link)}
+                              <span className="material-icons-round link-icon">open_in_new</span>
+                            </a>
+                          </div>
+                        )}
+
+                        {/* DIRECTIONS LINK */}
+                        {event.location && event.location.length > 0 && (
+                          <div className="flex" id="directions-container">
+                            <a href={Manager.getDirectionsLink(event.location)}>{event.location.replace(', USA', '')}</a>
+                          </div>
+                        )}
                       </div>
+                      <hr />
                     </div>
                   )
                 })}
@@ -687,173 +673,142 @@ export default function EventCalendar() {
           {searchResultsToUse.length === 0 && (
             <div className="events">
               {Manager.isValid(existingEvents, true) &&
-                existingEvents.map((eventArr, outerIndex) => {
+                existingEvents.map((event, index) => {
+                  let readableReminderTimes = []
+                  event.reminderTimes?.forEach((time) => {
+                    if (time && time !== undefined) {
+                      readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
+                    }
+                  })
+                  let parentsVisitation = ''
+                  if (event.fromVisitationSchedule) {
+                    if (contains(event.createdBy?.toLowerCase(), currentUser.name.toLowerCase())) {
+                      parentsVisitation = 'currentUser'
+                    } else {
+                      parentsVisitation = 'coparent'
+                    }
+                  }
                   return (
-                    <div key={outerIndex} className="flex columns">
-                      <div className="details-container">
-                        {eventArr.map((event, index) => {
-                          let readableReminderTimes = []
-                          event.reminderTimes?.forEach((time) => {
-                            if (time && time !== undefined) {
-                              readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
-                            }
-                          })
-                          let parentsVisitation = ''
-                          if (event.fromVisitationSchedule) {
-                            if (contains(event.createdBy?.toLowerCase(), currentUser.name.toLowerCase())) {
-                              parentsVisitation = 'currentUser'
-                            } else {
-                              parentsVisitation = 'coparent'
-                            }
-                          }
-                          return (
-                            <div
-                              key={index}
-                              data-from-date={event.fromDate}
-                              className={event.fromVisitationSchedule ? 'event-details visitation flex' : 'event-details flex'}>
-                              <div className="flex parent">
-                                <div className="flex content">
-                                  <div className="text">
-                                    {/* EVENT CONTENT */}
-                                    <div className={`${theme} event-content`}>
-                                      {/* DATE CONTAINER */}
-                                      <div id="date-container" className={theme === 'dark' ? 'event-row pt-10' : 'event-row'}>
-                                        <span className={`${parentsVisitation} color-coded-event-dot`}></span>
-                                        {/* FROM DATE */}
-                                        {!contains(event.fromDate, 'Invalid') && event?.fromDate?.length > 0 && (
-                                          <span className="fromDate">{moment(event?.fromDate).format(DateFormats.readableDay)}</span>
-                                        )}
-                                        {/* TO WORD */}
-                                        {!contains(event?.toDate, 'Invalid') && event?.toDate?.length > 0 && event?.toDate !== event?.fromDate && (
-                                          <span className="toDate"> to </span>
-                                        )}
-                                        {/* TO DATE */}
-                                        {!contains(event.toDate, 'Invalid') &&
-                                          event.toDate?.length > 0 &&
-                                          event.toDate !== event.fromDate &&
-                                          moment(event.toDate).format(DateFormats.readableDay)}
-                                        {/* ALL DAY */}
-                                        {event &&
-                                          !Manager.isValid(event.startTime) &&
-                                          (!Manager.isValid(event.toDate) || event.toDate.indexOf('Invalid') > -1) &&
-                                          event.toDate !== event.fromDate && <span className="toDate">&nbsp;- ALL DAY</span>}
-                                        {/* TIMES */}
-                                        <span id="times">
-                                          {!contains(event?.startTime, 'Invalid') && event.startTime?.length > 0 && (
-                                            <span className="from-time">
-                                              <span className="at-symbol">&nbsp;@</span> {event.startTime}
-                                            </span>
-                                          )}
-                                          {!contains(event?.endTime, 'Invalid') && event.endTime?.length > 0 && event.endTime !== event.startTime && (
-                                            <span className="to-time"> - {event.endTime}</span>
-                                          )}
-                                        </span>
+                    <div
+                      key={index}
+                      data-from-date={event.fromDate}
+                      className={event.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'}>
+                      <div className="text">
+                        {/* DATE CONTAINER */}
+                        <div id="date-container">
+                          <span className={`${parentsVisitation} color-coded-event-dot`}></span>
+                          {/* FROM DATE */}
+                          {!contains(event.fromDate, 'Invalid') && event?.fromDate?.length > 0 && (
+                            <span className="fromDate">{moment(event?.fromDate).format(DateFormats.readableDay)}</span>
+                          )}
+                          {/* TO WORD */}
+                          {!contains(event?.toDate, 'Invalid') && event?.toDate?.length > 0 && event?.toDate !== event?.fromDate && (
+                            <span className="toDate"> to </span>
+                          )}
+                          {/* TO DATE */}
+                          {!contains(event.toDate, 'Invalid') &&
+                            event.toDate?.length > 0 &&
+                            event.toDate !== event.fromDate &&
+                            moment(event.toDate).format(DateFormats.readableDay)}
+                          {/* ALL DAY */}
+                          {event &&
+                            !Manager.isValid(event.startTime) &&
+                            (!Manager.isValid(event.toDate) || event.toDate.indexOf('Invalid') > -1) &&
+                            event.toDate !== event.fromDate && <span className="toDate">&nbsp;- ALL DAY</span>}
+                          {/* TIMES */}
+                          <span id="times">
+                            {!contains(event?.startTime, 'Invalid') && event.startTime?.length > 0 && (
+                              <span className="from-time">
+                                <span className="at-symbol">&nbsp;@</span> {event.startTime}
+                              </span>
+                            )}
+                            {!contains(event?.endTime, 'Invalid') && event.endTime?.length > 0 && event.endTime !== event.startTime && (
+                              <span className="to-time"> - {event.endTime}</span>
+                            )}
+                          </span>
 
-                                        {/* EDIT ICON */}
-                                        <span
-                                          onClick={(e) => {
-                                            if (AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())) {
-                                              setEventToEdit(event)
-                                              setShowEditCard(true)
-                                            }
-                                          }}
-                                          className="material-icons-round edit-icon">
-                                          more_horiz
-                                        </span>
-                                      </div>
-                                      {/* TITLE */}
-                                      <p className="title mb-3" data-event-id={event.id}>
-                                        <b className={`event-title ${parentsVisitation}`}>
-                                          {CalendarManager.formatEventTitle(event.title)}
-                                          {event?.repeatInterval?.length > 0 ? (
-                                            <span className="material-icons-round fs-20 ml-10">event_repeat</span>
-                                          ) : (
-                                            ''
-                                          )}
-                                        </b>
-                                      </p>
+                          {/* EDIT ICON */}
+                          <span
+                            onClick={(e) => {
+                              if (AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())) {
+                                setEventToEdit(event)
+                                setShowEditCard(true)
+                              }
+                            }}
+                            className="material-icons-round edit-icon">
+                            more_horiz
+                          </span>
+                        </div>
+                        {/* TITLE */}
+                        <p className="title" data-event-id={event.id}>
+                          <b className={`event-title ${parentsVisitation}`}>{CalendarManager.formatEventTitle(event.title)}</b>
+                        </p>
 
-                                      {/* CHILDREN */}
-                                      {event.children && event.children.length > 0 && (
-                                        <div className="event-row mr-0">
-                                          <p className="children flex flex-start w-auto">
-                                            <span className="mr-0 material-icons-round event-icon">face</span>Children:
-                                            {event.children.map((child, index) => {
-                                              return (
-                                                <span key={index} className="child-date">
-                                                  {child}
-                                                </span>
-                                              )
-                                            })}
-                                          </p>
-                                        </div>
-                                      )}
+                        {/* CHILDREN */}
+                        {event.children && event.children.length > 0 && (
+                          <div className="children flex">
+                            <p className="children flex flex-start w-auto gap">
+                              <span className="mr-0 material-icons-round event-icon">face</span>
+                              {event.children.map((child, index) => {
+                                return (
+                                  <span key={index} className="child-date">
+                                    {child}
+                                  </span>
+                                )
+                              })}
+                            </p>
+                          </div>
+                        )}
 
-                                      {/* NOTES */}
-                                      {Manager.isValid(event.notes) && event.notes.length > 0 && (
-                                        <div className="event-row">
-                                          <p className="notes">
-                                            <span className="material-icons-round event-icon">text_snippet</span>
-                                            {event.notes}
-                                          </p>
-                                        </div>
-                                      )}
+                        {/* NOTES */}
+                        {Manager.isValid(event.notes) && event.notes.length > 0 && (
+                          <div className="flex">
+                            <span className="material-icons-round event-icon">text_snippet</span>
+                            <p className="notes">{event.notes}</p>
+                          </div>
+                        )}
 
-                                      {/* EVENT WEBSITE URL */}
-                                      {event.websiteUrl && true && event.websiteUrl.length > 0 && (
-                                        <div className="event-row">
-                                          <p className="website-url-label">
-                                            <span className="material-icons-round event-icon">language</span> Website:
-                                          </p>
-                                          <a target="_blank" href={event.websiteUrl} className="website-url" rel="noreferrer">
-                                            {formatWebsiteUrl(event.websiteUrl)}
-                                            <span className="material-icons-round website-url-icon">open_in_new</span>
-                                          </a>
-                                        </div>
-                                      )}
+                        {/* EVENT WEBSITE URL */}
+                        {event.websiteUrl && true && event.websiteUrl.length > 0 && (
+                          <div className="wesite flex">
+                            <span className="material-icons-round event-icon">language</span>
+                            <a target="_blank" href={event.websiteUrl} className="website-url" rel="noreferrer">
+                              {formatWebsiteUrl(event.websiteUrl)}
+                            </a>
+                          </div>
+                        )}
 
-                                      {/* DIRECTIONS LINK */}
-                                      {event.location && event.location.length > 0 && (
-                                        <div className="event-row">
-                                          <p>
-                                            <span className={'material-icons-round event-icon directions'}>turn_right</span> Directions:
-                                          </p>
-                                          <a href={Manager.getDirectionsLink(event.location)} target="_blank">
-                                            Navigation<span className="material-icons-round website-url-icon">open_in_new</span>
-                                          </a>
-                                        </div>
-                                      )}
+                        {/* DIRECTIONS LINK */}
+                        {event.location && event.location.length > 0 && (
+                          <div className="directions">
+                            <span className={'material-icons-round event-icon directions'}>turn_right</span>
+                            <a href={Manager.getDirectionsLink(event.location)} target="_blank">
+                              Navigation
+                            </a>
+                          </div>
+                        )}
 
-                                      {/* REMINDERS */}
-                                      {Manager.isValid(readableReminderTimes, true) && (
-                                        <div className="event-row reminders">
-                                          <>
-                                            <span className={`event-icon material-icons-round`}>notifications_active</span>
-                                            <div className="flex" id="reminder-times-flex">
-                                              <p id="reminders-title">Reminders: </p>
+                        {/* REMINDERS */}
+                        {Manager.isValid(readableReminderTimes, true) && (
+                          <div className="reminders">
+                            <>
+                              <span className={`event-icon material-icons-round`}>notifications_active</span>
+                              <p id="reminders-title">Reminders: </p>
 
-                                              <p
-                                                className="flex"
-                                                dangerouslySetInnerHTML={{
-                                                  __html:
-                                                    `${readableReminderTimes.toString().replaceAll(',', '').replaceAll(' minutes before', 'mins').replaceAll('At time of event', 'Event Time')}`.replaceAll(
-                                                      ' hour before',
-                                                      'hr'
-                                                    ),
-                                                }}
-                                                id="reminder-times"></p>
-                                            </div>
-                                          </>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        })}
+                              <p
+                                className="flex reminder-times"
+                                dangerouslySetInnerHTML={{
+                                  __html:
+                                    `${readableReminderTimes.toString().replaceAll(',', '').replaceAll(' minutes before', 'mins').replaceAll('At time of event', 'Event Time')}`.replaceAll(
+                                      ' hour before',
+                                      'hr'
+                                    ),
+                                }}></p>
+                            </>
+                          </div>
+                        )}
                       </div>
+                      <hr />
                     </div>
                   )
                 })}

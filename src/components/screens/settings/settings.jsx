@@ -132,7 +132,6 @@ export default function Settings() {
               Customize Shortcuts
             </p>
             <Accordion.Panel expanded={shortcutAccIsOpen} className={'pl-0 pr-0'}>
-              <img className="shortcuts-example center mt-5" src={require('img/shortcutsExample.png')} alt="" />
               <p className="center-text mt-5 caption">shortcuts</p>
               <p className="mt-10 mb-10 ">
                 Select the shortcuts (only four) you would like to use in the menu (example above). Select them in the order you would like them

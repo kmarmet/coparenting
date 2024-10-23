@@ -14,6 +14,8 @@ import DateFormats from '../../../constants/dateFormats'
 import domtoimage from 'dom-to-image'
 import TitleSuggestion from '../../../models/titleSuggestion'
 import TitleSuggestionWrapper from '../../shared/titleSuggestionWrapper'
+import { save } from 'save-file'
+import { saveAs } from 'file-saver'
 
 function ChatRecovery() {
   const { state, setState } = useContext(globalState)
@@ -92,7 +94,6 @@ function ChatRecovery() {
       messages = Manager.convertToArray(messages)
 
       if (messageType === 'Bookmarked') {
-        console.log(messages)
         messages = messages.filter((x) => x.saved === true)
       }
 
@@ -124,13 +125,12 @@ function ChatRecovery() {
   }
 
   const saveImage = () => {
-    const convoImage = document.getElementById('image-wrapper').querySelector('img')
-    const shadowDownloadLink = document.createElement('a')
-    shadowDownloadLink.href = convoImage.src
-    shadowDownloadLink.download = 'Peaceful coParenting Archived Conversation'
-    document.body.appendChild(shadowDownloadLink)
-    shadowDownloadLink.click()
-    document.body.removeChild(shadowDownloadLink)
+    setTimeout(() => {
+      const convoImage = document.getElementById('image-wrapper').querySelector('img')
+      domtoimage.toBlob(convoImage).then(function (blob) {
+        saveAs(blob, 'ArchivedConversation.png')
+      })
+    }, 1000)
   }
 
   const handleMessageTypeSelection = async (e) => {

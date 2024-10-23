@@ -70,7 +70,6 @@ const ImageManager = {
       }, 'image/jpeg')
     })
   },
-
   blobToImage: (blob) => {
     return new Promise((resolve) => {
       const url = URL.createObjectURL(blob)
@@ -83,7 +82,6 @@ const ImageManager = {
       console.log(img)
     })
   },
-
   navigateToImage: (direction, imgPaths) => {
     const img = document.querySelector('#modal-img')
     const src = img.getAttribute('src')

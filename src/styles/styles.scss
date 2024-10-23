@@ -1,8 +1,96 @@
 @import './_mixins.scss';
 
-#fallback {
+#error-screen {
   height: 100vh;
   width: 100vw;
+  background-color: white;
+  padding: 20px;
+  overflow: scroll;
+
+  #screen-title {
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  #text-container {
+    p {
+      &.heading {
+        font-weight: bold;
+      }
+    }
+
+    #steps {
+      display: flex;
+      width: 100%;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-items: center;
+
+      &#wrap {
+        flex-wrap: wrap;
+      }
+
+      .settings-icon {
+        height: 28px;
+      }
+
+      .step-number {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+
+      span {
+        text-align: left;
+      }
+
+      p {
+        text-align: left;
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+      }
+    }
+  }
+
+  #safari-icon {
+    height: 25px;
+    margin-left: 8px;
+  }
+
+  p,
+  .emphasize {
+    font-size: 14px;
+    font-weight: 400;
+
+    &.message {
+      line-height: 1.7;
+    }
+
+    &.emphasize {
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      padding: 3px 10px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    &.accordion-header {
+      color: white;
+      font-weight: 500;
+      margin-bottom: 10px;
+      background-color: #2b3881;
+      border-radius: 10px;
+      padding: 10px 0;
+      text-align: center;
+      text-align-last: center;
+    }
+
+    span {
+      color: $linkColor;
+    }
+  }
 
   .text {
     @include deadCenter;
@@ -296,8 +384,10 @@
     .material-icons {
       font-family: 'Material Icons';
     }
-    
-    .dead-center {@include deadCenter}
+
+    .dead-center {
+      @include deadCenter;
+    }
 
     .loading-overlay {
       top: 0;

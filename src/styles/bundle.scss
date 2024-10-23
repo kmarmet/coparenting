@@ -11,7 +11,8 @@
 @import "./screens/expenseTracker";
 @import "./screens/swapRequests";
 @import "./screens/transferRequests";
-@import "./screens/calendar";
+@import "./calendar/calendar";
+@import "./calendar/calendarSearch";
 @import "./screens/profile";
 @import "../icons/material-icons";
 @import "./screens/memories";
@@ -24,4 +25,5 @@
 @import "./screens/settings";
 @import "./screens/coparentingSpace.scss";
 @import "./screens/loginRegistration";
+@import "./calendar/calendarEvents";
 @import "./palette";
