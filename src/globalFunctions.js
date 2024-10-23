@@ -13,6 +13,13 @@ export var toCamelCase = function(input) {
   });
 };
 
+export var capitalizeFirstWord = function(str) {
+  var capitalizedFirstWord, firstWord;
+  firstWord = str.split(' ')[0];
+  capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
+  return capitalizedFirstWord + str.slice(firstWord.length);
+};
+
 export var getFirstWord = function(input) {
   return input.toString().replace(/ .*/, '');
 };

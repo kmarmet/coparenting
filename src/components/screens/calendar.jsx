@@ -793,8 +793,6 @@ export default function EventCalendar() {
                           <div className="reminders">
                             <>
                               <span className={`event-icon material-icons-round`}>notifications_active</span>
-                              <p id="reminders-title">Reminders: </p>
-
                               <p
                                 className="flex reminder-times"
                                 dangerouslySetInnerHTML={{

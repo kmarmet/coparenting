@@ -1,5 +1,8 @@
 import DB from '@db'
+import { saveAs } from 'file-saver'
 import FirebaseStorage from '@firebaseStorage'
+import domtoimage from 'dom-to-image'
+import Manager from '@manager'
 
 const ImageManager = {
   expandImage: (img, modal) => {
@@ -189,6 +192,20 @@ export const createImage = (url) =>
 
 export function getRadianAngle(degreeValue) {
   return (degreeValue * Math.PI) / 180
+}
+
+export function saveImage(imageSelector, url) {
+  setTimeout(() => {
+    if (Manager.isValid(imageSelector)) {
+      const image = document.querySelector(imageSelector)
+      domtoimage.toBlob(image).then(function (blob) {
+        saveAs(blob, 'ArchivedConversation.png')
+      })
+    }
+    if (Manager.isValid(url)) {
+      saveAs(url, 'Memory.jpg')
+    }
+  }, 300)
 }
 
 /**

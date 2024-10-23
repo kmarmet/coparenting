@@ -6,6 +6,11 @@ export toCamelCase = (input) ->
     if index == 0 then word.toLowerCase() else word.toUpperCase()
     input.replace /\s+/g, ''
 
+export capitalizeFirstWord = (str) ->
+  firstWord = str.split(' ')[0];
+  capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
+  return capitalizedFirstWord + str.slice(firstWord.length);
+
 export getFirstWord = (input) ->
   input.toString().replace(/ .*/, '')
 

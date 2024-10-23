@@ -15,6 +15,25 @@ import LightGallery from 'lightgallery/react'
 import imagesLoaded from 'imagesloaded'
 import Masonry from 'masonry-layout'
 import 'lightgallery/css/lightgallery.css'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  capitalizeFirstWord,
+  uniqueArray,
+  getFileExtension,
+} from '../../globalFunctions'
+import { saveImage } from '../../managers/imageManager'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -23,12 +42,10 @@ export default function Memories() {
   const [showImageTheater, setShowImageTheater] = useState(false)
   const [imgArray, setImgArray] = useState([])
   const [defaultTheaterIndex, setDefaultTheaterIndex] = useState(0)
-  const inputFile = useRef(null)
   const [showFyiAccordion, setShowFyiAccordion] = useState(false)
   const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [imageElements, setImageElements] = useState([])
   const dbRef = ref(getDatabase())
+  const inputFile = useRef(null)
 
   const getSecuredMemories = async () => {
     setState({ ...state, isLoading: true })
@@ -76,13 +93,11 @@ export default function Memories() {
           })
           setImgArray(arr)
           setMemories(validImages)
-          setIsLoading(false)
           setTimeout(() => {
             addImageAnimation()
           }, 200)
         } else {
           setMemories([])
-          setIsLoading(false)
         }
       }
       setState({ ...state, isLoading: true })
@@ -110,7 +125,19 @@ export default function Memories() {
     })
   }
 
-  // Light Gallery
+  const saveMemoryImage = (e) => {
+    const thisIconParent = e.target.parentNode
+    if (Manager.isValid(thisIconParent)) {
+      const memoryImage = thisIconParent.closest('.below-image').previousSibling
+      if (Manager.isValid(memoryImage)) {
+        const src = memoryImage.getAttribute('data-src')
+        if (Manager.isValid(src)) {
+          saveImage(null, src)
+        }
+      }
+    }
+  }
+
   useEffect(() => {
     onValue(child(dbRef, DB.tables.memories), async (snapshot) => {
       await getSecuredMemories(currentUser)
@@ -126,21 +153,6 @@ export default function Memories() {
       })
     })
     Manager.toggleForModalOrNewForm()
-    const container = document.querySelector('.light-gallery')
-    if (container) {
-      // Initialize Masonry
-      const msnry = new Masonry(container, {
-        itemSelector: '.memory-image',
-        columnWidth: '.grid-sizer',
-        percentPosition: true,
-      })
-
-      // Use imagesLoaded with Masonry
-      imagesLoaded(container).on('progress', function () {
-        // Layout Masonry after each image loads
-        msnry.layout()
-      })
-    }
   }, [])
 
   return (
@@ -177,31 +189,41 @@ export default function Memories() {
           </div>
         )}
         {/* GALLERY */}
-        <LightGallery elementClassNames={'light-gallery'} speed={500}>
+        <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'.memory-image'}>
           <>
             {Manager.isValid(memories, true) &&
               memories.map((imgObj, index) => {
-                return <div style={{ backgroundImage: `url(${imgObj.url})` }} key={index} className="memory-image" data-src={imgObj.url}></div>
+                return (
+                  <>
+                    <div style={{ backgroundImage: `url(${imgObj.url})` }} key={index} className="memory-image" data-src={imgObj.url}></div>
+                    <div className="below-image">
+                      {Manager.isValid(imgObj?.shareWith, true) && !imgObj?.shareWith.includes(currentUser.phone) && (
+                        <>
+                          <div className="top flex">
+                            <p className="title">{uppercaseFirstLetterOfAllWords(imgObj.title)}</p>
+                            <div className="buttons flex">
+                              <span
+                                className="material-icons-round download-icon"
+                                onClick={(e) => {
+                                  saveMemoryImage(e)
+                                }}>
+                                download
+                              </span>
+                              <span onClick={() => deleteMemory(imgObj.url, imgObj)} className="material-icons-round delete-icon">
+                                remove
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text">{capitalizeFirstWord(imgObj.notes)}</div>
+                        </>
+                      )}
+                    </div>
+                  </>
+                )
               })}
           </>
         </LightGallery>
       </div>
     </>
   )
-}
-// DELETE BUTTON
-{
-  /*{Manager.isValid(imgObj?.shareWith, true) && !imgObj?.shareWith.includes(currentUser.phone) && (*/
-}
-{
-  /*  <button onClick={() => deleteMemory(imgObj.url, imgObj)} className="button red default w-30 center">*/
-}
-{
-  /*    DELETE*/
-}
-{
-  /*  </button>*/
-}
-{
-  /*)}*/
 }
