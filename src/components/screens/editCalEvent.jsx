@@ -342,7 +342,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
 
   useEffect(() => {
     setAllCalEvents().then((r) => r)
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (

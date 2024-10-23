@@ -319,7 +319,7 @@ export default function Registration() {
   const [parentInputs, setParentInputs] = useState([<ParentInput add={addParent} />])
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
     setTimeout(() => {
       setState({
         ...state,
@@ -355,7 +355,7 @@ export default function Registration() {
               onClick={() => {
                 setState({ ...state, menuIsOpen: false })
                 document.querySelector('.install-app').classList.add('active')
-                Manager.toggleForModalOrNewForm('hide')
+                Manager.showPageContainer('hide')
               }}>
               Install App <span className="material-icons">install_mobile</span>
             </p>

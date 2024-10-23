@@ -93,11 +93,11 @@ const Chats = () => {
     if (currentUser.accountType === 'parent') {
       getChats().then((r) => r)
     }
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [selectedCoparent])
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
     getChats().then((r) => r)
 
     if (showNewThreadForm) {

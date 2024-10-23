@@ -161,7 +161,7 @@ export default function Login() {
 
   useLayoutEffect(() => {
     autoLogin().then((r) => r)
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
     document.querySelector('.App').classList.remove('pushed')
   }, [])
 
@@ -191,7 +191,7 @@ export default function Login() {
           onClick={() => {
             setState({ ...state, menuIsOpen: false })
             document.querySelector('.install-app').classList.add('active')
-            Manager.toggleForModalOrNewForm('hide')
+            Manager.showPageContainer('hide')
           }}>
           Install App <span className="material-icons">install_mobile</span>
         </p>

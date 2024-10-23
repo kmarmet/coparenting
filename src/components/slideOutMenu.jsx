@@ -45,13 +45,13 @@ export default function SlideOutMenu() {
     } else {
       setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), menuIsOpen: false, showCenterNavbarButton: true })
     }
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }
 
   const changeTheme = async (theme) => {
     await DB_UserScoped.updateUserRecord(currentUser.phone, `settings/theme`, theme)
     setState({ ...state, theme: theme })
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
   }
 
   const logout = () => {

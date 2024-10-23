@@ -362,7 +362,7 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
   }, [clonedDates.length])
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (

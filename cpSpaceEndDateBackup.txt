@@ -62,7 +62,7 @@ export default function CoparentingSpace() {
     setThirdFFPeriodEnd("");
     setShowFFExample(false);
     setShareWith([]);
-    Manager.toggleForModalOrNewForm("show");
+    Manager.showPageContainer("show");
     setState({ ...state, showMenuButton: true });
   };
 
@@ -286,7 +286,7 @@ export default function CoparentingSpace() {
     getVisitationHolidays().then((holidays) => {
       setHolidayLabels(holidays[0]);
     });
-    Manager.toggleForModalOrNewForm("show");
+    Manager.showPageContainer("show");
     Manager.centerDatepicker();
   }, []);
 

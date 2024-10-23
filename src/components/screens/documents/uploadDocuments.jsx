@@ -130,7 +130,7 @@ export default function UploadDocuments({ showCard, hideCard }) {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (

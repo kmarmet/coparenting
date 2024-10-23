@@ -32,7 +32,7 @@ function Feedback() {
 
   useEffect(() => {
     setState({ ...state, previousScreen: ScreenNames.settings, showMenuButton: false, showBackButton: true })
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
   }, [])
 
   return (

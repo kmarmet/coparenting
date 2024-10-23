@@ -73,7 +73,7 @@ export default function ChildInfo() {
         },
       })
     }, 300)
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (

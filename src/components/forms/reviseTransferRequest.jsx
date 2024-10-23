@@ -106,7 +106,7 @@ export default function ReviseChildTransferChangeRequest({ showCard, hideCard })
   }, [transferRequestToRevise])
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (

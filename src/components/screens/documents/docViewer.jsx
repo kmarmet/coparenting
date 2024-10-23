@@ -288,7 +288,7 @@ export default function DocViewer() {
 
     const imagePath = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, userIdToUse, docToView.name)
     await DocumentConversionManager.imageToTextAndAppend(imagePath.imageUrl, document.querySelector('#text-container')).finally(() => {
-      Manager.toggleForModalOrNewForm('show')
+      Manager.showPageContainer('show')
     })
     // Filter TOC
     const spanHeaders = document.querySelectorAll('.header')
@@ -311,7 +311,7 @@ export default function DocViewer() {
 
   useEffect(() => {
     document.getElementById('text-container').innerText = ''
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
     convertAndAppendDocOrImage().finally(() => {})
 
     setTimeout(() => {

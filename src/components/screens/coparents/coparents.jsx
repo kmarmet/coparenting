@@ -16,32 +16,17 @@ import NewCoparentForm from './newCoparentForm'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow } = state
+  const { currentUser, theme, navbarButton } = state
 
   // State
   const [userCoparents, setUserCoparents] = useState([])
-  const [selectedCoparent, setSelectedCoparent] = useState(null)
+  const [selectedCoparent, setSelectedCoparent] = useState(currentUser.coparents[0])
   const [showCustomInfoForm, setShowCustomInfoForm] = useState(false)
   const [customValues, setCustomValues] = useState([])
   const [confirmTitle, setConfirmTitle] = useState('')
-
-  const resetForm = () => {
-    Manager.resetForm()
-    setUserCoparents([])
-    setSelectedCoparent(null)
-    setShowCustomInfoForm(false)
-    setCustomValues([])
-    setConfirmTitle('')
-    setState({ ...state, formToShow: '' })
-  }
+  const [showNewCoparentForm, setShowNewCoparentForm] = useState(false)
 
   const deleteProp = async (prop) => await DB.deleteCoparentInfoProp(DB.tables.users, currentUser, theme, prop, selectedCoparent)
-
-  useEffect(() => {
-    if (selectedCoparent) {
-      setCustomValues(Object.entries(selectedCoparent).filter((x) => x[1].indexOf('custom') > -1))
-    }
-  }, [selectedCoparent])
 
   const update = async (prop, value) => {
     const dbRef = ref(getDatabase())
@@ -82,7 +67,7 @@ export default function Coparents() {
 
   const getCoparents = async () => {
     let all = []
-    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'coparents').then((coparent) => {
+    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'coparents').then((coparent) => {
       all.push(coparent)
     })
     all = all[0]
@@ -94,30 +79,47 @@ export default function Coparents() {
     if (currentUser) {
       const dbRef = getDatabase()
       const userRef = ref(dbRef, `${DB.tables.users}`)
-      onValue(userRef, (snapshot) => {
-        getCoparents()
+      onValue(userRef, async (snapshot) => {
+        await getCoparents()
       })
     }
   }
 
   useEffect(() => {
+    if (selectedCoparent) {
+      setCustomValues(Object.entries(selectedCoparent))
+    } else {
+      setCustomValues(Object.entries(currentUser.coparents[0]))
+      setSelectedCoparent(currentUser.coparents[0])
+    }
+  }, [selectedCoparent])
+
+  useEffect(() => {
     if (currentUser) {
       onValueChange().then((r) => r)
     }
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
 
     const autocompleteInput = document.querySelector('.pac-target-input')
     if (autocompleteInput) {
       document.querySelector('.pac-target-input').setAttribute('placeholder', 'Enter updated address')
     }
-    setState({ ...state, showMenuButton: true, showBackButton: false })
+    setState({
+      ...state,
+      navbarButton: {
+        ...navbarButton,
+        action: () => {
+          setShowNewCoparentForm(true)
+        },
+      },
+    })
   }, [])
 
   return (
     <>
       <Confirm
-        onAccept={() => {
-          deleteCoparent()
+        onAccept={async () => {
+          await deleteCoparent()
           setConfirmTitle('')
         }}
         onCancel={() => setConfirmTitle('')}
@@ -142,15 +144,16 @@ export default function Coparents() {
       </BottomCard>
 
       {/* NEW COPARENT FORM */}
-      <NewCoparentForm />
+      <NewCoparentForm showCard={showNewCoparentForm} hideCard={() => setShowNewCoparentForm(false)} />
 
       {/* COPARENTS CONTAINER */}
-      <div id="coparents-container" className={`${theme} page-container form`}>
+      <div id="coparents-container" className={`${theme} page-container coparents-wrapper form`}>
         {/* COPARENT ICONS CONTAINER */}
         <div id="coparent-container">
           {selectedCoparent &&
             Manager.isValid(userCoparents, true) &&
             userCoparents.map((coparent, index) => {
+              console.log(coparent)
               return (
                 <div
                   onClick={() => setSelectedCoparent(coparent)}

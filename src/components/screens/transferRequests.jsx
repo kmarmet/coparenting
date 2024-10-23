@@ -92,7 +92,7 @@ export default function TransferRequests() {
       getSecuredRequests().then((r) => r)
     })
 
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (

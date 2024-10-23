@@ -152,7 +152,7 @@ export default function Memories() {
         },
       })
     })
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
   }, [])
 
   return (

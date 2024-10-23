@@ -15,7 +15,7 @@ const Modal = ({
   const { state, setState } = useContext(globalState)
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('hide')
+    Manager.showPageContainer('hide')
   }, [])
 
   return (
@@ -32,7 +32,7 @@ const Modal = ({
             <button
               onClick={() => {
                 setState({ ...state, modalIsOpen: false })
-                Manager.toggleForModalOrNewForm('show')
+                Manager.showPageContainer('show')
                 onClose()
               }}
               className="button default close">

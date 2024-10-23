@@ -91,7 +91,7 @@ export default function SwapRequests() {
     onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
       await getSecuredRequests().then((r) => r)
     })
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
     setNavbarButton(() => setShowCard(true))
   }, [])
 

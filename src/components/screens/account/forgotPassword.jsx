@@ -63,7 +63,7 @@ export default function ForgotPassword() {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
   }, [])
 
   return (

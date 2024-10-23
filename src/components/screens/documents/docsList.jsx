@@ -81,7 +81,7 @@ export default function DocsList() {
         },
       })
     }, 500)
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
   }, [])
 
   return (

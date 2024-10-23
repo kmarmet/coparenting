@@ -10,7 +10,7 @@ export default function CardConfirm({ className = '', title = '', message = '', 
   const { showAlert, alertMessage, alertType } = state
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
     console.log(className)
   }, [showAlert])
 

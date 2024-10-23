@@ -27,9 +27,9 @@ import {
   getFileExtension,
 } from '../../../globalFunctions'
 
-const NewCoparentForm = () => {
+const NewCoparentForm = ({ showCard, hideCard }) => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow } = state
+  const { currentUser, theme } = state
 
   // State
   const [name, setName] = useState('')
@@ -38,12 +38,12 @@ const NewCoparentForm = () => {
   const [parentType, setParentType] = useState('')
 
   const resetForm = () => {
-    Manager.resetForm()
+    Manager.resetForm('new-coparent-wrapper')
     setName('')
     setAddress('')
     setPhoneNumber('')
     setParentType('')
-    setState({ ...state, formToShow: '' })
+    hideCard()
   }
 
   const submit = async () => {
@@ -88,12 +88,12 @@ const NewCoparentForm = () => {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
   }, [])
 
   return (
-    <>
-      <BottomCard title={'Add Co-Parent'} showCard={formToShow === ScreenNames.newCoparent}>
+    <div className="new-coparent-wrapper">
+      <BottomCard title={'Add Co-Parent'} showCard={showCard} onClose={hideCard}>
         <div id="new-coparent-container" className={`${theme} form`}>
           <div className="form new-coparent-form">
             <label>
@@ -146,7 +146,7 @@ const NewCoparentForm = () => {
           </div>
         </div>
       </BottomCard>
-    </>
+    </div>
   )
 }
 

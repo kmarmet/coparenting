@@ -35,9 +35,9 @@ function ImageTheater({ onOpen, showTheater = false, imgArray, title, subtitle =
 
   useEffect(() => {
     if (contains(className.toString(), 'active')) {
-      Manager.toggleForModalOrNewForm('show')
+      Manager.showPageContainer('show')
     } else {
-      Manager.toggleForModalOrNewForm('hide')
+      Manager.showPageContainer('hide')
     }
   }, [className])
 
@@ -71,7 +71,7 @@ function ImageTheater({ onOpen, showTheater = false, imgArray, title, subtitle =
         id="close-icon"
         onClick={() => {
           onClose()
-          Manager.toggleForModalOrNewForm('show')
+          Manager.showPageContainer('show')
         }}>
         expand_more
       </span>

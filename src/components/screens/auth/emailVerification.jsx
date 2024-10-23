@@ -70,7 +70,7 @@ export default function EmailVerification() {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
   }, [])
 
   return (

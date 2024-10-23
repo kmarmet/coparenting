@@ -163,14 +163,8 @@ const Manager = {
     window.scrollTo(0, 0)
   },
   // ON PAGE LOAD
-  toggleForModalOrNewForm: (hideOrShow = 'show') => {
+  showPageContainer: (hideOrShow = 'show') => {
     Manager.centerDatepicker()
-    if (hideOrShow === 'show') {
-      Manager.showPageContainer()
-      Manager.scrollToTopOfPage()
-    }
-  },
-  showPageContainer: () => {
     const interval = setInterval(() => {
       const pageContainer = document.querySelector('.page-container')
       if (pageContainer) {
@@ -178,6 +172,7 @@ const Manager = {
         clearInterval(interval)
       }
     }, 200)
+    Manager.scrollToTopOfPage()
   },
   hideKeyboard: (parentClass) => {
     const parent = document.querySelector(`.${parentClass}`)

@@ -18,7 +18,7 @@ export default function Alert({ className = '' }) {
 
   useEffect(() => {
     if (!showAlert) {
-      Manager.toggleForModalOrNewForm('show')
+      Manager.showPageContainer('show')
     }
   }, [showAlert])
 

@@ -74,7 +74,7 @@ export default function NavBar() {
       })
     }
 
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }
 
   return (

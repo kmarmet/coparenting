@@ -140,7 +140,7 @@ function NewMemoryForm({ showCard, hideCard }) {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
   }, [])
 
   return (

@@ -94,7 +94,7 @@ const NewChildForm = ({ showCard, hideCard }) => {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
     getExistingChildren().then((r) => r)
   }, [])
 

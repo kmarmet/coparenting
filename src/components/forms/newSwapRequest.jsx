@@ -160,7 +160,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   const changeSwapDuration = (duration) => setSwapDuration(duration)
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (

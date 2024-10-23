@@ -318,7 +318,7 @@ function NewExpenseForm({ showCard, hideCard }) {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (

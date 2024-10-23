@@ -50,7 +50,7 @@ export default function UpdateContactInfo() {
 
   useEffect(() => {
     setState({ ...state, previousScreen: ScreenNames.account, showBackButton: true, showMenuButton: false })
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (

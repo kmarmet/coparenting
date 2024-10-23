@@ -77,7 +77,7 @@ const Conversation = () => {
     onSwipedRight: (eventData) => {
       //console.log("User Swiped!", eventData);
       setState({ ...state, showMenuButton: true, currentScreen: ScreenNames.chats })
-      Manager.toggleForModalOrNewForm('show')
+      Manager.showPageContainer('show')
     },
   })
 
@@ -220,7 +220,7 @@ const Conversation = () => {
       })
     }, 500)
     scrollToLatestMessage()
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   useEffect(() => {
@@ -245,7 +245,7 @@ const Conversation = () => {
             <button
               onClick={() => {
                 setState({ ...state, currentScreen: ScreenNames.chats })
-                Manager.toggleForModalOrNewForm('show')
+                Manager.showPageContainer('show')
               }}
               id="previous-screen-button">
               <span className="material-icons-round">arrow_back_ios</span> BACK

@@ -395,7 +395,7 @@ export default function CoparentingSpace() {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
     setAllStates().then((r) => r)
     setTimeout(() => {
       setState({ ...state, showMenuButton: true, showBackButton: false })

@@ -54,7 +54,7 @@ export default function EventCalendar() {
     onSwipedRight: (eventData) => {
       //console.log("User Swiped!", eventData);
       // setState({ ...state, showMenuButton: true, currentScreen: ScreenNames.cal })
-      // Manager.toggleForModalOrNewForm('show')
+      // Manager.showPageContainer('show')
       document.querySelector('.flatpickr-prev-month').click()
       console.log('swiped')
     },
@@ -345,7 +345,7 @@ export default function EventCalendar() {
       inline: true,
       defaultDate: new Date(),
       onReady: () => {
-        Manager.toggleForModalOrNewForm('show')
+        Manager.showPageContainer('show')
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
           setState({ ...state, selectedNewEventDay: moment().format(DateFormats.dateForDb).toString() })
@@ -423,7 +423,7 @@ export default function EventCalendar() {
   // ON PAGE LOAD
   useEffect(() => {
     addFlatpickrCalendar().then((r) => r)
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
     setTimeout(() => {
       setState({
         ...state,

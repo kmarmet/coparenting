@@ -9,7 +9,7 @@ export default function Account() {
 
   useEffect(() => {
     setState({ ...state, currentScreen: ScreenNames.account, showMenuButton: true, showBackButton: false })
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (

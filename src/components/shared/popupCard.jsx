@@ -6,9 +6,9 @@ function PopupCard({ onOpen, children, title, subtitle = '', className = '', onC
   useEffect(() => {
     // @ts-ignore
     if (!className.contains('active')) {
-      Manager.toggleForModalOrNewForm('show')
+      Manager.showPageContainer('show')
     } else {
-      Manager.toggleForModalOrNewForm('hide')
+      Manager.showPageContainer('hide')
     }
   }, [className])
 
@@ -26,7 +26,7 @@ function PopupCard({ onOpen, children, title, subtitle = '', className = '', onC
           id="close-icon"
           onClick={() => {
             onClose()
-            Manager.toggleForModalOrNewForm('show')
+            Manager.showPageContainer('show')
           }}>
           expand_more
         </span>

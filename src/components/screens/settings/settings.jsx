@@ -83,7 +83,7 @@ export default function Settings() {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
     setState({ ...state, showBackButton: false, showMenuButton: true })
     setMenuItemsList(AllMenuItems.map((x) => x.Name.spaceBetweenWords().uppercaseFirstLetterOfAllWords()))
   }, [])

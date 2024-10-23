@@ -86,7 +86,7 @@ function ChatRecovery() {
         isLoading: false,
       })
       setViewConvo(false)
-      Manager.toggleForModalOrNewForm()
+      Manager.showPageContainer()
 
       return false
     } else {
@@ -161,12 +161,12 @@ function ChatRecovery() {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm()
+    Manager.showPageContainer()
     setState({ ...state, previousScreen: ScreenNames.account, showBackButton: true, showMenuButton: false })
     const signaturePadElement = document.querySelector('.signature-pad')
     if (signaturePadElement) {
       const sigPad = new SignaturePad(signaturePadElement, {
-        backgroundColor: '#2b356388',
+        backgroundColor: '#e4e4e4',
       })
       setSignaturePad(sigPad)
     }
@@ -221,7 +221,13 @@ function ChatRecovery() {
 
               {/* CONVERSATION TYPE */}
               <label>Which types of messages would you like to see and/or download?</label>
-              <CheckboxGroup defaultLabel={'All'} boxWidth={50} onCheck={handleMessageTypeSelection} labels={['Bookmarked Only', 'All']} />
+              <CheckboxGroup
+                defaultLabel={'All'}
+                boxWidth={50}
+                onCheck={handleMessageTypeSelection}
+                labels={['All', 'Bookmarked Only']}
+                skipNameFormatting={true}
+              />
 
               {/* DISCLAIMER/LEGAL TEXT */}
               <p className="mb-10">
@@ -268,7 +274,7 @@ function ChatRecovery() {
             {Manager.isValid(convoMessages, true) &&
               convoMessages.map((message, index) => {
                 return (
-                  <div className="convo-message">
+                  <div className="convo-message" key={index}>
                     <p id="message">{message.message}</p>
                     <p id="sender">From: {message.sender.contains(currentUser.name) ? 'Me' : message.sender}</p>
                     <p id="timestamp">{moment(message.timestamp, 'MM/DD/yyyy hh:mma').format(DateFormats.readableDatetime)}</p>

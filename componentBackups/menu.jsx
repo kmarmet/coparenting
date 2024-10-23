@@ -25,7 +25,7 @@ export default function Menu() {
       menuIsOpen: false,
       viewExpenseForm: false,
     })
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }
 
   const logout = () => {
@@ -56,7 +56,7 @@ export default function Menu() {
 
   useEffect(() => {
     if (menuIsOpen) {
-      Manager.toggleForModalOrNewForm('hide')
+      Manager.showPageContainer('hide')
       setState({ ...state, showMenuButton: false })
       setTimeout(() => {
         document.querySelector('#menu').classList.add('open')
@@ -189,7 +189,7 @@ export default function Menu() {
           </div>
           <span
             onClick={async (e) => {
-              Manager.toggleForModalOrNewForm('show')
+              Manager.showPageContainer('show')
               await deleteMenuAnimation()
               if (currentScreen === ScreenNames.calendar) {
                 setState({ ...state, menuIsOpen: false, currentScreen: ScreenNames.chats })

@@ -169,7 +169,7 @@ export default function ExpenseTracker() {
     onValue(child(dbRef, DB.tables.expenseTracker), async (snapshot) => {
       await getSecuredExpenses().then((r) => r)
     })
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
     setNavbarButton(() => setShowNewExpenseCard(true))
   }, [])
 
@@ -461,7 +461,7 @@ export default function ExpenseTracker() {
                           {/* EXPENSE IMAGE */}
                           <>
                             {Manager.isValid(expense.imageUrl) && (
-                              <div id="img-container" className="flex" onClick={() => Manager.toggleForModalOrNewForm('hide')}>
+                              <div id="img-container" className="flex" onClick={() => Manager.showPageContainer('hide')}>
                                 <img
                                   src={expense.imageUrl || ''}
                                   data-img-id={expense.id}

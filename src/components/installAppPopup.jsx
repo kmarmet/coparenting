@@ -11,7 +11,7 @@ export default function InstallAppPopup() {
   const [expandAndroidAccordion, setExpandAndroidAccordion] = useState(false)
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('hide')
+    Manager.showPageContainer('hide')
   }, [])
 
   return (

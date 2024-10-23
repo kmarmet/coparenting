@@ -135,7 +135,7 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
   }
 
   useEffect(() => {
-    Manager.toggleForModalOrNewForm('show')
+    Manager.showPageContainer('show')
   }, [])
 
   return (
