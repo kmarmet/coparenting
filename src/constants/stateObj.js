@@ -6,6 +6,7 @@ import ScreenNames from "./screenNames";
 StateObj = {
   alertMessage: '',
   alertType: '',
+  activeInfoChild: null,
   confirmMessage: '',
   contactInfoToUpdateType: 'email',
   currentScreen: ScreenNames.login,
@@ -44,6 +45,7 @@ StateObj = {
   viewTransferRequestForm: false,
   setAlertMessage: function(alertMessage) {},
   setAlertType: function(type) {},
+  setActiveInfoChild: function(child) {},
   setConfirmMessage: function(message) {},
   setContactInfoToUpdateType: function() {},
   setCurrentScreen: function(screen) {},

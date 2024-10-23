@@ -1,18 +1,25 @@
 import Manager from '@manager'
 import React, { useContext } from 'react'
 import globalState from '../../context'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  uniqueArray,
+  getFileExtension,
+} from '../../globalFunctions'
 
-export default function CheckboxGroup({
-  labels,
-  onCheck,
-  elClass = '',
-  dataPhone,
-  dataDate,
-  skipNameFormatting = false,
-  defaultLabel,
-  onLightBackground = false,
-  boxWidth,
-}) {
+export default function CheckboxGroup({ labels, onCheck, elClass = '', dataPhone, dataDate, skipNameFormatting = false, defaultLabel, boxWidth }) {
   const { state, setState } = useContext(globalState)
   const { theme } = state
   return (
@@ -33,8 +40,8 @@ export default function CheckboxGroup({
               thisDate = dataDate[index]
             }
           }
-          if (!label.stringHasNumbers() && !skipNameFormatting && !label.contains('Spouse')) {
-            label = label.toString().formatNameFirstNameOnly()
+          if (Manager.isValid(label) && !stringHasNumbers(label) && !skipNameFormatting && !contains(label, 'Spouse')) {
+            label = formatNameFirstNameOnly(label.toString())
           }
           return (
             <div
@@ -42,7 +49,7 @@ export default function CheckboxGroup({
               data-phone={thisPhone ? thisPhone : ''}
               data-label={label ? label : ''}
               data-date={thisDate ? thisDate : ''}
-              className={`flex animate ${boxWidth ? `w-${boxWidth}` : ''} ${onLightBackground ? 'on-light-background' : ''} ${boxWidth === 'auto' ? 'mr-20' : ''}`}
+              className={`flex animate ${boxWidth ? `w-${boxWidth}` : ''}  ${boxWidth === 'auto' ? 'mr-20' : ''}`}
               key={index}
               onClick={(e) => {
                 onCheck(e)

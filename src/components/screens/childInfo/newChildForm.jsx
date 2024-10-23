@@ -14,9 +14,26 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { useSwipeable } from 'react-swipeable'
 import BottomButton from '../../shared/bottomButton'
 import BottomCard from '../../shared/bottomCard'
-import Swal from 'sweetalert2'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  uniqueArray,
+  getFileExtension,
+} from '../../../globalFunctions'
+import ModelNames from '../../../models/modelNames'
 
-const NewChildForm = ({ showCard, setShowCard }) => {
+const NewChildForm = ({ showCard, hideCard }) => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
 
@@ -36,51 +53,28 @@ const NewChildForm = ({ showCard, setShowCard }) => {
     setExistingChildren([])
     setGender('male')
     setDateOfBirth('')
+    hideCard()
   }
 
   const submit = async () => {
-    const dbRef = ref(getDatabase())
-
     if (Manager.validation([name, dateOfBirth]) > 0) {
-      // ERROR
-      Swal.fire({
-        title: 'Please fill out required fields',
-        icon: 'error',
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-        },
-      })
+      displayAlert('error', 'Please fill out required fields')
       return false
     } else {
       const newChild = new Child()
       const general = new General()
       general.address = address !== null ? address : ''
-      general.phone = phoneNumber
+      general.phone = phoneNumber || ''
       general.name = name
-      general.gender = gender
-      newChild.general = general
+      general.gender = gender || ''
+      general.dateOfBirth = dateOfBirth
+      newChild.general = general || ''
 
-      // Has children already
-      if (existingChildren.length > 0) {
-        set(child(dbRef, `users/${currentUser.phone}/children`), [...existingChildren, newChild])
-      }
-      // Add new child
-      else {
-        set(child(dbRef, `users/${currentUser.phone}/children`), [newChild])
-      }
+      const cleanChild = Manager.cleanObject(newChild, ModelNames.childUser)
+      await DB_UserScoped.addUserChild(currentUser, cleanChild)
+
+      resetForm()
     }
-    resetForm()
   }
 
   const getExistingChildren = async () => {
@@ -110,7 +104,6 @@ const NewChildForm = ({ showCard, setShowCard }) => {
       title={'Add Child'}
       showCard={showCard}
       onClose={() => {
-        setShowCard()
         resetForm()
       }}>
       <div id="new-child-container" className={`${theme}  form`}>
@@ -143,9 +136,6 @@ const NewChildForm = ({ showCard, setShowCard }) => {
           {/* GENDER */}
           <label>Gender</label>
           <CheckboxGroup boxWidth={20} elClass="mb-20" labels={['Male', 'Female']} onCheck={(e) => handleGenderSelect(e)} />
-          {name.length > 0 && moment(dateOfBirth).format('MM/DD/YYYY').replace('Invalid date', '').length > 0 && (
-            <BottomButton iconName="add_reaction" elClass={'visible'} onClick={submit} />
-          )}
         </div>
         <div className="flex buttons gap">
           <button className="button card-button" onClick={submit}>

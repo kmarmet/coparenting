@@ -29,57 +29,51 @@ import {
   getFileExtension,
   lowercaseShouldBeLowercase,
 } from '../../../globalFunctions'
+import DB_UserScoped from '@userScoped'
 
-function General({ activeChild, updateActiveChild }) {
+function General() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, activeInfoChild } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [generalValues, setGeneralValues] = useState([])
   const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, activeChild, 'id')
-    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/general/${prop.toLowerCase()}`)
-    updateActiveChild()
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'general', prop)
+    setState({ ...state, activeInfoChild: updatedChild })
     setSelectedChild()
     setArrowDirection('down')
   }
 
   const setSelectedChild = () => {
-    if (Manager.isValid(activeChild.general, false, true)) {
+    if (Manager.isValid(activeInfoChild.general, false)) {
       // Set info
-      let values = Object.entries(activeChild.general)
+      let values = Object.entries(activeInfoChild.general)
       setGeneralValues(values.filter((x) => x[0] !== 'profilePic'))
     }
   }
 
   const update = async (section, prop, value, isArray) => {
-    const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
-
     // Update DB
-    if (key !== null) {
-      displayAlert('success', '', 'Updated!')
-      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${removeSpacesAndLowerCase(prop)}`), value)
-      updateActiveChild()
-    }
+    displayAlert('success', '', 'Updated!')
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', prop, value)
+    setState({ ...state, activeInfoChild: updatedChild })
   }
 
   useEffect(() => {
-    console.log(activeChild)
     setSelectedChild()
   }, [])
 
   useEffect(() => {
     setSelectedChild()
-  }, [activeChild])
+  }, [activeInfoChild])
 
   return (
     <div className="info-section section general form">
       <Accordion>
         {/* EXPAND ACCORDION */}
         <p
-          className={activeChild.general === undefined ? 'disabled header general' : 'header general'}
+          className={activeInfoChild.general === undefined ? 'disabled header general' : 'header general'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.general')
             setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
@@ -99,12 +93,12 @@ function General({ activeChild, updateActiveChild }) {
             generalValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
               const value = prop[1]
-
+              // console.log(value)
               return (
                 <div key={index}>
                   <label className="w-100">{infoLabel}</label>
                   <div className="flex input">
-                    {contains(infoLabel, 'address') && (
+                    {contains(infoLabel.toLowerCase(), 'address') && (
                       <Autocomplete
                         apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
                         options={{
@@ -115,10 +109,10 @@ function General({ activeChild, updateActiveChild }) {
                         onPlaceSelected={async (place) => {
                           await update('general', 'address', place.formatted_address, false)
                         }}
-                        placeholder={Manager.isValid(activeChild.general.address) ? activeChild.general.address : 'Location'}
+                        placeholder={Manager.isValid(activeInfoChild.general.address) ? activeInfoChild.general.address : 'Location'}
                       />
                     )}
-                    {!contains(infoLabel, 'address') && (
+                    {!contains(infoLabel.toLowerCase(), 'address') && (
                       <DebounceInput
                         className="mb-15"
                         value={value}

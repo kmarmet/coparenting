@@ -17,19 +17,25 @@ import {
   removeFileExtension,
   uniqueArray,
 } from '../../../globalFunctions'
+import DB from '@db'
 
-function ChildSelector({ showCard, setShowCard, setActiveChild }) {
+function ChildSelector({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
-  const [children, setChildren] = useState([])
+  const { currentUser, activeInfoChild } = state
+  const [children, setChildren] = useState(currentUser?.children)
+
+  const setUserChildren = async () => {
+    const childs = await DB.getTable(`users/${currentUser.phone}/children`)
+    setChildren(childs)
+  }
 
   useEffect(() => {
-    setChildren(currentUser?.children)
-  }, [])
+    setUserChildren().then((r) => r)
+  }, [activeInfoChild])
 
   return (
     <BottomCard
-      onClose={setShowCard}
+      onClose={hideCard}
       title={'Choose Child'}
       subtitle="Select which child you would like to view & edit"
       showCard={showCard}
@@ -42,8 +48,8 @@ function ChildSelector({ showCard, setShowCard, setActiveChild }) {
                 className="child-name mt-0 w-30"
                 key={index}
                 onClick={(e) => {
-                  setActiveChild(child)
-                  setShowCard()
+                  setState({ ...state, activeInfoChild: child })
+                  hideCard()
                 }}>
                 {formatNameFirstNameOnly(child.general.name)}
               </p>

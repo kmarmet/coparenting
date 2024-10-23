@@ -24,37 +24,33 @@ import {
   getFileExtension,
   lowercaseShouldBeLowercase,
 } from '../../../globalFunctions'
+import DB_UserScoped from '@userScoped'
 
-function Medical({ activeChild, updateActiveChild }) {
+function Medical() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, activeInfoChild } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [medicalValues, setMedicalValues] = useState([])
   const [arrowDirection, setArrowDirection] = useState('down')
+
   const deleteProp = async (prop) => {
-    const key = await DB.getNestedSnapshotKey(`/users/${currentUser.phone}/children`, activeChild, 'id')
-    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/medical/${prop.toLowerCase()}`)
-    updateActiveChild()
-    setSelectedChild()
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'medical', prop)
     setArrowDirection('down')
+    console.log(prop)
+    setState({ ...state, activeInfoChild: updatedChild })
+    setSelectedChild()
   }
 
   const update = async (section, prop, value, isArray) => {
-    const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
-
-    // Update DB
-    if (key !== null) {
-      displayAlert('success', '', 'Updated!')
-      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop}`), value)
-      updateActiveChild()
-    }
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'medical', prop, value)
+    setState({ ...state, activeInfoChild: updatedChild })
+    displayAlert('success', '', 'Updated!')
   }
 
   const setSelectedChild = () => {
-    if (Manager.isValid(activeChild.medical, false, true)) {
+    if (Manager.isValid(activeInfoChild.medical, false)) {
       // Set info
-      let values = Object.entries(activeChild.medical)
+      let values = Object.entries(activeInfoChild.medical)
       setMedicalValues(values)
     } else {
       setMedicalValues([])
@@ -63,17 +59,13 @@ function Medical({ activeChild, updateActiveChild }) {
 
   useEffect(() => {
     setSelectedChild()
-  }, [activeChild])
-
-  useEffect(() => {
-    setSelectedChild()
-  }, [])
+  }, [activeInfoChild])
 
   return (
     <div className="info-section section medical">
       <Accordion>
         <p
-          className={activeChild.medical === undefined ? 'disabled header medical' : 'header medical'}
+          className={activeInfoChild.medical === undefined ? 'disabled header medical' : 'header medical'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.medical')
             setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
@@ -81,13 +73,13 @@ function Medical({ activeChild, updateActiveChild }) {
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
             } else {
-              if (activeChild.medical !== undefined) {
+              if (activeInfoChild.medical !== undefined) {
                 parent.classList.add('active')
               }
             }
             setExpandAccordion(!expandAccordion)
           }}>
-          <span className="material-icons-round">medical_information</span> Medical {activeChild.medical === undefined ? '- No Info' : ''}
+          <span className="material-icons-round">medical_information</span> Medical {activeInfoChild.medical === undefined ? '- No Info' : ''}
           <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
         </p>
         <Accordion.Panel expanded={expandAccordion === true ? true : false}>

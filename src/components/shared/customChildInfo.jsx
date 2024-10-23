@@ -24,35 +24,49 @@ import {
   uniqueArray,
   getFileExtension,
 } from '.././../globalFunctions'
+import CheckboxGroup from './checkboxGroup'
+import Autocomplete from 'react-google-autocomplete'
 
-export default function CustomChildInfo({ activeChild, showCard, hideCard }) {
+export default function CustomChildInfo({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, activeInfoChild } = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
   const [infoSection, setInfoSection] = useState('general')
+  const [infoType, setInfoType] = useState('text')
 
   const add = async () => {
-    const dbRef = ref(getDatabase())
+    const updatedChild = await DB_UserScoped.addUserChildProp(currentUser, activeInfoChild, infoSection, title, value)
+    resetForm()
+    setState({ ...state, activeInfoChild: updatedChild })
+  }
 
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
-    if (key !== null) {
-      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${title.toLowerCase()}`), `${value}`)
-      resetForm()
-    }
+  const handleInfoTypeSelection = (e) => {
+    Manager.handleCheckboxSelection(
+      e,
+      (e) => {
+        setInfoType(e.toLowerCase())
+      },
+      () => {},
+      false
+    )
   }
 
   const resetForm = () => {
     Manager.resetForm('custom-child-info-wrapper')
     setTitle('')
     setValue('')
-    setInfoSection('Select Info Section')
+    setInfoSection('')
     hideCard()
   }
 
   return (
     <BottomCard className="custom-child-info-wrapper" onClose={hideCard} title={'Add Custom Info'} showCard={showCard}>
       <div className="form">
+        {/* INFO SECTIONS */}
+        <label>
+          Info Section <span className="asterisk">*</span>
+        </label>
         <div className="flex">
           <p onClick={() => setInfoSection('general')} className={infoSection === 'general' ? 'active item' : 'item'}>
             General
@@ -67,10 +81,41 @@ export default function CustomChildInfo({ activeChild, showCard, hideCard }) {
             Behavior
           </p>
         </div>
-        <>
-          <input className="mb-15" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
-          <input className="mb-15" type="text" placeholder="Value*" onChange={(e) => setValue(e.target.value)} />
-        </>
+
+        {/* INFO TYPE */}
+        <label>
+          Info Type <span className="asterisk">*</span>
+        </label>
+        <CheckboxGroup defaultLabel={'text'} labels={['Text', 'Location']} onCheck={handleInfoTypeSelection} />
+
+        {/* INPUTS */}
+        {infoType === 'text' && (
+          <div className="flex">
+            <input className="mb-15" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
+            <input className="mb-15" type="text" placeholder="Value*" onChange={(e) => setValue(e.target.value)} />
+          </div>
+        )}
+
+        {infoType === 'location' && (
+          <>
+            <input className="mb-15" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
+            <Autocomplete
+              apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+              options={{
+                types: ['geocode', 'establishment'],
+                componentRestrictions: { country: 'usa' },
+              }}
+              className="mb-10"
+              onPlaceSelected={async (place) => {
+                setTitle('address')
+                setValue(place.formatted_address)
+              }}
+              placeholder={Manager.isValid(activeInfoChild.general.address) ? activeInfoChild.general.address : 'Location'}
+            />
+          </>
+        )}
+
+        {/* BUTTONS */}
         <div className="buttons">
           {Manager.isValid(value) && Manager.isValid(title) && (
             <button className="button card-button" onClick={add}>

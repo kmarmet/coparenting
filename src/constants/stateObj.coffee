@@ -3,6 +3,7 @@ import ScreenNames from "./screenNames"
 StateObj =
   alertMessage: ''
   alertType: ''
+  activeInfoChild: null
   confirmMessage: ''
   contactInfoToUpdateType: 'email'
   currentScreen: ScreenNames.login
@@ -40,6 +41,7 @@ StateObj =
   viewTransferRequestForm: false
   setAlertMessage: (alertMessage) ->
   setAlertType: (type) ->
+  setActiveInfoChild: (child) ->
   setConfirmMessage: (message) ->
   setContactInfoToUpdateType: ->
   setCurrentScreen: (screen) ->

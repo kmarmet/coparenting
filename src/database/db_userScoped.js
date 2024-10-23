@@ -2,12 +2,28 @@ import Manager from '@manager'
 import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
 import FirebaseStorage from './firebaseStorage'
 import DB from '@db'
-import '../prototypes'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  uniqueArray,
+  getFileExtension,
+} from '../globalFunctions'
 
 const DB_UserScoped = {
-  getCurrentUserRecords: (tableName, currentUser, theme, objectName) => {
+  getCurrentUserRecords: (tableName, currentUser, objectName) => {
     return new Promise((resolve, reject) => {
-      DB_UserScoped.getRecordsByUser(tableName, currentUser, theme, objectName)
+      DB_UserScoped.getRecordsByUser(tableName, currentUser, objectName)
         .then((currentUserRecord) => {
           if (!Array.isArray(currentUserRecord)) {
             currentUserRecord = DB.convertKeyObjectToArray(currentUserRecord)
@@ -99,7 +115,7 @@ const DB_UserScoped = {
     const dbRef = ref(getDatabase())
     set(child(dbRef, `${DB.tables.users}/${phoneUid}/${propPath}`), value)
   },
-  getRecordsByUser: async (tableName, currentUser, theme, objectName) => {
+  getRecordsByUser: async (tableName, currentUser, objectName) => {
     return new Promise(async (resolve, reject) => {
       const dbRef = ref(getDatabase())
       await get(child(dbRef, `${tableName}/${currentUser.phone}/${objectName}`))
@@ -147,8 +163,35 @@ const DB_UserScoped = {
   },
   addCoparent: async (currentUser, newCoparent) => {
     const updatedCoparents = [...currentUser.coparents, newCoparent]
-
     await DB_UserScoped.updateUserRecord(currentUser.id, '/coparents', updatedCoparents)
+  },
+  addUserChild: async (currentUser, newChild) => {
+    const dbRef = ref(getDatabase())
+    const currentChildren = await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'children')
+    await set(child(dbRef, `users/${currentUser.phone}/children`), [...currentChildren, newChild])
+  },
+  updateUserChild: async (currentUser, activeChild, section, prop, value) => {
+    const dbRef = ref(getDatabase())
+    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
+    await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop.toLowerCase()}`), value)
+    const returnChild = await DB.getTable(`users/${currentUser.phone}/children/${key}`)
+    return returnChild
+  },
+  deleteUserChildPropByPath: async (currentUser, activeChild, section, prop) => {
+    const dbRef = ref(getDatabase())
+    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
+    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/${section}/${prop.toLowerCase()}`)
+    const returnChild = await DB.getTable(`users/${currentUser.phone}/children/${key}`)
+    return returnChild
+  },
+  addUserChildProp: async (currentUser, activeChild, infoSection, prop, value) => {
+    const dbRef = ref(getDatabase())
+    let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
+    if (key !== null) {
+      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${prop.toLowerCase()}`), `${value}`)
+    }
+    const returnChild = await DB.getTable(`users/${currentUser.phone}/children/${key}`)
+    return returnChild
   },
 }
 

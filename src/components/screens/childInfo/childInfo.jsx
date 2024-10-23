@@ -22,39 +22,36 @@ import {
   spaceBetweenWords,
   formatNameFirstNameOnly,
   removeFileExtension,
+  displayAlert,
   uniqueArray,
 } from '../../../globalFunctions'
 import NewChildForm from './newChildForm'
 import ChildSelector from './childSelector'
 import DateFormats from '../../../constants/dateFormats'
+import DB_UserScoped from '@userScoped'
 
 export default function ChildInfo() {
   // @ts-ignore
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, navbarButton } = state
+  const { currentUser, theme, navbarButton, activeInfoChild } = state
   const [showCard, setShowCard] = useState(false)
   const imgRef = useRef()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showSelectorCard, setShowSelectorCard] = useState(false)
-  const [activeChild, setActiveChild] = useState(null)
-  const [updateKey, setUpdateKey] = useState(0)
+
   const uploadProfilePic = async (img) => {
     setState({ ...state, isLoading: true })
     // @ts-ignore
     const imgFiles = document.getElementById('upload-input').files
     if (imgFiles.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose an image', isLoading: false, alertType: 'error' })
+      displayAlert('error', 'Please choose an image')
       return false
     }
 
     // Upload -> Set child/general/profilePic
-    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, activeChild.id, img, 'profilePic').then(async (url) => {
-      const dbRef = ref(getDatabase())
-      await get(child(dbRef, `${DB.tables.users}/${currentUser.phone}/children`)).then(async (children) => {
-        const key = await DB.getNestedSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
-        set(child(dbRef, `${DB.tables.users}/${currentUser.phone}/children/${key}/general/profilePic`), url)
-        setState({ ...state, isLoading: false })
-      })
+    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, activeInfoChild.id, img, 'profilePic').then(async (url) => {
+      const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilePic', url)
+      setState({ ...state, isLoading: false, activeInfoChild: updatedChild })
     })
   }
 
@@ -63,20 +60,11 @@ export default function ChildInfo() {
     await uploadProfilePic(img)
   }
 
-  const updateActiveChild = async () => {
-    const children = Manager.convertToArray(await DB.getTable(`users/${currentUser.phone}/children`))
-    for (let child of children) {
-      if (child.general.id === activeChild.general.id) {
-        setActiveChild(child)
-        break
-      }
-    }
-  }
-
   useEffect(() => {
     setTimeout(() => {
       setState({
         ...state,
+        activeInfoChild: currentUser.children[0],
         navbarButton: {
           ...navbarButton,
           action: () => {
@@ -86,59 +74,54 @@ export default function ChildInfo() {
       })
     }, 300)
     Manager.toggleForModalOrNewForm('show')
-    setActiveChild(currentUser.children[0])
   }, [])
 
   return (
-    <div key={updateKey}>
+    <div>
       {/* CHILD SELECTOR */}
-      <ChildSelector setActiveChild={setActiveChild} showCard={showSelectorCard} setShowCard={() => setShowSelectorCard(false)} />
+      <ChildSelector hideCard={() => setShowSelectorCard(false)} showCard={showSelectorCard} />
 
       {/* CUSTOM INFO FORM */}
-      <CustomChildInfo
-        activeChild={activeChild}
-        showCard={showInfoCard}
-        hideCard={async () => {
-          setShowInfoCard(false)
-          await updateActiveChild()
-        }}
-      />
+      <CustomChildInfo activeChild={activeInfoChild} showCard={showInfoCard} hideCard={async () => setShowInfoCard(false)} />
 
       {/* NEW CHILD + */}
-      <NewChildForm showCard={showCard} setShowCard={() => setShowCard(!showCard)} />
+      <NewChildForm showCard={showCard} hideCard={() => setShowCard(false)} />
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
         {/* PROFILE PIC */}
         <div id="children-container" className="mb-10">
           <>
-            {Manager.isValid(activeChild?.general?.profilePic) && (
-              <div className="profile-pic-container" style={{ backgroundImage: `url(${activeChild.general?.profilePic})` }}>
+            {Manager.isValid(activeInfoChild?.general['profilepic']) && (
+              <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild.general['profilepic']})` }}>
                 <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
                 <div className="after">
                   <span className="material-icons-outlined">flip_camera_ios</span>
                 </div>
               </div>
             )}
-            {!Manager.isValid(activeChild?.general.profilePic) && (
-              <div className="profile-pic-container no-image">
-                <p>Upload Image</p>
+            {!Manager.isValid(activeInfoChild?.general['profilepic']) && (
+              <div className="profile-pic-container" style={{ backgroundImage: `url(${require('../../../img/upload-image-placeholder.jpg')})` }}>
+                <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
+                <div className="after">
+                  <span className="material-icons-outlined">flip_camera_ios</span>
+                </div>
               </div>
             )}
 
-            <span className="child-name">{formatNameFirstNameOnly(activeChild?.general?.name)}</span>
+            <span className="child-name">{formatNameFirstNameOnly(activeInfoChild?.general?.name)}</span>
           </>
         </div>
 
         {/* INFO */}
         <>
           <div id="child-info">
-            {activeChild && (
+            {activeInfoChild && (
               <div className="form">
-                <General updateActiveChild={updateActiveChild} activeChild={activeChild} />
-                <Medical updateActiveChild={updateActiveChild} activeChild={activeChild} />
-                <Schooling updateActiveChild={updateActiveChild} activeChild={activeChild} />
-                <Behavior updateActiveChild={updateActiveChild} activeChild={activeChild} />
+                <General />
+                <Medical />
+                <Schooling />
+                <Behavior />
               </div>
             )}
           </div>
