@@ -43,6 +43,7 @@ export default function DocsList() {
   const [showCard, setShowCard] = useState(false)
   const getSecuredDocs = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)
+    console.log(allDocs)
     setDocs(allDocs)
   }
 
@@ -67,7 +68,7 @@ export default function DocsList() {
   useEffect(() => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.documents), async (snapshot) => {
-      await getSecuredDocs(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
+      await getSecuredDocs()
     })
     setTimeout(() => {
       setState({

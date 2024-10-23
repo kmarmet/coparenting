@@ -39,6 +39,7 @@ export default function UploadDocuments({ showCard, hideCard }) {
   const [shareWith, setShareWith] = useState([])
   const [docType, setDocType] = useState(null)
   const [image, setImage] = useState('')
+
   const resetForm = async () => {
     Manager.resetForm('upload-doc-wrapper')
     setShareWith([])
@@ -108,10 +109,11 @@ export default function UploadDocuments({ showCard, hideCard }) {
           NotificationManager.sendToShareWith(shareWith, 'New Document', `${currentUser} has uploaded a new document`)
         })
       })
+    await resetForm()
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
       setShareWith(updated)
     })
   }

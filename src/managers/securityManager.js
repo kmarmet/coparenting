@@ -30,7 +30,7 @@ SecurityManager = {
     if (Manager.isValid(allEvents, true)) {
       for (i = 0, len = allEvents.length; i < len; i++) {
         event = allEvents[i];
-        shareWith = event.shareWith || [];
+        shareWith = event.shareWith;
         if (Manager.dateIsValid(event.fromDate) && event.fromDate.length > 0) {
           if (event.phone === currentUser.phone) {
             returnRecords.push(event);
@@ -50,7 +50,7 @@ SecurityManager = {
     if (Manager.isValid(allExpenses, true)) {
       for (i = 0, len = allExpenses.length; i < len; i++) {
         expense = allExpenses[i];
-        shareWith = expense.shareWith || [];
+        shareWith = expense.shareWith;
         if (expense.phone === currentUser.phone) {
           returnRecords.push(expense);
         }
@@ -70,7 +70,7 @@ SecurityManager = {
     if (Manager.isValid(allRequests, true)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
-        shareWith = request.shareWith || [];
+        shareWith = request.shareWith;
         if (request.phone === currentUser.phone) {
           returnRecords.push(request);
         }
@@ -90,7 +90,7 @@ SecurityManager = {
     if (Manager.isValid(allRequests, true)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
-        shareWith = request.shareWith || [];
+        shareWith = request.shareWith;
         if (request.phone === currentUser.phone) {
           returnRecords.push(request);
         }
@@ -110,14 +110,15 @@ SecurityManager = {
     if (Manager.isValid(allDocs, true)) {
       for (i = 0, len = allDocs.length; i < len; i++) {
         doc = allDocs[i];
-        shareWith = doc.shareWith || [];
+        shareWith = doc.shareWith;
+        if (doc.phone === currentUser.phone) {
+          returnRecords.push(doc);
+        }
         if (doc.phone === currentUser.phone) {
           returnRecords.push(doc);
         }
         if (Manager.isValid(shareWith, true)) {
-          if (shareWith.includes(currentUser.phone)) {
-            returnRecords.push(doc);
-          }
+          returnRecords.push(doc);
         }
       }
     }
@@ -130,7 +131,7 @@ SecurityManager = {
     if (Manager.isValid(allMemories, true)) {
       for (i = 0, len = allMemories.length; i < len; i++) {
         memory = allMemories[i];
-        shareWith = memory.shareWith || [];
+        shareWith = memory.shareWith;
         if (memory.createdBy === currentUser.phone) {
           returnRecords.push(memory);
         }

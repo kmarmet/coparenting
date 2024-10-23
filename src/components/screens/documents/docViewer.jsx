@@ -7,7 +7,6 @@ import TableOfContentsListItem from '../../tableOfContentsListItem'
 import DocumentConversionManager from '@managers/documentConversionManager'
 import ImageManager from '@managers/imageManager'
 import Manager from '@manager'
-import { useSwipeable } from 'react-swipeable'
 import BottomCard from '../../shared/bottomCard'
 import { DebounceInput } from 'react-debounce-input'
 import {
@@ -38,8 +37,8 @@ export default function DocViewer() {
   const [showCard, setShowCard] = useState(false)
   const [searchResults, setSearchResults] = useState([])
   const [searchResultsIndex, setSearchResultsIndex] = useState(1)
-  const [showTocButton, setShowTocButton] = useState(true)
   const [showSearch, setShowSearch] = useState(false)
+
   const scrollToHeader = (header) => {
     closeSearch()
     const firstChar = header.slice(0, 1)
@@ -58,33 +57,11 @@ export default function DocViewer() {
   }
   const convertAndAppendDocOrImage = async () => {
     const fileType = `.${getFileExtension(docToView.name)}`
-    setState({ ...state, isLoading: true })
     if (currentUser && fileType === '.docx') {
       await getDoc()
     } else {
       await getImage()
     }
-  }
-
-  const expandImage = (e) => {
-    const modal = document.querySelector('.image-modal')
-    modal.classList.add('show')
-    ImageManager.expandImage(e, modal)
-  }
-
-  const deleteDoc = async (path, record) => {
-    console.log(path)
-    const imageName = FirebaseStorage.getImageNameFromUrl(path)
-
-    // Delete from Firebase Realtime DB
-    await DB.deleteImage(DB.tables.users, currentUser, theme, record.id, 'documents')
-      .then(() => {
-        convertAndAppendDocOrImage()
-      })
-      .finally(async () => {
-        // Delete from Firebase Storage
-        await FirebaseStorage.delete(FirebaseStorage.directories.documents, currentUser.id, imageName)
-      })
   }
 
   const search = (searchValue) => {
@@ -162,6 +139,7 @@ export default function DocViewer() {
     })
     setSearchResults([])
     setSearchResultsIndex(0)
+    setShowSearch(false)
     allHeaders = Array.from(allHeaders)
     if (Manager.isValid(allHeaders, true)) {
       allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
@@ -173,20 +151,24 @@ export default function DocViewer() {
     const url = docToView.url
     const fileName = FirebaseStorage.getImageNameFromUrl(url)
     const textContainer = document.getElementById('text-container')
-    const coparentDocsObjects = await DocumentsManager.getCoparentDocs(currentUser)
-    const docsFromObject = coparentDocsObjects.map((x) => x.docs)
-    const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
-    const relevantDoc = docsFromObject.filter((x) => x.name === docToView.name)[0]
-    let userIdToUse = currentUser.id
 
-    if (Manager.isValid(relevantDoc)) {
-      const uploadedByPhone = relevantDoc.uploadedBy
-      const relevantCoparent = coparentsFromObject.filter((x) => x.phone === uploadedByPhone)[0]
-      userIdToUse = relevantCoparent.id
+    const coparentDocsObjects = await SecurityManager.getDocuments(currentUser)
+    if (!Manager.isValid(coparentDocsObjects, true)) {
+      return false
+    }
+    console.log(coparentDocsObjects)
+
+    const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
+    if (!Manager.isValid(coparentsFromObject, true)) {
+      return false
+    }
+    const relevantDoc = coparentDocsObjects.filter((x) => x?.name === docToView?.name)[0]
+    if (!Manager.isValid(relevantDoc)) {
+      return false
     }
 
     // Insert HTML
-    const docHtml = await DocumentConversionManager.docToHtml(fileName, userIdToUse)
+    const docHtml = await DocumentConversionManager.docToHtml(fileName, currentUser.id)
     textContainer.innerHTML = docHtml
 
     // Format HTML
@@ -266,31 +248,46 @@ export default function DocViewer() {
         .replace('.', '')
         .replace(/\s/g, '')
         .replaceAll('•', '')
-      if (newHeaderArray.indexOf(text) === -1 && header.textContent.wordCount() < 10) {
+      if (newHeaderArray.indexOf(text) === -1 && wordCount(header.textContent) < 10) {
         newHeaderArray.push(text)
       }
     })
     setTocHeaders(newHeaderArray.sort())
-    setState({ ...state, isLoading: false, showBackButton: true, showMenuButton: false })
   }
 
   // Get/Append Image
   const getImage = async () => {
     const coparentDocsObjects = await SecurityManager.getDocuments(currentUser)
+
+    if (!Manager.isValid(coparentDocsObjects, true)) {
+      return false
+    }
+
     const docsFromObject = coparentDocsObjects.map((x) => x.docs)
+
+    if (!Manager.isValid(docsFromObject, true)) {
+      return false
+    }
     const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
+
+    if (!Manager.isValid(coparentsFromObject, true)) {
+      return false
+    }
     const relevantDoc = docsFromObject.filter((x) => x.name === docToView.name)[0]
     let userIdToUse = currentUser.id
 
+    if (!Manager.isValid(relevantDoc)) {
+      return false
+    }
+
     if (Manager.isValid(relevantDoc)) {
-      const uploadedByPhone = relevantDoc.uploadedBy
-      const relevantCoparent = coparentsFromObject.filter((x) => x.phone === uploadedByPhone)[0]
+      const uploadedByPhone = relevantDoc?.uploadedBy
+      const relevantCoparent = coparentsFromObject.filter((x) => x?.phone === uploadedByPhone)[0]
       userIdToUse = relevantCoparent.id
     }
 
     const imagePath = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, userIdToUse, docToView.name)
     await DocumentConversionManager.imageToTextAndAppend(imagePath.imageUrl, document.querySelector('#text-container')).finally(() => {
-      setState({ ...state, isLoading: false, previousScreen: ScreenNames.docsList, showBackButton: true, showMenuButton: false })
       Manager.toggleForModalOrNewForm('show')
     })
     // Filter TOC
@@ -305,29 +302,38 @@ export default function DocViewer() {
     setTocHeaders(newHeaderArray)
   }
 
+  // Show search icon when text is loaded
+  useEffect(() => {
+    if (Manager.isValid(tocHeaders, true)) {
+      setState({ ...state, isLoading: false })
+    }
+  }, [tocHeaders])
+
   useEffect(() => {
     document.getElementById('text-container').innerText = ''
     Manager.toggleForModalOrNewForm('show')
-    convertAndAppendDocOrImage().then((r) => r)
+    convertAndAppendDocOrImage().finally(() => {})
 
-    setState({
-      ...state,
-      navbarButton: {
-        action: () => {
-          console.log('here')
-          setShowSearch(true)
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            setShowSearch(true)
+          },
+          icon: 'search',
         },
-        icon: 'search',
-        formToShow: 'search',
-      },
-    })
+        isLoading: true,
+      })
+    }, 500)
   }, [])
 
   return (
     <div className="doc-viewer-container">
       {/* BOTTOM ACTIONS */}
       <div className={`${theme} flex form`} id="bottom-actions">
-        {showTocButton && Manager.isValid(document.querySelectorAll('.header'), true) && (
+        {Manager.isValid(document.querySelectorAll('.header'), true) && (
           <div id="toc-button" className={`${theme}`} onClick={() => setShowCard(true)}>
             Table of Contents <span className="pl-10 fs-20 material-icons-round">format_list_bulleted</span>
           </div>
@@ -339,7 +345,6 @@ export default function DocViewer() {
         showCard={showSearch}
         title={'Search'}
         onClose={() => {
-          setState({ ...state, formToShow: '' })
           closeSearch()
         }}>
         <div className="flex">
@@ -366,6 +371,7 @@ export default function DocViewer() {
         <BottomCard showCard={showCard} onClose={() => setShowCard(false)} className="toc" title={'Table of Contents'}>
           <div id="table-of-contents">
             <button
+              id="toc-scroll-button"
               className="button default center mt-5"
               onClick={() => {
                 setShowCard(false)

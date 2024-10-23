@@ -437,26 +437,6 @@
   font-weight: 500;
   color: white;
 
-  /*#region  LIGHT THEME*/
-  &.light {
-    &.default {
-      background-color: $lightBlue;
-      color: white;
-      font-weight: 300;
-    }
-  }
-  /*#endregion  LIGHT THEME*/
-
-  /*#region  DARK THEME*/
-  &.dark {
-    &.default {
-      background-color: $darkBlue;
-      color: white;
-      font-weight: 300;
-    }
-  }
-  /*#endregion  DARK THEME*/
-
   span {
     margin-left: 8px;
   }
@@ -468,18 +448,7 @@
   }
 
   &.default {
-    /*#region  DARK THEME*/
-    &.dark {
-      background-color: $darkBlue;
-    }
-    /*#endregion  DARK THEME*/
-
-    /*#region  LIGHT THEME*/
-    &.light {
-      background-color: $lightBlue;
-      color: white;
-    }
-    /*#endregion  LIGHT THEME*/
+    color: black;
     &.green {
       background-color: $green;
       color: white;
@@ -661,7 +630,6 @@
     border-radius: 0;
   }
 }
-
 /*#endregion  BUTTONS*/
 
 /*#region  EFFECTS*/
@@ -2104,11 +2072,14 @@
     line-height: 1.2;
     margin-left: 5px;
   }
+  
+  #toc-scroll-button {
+    margin-bottom: 15px;
+  }
 
   #title-and-close-icon {
     align-items: center;
     justify-content: center;
-    margin-bottom: 35px;
     #title {
       text-align: center;
       justify-content: center;
@@ -2521,7 +2492,12 @@
         font-weight: 400;
         font-style: italic;
         margin-bottom: 0;
+        color: black;
         padding-bottom: 0;
+      }
+      
+      &.toc-header {
+        color: black;
       }
     }
 

@@ -27,6 +27,20 @@ export default function NavBar() {
   const { state, setState } = useContext(globalState)
   const { currentScreen, menuIsOpen, showCenterNavbarButton, theme, showNavbar, navbarButton } = state
 
+  const setNavbarButton = (action, icon = 'add', color = 'green') => {
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => action(),
+          icon: icon,
+          color: color,
+        },
+      })
+    }, 500)
+  }
+
   const changeCurrentScreen = (screen) => {
     if (screen === ScreenNames.calendar) {
       const cal = document.querySelector('.flatpickr-calendar')
@@ -35,44 +49,32 @@ export default function NavBar() {
       }
     }
     if (ScreensToHideCenterNavbarButton.includes(screen)) {
-      setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), showCenterNavbarButton: false })
+      setState({
+        ...state,
+        currentScreen: screen,
+        showCenterNavbarButton: false,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {},
+          icon: 'add',
+          color: 'green',
+        },
+      })
     } else {
-      setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), showCenterNavbarButton: true })
+      setState({
+        ...state,
+        currentScreen: screen,
+        showCenterNavbarButton: true,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {},
+          icon: 'add',
+          color: 'green',
+        },
+      })
     }
 
     Manager.toggleForModalOrNewForm('show')
-  }
-
-  const addNew = () => {
-    switch (true) {
-      case currentScreen === ScreenNames.calendar:
-        setState({ ...state, formToShow: ScreenNames.newCalendarEvent })
-        break
-      case currentScreen === ScreenNames.memories:
-        setState({ ...state, formToShow: ScreenNames.newMemory })
-        break
-      case currentScreen === ScreenNames.chats:
-        setState({ ...state, formToShow: 'newConversation' })
-        break
-      case currentScreen === ScreenNames.expenseTracker:
-        setState({ ...state, formToShow: ScreenNames.newExpense })
-        break
-      case currentScreen === ScreenNames.swapRequests:
-        setState({ ...state, formToShow: ScreenNames.newSwapRequest })
-        break
-      case currentScreen === ScreenNames.coparents:
-        setState({ ...state, formToShow: ScreenNames.newCoparent })
-        break
-      case currentScreen === ScreenNames.docsList:
-        setState({ ...state, formToShow: ScreenNames.uploadDocuments })
-        break
-      case currentScreen === ScreenNames.docViewer:
-        setState({ ...state, formToShow: ScreenNames.docViewer })
-        break
-      case currentScreen === ScreenNames.transferRequests:
-        setState({ ...state, formToShow: ScreenNames.newTransferRequest })
-        break
-    }
   }
 
   return (
