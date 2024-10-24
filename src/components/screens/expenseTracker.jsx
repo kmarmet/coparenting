@@ -21,6 +21,8 @@ import Expense from '../../models/expense'
 import SecurityManager from '../../managers/securityManager'
 import NewExpenseForm from '../forms/newExpenseForm'
 import FirebaseStorage from '@firebaseStorage'
+import LightGallery from 'lightgallery/react'
+import 'lightgallery/css/lightgallery.css'
 
 const ViewTypes = {
   all: 'All',
@@ -461,14 +463,15 @@ export default function ExpenseTracker() {
                           {/* EXPENSE IMAGE */}
                           <>
                             {Manager.isValid(expense.imageUrl) && (
-                              <div id="img-container" className="flex" onClick={() => Manager.showPageContainer('hide')}>
-                                <img
-                                  src={expense.imageUrl || ''}
-                                  data-img-id={expense.id}
-                                  id="expense-image"
-                                  onClick={(e) => expandImage(expense.imageUrl, expense.imageName)}
-                                />
-                              </div>
+                              <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
+                                <div
+                                  data-src={expense.imageUrl}
+                                  id="img-container"
+                                  className="flex"
+                                  onClick={() => Manager.showPageContainer('hide')}>
+                                  <img src={expense.imageUrl || ''} data-img-id={expense.id} id="expense-image" />
+                                </div>
+                              </LightGallery>
                             )}
                             {Manager.isValid(expense.imageUrl) && <p id="img-expand-text">tap image to expand</p>}
                           </>

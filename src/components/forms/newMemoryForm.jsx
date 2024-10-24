@@ -154,8 +154,8 @@ function NewMemoryForm({ showCard, hideCard }) {
                   <span className="material-icons-round">visibility</span>Who should see it?<span className="asterisk">*</span>
                 </label>
                 <CheckboxGroup
-                  dataPhone={currentUser.coparents.map((x) => x.phone)}
-                  labels={currentUser.coparents.map((x) => x.name)}
+                  dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                  labels={currentUser?.coparents.map((x) => x.name)}
                   onCheck={handleShareWithSelection}
                 />
               </div>

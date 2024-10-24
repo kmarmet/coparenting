@@ -12,9 +12,9 @@ import NewMemoryForm from '../forms/newMemoryForm'
 import moment from 'moment'
 import ModelNames from '../../models/modelNames'
 import LightGallery from 'lightgallery/react'
+import 'lightgallery/css/lightgallery.css'
 import imagesLoaded from 'imagesloaded'
 import Masonry from 'masonry-layout'
-import 'lightgallery/css/lightgallery.css'
 import {
   toCamelCase,
   getFirstWord,

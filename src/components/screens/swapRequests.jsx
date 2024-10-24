@@ -16,6 +16,23 @@ import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
 import SecurityManager from '../../managers/securityManager'
 import NewSwapRequest from '../forms/newSwapRequest'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  uniqueArray,
+  getFileExtension,
+} from '../../globalFunctions'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -29,19 +46,19 @@ export default function SwapRequests() {
   const { currentUser, theme } = state
   const [rejectionReason, setRejectionReason] = useState('')
   const [showCard, setShowCard] = useState(false)
+  const [showReviseCard, setShowReviseCard] = useState(false)
   const getSecuredRequests = async () => {
-    let allRequests = await SecurityManager.getSwapRequests(currentUser).then((x) => x)
+    let allRequests = await SecurityManager.getSwapRequests(currentUser).then((r) => r)
     setExistingRequests(allRequests)
   }
 
   const selectDecision = async (request, decision) => {
     const subId = await NotificationManager.getUserSubId(request.recipientPhone)
-
     // Delete
     if (decision === Decisions.delete) {
       await DB.delete(DB.tables.swapRequests, request.id)
     }
-
+    //
     // Rejected
     if (decision === Decisions.rejected) {
       await DB.updateRecord(DB.tables.swapRequests, request, 'rejectionReason', rejectionReason, 'id')
@@ -61,18 +78,13 @@ export default function SwapRequests() {
   }
 
   const sendReminder = async (request) => {
-    setState({ ...state, showAlert: true, alertType: 'success', alertMessage: 'Reminder Sent!' })
-
+    displayAlert('success', '', 'Reminder Sent')
     await DB_UserScoped.getCoparentByPhone(request.recipientPhone, currentUser).then(async (coparent) => {
       const subId = await PushAlertApi.getSubId(coparent.phone)
       PushAlertApi.sendMessage(`Pending Swap Decision`, ` ${moment(request.fromDate).format('dddd, MMMM Do')}`, subId)
     })
   }
 
-  const getCoparent = async (recipientPhone) => {
-    const coparent = await DB_UserScoped.getCoparentByPhone(recipientPhone, currentUser)
-    return coparent
-  }
   const setNavbarButton = (action, icon = 'add', color = 'green') => {
     setTimeout(() => {
       setState({
@@ -86,6 +98,7 @@ export default function SwapRequests() {
       })
     }, 500)
   }
+
   useEffect(() => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
@@ -98,6 +111,7 @@ export default function SwapRequests() {
   return (
     <>
       <NewSwapRequest showCard={showCard} hideCard={() => setShowCard(false)} />
+      <ReviseSwapRequest showCard={showReviseCard} hideCard={() => setShowReviseCard(false)} />
       <div id="swap-requests" className={`${theme} page-container`}>
         <>
           <p className="text-screen-intro mb-15">
@@ -136,7 +150,7 @@ export default function SwapRequests() {
                         <p>
                           <b>Request Sent to:&nbsp;</b>
                         </p>
-                        <p>{currentUser.coparents.filter((x) => x.phone === request.recipientPhone)[0]?.name}</p>
+                        <p>{currentUser?.coparents.filter((x) => x.phone === request.recipientPhone)[0]?.name}</p>
                       </div>
 
                       {/* REASON */}
@@ -158,21 +172,15 @@ export default function SwapRequests() {
                         placeholder="Rejection reason (if needed)"
                         onChange={(e) => setRejectionReason(e.target.value)}></textarea>
                       <div id="button-group" className="flex">
-                        <div className="flex approve green">
-                          <button
-                            onClick={(e) => selectDecision(request, Decisions.approved)}
-                            className="approve button default no-border green-text">
-                            Approve
-                          </button>
-                        </div>
-                        <div className="flex reject">
-                          <button
-                            data-request-id={request.id}
-                            onClick={(e) => selectDecision(request, Decisions.rejected)}
-                            className="reject no-border button default  red-text">
-                            Reject
-                          </button>
-                        </div>
+                        <button onClick={(e) => selectDecision(request, Decisions.approved)} className=" button default no-border green-text">
+                          Approve
+                        </button>
+                        <button
+                          data-request-id={request.id}
+                          onClick={(e) => selectDecision(request, Decisions.rejected)}
+                          className=" no-border button default  red-text">
+                          Reject
+                        </button>
                       </div>
                     </>
                   )}

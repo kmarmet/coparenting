@@ -239,8 +239,8 @@ const Chats = () => {
           }}
           showCard={showNewConvoCard}
           title={'New Conversation'}>
-          {Manager.isValid(currentUser.coparents, true) &&
-            currentUser.coparents
+          {Manager.isValid(currentUser?.coparents, true) &&
+            currentUser?.coparents
               .filter((x) => !activeChatsMembers.includes(x.phone))
               .map((coparent, index) => {
                 return (

@@ -6,10 +6,16 @@ export toCamelCase = (input) ->
     if index == 0 then word.toLowerCase() else word.toUpperCase()
     input.replace /\s+/g, ''
 
+export throwError = (title) ->
+  displayAlert("error", title)
+
 export capitalizeFirstWord = (str) ->
   firstWord = str.split(' ')[0];
   capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
   return capitalizedFirstWord + str.slice(firstWord.length);
+
+export formatTitleWords = (str) ->
+  str = str.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and");
 
 export getFirstWord = (input) ->
   input.toString().replace(/ .*/, '')

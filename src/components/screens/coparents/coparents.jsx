@@ -13,6 +13,25 @@ import CustomCoparentInfo from './customCoparentInfo'
 import PopupCard from 'components/shared/popupCard'
 import BottomCard from '../../shared/bottomCard'
 import NewCoparentForm from './newCoparentForm'
+import {
+  toCamelCase,
+  formatTitleWords,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  lowercaseShouldBeLowercase,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  uniqueArray,
+  getFileExtension,
+} from '../../../globalFunctions'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -20,49 +39,23 @@ export default function Coparents() {
 
   // State
   const [userCoparents, setUserCoparents] = useState([])
-  const [selectedCoparent, setSelectedCoparent] = useState(currentUser.coparents[0])
-  const [showCustomInfoForm, setShowCustomInfoForm] = useState(false)
-  const [customValues, setCustomValues] = useState([])
+  const [selectedCoparent, setSelectedCoparent] = useState(null)
+  const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
+  const [coparentData, setCoparentData] = useState([])
   const [confirmTitle, setConfirmTitle] = useState('')
   const [showNewCoparentForm, setShowNewCoparentForm] = useState(false)
 
-  const deleteProp = async (prop) => await DB.deleteCoparentInfoProp(DB.tables.users, currentUser, theme, prop, selectedCoparent)
+  const deleteProp = async (prop) => await DB_UserScoped.deleteCoparentInfoProp(currentUser, prop, selectedCoparent)
 
   const update = async (prop, value) => {
-    const dbRef = ref(getDatabase())
-    const activeCoparentEl = document.querySelector('.coparent.active')
-    const coparentPhone = activeCoparentEl.getAttribute('data-phone')
-    let key = null
-
-    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'coparents').then((coparents) => {
-      coparents.forEach((coparent, index) => {
-        if (coparent.phone === coparentPhone) {
-          key = index
-        }
-      })
-    })
-
-    if (key !== null) {
-      set(child(dbRef, `users/${currentUser.phone}/coparents/${key}/${prop}`), value)
-      setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Updated!' })
-    }
+    // Update DB
+    displayAlert('success', '', 'Updated!')
+    const updatedChild = await DB_UserScoped.updateCoparent(currentUser, selectedCoparent, prop, value)
+    setSelectedCoparent(updatedChild)
   }
 
   const deleteCoparent = async () => {
-    const dbRef = ref(getDatabase())
-    const activeCoparentEl = document.querySelector('.coparent.active')
-    const coparentPhone = activeCoparentEl.getAttribute('data-phone')
-    let key = null
-    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'coparents').then((coparents) => {
-      coparents.forEach((coparent, index) => {
-        if (coparent.phone === coparentPhone) {
-          key = index
-        }
-      })
-    })
-    if (key !== null) {
-      remove(child(dbRef, `users/${currentUser.phone}/coparents/${key}`))
-    }
+    await DB_UserScoped.deleteCoparent(currentUser, selectedCoparent)
   }
 
   const getCoparents = async () => {
@@ -72,6 +65,7 @@ export default function Coparents() {
     })
     all = all[0]
     setSelectedCoparent(all[0])
+    all = all.filter((x) => x !== 'address')
     setUserCoparents(all)
   }
 
@@ -87,10 +81,12 @@ export default function Coparents() {
 
   useEffect(() => {
     if (selectedCoparent) {
-      setCustomValues(Object.entries(selectedCoparent))
+      setCoparentData(Object.entries(selectedCoparent))
     } else {
-      setCustomValues(Object.entries(currentUser.coparents[0]))
-      setSelectedCoparent(currentUser.coparents[0])
+      if (Manager.isValid(currentUser?.coparents, true)) {
+        setCoparentData(Object.entries(currentUser?.coparents[0]))
+        setSelectedCoparent(currentUser?.coparents[0])
+      }
     }
   }, [selectedCoparent])
 
@@ -129,19 +125,14 @@ export default function Coparents() {
       />
 
       {/* CUSTOM INFO FORM */}
-      <BottomCard
-        showCard={showCustomInfoForm}
-        title={'Add Custom Information'}
-        className={`${showCustomInfoForm ? 'active' : ''} ${theme}`}
-        onClose={() => setShowCustomInfoForm(false)}>
-        <CustomCoparentInfo
-          selectedChild={selectedCoparent}
-          showForm={showCustomInfoForm}
-          onClose={() => {
-            setShowCustomInfoForm(false)
-          }}
-        />
-      </BottomCard>
+      <CustomCoparentInfo
+        showCard={showCustomInfoCard}
+        hideCard={() => {
+          setShowCustomInfoCard(false)
+        }}
+      />
+
+      {!selectedCoparent && <p className="dead-center">No coparents at this time</p>}
 
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentForm} hideCard={() => setShowNewCoparentForm(false)} />
@@ -153,7 +144,6 @@ export default function Coparents() {
           {selectedCoparent &&
             Manager.isValid(userCoparents, true) &&
             userCoparents.map((coparent, index) => {
-              console.log(coparent)
               return (
                 <div
                   onClick={() => setSelectedCoparent(coparent)}
@@ -176,94 +166,72 @@ export default function Coparents() {
         </div>
 
         {/* COPARENT INFO */}
-        {
-          <div id="coparent-info">
-            {selectedCoparent && (
-              <div className="form">
-                <div className="info-section section">
-                  <div className="flex input">
-                    {selectedCoparent && (
-                      <a className="directions-icon" href={Manager.getDirectionsLink(selectedCoparent.address)}>
-                        <span className="material-icons-round">directions</span>
-                      </a>
-                    )}
-                    <Autocomplete
-                      key={Manager.getUid()}
-                      defaultValue={selectedCoparent.address}
-                      apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                      options={{
-                        types: ['geocode', 'establishment'],
-                        componentRestrictions: { country: 'usa' },
-                      }}
-                      className="mb-15"
-                      onPlaceSelected={(place) => {
-                        update('address', place.formatted_address)
-                      }}
-                    />
-                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('address')}>
-                      delete
-                    </span>
-                  </div>
-                  <div className="flex input">
-                    <DebounceInput
-                      className="mb-20"
-                      key={Manager.getUid()}
-                      value={selectedCoparent.phone}
-                      placeholder={'Enter updated phone number'}
-                      minLength={2}
-                      debounceTimeout={1000}
-                      onChange={(e) => update('phone', e.target.value)}
-                    />
-                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp('phone')}>
-                      delete
-                    </span>
-                  </div>
-                  {customValues &&
-                    customValues.length > 0 &&
-                    customValues.map((prop, index) => {
-                      const infoLabel = prop[0]
-                      const value = prop[1]
-                      return (
-                        <div key={index} className="flex input">
-                          <DebounceInput
-                            className="mb-15"
-                            key={Manager.getUid()}
-                            value={value}
-                            placeholder={infoLabel.camelCaseToString(infoLabel)}
-                            minLength={2}
-                            debounceTimeout={1000}
-                            onChange={async (e) => {
-                              const inputValue = e.target.value
-                              await update(infoLabel, `${inputValue}`)
-                            }}
-                          />
-                          <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
-                            delete
-                          </span>
+        <div id="coparent-info">
+          {selectedCoparent && (
+            <div className="form">
+              {Manager.isValid(coparentData) &&
+                coparentData.map((propArray, index) => {
+                  let infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(propArray[0])))
+                  infoLabel = formatTitleWords(infoLabel)
+                  const value = propArray[1]
+                  return (
+                    <div key={index}>
+                      {infoLabel !== 'Id' && (
+                        <div className="row">
+                          <label className="w-100">{infoLabel}</label>
+                          <div className="flex input">
+                            {contains(infoLabel.toLowerCase(), 'address') && (
+                              <Autocomplete
+                                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                                options={{
+                                  types: ['geocode', 'establishment'],
+                                  componentRestrictions: { country: 'usa' },
+                                }}
+                                onPlaceSelected={async (place) => {
+                                  await update('address', place.formatted_address)
+                                }}
+                                placeholder={Manager.isValid(selectedCoparent.address) ? selectedCoparent.address : 'Location'}
+                              />
+                            )}
+                            {!contains(infoLabel.toLowerCase(), 'address') && (
+                              <DebounceInput
+                                value={value}
+                                minLength={2}
+                                debounceTimeout={1000}
+                                onChange={async (e) => {
+                                  const inputValue = e.target.value
+                                  await update(infoLabel, `${inputValue}`)
+                                }}
+                              />
+                            )}
+                            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
+                              delete
+                            </span>
+                          </div>
                         </div>
-                      )
-                    })}
+                      )}
+                    </div>
+                  )
+                })}
 
-                  {/* BUTTONS */}
-                  <button
-                    className="button w-60 default center white-text mb-10 green"
-                    onClick={() => {
-                      setShowCustomInfoForm(true)
-                    }}>
-                    Add Your Own Info <span className="material-icons">auto_fix_high</span>
-                  </button>
-                  <button
-                    className="button w-60 no-border default red center"
-                    onClick={(e) => {
-                      setConfirmTitle(`Deleting ${selectedCoparent.name}`)
-                    }}>
-                    Remove Coparent <span className="material-icons">person_remove</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        }
+              {/* BUTTONS */}
+              <button
+                className="button w-60 default center white-text mb-10 green"
+                onClick={() => {
+                  setShowCustomInfoCard(true)
+                }}>
+                Add Your Own Info <span className="material-icons">auto_fix_high</span>
+              </button>
+              <button
+                className="button w-60 no-border default red center"
+                onClick={(e) => {
+                  setConfirmTitle(`Deleting ${selectedCoparent.name}`)
+                }}>
+                Remove Coparent <span className="material-icons">person_remove</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </>
   )

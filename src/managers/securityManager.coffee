@@ -54,7 +54,7 @@ SecurityManager =
         if Manager.isValid(shareWith, true)
           if shareWith.includes(currentUser.phone)
             returnRecords.push(request)
-      return returnRecords
+    return returnRecords
   getTransferChangeRequests: (currentUser) ->
     returnRecords = []
     allRequests = Manager.convertToArray(await DB.getTable(DB.tables.transferChangeRequests)).flat()

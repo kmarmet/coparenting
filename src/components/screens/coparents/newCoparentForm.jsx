@@ -26,6 +26,7 @@ import {
   uniqueArray,
   getFileExtension,
 } from '../../../globalFunctions'
+import ModelNames from '../../../models/modelNames'
 
 const NewCoparentForm = ({ showCard, hideCard }) => {
   const { state, setState } = useContext(globalState)
@@ -49,29 +50,26 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
   const submit = async () => {
     const dbRef = ref(getDatabase())
     if (!Manager.phoneNumberIsValid(phoneNumber)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Phone number is not valid', alertType: 'error' })
+      displayAlert('error', 'Phone number is not valid')
       return false
     }
     if (Manager.validation([phoneNumber, address, name, parentType]) > 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'All fields are required', alertType: 'error' })
+      displayAlert('error', 'All fields are required')
     } else {
-      const existingCoparents = currentUser.coparents
+      const existingCoparents = currentUser?.coparents || []
       const newCoparent = new Coparent()
       newCoparent.id = Manager.getUid()
       newCoparent.address = address !== null ? address : ''
       newCoparent.phone = formatPhone(phoneNumber)
       newCoparent.name = name
       newCoparent.parentType = parentType
+
+      const cleanCoparent = Manager.cleanObject(newCoparent, ModelNames.coparent)
+
       // Has coparents already
-      if (existingCoparents.length > 0) {
-        await set(child(dbRef, `users/${currentUser.phone}/coparents`), [...existingCoparents, newCoparent])
-        setState({ ...state, formToShow: '' })
-      }
-      // Add new coparent
-      else {
-        await set(child(dbRef, `users/${currentUser.phone}/coparents`), [newCoparent])
-        setState({ ...state, formToShow: '' })
-      }
+      await set(child(dbRef, `users/${currentUser.phone}/coparents`), [...existingCoparents, cleanCoparent])
+
+      resetForm()
     }
   }
 

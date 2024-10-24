@@ -106,7 +106,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       newRequest.phone = currentUser.phone || ''
       newRequest.createdBy = currentUser.name || ''
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
-      newRequest.recipientPhone = currentUser.coparents.filter((x) => x.name.contains(recipientName))[0].phone || ''
+      newRequest.recipientPhone = currentUser?.coparents.filter((x) => x.name.contains(recipientName))[0].phone || ''
 
       const cleanObject = Manager.cleanObject(newRequest, ModelNames.swapRequest)
 
@@ -139,7 +139,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
+    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
       setShareWith(updated)
     })
   }
@@ -256,8 +256,8 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                   <span className="asterisk">*</span>
                 </label>
                 <CheckboxGroup
-                  dataPhone={currentUser.coparents.map((x) => x.phone)}
-                  labels={currentUser.coparents.map((x) => x.name)}
+                  dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                  labels={currentUser?.coparents.map((x) => x.name)}
                   onCheck={handleRecipientSelection}
                 />
 
@@ -267,8 +267,8 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                     <span className="material-icons-round">visibility</span> Who should see it?<span className="asterisk">*</span>
                   </label>
                   <CheckboxGroup
-                    dataPhone={currentUser.coparents.map((x) => x.phone)}
-                    labels={currentUser.coparents.map((x) => x.name)}
+                    dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                    labels={currentUser?.coparents.map((x) => x.name)}
                     onCheck={handleShareWithSelection}
                   />
                 </div>

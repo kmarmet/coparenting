@@ -8,6 +8,7 @@ StateObj =
   contactInfoToUpdateType: 'email'
   currentScreen: ScreenNames.login
   currentUser: {}
+  activeInfoCoparent: [],
   docToView: ''
   formToShow: ''
   firebaseUser: null,
@@ -23,6 +24,7 @@ StateObj =
   previousScreen: ''
   selectedChild: null
   selectedNewEventDay: null
+  swapRequestToRevise: null
   showAlert: false
   showBackButton: false
   showConfirm: false
@@ -42,6 +44,7 @@ StateObj =
   setAlertMessage: (alertMessage) ->
   setAlertType: (type) ->
   setActiveInfoChild: (child) ->
+  setActiveInfoCoparent: (coparent) ->
   setConfirmMessage: (message) ->
   setContactInfoToUpdateType: ->
   setCurrentScreen: (screen) ->
@@ -61,6 +64,7 @@ StateObj =
   setSelectedChild: (child) ->
   setSelectedNewEventDay: (day) ->
   setShowAlert: (bool) ->
+  setSwapRequestToRevise: (request) ->
   setShowBackButton: (bool) ->
   setShowCenterNavbarButton: (bool) ->
   setShowMenuButton: ->

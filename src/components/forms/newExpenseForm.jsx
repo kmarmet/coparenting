@@ -34,6 +34,7 @@ import {
   formatNameFirstNameOnly,
   removeFileExtension,
   contains,
+  throwError,
   displayAlert,
   uniqueArray,
   getFileExtension,
@@ -126,8 +127,6 @@ function NewExpenseForm({ showCard, hideCard }) {
     // Get coparent name
     newExpense.recipientName = formatNameFirstNameOnly(currentUser.name)
 
-    const cleanObject = Manager.cleanObject(newExpense, ModelNames.expense)
-
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
     if (activeRepeatIntervals.length > 0 && !expenseDueDate) {
@@ -141,6 +140,8 @@ function NewExpenseForm({ showCard, hideCard }) {
         newExpense.imageUrl = url
       })
     }
+
+    const cleanObject = Manager.cleanObject(newExpense, ModelNames.expense)
 
     // Add to DB
     await DB.add(tables.expenseTracker, cleanObject).finally(async () => {
@@ -157,27 +158,6 @@ function NewExpenseForm({ showCard, hideCard }) {
 
       // Go back to expense screen
       resetForm()
-    })
-  }
-
-  const throwError = (title) => {
-    Swal.fire({
-      title: title,
-      icon: 'error',
-      showClass: {
-        popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-      },
-      hideClass: {
-        popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-      },
     })
   }
 
@@ -279,16 +259,6 @@ function NewExpenseForm({ showCard, hideCard }) {
       },
       false
     )
-  }
-
-  const chooseImage = (e) => {
-    const img = document.querySelector('#upload-input').files[0]
-    const blobText = FirebaseStorage.imageToBlob(img)
-    if (blobText && img) {
-      blobText.then((base64Image) => {
-        setExpenseImage(img)
-      })
-    }
   }
 
   const deleteLastNumber = () => {
@@ -410,12 +380,14 @@ function NewExpenseForm({ showCard, hideCard }) {
             getImages={(files) => {
               if (files.length === 0) {
                 throwError('Please choose an image first')
+              } else {
+                setExpenseImage(files[0])
               }
             }}
             containerClass={theme}
             actualUploadButtonText={'Upload'}
             uploadButtonText="Choose Image"
-            upload={chooseImage}
+            upload={() => {}}
           />
           <textarea name="expense-notes" placeholder="Notes" className="mb-15" onChange={(e) => setExpenseNotes(e.target.value)}></textarea>
           {currentUser && (
@@ -425,8 +397,8 @@ function NewExpenseForm({ showCard, hideCard }) {
                 <span className="asterisk">*</span>
               </label>
               <CheckboxGroup
-                dataPhone={currentUser.coparents.map((x) => x.phone)}
-                labels={currentUser.coparents.map((x) => x.name)}
+                dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                labels={currentUser?.coparents.map((x) => x.name)}
                 onCheck={(e) => {
                   const checkbox = e.target.closest('#checkbox-container')
                   document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
@@ -444,8 +416,8 @@ function NewExpenseForm({ showCard, hideCard }) {
                 <span className="material-icons-round">visibility</span> Who should see it?<span className="asterisk">*</span>
               </label>
               <CheckboxGroup
-                dataPhone={currentUser.coparents.map((x) => x.phone)}
-                labels={currentUser.coparents.map((x) => x.name)}
+                dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                labels={currentUser?.coparents.map((x) => x.name)}
                 onCheck={handleShareWithSelection}
               />
             </div>

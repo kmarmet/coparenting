@@ -290,7 +290,7 @@ export default function Registration() {
       isValid = false
     }
 
-    if (coparents.length === 0) {
+    if (coparents?.length === 0) {
       displayAlert('error', 'Please enter at least one co-parent')
       isValid = false
     }
@@ -502,7 +502,7 @@ export default function Registration() {
             })}
 
             {/* COPARENTS */}
-            {coparents.length > 0 && (
+            {coparents?.length > 0 && (
               <button id="add-coparent-button" className="button default w-60" onClick={addCoparentInput}>
                 Add Another Co-Parent
               </button>

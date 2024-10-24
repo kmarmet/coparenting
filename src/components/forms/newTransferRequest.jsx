@@ -84,7 +84,7 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
       newRequest.preferredTransferLocation = requestLocation
 
       if (preferredLocation.length > 0) {
-        const coparent = currentUser.coparents.filter((x) => x.phone === requestRecipientPhone)[0]
+        const coparent = currentUser?.coparents.filter((x) => x.phone === requestRecipientPhone)[0]
         const key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/coparents`, coparent, 'id')
         await DB_UserScoped.updateUserRecord(currentUser.phone, `coparents/${key}/preferredTransferLocation`, requestLocation)
       }
@@ -177,7 +177,7 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
             <CheckboxGroup
               boxWidth={100}
               skipNameFormatting={true}
-              dataPhone={currentUser.coparents.map((x) => x.phone)}
+              dataPhone={currentUser?.coparents.map((x) => x.phone)}
               labels={['Set as Preferred Transfer Location']}
               onCheck={handlePreferredLocation}
             />
@@ -194,8 +194,8 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
                   <span className="asterisk">*</span>
                 </label>
                 <CheckboxGroup
-                  dataPhone={currentUser.coparents.map((x) => x.phone)}
-                  labels={currentUser.coparents.map((x) => x.name)}
+                  dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                  labels={currentUser?.coparents.map((x) => x.name)}
                   onCheck={handleRequestRecipient}
                 />
               </div>
@@ -206,8 +206,8 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
                   <span className="material-icons-round">visibility</span> Who is allowed to see it? <span className="asterisk">*</span>
                 </label>
                 <CheckboxGroup
-                  dataPhone={currentUser.coparents.map((x) => x.phone)}
-                  labels={currentUser.coparents.map((x) => x.name)}
+                  dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                  labels={currentUser?.coparents.map((x) => x.name)}
                   onCheck={handleShareWithSelection}
                 />
               </div>

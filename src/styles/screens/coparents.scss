@@ -67,10 +67,10 @@
 
     #coparent-info {
         margin-top: 20px;
-
-        .info-section {
+        
+        .row {
             overflow: hidden;
-            margin-bottom: 5px;
+            margin-bottom:15px;
             transition: max-height .3s ease-in-out;
 
             &.active {
@@ -83,19 +83,19 @@
 
             .flex {
                 width: 95%;
-                margin: 0 auto;
+                
+                input {
+                    margin: 0;
+                }
 
                 &.input {
+                    display: flex;
+                    align-items: center;
                     .delete-icon {
-                        font-size: 22px;
                         position: relative;
-                        margin-left: 5px;
-                        right: -5px;
-                        color: #ca436c;
-                        height: 49px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
+                        transform: scale(1.5);
+                        margin-left: 10px;
+                        color: $red;
                     }
                 }
             }

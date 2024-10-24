@@ -13,11 +13,19 @@ export var toCamelCase = function(input) {
   });
 };
 
+export var throwError = function(title) {
+  return displayAlert("error", title);
+};
+
 export var capitalizeFirstWord = function(str) {
   var capitalizedFirstWord, firstWord;
   firstWord = str.split(' ')[0];
   capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
   return capitalizedFirstWord + str.slice(firstWord.length);
+};
+
+export var formatTitleWords = function(str) {
+  return str = str.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and");
 };
 
 export var getFirstWord = function(input) {

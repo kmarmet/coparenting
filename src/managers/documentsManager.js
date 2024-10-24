@@ -85,11 +85,11 @@ export default DocumentsManager = {
   getCoparentDocs: async function (currentUser) {
     var allDocs, coparent, coparents, currentCoparentFromDb, i, j, len, len1, returnObject, thisDoc
     allDocs = await DB.getAllFilteredRecords(DB.tables.documents, currentUser, 'documents', 'root')
-    coparents = currentUser.coparents
+    coparents = currentUser?.coparents
     returnObject = []
     for (i = 0, len = allDocs.length; i < len; i++) {
       thisDoc = allDocs[i]
-      for (j = 0, len1 = coparents.length; j < len1; j++) {
+      for (j = 0, len1 = coparents?.length; j < len1; j++) {
         coparent = coparents[j]
         currentCoparentFromDb = await DB_UserScoped.getUser(DB.tables.users, coparent.phone)
         if (thisDoc.uploadedBy === currentCoparentFromDb.phone) {

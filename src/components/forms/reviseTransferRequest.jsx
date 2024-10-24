@@ -78,8 +78,6 @@ export default function ReviseChildTransferChangeRequest({ showCard, hideCard })
 
     const cleanRequest = Manager.cleanObject(revisedRequest, ModelNames.transferChangeRequest)
 
-    console.log(cleanRequest)
-
     // Notify
     if (transferRequestToRevise.recipientPhone) {
       const subId = await NotificationManager.getUserSubId(transferRequestToRevise.requestRecipientPhone)

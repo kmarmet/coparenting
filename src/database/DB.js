@@ -43,9 +43,9 @@ const DB = {
     })
     return key
   },
-  getAllFilteredRecords: async (tableName, currentUser, theme, objectName, type = 'by-phone') => {
+  getAllFilteredRecords: async (tableName, currentUser, objectName, type = 'by-phone') => {
     const getRecords = new Promise(async (resolve, reject) => {
-      const coparentPhones = currentUser.coparents.map((x) => x.phone)
+      const coparentPhones = currentUser?.coparents.map((x) => x.phone)
 
       // Records based on phone
       if (type === 'by-phone') {
@@ -71,7 +71,7 @@ const DB = {
         coparentRecords = await coparentsPromise
 
         // Current user Records
-        const currentUserRecords = Manager.convertToArray(await DB_UserScoped.getRecordsByUser(tableName, currentUser, theme, objectName))
+        const currentUserRecords = Manager.convertToArray(await DB_UserScoped.getRecordsByUser(tableName, currentUser, objectName))
         const allRecords = currentUserRecords.concat(coparentRecords).flat()
         resolve(allRecords)
       }
@@ -158,40 +158,6 @@ const DB = {
       resolve('')
       await set(child(dbRef, tableName), tableData)
     }),
-  addToUserMemories: async (currentUser, theme, objectName, value, id) => {
-    const dbRef = ref(getDatabase())
-    let tableRecords = await DB.getTable(DB.tables.users)
-    tableRecords = DB.convertKeyObjectToArray(tableRecords)
-    let toUpdate = tableRecords.filter((x) => x.phone === currentUser.phone)[0]
-    if (toUpdate[objectName] !== undefined && toUpdate[objectName].length > 0) {
-      toUpdate[objectName] = [...toUpdate[objectName], value]
-    } else {
-      toUpdate[objectName] = [value]
-    }
-    if (id) {
-      await push(child(dbRef, `/users/${currentUser.phone}/${objectName}/${id}/`), value)
-      return toUpdate[objectName]
-    } else {
-      await push(child(dbRef, `/users/${currentUser.phone}/${objectName}`), value)
-      return toUpdate[objectName]
-    }
-  },
-  addProfilePicToChildRecord: async (currentUser, theme, objectName, value, id) => {
-    const dbRef = ref(getDatabase())
-    let basePath = `${DB.tables.users}/${currentUser.phone}/children`
-    await get(child(dbRef, basePath)).then(async (snapshot) => {
-      let key = null
-      snapshot.forEach((child) => {
-        if (child.val().id === id) {
-          key = child.key
-        }
-      })
-      basePath = `${basePath}/${key}/profilePic/`
-      await FirebaseStorage.getProfilePicUrl(FirebaseStorage.directories.profilePics, id, value).then(async (urls) => {
-        set(child(dbRef, basePath), urls)
-      })
-    })
-  },
   delete: async (tableName, id) => {
     const dbRef = ref(getDatabase())
     let idToDelete
@@ -289,173 +255,6 @@ const DB = {
     console.log(newRecord)
     update(ref(dbRef, path), newRecord)
     // update((ref(dbRef, tableName), { newRecord }))
-  },
-  deleteChildInfoProp: async (tableName, currentUser, prop, parentObjectName, selectedChild) => {
-    const dbRef = ref(getDatabase())
-    let removalKey
-    await get(child(dbRef, `users/${currentUser.phone}/children/`)).then(async (snapshot) => {
-      if (snapshot.exists()) {
-        snapshot.val().forEach((child, index) => {
-          if (child.general?.name === selectedChild.general?.name) {
-            removalKey = index
-          }
-        })
-      }
-      await remove(child(dbRef, `${tableName}/${currentUser.phone}/children/${removalKey}/${parentObjectName}/${prop.toLowerCase()}`))
-    })
-  },
-  deleteCoparentInfoProp: async (tableName, currentUser, theme, prop, selectedCoparent) => {
-    const dbRef = ref(getDatabase())
-    let removalKey
-    await get(child(dbRef, `${tableName}/${currentUser.phone}/coparents/`)).then((snapshot) => {
-      if (snapshot.exists()) {
-        snapshot.forEach((event) => {
-          let coparent = event.val()
-          if (coparent.phone === selectedCoparent.phone) {
-            removalKey = event.key
-          }
-        })
-      }
-      remove(child(dbRef, `${tableName}/${currentUser.phone}/coparents/${removalKey}/${prop}`))
-    })
-  },
-  updatePhoneOrEmail: async (currentUser, theme, prop, valueObject) => {
-    const { phone, email } = valueObject
-    const dbRef = ref(getDatabase())
-
-    // Update archivedChats
-    await DB.getTable(DB.tables.archivedChats).then(async (archivedChats) => {
-      if (!Array.isArray(archivedChats)) {
-        archivedChats = DB.convertKeyObjectToArray(archivedChats)
-      }
-      if (archivedChats && archivedChats.length > 0) {
-        for (const chat of archivedChats) {
-          // UPDATE firstMessageFrom
-          if (chat.firstMessageFrom === currentUser.phone) {
-            chat['firstMessageFrom'] = phone
-            // await update(fmfRef, fmfChat)
-          }
-
-          // UPDATE MEMBER PHONES
-          const members = chat['members']
-          members.forEach((thisMember, memberIndex) => {
-            if (thisMember.phone === currentUser.phone) {
-              thisMember['phone'] = phone
-            }
-          })
-          // replace with set()
-          // await update(updateMemberPath, updatedMember)
-        }
-      }
-    })
-
-    // Update swap requests table
-    await DB.getTable(DB.tables.swapRequests).then((data) => {
-      if (!Array.isArray(data)) {
-        data = DB.convertKeyObjectToArray(data)
-      }
-      if (data && data.length > 0) {
-        data.forEach((request, index) => {
-          // Update shareWith
-          if (request.shareWith.includes(currentUser.phone)) {
-            const numberIndex = request.shareWith.indexOf(currentUser.phone)
-            request.shareWith[numberIndex] = phone
-          }
-          // Update record phone
-          if (request['phone'] === currentUser.phone) {
-            request['phone'] = phone
-          }
-        })
-        // console.log(data);
-        // set(child(dbRef, tableName), data)
-      }
-    })
-
-    // Update expenseTracker table
-    await DB.getTable(DB.tables.expenseTracker).then((data) => {
-      if (!Array.isArray(data)) {
-        data = DB.convertKeyObjectToArray(data)
-      }
-      if (data && data.length > 0) {
-        data.forEach((request) => {
-          // Update user expenseTracker
-          if (request['phone'] === currentUser.phone) {
-            request['phone'] = phone
-          }
-          if (request.shareWith.includes(currentUser.phone)) {
-            const numberIndex = request.shareWith.indexOf(currentUser.phone)
-            request.shareWith[numberIndex] = phone
-          }
-        })
-        // set(child(dbRef, tableName), data);
-      }
-    })
-
-    // Update cal table
-    await DB.getTable(DB.tables.calendarEvents).then((data) => {
-      if (!Array.isArray(data)) {
-        data = DB.convertKeyObjectToArray(data)
-      }
-      if (data && data.length > 0) {
-        data.forEach((event) => {
-          // Update user cal
-          if (event['phone'] === currentUser.phone) {
-            event['phone'] = phone
-          }
-
-          if (event.shareWith.includes(currentUser.phone)) {
-            const numberIndex = event.shareWith.indexOf(currentUser.phone)
-            event.shareWith[numberIndex] = phone
-          }
-        })
-        // console.log(data);
-        // set(child(dbRef, tableName), data);
-      }
-    })
-
-    // Update chats table
-    await DB.getTable(DB.tables.chats).then(async (chats) => {
-      if (!Array.isArray(chats)) {
-        chats = DB.convertKeyObjectToArray(chats)
-      }
-      const database = getDatabase()
-      if (chats && chats.length > 0) {
-        for (const chat of chats) {
-          // UPDATE firstMessageFrom
-          if (chat.firstMessageFrom === currentUser.phone) {
-            chat['firstMessageFrom'] = phone
-            // await update(fmfRef, fmfChat)
-          }
-
-          // UPDATE MEMBER PHONES
-          const members = chat['members']
-          members.forEach((thisMember, memberIndex) => {
-            if (thisMember.phone === currentUser.phone) {
-              thisMember['phone'] = phone
-            }
-          })
-          // replace with set()
-          // await update(updateMemberPath, updatedMember)
-        }
-      }
-    })
-
-    // Update coparents table
-    await DB.getTable(DB.tables.users).then((users) => {
-      if (users && users.length > 0) {
-        users.forEach((user) => {
-          user.coparents.forEach((coparent) => {
-            if (coparent[phone] === currentUser.phone) {
-              coparent[phone] = phone
-            }
-          })
-        })
-        // set(child(dbRef, tableName), data);
-      }
-    })
-
-    // Update user phone
-    await DB_UserScoped.updateUserRecord(currentUser, theme, 'phone', phone)
   },
 }
 

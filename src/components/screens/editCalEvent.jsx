@@ -459,56 +459,60 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
           </div>
 
           {/* WHO IS ALLOWED TO SEE IT? */}
-          {(currentUser?.coparents?.length > 0 || currentUser?.parents?.length > 0) && (
-            <div className={`share-with-container `}>
-              <label>
-                <span className="material-icons-round mr-10">visibility</span> Who is allowed to see it?
-                <span className="asterisk">*</span>
-              </label>
-              <CheckboxGroup
-                elClass={`${theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
-                dataPhone={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)}
-                labels={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
-                onCheck={handleShareWithSelection}
-              />
-            </div>
-          )}
-
-          {/* REMINDER */}
-          {(currentUser.coparents.length > 0 || currentUser.parents.length > 0) && !isAllDay && (
-            <>
-              <div className="flex">
-                <p>Remind Me</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">notifications</span>,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setShowReminders(!showReminders)}
+          {Manager.isValid(currentUser?.coparents, true) ||
+            (Manager.isValid(currentUser?.parents, true) && (
+              <div className={`share-with-container `}>
+                <label>
+                  <span className="material-icons-round mr-10">visibility</span> Who is allowed to see it?
+                  <span className="asterisk">*</span>
+                </label>
+                <CheckboxGroup
+                  elClass={`${theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
+                  dataPhone={
+                    currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
+                  }
+                  labels={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
+                  onCheck={handleShareWithSelection}
                 />
               </div>
-              <div className="share-with-container mb-5">
-                <Accordion>
-                  <Accordion.Panel expanded={showReminders}>
-                    <CheckboxGroup
-                      elClass={`${theme} `}
-                      boxWidth={50}
-                      skipNameFormatting={true}
-                      dataPhone={
-                        currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
-                      }
-                      labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
-                      onCheck={handleReminderSelection}
-                    />
-                  </Accordion.Panel>
-                </Accordion>
-              </div>
-            </>
-          )}
+            ))}
+
+          {/* REMINDER */}
+          {Manager.isValid(currentUser?.coparents, true) ||
+            (Manager.isValid(currentUser?.parents, true) && !isAllDay && (
+              <>
+                <div className="flex">
+                  <p>Remind Me</p>
+                  <Toggle
+                    icons={{
+                      checked: <span className="material-icons-round">notifications</span>,
+                      unchecked: null,
+                    }}
+                    className={'ml-auto reminder-toggle'}
+                    onChange={(e) => setShowReminders(!showReminders)}
+                  />
+                </div>
+                <div className="share-with-container mb-5">
+                  <Accordion>
+                    <Accordion.Panel expanded={showReminders}>
+                      <CheckboxGroup
+                        elClass={`${theme} `}
+                        boxWidth={50}
+                        skipNameFormatting={true}
+                        dataPhone={
+                          currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
+                        }
+                        labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                        onCheck={handleReminderSelection}
+                      />
+                    </Accordion.Panel>
+                  </Accordion>
+                </div>
+              </>
+            ))}
 
           {/* SEND NOTIFICATION TO */}
-          {(!currentUser.accountType || currentUser.accountType === 'parent') && (
+          {Manager.isValid(currentUser?.coparents, true) && (!currentUser.accountType || currentUser.accountType === 'parent') && (
             <div className="share-with-container mb-5">
               <div className="flex">
                 <p>Remind Coparent(s)</p>
@@ -526,9 +530,9 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                   <CheckboxGroup
                     elClass={`${theme} `}
                     dataPhone={
-                      currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
+                      currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
                     }
-                    labels={currentUser.accountType === 'parent' ? currentUser.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
+                    labels={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
                     onCheck={handleShareWithSelection}
                   />
                 </Accordion.Panel>

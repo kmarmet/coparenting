@@ -111,7 +111,7 @@ const ImageManager = {
       users.forEach(async (user, index) => {
         if (user.memories !== undefined) {
           // Array of memories
-          if (currentUser.coparents.map((x) => x.phone).includes(user.phone)) {
+          if (currentUser?.coparents.map((x) => x.phone).includes(user.phone)) {
             const coparentWithMemories = user
             if (Array.isArray(coparentWithMemories.memories)) {
               coparentWithMemories.memories = Object.assign({}, coparentWithMemories.memories)[0]
@@ -157,7 +157,7 @@ const ImageManager = {
       coparentMemories: coparentMemories,
     }
   },
-  deleteImage: async (currentUser, theme, imgPaths, directory, path) => {
+  deleteImage: async (currentUser, imgPaths, directory, path) => {
     // Delete from currentUser.memories
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
     const memoryImageToDelete = imgPaths.filter((x) => {
@@ -175,7 +175,7 @@ const ImageManager = {
       images: newArray,
     }
 
-    DB.updateRecord(DB.tables.users, currentUser, theme, 'memories', newMemoryObj)
+    DB.updateRecord(DB.tables.users, currentUser, 'memories', newMemoryObj)
     // Delete from Firebase Storage
     FirebaseStorage.delete(directory, currentUser.id, imageName)
   },

@@ -80,8 +80,8 @@ SecurityManager = {
           }
         }
       }
-      return returnRecords;
     }
+    return returnRecords;
   },
   getTransferChangeRequests: async function(currentUser) {
     var allRequests, i, len, request, returnRecords, shareWith;
