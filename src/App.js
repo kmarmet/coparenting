@@ -57,7 +57,7 @@ import { wordCount, getFirstWord } from './globalFunctions'
 import emailjs from '@emailjs/browser'
 import './globalFunctions'
 import StateObj from './constants/stateObj'
-// import smtp from 'smtp.js'
+import EmailManager from './managers/emailManager'
 // Menus
 import NavBar from './components/navBar'
 import SlideOutMenu from './components/slideOutMenu'

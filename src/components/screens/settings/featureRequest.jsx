@@ -9,10 +9,27 @@ import ScreenNames from '@screenNames'
 import { useSwipeable } from 'react-swipeable'
 import EmailManager from 'managers/emailManager'
 import BottomButton from 'components/shared/bottomButton'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  uniqueArray,
+  getFileExtension,
+} from '../../../globalFunctions'
 
 function FeatureRequest() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, currentScreenTitle, theme, setTheme } = state
+  const { currentUser, theme } = state
   const [featureName, setFeatureName] = useState('')
   const [featureDescription, setFeatureDescription] = useState('')
 
@@ -23,27 +40,30 @@ function FeatureRequest() {
     },
   })
 
+  const resetForm = () => {
+    Manager.resetForm('feature-request-wrapper')
+    setFeatureName('')
+    setFeatureDescription('')
+  }
+
   const submit = () => {
     if (featureDescription.length === 0) {
-      setState({ ...state, alertType: 'error', alertMessage: 'Please enter a description of the feature you would like to add', showAlert: true })
+      displayAlert('error', 'Please enter a description of the feature you would like to add')
       return false
     }
-    EmailManager.sendEmail(
-      currentUser.email,
-      EmailManager.supportEmail,
-      `Feature Request \n Name: ${featureName} \n Description: ${featureDescription}`
-    )
-    setState({ ...state, alertMessage: 'Feature Request Sent!', alertType: 'success', showAlert: true })
+
+    displayAlert('success', '', 'We have received your feature request!')
+    EmailManager.SendFeatureRequest(currentUser.email)
+
+    resetForm()
   }
 
   useEffect(() => {
-    setState({ ...state, previousScreen: ScreenNames.settings, showMenuButton: false, showBackButton: true })
     Manager.showPageContainer()
   }, [])
 
   return (
-    <>
-      <p className="screen-title ">Feature Request</p>
+    <div className="feature-request-wrapper">
       <div {...handlers} id="feature-request-container" className={`${theme} page-container form`}>
         <div className="form">
           <label>
@@ -54,10 +74,12 @@ function FeatureRequest() {
             Request Details <span className="asterisk">*</span>
           </label>
           <textarea onChange={(e) => setFeatureDescription(e.target.value)} className="mb-20"></textarea>
-          <BottomButton onClick={submit} text="Send Feature Request" iconName="send" />
+          <button className="button green default center" onClick={submit}>
+            Request Feature
+          </button>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
