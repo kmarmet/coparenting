@@ -255,11 +255,15 @@ const DateManager = {
   setHolidays: async () => {
     let users = await DB.getTable(DB.tables.users)
     let userPhones = DB.convertKeyObjectToArray(users).map((x) => x.phone)
+    const calEvents = await DB.getTable(DB.tables.calendarEvents)
+    const existingCalendarHolidays = calEvents.filter((x) => x.isHoliday === true).map((x) => x.fromDate)
     DateManager.getHolidays().then(async (holidays) => {
       let events = []
       const switchCheck = (title, holidayName) => {
         return !!title.contains(holidayName)
       }
+
+      // SET EMOJIS
       for (const holiday of holidays) {
         const newEvent = new CalendarEvent()
         // Required
@@ -295,13 +299,19 @@ const DateManager = {
             newEvent.title = holiday.name
         }
         newEvent.id = Manager.getUid()
-        newEvent.fromDate = moment(holiday.date).format('MM/DD/yyyy')
-        newEvent.isHoliday = true
-        // Not Required
-        newEvent.shareWith = Manager.getUniqueArray(userPhones).flat()
-        events.push(newEvent)
+        const alreadyExistsCount = events.filter((x) => moment(x.fromDate).format('MM/DD/yyyy') === moment(holiday.date).format('MM/DD/yyyy')).length
+        if (alreadyExistsCount === 0 && ~existingCalendarHolidays.includes(moment(holiday.date).format('MM/DD/yyyy'))) {
+          newEvent.fromDate = moment(holiday.date).format('MM/DD/yyyy')
+          newEvent.isHoliday = true
+          // Not Required
+          newEvent.shareWith = Manager.getUniqueArray(userPhones).flat()
+          events.push(newEvent)
+        }
       }
-      await CalendarManager.addMultipleCalEvents(events)
+
+      events = events.filter((value, index, self) => index === self.findIndex((t) => t.fromDate === value.fromDate))
+      // console.log(events)
+      await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(events).flat())
     })
   },
   dateIsValid: (inputDate) => {

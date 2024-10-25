@@ -143,6 +143,52 @@ export var uniqueArray = function(array) {
   return Array.from(new Set(array));
 };
 
+export var successAlert = function(message) {
+  return Swal.fire({
+    text: message,
+    icon: "success",
+    timer: 1500,
+    showConfirmButton: false,
+    showClass: {
+      popup: `animate__animated
+animate__fadeInUp
+animate__faster`
+    },
+    hideClass: {
+      popup: `animate__animated
+animate__fadeOutDown
+animate__faster`
+    }
+  });
+};
+
+export var confirmAlert = function(title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm) {
+  return Swal.fire({
+    showClass: {
+      popup: `animate__animated
+animate__fadeInUp
+animate__faster`
+    },
+    hideClass: {
+      popup: `animate__animated
+animate__fadeOutDown
+animate__faster`
+    },
+    title: title,
+    showDenyButton: showNevermindButton,
+    showCancelButton: false,
+    confirmButtonText: confirmButtonText,
+    denyButtonText: "Nevermind",
+    confirmButtonColor: '#00b389 !important'
+  }).then(function(result) {
+    if (result.isConfirmed) {
+      if (onConfirm) {
+        return onConfirm();
+      }
+    }
+  });
+};
+
 export var displayAlert = function(type, title, text = '', onConfirm) {
   switch (true) {
     case type === "input":
@@ -175,48 +221,6 @@ animate__faster`
         title: title,
         text: text,
         icon: 'error',
-        showClass: {
-          popup: `animate__animated
-animate__fadeInUp
-animate__faster`
-        },
-        hideClass: {
-          popup: `animate__animated
-animate__fadeOutDown
-animate__faster`
-        }
-      });
-    case type === "confirm":
-      return Swal.fire({
-        showClass: {
-          popup: `animate__animated
-animate__fadeInUp
-animate__faster`
-        },
-        hideClass: {
-          popup: `animate__animated
-animate__fadeOutDown
-animate__faster`
-        },
-        title: title,
-        showDenyButton: true,
-        showCancelButton: false,
-        confirmButtonText: "I'm Sure",
-        denyButtonText: "Nevermind",
-        confirmButtonColor: '#00b389 !important'
-      }).then(function(result) {
-        if (result.isConfirmed) {
-          if (onConfirm) {
-            return onConfirm();
-          }
-        }
-      });
-    case type === 'success':
-      return Swal.fire({
-        text: text,
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
         showClass: {
           popup: `animate__animated
 animate__fadeInUp

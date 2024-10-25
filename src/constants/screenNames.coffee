@@ -1,4 +1,5 @@
 ScreenNames=
+  adminDashboard: 'adminDashboard'
   expenseTracker: 'expenseTracker'
   swapRequests: 'swapRequests'
   login: 'login'

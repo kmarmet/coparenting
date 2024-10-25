@@ -38,6 +38,7 @@ StateObj =
   unreadMessagesCountSet: false
   userIsLoggedIn: false
   users: []
+  updateAvailable: false,
   viewExpenseForm: false
   viewSwapRequestForm: false
   viewTransferRequestForm: false
@@ -73,6 +74,7 @@ StateObj =
   setTheme: (theme) ->
   setTransferRequestToEdit: (request) ->
   setUnreadMessages: (count) ->
+  setUpdateAvailable: (bool) ->
   setUnreadMessagesCountSet: (bool) ->
   setUserIsLoggedIn: (isLoggedIn) ->
   setUsers: (users) ->

@@ -19,6 +19,7 @@ import {
   removeFileExtension,
   contains,
   displayAlert,
+  successAlert,
   uniqueArray,
   getFileExtension,
 } from '../../../globalFunctions'
@@ -46,7 +47,7 @@ function Feedback() {
       return false
     }
 
-    displayAlert('success', '', 'Thank you! We have received your app feedback!')
+    successAlert('Thank you! We have received your app feedback!')
     EmailManager.SendAppFeedback(currentUser.email)
     resetForm()
   }

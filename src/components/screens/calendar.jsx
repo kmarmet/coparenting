@@ -733,16 +733,18 @@ export default function EventCalendar() {
                           </span>
 
                           {/* EDIT ICON */}
-                          <span
-                            onClick={(e) => {
-                              if (AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())) {
-                                setEventToEdit(event)
-                                setShowEditCard(true)
-                              }
-                            }}
-                            className="material-icons-round edit-icon">
-                            more_horiz
-                          </span>
+                          {!event.isHoliday && (
+                            <span
+                              onClick={(e) => {
+                                if (AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())) {
+                                  setEventToEdit(event)
+                                  setShowEditCard(true)
+                                }
+                              }}
+                              className="material-icons-round edit-icon">
+                              more_horiz
+                            </span>
+                          )}
                         </div>
                         {/* TITLE */}
                         <p className="title" data-event-id={event.id}>

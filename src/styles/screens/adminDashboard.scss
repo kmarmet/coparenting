@@ -1,0 +1,41 @@
+@import "../colors";
+@import "../palette";
+@import "../variables";
+
+#external-overrides {
+  #admin-dashboard-wrapper {
+	.grid {
+	  display: flex;
+	  
+
+	  
+	  .box {
+		padding: 20px;
+		background: $lightBorder;
+		border-radius: 8px;
+		width: calc(100vw /2);
+		button {
+		  padding: 5px 8px;
+		  font-size: 16px;
+		}
+		
+		.box-title {
+		  font-weight: bold;
+		  text-align: center;
+		  font-size: 18px;
+		  margin-bottom: 10px;
+		}
+	  }
+	  
+	  // RESPONSIVE
+	  @media screen and (max-width: 600px) {
+		display: block;
+		
+		.box {
+		  width: 100%;
+		  margin-bottom: 10px;
+		}
+	  }
+	}
+  }
+}

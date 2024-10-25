@@ -165,6 +165,15 @@ export default function SlideOutMenu() {
         <p>Settings</p>
       </div>
 
+      {currentUser.email === 'kmarmet1@gmail.com' && (
+        <div
+          className={`slide-out-menu-item ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
+          onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>
+          <span className="material-icons-round">dashboard</span>
+          <p>Admin Dashboard</p>
+        </div>
+      )}
+
       {/* THEME TOGGLE */}
       {menuIsOpen && (
         <div id="bottom-bar" className={theme}>

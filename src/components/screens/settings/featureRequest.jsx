@@ -24,6 +24,7 @@ import {
   contains,
   displayAlert,
   uniqueArray,
+  successAlert,
   getFileExtension,
 } from '../../../globalFunctions'
 
@@ -52,7 +53,7 @@ function FeatureRequest() {
       return false
     }
 
-    displayAlert('success', '', 'We have received your feature request!')
+    successAlert('success', '', 'We have received your feature request!')
     EmailManager.SendFeatureRequest(currentUser.email)
 
     resetForm()

@@ -3,6 +3,8 @@ import DB from "../database/DB"
 import DateManager from "./dateManager"
 import moment from "moment"
 import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
+import DateFormats from "../constants/dateFormats"
+import DB_UserScoped from "../database/db_userScoped"
 
 
 export default AppManager =
@@ -33,8 +35,8 @@ export default AppManager =
   setHolidays:  () =>
       cal = await DB.getTable(DB.tables.calendarEvents)
       holidays = cal.filter((x) => x.isHoliday is true)
-      if holidays.length is 0
-        await DateManager.setHolidays()
+#      if holidays.length is 0
+      await DateManager.setHolidays()
   deleteExpiredCalendarEvents: ->
     events = await DB.getTable(DB.tables.calendarEvents)
     events = DB.convertKeyObjectToArray(events) unless Array.isArray(events)
@@ -45,6 +47,29 @@ export default AppManager =
         if daysPassed <= -30 and not event.isHoliday
           await DB.delete(DB.tables.calendarEvents, event.id)
           return
+  setUpdateAvailable: ( updateAvailableValue = null) ->
+    dbRef = ref(getDatabase())
+    users = Manager.convertToArray(await DB.getTable(DB.tables.users))
+    # Set updatedAp to false for all users to show update alert
+    for user in users
+      await DB_UserScoped.updateUserRecord(user.phone, "updatedApp", false)
+    lastUpdateObject = await DB.getTable("updateAvailable")
+    {updateAvailable} =  lastUpdateObject
+    timestamp = moment().format(DateFormats.fullDatetime)
+    updateObject =
+      lastUpdate: timestamp
+      updateAvailable: false
+    if updateAvailableValue != null and updateAvailableValue != undefined
+      updateObject.lastUpdate = timestamp
+      updateAvailable= false
+      set(child(dbRef, "updateAvailable"), updateObject)
+      return false
+    if !Manager.isValid(updateAvailable) || updateAvailable == false
+      updateObject.updateAvailable = true
+      set(child(dbRef, "updateAvailable"), updateObject )
+  getLastUpdateObject:  ->
+    updateObject = await DB.getTable("updateAvailable")
+    return updateObject
   deleteExpiredMemories: ->
     memories = await DB.getTable(DB.tables.memories)
     if Manager.isValid(memories, true)

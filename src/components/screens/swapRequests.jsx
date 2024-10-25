@@ -31,6 +31,7 @@ import {
   contains,
   displayAlert,
   uniqueArray,
+  successAlert,
   getFileExtension,
 } from '../../globalFunctions'
 
@@ -78,7 +79,7 @@ export default function SwapRequests() {
   }
 
   const sendReminder = async (request) => {
-    displayAlert('success', '', 'Reminder Sent')
+    successAlert('Reminder Sent')
     await DB_UserScoped.getCoparentByPhone(request.recipientPhone, currentUser).then(async (coparent) => {
       const subId = await PushAlertApi.getSubId(coparent.phone)
       PushAlertApi.sendMessage(`Pending Swap Decision`, ` ${moment(request.fromDate).format('dddd, MMMM Do')}`, subId)

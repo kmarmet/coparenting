@@ -43,7 +43,7 @@ function Behavior() {
   const update = async (section, prop, value, isArray) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'behavior', prop, value)
     setState({ ...state, activeInfoChild: updatedChild })
-    displayAlert('success', '', 'Updated!')
+    successAlert('Updated!')
   }
   const setSelectedChild = () => {
     if (Manager.isValid(activeInfoChild.behavior, false, true)) {

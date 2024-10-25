@@ -55,7 +55,7 @@ function General() {
 
   const update = async (section, prop, value, isArray) => {
     // Update DB
-    displayAlert('success', '', 'Updated!')
+    successAlert('Updated!')
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', prop, value)
     setState({ ...state, activeInfoChild: updatedChild })
   }

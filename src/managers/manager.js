@@ -379,20 +379,36 @@ const Manager = {
       let reminderTimes = []
       if (reminderIsValid) {
         if (object.reminderTimes.includes(ReminderTimes.hour)) {
-          document.querySelector(`[data-label='1 hour before']`).querySelector('.box').classList.add('active')
-          reminderTimes.push(ReminderTimes.hour)
+          const hourBox = document.querySelector(`[data-label='1 hour before']`)
+
+          if (Manager.isValid(hourBox)) {
+            hourBox.querySelector('.box').classList.add('active')
+            reminderTimes.push(ReminderTimes.hour)
+          }
         }
         if (object.reminderTimes.includes(ReminderTimes.halfHour)) {
-          document.querySelector(`[data-label='30 minutes before']`).querySelector('.box').classList.add('active')
-          reminderTimes.push(ReminderTimes.halfHour)
+          const halfHourBox = document.querySelector(`[data-label='30 minutes before']`)
+
+          if (Manager.isValid(halfHourBox)) {
+            halfHourBox.querySelector('.box').classList.add('active')
+            reminderTimes.push(ReminderTimes.halfHour)
+          }
         }
         if (object.reminderTimes.includes(ReminderTimes.fiveMinutes)) {
-          document.querySelector(`[data-label='5 minutes before']`).querySelector('.box').classList.add('active')
-          reminderTimes.push(ReminderTimes.fiveMinutes)
+          const fiveMinsBox = document.querySelector(`[data-label='5 minutes before']`)
+
+          if (Manager.isValid(fiveMinsBox)) {
+            fiveMinsBox.querySelector('.box').classList.add('active')
+            reminderTimes.push(ReminderTimes.fiveMinutes)
+          }
         }
         if (object.reminderTimes.includes(ReminderTimes.timeOfEvent)) {
-          document.querySelector(`[data-label='At time of event']`).querySelector('.box').classList.add('active')
-          reminderTimes.push(ReminderTimes.timeOfEvent)
+          const timeOfEventBox = document.querySelector(`[data-label='At time of event']`)
+
+          if (Manager.isValid(timeOfEventBox)) {
+            timeOfEventBox.querySelector('.box').classList.add('active')
+            reminderTimes.push(ReminderTimes.timeOfEvent)
+          }
         }
       }
       return reminderTimes

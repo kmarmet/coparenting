@@ -5,17 +5,19 @@ export default class User
     _name = 'name'
     _id = ''
     _allowNotifications = 'Yes'
-    _email = 'email'
+    _email = ''
     _coparents = []
-    _children = 'children'
-    _phone = 'phone'
+    _children = []
+    _phone = ''
     _parentType = ''
     _accountType = 'parent'
     _settings = {
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'
-    }
+    },
+    _updatedApp = false
   ) ->
+    @updatedApp = _updatedApp
     @name = _name
     @email = _email
     @phone = _phone

@@ -44,7 +44,7 @@ function Medical() {
   const update = async (section, prop, value, isArray) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'medical', prop, value)
     setState({ ...state, activeInfoChild: updatedChild })
-    displayAlert('success', '', 'Updated!')
+    successAlert('Updated!')
   }
 
   const setSelectedChild = () => {

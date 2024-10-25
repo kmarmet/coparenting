@@ -34,6 +34,7 @@ import {
   formatNameFirstNameOnly,
   removeFileExtension,
   contains,
+  successAlert,
   displayAlert,
   uniqueArray,
   getFileExtension,
@@ -62,10 +63,10 @@ const Conversation = () => {
         setTimeout(() => {
           getExistingMessages()
         }, 500)
-        displayAlert('success', '', 'Bookmark Removed')
+        successAlert('Bookmark Removed')
       })
     } else {
-      displayAlert('success', '', 'Message Bookmarked!')
+      successAlert('Message Bookmarked!')
       ChatManager.toggleMessageBookmark(currentUser, theme, messageToUser, messageId, true).finally(() => {
         setTimeout(() => {
           getExistingMessages()

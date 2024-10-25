@@ -44,7 +44,7 @@ function Schooling() {
   const update = async (section, prop, value) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'schooling', prop, value)
     setState({ ...state, activeInfoChild: updatedChild })
-    displayAlert('success', '', 'Updated!')
+    successAlert('Updated!')
   }
 
   const setSelectedChild = () => {

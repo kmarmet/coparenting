@@ -53,7 +53,6 @@ import ChildSelector from 'components/screens/childInfo/childSelector.jsx'
 import Loading from './components/shared/loading'
 import DocViewer from './components/screens/documents/docViewer'
 import ReviseChildTransferChangeRequest from './components/forms/reviseTransferRequest'
-import { wordCount, getFirstWord } from './globalFunctions'
 import emailjs from '@emailjs/browser'
 import './globalFunctions'
 import StateObj from './constants/stateObj'
@@ -61,6 +60,29 @@ import EmailManager from './managers/emailManager'
 // Menus
 import NavBar from './components/navBar'
 import SlideOutMenu from './components/slideOutMenu'
+import AdminDashboard from './components/screens/admin/adminDashboard'
+import DateFormats from './constants/dateFormats'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  throwError,
+  successAlert,
+  uniqueArray,
+  confirmAlert,
+  getFileExtension,
+} from './globalFunctions'
+import DB_UserScoped from '@userScoped'
 
 export default function App() {
   // Initialize Firebase
@@ -107,6 +129,17 @@ export default function App() {
     })
   }
 
+  const disableUpdateAlert = async () => {
+    const lastUpdateObject = await AppManager.getLastUpdateObject()
+    const { lastUpdate, updateAvailable } = lastUpdateObject
+    const now = moment().hour()
+    const expirationTime = moment(lastUpdate, DateFormats.fullDatetime).hour()
+    const duration = now - expirationTime
+    if (duration > 2) {
+      AppManager.setUpdateAvailable(false)
+    }
+  }
+
   // ON PAGE LOAD
   useEffect(() => {
     setState({ ...state, isLoading: true, showMenuButton: false, showNavbar: true })
@@ -117,23 +150,32 @@ export default function App() {
 
     AppManager.deleteExpiredCalendarEvents().then((r) => r)
     AppManager.deleteExpiredMemories().then((r) => r)
+    disableUpdateAlert().then((r) => r)
     // throw new Error('Something went wrong')
     // AppManager.setHolidays()
     document.body.appendChild(myCanvas)
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
         console.log('signed in')
       } else {
         console.log('signed out')
         console.log(user)
-        // User is signed out
-        // ...
       }
     })
   }, [])
+
+  // Show update alert -> set user prop
+  useEffect(() => {
+    if (Manager.isValid(currentUser) && currentUser.hasOwnProperty('phone')) {
+      if (!currentUser.updatedApp) {
+        confirmAlert('Update Available', 'Update', false, async () => {
+          await DB_UserScoped.updateUserRecord(currentUser.phone, 'updatedApp', true)
+          window.location.reload()
+        })
+      }
+    }
+  }, [currentUser])
 
   useEffect(() => {
     if (menuIsOpen) {
@@ -172,6 +214,9 @@ export default function App() {
 
           {/* SCREENS */}
           <>
+            {/* ADMIN */}
+            {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
+
             {/* AUTHENTICATION */}
             {currentScreen === ScreenNames.login && <Login />}
             {currentScreen === ScreenNames.registration && <Registration />}

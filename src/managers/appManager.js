@@ -20,6 +20,10 @@ import {
   update
 } from 'firebase/database';
 
+import DateFormats from "../constants/dateFormats";
+
+import DB_UserScoped from "../database/db_userScoped";
+
 export default AppManager = {
   setAppBadge: (count) => {
     if (window.navigator.setAppBadge) {
@@ -63,9 +67,8 @@ export default AppManager = {
     holidays = cal.filter((x) => {
       return x.isHoliday === true;
     });
-    if (holidays.length === 0) {
-      return (await DateManager.setHolidays());
-    }
+    //      if holidays.length is 0
+    return (await DateManager.setHolidays());
   },
   deleteExpiredCalendarEvents: async function() {
     var daysPassed, event, events, i, len;
@@ -89,6 +92,38 @@ export default AppManager = {
         }
       }
     }
+  },
+  setUpdateAvailable: async function(updateAvailableValue = null) {
+    var dbRef, i, lastUpdateObject, len, timestamp, updateAvailable, updateObject, user, users;
+    dbRef = ref(getDatabase());
+    users = Manager.convertToArray((await DB.getTable(DB.tables.users)));
+// Set updatedAp to false for all users to show update alert
+    for (i = 0, len = users.length; i < len; i++) {
+      user = users[i];
+      await DB_UserScoped.updateUserRecord(user.phone, "updatedApp", false);
+    }
+    lastUpdateObject = (await DB.getTable("updateAvailable"));
+    ({updateAvailable} = lastUpdateObject);
+    timestamp = moment().format(DateFormats.fullDatetime);
+    updateObject = {
+      lastUpdate: timestamp,
+      updateAvailable: false
+    };
+    if (updateAvailableValue !== null && updateAvailableValue !== void 0) {
+      updateObject.lastUpdate = timestamp;
+      updateAvailable = false;
+      set(child(dbRef, "updateAvailable"), updateObject);
+      return false;
+    }
+    if (!Manager.isValid(updateAvailable) || updateAvailable === false) {
+      updateObject.updateAvailable = true;
+      return set(child(dbRef, "updateAvailable"), updateObject);
+    }
+  },
+  getLastUpdateObject: async function() {
+    var updateObject;
+    updateObject = (await DB.getTable("updateAvailable"));
+    return updateObject;
   },
   deleteExpiredMemories: async function() {
     var i, key, len, memories, memory, results;

@@ -32,6 +32,7 @@ import {
   contains,
   displayAlert,
   uniqueArray,
+  successAlert,
   formatPhone,
   getFileExtension,
 } from '../../../globalFunctions'
@@ -139,6 +140,7 @@ export default function Registration() {
       newUser.coparents = coparents
       newUser.parentType = parentType
       newUser.settings.theme = 'light'
+      newUser.updatedApp = true
       newUser.settings.eveningReminderSummaryHour = '8pm'
       newUser.settings.morningReminderSummaryHour = '10am'
 
@@ -180,6 +182,7 @@ export default function Registration() {
         childUser.settings.morningReminderSummaryHour = '10am'
         childUser.general.name = userName
         childUser.general.phone = userPhone
+        childUser.updatedApp = true
         const cleanChild = Manager.cleanObject(childUser, ModelNames.childUser)
         const dbRef = ref(getDatabase())
         await set(child(dbRef, `users/${userPhone}`), cleanChild)
@@ -205,7 +208,7 @@ export default function Registration() {
         // Send to me
         const mySubId = await NotificationManager.getUserSubId('3307494534')
         PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone}`, mySubId)
-        displayAlert('success', '', `Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
+        successAlert(`Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
         setState({ ...state, currentScreen: ScreenNames.login })
       } else {
         // Parent account does not exist

@@ -30,6 +30,7 @@ import {
   removeFileExtension,
   contains,
   displayAlert,
+  successAlert,
   uniqueArray,
   getFileExtension,
 } from '../../globalFunctions'
@@ -86,7 +87,7 @@ export default function ReviseChildTransferChangeRequest({ showCard, hideCard })
     // Revise
     const updateKey = await DB.getSnapshotKey(DB.tables.transferChangeRequests, transferRequestToRevise, 'id')
     await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${updateKey}`, cleanRequest)
-    displayAlert('success', '', 'Updated')
+    successAlert('Updated')
     resetForm()
   }
 

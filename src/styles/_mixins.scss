@@ -446,6 +446,11 @@
     color: white;
     @include buttonPress(#02a67c);
   }
+  
+  &.white {
+    background-color: white;
+    color: black;
+  }
 
   &.default {
     color: black;
@@ -512,6 +517,11 @@
   &.red {
     color: rgba(232, 62, 113, 0.849);
     border: 1px solid rgba(232, 62, 113, 0.849);
+  }
+  
+  &.white {
+    background-color: white;
+    color: black;
   }
 
   &.glow {

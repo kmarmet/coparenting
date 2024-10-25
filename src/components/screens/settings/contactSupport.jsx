@@ -20,6 +20,7 @@ import {
   contains,
   displayAlert,
   uniqueArray,
+  successAlert,
   getFileExtension,
 } from '../../../globalFunctions'
 
@@ -46,7 +47,7 @@ function ContactSupport() {
       return false
     }
 
-    displayAlert('success', '', 'Thank you for reporting this issue. We will reply soon!!')
+    successAlert('Thank you for reporting this issue. We will reply soon!')
     EmailManager.SendSupportEmail(currentUser.email)
     resetForm()
   }
