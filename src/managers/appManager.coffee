@@ -35,8 +35,8 @@ export default AppManager =
   setHolidays:  () =>
       cal = await DB.getTable(DB.tables.calendarEvents)
       holidays = cal.filter((x) => x.isHoliday is true)
-#      if holidays.length is 0
-      await DateManager.setHolidays()
+      if holidays.length is 0
+        await DateManager.setHolidays()
   deleteExpiredCalendarEvents: ->
     events = await DB.getTable(DB.tables.calendarEvents)
     events = DB.convertKeyObjectToArray(events) unless Array.isArray(events)

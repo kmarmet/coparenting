@@ -110,4 +110,5 @@ SecurityManager =
             returnRecords.push(chat)
     return returnRecords.flat()
 
+
 export default SecurityManager

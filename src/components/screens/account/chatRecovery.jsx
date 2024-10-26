@@ -16,10 +16,33 @@ import TitleSuggestion from '../../../models/titleSuggestion'
 import TitleSuggestionWrapper from '../../shared/titleSuggestionWrapper'
 import { save } from 'save-file'
 import { saveAs } from 'file-saver'
+import ChatRecoveryRequest from '../../../models/chatRecoveryRequest'
+import { saveImage } from '../../../managers/imageManager'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  throwError,
+  successAlert,
+  uniqueArray,
+  confirmAlert,
+  getFileExtension,
+} from '../../../globalFunctions'
+import ImageManager from '../../../managers/imageManager'
 
 function ChatRecovery() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, setTheme } = state
+  const { currentUser, theme } = state
   const [reason, setReason] = useState('')
   const [coparentPhone, setCoparentPhone] = useState('')
   const [signaturePad, setSignaturePad] = useState(null)
@@ -27,6 +50,8 @@ function ChatRecovery() {
   const [messageType, setMessageType] = useState('all')
   const [convoMessages, setConvoMessages] = useState([])
   const [titleSuggestions, setTitleSuggestions] = useState([])
+  const [signatureUrl, setSignatureUrl] = useState('')
+
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
       setState({ ...state, currentScreen: ScreenNames.account })
@@ -35,20 +60,15 @@ function ChatRecovery() {
 
   const submit = async () => {
     if (reason.length === 0) {
-      setState({ ...state, alertMessage: 'Please provide a reason for recovering this deleted conversation', showAlert: true, alertType: 'error' })
+      throwError('Please provide a reason for recovering this deleted conversation')
       return false
     }
     if (signaturePad && signaturePad.isEmpty()) {
-      setState({ ...state, alertMessage: 'Please draw your signature', showAlert: true, alertType: 'error' })
+      throwError('Please draw your signature')
       return false
     }
     if (coparentPhone.length === 0) {
-      setState({
-        ...state,
-        alertMessage: 'Please enter the phone number of the coparent you were chatting with',
-        showAlert: true,
-        alertType: 'error',
-      })
+      throwError('Please enter the phone number of the coparent you were chatting with')
       return false
     }
     setViewConvo(true)
@@ -66,9 +86,8 @@ function ChatRecovery() {
     setViewConvo(true)
     const signatureImage = new Image()
     signatureImage.id = 'pic'
-    let all = []
     let scopedChat
-    let deletedChats = await DB.getTable(DB.tables.archivedChats)
+    let deletedChats = Manager.convertToArray(await DB.getTable(DB.tables.archivedChats))
 
     deletedChats.forEach((chat) => {
       const memberPhones = chat.members.map((x) => x.phone)
@@ -79,15 +98,9 @@ function ChatRecovery() {
 
     // Error if no scoped chat
     if (!Manager.isValid(scopedChat) || scopedChat?.messages.length === 0) {
-      setState({
-        ...state,
-        alertMessage: 'We could not find an archived chat with the details provided.',
-        showAlert: true,
-        isLoading: false,
-      })
+      throwError('We could not find an archived chat with the details provided.')
       setViewConvo(false)
-      Manager.showPageContainer()
-
+      setState({ ...state, isLoading: false })
       return false
     } else {
       let messages = scopedChat.messages
@@ -110,28 +123,23 @@ function ChatRecovery() {
       await FirebaseStorage.uploadChatRecoverySignature(scopedChat.id, signaturePadImage).finally(async (img) => {})
       await FirebaseStorage.getSingleImage(FirebaseStorage.directories.chatRecoveryRequests, scopedChat.id, 'signature.jpg').then(async (url) => {
         if (url && url !== undefined && url.length > 0) {
-          const chatRecoveryRequest = {
-            id: scopedChat.id,
-            members: scopedChat.members,
-            requestTimestamp: moment().format('MM/DD/yyyy hh:mma'),
-            firebaseStorageUrl: url,
-          }
+          const chatRecoveryRequest = new ChatRecoveryRequest()
+          chatRecoveryRequest.id = scopedChat.id
+          chatRecoveryRequest.members = scopedChat.members
+          chatRecoveryRequest.signatureImageUrl = url
+          chatRecoveryRequest.timestamp = moment().format(DateFormats.fullDatetime)
+          chatRecoveryRequest.createdBy = currentUser.email
 
-          // console.log(img)
+          setSignatureUrl(url)
+
+          // Add to Database
           await DB.add(DB.tables.chatRecoveryRequests, chatRecoveryRequest)
         }
       })
     }
   }
 
-  const saveImage = () => {
-    setTimeout(() => {
-      const convoImage = document.getElementById('image-wrapper').querySelector('img')
-      domtoimage.toBlob(convoImage).then(function (blob) {
-        saveAs(blob, 'ArchivedConversation.png')
-      })
-    }, 1000)
-  }
+  const saveImageLocal = () => saveImage(null, signatureUrl, 'Chat Recovery Conversation')
 
   const handleMessageTypeSelection = async (e) => {
     Manager.handleCheckboxSelection(
@@ -162,7 +170,6 @@ function ChatRecovery() {
 
   useEffect(() => {
     Manager.showPageContainer()
-    setState({ ...state, previousScreen: ScreenNames.account, showBackButton: true, showMenuButton: false })
     const signaturePadElement = document.querySelector('.signature-pad')
     if (signaturePadElement) {
       const sigPad = new SignaturePad(signaturePadElement, {
@@ -177,7 +184,6 @@ function ChatRecovery() {
     <>
       {!viewConvo && (
         <>
-          <p className="screen-title ">Chat Recovery</p>
           <div {...handlers} id="chat-request-container" className={`${theme} page-container form`}>
             <div className="form">
               {/* PHONE */}
@@ -194,7 +200,8 @@ function ChatRecovery() {
                     if (inputValue.length > 1) {
                       const dbSuggestions = await DB.getTable(DB.tables.suggestions)
                       const matching = dbSuggestions.filter(
-                        (x) => x.formName === 'archived-chat' && x.ownerPhone === currentUser.phone && x.suggestion.toLowerCase().contains(inputValue)
+                        (x) =>
+                          x.formName === 'archived-chat' && x.ownerPhone === currentUser.phone && contains(x.suggestion.toLowerCase(), inputValue)
                       )
                       setTitleSuggestions(Manager.getUniqueArray(matching).flat())
                     } else {
@@ -259,12 +266,18 @@ function ChatRecovery() {
         </>
       )}
       <div className="conversation-container">
-        <p className="screen-title active">Conversation</p>
         <div {...handlers} id="chat-request-container" className={`${theme} page-container active form`}>
+          <p className="mb-15">
+            If you require a copy (image) of the signature applied when requesting this chat, or the date and time, please{' '}
+            <span className="link" onClick={() => setState({ ...state, currentScreen: ScreenNames.contactSupport })}>
+              <u>send us an email</u>
+            </span>
+            .
+          </p>
           {/* CONVO IMAGE */}
           <label>Below is an image of the entire conversation</label>
           <div id="image-wrapper" className="mt-5"></div>
-          <button className="button default w-50 center mb-20" onClick={saveImage}>
+          <button className="button default w-50 center mb-20" onClick={saveImageLocal}>
             Download Image
           </button>
 

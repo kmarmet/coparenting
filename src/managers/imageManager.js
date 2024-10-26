@@ -180,7 +180,6 @@ const ImageManager = {
     FirebaseStorage.delete(directory, currentUser.id, imageName)
   },
 }
-export default ImageManager
 export const createImage = (url) =>
   new Promise((resolve, reject) => {
     const image = new Image()
@@ -189,12 +188,10 @@ export const createImage = (url) =>
     image.setAttribute('crossOrigin', 'anonymous') // needed to avoid cross-origin issues on CodeSandbox
     image.src = url
   })
-
 export function getRadianAngle(degreeValue) {
   return (degreeValue * Math.PI) / 180
 }
-
-export function saveImage(imageSelector, url) {
+export function saveImage(imageSelector, url, fileName) {
   setTimeout(() => {
     if (Manager.isValid(imageSelector)) {
       const image = document.querySelector(imageSelector)
@@ -203,14 +200,10 @@ export function saveImage(imageSelector, url) {
       })
     }
     if (Manager.isValid(url)) {
-      saveAs(url, 'Memory.jpg')
+      saveAs(url, fileName)
     }
   }, 300)
 }
-
-/**
- * Returns the new bounding area of a rotated rectangle.
- */
 export function rotateSize(width, height, rotation) {
   const rotRad = getRadianAngle(rotation)
 
@@ -219,7 +212,3 @@ export function rotateSize(width, height, rotation) {
     height: Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height),
   }
 }
-
-/**
- * This function was adapted from the one in the ReadMe of https://github.com/DominicTobias/react-image-crop
- */

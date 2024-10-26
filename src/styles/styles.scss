@@ -249,6 +249,12 @@
         z-index: $maxZIndex;
       }
     }
+    
+    span {
+      &.link {
+        color: $linkColor;
+      }
+    }
 
     label {
       @include fontType(300);

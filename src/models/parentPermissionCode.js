@@ -4,11 +4,11 @@ var ParentPermissionCodes;
 import moment from "moment";
 
 export default ParentPermissionCodes = class ParentPermissionCodes {
-  constructor(_code = "", _expiration = moment().add(5, "minutes"), _parentPhone = "", _childPhone = '') {
-    this.childPhone = _childPhone;
-    this.code = _code;
-    this.expiration = moment().add(5, "minutes");
-    this.parentPhone = _parentPhone;
+  constructor(code = "", expiration = moment().add(5, "minutes"), parentPhone = "", childPhone = '') {
+    this.code = code;
+    this.expiration = expiration;
+    this.parentPhone = parentPhone;
+    this.childPhone = childPhone;
   }
 
 };

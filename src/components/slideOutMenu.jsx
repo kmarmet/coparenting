@@ -81,6 +81,17 @@ export default function SlideOutMenu() {
             <img src={require('../img/logo.png')} alt="" />
           </div>
         </div>
+
+        {/* ADMIN DASHBOARD */}
+        {currentUser.email === 'kmarmet1@gmail.com' && (
+          <div
+            className={`slide-out-menu-item ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
+            onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>
+            <span className="material-icons-round">dashboard</span>
+            <p>Admin Dashboard</p>
+          </div>
+        )}
+
         {AppManager.getAccountType(currentUser) === 'parent' && (
           <>
             <div
@@ -125,6 +136,7 @@ export default function SlideOutMenu() {
               <span className="material-icons-round">update</span>
               <p>Transfer Change</p>
             </div>
+
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.docsList)}>
@@ -164,15 +176,6 @@ export default function SlideOutMenu() {
         <span className="material-icons-round">settings</span>
         <p>Settings</p>
       </div>
-
-      {currentUser.email === 'kmarmet1@gmail.com' && (
-        <div
-          className={`slide-out-menu-item ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>
-          <span className="material-icons-round">dashboard</span>
-          <p>Admin Dashboard</p>
-        </div>
-      )}
 
       {/* THEME TOGGLE */}
       {menuIsOpen && (

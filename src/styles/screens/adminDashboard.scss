@@ -4,19 +4,86 @@
 
 #external-overrides {
   #admin-dashboard-wrapper {
+	p {
+	  margin: 0 0 5px 0;
+	}
+	hr {
+	  margin: 10px 0;
+	  border-color: $translucentLightest;
+	}
+	a {
+	  display: block;
+	}
+	
+	button {
+	  background-color: #282a37;
+	  color: #7dc8da;
+	  padding: 5px 15px;
+	  border-radius: 20px;
+	  font-size: 16px;
+	}
+	
 	.grid {
 	  display: flex;
-	  
-
 	  
 	  .box {
 		padding: 20px;
 		background: $lightBorder;
-		border-radius: 8px;
+		border-radius: $borderRadius;
 		width: calc(100vw /2);
-		button {
-		  padding: 5px 8px;
-		  font-size: 16px;
+		
+		.data-ui {
+		  padding: 15px;
+		  margin-top: 15px;
+		  border-radius: $borderRadius;
+		  background: #282a37;
+		  
+		  a {
+			color: #a28fc4;
+			text-decoration: underline;
+			font-weight: bold;
+		  }
+		  
+		  .prop {
+			  color: #56e27b;
+		  }
+		  
+		  p {
+			color:white;
+		  }
+		  
+		  .data-subset {
+			margin-left: 15px;
+			
+			.subset-prop {
+			color: #7dc8da;
+			}
+		  }
+		  
+		  .buttons {
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			gap: 10px;
+			
+			button {
+			  border-radius: $borderRadius;
+			  padding: 5px 10px;
+			  display: flex;
+			  align-items: center;
+			  @include shadow;
+			  
+			  &.red {
+				background: $red;
+				color:white;
+			  }
+			}
+			
+			.chat-recovery-clipboard-button {
+			  background-color: $green;
+			  color:white;
+			}
+		  }
 		}
 		
 		.box-title {

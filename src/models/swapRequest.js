@@ -4,21 +4,21 @@ var SwapRequest;
 import Manager from "../managers/manager";
 
 export default SwapRequest = class SwapRequest {
-  constructor(_id = '', _fromDate = '', _shareWith = [], _createdBy = '', _toDate = '', _dateAdded = '', _recipientPhone = '', _reason = '', _duration = '', _phone = '', _children = '', _fromHour = '', _toHour = '', _range = []) {
-    this.range = _range;
-    this.children = [];
-    this.id = Manager.getUid();
-    this.fromDate = _fromDate;
-    this.toDate = _toDate;
-    this.dateAdded = Manager.getCurrentDate();
-    this.recipientPhone = _recipientPhone;
-    this.shareWith = _shareWith;
-    this.reason = _reason;
-    this.duration = _duration;
-    this.phone = _phone;
-    this.createdBy = _createdBy;
-    this.fromHour = _fromHour;
-    this.toHour = _toHour;
+  constructor(id = '', fromDate = '', shareWith = [], createdBy = '', toDate = '', dateAdded = '', recipientPhone = '', reason = '', duration = '', phone = '', children = '', fromHour = '', toHour = '', range = []) {
+    this.id = id;
+    this.fromDate = fromDate;
+    this.shareWith = shareWith;
+    this.createdBy = createdBy;
+    this.toDate = toDate;
+    this.dateAdded = dateAdded;
+    this.recipientPhone = recipientPhone;
+    this.reason = reason;
+    this.duration = duration;
+    this.phone = phone;
+    this.children = children;
+    this.fromHour = fromHour;
+    this.toHour = toHour;
+    this.range = range;
   }
 
 };

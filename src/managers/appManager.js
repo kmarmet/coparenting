@@ -67,8 +67,9 @@ export default AppManager = {
     holidays = cal.filter((x) => {
       return x.isHoliday === true;
     });
-    //      if holidays.length is 0
-    return (await DateManager.setHolidays());
+    if (holidays.length === 0) {
+      return (await DateManager.setHolidays());
+    }
   },
   deleteExpiredCalendarEvents: async function() {
     var daysPassed, event, events, i, len;

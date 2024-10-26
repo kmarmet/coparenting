@@ -4,15 +4,15 @@ var ConversationMessage;
 import Manager from "../managers/manager";
 
 export default ConversationMessage = class ConversationMessage {
-  constructor(_id = '', saved = false, _sender = '', _recipient = '', _timestamp = '', _readState = 'delivered', _message = '', _notificationSent = false, _saved = false) {
-    this.id = Manager.getUid();
-    this.saved = _saved;
-    this.message = _message;
-    this.sender = _sender;
-    this.recipient = _recipient;
-    this.timestamp = _timestamp;
-    this.readState = 'delivered';
-    this.notificationSent = _notificationSent;
+  constructor(id = Manager.getUid(), saved = false, sender = '', recipient = '', timestamp = '', readState = 'delivered', message = '', notificationSent = false) {
+    this.id = id;
+    this.saved = saved;
+    this.sender = sender;
+    this.recipient = recipient;
+    this.timestamp = timestamp;
+    this.readState = readState;
+    this.message = message;
+    this.notificationSent = notificationSent;
   }
 
 };
