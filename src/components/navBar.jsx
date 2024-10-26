@@ -27,20 +27,6 @@ export default function NavBar() {
   const { state, setState } = useContext(globalState)
   const { currentScreen, menuIsOpen, showCenterNavbarButton, theme, showNavbar, navbarButton } = state
 
-  const setNavbarButton = (action, icon = 'add', color = 'green') => {
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => action(),
-          icon: icon,
-          color: color,
-        },
-      })
-    }, 500)
-  }
-
   const changeCurrentScreen = (screen) => {
     if (screen === ScreenNames.calendar) {
       const cal = document.querySelector('.flatpickr-calendar')

@@ -15,6 +15,27 @@ import MenuMapper from '../../../mappers/menuMapper.js'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../../constants/dateFormats'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  throwError,
+  successAlert,
+  uniqueArray,
+  confirmAlert,
+  getFileExtension,
+} from '../../../globalFunctions'
+import DateManager from '../../../managers/dateManager'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
@@ -40,18 +61,24 @@ export default function Settings() {
   }
 
   const submitCalendarSettings = async () => {
-    await DB_UserScoped.updateUserRecord(
-      currentUser.phone,
-      'settings/eveningReminderSummaryHour',
-      moment(eveningSummaryTime).format(DateFormats.summaryHour)
-    )
-    await DB_UserScoped.updateUserRecord(
-      currentUser.phone,
-      'settings/morningReminderSummaryHour',
-      moment(morningSummaryTime).format(DateFormats.summaryHour)
-    )
+    console.log(DateManager.dateIsValid(morningSummaryTime))
+    console.log(moment(eveningSummaryTime).format(DateFormats.summaryHour))
+    if (DateManager.dateIsValid(morningSummaryTime)) {
+      await DB_UserScoped.updateUserRecord(
+        currentUser.phone,
+        'settings/morningReminderSummaryHour',
+        moment(morningSummaryTime).format(DateFormats.summaryHour)
+      )
+    }
+    if (DateManager.dateIsValid(eveningSummaryTime)) {
+      await DB_UserScoped.updateUserRecord(
+        currentUser.phone,
+        'settings/eveningReminderSummaryHour',
+        moment(eveningSummaryTime).format(DateFormats.summaryHour)
+      )
+    }
     await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/defaultReminderTimes', defaultReminderTimes)
-    setState({ ...state, alertMessage: 'Calendar settings have been updated!', alertType: 'success', showAlert: true })
+    successAlert('Calendar settings have been updated!')
     setCalendarAccIsOpen(false)
   }
 
@@ -84,8 +111,7 @@ export default function Settings() {
 
   useEffect(() => {
     Manager.showPageContainer('show')
-    setState({ ...state, showBackButton: false, showMenuButton: true })
-    setMenuItemsList(AllMenuItems.map((x) => x.Name.spaceBetweenWords().uppercaseFirstLetterOfAllWords()))
+    // setMenuItemsList(AllMenuItems.map((x) => uppercaseFirstLetterOfAllWords(spaceBetweenWords(x.Name))))
   }, [])
 
   return (
@@ -126,38 +152,38 @@ export default function Settings() {
         </div>
 
         {/* SHORTCUTS */}
-        <div className="shortcuts-settings mb-20">
-          <Accordion className="pl-0 pr-0 w-100">
-            <p onClick={() => setShortcutAccIsOpen(!shortcutAccIsOpen)} className="accordion-header">
-              Customize Shortcuts
-            </p>
-            <Accordion.Panel expanded={shortcutAccIsOpen} className={'pl-0 pr-0'}>
-              <p className="center-text mt-5 caption">shortcuts</p>
-              <p className="mt-10 mb-10 ">
-                Select the shortcuts (only four) you would like to use in the menu (example above). Select them in the order you would like them
-                displayed. <br /> <br /> The middle button is the menu button and cannot be modified.
-              </p>
-              <CheckboxGroup
-                boxWidth={50}
-                onLightBackground={true}
-                skipNameFormatting={true}
-                onCheck={handleShortcutSelection}
-                labels={menuItemsList}
-              />
-              {shortcutsToSendToDb.length === 4 && (
-                <button
-                  id="submit-button"
-                  onClick={(e) => {
-                    Manager.toggleSparkleAnimation(e.target)
-                    submitShortcuts()
-                  }}
-                  className="button green default center mb-10 mt-10">
-                  Set Shortcuts <span className="material-icons-round">check</span>
-                </button>
-              )}
-            </Accordion.Panel>
-          </Accordion>
-        </div>
+        {/*<div className="shortcuts-settings mb-20">*/}
+        {/*  <Accordion className="pl-0 pr-0 w-100">*/}
+        {/*    <p onClick={() => setShortcutAccIsOpen(!shortcutAccIsOpen)} className="accordion-header">*/}
+        {/*      Customize Shortcuts*/}
+        {/*    </p>*/}
+        {/*    <Accordion.Panel expanded={shortcutAccIsOpen} className={'pl-0 pr-0'}>*/}
+        {/*      <p className="center-text mt-5 caption">shortcuts</p>*/}
+        {/*      <p className="mt-10 mb-10 ">*/}
+        {/*        Select the shortcuts (only four) you would like to use in the menu (example above). Select them in the order you would like them*/}
+        {/*        displayed. <br /> <br /> The middle button is the menu button and cannot be modified.*/}
+        {/*      </p>*/}
+        {/*      <CheckboxGroup*/}
+        {/*        boxWidth={50}*/}
+        {/*        onLightBackground={true}*/}
+        {/*        skipNameFormatting={true}*/}
+        {/*        onCheck={handleShortcutSelection}*/}
+        {/*        labels={menuItemsList}*/}
+        {/*      />*/}
+        {/*      {shortcutsToSendToDb.length === 4 && (*/}
+        {/*        <button*/}
+        {/*          id="submit-button"*/}
+        {/*          onClick={(e) => {*/}
+        {/*            Manager.toggleSparkleAnimation(e.target)*/}
+        {/*            submitShortcuts()*/}
+        {/*          }}*/}
+        {/*          className="button green default center mb-10 mt-10">*/}
+        {/*          Set Shortcuts <span className="material-icons-round">check</span>*/}
+        {/*        </button>*/}
+        {/*      )}*/}
+        {/*    </Accordion.Panel>*/}
+        {/*  </Accordion>*/}
+        {/*</div>*/}
 
         {/* SECTIONS */}
         <div className="sections">

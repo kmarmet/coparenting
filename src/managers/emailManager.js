@@ -32,14 +32,14 @@ EmailManager = {
     config.from_name = fromName;
     return emailjs.send(config.service_id, config.template_id, config);
   },
-  SendFeatureRequest: function(userEmail) {
-    return EmailManager.SendEmail(EmailManager.Templates.featureRequest, "New Feature Request", userEmail);
+  SendFeatureRequest: function(userEmail, message) {
+    return EmailManager.SendEmail(EmailManager.Templates.featureRequest, message, userEmail);
   },
-  SendAppFeedback: function(userEmail) {
-    return EmailManager.SendEmail(EmailManager.Templates.appFeedback, "New Feedback", userEmail);
+  SendAppFeedback: function(userEmail, message) {
+    return EmailManager.SendEmail(EmailManager.Templates.appFeedback, message, userEmail);
   },
-  SendSupportEmail: function(userEmail) {
-    return EmailManager.SendEmail(EmailManager.Templates.customerSupport, "App Support", userEmail);
+  SendSupportEmail: function(userEmail, message) {
+    return EmailManager.SendEmail(EmailManager.Templates.customerSupport, message, userEmail);
   }
 };
 

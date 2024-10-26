@@ -74,6 +74,7 @@ const Chats = () => {
 
   useEffect(() => {
     if (!selectedCoparent) {
+      console.log('here')
       setTimeout(() => {
         setState({
           ...state,
@@ -96,38 +97,44 @@ const Chats = () => {
     Manager.showPageContainer('show')
   }, [selectedCoparent])
 
-  useEffect(() => {
-    Manager.showPageContainer('show')
-    getChats().then((r) => r)
-
-    if (showNewThreadForm) {
-      setState({
-        ...state,
-        currentScreen: ScreenNames.chats,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            setShowNewConvoCard(false)
-          },
-          icon: 'close',
-          color: 'red',
-        },
-      })
-    } else {
-      setState({
-        ...state,
-        currentScreen: ScreenNames.chats,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            setShowNewThreadForm(true)
-          },
-          color: 'green',
-          icon: 'add',
-        },
-      })
-    }
-  }, [showNewThreadForm])
+  // useEffect(() => {
+  //   console.log('also here')
+  //   Manager.showPageContainer('show')
+  //   getChats().then((r) => r)
+  //
+  //   setTimeout(() => {
+  //     console.log(showNewThreadForm)
+  //     if (showNewThreadForm) {
+  //       setState({
+  //         ...state,
+  //         currentScreen: ScreenNames.chats,
+  //         navbarButton: {
+  //           ...navbarButton,
+  //           action: () => {
+  //             setShowNewConvoCard(false)
+  //           },
+  //           icon: 'close',
+  //           color: 'red',
+  //         },
+  //         showNavbar: true,
+  //       })
+  //     } else {
+  //       setState({
+  //         ...state,
+  //         currentScreen: ScreenNames.chats,
+  //         navbarButton: {
+  //           ...navbarButton,
+  //           action: () => {
+  //             setShowNewThreadForm(true)
+  //           },
+  //           color: 'green',
+  //           icon: 'add',
+  //         },
+  //         showNavbar: true,
+  //       })
+  //     }
+  //   }, 400)
+  // }, [showNewThreadForm])
 
   const showDeleteIcon = async (coparent) => {
     setState({

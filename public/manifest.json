@@ -4,8 +4,8 @@
   "start_url": "/",
   "id": "https://peaceful-coparenting.app/",
   "display": "fullscreen",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#f4f8fb",
+  "theme_color": "#f4f8fb",
   "display_override": [
     "fullscreen",
     "minimal-ui"

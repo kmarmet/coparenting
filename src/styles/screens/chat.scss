@@ -96,7 +96,7 @@
       min-height: 80px;
       #thread-action-button {
         margin-right: 5px;
-        color: $accent;
+        color: $lightDarkGrey;
         opacity: 0.8;
         font-size: 25px;
       }
@@ -188,17 +188,10 @@
     &.page-container {
       .form {
         #message-input-container {
-          border: 2px solid $lightGrey;
-
           #message-input {
-            color: $lightBlackLight;
+            color: $lightBlue;
           }
         }
-      }
-    }
-    .top-buttons {
-      #conversation-bookmark-icon {
-        color: $darkBlueMedium;
       }
     }
     #default-messages,
@@ -208,16 +201,17 @@
         &.to {
           &.from {
             p {
-              background-color: $lightGrey;
+              background-color: #ebf4fb;
+              color: #77899b;
             }
           }
           p {
-            color: $lightBlackLight;
+            color: #3d454d;
           }
           .under-message {
             .from-name,
             .timestamp {
-              color: $lightBlackLight;
+              color: #7b8b9f;
             }
           }
         }
@@ -303,40 +297,39 @@
     .top-buttons {
       justify-content: flex-end;
       position: sticky;
-      top:0;
+      top: 0;
       z-index: 100000;
+      background-color: white;
+      border-bottom: 1px solid $lightBorder;
 
-      #previous-screen-button {
-        font-size: 14px;
-        font-weight: bold;
-        padding: 5px 15px 5px 0;
-        border-radius: $borderRadius;
-        z-index: 10000;
-        display: flex;
+      #user-info {
+        justify-self: flex-start;
         margin-right: auto;
-        align-items: center;
-        background: transparent;
-        span {
-          margin-right: 5px;
-          font-size: 14px;
+        #user-icon {
+          color: $lightBlue;
+          font-size: 50px;
+        }
+        #user-name {
+          margin-left: 8px;
+          font-weight: 200;
+          font-size: 18px;
         }
       }
-
+      
       #conversation-bookmark-icon {
-        font-size: 25px;
-        position: relative;
-        top: -2px;
-        margin-right: 10px;
-
         &.active {
-          color: $green;
+          color: $lightBlue;
         }
       }
 
-      #conversation-search-icon {
-        font-size: 30px;
-        color: $blue;
-        margin-bottom: 5px;
+      #conversation-bookmark-icon,
+      #close-icon, #search-icon {
+        color: $lightDarkGrey;
+        font-size: 25px;
+        
+        &#close-icon, &#search-icon {
+          font-size: 28px;
+        }
       }
     }
 
@@ -344,16 +337,38 @@
     #messages,
     #bookmark-messages {
       margin-top: auto;
-      width: calc(100vw - 30px);
+      max-width: calc(100vw);
+      width: 100vw;
+      left: 0;
+      display: block;
       position: fixed;
       overflow: auto;
-      top: 70px;
-      max-height: 74vh;
-      padding: 0 5px;
+      top: 90px;
+      max-height: calc(100vh - 120px);
+      padding: 0 15px;
 
       @media screen and (min-width: 800px) {
         min-width: 10%;
         width: 28vw;
+      }
+
+      .timestamp {
+        width: 100%;
+        display: block;
+        margin-bottom: 15px;
+        color: #b2b2b2;
+        font-size: 12px;
+        padding-top: 5px;
+        padding-left: 5px;
+        &.from {
+          float: left;
+          text-align: left;
+        }
+        &.to {
+          float: right;
+          text-align: right;
+          padding-right: 5px;
+        }
       }
 
       .message {
@@ -361,11 +376,8 @@
         -webkit-user-select: none;
         -ms-user-select: none;
         user-select: none;
-
-        p {
-          color: white;
-          font-weight: 500;
-        }
+        font-weight: 500;
+        position: relative;
 
         &.longpress {
           p {
@@ -378,18 +390,44 @@
           opacity: 0;
         }
 
+        &.from,
         &.to {
-          .under-message {
-            float: right;
-          }
-          p {
-            color: white;
-          }
-        }
+          word-break: break-all;
+          display: inline-block;
+          max-width: 85%;
+          width: auto;
+          min-width: 65%;
+          border-radius: 12px;
+          padding: 10px 15px;
+          transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+          line-height: 1.3;
 
-        &.from {
-          .under-message {
-            float: left;
+          &.from {
+            z-index: 100;
+            margin-right: auto;
+            background-color: #ebf4fb;
+            color: #7b8b9f;
+            .under-message {
+              float: left;
+            }
+          }
+
+          &.to {
+            background-color: #f2f4f6;
+            color: #6f8194;
+            margin-left: auto;
+            margin-right: 0;
+            float: right;
+
+            .under-message {
+              float: right;
+            }
+
+            .message-subtitle {
+              margin-left: auto;
+              display: block;
+              text-align: right;
+            }
           }
         }
 
@@ -422,56 +460,9 @@
         font-size: 30px;
       }
 
-      .from,
-      .to {
-        p {
-          display: inline-block;
-          max-width: 85%;
-          width: auto;
-          min-width: 65%;
-          border-radius: 20px;
-          margin-bottom: 15px;
-          padding: 10px 15px;
-          box-shadow:
-            0 1px 3px rgba(0, 0, 0, 0.12),
-            0 1px 2px rgba(0, 0, 0, 0.24);
-          transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-          line-height: 1.3;
-
-          &.to {
-            p {
-              color: white;
-            }
-          }
-        }
-      }
-
       .from-said {
         margin-bottom: 10px;
         margin-left: 5px;
-      }
-
-      .from {
-        p {
-          z-index: 100;
-          margin-right: auto;
-          float: left;
-        }
-      }
-
-      .to {
-        p {
-          background-color: #534aff;
-          margin-left: auto;
-          margin-right: 0;
-          float: right;
-        }
-
-        .message-subtitle {
-          margin-left: auto;
-          display: block;
-          text-align: right;
-        }
       }
     }
 
@@ -491,34 +482,60 @@
     }
 
     .form {
-      margin-top: 5px;
       position: fixed;
-      bottom: 60px;
-      width: calc(100vw - 30px);
+      bottom: 0;
+      width: 100vw;
+      background: $lightBg;
+      left: 0;
+      padding: 10px;
 
-      #emoji-icon {
-        font-size: 25px;
-        border: 0;
+      #send-button {
+        background: $lightBlue;
+        color: white;
+        border-radius: 8px;
+        align-self: stretch;
+        width: 100px;
+      }
+
+      #under-message-input {
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 10px;
+        left: -10px;
+        position: relative;
+        #icons {
+          align-items: center;
+          gap: 8px;
+
+          .emoji {
+            font-size: 22px;
+          }
+          #emoji-icon {
+            border: 0;
+            filter: grayscale(100%);
+            font-size: 22px;
+            border-left: 2px solid $lightBorder;
+            padding-left: 5px;
+          }
+        }
       }
 
       #message-input-container {
-        display: flex;
-        align-items: center;
-        height: 45px;
-        margin-bottom: 30px;
-        border-radius: 50px;
-        padding: 10px;
-
+        gap: 10px;
         #message-input {
-          border: 0;
-          background-color: transparent;
+          background-color: white;
           color: white;
           outline: none;
           height: 45px;
-          margin-right: 10px;
-          overflow-y: hidden;
-          line-height: 1;
+          line-height: 1.2;
           vertical-align: middle;
+          border: 1px solid $lightBorder;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          overflow: auto;
 
           &::placeholder {
             position: relative;

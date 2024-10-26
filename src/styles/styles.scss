@@ -91,6 +91,16 @@
       color: $linkColor;
     }
   }
+  
+  button {
+      background-color: transparent;
+    &.link {
+      color: $linkColor;
+      text-decoration: underline;
+      background-color: transparent;
+      padding: 0;
+    }
+  }
 
   .text {
     @include deadCenter;

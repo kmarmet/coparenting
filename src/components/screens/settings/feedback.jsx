@@ -48,7 +48,7 @@ function Feedback() {
     }
 
     successAlert('Thank you! We have received your app feedback!')
-    EmailManager.SendAppFeedback(currentUser.email)
+    EmailManager.SendAppFeedback(currentUser.email, feedback)
     resetForm()
   }
 

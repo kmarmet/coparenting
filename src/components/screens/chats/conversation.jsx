@@ -39,6 +39,7 @@ import {
   uniqueArray,
   getFileExtension,
 } from '../../../globalFunctions'
+import BottomCard from '../../shared/bottomCard'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -51,6 +52,7 @@ const Conversation = () => {
   const [showEmojis, setShowEmojis] = useState(false)
   const [showBookmarks, setShowBookmarks] = useState(false)
   const [chatKey, setChatKey] = useState(null)
+  const [showSearchCard, setShowSearchCard] = useState(false)
 
   // Longpress/bookmark
   const bind = useLongPress(async (e, messageObject) => {
@@ -59,7 +61,7 @@ const Conversation = () => {
     const isSavedAlready = messageObject.context.saved
     toggleLongpressAnimation(el)
     if (isSavedAlready) {
-      ChatManager.toggleMessageBookmark(currentUser, theme, messageToUser, messageId, false).finally(() => {
+      ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, false).finally(() => {
         setTimeout(() => {
           getExistingMessages()
         }, 500)
@@ -67,7 +69,7 @@ const Conversation = () => {
       })
     } else {
       successAlert('Message Bookmarked!')
-      ChatManager.toggleMessageBookmark(currentUser, theme, messageToUser, messageId, true).finally(() => {
+      ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, true).finally(() => {
         setTimeout(() => {
           getExistingMessages()
         }, 500)
@@ -168,7 +170,7 @@ const Conversation = () => {
   }
 
   const getExistingMessages = async () => {
-    const scopedChat = await ChatManager.getExistingMessages(currentUser, theme, messageToUser)
+    const scopedChat = await ChatManager.getExistingMessages(currentUser, messageToUser)
     const { key, messages, bookmarkedMessages, chats } = scopedChat
     setChatKey(key)
     if (messages.length > 0) {
@@ -202,26 +204,21 @@ const Conversation = () => {
     const dbRef = ref(getDatabase())
 
     onValue(child(dbRef, DB.tables.chats), async (snapshot) => {
-      await getExistingMessages()
-      setState({ ...state, selectedNewEventDay: moment().format(DateFormats.dateForDb).toString() })
+      await getExistingMessages().then((r) => r)
     })
+
     setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            setShowSearchInput(true)
-            setTimeout(() => {
-              document.querySelector('.search-input').focus()
-            }, 200)
-          },
-          icon: 'search',
-        },
-      })
+      setState({ ...state, showNavbar: false })
     }, 500)
     scrollToLatestMessage()
     Manager.showPageContainer('show')
+
+    // Set max screen height for message wrapper
+    const screenHeight = window.screen.height - 300
+    const defaultMessages = document.getElementById('default-messages')
+    if (defaultMessages) {
+      document.getElementById('default-messages').style.height = `${screenHeight}px`
+    }
   }, [])
 
   useEffect(() => {
@@ -238,68 +235,75 @@ const Conversation = () => {
 
   return (
     <>
-      <p className="screen-title ml-auto mr-auto pt-15 center-text conversation">{messageToUser.name.formatNameFirstNameOnly()}</p>
+      <BottomCard
+        title={'Search'}
+        className="form"
+        showCard={showSearchCard}
+        onClose={() => {
+          setShowSearchInput(false)
+          setShowSearchCard(false)
+          setSearchResults([])
+          scrollToLatestMessage()
+        }}>
+        <DebounceInput
+          placeholder="Find a message..."
+          minLength={2}
+          className="search-input"
+          debounceTimeout={500}
+          onChange={(e) => {
+            if (e.target.value.length > 2) {
+              const results = messagesToLoop.filter((x) => x.message.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1)
+              setBookmarks([])
+              setSearchResults(results)
+            } else {
+              setSearchResults([])
+              scrollToLatestMessage()
+            }
+          }}
+        />
+      </BottomCard>
+      <p className="screen-title ml-auto mr-auto pt-15 center-text conversation">{formatNameFirstNameOnly(messageToUser.name)}</p>
       <div {...handlers} id="message-thread-container" className={`${theme} page-container conversation`}>
         {/* TOP BAR */}
         {!showSearchInput && (
           <div className="flex top-buttons">
-            <button
-              onClick={() => {
-                setState({ ...state, currentScreen: ScreenNames.chats })
-                Manager.showPageContainer('show')
-              }}
-              id="previous-screen-button">
-              <span className="material-icons-round">arrow_back_ios</span> BACK
-            </button>
-            {bookmarks.length > 0 && (
+            <div className="flex" id="user-info">
+              <span id="user-icon" className="material-icons-round">
+                account_circle
+              </span>
+              <p id="user-name">{formatNameFirstNameOnly(messageToUser.name)}</p>
+            </div>
+            <div id="right-side" className="flex gap-5">
+              <span className="material-icons" id="search-icon" onClick={() => setShowSearchCard(true)}>
+                search
+              </span>
+              {bookmarks.length > 0 && (
+                <span
+                  id="conversation-bookmark-icon"
+                  className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
+                  onClick={(e) => viewBookmarks(e)}>
+                  bookmarks
+                </span>
+              )}
+              <Tooltip
+                transitionName="rc-tooltip-zoom"
+                placement="left"
+                trigger={['click', 'hover']}
+                overlay={'Longpress on a message to bookmark it for viewing later'}>
+                <span className="material-icons top-bar-icon" id="conversation-bookmark-icon">
+                  bookmark
+                </span>
+              </Tooltip>
               <span
-                id="conversation-bookmark-icon"
-                className={showBookmarks ? 'material-icons bookmark-icon' + ' active' : 'material-icons bookmark-icon'}
-                onClick={(e) => viewBookmarks(e)}>
-                bookmarks
+                onClick={() => {
+                  setState({ ...state, currentScreen: ScreenNames.chats })
+                  Manager.showPageContainer('show')
+                }}
+                className="material-icons"
+                id="close-icon">
+                close
               </span>
-            )}
-            <Tooltip
-              transitionName="rc-tooltip-zoom"
-              placement="left"
-              trigger={['click', 'hover']}
-              overlay={'Longpress on a message to bookmark it for viewing later'}>
-              <span className="material-icons bookmark-icon" id="conversation-bookmark-icon">
-                bookmark
-              </span>
-            </Tooltip>
-          </div>
-        )}
-
-        {/* SEARCH INPUT */}
-        {showSearchInput && (
-          <div className="flex top-buttons">
-            <DebounceInput
-              placeholder="Find a message..."
-              minLength={2}
-              className="search-input"
-              debounceTimeout={500}
-              onChange={(e) => {
-                if (e.target.value.length > 2) {
-                  const results = messagesToLoop.filter((x) => x.message.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1)
-                  setBookmarks([])
-                  setSearchResults(results)
-                } else {
-                  setSearchResults([])
-                  scrollToLatestMessage()
-                }
-              }}
-            />
-            <span
-              id="conversation-search-icon"
-              className="material-icons search-icon ml-10"
-              onClick={() => {
-                setShowSearchInput(false)
-                setSearchResults([])
-                scrollToLatestMessage()
-              }}>
-              close
-            </span>
+            </div>
           </div>
         )}
 
@@ -309,22 +313,23 @@ const Conversation = () => {
             {Manager.isValid(searchResults, true) &&
               searchResults.map((messageObj, index) => {
                 let sender
-                if (messageObj.sender.formatNameFirstNameOnly() === currentUser.name.formatNameFirstNameOnly()) {
+                if (formatNameFirstNameOnly(messageObj.sender) === currentUser.name.formatNameFirstNameOnly()) {
                   sender = 'ME'
                 } else {
-                  sender = messageObj.sender.formatNameFirstNameOnly()
+                  sender = formatNameFirstNameOnly(messageObj.sender)
                 }
                 return (
-                  <div
-                    {...bind(messageObj, messageObj)}
-                    className={messageObj.sender === currentUser.name ? 'message from' : 'to message'}
-                    key={index}>
-                    <p>{messageObj.message}</p>
-                    <div className="flex under-message">
-                      <span className="from-name">From {sender} on&nbsp;</span>
-                      <span className="timestamp">{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}</span>
-                    </div>
-                  </div>
+                  <>
+                    <p
+                      key={index}
+                      {...bind(messageObj, messageObj)}
+                      className={messageObj.sender === currentUser.name ? 'message from' : 'to message'}>
+                      {messageObj.message}
+                    </p>
+                    <span className={messageObj.sender === currentUser.name ? 'timestamp from' : 'to timestamp'}>
+                      From {sender} on&nbsp;{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
+                    </span>
+                  </>
                 )
               })}
           </div>
@@ -335,23 +340,24 @@ const Conversation = () => {
           <div id="bookmark-messages" className="bookmark-results">
             {bookmarks.map((messageObj, index) => {
               let sender
-              if (messageObj.sender.formatNameFirstNameOnly() === currentUser.name.formatNameFirstNameOnly()) {
+              if (formatNameFirstNameOnly(messageObj.sender) === formatNameFirstNameOnly(currentUser.name)) {
                 sender = 'ME'
               } else {
-                sender = messageObj.sender.formatNameFirstNameOnly()
+                sender = formatNameFirstNameOnly(messageObj.sender)
               }
               return (
                 messageObj.saved === true && (
-                  <div
-                    {...bind(messageObj, messageObj)}
-                    className={messageObj.sender === currentUser.name ? 'message from' : 'to message'}
-                    key={index}>
-                    <p>{messageObj.message}</p>
-                    <div className="flex under-message">
-                      <span className="from-name">From {sender} on&nbsp;</span>
-                      <span className="timestamp">{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}</span>
-                    </div>
-                  </div>
+                  <>
+                    <p
+                      key={index}
+                      {...bind(messageObj, messageObj)}
+                      className={messageObj.sender === currentUser.name ? 'message from' : 'to message'}>
+                      {messageObj.message}
+                    </p>
+                    <span className={messageObj.sender === currentUser.name ? 'timestamp from' : 'to timestamp'}>
+                      From {sender} on&nbsp; {moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
+                    </span>
+                  </>
                 )
               )
             })}
@@ -364,10 +370,17 @@ const Conversation = () => {
             <div id="default-messages">
               {Manager.isValid(messagesToLoop, true) &&
                 messagesToLoop.map((messageObj, index) => {
+                  let timestamp = moment().format('ddd, MMMM Do @ hh:mm a')
+                  if (moment(messageObj.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
+                    timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('hh:mm a')
+                  }
                   return (
-                    <div className={messageObj.sender === currentUser.name ? 'from message' : 'to message'} key={index}>
-                      <p {...bind(messageObj, messageObj)}>{messageObj.message}</p>
-                    </div>
+                    <>
+                      <p className={messageObj.sender === currentUser.name ? 'from message' : 'to message'} {...bind(messageObj, messageObj)}>
+                        {messageObj.message}
+                      </p>
+                      <span className={messageObj.sender === currentUser.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
+                    </>
                   )
                 })}
               <div id="last-message-anchor"></div>
@@ -385,19 +398,37 @@ const Conversation = () => {
                   document.querySelector('#message-input').value += e.emoji
                 }}
               />
-              <span
-                className="material-icons-round "
-                id="message-icon"
-                onClick={async () => {
-                  await submitMessage()
-                }}>
-                send
-              </span>
               <div className="flex" id="message-input-container">
                 <textarea placeholder="Enter message..." id="message-input" rows={1}></textarea>
-                <span onClick={() => setShowEmojis(!showEmojis)} id="emoji-icon">
-                  😀
-                </span>
+                <button
+                  onClick={async () => {
+                    await submitMessage()
+                  }}
+                  id="send-button">
+                  Send
+                </button>
+              </div>
+              <div id="under-message-input">
+                <div className="flex" id="icons">
+                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 🗓 ️')}>
+                    🗓️
+                  </span>
+                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 💭 ')}>
+                    💭
+                  </span>
+                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 🙂 ')}>
+                    🙂
+                  </span>
+                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 👌 ')}>
+                    👌
+                  </span>
+                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 👍 ')}>
+                    👍
+                  </span>
+                  <span onClick={() => setShowEmojis(!showEmojis)} id="emoji-icon">
+                    😀
+                  </span>
+                </div>
               </div>
             </div>
           </>

@@ -38,11 +38,12 @@
     opacity: 1;
     margin-top: 0;
     padding-bottom: 300px;
-    padding-top: 20px;
+    padding-top: 10px;
     width: calc(100vw - 3px);
 
     &.conversation {
       padding-bottom: 0;
+      background-color: white;
     }
   }
 
@@ -2728,7 +2729,7 @@
 }
 @mixin navBar {
   width: 100vw;
-  background-color: white;
+  background-color: $lightBg;
   position: fixed;
   bottom: 0;
   max-height: 90vh;
@@ -2738,6 +2739,9 @@
   transition: all 0.5s ease-in-out;
   border-radius: 0 0 30px 30px;
   @include shadow;
+  opacity: 0;
+  bottom: -200px;
+  
   &.active {
     bottom: 0;
     opacity: 1;
@@ -2762,11 +2766,12 @@
     padding: 15px 10px 20px 10px;
 
     .menu-item {
-      opacity: 0.5;
+      opacity: 0.8;
       transition: all 0.3s ease-in-out;
       justify-content: center;
       display: flex;
       width: 40px;
+      color: $lightDarkGrey;
 
       &.active:not(#menu-button) {
         opacity: 1;

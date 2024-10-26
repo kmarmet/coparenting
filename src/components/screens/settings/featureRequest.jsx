@@ -53,8 +53,8 @@ function FeatureRequest() {
       return false
     }
 
-    successAlert('success', '', 'We have received your feature request!')
-    EmailManager.SendFeatureRequest(currentUser.email)
+    successAlert('We have received your feature request!')
+    EmailManager.SendFeatureRequest(currentUser.email, `Feature Name: ${featureName} \n Description: ${featureDescription}`)
 
     resetForm()
   }

@@ -131,11 +131,11 @@ export default function App() {
 
   const disableUpdateAlert = async () => {
     const lastUpdateObject = await AppManager.getLastUpdateObject()
-    const { lastUpdate, updateAvailable } = lastUpdateObject
+    const { lastUpdate } = lastUpdateObject
     const now = moment().hour()
     const expirationTime = moment(lastUpdate, DateFormats.fullDatetime).hour()
     const duration = now - expirationTime
-    if (duration > 2) {
+    if (duration > 24) {
       AppManager.setUpdateAvailable(false)
     }
   }

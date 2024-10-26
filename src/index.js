@@ -68,21 +68,24 @@ root.render(
         <p id="screen-title" className="mb-15">
           Oops! It looks like the app ran into an issue. Troubleshooting steps below...
         </p>
-        <p className="message mb-15">
-          Please <span className="emphasize">Clear the Cache</span> and then
-          <span className="emphasize ml-5">Force Close</span> the application and reopen it.
-        </p>
-
         <div id="text-container" className="mb-20">
           <div className="flex">
-            <p>If the steps below do not work, please email us at </p>
+            <p>Please follow the steps below. If the steps below do not work, please email us at </p>
             <a href="mailto:support@peaceful-coparenting.app">support@peaceful-coparenting.app</a>
           </div>
         </div>
         <hr />
+        <div id="text-container">
+          <p className="heading mb-5">First Step to Try</p>
+        </div>
+
+        <button className="link" onClick={() => window.location.reload()}>
+          Refresh the App
+        </button>
+        <hr />
         {/* CLEAR CACHE - IOS */}
         <div id="text-container" className="mb-15">
-          <p className="heading mb-5">How to Clear the Cache - iOS</p>
+          <p className="heading mb-5">Clear the Cache - iOS</p>
 
           <div className="flex mb-5" id="steps">
             <span className="step-number">1.</span>
@@ -105,7 +108,7 @@ root.render(
           </div>
         </div>
         <div id="text-container" className="mb-15">
-          <p className="heading mb-5">How to Force Close App - iOS</p>
+          <p className="heading mb-5">Force Close App - iOS</p>
 
           <div className="flex" id="steps wrap">
             <p>
@@ -115,7 +118,7 @@ root.render(
         </div>
         <hr />
         <div id="text-container" className="mb-15">
-          <p className="heading mb-5">How to Clear the Cache - Android</p>
+          <p className="heading mb-5">Clear the Cache - Android</p>
 
           <div className="flex mb-5" id="steps">
             <span className="step-number">1.</span>
@@ -136,7 +139,7 @@ root.render(
         </div>
 
         <div id="text-container" className="mb-15">
-          <p className="heading mb-5">How to Force Close App - Android</p>
+          <p className="heading mb-5">Force Close App - Android</p>
 
           <div className="flex mb-10" id="steps">
             <span className="step-number">1.</span>

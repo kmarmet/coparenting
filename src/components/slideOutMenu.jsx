@@ -196,10 +196,6 @@ export default function SlideOutMenu() {
           )}
         </div>
       )}
-
-      <span className="material-icons-round" id="close-menu-button" onClick={() => setState({ ...state, menuIsOpen: false })}>
-        cancel
-      </span>
     </div>
   )
 }

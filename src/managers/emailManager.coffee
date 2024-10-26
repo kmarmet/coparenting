@@ -22,11 +22,11 @@ EmailManager =
     config.message = message
     config.from_name = fromName
     emailjs.send(config.service_id, config.template_id, config)
-  SendFeatureRequest: (userEmail) ->
-    EmailManager.SendEmail(EmailManager.Templates.featureRequest, "New Feature Request", userEmail)
-  SendAppFeedback: ( userEmail) ->
-    EmailManager.SendEmail( EmailManager.Templates.appFeedback, "New Feedback", userEmail)
-  SendSupportEmail: ( userEmail) ->
-    EmailManager.SendEmail( EmailManager.Templates.customerSupport, "App Support", userEmail)
+  SendFeatureRequest: (userEmail, message) ->
+    EmailManager.SendEmail(EmailManager.Templates.featureRequest, message, userEmail)
+  SendAppFeedback: (userEmail,message) ->
+    EmailManager.SendEmail( EmailManager.Templates.appFeedback, message, userEmail)
+  SendSupportEmail: (userEmail, message) ->
+    EmailManager.SendEmail( EmailManager.Templates.customerSupport, message, userEmail)
 
 export default EmailManager

@@ -48,7 +48,7 @@ function ContactSupport() {
     }
 
     successAlert('Thank you for reporting this issue. We will reply soon!')
-    EmailManager.SendSupportEmail(currentUser.email)
+    EmailManager.SendSupportEmail(currentUser.email, supportNotes)
     resetForm()
   }
 
