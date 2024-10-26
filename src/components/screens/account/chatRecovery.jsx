@@ -68,7 +68,7 @@ function ChatRecovery() {
       return false
     }
     if (coparentPhone.length === 0) {
-      throwError('Please enter the phone number of the coparent you were chatting with')
+      throwError('Please enter the phone number of the co-parent you were chatting with')
       return false
     }
     setViewConvo(true)
@@ -188,7 +188,7 @@ function ChatRecovery() {
             <div className="form">
               {/* PHONE */}
               <label>
-                Phone Number of Conversation Coparent <span className="asterisk">*</span>
+                Phone Number of Conversation Co-parent <span className="asterisk">*</span>
               </label>
               <div className="title-suggestion-wrapper">
                 <input

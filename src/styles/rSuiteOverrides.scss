@@ -343,21 +343,17 @@
 
     *:not(.flatpickr-month, .flatpickr-current-month, .flatpickr-monthDropdown-months, .flatpickr-monthDropdown-month, .flatpickr-months) {
       font-weight: 400;
-      margin: 0 auto;
     }
 
     .calendar-arrow {
       font-size: 25px !important;
       position: relative;
-      top: -10px;
       opacity: 0.7;
 
       &.left {
-        left: -7px !important;
       }
 
       &.right {
-        right: -5px !important;
       }
     }
 
@@ -393,11 +389,12 @@
     }
 
     .numInputWrapper {
-      margin: 0 0 0 10px;
     }
 
     // TOP MONTH SELECTOR
     .flatpickr-months {
+      margin: 0 auto;
+      width: 245px;
       @media screen and (min-width: 1024px) {
         max-width: 70vw;
         margin: 0;
@@ -406,14 +403,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
+        margin-top: 10px;
         height: 60px;
       }
       .flatpickr-current-month,
       .flatpickr-monthDropdown-months {
         padding: 0;
         font-weight: 600 !important;
-        transform: scale(1.1);
 
         .arrowUp,
         .arrowDown {
@@ -422,9 +419,7 @@
 
         select {
           border: 0;
-          /* for Firefox */
           -moz-appearance: none;
-          /* for Safari, Chrome, Opera */
           -webkit-appearance: none;
 
           &::-ms-expand {
@@ -437,10 +432,9 @@
           justify-content: center;
 
           .numInputWrapper {
-                width: 100%;
             .numInput {
               &.cur-year {
-                font-size: 14px !important;
+                font-size: 16px !important;
                 opacity: 0.6;
               }
             }
@@ -454,7 +448,7 @@
       }
 
       .flatpickr-monthDropdown-months {
-        font-size: 20px !important;
+        font-size: 16px !important;
         option {
           font-size: 16px;
           font-weight: 500;

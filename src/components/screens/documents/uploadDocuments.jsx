@@ -140,7 +140,7 @@ export default function UploadDocuments({ showCard, hideCard }) {
         <div id="upload-documents-container" className={`${theme} form`}>
           <p className={`${theme} text-screen-intro`}>If uploading a document</p>
           <p className={`${theme} text-screen-intro`}>
-            Upload documents (.doc or .docx) , or images of documents you would like to save or share with a coparent.
+            Upload documents (.doc or .docx) , or images of documents you would like to save or share with a co-parent.
           </p>
           <p className={`${theme} text-screen-intro`}>
             The uploaded document. If the document you are uploading is a different type is not .docx (.doc, .pdf, .txt, .etc) please click the link

@@ -231,7 +231,7 @@ export default function ExpenseTracker() {
       <>
         {showPaymentOptionsCard && (
           <BottomCard
-            subtitle="There are a multitude of simple and FREE ways to send money to a coparent for expenses, or for any other reason. Please look below to
+            subtitle="There are a multitude of simple and FREE ways to send money to a co-parent for expenses, or for any other reason. Please look below to
               see which option works best for you."
             title={'Payment/Transfer Options'}
             className="payment-options-card"
@@ -245,7 +245,7 @@ export default function ExpenseTracker() {
                   <div className="flex">
                     <img className="active" src={require('../../img/brandLogos/zelle.png')} alt="" />
                     <div className="text">
-                      <p className="description ">Safely send money to coparent, no matter where they bank.</p>
+                      <p className="description ">Safely send money to co-parent, no matter where they bank.</p>
                       <a href="https://www.zellepay.com/how-it-works" target="_blank" className="setup-instructions mb-10">
                         Learn More <span className="material-icons">open_in_new</span>
                       </a>
@@ -333,7 +333,7 @@ export default function ExpenseTracker() {
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>
         <p className={`${theme}  text-screen-intro`}>
-          Add expenses to be paid by your coparent. If a new expense is created for you, you will have the opportunity to approve or reject it.
+          Add expenses to be paid by your co-parent. If a new expense is created for you, you will have the opportunity to approve or reject it.
         </p>
         <p className="payment-options-link mb-20 mt-10" onClick={() => setShowPaymentOptionsCard(true)}>
           Bill Payment & Money Transfer Options

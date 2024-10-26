@@ -491,7 +491,7 @@ export default function CoparentingSpace() {
               {scheduleType === scheduleTypes.fiftyFifty && (
                 <>
                   <div className="text pl-10 pr-10">
-                    <p className="mb-10 white-text">An arrangement where both you and your coparent have equal time with your children.</p>
+                    <p className="mb-10 white-text">An arrangement where both you and your co-parent have equal time with your children.</p>
                     <p className="mb-10 white-text">
                       For the start of the next visitation period (and next period ONLY) you have your children, enter the date ranges for both the
                       first half of the 50/50 and the second half of the 50/50.
@@ -629,7 +629,7 @@ export default function CoparentingSpace() {
           </div>
 
           {/* LOCATION */}
-          <label>Preferred Transfer Location (for primary/biological coparent)</label>
+          <label>Preferred Transfer Location (for primary/biological co-parent)</label>
           <Autocomplete
             placeholder=""
             apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}

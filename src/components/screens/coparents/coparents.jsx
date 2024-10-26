@@ -158,7 +158,7 @@ export default function Coparents() {
                       .replace('Biological Parent', 'Bio')
                       .replace('Biological', 'Bio')
                       .replace('Step-Parent', 'Step')
-                      .replace('SpousesCoparent', "Spouse's Coparent")}
+                      .replace('SpousesCoparent', "Spouse's Co-parent")}
                   </span>
                 </div>
               )
@@ -227,7 +227,7 @@ export default function Coparents() {
                 onClick={(e) => {
                   setConfirmTitle(`Deleting ${selectedCoparent.name}`)
                 }}>
-                Remove Coparent <span className="material-icons">person_remove</span>
+                Remove Co-parent <span className="material-icons">person_remove</span>
               </button>
             </div>
           )}

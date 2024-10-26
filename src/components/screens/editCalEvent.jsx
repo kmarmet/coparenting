@@ -515,7 +515,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
           {Manager.isValid(currentUser?.coparents, true) && (!currentUser.accountType || currentUser.accountType === 'parent') && (
             <div className="share-with-container mb-5">
               <div className="flex">
-                <p>Remind Coparent(s)</p>
+                <p>Remind Co-parent(s)</p>
                 <Toggle
                   icons={{
                     checked: <span className="material-icons-round">person</span>,
