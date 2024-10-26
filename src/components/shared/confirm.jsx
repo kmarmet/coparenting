@@ -2,6 +2,26 @@ import React, { useState, useEffect, useContext } from 'react'
 import globalState from '../../context'
 import PopupCard from './popupCard'
 import BottomCard from './bottomCard'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  throwError,
+  successAlert,
+  uniqueArray,
+  confirmAlert,
+  getFileExtension,
+} from '../../globalFunctions'
 
 export default function Confirm({ message, title = '', onAccept, onReject, className = '', buttonsText = [], onCancel, type = 'confirm' }) {
   const { state, setState } = useContext(globalState)

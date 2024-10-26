@@ -89,6 +89,7 @@ const ChatManager = {
     const { chats } = scopedChat
     await DB.add(DB.tables.archivedChats, chats).finally(async () => {
       const idToDelete = await DB.getSnapshotKey(DB.tables.chats, chats, 'id')
+      console.log(idToDelete)
       remove(child(dbRef, `${DB.tables.chats}/${idToDelete}/`))
     })
   },

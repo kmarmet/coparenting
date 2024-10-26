@@ -27,6 +27,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   spaceBetweenWords,
   formatNameFirstNameOnly,
+  confirmAlert,
   removeFileExtension,
   contains,
   displayAlert,
@@ -63,21 +64,21 @@ const Chats = () => {
     }
   }
 
-  const archive = async () => {
-    if (Manager.isValid(selectedCoparent)) {
-      await ChatManager.deleteAndArchive(currentUser, theme, selectedCoparent)
-      setConfirmTitle('')
+  const archive = async (coparent) => {
+    if (Manager.isValid(coparent)) {
+      await ChatManager.deleteAndArchive(currentUser, coparent)
       await getChats()
+      setNavbarButton(setShowNewConvoCard(true), 'green', 'add')
       setSelectedCoparent(null)
     }
   }
 
   useEffect(() => {
     if (!selectedCoparent) {
-      console.log('here')
       setTimeout(() => {
         setState({
           ...state,
+          showNavbar: true,
           navbarButton: {
             ...navbarButton,
             action: () => {
@@ -97,60 +98,23 @@ const Chats = () => {
     Manager.showPageContainer('show')
   }, [selectedCoparent])
 
-  // useEffect(() => {
-  //   console.log('also here')
-  //   Manager.showPageContainer('show')
-  //   getChats().then((r) => r)
-  //
-  //   setTimeout(() => {
-  //     console.log(showNewThreadForm)
-  //     if (showNewThreadForm) {
-  //       setState({
-  //         ...state,
-  //         currentScreen: ScreenNames.chats,
-  //         navbarButton: {
-  //           ...navbarButton,
-  //           action: () => {
-  //             setShowNewConvoCard(false)
-  //           },
-  //           icon: 'close',
-  //           color: 'red',
-  //         },
-  //         showNavbar: true,
-  //       })
-  //     } else {
-  //       setState({
-  //         ...state,
-  //         currentScreen: ScreenNames.chats,
-  //         navbarButton: {
-  //           ...navbarButton,
-  //           action: () => {
-  //             setShowNewThreadForm(true)
-  //           },
-  //           color: 'green',
-  //           icon: 'add',
-  //         },
-  //         showNavbar: true,
-  //       })
-  //     }
-  //   }, 400)
-  // }, [showNewThreadForm])
-
   const showDeleteIcon = async (coparent) => {
     setState({
       ...state,
       navbarButton: {
         ...navbarButton,
         action: () => {
-          setConfirmTitle(`DELETING CONVERSATION WITH ${getFirstWord(coparent.name)}`)
+          confirmAlert(
+            'Are you sure? If you delete this message, it will be archived. \n However, you can submit a request to recover it.',
+            "I'm Sure",
+            true,
+            () => archive(coparent)
+          )
         },
         color: 'red',
         icon: 'delete',
       },
     })
-    selectedCoparent ? setSelectedCoparent(false) : setSelectedCoparent(coparent)
-
-    await getChats()
   }
 
   const hideDeleteIcon = () => {
@@ -187,15 +151,6 @@ const Chats = () => {
 
   return (
     <>
-      {/* DELETE CONFIRMATION */}
-      <Confirm
-        onAccept={archive}
-        onCancel={hideDeleteIcon}
-        onReject={hideDeleteIcon}
-        title={confirmTitle}
-        message={'Are you sure? If you delete this message, it will be archived. However, you can submit a request to recover it.'}
-      />
-
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
         {/* THREAD LINE ITEM */}
@@ -204,22 +159,25 @@ const Chats = () => {
           threads.map((thread, index) => {
             const coparent = thread.members.filter((x) => x.phone !== currentUser.phone)[0]
             const coparentMessages = Manager.convertToArray(thread.messages).filter((x) => x.sender === coparent.name)
-            const lastMessage = coparentMessages[coparentMessages.length - 1].message
+            const lastMessage = coparentMessages[coparentMessages.length - 1]?.message
             return (
               <div key={Manager.getUid()} className="flex thread-item">
                 {/* COPARENT NAME */}
-                <p
-                  onClick={(e) => {
-                    if (!e.target.classList.contains('delete-button')) {
-                      openMessageThread(coparent.phone).then((r) => r)
-                    }
-                  }}
-                  data-coparent-phone={coparent.phone}
-                  className="coparent-name">
-                  {formatNameFirstNameOnly(coparent.name)}
-                  {/* Last Message */}
-                  <span className="last-message">{lastMessage}</span>
-                </p>
+                <div className="flex">
+                  <span className="fs-40 material-icons-round mr-5">account_circle</span>
+                  <p
+                    onClick={(e) => {
+                      if (!e.target.classList.contains('delete-button')) {
+                        openMessageThread(coparent.phone).then((r) => r)
+                      }
+                    }}
+                    data-coparent-phone={coparent.phone}
+                    className="coparent-name">
+                    {formatNameFirstNameOnly(coparent.name)}
+                    {/* Last Message */}
+                    <span className="last-message">{lastMessage}</span>
+                  </p>
+                </div>
                 <span
                   className="material-icons-round"
                   id="thread-action-button"
