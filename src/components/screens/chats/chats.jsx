@@ -73,31 +73,6 @@ const Chats = () => {
     }
   }
 
-  useEffect(() => {
-    if (!selectedCoparent) {
-      setTimeout(() => {
-        setState({
-          ...state,
-          showNavbar: true,
-          navbarButton: {
-            ...navbarButton,
-            action: () => {
-              setShowNewConvoCard(true)
-            },
-            color: 'green',
-            icon: 'add',
-          },
-        })
-      }, 300)
-    } else {
-    }
-
-    if (currentUser.accountType === 'parent') {
-      getChats().then((r) => r)
-    }
-    Manager.showPageContainer('show')
-  }, [selectedCoparent])
-
   const showDeleteIcon = async (coparent) => {
     setState({
       ...state,
@@ -149,6 +124,31 @@ const Chats = () => {
     }, 100)
   }
 
+  useEffect(() => {
+    if (!selectedCoparent) {
+      setTimeout(() => {
+        setState({
+          ...state,
+          showNavbar: true,
+          navbarButton: {
+            ...navbarButton,
+            action: () => {
+              setShowNewConvoCard(true)
+            },
+            color: 'green',
+            icon: 'edit',
+          },
+        })
+      }, 300)
+    } else {
+    }
+
+    if (currentUser.accountType === 'parent') {
+      getChats().then((r) => r)
+    }
+    Manager.showPageContainer('show')
+  }, [selectedCoparent])
+
   return (
     <>
       {/* PAGE CONTAINER */}
@@ -161,18 +161,18 @@ const Chats = () => {
             const coparentMessages = Manager.convertToArray(thread.messages).filter((x) => x.sender === coparent.name)
             const lastMessage = coparentMessages[coparentMessages.length - 1]?.message
             return (
-              <div key={Manager.getUid()} className="flex thread-item">
+              <div
+                key={Manager.getUid()}
+                className="flex thread-item"
+                onClick={(e) => {
+                  if (!e.target.classList.contains('delete-button')) {
+                    openMessageThread(coparent.phone).then((r) => r)
+                  }
+                }}>
                 {/* COPARENT NAME */}
                 <div className="flex">
                   <span className="fs-40 material-icons-round mr-5">account_circle</span>
-                  <p
-                    onClick={(e) => {
-                      if (!e.target.classList.contains('delete-button')) {
-                        openMessageThread(coparent.phone).then((r) => r)
-                      }
-                    }}
-                    data-coparent-phone={coparent.phone}
-                    className="coparent-name">
+                  <p data-coparent-phone={coparent.phone} className="coparent-name">
                     {formatNameFirstNameOnly(coparent.name)}
                     {/* Last Message */}
                     <span className="last-message">{lastMessage}</span>

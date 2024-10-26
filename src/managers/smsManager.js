@@ -49,6 +49,9 @@ export default SmsManager = {
   getRegistrationVerificationTemplate: function(userName, verificationCode) {
     return `${userName} ,please enter this code to continue registration: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;
   },
+  getPhoneVerificationTemplate: function(verificationCode) {
+    return `Please enter this code for Peaceful coParenting registration ${SmsManager.lineBreak} ${verificationCode}`;
+  },
   send: (phoneNumber, message) => {
     if (location.hostname !== 'localhost') {
       return fetch('https://textbelt.com/text', {

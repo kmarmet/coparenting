@@ -13,7 +13,7 @@
     
     &.page-container {
       &.active {
-        background-color: white;
+        background-color: $lightBg;
       }
     }
     
@@ -238,6 +238,10 @@
     height: 100vh;
     overflow-y: auto;
     margin-top: 0;
+    
+    img {
+      border-radius: 100%;
+    }
 
     /*#region  LIGHT THEME*/
     &.light {

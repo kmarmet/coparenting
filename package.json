@@ -25,9 +25,7 @@
     "firebase": "^10.14.1",
     "firebaseui": "^6.1.0",
     "flatpickr": "4.6.13",
-    "hamburger-react": "2.5.1",
     "imagesloaded": "^5.0.0",
-    "jquery": "3.7.1",
     "js2coffee": "2.2.0",
     "lightgallery": "^2.7.2",
     "luxon": "3.4.4",
@@ -43,7 +41,6 @@
     "pwa-asset-generator": "6.3.1",
     "rc-tooltip": "6.2.0",
     "react": "18.3.1",
-    "react-code-blocks": "^0.1.6",
     "react-contenteditable": "3.3.7",
     "react-debounce-input": "3.3.0",
     "react-doc-viewer": "0.1.13",
@@ -67,8 +64,7 @@
     "use-long-press": "3.2.0",
     "web-push": "3.6.7",
     "workbox": "0.0.0",
-    "workbox-cli": "7.1.0",
-    "yarn": "1.22.22"
+    "workbox-cli": "7.1.0"
   },
   "livelyReload": {
     "livelyReload.port": 3000

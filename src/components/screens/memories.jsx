@@ -33,7 +33,7 @@ import {
   uniqueArray,
   getFileExtension,
 } from '../../globalFunctions'
-import { saveImage } from '../../managers/imageManager'
+import { saveImageFromUrl } from '../../managers/imageManager'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -132,7 +132,7 @@ export default function Memories() {
       if (Manager.isValid(memoryImage)) {
         const src = memoryImage.getAttribute('data-src')
         if (Manager.isValid(src)) {
-          saveImage(null, src)
+          saveImageFromUrl(null, src)
         }
       }
     }

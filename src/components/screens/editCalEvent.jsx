@@ -29,6 +29,7 @@ import {
   isAllUppercase,
   removeSpacesAndLowerCase,
   stringHasNumbers,
+  confirmAlert,
   wordCount,
   uppercaseFirstLetterOfAllWords,
   spaceBetweenWords,
@@ -592,7 +593,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
           <button
             className="button card-button delete"
             onClick={() => {
-              displayAlert('confirm', setLocalConfirmMessage(), setLocalConfirmMessage(), async () => {
+              confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
                 hideCard()
                 await deleteEvent()
                 displayAlert('success', 'Event Deleted', 'Event Deleted')

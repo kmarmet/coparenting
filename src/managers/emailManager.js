@@ -10,7 +10,8 @@ EmailManager = {
     newActivity: "newActivity",
     featureRequest: 'featureRequest',
     appFeedback: 'appFeedback',
-    customerSupport: 'customerSupport'
+    customerSupport: 'customerSupport',
+    emailVerification: 'emailVerification'
   },
   GetConfig: function(message, templateName, fromName) {
     var config;
@@ -32,6 +33,14 @@ EmailManager = {
     config.from_name = fromName;
     return emailjs.send(config.service_id, config.template_id, config);
   },
+  SendEmailToUser: function(templateName, message, userEmail) {
+    var config;
+    config = EmailManager.GetConfig();
+    config.template_id = templateName;
+    config.message = message;
+    config.reply_to = userEmail;
+    return emailjs.send(config.service_id, config.template_id, config);
+  },
   SendFeatureRequest: function(userEmail, message) {
     return EmailManager.SendEmail(EmailManager.Templates.featureRequest, message, userEmail);
   },
@@ -40,6 +49,9 @@ EmailManager = {
   },
   SendSupportEmail: function(userEmail, message) {
     return EmailManager.SendEmail(EmailManager.Templates.customerSupport, message, userEmail);
+  },
+  SendEmailVerification: function(userEmail, message) {
+    return EmailManager.SendEmailToUser(EmailManager.Templates.emailVerification, message, userEmail);
   }
 };
 

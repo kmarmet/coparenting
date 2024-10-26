@@ -2,12 +2,13 @@
 var ChatRecoveryRequest;
 
 export default ChatRecoveryRequest = class ChatRecoveryRequest {
-  constructor(id = '', members = [], timestamp = '', signatureImageUrl = '', createdBy = '') {
+  constructor(id = '', members = [], timestamp = '', signatureImageUrl = '', createdBy = '', reason = '') {
     this.id = id;
     this.members = members;
     this.timestamp = timestamp;
     this.signatureImageUrl = signatureImageUrl;
     this.createdBy = createdBy;
+    this.reason = reason;
   }
 
 };

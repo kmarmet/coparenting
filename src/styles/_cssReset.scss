@@ -46,7 +46,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow: hidden !important;
   max-height: 100vh !important;
-  
+  background-color: $lightBg;
   
   &.dark {
       background-color: $darkBg;

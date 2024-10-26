@@ -191,12 +191,12 @@ export const createImage = (url) =>
 export function getRadianAngle(degreeValue) {
   return (degreeValue * Math.PI) / 180
 }
-export function saveImage(imageSelector, url, fileName) {
+export function saveImageFromUrl(imageSelector, url, fileName) {
   setTimeout(() => {
     if (Manager.isValid(imageSelector)) {
       const image = document.querySelector(imageSelector)
       domtoimage.toBlob(image).then(function (blob) {
-        saveAs(blob, 'ArchivedConversation.png')
+        saveAs(blob, fileName)
       })
     }
     if (Manager.isValid(url)) {

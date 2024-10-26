@@ -5,4 +5,5 @@ export default class ChatRecoveryRequest
     @timestamp= ''
     @signatureImageUrl= ''
     @createdBy = ''
+    @reason = ''
   ) ->

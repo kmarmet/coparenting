@@ -4,7 +4,7 @@ var User;
 import Manager from "../managers/manager";
 
 export default User = class User {
-  constructor(updatedApp = '', name = '', email = '', phone = '', children = [], coparents = [], parentType = '', accountType = '', allowNotifications = '', id = Manager.getUid(), settings = {
+  constructor(updatedApp = '', name = '', email = '', phone = '', children = [], coparents = [], parentType = '', accountType = '', allowNotifications = '', id = Manager.getUid(), emailVerified = false, settings = {
       morningReminderSummaryHour: '10am',
       eveningReminderSummaryHour: '8pm'
     }) {
@@ -18,6 +18,7 @@ export default User = class User {
     this.accountType = accountType;
     this.allowNotifications = allowNotifications;
     this.id = id;
+    this.emailVerified = emailVerified;
     this.settings = settings;
   }
 

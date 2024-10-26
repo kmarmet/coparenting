@@ -25,14 +25,7 @@
   transition: all 0.5s ease-in-out;
   transition-timing-function: cubic-bezier(0.17, 0.67, 0.21, 0.95);
   margin-top: 100vh;
-
-  &.light {
-    background: $lightBg;
-  }
-
-  &.dark {
-    background-color: $darkBg;
-  }
+  background: $lightBg;
 
   &.active {
     opacity: 1;
@@ -405,7 +398,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    color: $blue;
+    color: $lightBlue;
     font-weight: 600;
     font-size: 16px;
     line-height: 1.5;
@@ -2763,7 +2756,7 @@
     justify-content: space-between;
     align-items: center;
     overflow: auto;
-    padding: 15px 10px 20px 10px;
+    padding: 15px 10px 30px 10px;
 
     .menu-item {
       opacity: 0.8;
@@ -2779,10 +2772,12 @@
         color: $lightBlue;
         position: relative;
         top: -15px;
+        transition: all .3s ease-in-out;
 
         span:not(.menu-icon) {
           position: relative;
-          top: 15px;
+          top: 10px;
+          transition: all .3s ease-in-out;
         }
       }
 

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
-import CheckboxGroup from '@shared/checkboxGroup'
 import globalState from '../../../context'
 import moment from 'moment'
-import { CodeBlock, dracula } from 'react-code-blocks'
 import {
   toCamelCase,
   getFirstWord,

@@ -12,6 +12,7 @@ export default class User
     @accountType = ''
     @allowNotifications = ''
     @id = Manager.getUid()
+    @emailVerified = false
     @settings = {
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'

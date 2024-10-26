@@ -30,6 +30,7 @@ import {
   formatNameFirstNameOnly,
   removeFileExtension,
   contains,
+  throwError,
   displayAlert,
   uniqueArray,
   successAlert,
@@ -46,6 +47,8 @@ import db_userScoped from '@userScoped'
 import ParentPermissionCode from '../../../models/parentPermissionCode'
 import DateFormats from '../../../constants/dateFormats'
 import DateManager from '../../../managers/dateManager'
+import BottomCard from '../../shared/bottomCard'
+import EmailManager from '../../../managers/emailManager'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -63,8 +66,11 @@ export default function Registration() {
   const [parentTypeAccExpanded, setParentTypeAccExpanded] = useState(false)
   const [verificationCode, setVerificationCode] = useState(Manager.getUid().slice(0, 4))
   const [accountAlreadyExists, setAccountAlreadyExists] = useState(false)
-  const [verificationCodeSent, setVerificationCodeSent] = useState(false)
+  const [childVerificationCodeSent, setChildVerificationCodeSent] = useState(false)
+  const [phoneIsVerified, setPhoneIsVerified] = useState(false)
+  const [showVerificationCard, setShowVerificationCard] = useState(false)
 
+  // Firebase init
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
@@ -80,7 +86,7 @@ export default function Registration() {
     if (validPhone) {
       const permissionCode = Manager.getUid().slice(0, 6)
       SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, permissionCode))
-      setVerificationCodeSent(true)
+      setChildVerificationCodeSent(true)
 
       // Add Parent Permission record to DB
       const parentPermissionCode = new ParentPermissionCode()
@@ -144,23 +150,27 @@ export default function Registration() {
       newUser.settings.eveningReminderSummaryHour = '8pm'
       newUser.settings.morningReminderSummaryHour = '10am'
 
-      const cleanUser = Manager.cleanObject(newUser, ModelNames.user)
-
       createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
           // Signed up successfully
           const user = userCredential.user
           console.log('Signed up as:', user.email)
+          newUser.emailVerified = true
+          const cleanUser = Manager.cleanObject(newUser, ModelNames.user)
           await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
+          successAlert(`Welcome aboard ${newUser.name}!`)
+          setState({ ...state, currentScreen: ScreenNames.login })
         })
         .catch((error) => {
           console.error('Sign up error:', error.message)
+          if (contains(error.message, 'email-already-in-use')) {
+            throwError('Account already exists. If this is you, please login')
+          }
         })
 
       const dbRef = ref(getDatabase())
       const subId = await NotificationManager.getUserSubId('3307494534')
       PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone} \n Name: ${userName}`, subId)
-      setState({ ...state, currentScreen: ScreenNames.emailVerification })
     }
   }
 
@@ -321,6 +331,48 @@ export default function Registration() {
   const addParentInput = () => setParentInputs([...parentInputs, <ParentInput add={addParent} parentsLength={parentInputs.length + 1} />])
   const [parentInputs, setParentInputs] = useState([<ParentInput add={addParent} />])
 
+  // SEND VERIFICATION CODE
+  const sendPhoneVerificationCode = async () => {
+    const validPhone = phoneIsValid()
+    if (validPhone) {
+      const permissionCode = Manager.getUid().slice(0, 6)
+      SmsManager.send(userPhone, SmsManager.getPhoneVerificationTemplate(permissionCode))
+      // Enter code alert
+      displayAlert('input', 'Please enter the verification code sent to your phone', ``, async (e) => {
+        if (permissionCode === e.value) {
+          setPhoneIsVerified(true)
+        } else {
+          throwError('Verification code is incorrect, please try again')
+        }
+      })
+    } else {
+      throwError('Phone number provided is not valid')
+    }
+  }
+
+  const sendEmailVerification = async () => {
+    if (email.length > 0 && contains(email, '.com') && contains(email, '@')) {
+      try {
+        const permissionCode = Manager.getUid().slice(0, 6)
+        EmailManager.SendEmailVerification(email, `${permissionCode}`)
+        successAlert('success', 'Verification Email Sent')
+
+        displayAlert('input', 'Please enter the verification code sent to your email', ``, async (e) => {
+          if (permissionCode === e.value) {
+            await submit()
+            setShowVerificationCard(false)
+          } else {
+            throwError('Verification code is incorrect, please try again')
+          }
+        })
+      } catch (err) {
+        console.log(err)
+      }
+    } else {
+      throwError('Email address provided is not valid')
+    }
+  }
+
   useEffect(() => {
     Manager.showPageContainer()
     setTimeout(() => {
@@ -334,8 +386,36 @@ export default function Registration() {
 
   return (
     <>
+      <BottomCard showCard={showVerificationCard} title={'Verify Your Phone & Email'} onClose={() => setShowVerificationCard(false)}>
+        <div id="email-verification-container" className=" form">
+          <div className="form" autoComplete="off">
+            {!phoneIsVerified && (
+              <>
+                <label>
+                  Phone Number <span className="asterisk">*</span>
+                </label>
+                <input defaultValue={userPhone} type="phone" onChange={(e) => setUserPhone(e.target.value)} />
+                <button className="button default green w-100 mt-15" onClick={sendPhoneVerificationCode}>
+                  Send Phone Verification Code <span className="material-icons-round fs-22">phone_iphone</span>
+                </button>
+              </>
+            )}
+            {phoneIsVerified && (
+              <>
+                <label>
+                  Email Address<span className="asterisk">*</span>
+                </label>
+                <input autoComplete="off" className="mb-15" value={email} type="email" onChange={(e) => setEmail(e.target.value)} />
+                <button className="button default green w-100" onClick={sendEmailVerification}>
+                  Send Verification Email <span className="material-icons-round fs-22">forward_to_inbox</span>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </BottomCard>
       {/* PAGE CONTAINER */}
-      <div id="registration-container" className="page-container light form">
+      <div id="registration-container" className="page-container form">
         {accountAlreadyExists && (
           <button className="button default dead-center h-40 w-80" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
             Login
@@ -527,11 +607,10 @@ export default function Registration() {
               onClick={async () => {
                 const isValidForm = await formIsValid()
                 if (isValidForm) {
-                  await submit()
-                  setState({ ...state, currentScreen: ScreenNames.emailVerification })
+                  setShowVerificationCard(true)
                 }
               }}>
-              Verify Email<span className="material-icons-round fs-20">mark_email_read</span>
+              Verify Phone & Email<span className="material-icons-round fs-20">admin_panel_settings</span>
             </button>
             <button className="button default w-60" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
               Back to Login

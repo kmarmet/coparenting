@@ -2,7 +2,26 @@ import React, { useContext, useEffect } from 'react'
 import ScreenNames from '@screenNames'
 import globalState from '../../../context.js'
 import Manager from '@manager'
-
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  throwError,
+  successAlert,
+  uniqueArray,
+  confirmAlert,
+  getFileExtension,
+} from '../../../globalFunctions'
 export default function Account() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
@@ -17,7 +36,7 @@ export default function Account() {
       <p className="screen-title ">Account</p>
       <div id="account-container" className={`${theme} page-container`}>
         <p id="user-name">
-          Hello {currentUser?.name?.formatNameFirstNameOnly()}! <span className="material-icons-outlined">sentiment_very_satisfied</span>
+          Hello {formatNameFirstNameOnly(currentUser?.name)}! <span className="material-icons-outlined">sentiment_very_satisfied</span>
         </p>
         <div className="sections">
           <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.forgotPassword })}>

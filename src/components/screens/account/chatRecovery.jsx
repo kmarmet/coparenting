@@ -14,10 +14,8 @@ import DateFormats from '../../../constants/dateFormats'
 import domtoimage from 'dom-to-image'
 import TitleSuggestion from '../../../models/titleSuggestion'
 import TitleSuggestionWrapper from '../../shared/titleSuggestionWrapper'
-import { save } from 'save-file'
-import { saveAs } from 'file-saver'
 import ChatRecoveryRequest from '../../../models/chatRecoveryRequest'
-import { saveImage } from '../../../managers/imageManager'
+import { saveImageFromUrl } from '../../../managers/imageManager'
 import {
   toCamelCase,
   getFirstWord,
@@ -129,6 +127,7 @@ function ChatRecovery() {
           chatRecoveryRequest.signatureImageUrl = url
           chatRecoveryRequest.timestamp = moment().format(DateFormats.fullDatetime)
           chatRecoveryRequest.createdBy = currentUser.email
+          chatRecoveryRequest.reason = reason
 
           setSignatureUrl(url)
 
@@ -139,7 +138,7 @@ function ChatRecovery() {
     }
   }
 
-  const saveImageLocal = () => saveImage(null, signatureUrl, 'Chat Recovery Conversation')
+  const saveImageLocal = () => saveImageFromUrl('#image-wrapper', null, 'Chat Recovery Conversation')
 
   const handleMessageTypeSelection = async (e) => {
     Manager.handleCheckboxSelection(
