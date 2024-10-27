@@ -38,7 +38,7 @@ import {
   uniqueArray,
 } from '../../globalFunctions'
 
-export default function CoparentingSpace() {
+export default function Visitation() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [scheduleType, setScheduleType] = useState('')
@@ -438,182 +438,156 @@ export default function CoparentingSpace() {
         <BottomButton elClass={'green visible'} onClick={addEveryOtherWeekendToCalendar} iconName="event_available" bottom="100" />
       )}
 
-      {/* SCREEN TITLE */}
-      <p className="screen-title">Coparenting Space</p>
-
       {/* PAGE CONTAINER */}
-      <div id="coparenting-setup-container" className={`${theme} page-container form`}>
+      <div id="visitation-container" className={`${theme} page-container form`}>
         {/* SECTIONS */}
         <div className="sections">
           {/* VISITATION SCHEDULE */}
-          <Accordion>
-            <label className="accordion-header" onClick={() => setVisitationAccordionExpanded(!visitationAccordionExpanded)}>
-              Visitation
-              {visitationAccordionExpanded ? (
-                <span className="material-icons ml-auto">expand_less</span>
-              ) : (
-                <span className="material-icons ml-auto">expand_more</span>
-              )}
-            </label>
-            <Accordion.Panel expanded={visitationAccordionExpanded}>
+          <div className="note-container">
+            <Note
+              elClass={'mt-10'}
+              message={'When you choose a visitation schedule, it will be visible in the calendar for you and chosen coparents to view.'}
+            />
+          </div>
+
+          {/* SCHEDULE SELECTION ACCORDION */}
+          <div className="section visitation-schedule mt-10 mb-10">
+            {/* SCHEDULE SELECTION */}
+            <label>Choose Visitation Schedule</label>
+            <CheckboxGroup
+              boxWidth={50}
+              elClass="mt-10"
+              onCheck={handleScheduleTypeSelection}
+              skipNameFormatting={true}
+              labels={['50/50', 'Specific Weekends', 'Every Weekend', 'Every other Weekend']}
+            />
+          </div>
+
+          {/* 50/50 SCHEDULE */}
+          {scheduleType === scheduleTypes.fiftyFifty && (
+            <>
+              <div className="text pl-10 pr-10">
+                <p className="mb-10 white-text">An arrangement where both you and your co-parent have equal time with your children.</p>
+                <p className="mb-10 white-text">
+                  For the start of the next visitation period (and next period ONLY) you have your children, enter the date ranges for both the first
+                  half of the 50/50 and the second half of the 50/50.
+                </p>
+                <p className="white-text caption">
+                  <i>
+                    Use the <u>third period</u> date selector if it is necessary for your schedule.
+                  </i>
+                </p>
+              </div>
+              <span className="material-icons help-icon center-text fs-25" onClick={() => setShowFFExample(!showFFExample)}>
+                {showFFExample ? 'close' : 'help'}
+              </span>
+
               <div className="note-container">
                 <Note
-                  elClass={'mt-10'}
-                  message={'When you choose a visitation schedule, it will be visible in the calendar for you and chosen coparents to view.'}
+                  elClass={showFFExample ? 'mb-10 ff-note active white-text' : 'mb-10 white-text ff-note'}
+                  message={`<b class="white-text">Example</b> <br/> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:<br/><span class="fs-15">You would choose: 8/14-8/16 for the first period and 8/19-8/21 for the second period.</span>`}
                 />
               </div>
+              {/* 50/50 DATE PICKERS */}
+              <>
+                <label className="h-20">
+                  First Period <span className="asterisk">*</span>
+                </label>
+                <DateRangePicker
+                  showOneCalendar
+                  showHeader={false}
+                  editable={false}
+                  placement="auto"
+                  character=" to "
+                  className="mb-30 event-date"
+                  format={'MM/dd/yyyy'}
+                  onChange={(e) => {
+                    let formattedDates = []
+                    if (e && e.length > 0) {
+                      e.forEach((date) => {
+                        formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
+                      })
+                      setFirstFFPeriodStart(formattedDates[0])
+                      setFirstFFPeriodEnd(formattedDates[1])
+                    }
+                  }}
+                />
+                <label className="h-20">
+                  Second Period <span className="asterisk">*</span>
+                </label>
+                <DateRangePicker
+                  showOneCalendar
+                  showHeader={false}
+                  editable={false}
+                  className="mb-30 event-date"
+                  placement="auto"
+                  label={''}
+                  placeholder={''}
+                  character=" to "
+                  format={'MM/dd/yyyy'}
+                  onChange={(e) => {
+                    let formattedDates = []
+                    if (e && e.length > 0) {
+                      e.forEach((date) => {
+                        formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
+                      })
+                      setSecondFFPeriodStart(formattedDates[0])
+                      setSecondFFPeriodEnd(formattedDates[1])
+                    }
+                  }}
+                />
+                <label className="h-20">Third Period</label>
+                <DateRangePicker
+                  showOneCalendar
+                  showHeader={false}
+                  editable={false}
+                  className="event-date mb-20"
+                  placement="auto"
+                  character=" to "
+                  format={'MM/dd/yyyy'}
+                  onChange={(e) => {
+                    let formattedDates = []
+                    if (e && e.length > 0) {
+                      e.forEach((date) => {
+                        formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
+                      })
+                      setThirdFFPeriodStart(formattedDates[0])
+                      setThirdFFPeriodEnd(formattedDates[1])
+                    }
+                  }}
+                />
+              </>
+            </>
+          )}
 
-              {/* SCHEDULE SELECTION ACCORDION */}
-              <div className="section visitation-schedule mt-10 mb-10">
-                {/* SCHEDULE SELECTION */}
-                <Accordion>
-                  <label className="accordion-header" onClick={() => setScheduleAccordionExpanded(!scheduleAccordionExpanded)}>
-                    Choose Visitation Schedule
-                    {scheduleAccordionExpanded ? (
-                      <span className="material-icons ml-auto">expand_less</span>
-                    ) : (
-                      <span className="material-icons ml-auto">expand_more</span>
-                    )}
-                  </label>
-                  <Accordion.Panel expanded={scheduleAccordionExpanded}>
-                    <CheckboxGroup
-                      boxWidth={50}
-                      elClass="mt-10"
-                      onCheck={handleScheduleTypeSelection}
-                      skipNameFormatting={true}
-                      labels={['50/50', 'Specific Weekends', 'Every Weekend', 'Every other Weekend']}
-                    />
-                  </Accordion.Panel>
-                </Accordion>
+          {/* EVERY OTHER WEEKEND */}
+          {scheduleType === scheduleTypes.everyOtherWeekend && (
+            <>
+              <label>Friday of the next weekend you have your child(ren)</label>
+              <MobileDatePicker onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100 mt-0`} />
+            </>
+          )}
+
+          {/* SPECIFIC WEEKENDS SCHEDULE */}
+          {scheduleType === scheduleTypes.specificWeekends && (
+            <>
+              <div className="form mb-20">
+                <label>Which weekends will YOU have the child(ren)?</label>
+                <CheckboxGroup
+                  boxWidth={50}
+                  elClass={'mb-15'}
+                  onCheck={handleSpecificWeekendSelection}
+                  labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend']}
+                />
+                <label>If it is a month with 5 weekends, which additional weekend will YOU have the child(ren)?</label>
+                <CheckboxGroup
+                  boxWidth={50}
+                  onCheck={handleFifthWeekendSelection}
+                  labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend']}
+                />
               </div>
-
-              {/* 50/50 SCHEDULE */}
-              {scheduleType === scheduleTypes.fiftyFifty && (
-                <>
-                  <div className="text pl-10 pr-10">
-                    <p className="mb-10 white-text">An arrangement where both you and your co-parent have equal time with your children.</p>
-                    <p className="mb-10 white-text">
-                      For the start of the next visitation period (and next period ONLY) you have your children, enter the date ranges for both the
-                      first half of the 50/50 and the second half of the 50/50.
-                    </p>
-                    <p className="white-text caption">
-                      <i>
-                        Use the <u>third period</u> date selector if it is necessary for your schedule.
-                      </i>
-                    </p>
-                  </div>
-                  <span className="material-icons help-icon center-text fs-25" onClick={() => setShowFFExample(!showFFExample)}>
-                    {showFFExample ? 'close' : 'help'}
-                  </span>
-
-                  <div className="note-container">
-                    <Note
-                      elClass={showFFExample ? 'mb-10 ff-note active white-text' : 'mb-10 white-text ff-note'}
-                      message={`<b class="white-text">Example</b> <br/> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:<br/><span class="fs-15">You would choose: 8/14-8/16 for the first period and 8/19-8/21 for the second period.</span>`}
-                    />
-                  </div>
-                  {/* 50/50 DATE PICKERS */}
-                  <>
-                    <label className="h-20">
-                      First Period <span className="asterisk">*</span>
-                    </label>
-                    <DateRangePicker
-                      showOneCalendar
-                      showHeader={false}
-                      editable={false}
-                      placement="auto"
-                      character=" to "
-                      className="mb-30 event-date"
-                      format={'MM/dd/yyyy'}
-                      onChange={(e) => {
-                        let formattedDates = []
-                        if (e && e.length > 0) {
-                          e.forEach((date) => {
-                            formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                          })
-                          setFirstFFPeriodStart(formattedDates[0])
-                          setFirstFFPeriodEnd(formattedDates[1])
-                        }
-                      }}
-                    />
-                    <label className="h-20">
-                      Second Period <span className="asterisk">*</span>
-                    </label>
-                    <DateRangePicker
-                      showOneCalendar
-                      showHeader={false}
-                      editable={false}
-                      className="mb-30 event-date"
-                      placement="auto"
-                      label={''}
-                      placeholder={''}
-                      character=" to "
-                      format={'MM/dd/yyyy'}
-                      onChange={(e) => {
-                        let formattedDates = []
-                        if (e && e.length > 0) {
-                          e.forEach((date) => {
-                            formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                          })
-                          setSecondFFPeriodStart(formattedDates[0])
-                          setSecondFFPeriodEnd(formattedDates[1])
-                        }
-                      }}
-                    />
-                    <label className="h-20">Third Period</label>
-                    <DateRangePicker
-                      showOneCalendar
-                      showHeader={false}
-                      editable={false}
-                      className="event-date mb-20"
-                      placement="auto"
-                      character=" to "
-                      format={'MM/dd/yyyy'}
-                      onChange={(e) => {
-                        let formattedDates = []
-                        if (e && e.length > 0) {
-                          e.forEach((date) => {
-                            formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                          })
-                          setThirdFFPeriodStart(formattedDates[0])
-                          setThirdFFPeriodEnd(formattedDates[1])
-                        }
-                      }}
-                    />
-                  </>
-                </>
-              )}
-
-              {/* EVERY OTHER WEEKEND */}
-              {scheduleType === scheduleTypes.everyOtherWeekend && (
-                <>
-                  <label>Friday of the next weekend you have your child(ren)</label>
-                  <MobileDatePicker onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100 mt-0`} />
-                </>
-              )}
-
-              {/* SPECIFIC WEEKENDS SCHEDULE */}
-              {scheduleType === scheduleTypes.specificWeekends && (
-                <>
-                  <div className="form mb-20">
-                    <label>Which weekends will YOU have the child(ren)?</label>
-                    <CheckboxGroup
-                      boxWidth={50}
-                      elClass={'mb-15'}
-                      onCheck={handleSpecificWeekendSelection}
-                      labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend']}
-                    />
-                    <label>If it is a month with 5 weekends, which additional weekend will YOU have the child(ren)?</label>
-                    <CheckboxGroup
-                      boxWidth={50}
-                      onCheck={handleFifthWeekendSelection}
-                      labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend']}
-                    />
-                  </div>
-                </>
-              )}
-            </Accordion.Panel>
-          </Accordion>
+            </>
+          )}
 
           {/* SHARE WITH */}
           <div className="share-with-container mt-20">

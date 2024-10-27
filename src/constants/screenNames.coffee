@@ -29,7 +29,7 @@ ScreenNames=
   contactSupport: 'contactSupport'
   docsList: 'docsList'
   editCalendarEvent: 'editCalendarEvent'
-  coparentingSpace: 'coparentingSpace'
+  visitation: 'visitation'
   chatRecovery: 'chatRecovery'
   newCalendarEvent: 'newCalendarEvent'
   newChild: 'newChild'
@@ -42,4 +42,5 @@ ScreenNames=
   reviseTransferRequest: 'reviseTransferRequest'
   firebaseLogin: "firebaseLogin"
   emailVerification: 'emailVerification'
+  contactUs: 'contactUs'
 export default ScreenNames

@@ -30,10 +30,7 @@ import ForgotPassword from '@screens/account/forgotPassword.jsx'
 import Login from '@screens/auth/login.jsx'
 import Memories from '@screens/memories.jsx'
 import Registration from '@screens/auth/registration.jsx'
-import ContactSupport from '@screens/settings/contactSupport.jsx'
-import CoparentingSpace from '@screens/coparentingSpace.jsx'
-import FeatureRequest from '@screens/settings/featureRequest.jsx'
-import Feedback from '@screens/settings/feedback.jsx'
+import Visitation from '@screens/visitation.jsx'
 import Settings from '@screens/settings/settings.jsx'
 import SwapRequests from '@screens/swapRequests.jsx'
 import TransferRequests from '@screens/transferRequests.jsx'
@@ -82,6 +79,7 @@ import {
   getFileExtension,
 } from './globalFunctions'
 import DB_UserScoped from '@userScoped'
+import ContactUs from './components/screens/contactUs'
 
 export default function App() {
   // Initialize Firebase
@@ -177,6 +175,9 @@ export default function App() {
   }, [currentUser])
 
   useEffect(() => {
+    document.querySelector('#app-container').style.height = `${window.screen.height}px`
+    document.querySelector('html').style.height = `${window.screen.height}px`
+
     if (menuIsOpen) {
       document.querySelector('#app-container').classList.add('pushed')
       addMenuItemAnimation()
@@ -245,7 +246,6 @@ export default function App() {
             {currentScreen === ScreenNames.calendar && <EventCalendar />}
             {currentScreen === ScreenNames.settings && <Settings />}
             {currentScreen === ScreenNames.account && <Account />}
-            {currentScreen === ScreenNames.contactSupport && <ContactSupport />}
             {currentScreen === ScreenNames.expenseTracker && <ExpenseTracker />}
             {currentScreen === ScreenNames.swapRequests && <SwapRequests />}
             {currentScreen === ScreenNames.forgotPassword && <ForgotPassword />}
@@ -255,11 +255,10 @@ export default function App() {
             {currentScreen === ScreenNames.coparents && <Coparents />}
             {currentScreen === ScreenNames.conversation && <Conversation />}
             {currentScreen === ScreenNames.chats && <Chat />}
-            {currentScreen === ScreenNames.featureRequests && <FeatureRequest />}
-            {currentScreen === ScreenNames.feedback && <Feedback />}
-            {currentScreen === ScreenNames.coparentingSpace && <CoparentingSpace />}
+            {currentScreen === ScreenNames.visitation && <Visitation />}
             {currentScreen === ScreenNames.childSelector && <ChildSelector />}
             {currentScreen === ScreenNames.chatRecovery && <ChatRecovery />}
+            {currentScreen === ScreenNames.contactUs && <ContactUs />}
           </>
         </globalState.Provider>
       </div>

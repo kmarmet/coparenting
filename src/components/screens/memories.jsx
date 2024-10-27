@@ -174,20 +174,6 @@ export default function Memories() {
         </p>
 
         {memories && memories.length === 0 && <p className="caption center">There are currently no memories</p>}
-        {memories && memories.length > 0 && (
-          <div className="flex" id="fyi-wrapper">
-            <Accordion>
-              <span className="material-icons-round yellow" onClick={() => setShowFyiAccordion(!showFyiAccordion)}>
-                help
-              </span>
-              <Accordion.Panel expanded={showFyiAccordion}>
-                <p className="blue">All images will be automatically (and permanently) deleted after 30 days from their creation date.</p>
-                <p className="blue ml-auto">Feel free to save them to your device at any time.</p>
-                <p className="gallery center-text pb-10 w-100">tap image to expand</p>
-              </Accordion.Panel>
-            </Accordion>
-          </div>
-        )}
         {/* GALLERY */}
         <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'.memory-image'}>
           <>
@@ -223,6 +209,11 @@ export default function Memories() {
               })}
           </>
         </LightGallery>
+        <div id="disclaimer">
+          <p className="blue">
+            All images will be automatically (and permanently) deleted after 30 days from their creation date. Feel free to download them at any time.
+          </p>
+        </div>
       </div>
     </>
   )

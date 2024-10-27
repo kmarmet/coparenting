@@ -165,9 +165,11 @@ const Manager = {
   // ON PAGE LOAD
   showPageContainer: (hideOrShow = 'show') => {
     Manager.centerDatepicker()
+
     const interval = setInterval(() => {
       const pageContainer = document.querySelector('.page-container')
       if (pageContainer) {
+        pageContainer.style.height = `${window.screen.height}px`
         pageContainer.classList.add('active')
         clearInterval(interval)
       }

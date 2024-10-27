@@ -18,6 +18,7 @@ import { useSwipeable } from 'react-swipeable'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
 import { BiFilterAlt } from 'react-icons/bi'
+import { PiMoneyWavyDuotone } from 'react-icons/pi'
 import {
   toCamelCase,
   getFirstWord,

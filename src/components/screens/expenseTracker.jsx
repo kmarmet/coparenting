@@ -494,7 +494,7 @@ export default function ExpenseTracker() {
                           {/* DUE IN... */}
                           {expense.dueDate.length > 0 && (
                             <div className="flex due-in">
-                              <p>Due:</p>
+                              <p>Countdown:</p>
                               <span>
                                 <PiClockCountdownDuotone className={'fs-24 mr-5'} />
                                 {moment(moment(expense.dueDate).startOf('day')).fromNow().toString()}

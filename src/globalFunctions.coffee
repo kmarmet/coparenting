@@ -121,7 +121,7 @@ export successAlert = (message) ->
             animate__faster
           """
 
-export confirmAlert = (title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm) ->
+export confirmAlert = (title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm, onDeny) ->
   Swal.fire
     showClass:
       popup: """
@@ -143,7 +143,11 @@ export confirmAlert = (title, confirmButtonText = "I'm Sure", showNevermindButto
     confirmButtonColor: '#00b389 !important'
   .then (result) ->
     if result.isConfirmed
-      if onConfirm then onConfirm()
+      if onConfirm then onConfirm(result)
+    if result.isDenied
+      if onDeny then onDeny(result)
+    return result
+
 
 export displayAlert = (type, title, text = '', onConfirm) ->
   switch (true)

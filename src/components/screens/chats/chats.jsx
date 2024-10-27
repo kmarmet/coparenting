@@ -1,21 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react'
-import DB from '@db'
-import Modal from '@shared/modal.jsx'
 import Manager from '@manager'
 import globalState from '../../../context.js'
 import 'rsuite/dist/rsuite.min.css'
-import moment from 'moment'
-import AddNewButton from '@shared/addNewButton.jsx'
 import ScreenNames from '@screenNames'
-import { getDatabase, ref, set, get, child, onValue, push, remove } from 'firebase/database'
-import NotificationManager from '@managers/notificationManager.js'
 import { useSwipeable } from 'react-swipeable'
 import ChatManager from '@managers/chatManager.js'
 import DB_UserScoped from '@userScoped'
-import Confirm from 'components/shared/confirm.jsx'
-import DateFormats from '../../../constants/dateFormats'
-import manager from '@manager'
-import BottomButton from '../../shared/bottomButton'
+import { BiSolidMessageRoundedMinus } from 'react-icons/bi'
+
 import {
   toCamelCase,
   getFirstWord,
@@ -46,6 +38,16 @@ const Chats = () => {
   const [selectedCoparent, setSelectedCoparent] = useState(null)
   const [activeChatsMembers, setActiveChatsMembers] = useState([])
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
+  const [showDeleteButton, setShowDeleteButton] = useState(false)
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      setShowDeleteButton(true)
+    },
+    onSwipedRight: () => {
+      setShowDeleteButton(false)
+    },
+  })
 
   const openMessageThread = async (coparentPhone) => {
     const userCoparent = await DB_UserScoped.getCoparentByPhone(coparentPhone, currentUser)
@@ -68,44 +70,8 @@ const Chats = () => {
     if (Manager.isValid(coparent)) {
       await ChatManager.deleteAndArchive(currentUser, coparent)
       await getChats()
-      setNavbarButton(setShowNewConvoCard(true), 'green', 'add')
       setSelectedCoparent(null)
     }
-  }
-
-  const showDeleteIcon = async (coparent) => {
-    setState({
-      ...state,
-      navbarButton: {
-        ...navbarButton,
-        action: () => {
-          confirmAlert(
-            'Are you sure? If you delete this message, it will be archived. \n However, you can submit a request to recover it.',
-            "I'm Sure",
-            true,
-            () => archive(coparent)
-          )
-        },
-        color: 'red',
-        icon: 'delete',
-      },
-    })
-  }
-
-  const hideDeleteIcon = () => {
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {},
-          color: 'green',
-          icon: 'add',
-        },
-      })
-    }, 300)
-    setConfirmTitle('')
-    setSelectedCoparent(null)
   }
 
   const setNavbarButton = (action, color, icon) => {
@@ -164,12 +130,10 @@ const Chats = () => {
               <div
                 key={Manager.getUid()}
                 className="flex thread-item"
+                {...handlers}
                 onClick={(e) => {
-                  console.log(e.target.tagName)
-                  if (e.target.tagName !== 'SPAN') {
-                    if (!e.target.classList.contains('delete-button')) {
-                      openMessageThread(coparent.phone).then((r) => r)
-                    }
+                  if (e.target.tagName !== 'SPAN' && e.target.tagName !== 'path') {
+                    openMessageThread(coparent.phone).then((r) => r)
                   }
                 }}>
                 {/* COPARENT NAME */}
@@ -181,18 +145,23 @@ const Chats = () => {
                     <span className="last-message">{lastMessage}</span>
                   </p>
                 </div>
-                <span
-                  className="material-icons-round"
-                  id="thread-action-button"
-                  onClick={(e) => {
-                    if (e.target.textContent === 'close') {
-                      setSelectedCoparent(null)
-                    } else {
-                      showDeleteIcon(coparent).then((r) => r)
-                    }
-                  }}>
-                  {selectedCoparent ? 'close' : 'more_vert'}
-                </span>
+                <BiSolidMessageRoundedMinus
+                  onClick={(e) =>
+                    confirmAlert(
+                      'Are you sure you would like to delete this conversation? You can recover it later.',
+                      "I'm Sure",
+                      true,
+                      async (e) => {
+                        await archive(coparent)
+                      },
+                      () => {
+                        setShowDeleteButton(false)
+                        setNavbarButton(() => setShowNewThreadForm(), 'green', <BiSolidEdit />)
+                      }
+                    )
+                  }
+                  className={`fs-24 delete-icon mr-10 ${showDeleteButton ? 'active' : ''}`}
+                />
               </div>
             )
           })}

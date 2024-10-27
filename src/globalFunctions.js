@@ -162,7 +162,7 @@ animate__faster`
   });
 };
 
-export var confirmAlert = function(title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm) {
+export var confirmAlert = function(title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm, onDeny) {
   return Swal.fire({
     showClass: {
       popup: `animate__animated
@@ -183,9 +183,15 @@ animate__faster`
   }).then(function(result) {
     if (result.isConfirmed) {
       if (onConfirm) {
-        return onConfirm();
+        onConfirm(result);
       }
     }
+    if (result.isDenied) {
+      if (onDeny) {
+        onDeny(result);
+      }
+    }
+    return result;
   });
 };
 

@@ -147,6 +147,7 @@
     opacity: 1;
     background-color: $lightBg;
     justify-content: flex-start;
+    overflow-y: hidden;
     
     &.pushed {
       max-width: 1000px;
@@ -462,6 +463,18 @@
       display: flex;
       align-items: center;
     }
+    
+    #disclaimer {
+      p {
+        color: $lightDarkGrey;
+        font-size: 14px;
+        text-align: center;
+        position: absolute;
+        bottom: 100px;
+        @include centerHoriz;
+        width: 90vw;
+      }
+    }
 
     // Colors
     .accent {
@@ -516,9 +529,6 @@
     }
 
     .note {
-      padding: 0 8px 8px 8px;
-      border-radius: $borderRadius;
-
       span {
         font-size: 20px;
         position: relative;

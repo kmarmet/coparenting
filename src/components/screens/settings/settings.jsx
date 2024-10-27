@@ -116,113 +116,32 @@ export default function Settings() {
 
   return (
     <>
-      <p className="screen-title ">Settings</p>
       <div id="settings-container" className={`${theme} page-container form`}>
         {/* CALENDAR SETTINGS */}
+        <label>Calendar</label>
         <div className="calendar-settings mb-10 form">
-          <Accordion className=" w-100">
-            <p onClick={() => setCalendarAccIsOpen(!calendarAccIsOpen)} className="accordion-header">
-              Calendar
-            </p>
-            <Accordion.Panel expanded={calendarAccIsOpen}>
-              <div className="section summary mb-10 ">
-                <span className="material-icons mr-10">calendar_month</span>
+          <div className="section summary mb-10 ">
+            <span className="material-icons mr-10">calendar_month</span>
 
-                <div className="input-container">
-                  {/* MORNING SUMMARY */}
-                  <label>Morning Summary Hour</label>
-                  <MobileTimePicker className={`${theme} mt-0 w-100`} views={['hours']} onAccept={(e) => setMorningSummaryTime(e)} />
-                  {/* EVENING SUMMARY */}
-                  <div className="input-container">
-                    <label>Evening Summary Hour</label>
-                    <MobileTimePicker className={`${theme} mt-0 w-100`} views={['hours']} onAccept={(e) => setEveningSummaryTime(e)} />
-                  </div>
-                </div>
+            <div className="input-container">
+              {/* MORNING SUMMARY */}
+              <label>Morning Summary Hour</label>
+              <MobileTimePicker className={`${theme} mt-0 w-100`} views={['hours']} onAccept={(e) => setMorningSummaryTime(e)} />
+              {/* EVENING SUMMARY */}
+              <div className="input-container">
+                <label>Evening Summary Hour</label>
+                <MobileTimePicker className={`${theme} mt-0 w-100`} views={['hours']} onAccept={(e) => setEveningSummaryTime(e)} />
               </div>
+            </div>
+          </div>
 
-              {currentUser && (
-                <div className="mt-30">
-                  <button onClick={submitCalendarSettings} className="button default submit green center mb-10">
-                    Update
-                  </button>
-                </div>
-              )}
-            </Accordion.Panel>
-          </Accordion>
-        </div>
-
-        {/* SHORTCUTS */}
-        {/*<div className="shortcuts-settings mb-20">*/}
-        {/*  <Accordion className="pl-0 pr-0 w-100">*/}
-        {/*    <p onClick={() => setShortcutAccIsOpen(!shortcutAccIsOpen)} className="accordion-header">*/}
-        {/*      Customize Shortcuts*/}
-        {/*    </p>*/}
-        {/*    <Accordion.Panel expanded={shortcutAccIsOpen} className={'pl-0 pr-0'}>*/}
-        {/*      <p className="center-text mt-5 caption">shortcuts</p>*/}
-        {/*      <p className="mt-10 mb-10 ">*/}
-        {/*        Select the shortcuts (only four) you would like to use in the menu (example above). Select them in the order you would like them*/}
-        {/*        displayed. <br /> <br /> The middle button is the menu button and cannot be modified.*/}
-        {/*      </p>*/}
-        {/*      <CheckboxGroup*/}
-        {/*        boxWidth={50}*/}
-        {/*        onLightBackground={true}*/}
-        {/*        skipNameFormatting={true}*/}
-        {/*        onCheck={handleShortcutSelection}*/}
-        {/*        labels={menuItemsList}*/}
-        {/*      />*/}
-        {/*      {shortcutsToSendToDb.length === 4 && (*/}
-        {/*        <button*/}
-        {/*          id="submit-button"*/}
-        {/*          onClick={(e) => {*/}
-        {/*            Manager.toggleSparkleAnimation(e.target)*/}
-        {/*            submitShortcuts()*/}
-        {/*          }}*/}
-        {/*          className="button green default center mb-10 mt-10">*/}
-        {/*          Set Shortcuts <span className="material-icons-round">check</span>*/}
-        {/*        </button>*/}
-        {/*      )}*/}
-        {/*    </Accordion.Panel>*/}
-        {/*  </Accordion>*/}
-        {/*</div>*/}
-
-        {/* SECTIONS */}
-        <div className="sections">
-          <p
-            className="section"
-            onClick={() =>
-              setState({
-                ...state,
-                currentScreen: ScreenNames.featureRequests,
-                currentScreenTitle: 'Feature Request',
-              })
-            }>
-            <span className="material-icons accent">add_task</span>Feature Request{' '}
-            <span className="material-icons-round go-arrow">arrow_forward_ios</span>
-          </p>
-          <p
-            className="section"
-            onClick={() =>
-              setState({
-                ...state,
-                currentScreen: ScreenNames.feedback,
-                currentScreenTitle: 'App Feedback',
-              })
-            }>
-            <span className="material-icons-round accent">speaker_notes</span>Send App Feedback{' '}
-            <span className="material-icons-round go-arrow">arrow_forward_ios</span>
-          </p>
-          <p
-            className="section"
-            onClick={() =>
-              setState({
-                ...state,
-                currentScreen: ScreenNames.contactSupport,
-                currentScreenTitle: 'Support Request',
-              })
-            }>
-            <span className="material-icons-round accent">email</span>Contact Support{' '}
-            <span className="material-icons-round go-arrow">arrow_forward_ios</span>
-          </p>
+          {currentUser && (
+            <div className="mt-30">
+              <button onClick={submitCalendarSettings} className="button default submit green center mb-10">
+                Update
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>
