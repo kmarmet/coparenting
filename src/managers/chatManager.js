@@ -13,7 +13,7 @@ const ChatManager = {
       const dbRef = ref(getDatabase())
       await get(child(dbRef, `chats`)).then(async (dbChats) => {
         let scopedChats = []
-        const allChats = DB.convertKeyObjectToArray(dbChats.val())
+        const allChats = Manager.convertToArray(dbChats.val())
         const coparentPhones = currentUser?.coparents.map((x) => x.phone)
         let coparents = currentUser?.coparents.filter((x) => coparentPhones.includes(x.phone))
         allChats.forEach((thisChat) => {
@@ -36,7 +36,7 @@ const ChatManager = {
       const { key, chats } = existingThread
       let messages = chats.messages
       if (!Array.isArray(messages)) {
-        messages = DB.convertKeyObjectToArray(messages)
+        messages = Manager.convertToArray(messages)
       }
       if (!Manager.isValid(messages, true)) {
         return false
@@ -98,7 +98,7 @@ const ChatManager = {
     const scopedChat = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
     const { key } = scopedChat
     await DB.getTable(`chats/${key}/messages`).then((snapshot) => {
-      let asArray = DB.convertKeyObjectToArray(snapshot)
+      let asArray = Manager.convertToArray(snapshot)
       asArray.forEach(async (snap) => {
         const messageKey = await DB.getNestedSnapshotKey(`chats/${key}/messages`, snap, 'id')
         if (snap.id === messageId) {

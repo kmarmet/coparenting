@@ -101,6 +101,12 @@
       padding: 0;
     }
   }
+  
+  .support-email {
+    p,a {
+      display: inline;
+    }
+  }
 
   .text {
     @include deadCenter;
@@ -394,6 +400,10 @@
     #popup-card-container {
       @include popupCardContainer;
     }
+    
+    svg {
+      font-size: 30px;
+    }
 
     .title-suggestion-dropdown-wrapper {
       @include titleSuggestionDropdown;
@@ -431,6 +441,10 @@
         height: 120px;
       }
     }
+    
+    .align-center {
+      align-items: center;
+    }
 
     .block {
       display: block;
@@ -455,7 +469,7 @@
     }
 
     .blue {
-      color: $blue;
+      color: $lightBlue;
     }
 
     .yellow {

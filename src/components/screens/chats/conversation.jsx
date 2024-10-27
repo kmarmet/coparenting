@@ -143,7 +143,7 @@ const Conversation = () => {
 
     if (Manager.isValid(updatedMessages, true)) {
       if (!Array.isArray(updatedMessages)) {
-        updatedMessages = DB.convertKeyObjectToArray(updatedMessages)
+        updatedMessages = Manager.convertToArray(updatedMessages)
       }
       setMessagesToLoop([...updatedMessages, cleanThread.messages[0]])
     } else {
@@ -214,7 +214,7 @@ const Conversation = () => {
     Manager.showPageContainer('show')
 
     // Set max screen height for message wrapper
-    const screenHeight = window.screen.height - 300
+    const screenHeight = window.screen.height - 330
     const defaultMessages = document.getElementById('default-messages')
     if (defaultMessages) {
       document.getElementById('default-messages').style.height = `${screenHeight}px`

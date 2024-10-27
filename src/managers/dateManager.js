@@ -254,7 +254,7 @@ const DateManager = {
   },
   setHolidays: async () => {
     let users = await DB.getTable(DB.tables.users)
-    let userPhones = DB.convertKeyObjectToArray(users).map((x) => x.phone)
+    let userPhones = Manager.convertToArray(users).map((x) => x.phone)
     const calEvents = await DB.getTable(DB.tables.calendarEvents)
     const existingCalendarHolidays = calEvents.filter((x) => x.isHoliday === true).map((x) => x.fromDate)
     DateManager.getHolidays().then(async (holidays) => {

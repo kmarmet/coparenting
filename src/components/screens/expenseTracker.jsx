@@ -497,7 +497,7 @@ export default function ExpenseTracker() {
                               setCurrentExpense(expense)
                               let existing = await DB.getTable(DB.tables.expenseTracker)
                               if (!Array.isArray(existing)) {
-                                existing = DB.convertKeyObjectToArray(existing)
+                                existing = Manager.convertToArray(existing)
                               }
                               existing = existing.filter((x) => x.name === expense.name)
                               if (existing.length > 1) {

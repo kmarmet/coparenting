@@ -75,7 +75,7 @@ export default AppManager = {
     var daysPassed, event, events, i, len;
     events = (await DB.getTable(DB.tables.calendarEvents));
     if (!Array.isArray(events)) {
-      events = DB.convertKeyObjectToArray(events);
+      events = Manager.convertToArray(events);
     }
     if (Manager.isValid(events, true)) {
       events = events.filter(function(x) {

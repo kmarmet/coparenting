@@ -27,7 +27,7 @@ const DB_UserScoped = {
       DB_UserScoped.getRecordsByUser(tableName, currentUser, objectName)
         .then((currentUserRecord) => {
           if (!Array.isArray(currentUserRecord)) {
-            currentUserRecord = DB.convertKeyObjectToArray(currentUserRecord)
+            currentUserRecord = Manager.convertToArray(currentUserRecord)
             currentUserRecord = currentUserRecord.map((x) => {
               x.canDelete = true
               return x
@@ -49,7 +49,7 @@ const DB_UserScoped = {
       DB.getRecordsByUser(tableName, currentUser, objectName)
         .then((currentUserRecord) => {
           if (!Array.isArray(currentUserRecord)) {
-            currentUserRecord = DB.convertKeyObjectToArray(currentUserRecord)
+            currentUserRecord = Manager.convertToArray(currentUserRecord)
             currentUserRecord = currentUserRecord.map((x) => {
               x.canDelete = true
               return x
@@ -86,7 +86,7 @@ const DB_UserScoped = {
     let user
     await DB.getTable(DB.tables.users).then((users) => {
       if (!Array.isArray(users)) {
-        users = DB.convertKeyObjectToArray(users)
+        users = Manager.convertToArray(users)
       }
       user = users.filter((x) => x.name.formatNameFirstNameOnly() === userName.formatNameFirstNameOnly())[0].phone
     })
@@ -161,7 +161,7 @@ const DB_UserScoped = {
   addToUserMemories: async (currentUser, objectName, value, id) => {
     const dbRef = ref(getDatabase())
     let tableRecords = await DB.getTable(DB.tables.users)
-    tableRecords = DB.convertKeyObjectToArray(tableRecords)
+    tableRecords = Manager.convertToArray(tableRecords)
     let toUpdate = tableRecords.filter((x) => x.phone === currentUser.phone)[0]
     if (toUpdate[objectName] !== undefined && toUpdate[objectName].length > 0) {
       toUpdate[objectName] = [...toUpdate[objectName], value]
@@ -248,7 +248,7 @@ const DB_UserScoped = {
     // Update archivedChats
     await DB.getTable(DB.tables.archivedChats).then(async (archivedChats) => {
       if (!Array.isArray(archivedChats)) {
-        archivedChats = DB.convertKeyObjectToArray(archivedChats)
+        archivedChats = Manager.convertToArray(archivedChats)
       }
       if (archivedChats && archivedChats.length > 0) {
         for (const chat of archivedChats) {
@@ -274,7 +274,7 @@ const DB_UserScoped = {
     // Update swap requests table
     await DB.getTable(DB.tables.swapRequests).then((data) => {
       if (!Array.isArray(data)) {
-        data = DB.convertKeyObjectToArray(data)
+        data = Manager.convertToArray(data)
       }
       if (data && data.length > 0) {
         data.forEach((request, index) => {
@@ -296,7 +296,7 @@ const DB_UserScoped = {
     // Update expenseTracker table
     await DB.getTable(DB.tables.expenseTracker).then((data) => {
       if (!Array.isArray(data)) {
-        data = DB.convertKeyObjectToArray(data)
+        data = Manager.convertToArray(data)
       }
       if (data && data.length > 0) {
         data.forEach((request) => {
@@ -316,7 +316,7 @@ const DB_UserScoped = {
     // Update cal table
     await DB.getTable(DB.tables.calendarEvents).then((data) => {
       if (!Array.isArray(data)) {
-        data = DB.convertKeyObjectToArray(data)
+        data = Manager.convertToArray(data)
       }
       if (data && data.length > 0) {
         data.forEach((event) => {
@@ -338,7 +338,7 @@ const DB_UserScoped = {
     // Update chats table
     await DB.getTable(DB.tables.chats).then(async (chats) => {
       if (!Array.isArray(chats)) {
-        chats = DB.convertKeyObjectToArray(chats)
+        chats = Manager.convertToArray(chats)
       }
       const database = getDatabase()
       if (chats && chats.length > 0) {

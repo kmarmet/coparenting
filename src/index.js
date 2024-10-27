@@ -4,15 +4,10 @@ import '../src/styles/bundle.scss'
 import App from './App'
 import { ErrorBoundary } from 'react-error-boundary'
 import PopupCard from 'components/shared/popupCard'
+import ScreenNames from '@screenNames'
+import { getAuth, signOut } from 'firebase/auth'
 const a = document.getElementsByTagName('a')
-for (let i = 0; i < a.length; i++) {
-  if (!a[i].onclick && a[i].getAttribute('target') != '_blank') {
-    a[i].onclick = function () {
-      window.location = this.getAttribute('href')
-      return false
-    }
-  }
-}
+
 if ('serviceWorker' in navigator) {
   // Register PWA
 
@@ -58,6 +53,20 @@ if ('serviceWorker' in navigator) {
   // }
   // forceSWupdate()
 }
+const logout = () => {
+  localStorage.removeItem('rememberKey')
+  const auth = getAuth()
+  signOut(auth)
+    .then(() => {
+      // Sign-out successful.
+      console.log('User signed out')
+      window.location.reload()
+    })
+    .catch((error) => {
+      // An error happened.
+    })
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'))
 // Add Logging in Boundary
 // Add support email in text
@@ -66,23 +75,39 @@ root.render(
     fallback={
       <div className="active error-boundary" id="error-screen">
         <p id="screen-title" className="mb-15">
-          Oops! It looks like the app ran into an issue. Troubleshooting steps below...
+          Oops! It looks like the app ran into an issue. But we can help!
         </p>
         <div id="text-container" className="mb-20">
-          <div className="flex">
-            <p>Please follow the steps below. If the steps below do not work, please email us at </p>
+          <div className="flex support-email">
+            <p>Feel free to send us an email to get help with this issue, at any time @ </p>
             <a href="mailto:support@peaceful-coparenting.app">support@peaceful-coparenting.app</a>
           </div>
         </div>
         <hr />
         <div id="text-container">
-          <p className="heading mb-5">First Step to Try</p>
+          <p className="heading mb-5">First Steps to Try</p>
         </div>
 
-        <button className="link" onClick={() => window.location.reload()}>
-          Refresh the App
-        </button>
+        {/* REFRESH THE APP */}
+        <div id="text-container">
+          <div className="flex mb-5" id="steps">
+            <span className="step-number">1.</span>
+            <button className="link" onClick={() => window.location.reload()}>
+              Refresh the App
+            </button>
+          </div>
+          <div className="flex mb-5" id="steps">
+            <span className="step-number">2.</span>
+            <button className="link" onClick={logout}>
+              Sign Out then Sign In
+            </button>
+          </div>
+          <p className="mt-15">
+            <b>If those two steps did not resolve the issue, please follow the steps below.</b>
+          </p>
+        </div>
         <hr />
+
         {/* CLEAR CACHE - IOS */}
         <div id="text-container" className="mb-15">
           <p className="heading mb-5">Clear the Cache - iOS</p>
@@ -107,6 +132,8 @@ root.render(
             </p>
           </div>
         </div>
+
+        {/* FORCE CLOSE - IOS */}
         <div id="text-container" className="mb-15">
           <p className="heading mb-5">Force Close App - iOS</p>
 
@@ -117,6 +144,8 @@ root.render(
           </div>
         </div>
         <hr />
+
+        {/* CLEAR CACHE - ANDROID */}
         <div id="text-container" className="mb-15">
           <p className="heading mb-5">Clear the Cache - Android</p>
 
@@ -138,6 +167,7 @@ root.render(
           </div>
         </div>
 
+        {/* FORCE CLOSE - ANDROID */}
         <div id="text-container" className="mb-15">
           <p className="heading mb-5">Force Close App - Android</p>
 
@@ -151,6 +181,7 @@ root.render(
           </div>
         </div>
 
+        {/* UNINSTALL/REINSTALL */}
         <div id="text-container" className="mb-15">
           <p className="heading mb-5">If the issue continues...</p>
 

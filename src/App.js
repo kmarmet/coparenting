@@ -42,7 +42,6 @@ import AppManager from '@managers/appManager.js'
 import ChatRecovery from '@screens/account/chatRecovery'
 import EditCalEvent from '@components/screens/editCalEvent.jsx'
 import NewCalendarEvent from '@components/forms/newCalendarEvent.jsx'
-import EmailVerification from './components/screens/auth/emailVerification'
 import NewChildForm from 'components/screens/childInfo/newChildForm.jsx'
 import NewMemoryForm from 'components/forms/newMemoryForm.jsx'
 import NewExpenseForm from 'components/forms/newExpenseForm.jsx'
@@ -220,7 +219,6 @@ export default function App() {
             {/* AUTHENTICATION */}
             {currentScreen === ScreenNames.login && <Login />}
             {currentScreen === ScreenNames.registration && <Registration />}
-            {currentScreen === ScreenNames.emailVerification && <EmailVerification />}
 
             {/* UPDATE/EDIT */}
             {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}

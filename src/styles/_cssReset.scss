@@ -41,18 +41,22 @@
     3. Add accessible line-height
     4. Improve text rendering
   */
+
+html {
+  background-color: $lightBg !important;
+}
 body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow: hidden !important;
   max-height: 100vh !important;
-  background-color: $lightBg;
+  background-color: $lightBg !important;
   
   &.dark {
-      background-color: $darkBg;
+//      background-color: $darkBg;
   }
   &.light {
-    background-color: $lightBg;
+//    background-color: $lightBg;
     
     .rc-tooltip {
       .rc-tooltip-inner {
@@ -95,8 +99,7 @@ body {
 img,
 picture,
 video,
-canvas,
-svg {
+canvas{
   display: block;
   max-width: 100%;
 }

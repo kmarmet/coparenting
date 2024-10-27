@@ -26,6 +26,24 @@ import {
 import DB_UserScoped from '@userScoped'
 import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
 
+// ICONS
+import { PiChatsCircleDuotone } from 'react-icons/pi'
+import {
+  PiCalendarDotsDuotone,
+  PiHouseLineDuotone,
+  PiSwapDuotone,
+  PiCarProfileDuotone,
+  PiMoneyWavyDuotone,
+  PiMoonStarsDuotone,
+  PiImagesSquareDuotone,
+  PiSignOutDuotone,
+  PiSunDuotone,
+} from 'react-icons/pi'
+import { HiOutlineDocumentText } from 'react-icons/hi2'
+import { BsWrenchAdjustableCircle, BsPeople } from 'react-icons/bs'
+import { MdOutlineManageAccounts } from 'react-icons/md'
+import { FiSettings } from 'react-icons/fi'
+import { BiFace } from 'react-icons/bi'
 export default function SlideOutMenu() {
   const { state, setState } = useContext(globalState)
   const { currentScreen, menuIsOpen, theme, currentUser, showCenterNavbarButton } = state
@@ -87,7 +105,7 @@ export default function SlideOutMenu() {
           <div
             className={`slide-out-menu-item ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
             onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>
-            <span className="material-icons-round">dashboard</span>
+            <BsWrenchAdjustableCircle />
             <p>Admin Dashboard</p>
           </div>
         )}
@@ -97,13 +115,15 @@ export default function SlideOutMenu() {
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.coparentingSpace ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.coparentingSpace)}>
-              <span className="material-icons-round">meeting_room</span>
-              <p>Coparenting Space</p>
+              {/*<span className="material-icons-round">meeting_room</span>*/}
+              <PiHouseLineDuotone />
+              <p>Visitation</p>
             </div>
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.chats)}>
-              <span className="material-icons-round">question_answer</span>
+              {/*<span className="material-icons-round">question_answer</span>*/}
+              <PiChatsCircleDuotone />
               <p className="text">Chat</p>
             </div>
           </>
@@ -112,7 +132,8 @@ export default function SlideOutMenu() {
           <div
             className={`slide-out-menu-item ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
             onClick={() => changeCurrentScreen(ScreenNames.calendar)}>
-            <span className="material-icons-round">calendar_month</span>
+            {/*<span className="material-icons-round">calendar_month</span>*/}
+            <PiCalendarDotsDuotone />
             <p>Calendar</p>
           </div>
         </>
@@ -121,44 +142,51 @@ export default function SlideOutMenu() {
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.expenseTracker)}>
-              <span className="material-icons-round">paid</span>
+              {/*<span className="material-icons-round">paid</span>*/}
+              <PiMoneyWavyDuotone />
               <p>Expense Tracker</p>
             </div>
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.swapRequests)}>
-              <span className="material-icons-round">swap_horizontal_circle</span>
+              {/*<span className="material-icons-round">swap_horizontal_circle</span>*/}
+              <PiSwapDuotone />
               <p>Swap Requests</p>
             </div>
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.transferRequests)}>
-              <span className="material-icons-round">update</span>
+              {/*<span className="material-icons-round">update</span>*/}
+              <PiCarProfileDuotone />
               <p>Transfer Change</p>
             </div>
 
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.docsList)}>
-              <span className="material-icons-round">description</span>
+              {/*<span className="material-icons-round">description</span>*/}
+              <HiOutlineDocumentText />
               <p>Documents</p>
             </div>
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.memories)}>
-              <span className="material-icons-round">collections</span>
+              {/*<span className="material-icons-round">collections</span>*/}
+              <PiImagesSquareDuotone />
               <p>Memories</p>
             </div>
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.childInfo)}>
-              <span className="material-icons-round">face</span>
+              {/*<span className="material-icons-round">face</span>*/}
+              <BiFace />
               <p>Child Info</p>
             </div>
             <div
               className={`slide-out-menu-item ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.coparents)}>
-              <span className="material-icons-round">family_restroom</span>
+              {/*<span className="material-icons-round">family_restroom</span>*/}
+              <BsPeople />
               <p>Coparents</p>
             </div>
           </>
@@ -167,31 +195,34 @@ export default function SlideOutMenu() {
       <div
         className={`slide-out-menu-item ${currentScreen === ScreenNames.account ? 'active' : ''}`}
         onClick={() => changeCurrentScreen(ScreenNames.account)}>
-        <span className="material-icons-round">manage_accounts</span>
+        {/*<span className="material-icons-round">manage_accounts</span>*/}
+        <MdOutlineManageAccounts />
         <p>Account</p>
       </div>
       <div
         className={`slide-out-menu-item ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
         onClick={() => changeCurrentScreen(ScreenNames.settings)}>
-        <span className="material-icons-round">settings</span>
-        <p>Settings</p>
+        {/*<span className="material-icons-round">settings</span>*/}
+        <FiSettings /> <p>Settings</p>
       </div>
 
       {/* THEME TOGGLE */}
       {menuIsOpen && (
         <div id="bottom-bar" className={theme}>
-          <div className={`slide-out-menu-item ${currentScreen === ScreenNames.settings ? 'active' : ''}`} onClick={logout}>
-            <span className="material-icons-round">waving_hand</span>
+          <div className={`slide-out-menu-item visible`} onClick={logout}>
+            {/*<span className="material-icons-round">waving_hand</span>*/}
+            <PiSignOutDuotone />
             <p>Logout</p>
           </div>
           {theme === 'dark' && (
             <p className="theme-text" onClick={() => changeTheme('light')}>
-              <span className="material-icons-round">light_mode</span>Switch to Light Mode
+              <PiSunDuotone />
+              Switch to Light Mode
             </p>
           )}
           {theme === 'light' && (
             <p className="theme-text" onClick={() => changeTheme('dark')}>
-              <span className="material-icons-round">nights_stay</span> Switch to Dark Mode
+              <PiMoonStarsDuotone /> Switch to Dark Mode
             </p>
           )}
         </div>

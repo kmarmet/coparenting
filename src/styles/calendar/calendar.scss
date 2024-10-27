@@ -6,6 +6,7 @@
     #below-calendar {
       display: block;
       transition: height 0.3s linear;
+      margin-bottom: 10px;
       #close-search-button {
         color: $red;
         margin-top: 8px;
@@ -83,7 +84,7 @@
       
       .search-icon {
         margin-right: 10px;
-        font-size: 28px;
+        font-size: 25px;
         align-self: stretch;
         display: flex;
         align-items: center;

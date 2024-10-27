@@ -2644,7 +2644,6 @@
     color: white;
     display: flex;
     align-items: center;
-    margin-left: 10px;
 
     span {
       padding-right: 8px;
@@ -2683,11 +2682,12 @@
   .slide-out-menu-item {
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     opacity: 0;
     width: 100%;
     transform: scale(0);
     transition: all 0.6s ease-in-out;
+    
     &.visible {
       opacity: 1;
       margin-top: 0;
@@ -2699,21 +2699,20 @@
     &.active {
       opacity: 1;
       background-color: $lightBlue;
-      padding-left: 5px;
-      border-radius: 12px;
+      padding: 6px;
+      border-radius: 8px;
       position: relative;
       left: -5px;
       p,
-      span {
+      svg {
         font-weight: bold;
         color: white;
       }
     }
-    span {
+    svg {
+      font-size: 28px;
       margin-right: 10px;
-      font-size: 30px;
       color: $lightBlue;
-      padding-left: 10px;
     }
     p {
       color: $lightBlue;
@@ -2765,20 +2764,18 @@
       display: flex;
       width: 40px;
       color: $lightDarkGrey;
+      
+      &.settings {
+        svg {
+          font-size: 26px;
+        }
+      }
 
       &.active:not(#menu-button) {
         opacity: 1;
-        border-top: 2px solid $lightBlue;
         color: $lightBlue;
         position: relative;
-        top: -15px;
         transition: all .3s ease-in-out;
-
-        span:not(.menu-icon) {
-          position: relative;
-          top: 10px;
-          transition: all .3s ease-in-out;
-        }
       }
 
       &#menu-button {

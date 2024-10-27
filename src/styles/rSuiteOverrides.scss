@@ -170,7 +170,7 @@
     box-shadow: none;
     left: 0;
     right: 0;
-    border-radius: $borderRadius;
+    border-radius: $bigBorderRadius;
     border: 0;
     background-color: white;
     box-sizing: border-box;
@@ -238,15 +238,15 @@
           }
 
           .current-user-visitation-dot {
-            background-color: $purple;
+            background-color: $lightBlue;
           }
 
           .coparent-visitation-dot {
-            background-color: $green;
+            background-color: #fad59d;
           }
 
           .standard-event-dot {
-            background-color: $darkBlueLight;
+            background-color: #87d6f8;
           }
         }
         /*#endregion  */
@@ -955,6 +955,10 @@
         border: 0 !important;
         height: auto !important;
         transform: none !important;
+      }
+      
+      &.weekend-day {
+        color: $green !important;
       }
 
       &.prevMonthDay {

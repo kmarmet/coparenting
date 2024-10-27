@@ -160,21 +160,13 @@ const DB = {
     }),
   delete: async (tableName, id) => {
     const dbRef = ref(getDatabase())
-    let idToDelete
     let tableRecords = await DB.getTable(tableName)
     if (Manager.isValid(tableRecords, true)) {
-      if (!Array.isArray(tableRecords)) {
-        tableRecords = DB.convertKeyObjectToArray(tableRecords)
-      }
-      for (const record of tableRecords) {
-        const index = tableRecords.indexOf(record)
-        if (record && record.id === id) {
-          idToDelete = await DB.getSnapshotKey(tableName, record, 'id')
-          remove(child(dbRef, `${tableName}/${idToDelete}/`))
-        }
-      }
+      const deleteKey = await DB.getFlatTableKey(tableName, id)
+      await remove(child(dbRef, `${tableName}/${deleteKey}/`))
     }
   },
+
   deleteByPath: (path) => {
     const dbRef = ref(getDatabase())
     remove(child(dbRef, path))
@@ -227,7 +219,7 @@ const DB = {
     await get(child(dbRef, tableName)).then((snapshot) => {
       tableData = snapshot.val()
     })
-    return tableData
+    return Manager.convertToArray(tableData)
   },
   updateIsAvailable: async (tableName) => {
     const dbRef = ref(getDatabase())
@@ -239,7 +231,7 @@ const DB = {
   },
   updateRecord: async (tableName, recordToUpdate, prop, value, identifier) => {
     const dbRef = ref(getDatabase())
-    const tableRecords = DB.convertKeyObjectToArray(await DB.getTable(tableName))
+    const tableRecords = Manager.convertToArray(await DB.getTable(tableName))
     let toUpdate
     if (identifier && identifier !== undefined) {
       toUpdate = tableRecords.filter((x) => x[identifier] === recordToUpdate[identifier])[0]

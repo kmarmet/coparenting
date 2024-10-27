@@ -32,7 +32,7 @@ function ShortcutMenu() {
       const rememberKey = localStorage.getItem('rememberKey')
       await DB.getTable(DB.tables.users)
         .then(async (people) => {
-          people = DB.convertKeyObjectToArray(people)
+          people = Manager.convertToArray(people)
           if (people && people.length > 0) {
             const user = people.filter((x) => x.id === rememberKey)[0]
             if (user) {
