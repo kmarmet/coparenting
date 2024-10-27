@@ -1,57 +1,14 @@
 @import '../mixins';
 
 #external-overrides {
+  #expense-tracker {
+    &.page-container {
+      background: white;
+    }
+  }
   #add-expense-form {
     margin: 0;
     position: relative;
-    
-    /*#region  LIGHT THEME*/
-    &.light {
-      #or {
-        color: $darkGrey;
-        font-size: 20px;
-      }
-      #default-expense-amounts {
-        button {
-          background-color: white;
-          color: $lightBlackLight;
-          
-          &.reset {
-            font-weight: bold;
-          }
-        }
-      }
-      #amount-input-wrapper {
-        #amount-input {
-          border-bottom: 1px solid $lightGrey;
-        }
-      }
-    }
-    /*#endregion  LIGHT THEME*/
-
-    /*#region  DARK THEME*/
-    &.dark {
-      #or {
-        color: $darkGrey;
-        font-size: 20px;
-      }
-      #default-expense-amounts {
-        button {
-          background-color: $darkBlue;
-          color: white;
-          
-          &.reset {
-            font-weight: bold;
-          }
-        }
-      }
-      #amount-input-wrapper {
-        #amount-input {
-          border-bottom: 1px solid $translucentLightest;
-        }
-      }
-    }
-    /*#endregion  DARK THEME*/
 
     .rs-picker {
       margin: 0;
@@ -135,48 +92,48 @@
 
   #expense-tracker {
     /*#region  LIGHT THEME*/
-    &.light {
-      .description {
-        color: $darkGrey;
-        font-style: italic;
+    .description {
+      color: $darkGrey;
+      font-style: italic;
+    }
+    .amount {
+      background-color: $translucentLightest;
+      color: white;
+    }
+    .expense {
+      background: $lightGrey;
+      .content {
+        background: $lightGrey;
+        #date-added-text {
+          color: $lightBlackLight;
+        }
       }
-      .amount {
-        background-color: $translucentLightest;
-        color: white;
-      }
-      .expense {
-//        background-color: $darkBlue;
-        .content {
-          #date-added-text {
-            color: $lightBlackLight;
-          }
+      .lower-details {
+        background: $lightGrey;
+        #img-expand-text {
+          color: $darkGrey;
+        }
+        .group {
+          background-color: $lightGrey;
         }
         .lower-details {
-          #img-expand-text {
-            color: $darkGrey;
-          }
-          .group {
-            background-color: $lightGrey;
-          }
-          .lower-details {
-            #button-group {
-              button {
-                &.default {
-                  color: $darkGrey;
-                }
+          #button-group {
+            button {
+              &.default {
+                color: $darkGrey;
               }
             }
           }
-          .lower-details-text {
-            b {
-              color: $lightBlackLight;
-            }
-            .flex {
-              &.editable {
-                background-color: $lightGrey;
-                span {
-                  color: $darkGrey;
-                }
+        }
+        .lower-details-text {
+          b {
+            color: $lightBlackLight;
+          }
+          .flex {
+            &.editable {
+              background-color: $lightGrey;
+              span {
+                color: $darkGrey;
               }
             }
           }
@@ -269,71 +226,120 @@
     #expenses-card-container {
       margin-top: 10px;
       background-color: transparent;
+      
+      .content {
+        border-radius: $bigBorderRadius;
+      }
 
       .expense {
         border: 0;
-        border-radius: 15px;
-        @include shadow;
+        border-radius: $bigBorderRadius;
         display: block;
 
         &:last-child {
           border-bottom: 0;
         }
+        
+        #expense-image {
+          position: relative;
+          img {
+            border-radius: $bigBorderRadius $bigBorderRadius 0 0;
+          }
+          svg {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 20px;
+            color:white;
+          }
+        }
 
         .lower-details {
-          #button-group {
-            width: 100%;
-
-            button {
-              border: 0;
-              height: auto;
-              min-height: 0;
-              padding: 10px 5px;
-              font-size: 14px;
-              width: 100%;
-              box-shadow: none;
-
-              &:first-child {
-                border-radius: 0 0 0 15px;
-              }
-
-              &:nth-child(2) {
-                min-width: 150px;
-              }
-
-              &:last-child {
-                border-radius: 0 0 15px 0;
-              }
-            }
-          }
-
-          #img-container {
-            padding: 10px 0;
-            width: 100%;
-
-            img {
-              width: auto;
-              height: 100%;
-              border-radius: $borderRadius;
-              margin: 0 auto;
-            }
-          }
-
-          #img-expand-text {
-            margin-top: 10px;
-            width: 100%;
-            text-align: center;
-            font-style: italic;
-          }
+          background: $lightGrey;
+          border-radius: $bigBorderRadius;
 
           .lower-details-text {
-            padding: 10px;
+            border-radius: $bigBorderRadius;
+            position: relative;
+            padding: 20px;
+            
+            span {
+              display: flex;
+              align-items: center;
+            }
+            
+            .delete {
+              position: relative;
+              z-index: 1000000;
+              align-items: center;
+              
+              &.flex {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                width: auto;
+                justify-content: center;
+                align-items: center;
+
+                * {
+                  color: $lightDarkGrey;
+                }
+
+                span {
+                  font-size: 12px;
+                  width: auto;
+                  font-weight: 300;
+
+                }
+
+                svg {
+                  font-size: 18px;
+                  margin-left: 5px;
+                }
+              }
+            }
+
+            .amount {
+              font-size: 18px;
+              color: $lightBlack;
+              font-weight: bold;
+              margin-top: 15px;
+              margin-bottom: 15px;
+              display: block;
+            }
+
+            .name {
+              line-height: 1;
+              font-weight: 500;
+              width: 100%;
+              color: $lightBlue;
+              display: flex;
+              justify-content: space-between;
+              font-size: 18px;
+              align-items: center;
+            }
 
             .flex {
-              padding: 8px 10px;
               margin-bottom: 5px;
               border-radius: $borderRadius;
               align-items: center;
+              width: 100%;
+              flex-wrap: nowrap;
+              
+              &.due-in {
+                span {
+                  color: $red;
+                }
+              }
+
+              p,
+              span {
+                width: 50%;
+              }
+
+              span {
+                font-weight: 600;
+              }
 
               &.editable {
                 justify-content: flex-start;
@@ -350,10 +356,6 @@
                       font-weight: bold;
                     }
                   }
-
-                  span {
-                    width: calc(100% - 100px);
-                  }
                 }
 
                 &.notes {
@@ -364,40 +366,33 @@
 
                 span {
                   top: -1px;
-                  margin: 0 0 0 5px;
                 }
               }
             }
           }
 
-          .group,
-          .due-date {
-            padding: 8px 10px;
+          #img-container {
+            width: 100%;
+
+            img {
+              width: auto;
+              height: 100%;
+            }
+          }
+
+          #img-expand-text {
+            margin-top: 10px;
+            width: 100%;
+            text-align: center;
+            font-style: italic;
+          }
+
+          .group{
             border-radius: $borderRadius;
             margin-bottom: 5px;
             align-items: center;
             line-height: 1;
 
-            .due-date-text {
-              padding-left: 0;
-            }
-
-            &.red {
-              background-color: $red;
-              p {
-                color: white;
-                font-weight: 600;
-                max-height: 30px;
-                margin: 0;
-              }
-
-              span {
-                position: relative;
-                font-size: 20px;
-                left: -3px;
-                margin: 0;
-              }
-            }
 
             &.subtext {
               p {
@@ -406,24 +401,40 @@
             }
           }
         }
-
+        
+        #button-group {
+          width: 100%;
+          gap: 5px;
+          padding: 0 20px 20px 20px;
+          border-radius: $bigBorderRadius;
+          button {
+            border-radius: $borderRadius;
+            min-width: 120px;
+            padding: 5px 15px;
+            
+            &:first-child {
+              background-color: $green;
+              color: white;
+              border: 1px solid $green;
+            }
+            
+            &:last-child {
+              background-color: transparent;
+              border: 1px solid $green;
+              color: $green;
+            }
+          }
+        }
+        
         .content {
           .rs-panel-body {
             padding: 0;
           }
 
-
           p {
             line-height: 1.3;
             opacity: 0.9;
             margin: 0;
-            font-size: 15px;
-            font-weight: 400;
-
-            b {
-              font-weight: 600;
-              font-size: 15px;
-            }
 
             &.due-date {
               color: $red;
@@ -446,58 +457,6 @@
 
             b {
               font-weight: 500;
-            }
-
-            .flex {
-              width: 100%;
-              border-radius: 15px 15px 0 0;
-              background-color: $purple;
-              padding: 8px 10px;
-
-              &.amount-flex {
-                display: flex;
-                align-items: center;
-                padding: 0;
-                width: auto;
-                #dollar-sign {
-                  border-radius: 10px 0 0 10px;
-                  background-color: white;
-                  opacity: 0.9;
-                  font-size: 20px;
-                  position: relative;
-                  margin: 0 0 0 auto;
-                  color: $green;
-                  top: 0;
-                  right: -5px;
-                  z-index: 1000;
-                  padding: 1px 5px 2px;
-                }
-              }
-
-              .name {
-                line-height: 1;
-                text-transform: uppercase;
-                font-weight: 600;
-                width: 100%;
-                color: white;
-                display: flex;
-                justify-content: space-between;
-                font-size: 20px;
-                align-items: center;
-                background-color: $purple;
-              }
-
-              .amount {
-                margin: 0;
-                font-size: 18px;
-                padding: 5px 10px;
-                position: relative;
-                border-radius: $borderRadius;
-                top: 0;
-                min-width: 50px;
-                text-align: center;
-                color:white;
-              }
             }
           }
         }

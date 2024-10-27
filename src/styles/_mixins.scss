@@ -995,7 +995,7 @@
 
   .flex {
     align-items: center;
-    color: $lightBlue;
+    color: $lightDarkGrey;
     margin-right: 10px;
     background-color: transparent;
     text-align: center;
@@ -1007,8 +1007,8 @@
     justify-content: center;
 
     &.active {
-      span {
-        color: $accent;
+      span,p {
+        color: $lightBlue;
       }
     }
 
@@ -1020,11 +1020,12 @@
       opacity: 0.8;
       display: flex;
       align-items: center;
+      color: $lightDarkGrey;
     }
 
     span {
       font-size: 18px;
-      color: $lightBlue;
+      color: $lightDarkGrey;
       margin: 0;
       height: 16px;
       display: flex;
@@ -1146,8 +1147,8 @@
 
         &.active {
           border: 0;
-          background-color: $purple;
-          box-shadow: 0 0 12px 0 $purple;
+          background-color: $green;
+          box-shadow: 0 0 12px 0 $green;
 
           .checkmark-icon {
             display: block;
@@ -2303,13 +2304,36 @@
   }
 
   .action-pills {
+    svg {
+      color: $lightDarkGrey;
+      opacity: .5;
+      position: relative;
+      top: -2px;
+      &.single-day-icon {
+        font-size: 22px;
+      }
+      &.multiple-day-icon {
+        font-size: 22px;
+      }
+    }
+    svg, p {
+      transition: all .3s ease-in-out;
+    }
     .flex {
+      align-items: center;
       p:not(#title) {
         margin-left: 5px;
+        color: $lightDarkGrey;
+        opacity: .5;
       }
       &.active {
         p:not(#title) {
-          color: $accent;
+          color: $lightDarkGrey;
+          opacity: 1;
+          font-weight: 600;
+        }
+        svg {
+          opacity: 1;
         }
       }
     }
@@ -2610,7 +2634,7 @@
   transition: all 0.6s ease-in-out;
   width: 0;
   position: relative;
-  max-height: 100vh;
+  max-height: 600px;
   overflow: auto;
   z-index: -1;
 
@@ -2645,18 +2669,15 @@
     display: flex;
     align-items: center;
 
-    span {
+    svg {
       padding-right: 8px;
-      font-size: 30px;
+      font-size: 40px;
     }
   }
 
-  #close-menu-button {
-    position: fixed;
-    bottom: 0;
-    right: 25vw;
-    font-size: 40px;
-    color: #d7d8de;
+  #menu-close-icon  {
+    color: $lightAccent;
+    float: right;
   }
 
   #top-bar {
@@ -2664,17 +2685,18 @@
     display: flex;
     justify-content: center;
     border-bottom: 1px solid $lightBorder;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 
     .logo {
-      padding-bottom: 10px;
+      border-radius: 100%;
       img {
         display: flex;
         justify-content: center;
         width: 80%;
         text-align: center;
         height: auto;
-        margin: 0 auto;
+        margin: 0 auto 20px auto;
+        border-radius: 100%;
       }
     }
   }
@@ -2682,7 +2704,7 @@
   .slide-out-menu-item {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     opacity: 0;
     width: 100%;
     transform: scale(0);

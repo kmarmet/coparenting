@@ -35,7 +35,7 @@ import {
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
-import Swal from 'sweetalert2'
+import { BiSolidEdit } from 'react-icons/bi'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -136,7 +136,7 @@ const Chats = () => {
               setShowNewConvoCard(true)
             },
             color: 'green',
-            icon: 'edit',
+            icon: <BiSolidEdit />,
           },
         })
       }, 300)
@@ -165,8 +165,11 @@ const Chats = () => {
                 key={Manager.getUid()}
                 className="flex thread-item"
                 onClick={(e) => {
-                  if (!e.target.classList.contains('delete-button')) {
-                    openMessageThread(coparent.phone).then((r) => r)
+                  console.log(e.target.tagName)
+                  if (e.target.tagName !== 'SPAN') {
+                    if (!e.target.classList.contains('delete-button')) {
+                      openMessageThread(coparent.phone).then((r) => r)
+                    }
                   }
                 }}>
                 {/* COPARENT NAME */}

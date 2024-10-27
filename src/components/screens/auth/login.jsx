@@ -10,6 +10,7 @@ import { child, get, getDatabase, push, ref, remove, set, update } from 'firebas
 import { getAuth, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
+import { PiEyeDuotone, PiEyeClosedDuotone } from 'react-icons/pi'
 import {
   toCamelCase,
   getFirstWord,
@@ -211,16 +212,8 @@ export default function Login() {
             </label>
             <div className="flex inputs mb-20">
               <input required={true} type={viewPassword ? 'text' : 'password'} onChange={(e) => setPassword(e.target.value)} />
-              {!viewPassword && (
-                <span className="material-icons-round accent" onClick={() => setViewPassword(true)}>
-                  visibility
-                </span>
-              )}
-              {viewPassword && (
-                <span className="material-icons-round accent" onClick={() => setViewPassword(false)}>
-                  visibility_off
-                </span>
-              )}
+              {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue ml-10'} />}
+              {viewPassword && <PiEyeClosedDuotone onClick={() => setViewPassword(false)} className={'blue ml-10'} />}
             </div>
 
             {/* REMEMBER ME */}

@@ -23,6 +23,28 @@ import NewExpenseForm from '../forms/newExpenseForm'
 import FirebaseStorage from '@firebaseStorage'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
+import { PiClockCountdownDuotone, PiTrashDuotone } from 'react-icons/pi'
+import { BsArrowsAngleExpand } from 'react-icons/bs'
+import {
+  toCamelCase,
+  getFirstWord,
+  formatFileName,
+  isAllUppercase,
+  removeSpacesAndLowerCase,
+  stringHasNumbers,
+  wordCount,
+  uppercaseFirstLetterOfAllWords,
+  spaceBetweenWords,
+  formatNameFirstNameOnly,
+  removeFileExtension,
+  contains,
+  displayAlert,
+  throwError,
+  successAlert,
+  uniqueArray,
+  confirmAlert,
+  getFileExtension,
+} from '../../globalFunctions'
 
 const ViewTypes = {
   all: 'All',
@@ -367,132 +389,24 @@ export default function ExpenseTracker() {
                 return (
                   <div key={Manager.getUid()} data-expense-id={expense.id} className={`expense mb-10`}>
                     <div className="content">
-                      <div className="flex top-details">
-                        {/* EXPENSE NAME */}
-                        <div className="flex">
-                          <p
-                            onBlur={(e) => {
-                              handleEditable(e, expense, 'name', e.currentTarget.innerHTML).then((r) => r)
-                            }}
-                            contentEditable
-                            dangerouslySetInnerHTML={{ __html: expense.name.uppercaseFirstLetterOfAllWords() }}
-                            className="name"></p>
-                          <div className="flex amount-flex">
-                            <span
-                              className="amount"
-                              onBlur={(e) => {
-                                handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
-                              }}
-                              contentEditable
-                              dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
-                          </div>
-                        </div>
-                      </div>
                       <div className="lower-details">
+                        {/* EXPENSE IMAGE */}
+                        {Manager.isValid(expense.imageUrl) && (
+                          <div id="expense-image">
+                            <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
+                              <div data-src={expense.imageUrl} id="img-container" className="flex" onClick={() => Manager.showPageContainer('hide')}>
+                                <img src={expense.imageUrl || ''} data-img-id={expense.id} id="expense-image" />
+                              </div>
+                            </LightGallery>
+                            <BsArrowsAngleExpand />
+                          </div>
+                        )}
+
+                        {/* LOWER DETAILS TEXT */}
                         <div className="lower-details-text">
-                          {/* PAY TO */}
-                          <div className="flex editable h-40">
-                            <p className="recipient subtext">
-                              <b>Pay to:</b>
-                            </p>
-                            <span
-                              onBlur={(e) => {
-                                handleEditable(e, expense, 'recipientName', e.currentTarget.innerHTML).then((r) => r)
-                              }}
-                              contentEditable
-                              dangerouslySetInnerHTML={{ __html: expense.recipientName }}
-                              className="recipient subtext"></span>
-                          </div>
-                          <div className="text">
-                            {/* CHILDREN */}
-                            {expense && expense.children && expense.children.length > 0 && (
-                              <div className="group">
-                                <p>
-                                  <b>Relevant Children</b>
-                                </p>
-                                <p>{expense.children.join(', ')}</p>
-                              </div>
-                            )}
-
-                            {/* DATE ADDED */}
-                            <div className="group flex">
-                              <p id="date-added-text">
-                                <b>Date Added:</b> {DateManager.formatDate(expense.dateAdded)}
-                              </p>
-                            </div>
-
-                            {/* NOTES */}
-                            {expense.notes && expense.notes.length > 0 && (
-                              <div className="flex editable notes">
-                                <p>
-                                  <b>Notes:</b>
-                                </p>
-                                <span
-                                  onBlur={(e) => {
-                                    handleEditable(e, expense, 'notes', e.currentTarget.innerHTML)
-                                  }}
-                                  contentEditable
-                                  dangerouslySetInnerHTML={{ __html: expense.notes }}></span>
-                              </div>
-                            )}
-
-                            {/* DUE DATE */}
-                            {expense.dueDate && expense.dueDate.length > 0 && (
-                              <div className="flex editable h-40">
-                                <p>
-                                  <b>Due Date:</b>
-                                </p>
-                                <span
-                                  onBlur={(e) => {
-                                    handleEditable(e, expense, 'dueDate', e.currentTarget.innerHTML).then((r) => r)
-                                  }}
-                                  contentEditable
-                                  dangerouslySetInnerHTML={{ __html: moment(expense.dueDate).format(DateFormats.dateForDb) }}></span>
-                              </div>
-                            )}
-                          </div>
-                          {expense.dueDate.length > 0 && (
-                            <div className="flex group red h-40">
-                              <p className="due-date-text flex">
-                                <span className="flex  ml-0 pl-0 pr-0 material-icons-round">hourglass_top</span> Due&nbsp;
-                                {moment(moment(expense.dueDate).startOf('day')).fromNow().toString()}
-                              </p>
-                            </div>
-                          )}
-
-                          {/* EXPENSE IMAGE */}
-                          <>
-                            {Manager.isValid(expense.imageUrl) && (
-                              <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
-                                <div
-                                  data-src={expense.imageUrl}
-                                  id="img-container"
-                                  className="flex"
-                                  onClick={() => Manager.showPageContainer('hide')}>
-                                  <img src={expense.imageUrl || ''} data-img-id={expense.id} id="expense-image" />
-                                </div>
-                              </LightGallery>
-                            )}
-                            {Manager.isValid(expense.imageUrl) && <p id="img-expand-text">tap image to expand</p>}
-                          </>
-                        </div>
-
-                        {/* BUTTONS */}
-                        <div id="button-group" className="flex">
-                          <button
-                            onClick={() => {
-                              setCurrentExpense(expense)
-                              setExecutePaid(true)
-                            }}
-                            className="button no-radius default green-text">
-                            Paid
-                          </button>
-                          {expense.phone === currentUser.phone && (
-                            <button className="button no-radius default send-reminder" onClick={() => sendReminder(expense)}>
-                              Send Reminder
-                            </button>
-                          )}
-                          <button
+                          {/* DELETE */}
+                          <div
+                            className="flex delete"
                             onClick={async () => {
                               setCurrentExpense(expense)
                               let existing = await DB.getTable(DB.tables.expenseTracker)
@@ -505,10 +419,105 @@ export default function ExpenseTracker() {
                               } else {
                                 setDeleteConfirmTitle('DELETING EXPENSE')
                               }
+                            }}>
+                            <span>Delete</span> <PiTrashDuotone />
+                          </div>
+                          {/* EXPENSE NAME */}
+                          <p
+                            onBlur={(e) => {
+                              handleEditable(e, expense, 'name', e.currentTarget.innerHTML).then((r) => r)
                             }}
-                            className="delete no-radius button default red-text">
-                            Delete
+                            contentEditable
+                            dangerouslySetInnerHTML={{ __html: uppercaseFirstLetterOfAllWords(expense.name) }}
+                            className="name"></p>
+
+                          {/* AMOUNT */}
+                          <span
+                            className="amount"
+                            onBlur={(e) => {
+                              handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
+                            }}
+                            contentEditable
+                            dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
+                          {/* PAY TO */}
+                          <div className="flex editable h-40">
+                            <p className="recipient subtext">Pay to:</p>
+                            <span
+                              onBlur={(e) => {
+                                handleEditable(e, expense, 'recipientName', e.currentTarget.innerHTML).then((r) => r)
+                              }}
+                              contentEditable
+                              dangerouslySetInnerHTML={{ __html: expense.recipientName }}
+                              className="recipient subtext"></span>
+                          </div>
+                          {/* CHILDREN */}
+                          {expense && expense.children && expense.children.length > 0 && (
+                            <div className="group">
+                              <p>Relevant Children</p>
+                              <p>{expense.children.join(', ')}</p>
+                            </div>
+                          )}
+
+                          {/* DATE ADDED */}
+                          <div className="group flex">
+                            <p id="date-added-text">Date Added:</p>
+                            <span>{DateManager.formatDate(expense.dateAdded)}</span>
+                          </div>
+
+                          {/* NOTES */}
+                          {expense.notes && expense.notes.length > 0 && (
+                            <div className="flex editable notes">
+                              <p>Notes:</p>
+                              <span
+                                onBlur={(e) => {
+                                  handleEditable(e, expense, 'notes', e.currentTarget.innerHTML)
+                                }}
+                                contentEditable
+                                dangerouslySetInnerHTML={{ __html: expense.notes }}></span>
+                            </div>
+                          )}
+
+                          {/* DUE DATE */}
+                          {expense.dueDate && expense.dueDate.length > 0 && (
+                            <div className="flex editable h-40">
+                              <p>Due Date:</p>
+
+                              <span
+                                onBlur={(e) => {
+                                  handleEditable(e, expense, 'dueDate', e.currentTarget.innerHTML).then((r) => r)
+                                }}
+                                contentEditable
+                                dangerouslySetInnerHTML={{ __html: moment(expense.dueDate).format(DateFormats.dateForDb) }}></span>
+                            </div>
+                          )}
+
+                          {/* DUE IN... */}
+                          {expense.dueDate.length > 0 && (
+                            <div className="flex due-in">
+                              <p>Due:</p>
+                              <span>
+                                <PiClockCountdownDuotone className={'fs-24 mr-5'} />
+                                {moment(moment(expense.dueDate).startOf('day')).fromNow().toString()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* BUTTONS */}
+                        <div id="button-group" className="flex">
+                          <button
+                            onClick={() => {
+                              setCurrentExpense(expense)
+                              setExecutePaid(true)
+                            }}
+                            className="green-text">
+                            Paid
                           </button>
+                          {expense.phone === currentUser.phone && (
+                            <button className="send-reminder" onClick={() => sendReminder(expense)}>
+                              Send Reminder
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
