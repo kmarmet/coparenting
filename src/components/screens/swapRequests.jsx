@@ -5,11 +5,8 @@ import Manager from '@manager'
 import globalState from '../../context.js'
 import 'rsuite/dist/rsuite.min.css'
 import moment from 'moment'
-import ScreenNames from '@screenNames'
 import { getDatabase, ref, set, get, child, onValue } from 'firebase/database'
 import SwapDurations from '@constants/swapDurations.js'
-import SmsManager from '@managers/smsManager.js'
-import AddNewButton from '@shared/addNewButton.jsx'
 import PushAlertApi from '@api/pushAlert'
 import NotificationManager from '@managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
@@ -112,7 +109,6 @@ export default function SwapRequests() {
   return (
     <>
       <NewSwapRequest showCard={showCard} hideCard={() => setShowCard(false)} />
-      <ReviseSwapRequest showCard={showReviseCard} hideCard={() => setShowReviseCard(false)} />
       <div id="swap-requests" className={`${theme} page-container`}>
         <>
           <p className="text-screen-intro mb-15">

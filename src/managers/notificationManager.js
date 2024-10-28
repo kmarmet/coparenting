@@ -19,8 +19,14 @@ import PushAlertApi from '@api/pushAlert';
 
 export default NotificationManager = {
   getUserSubId: async(userPhone) => {
-    var subId;
-    subId = (await DB.getTable(`${DB.tables.pushAlertSubscribers}/${userPhone}`));
+    var dbRef, subId;
+    dbRef = ref(getDatabase());
+    subId = '';
+    await get(child(dbRef, `${DB.tables.pushAlertSubscribers}`)).then(function(snapshot) {
+      var _subId;
+      _subId = snapshot.val();
+      return subId = _subId[userPhone];
+    });
     return subId;
   },
   sendToShareWith: async(coparentPhones, title, message) => {

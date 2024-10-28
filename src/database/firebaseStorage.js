@@ -182,13 +182,13 @@ const FirebaseStorage = {
     }
   },
   delete: async (imgDirectory, uid, imageName, recordToDeleteIfNoImage) => {
-    console.log('DELETING')
-    console.log(imageName)
+    // console.log('DELETING')
+    // console.log(imageName)
     const storage = getStorage()
     let bin = ref(storage, `${imgDirectory}/${uid}`)
     if (imageName) {
       bin = ref(storage, `${imgDirectory}/${uid}/${imageName}`)
-      console.log(bin)
+      // console.log(bin)
     }
     // Delete the file
     deleteObject(bin)

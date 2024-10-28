@@ -5,6 +5,7 @@ DateFormats = {
   withReadbleDay: 'dddd, MMMM DD, YYYY',
   readableDatetime: 'ddd, MMM DD @ hh:mma',
   fullDatetime: 'MM/DD/YYYY h:mma',
+  readableMonthAndDay: 'dddd, MMMM DD',
   monthAndDay: 'MM/DD',
   dateForDb: 'MM/DD/YYYY',
   jsDateTime: 'yyyy,MM,DD h:mm a',

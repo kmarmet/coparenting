@@ -13,8 +13,7 @@ import moment from 'moment'
 import ModelNames from '../../models/modelNames'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
-import imagesLoaded from 'imagesloaded'
-import Masonry from 'masonry-layout'
+import { HiOutlineSave } from 'react-icons/hi'
 import {
   toCamelCase,
   getFirstWord,
@@ -33,7 +32,9 @@ import {
   uniqueArray,
   getFileExtension,
 } from '../../globalFunctions'
+import { LuImageMinus } from 'react-icons/lu'
 import { saveImageFromUrl } from '../../managers/imageManager'
+import { LuImagePlus } from 'react-icons/lu'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -42,7 +43,6 @@ export default function Memories() {
   const [showImageTheater, setShowImageTheater] = useState(false)
   const [imgArray, setImgArray] = useState([])
   const [defaultTheaterIndex, setDefaultTheaterIndex] = useState(0)
-  const [showFyiAccordion, setShowFyiAccordion] = useState(false)
   const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
   const dbRef = ref(getDatabase())
   const inputFile = useRef(null)
@@ -149,6 +149,7 @@ export default function Memories() {
           action: () => {
             setShowNewMemoryCard(true)
           },
+          icon: <LuImagePlus />,
         },
       })
     })
@@ -188,16 +189,13 @@ export default function Memories() {
                           <div className="top flex">
                             <p className="title">{uppercaseFirstLetterOfAllWords(imgObj.title)}</p>
                             <div className="buttons flex">
-                              <span
-                                className="material-icons-round download-icon"
+                              <HiOutlineSave
                                 onClick={(e) => {
                                   saveMemoryImage(e)
-                                }}>
-                                download
-                              </span>
-                              <span onClick={() => deleteMemory(imgObj.url, imgObj)} className="material-icons-round delete-icon">
-                                remove
-                              </span>
+                                }}
+                                className={'fs-30'}
+                              />
+                              <LuImageMinus className={'fs-26'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
                             </div>
                           </div>
                           <div className="text">{capitalizeFirstWord(imgObj.notes)}</div>

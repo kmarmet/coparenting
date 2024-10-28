@@ -2,22 +2,18 @@ import React, { useState, useEffect, useContext, useRef, createRef } from 'react
 import DB from '@db'
 import Manager from '@manager'
 import globalState from '../../context.js'
-import ScreenNames from '@screenNames'
 import { getDatabase, ref, set, get, child, onValue } from 'firebase/database'
 import NotificationManager from '@managers/notificationManager.js'
-import AddNewButton from '@shared/addNewButton.jsx'
 import PushAlertApi from '@api/pushAlert'
 import MyConfetti from '@shared/myConfetti.js'
 import Confirm from '@shared/confirm.jsx'
-import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
 import CheckboxGroup from 'components/shared/checkboxGroup.jsx'
 import DateFormats from 'constants/dateFormats.js'
 import moment from 'moment'
 import '../../prototypes.js'
 import BottomCard from '../shared/bottomCard'
-import ImageTheater from '../shared/imageTheater'
-import Expense from '../../models/expense'
+import { PiConfettiDuotone } from 'react-icons/pi'
 import SecurityManager from '../../managers/securityManager'
 import NewExpenseForm from '../forms/newExpenseForm'
 import FirebaseStorage from '@firebaseStorage'
@@ -25,6 +21,9 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import { PiClockCountdownDuotone, PiTrashDuotone } from 'react-icons/pi'
 import { BsArrowsAngleExpand } from 'react-icons/bs'
+import { PiBellSimpleRinging } from 'react-icons/pi'
+
+import { MdPriceCheck } from 'react-icons/md'
 import {
   toCamelCase,
   getFirstWord,
@@ -53,7 +52,7 @@ const ViewTypes = {
 }
 
 export default function ExpenseTracker() {
-  const [expenseLog, setExpenseLog] = useState([])
+  const [expenses, setExpenses] = useState([])
   const { state, setState, theme, navbarButton } = useContext(globalState)
   const { currentUser } = state
   const [currentExpense, setCurrentExpense] = useState(null)
@@ -62,17 +61,12 @@ export default function ExpenseTracker() {
   const [executePaid, setExecutePaid] = useState(false)
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
   const [viewType, setViewType] = useState(ViewTypes.all)
-  const [showImageTheater, setShowImageTheater] = useState(false)
-  const [imageName, setImageName] = useState('')
-  const [dueDates, setDueDates] = useState([])
-  const [theaterImages, setTheaterImages] = useState([])
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
-  const imgRef = useRef()
   let contentEditable = useRef()
 
   const markAsPaid = async () => {
     let arr = []
-    expenseLog.forEach((expense) => {
+    expenses.forEach((expense) => {
       let thisExpense = expense
       if (thisExpense.id === currentExpense.id) {
         currentExpense.paidStatus = 'paid'
@@ -80,7 +74,7 @@ export default function ExpenseTracker() {
       }
       arr.push(expense)
     })
-    setExpenseLog(arr)
+    setExpenses(arr)
     await DB.updateRecord(DB.tables.expenseTracker, currentExpense, 'paidStatus', 'paid').then(async () => {
       const subId = await NotificationManager.getUserSubId(currentExpense.phone)
       PushAlertApi.sendMessage(
@@ -93,32 +87,26 @@ export default function ExpenseTracker() {
     })
   }
 
-  const expandImage = (imageUrl, imageName) => {
-    const newExpense = new Expense()
-    newExpense.url = imageUrl
-    setTheaterImages([newExpense])
-    setShowImageTheater(true)
-  }
-
   const deleteExpense = async (eventCount) => {
-    if (currentExpense) {
+    console.log('ran')
+    if (Manager.isValid(currentExpense) && Manager.isValid(currentExpense.imageName, null, null, true)) {
       await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser.id, currentExpense.imageName, currentExpense)
     }
     if (eventCount === 'single') {
-      await DB.delete(DB.tables.expenseTracker, currentExpense.id).finally(async () => {
-        setCurrentExpense(false)
-        setConfirmMessage('')
-      })
+      const deleteKey = await DB.getSnapshotKey(DB.tables.expenseTracker, currentExpense, 'id')
+      await DB.deleteByPath(`${DB.tables.expenseTracker}/${deleteKey}`)
+      setCurrentExpense(false)
+      setConfirmMessage('')
     } else {
-      let existingExpenses = expenseLog.filter((x) => x.name === currentExpense.name && x.repeating === true)
-      for (let expense of existingExpenses) {
-        await DB.delete(DB.tables.expenseTracker, expense.id)
-          .finally(async () => {
+      let existingExpenses = expenses.filter((x) => x.name === currentExpense.name && x.repeating === true)
+      if (Manager.isValid(existingExpenses, true)) {
+        for (let expense of existingExpenses) {
+          await DB.delete(DB.tables.expenseTracker, expense.id).finally(async () => {
             setCurrentExpense(false)
             setDeleteConfirmTitle('')
-            setState({ ...state, showAlert: true, alertMessage: `All ${currentExpense.name} expenses have been deleted`, alertType: 'success' })
+            successAlert(`All ${currentExpense.name} expenses have been deleted`)
           })
-          .then((r) => r)
+        }
       }
     }
   }
@@ -126,24 +114,24 @@ export default function ExpenseTracker() {
   const getSecuredExpenses = async () => {
     let allExpenses = await SecurityManager.getExpenses(currentUser)
     allExpenses = Manager.getUniqueArrayOfObjects(allExpenses, 'id')
-
     if (viewType === ViewTypes.repeating) {
       allExpenses = allExpenses.filter((x) => x.repeating === true)
     } else if (viewType === ViewTypes.individual) {
       allExpenses = allExpenses.filter((x) => x.repeating === false)
     }
 
-    setExpenseLog(allExpenses)
+    setExpenses(allExpenses)
   }
 
   const sendReminder = async (expense) => {
-    await DB_UserScoped.getCoparentByPhone(expense.recipientName, currentUser).then(async (coparent) => {
-      const subId = await NotificationManager.getUserSubId(coparent.phone)
-      const message = `This is a reminder to pay the ${expense.name} expense. Due date is: ${
-        Manager.isValid(expense.dueDate) ? expense.dueDate : 'N/A'
-      }`
-      PushAlertApi.sendMessage(`Expense Reminder`, message, subId)
-    })
+    const coparents = currentUser.coparents
+    const expenseCoparent = coparents.filter((x) => x.phone === expense.payer.phone)[0]
+    const subId = await NotificationManager.getUserSubId(expenseCoparent.phone)
+    const message = `This is a reminder to pay the ${expense.name} expense. Due date is: ${
+      Manager.isValid(expense.dueDate) ? expense.dueDate : 'N/A'
+    }`
+    PushAlertApi.sendMessage(`Expense Reminder`, message, subId)
+    successAlert('Reminder Sent')
   }
 
   const handleViewTypeSelection = async (e) => {
@@ -235,16 +223,6 @@ export default function ExpenseTracker() {
           subtitle={`Would you like to delete all expenses with this information or just this one?`}
         />
       </>
-
-      {/* EXPANDED IMAGE THEATER */}
-      <ImageTheater
-        showTheater={showImageTheater}
-        elClass="image-modal"
-        imgArray={theaterImages}
-        onClose={(e) => {
-          setShowImageTheater(false)
-        }}
-      />
 
       {/* NEW EXPENSE FORM */}
       <NewExpenseForm showCard={showNewExpenseCard} hideCard={(e) => setShowNewExpenseCard(false)} />
@@ -355,7 +333,8 @@ export default function ExpenseTracker() {
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>
         <p className={`${theme}  text-screen-intro`}>
-          Add expenses to be paid by your co-parent. If a new expense is created for you, you will have the opportunity to approve or reject it.
+          Add expenses to be paid by your co-parent. If a new expense is created for you to pay, you will have the opportunity to approve or reject
+          it.
         </p>
         <p className="payment-options-link mb-20 mt-10" onClick={() => setShowPaymentOptionsCard(true)}>
           Bill Payment & Money Transfer Options
@@ -363,11 +342,10 @@ export default function ExpenseTracker() {
 
         {/* SET VIEW TYPE */}
         <>
-          {(expenseLog.length > 0 || viewType === ViewTypes.repeating) && (
+          {(expenses.length > 0 || viewType === ViewTypes.repeating) && (
             <>
               <label className="mb-10">Which type of expenses would you like to view?</label>
               <CheckboxGroup
-                boxWidth={'auto'}
                 defaultLabel={'All'}
                 skipNameFormatting={true}
                 labels={['All', 'Single Date', 'Repeating']}
@@ -379,24 +357,30 @@ export default function ExpenseTracker() {
             </>
           )}
         </>
-        {expenseLog.length === 0 && <p className="instructions center">There are currently no expenses</p>}
+        {expenses.length === 0 && (
+          <p className="instructions center">
+            There are currently no expenses <PiConfettiDuotone className={'fs-22'} />
+          </p>
+        )}
 
         {/* LOOP EXPENSES */}
         <div id="expenses-container">
           <div id="expenses-card-container">
-            {Manager.isValid(expenseLog, true) &&
-              expenseLog.map((expense, index) => {
+            {Manager.isValid(expenses, true) &&
+              expenses.map((expense, index) => {
                 return (
-                  <div key={Manager.getUid()} data-expense-id={expense.id} className={`expense mb-10`}>
+                  <div key={Manager.getUid()} data-expense-id={expense.id} className={`expense mb-20`}>
                     <div className="content">
                       <div className="lower-details">
                         {/* EXPENSE IMAGE */}
                         {Manager.isValid(expense.imageUrl) && (
                           <div id="expense-image">
                             <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
-                              <div data-src={expense.imageUrl} id="img-container" className="flex" onClick={() => Manager.showPageContainer('hide')}>
-                                <img src={expense.imageUrl || ''} data-img-id={expense.id} id="expense-image" />
-                              </div>
+                              <div
+                                style={{ backgroundImage: `url(${expense.imageUrl})` }}
+                                data-src={expense.imageUrl}
+                                id="img-container"
+                                className="flex"></div>
                             </LightGallery>
                             <BsArrowsAngleExpand />
                           </div>
@@ -428,19 +412,19 @@ export default function ExpenseTracker() {
                               handleEditable(e, expense, 'name', e.currentTarget.innerHTML).then((r) => r)
                             }}
                             contentEditable
-                            dangerouslySetInnerHTML={{ __html: uppercaseFirstLetterOfAllWords(expense.name) }}
+                            dangerouslySetInnerHTML={{ __html: uppercaseFirstLetterOfAllWords(expense.name).toString() }}
                             className="name"></p>
 
                           {/* AMOUNT */}
                           <span
-                            className="amount"
+                            className="amount mb-10"
                             onBlur={(e) => {
                               handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
                             }}
                             contentEditable
                             dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
                           {/* PAY TO */}
-                          <div className="flex editable h-40">
+                          <div className="flex editable">
                             <p className="recipient subtext">Pay to:</p>
                             <span
                               onBlur={(e) => {
@@ -450,11 +434,12 @@ export default function ExpenseTracker() {
                               dangerouslySetInnerHTML={{ __html: expense.recipientName }}
                               className="recipient subtext"></span>
                           </div>
+
                           {/* CHILDREN */}
                           {expense && expense.children && expense.children.length > 0 && (
-                            <div className="group">
-                              <p>Relevant Children</p>
-                              <p>{expense.children.join(', ')}</p>
+                            <div className="flex">
+                              <p>Children</p>
+                              <span>{expense.children.join(', ')}</span>
                             </div>
                           )}
 
@@ -479,7 +464,7 @@ export default function ExpenseTracker() {
 
                           {/* DUE DATE */}
                           {expense.dueDate && expense.dueDate.length > 0 && (
-                            <div className="flex editable h-40">
+                            <div className="flex editable">
                               <p>Due Date:</p>
 
                               <span
@@ -487,7 +472,7 @@ export default function ExpenseTracker() {
                                   handleEditable(e, expense, 'dueDate', e.currentTarget.innerHTML).then((r) => r)
                                 }}
                                 contentEditable
-                                dangerouslySetInnerHTML={{ __html: moment(expense.dueDate).format(DateFormats.dateForDb) }}></span>
+                                dangerouslySetInnerHTML={{ __html: DateManager.formatDate(expense.dueDate) }}></span>
                             </div>
                           )}
 
@@ -511,11 +496,11 @@ export default function ExpenseTracker() {
                               setExecutePaid(true)
                             }}
                             className="green-text">
-                            Paid
+                            Paid <MdPriceCheck className={'fs-22'} />
                           </button>
                           {expense.phone === currentUser.phone && (
                             <button className="send-reminder" onClick={() => sendReminder(expense)}>
-                              Send Reminder
+                              Send Reminder <PiBellSimpleRinging className={'fs-18'} />
                             </button>
                           )}
                         </div>

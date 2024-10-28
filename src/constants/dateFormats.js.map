@@ -6,8 +6,8 @@
     "dateFormats.coffee"
   ],
   "names": [],
-  "mappings": ";AAAA,IAAA;;AAAA,WAAA,GACE;EAAA,cAAA,EAAgB,qBAAhB;EACA,gBAAA,EAAkB,sBADlB;EAEA,YAAA,EAAc,kBAFd;EAGA,WAAA,EAAa,OAHb;EAIA,SAAA,EAAW,YAJX;EAKA,UAAA,EAAY,mBALZ;EAMA,SAAA,EAAW,OANX;EAOA,YAAA,EAAc,YAPd;EAQA,WAAA,EAAa,SARb;EASA,SAAA,EAAW,IATX;EAUA,aAAA,EAAe,MAVf;EAWA,SAAA,EAAW,eAXX;EAYA,WAAA,EAAa;AAZb;;AAeF,OAAA,QAAe",
+  "mappings": ";AAAA,IAAA;;AAAA,WAAA,GACE;EAAA,cAAA,EAAgB,qBAAhB;EACA,gBAAA,EAAkB,sBADlB;EAEA,YAAA,EAAc,kBAFd;EAGA,mBAAA,EAAqB,eAHrB;EAIA,WAAA,EAAa,OAJb;EAKA,SAAA,EAAW,YALX;EAMA,UAAA,EAAY,mBANZ;EAOA,SAAA,EAAW,OAPX;EAQA,YAAA,EAAc,YARd;EASA,WAAA,EAAa,SATb;EAUA,SAAA,EAAW,IAVX;EAWA,aAAA,EAAe,MAXf;EAYA,SAAA,EAAW,eAZX;EAaA,WAAA,EAAa;AAbb;;AAgBF,OAAA,QAAe",
   "sourcesContent": [
-    "DateFormats =\r\n  withReadbleDay: 'dddd, MMMM DD, YYYY'\r\n  readableDatetime: 'ddd, MMM DD @ hh:mma'\r\n  fullDatetime: 'MM/DD/YYYY h:mma'\r\n  monthAndDay: 'MM/DD'\r\n  dateForDb: 'MM/DD/YYYY'\r\n  jsDateTime: 'yyyy,MM,DD h:mm a'\r\n  timeForDb: 'h:mma'\r\n  monthDayYear: 'MM/DD/YYYY'\r\n  readableDay: 'dddd Do'\r\n  monthOnly: \"MM\"\r\n  readableMonth: \"MMMM\"\r\n  flatpickr: \"MMMM DD, yyyy\"\r\n  summaryHour: \"ha\"\r\n\r\n\r\nexport default DateFormats"
+    "DateFormats =\r\n  withReadbleDay: 'dddd, MMMM DD, YYYY'\r\n  readableDatetime: 'ddd, MMM DD @ hh:mma'\r\n  fullDatetime: 'MM/DD/YYYY h:mma'\r\n  readableMonthAndDay: 'dddd, MMMM DD'\r\n  monthAndDay: 'MM/DD'\r\n  dateForDb: 'MM/DD/YYYY'\r\n  jsDateTime: 'yyyy,MM,DD h:mm a'\r\n  timeForDb: 'h:mma'\r\n  monthDayYear: 'MM/DD/YYYY'\r\n  readableDay: 'dddd Do'\r\n  monthOnly: \"MM\"\r\n  readableMonth: \"MMMM\"\r\n  flatpickr: \"MMMM DD, yyyy\"\r\n  summaryHour: \"ha\"\r\n\r\n\r\nexport default DateFormats"
   ]
 }

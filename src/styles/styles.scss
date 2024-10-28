@@ -198,11 +198,7 @@
     /*#endregion  DARK THEME*/
 
     p {
-      /*#region  DARK THEME*/
-      &.dark {
-        color: $offWhite;
-      }
-      /*#endregion  DARK THEME*/
+      color: $lightBlack;
     }
 
     // TOP LEVEL THEME MODS (page container)
@@ -482,7 +478,11 @@
     }
 
     .blue {
-      color: $lightBlue;
+      color: $mainBlue;
+    }
+    
+    .red {
+      color: $red;
     }
 
     .yellow {
@@ -795,6 +795,8 @@
       font-weight: 400;
       line-height: 1.1;
       font-size: 16px;
+      display: flex;
+      align-items: center;
 
       &.center {
         @include deadCenter;

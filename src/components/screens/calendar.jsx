@@ -17,8 +17,8 @@ import DateFormats from '../../constants/dateFormats'
 import { useSwipeable } from 'react-swipeable'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
-import { BiFilterAlt } from 'react-icons/bi'
-import { PiMoneyWavyDuotone } from 'react-icons/pi'
+import { FaChildren } from 'react-icons/fa6'
+import { FaAngleUp, FaAngleDown } from 'react-icons/fa6'
 import {
   toCamelCase,
   getFirstWord,
@@ -37,20 +37,21 @@ import {
 import NewCalendarEvent from '../forms/newCalendarEvent'
 import EditCalEvent from './editCalEvent'
 import { TbLocation } from 'react-icons/tb'
-import { PiCalendarPlusDuotone, PiBellSimpleRinging } from 'react-icons/pi'
+import { PiCalendarPlusDuotone, PiBellSimpleRinging, PiGlobeDuotone } from 'react-icons/pi'
+import { GiPartyPopper } from 'react-icons/gi'
+
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
   const { theme, menuIsOpen, currentUser, selectedNewEventDay, navbarButton } = state
   const [existingEvents, setExistingEvents] = useState([])
-  const [showSearchInput, setShowSearchInput] = useState(false)
-  const [allHolidays, setAllHolidays] = useState([])
-  const [showFilters, setShowFilters] = useState(false)
-  const [searchResultsToUse, setSearchResultsToUse] = useState([])
+  const [showHolidaysCard, setShowHolidaysCard] = useState(false)
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
   const [showNewEventCard, setShowNewEventCard] = useState(false)
   const [showEditCard, setShowEditCard] = useState(false)
   const [eventToEdit, setEventToEdit] = useState(null)
   const [showSearchCard, setShowSearchCard] = useState(false)
+  const [showHolidays, setShowHolidays] = useState(false)
+  const [showNotes, setShowNotes] = useState(false)
   // HANDLE SWIPE
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
@@ -161,13 +162,6 @@ export default function EventCalendar() {
     setTimeout(() => {
       addEventRowAnimation()
     }, 100)
-  }
-
-  const scrollToTopOfEvents = () => {
-    let detailsContainer = document.querySelector('.details-container')
-    if (detailsContainer) {
-      detailsContainer.scroll(0, 0)
-    }
   }
 
   const addDayIndicators = (selectedMonth, events, eventsWithMultipleDays) => {
@@ -322,7 +316,7 @@ export default function EventCalendar() {
   }
 
   const addEventRowAnimation = () => {
-    document.querySelectorAll('.event-details').forEach((eventRow, i) => {
+    document.querySelectorAll('.event-row').forEach((eventRow, i) => {
       setTimeout(() => {
         eventRow.classList.add('active')
       }, 200 * i)
@@ -373,6 +367,9 @@ export default function EventCalendar() {
       },
       // Firebase onValue change / date selection/click
       onChange: async (e) => {
+        document.querySelectorAll('.event-row').forEach((eventRow, i) => {
+          eventRow.classList.remove('active')
+        })
         setNavbarButton(
           () => {
             setShowNewEventCard(true)
@@ -381,8 +378,10 @@ export default function EventCalendar() {
         )
         const date = moment(e[0]).format(DateFormats.dateForDb).toString()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-          await getSecuredEvents(date, moment(e[0]).format('MM'))
-          setState({ ...state, selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString() })
+          setTimeout(async () => {
+            await getSecuredEvents(date, moment(e[0]).format('MM'))
+            setState({ ...state, selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString() })
+          }, 300)
         })
       },
     })
@@ -392,9 +391,12 @@ export default function EventCalendar() {
     const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
     const _holidays = allEvents.filter((x) => x.isHoliday === true).filter((x) => !contains(x?.title.toLowerCase(), 'visitation'))
     toggleCalendar('hide')
-    setSearchResultsToUse(_holidays)
-    setAllHolidays(_holidays)
-    setShowFilters(!showFilters)
+    setShowHolidaysCard(!showHolidaysCard)
+    setExistingEvents(_holidays)
+    setShowHolidays(true)
+    setTimeout(() => {
+      addEventRowAnimation()
+    }, 200)
   }
 
   const toggleVisitationHolidays = async () => {
@@ -406,15 +408,18 @@ export default function EventCalendar() {
       const holidayName = CalendarMapper.holidayDateToName(moment(holiday.fromDate).format('MM/DD'))
       holiday.title += ` (${holidayName})`
     })
-    setSearchResultsToUse(userVisitationHolidays)
-    setShowFilters(!showFilters)
+    setExistingEvents(userVisitationHolidays)
+    setShowHolidaysCard(!showHolidaysCard)
+    setShowHolidays(true)
+    setTimeout(() => {
+      addEventRowAnimation()
+    }, 200)
     toggleCalendar('hide')
   }
 
   const viewAllEvents = async () => {
     await addFlatpickrCalendar()
-    setSearchResultsToUse([])
-    setShowFilters(false)
+    setShowHolidaysCard(false)
   }
 
   const setNavbarButton = (action, icon = 'add', color = 'green') => {
@@ -430,6 +435,22 @@ export default function EventCalendar() {
       })
     }, 500)
   }
+
+  useEffect(() => {
+    if (showHolidays) {
+      setNavbarButton(
+        async () => {
+          const today = moment().format(DateFormats.dateForDb).toString()
+          setShowHolidays(false)
+          setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
+          await addFlatpickrCalendar()
+          await getSecuredEvents(today)
+        },
+        'close',
+        'red'
+      )
+    }
+  }, [showHolidays])
 
   // ON PAGE LOAD
   useEffect(() => {
@@ -452,28 +473,23 @@ export default function EventCalendar() {
 
   return (
     <>
-      {/* BOTTOM FILTER CARD */}
-      <BottomCard
-        className={`${theme}`}
-        onClose={viewAllEvents}
-        showCard={showFilters}
-        title={allHolidays.length > 0 ? 'Filter' : 'Filter Holidays ✨'}>
-        <p id="view-all-holidays-item" className="ml-auto mr-auto" onClick={viewAllEvents}>
-          View All Events <span className="material-icons-round accent pl-5 fs-20">calendar_month</span>
-        </p>
-        <p id="view-all-holidays-item" onClick={toggleAllHolidays}>
-          View All Holidays ✨
-        </p>
-        <p id="view-visitation-holidays-item" onClick={toggleVisitationHolidays}>
-          View Visitation Holidays ✨👦👧
-        </p>
+      {/* HOLIDAYS CARD */}
+      <BottomCard className={`${theme}`} onClose={viewAllEvents} showCard={showHolidaysCard} title={'View Holidays ✨'}>
+        <div className="flex buttons wrap stack">
+          <button className="card-button w-100" id="view-all-holidays-item" onClick={toggleAllHolidays}>
+            All Holidays ✨
+          </button>
+          <button className="card-button w-100" id="view-visitation-holidays-item" onClick={toggleVisitationHolidays}>
+            Visitation Holidays 👦👧
+          </button>
+        </div>
       </BottomCard>
 
+      {/* SEARCH CARD */}
       <BottomCard
         className="form search-card"
         title={'Find Events'}
         onClose={() => {
-          setSearchResultsToUse([])
           addFlatpickrCalendar().then((r) => r)
           setShowSearchCard(false)
         }}
@@ -482,7 +498,7 @@ export default function EventCalendar() {
           <DebounceInput
             placeholder="Enter an event name..."
             minLength={2}
-            className={`${showSearchInput ? 'active search-input' : 'search-input'}`}
+            className={'search-input'}
             debounceTimeout={500}
             onChange={(e) => {
               const inputValue = e.target.value
@@ -492,17 +508,15 @@ export default function EventCalendar() {
                   results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
                 }
                 if (results.length > 0) {
-                  setSearchResultsToUse(results)
+                  setExistingEvents(results)
                   toggleCalendar('hide')
                   CalendarManager.hideCalendar()
                   Manager.scrollToTopOfPage()
                 } else {
-                  setSearchResultsToUse([])
                   addFlatpickrCalendar().then((r) => r)
                 }
               } else {
                 addFlatpickrCalendar().then((r) => r)
-                setSearchResultsToUse([])
               }
             }}
           />
@@ -537,12 +551,12 @@ export default function EventCalendar() {
         <div id="calendar-ui-container" className={`${theme}`} {...handlers}></div>
         <div id="with-padding" className={theme}>
           {/* BELOW CALENDAR */}
-          {searchResultsToUse.length === 0 && (
+          {!showHolidays && (
             <div id="below-calendar" className={`${theme} mt-10`}>
               <div className="flex wrap">
-                <p onClick={() => setShowFilters(!showFilters)} id="filter-button">
-                  Filter
-                  <BiFilterAlt id={'filter-icon'} />
+                <p className="blue" onClick={() => setShowHolidaysCard(!showHolidaysCard)} id="filter-button">
+                  Holidays
+                  <GiPartyPopper id={'filter-icon'} />
                 </p>
 
                 {/* SEARCH ICON */}
@@ -551,7 +565,6 @@ export default function EventCalendar() {
                   onClick={() => {
                     setShowSearchCard(true)
                     addFlatpickrCalendar().then((r) => r)
-                    setSearchResultsToUse([])
                     setTimeout(() => {
                       document.querySelector('.search-input').focus()
                     }, 100)
@@ -561,223 +574,158 @@ export default function EventCalendar() {
             </div>
           )}
 
-          {searchResultsToUse.length === 0 && existingEvents.length === 0 && <p className="description">No events on this day</p>}
+          {existingEvents.length === 0 && <p className="description">No events on this day</p>}
 
           {/* MAP/LOOP SEARCH/HOLIDAY RESULTS */}
-          {searchResultsToUse.length > 0 && (
-            <div className={`${theme} search-results`}>
-              {Manager.isValid(searchResultsToUse, true) &&
-                searchResultsToUse.map((event, index) => {
-                  return (
-                    <div key={index} className={`${searchResultsToUse.length > 0 ? 'active' : ''} event-row`}>
-                      <div className="text">
-                        <p className="title text-small-title">
-                          <b className="text-small-title">{CalendarManager.formatEventTitle(event.title.toString())}</b>
-                        </p>
 
-                        {/* CHILDREN */}
-                        {event.children && event.children.length > 0 && <p className="children">with {event.children.join(', ')} </p>}
-
+          {/* MAP/LOOP DEFAULT EVENTS */}
+          <div className="events">
+            {Manager.isValid(existingEvents, true) &&
+              existingEvents.map((event, index) => {
+                let readableReminderTimes = []
+                event.reminderTimes?.forEach((time) => {
+                  if (time && time !== undefined) {
+                    readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
+                  }
+                })
+                let eventType = 'standard'
+                if (event.fromVisitationSchedule) {
+                  if (contains(event.createdBy?.toLowerCase(), currentUser.name.toLowerCase())) {
+                    eventType = 'current-user-visitation'
+                  } else {
+                    eventType = 'coparent-visitation'
+                  }
+                }
+                return (
+                  <div
+                    onClick={(e) => {
+                      if (!event.isHoliday && e.target.tagName !== 'A' && e.target.tagName !== 'P') {
+                        if (AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())) {
+                          setEventToEdit(event)
+                          setShowEditCard(true)
+                        }
+                      }
+                    }}
+                    key={index}
+                    data-from-date={event.fromDate}
+                    className={`${event.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
+                    <div className="text">
+                      <div className="top">
                         {/* DATE CONTAINER */}
                         <div id="date-container">
-                          {/* fromDate */}
-                          {event && Manager.isValid(event.fromDate) && (
-                            <span className="fromDate">{moment(event.fromDate).format('dddd MM/DD')}</span>
+                          {/* FROM DATE */}
+                          {!contains(event.fromDate, 'Invalid') && event?.fromDate?.length > 0 && (
+                            <span className="fromDate">
+                              {moment(event?.fromDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
+                            </span>
                           )}
-                          {/* toDate */}
-                          {event && Manager.isValid(event.toDate) && event.toDate !== event.fromDate && <span className="toDate"> to </span>}
-                          {event && Manager.isValid(event.toDate) && event.toDate !== event.fromDate && (
-                            <span className="toDate">{moment(event.toDate).format('ddd MM/DD')}</span>
-                          )}
-                          {/* ALL DAY */}
-                          {event && Manager.isValid(event.toDate) && event.toDate.indexOf('Invalid') === -1 && event.toDate !== event.fromDate && (
+                          {/* TO WORD */}
+                          {!contains(event?.toDate, 'Invalid') && event?.toDate?.length > 0 && event?.toDate !== event?.fromDate && (
                             <span className="toDate"> to </span>
                           )}
+                          {/* TO DATE */}
+                          {!contains(event.toDate, 'Invalid') &&
+                            event.toDate?.length > 0 &&
+                            event.toDate !== event.fromDate &&
+                            moment(event.toDate).format(DateFormats.readableDay)}
+                          {/* ALL DAY */}
                           {event &&
                             !Manager.isValid(event.startTime) &&
                             (!Manager.isValid(event.toDate) || event.toDate.indexOf('Invalid') > -1) &&
-                            event.toDate !== event.fromDate && <span className="toDate"> - ALL DAY</span>}
-                          {/* Times */}
+                            event.toDate !== event.fromDate && <span className="toDate">&nbsp;- ALL DAY</span>}
+                          {/* TIMES */}
                           <span id="times">
-                            {event.startTime && (
+                            {!contains(event?.startTime, 'Invalid') && event.startTime?.length > 0 && (
                               <span className="from-time">
                                 <span className="at-symbol">&nbsp;@</span> {event.startTime}
                               </span>
                             )}
-                            {event.endTime && event.endTime !== event.startTime && <span> - </span>}
-                            {event.endTime && event.endTime !== event.startTime && <span className="to-time"> {event.endTime}</span>}
+                            {!contains(event?.endTime, 'Invalid') && event.endTime?.length > 0 && event.endTime !== event.startTime && (
+                              <span className="to-time"> - {event.endTime}</span>
+                            )}
                           </span>
-                        </div>
-
-                        {/* NOTES */}
-                        {Manager.isValid(event.notes) && event.notes.length > 0 && <p className="notes">{event.notes}</p>}
-
-                        {/* EVENT LINK */}
-                        {event.link && event.link !== undefined && event.link.length > 0 && (
-                          <div id="website-url-container" className="flex">
-                            <p className="website-url-label">&#8226; Website:</p>
-                            <a target="_blank" href={event.link} className="website-url">
-                              {formatWebsiteUrl(event.link)}
-                              <span className="material-icons-round link-icon">open_in_new</span>
-                            </a>
-                          </div>
-                        )}
-
-                        {/* DIRECTIONS LINK */}
-                        {event.location && event.location.length > 0 && (
-                          <div className="flex" id="directions-container">
-                            <a href={Manager.getDirectionsLink(event.location)}>{event.location.replace(', USA', '')}</a>
-                          </div>
-                        )}
-                      </div>
-                      <hr />
-                    </div>
-                  )
-                })}
-            </div>
-          )}
-
-          {/* MAP/LOOP DEFAULT EVENTS */}
-          {searchResultsToUse.length === 0 && (
-            <div className="events">
-              {Manager.isValid(existingEvents, true) &&
-                existingEvents.map((event, index) => {
-                  let readableReminderTimes = []
-                  event.reminderTimes?.forEach((time) => {
-                    if (time && time !== undefined) {
-                      readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
-                    }
-                  })
-                  let eventType = 'standard'
-                  if (event.fromVisitationSchedule) {
-                    if (contains(event.createdBy?.toLowerCase(), currentUser.name.toLowerCase())) {
-                      eventType = 'current-user-visitation'
-                    } else {
-                      eventType = 'coparent-visitation'
-                    }
-                  }
-                  return (
-                    <div
-                      onClick={(e) => {
-                        if (!event.isHoliday && e.target.tagName !== 'A') {
-                          if (AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())) {
-                            setEventToEdit(event)
-                            setShowEditCard(true)
-                          }
-                        }
-                      }}
-                      key={index}
-                      data-from-date={event.fromDate}
-                      className={`${event.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
-                      <div className="text">
-                        <div className="top">
-                          {/* DATE CONTAINER */}
-                          <div id="date-container">
-                            {/*<span className={`${eventType} color-coded-event-dot`}></span>*/}
-                            {/* FROM DATE */}
-                            {!contains(event.fromDate, 'Invalid') && event?.fromDate?.length > 0 && (
-                              <span className="fromDate">{moment(event?.fromDate).format(DateFormats.readableDay)}</span>
-                            )}
-                            {/* TO WORD */}
-                            {!contains(event?.toDate, 'Invalid') && event?.toDate?.length > 0 && event?.toDate !== event?.fromDate && (
-                              <span className="toDate"> to </span>
-                            )}
-                            {/* TO DATE */}
-                            {!contains(event.toDate, 'Invalid') &&
-                              event.toDate?.length > 0 &&
-                              event.toDate !== event.fromDate &&
-                              moment(event.toDate).format(DateFormats.readableDay)}
-                            {/* ALL DAY */}
-                            {event &&
-                              !Manager.isValid(event.startTime) &&
-                              (!Manager.isValid(event.toDate) || event.toDate.indexOf('Invalid') > -1) &&
-                              event.toDate !== event.fromDate && <span className="toDate">&nbsp;- ALL DAY</span>}
-                            {/* TIMES */}
-                            <span id="times">
-                              {!contains(event?.startTime, 'Invalid') && event.startTime?.length > 0 && (
-                                <span className="from-time">
-                                  <span className="at-symbol">&nbsp;@</span> {event.startTime}
-                                </span>
+                          {/* DIRECTIONS LINK */}
+                          {event.location && event.location.length > 0 && (
+                            <div className="flex" id="nav-website">
+                              {event.websiteUrl && true && event.websiteUrl.length > 0 && (
+                                <div className="website flex">
+                                  <PiGlobeDuotone />
+                                  <a target="_blank" href={event.websiteUrl} className="website-url fs-14" rel="noreferrer">
+                                    Website
+                                  </a>
+                                </div>
                               )}
-                              {!contains(event?.endTime, 'Invalid') && event.endTime?.length > 0 && event.endTime !== event.startTime && (
-                                <span className="to-time"> - {event.endTime}</span>
-                              )}
-                            </span>
-                            {/* DIRECTIONS LINK */}
-                            {event.location && event.location.length > 0 && (
                               <div className="directions">
                                 <TbLocation />
                                 <a href={Manager.getDirectionsLink(event.location)} target="_blank">
                                   Nav
                                 </a>
                               </div>
-                            )}
-                          </div>
-                          {/* TITLE */}
-                          <p className="title" data-event-id={event.id}>
-                            <b className={`event-title ${eventType}`}>{CalendarManager.formatEventTitle(event.title)}</b>
-                          </p>
-                        </div>
-
-                        <div className="column right"></div>
-                        <div className="flex reminders">
-                          {/* REMINDERS */}
-                          {Manager.isValid(readableReminderTimes, true) && (
-                            <>
-                              <PiBellSimpleRinging className={'event-icon'} />
-                              <p
-                                className="flex reminder-times"
-                                dangerouslySetInnerHTML={{
-                                  __html: `${readableReminderTimes
-                                    .join('|')
-                                    .replaceAll('|', '<span class="divider">|</span>')
-                                    .replaceAll(' minutes before', 'mins')
-                                    .replaceAll('At time of event', 'Event Time')
-                                    .replaceAll(' hour before', 'hr')}`,
-                                }}></p>
-                            </>
+                            </div>
                           )}
                         </div>
+                        {/* TITLE */}
+                        <p className="title" data-event-id={event.id}>
+                          <b className={`event-title ${eventType}`}>{CalendarManager.formatEventTitle(event.title)}</b>
+                        </p>
+                      </div>
 
-                        {/* CHILDREN */}
-                        {event.children && event.children.length > 0 && (
-                          <div className="children flex">
-                            <p className="children flex flex-start w-auto gap">
-                              <span className="mr-0 material-icons-round event-icon">face</span>
-                              {event.children.map((child, index) => {
-                                return (
-                                  <span key={index} className="child-date">
-                                    {child}
-                                  </span>
-                                )
-                              })}
-                            </p>
-                          </div>
+                      {/* NOTES */}
+                      {Manager.isValid(event.notes) && event.notes.length > 0 && (
+                        <p className={showNotes ? 'active notes pb-10' : 'notes 0'}>{event.notes}</p>
+                      )}
+                      <div className="flex reminders">
+                        {/* REMINDERS */}
+                        {Manager.isValid(readableReminderTimes, true) && (
+                          <>
+                            <PiBellSimpleRinging className={'event-icon'} />
+                            <p
+                              className="flex reminder-times"
+                              dangerouslySetInnerHTML={{
+                                __html: `${readableReminderTimes
+                                  .join('|')
+                                  .replaceAll('|', '<span class="divider">|</span>')
+                                  .replaceAll(' minutes before', 'mins')
+                                  .replaceAll('At time of event', 'Event Time')
+                                  .replaceAll(' hour before', 'hr')}`,
+                              }}></p>
+                          </>
                         )}
-
-                        {/* NOTES */}
-                        {Manager.isValid(event.notes) && event.notes.length > 0 && (
-                          <div className="flex">
-                            <span className="material-icons-round event-icon">text_snippet</span>
-                            <p className="notes">{event.notes}</p>
-                          </div>
-                        )}
-
-                        {/* EVENT WEBSITE URL */}
-                        {event.websiteUrl && true && event.websiteUrl.length > 0 && (
-                          <div className="wesite flex">
-                            <span className="material-icons-round event-icon">language</span>
-                            <a target="_blank" href={event.websiteUrl} className="website-url" rel="noreferrer">
-                              {formatWebsiteUrl(event.websiteUrl)}
-                            </a>
-                          </div>
+                      </div>
+                      <div className={`flex ${event?.notes?.length > 0 || event?.children?.lengthF > 0 ? 'pt-5' : ''}`} id="more-children">
+                        <div id="children-website">
+                          {/* CHILDREN */}
+                          {event.children && event.children.length > 0 && (
+                            <div className="children flex">
+                              <FaChildren className={'ml-auto'} />
+                              <p
+                                className="fs-14 "
+                                dangerouslySetInnerHTML={{
+                                  __html: `${event.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                                }}></p>
+                            </div>
+                          )}
+                        </div>
+                        {event?.notes && event?.notes.length > 0 && (
+                          <>
+                            {!showNotes && (
+                              <p onClick={() => setShowNotes(true)} id="more-button">
+                                MORE <FaAngleDown />
+                              </p>
+                            )}
+                            {showNotes && (
+                              <p onClick={() => setShowNotes(false)} id="more-button">
+                                LESS <FaAngleUp />
+                              </p>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
-                  )
-                })}
-            </div>
-          )}
+                  </div>
+                )
+              })}
+          </div>
         </div>
       </div>
     </>

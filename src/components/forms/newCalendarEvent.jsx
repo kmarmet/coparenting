@@ -10,9 +10,6 @@ import Manager from '@manager'
 import MyConfetti from '@shared/myConfetti.js'
 import CheckboxGroup from '@shared/checkboxGroup'
 import CalendarEvent from '../../models/calendarEvent'
-import ScreenNames from '@screenNames'
-import BottomButton from 'components/shared/bottomButton'
-import { useSwipeable } from 'react-swipeable'
 import CalendarMapper from 'mappers/calMapper'
 import DatetimePicker from '@shared/datetimePicker.jsx'
 import DateFormats from '../../constants/dateFormats'
@@ -530,8 +527,7 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
                 <Accordion>
                   <Accordion.Panel expanded={showReminders}>
                     <CheckboxGroup
-                      elClass={`${theme} `}
-                      boxWidth={50}
+                      elClass={`${theme} gap-10`}
                       skipNameFormatting={true}
                       labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                       onCheck={handleReminderSelection}
@@ -587,7 +583,11 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
               </div>
               <Accordion>
                 <Accordion.Panel expanded={includeChildren}>
-                  <CheckboxGroup elClass={`${theme} `} labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+                  <CheckboxGroup
+                    elClass={`${theme} gap-15 `}
+                    labels={currentUser.children.map((x) => x['general'].name)}
+                    onCheck={handleChildSelection}
+                  />
                 </Accordion.Panel>
               </Accordion>
             </div>

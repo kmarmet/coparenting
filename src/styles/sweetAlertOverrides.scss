@@ -4,7 +4,7 @@ div {
   &:where(.swal2-container) {
     button {
       &:where(.swal2-styled):where(.swal2-confirm) {
-		background-color: $lightBlue !important;
+		background-color: $mainBlue !important;
         width: 140px !important;
       }
     }
@@ -18,4 +18,8 @@ div {
 .swal2-title {
   font-size: 25px;
   line-height: 1.3;
+}
+
+.swal2-icon {
+  transform: scale(.9);
 }

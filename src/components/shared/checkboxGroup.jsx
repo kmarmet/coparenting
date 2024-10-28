@@ -19,7 +19,7 @@ import {
   getFileExtension,
 } from '../../globalFunctions'
 
-export default function CheckboxGroup({ labels, onCheck, elClass = '', dataPhone, dataDate, skipNameFormatting = false, defaultLabel, boxWidth }) {
+export default function CheckboxGroup({ labels, onCheck, elClass = '', dataPhone, dataDate, skipNameFormatting = false, defaultLabel }) {
   const { state, setState } = useContext(globalState)
   const { theme } = state
   return (
@@ -49,13 +49,14 @@ export default function CheckboxGroup({ labels, onCheck, elClass = '', dataPhone
               data-phone={thisPhone ? thisPhone : ''}
               data-label={label ? label : ''}
               data-date={thisDate ? thisDate : ''}
-              className={`flex animate ${boxWidth ? `w-${boxWidth}` : ''}  ${boxWidth === 'auto' ? 'mr-20' : ''}`}
+              className={`flex`}
               key={index}
               onClick={(e) => {
                 onCheck(e)
               }}>
               <div className={`box ${defaultLabel && defaultLabel === label ? 'active' : ''}`}>
-                <span className="checkmark-icon material-icons-round">check</span>
+                {/*<span className="checkmark-icon material-icons-round">check</span>*/}
+                <div id="inner-circle"></div>
               </div>
               <span>{label}</span>
             </div>

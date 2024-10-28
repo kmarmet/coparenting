@@ -15,21 +15,19 @@
 
 // PAGE CONTAINER
 @mixin pageContainer {
-  overflow: auto;
   max-width: 100vw;
   opacity: 0;
-  padding: 0 15px 200px 15px;
   transition: all 0.5s ease-in-out;
   transition-timing-function: cubic-bezier(0.17, 0.67, 0.21, 0.95);
   margin-top: 100vh;
   background: $lightBg;
   overflow: auto;
-
+  padding:15px 15px 300px 15px;
+  
   &.active {
     opacity: 1;
     margin-top: 0;
-    padding-top: 10px;
-    width: calc(100vw - 3px);
+    width: calc(100vw - 4px);
 
     &.conversation {
       padding-bottom: 0;
@@ -41,11 +39,11 @@
     padding-left: 0;
     padding-right: 0;
   }
-  
+
   &.login {
     max-height: 100vh;
   }
-  
+
   @media screen and (max-width: 800px) {
     width: 100vw;
     max-width: 100vw;
@@ -395,7 +393,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    color: $lightBlue;
+    color: $mainBlue;
     font-weight: 600;
     font-size: 16px;
     line-height: 1.5;
@@ -426,7 +424,7 @@
     color: white;
     @include buttonPress(#02a67c);
   }
-  
+
   &.white {
     background-color: white;
     color: black;
@@ -498,7 +496,7 @@
     color: rgba(232, 62, 113, 0.849);
     border: 1px solid rgba(232, 62, 113, 0.849);
   }
-  
+
   &.white {
     background-color: white;
     color: black;
@@ -685,7 +683,7 @@
   text-transform: uppercase;
   transition: 0.5s;
   background-size: 200% auto;
-  box-shadow: 0 0 5px $lightBlue;
+  box-shadow: 0 0 5px $mainBlue;
 }
 @mixin sparkleButton() {
   &:focus {
@@ -993,8 +991,9 @@
     justify-content: center;
 
     &.active {
-      span,p {
-        color: $lightBlue;
+      span,
+      p {
+        color: $mainBlue;
       }
     }
 
@@ -1061,54 +1060,28 @@
   flex-wrap: wrap;
   margin-bottom: 10px;
   padding: 0;
-
-  /*#region  DARK THEME*/
-  &.dark {
-    #checkbox-container {
-      &.flex {
-        .box {
-          border: 1.5px solid $darkGrey;
-
-          &.active {
-            background-color: $purple;
-            box-shadow: 0 0 12px 0 $purple;
-
-            + {
-              span {
-                color: white;
-                font-weight: bold;
-              }
-            }
-          }
-        }
-        span {
-          color: $offWhite;
-        }
-      }
-    }
+  gap: 30px;
+  
+  &.gap-5 {
+    gap: 5px;
   }
-  /*#endregion  DARK THEME*/
-
-  /*#region  LIGHT tHEME*/
-  &.light {
-    #checkbox-container {
-      &.flex {
-        span {
-          color: $lightBlackLight;
-        }
-      }
-    }
+  
+  &.gap-10 {
+    gap: 10px;
   }
-  /*#endregion  LIGHT THEME*/
+  
+  &.gap-15 {
+    gap: 15px;
+  }
+  
   #checkbox-container,
   #standalone-checkbox-container {
-    width: calc(100% / 3);
     &.flex {
       align-items: center;
       margin-bottom: 10px;
 
       span {
-        color: white;
+        color: $lightBlack;
         font-weight: 300;
         display: inline;
         margin-left: 6px;
@@ -1124,29 +1097,22 @@
         transition: all 0.5s ease-out;
         border-radius: 100%;
         min-width: 22px;
-        border: 1.5px solid $darkGrey;
-
-        .checkmark-icon {
-          display: none;
-          color: white;
-        }
+        border: 1.5px solid $lightDarkGrey;
 
         &.active {
-          border: 0;
-          background-color: $green;
-          box-shadow: 0 0 12px 0 $green;
-
-          .checkmark-icon {
-            display: block;
-            margin: 0 auto;
-            font-size: 20px;
+          transition: all 0.3s ease-out;
+          #inner-circle {
+            background-color: $mainBlue;
           }
         }
-      }
 
-      .checkmark-icon {
-        padding: 0;
-        line-height: 1;
+        #inner-circle {
+          height: 20px;
+          width: 20px;
+          border: 3px solid white;
+          border-radius: 100%;
+          transition: all 0.3s ease-out;
+        }
       }
     }
   }
@@ -1166,7 +1132,7 @@
       height: 40px;
     }
     .custom-file-upload {
-      background-color: $lightBlue;
+      background-color: $mainBlue;
       color: white;
       display: flex;
       justify-content: center;
@@ -2044,26 +2010,26 @@
 @mixin bottomCard {
   width: 100vw;
   min-height: 30vh;
-  background-color: $darkBlueDarkest;
+  background-color: white;
   position: fixed;
   z-index: -1;
   border-radius: 25px 25px 0 0;
   padding: 20px 20px 200px 20px;
   box-shadow:
-    0px 100px 25px rgba(0, 0, 0, 0.56),
-    00px -40px 15px rgba(0, 0, 0, 0.56);
+    0px 50px 25px rgba(0, 0, 0, 0.56),
+    00px -25px 15px rgba(0, 0, 0, 0.56);
   bottom: -30vh;
   transition: all 0.3s ease-in-out;
   opacity: 0;
   max-height: 0;
   overflow: auto;
-  
+
   i {
     font-size: 20px;
     line-height: 1.2;
     margin-left: 5px;
   }
-  
+
   #toc-scroll-button {
     margin-bottom: 15px;
   }
@@ -2080,7 +2046,7 @@
       transform: scale(2);
       justify-self: flex-end;
       margin-left: auto;
-      opacity: .6;
+      opacity: 0.6;
       margin-right: 5px;
     }
   }
@@ -2166,17 +2132,23 @@
     justify-content: center;
     right: 0;
     bottom: 10px;
+    color:white;
     max-height: 45px;
     @include bestShadow;
     @include centerHoriz;
     z-index: 10000;
+    background-color: $green;
+    
+    &.green {
+      background-color: $green;
+    }
   }
 
   .buttons {
     position: fixed;
     left: inherit;
     right: inherit;
-    bottom: 10px;
+    bottom: 15px;
     width: calc(100vw - 40px);
     display: flex;
     align-items: center;
@@ -2201,6 +2173,10 @@
       &.red {
         background: $red;
       }
+    }
+    
+    &.stack {
+      bottom: 30px;
     }
   }
 
@@ -2227,60 +2203,6 @@
     }
   }
 
-  // DARK
-  &.dark {
-    background-color: $darkBg;
-
-    .card-button {
-      background-color: $purple;
-      color: white;
-    }
-
-    #title {
-      color: white;
-    }
-
-    p:not(#title) {
-      background-color: transparent;
-      color: white;
-      padding-left: 0;
-    }
-  }
-
-  /*#region  LIGHT THEME*/
-  &.light {
-    background-color: white;
-
-    .swipe-line-and-close {
-      background: white;
-    }
-
-    #title {
-      color: $darkBg;
-    }
-
-    p:not(#title) {
-      background: transparent;
-      color: cornflowerblue;
-      padding: 0;
-    }
-
-    .card-button {
-      background-color: $lightBlueMedium;
-      color: white;
-    }
-
-    &.new-conversation {
-      .coparent-name {
-        border: 1px solid $lightBorder;
-        &:not(#title) {
-          padding: 10px 0;
-        }
-      }
-    }
-  }
-  /*#endregion  LIGHT THEME*/
-
   &.active {
     max-height: 70vh;
     opacity: 1;
@@ -2292,7 +2214,7 @@
   .action-pills {
     svg {
       color: $lightDarkGrey;
-      opacity: .5;
+      opacity: 0.5;
       position: relative;
       top: -2px;
       &.single-day-icon {
@@ -2302,15 +2224,16 @@
         font-size: 22px;
       }
     }
-    svg, p {
-      transition: all .3s ease-in-out;
+    svg,
+    p {
+      transition: all 0.3s ease-in-out;
     }
     .flex {
       align-items: center;
       p:not(#title) {
         margin-left: 5px;
         color: $lightDarkGrey;
-        opacity: .5;
+        opacity: 0.5;
       }
       &.active {
         p:not(#title) {
@@ -2321,30 +2244,6 @@
         svg {
           opacity: 1;
         }
-      }
-    }
-  }
-
-  #button-group {
-    display: flex;
-    margin-top: 15px;
-
-    button {
-      border-radius: 12px;
-      padding: 8px 0;
-      font-weight: bold;
-      color: white;
-
-      &:first-child {
-        margin-right: 8px;
-      }
-
-      &.red {
-        background-color: $red;
-      }
-
-      &.green {
-        background-color: $green;
       }
     }
   }
@@ -2367,7 +2266,6 @@
       padding: 10px;
       border-radius: 10px;
       font-weight: 600;
-      color: $offWhite;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2376,7 +2274,6 @@
     &#subtitle,
     &.description {
       font-weight: 400;
-      color: $offWhite;
     }
 
     &#swipe-instructions {
@@ -2435,7 +2332,6 @@
       .flex {
         align-items: center;
         gap: 8px;
-       
 
         .item {
           width: calc(100% / 4);
@@ -2509,7 +2405,7 @@
         color: black;
         padding-bottom: 0;
       }
-      
+
       &.toc-header {
         color: black;
       }
@@ -2547,7 +2443,7 @@
       justify-content: flex-start;
 
       &.brand-name {
-        color: $accent;
+        color: $mainBlue;
         font-size: 22px;
         justify-content: center;
       }
@@ -2593,22 +2489,6 @@
     @include centerHoriz;
   }
 }
-@mixin reminderButton {
-  font-size: 12px;
-  height: 35px;
-  background-color: transparent;
-  font-weight: bold;
-
-  margin-bottom: 10px;
-  padding: 0;
-
-  span {
-    top: 0;
-    margin-left: 5px;
-    font-size: 16px;
-    color: $accent;
-  }
-}
 /*#endregion  COMPONENTS*/
 
 /*#region  MENU*/
@@ -2631,7 +2511,7 @@
   }
 
   .theme-text {
-    color: $lightBlue;
+    color: $mainBlue;
     display: flex;
     align-items: center;
 
@@ -2641,7 +2521,7 @@
     }
   }
 
-  #menu-close-icon  {
+  #menu-close-icon {
     color: $lightAccent;
     float: right;
     position: fixed;
@@ -2678,7 +2558,7 @@
     width: 100%;
     transform: scale(0);
     transition: all 0.6s ease-in-out;
-    
+
     &.visible {
       opacity: 1;
       margin-top: 0;
@@ -2689,7 +2569,7 @@
 
     &.active {
       opacity: 1;
-      background-color: $lightBlue;
+      background-color: $mainBlue;
       padding: 6px;
       border-radius: 8px;
       position: relative;
@@ -2703,10 +2583,10 @@
     svg {
       font-size: 28px;
       margin-right: 10px;
-      color: $lightBlue;
+      color: $mainBlue;
     }
     p {
-      color: $lightBlue;
+      color: $mainBlue;
     }
   }
 }
@@ -2723,7 +2603,7 @@
   border-radius: 0 0 30px 30px;
   opacity: 0;
   bottom: -200px;
-  
+
   &.active {
     bottom: 0;
     opacity: 1;
@@ -2743,7 +2623,7 @@
       display: flex;
       width: 40px;
       color: $lightDarkGrey;
-      
+
       &.settings {
         svg {
           font-size: 26px;
@@ -2752,9 +2632,9 @@
 
       &.active:not(#menu-button) {
         opacity: 1;
-        color: $lightBlue;
+        color: $mainBlue;
         position: relative;
-        transition: all .3s ease-in-out;
+        transition: all 0.3s ease-in-out;
       }
 
       &#menu-button {
@@ -2766,7 +2646,7 @@
         width: 45px;
         border: 0;
         opacity: 1;
-        
+
         svg {
           font-size: 28px;
         }

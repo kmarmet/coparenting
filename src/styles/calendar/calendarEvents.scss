@@ -8,15 +8,29 @@
         width: 100%;
       }
       .material-icons-round {
-        color: $lightBlue;
+        color: $mainBlue;
         font-size: 18px;
         margin-right: 8px;
       }
       .event-row {
         width: calc(100vw - 20px);
         border-radius: 15px;
-        margin: 0 auto 15px auto;
+        transition: all 0.3s ease-in;
         flex-wrap: wrap;
+        border: 1px solid $borderColor;
+        opacity: 0;
+        margin: 0 auto 10px auto;
+        padding: 20px 20px 15px 20px;
+
+        &.active {
+          transition: all 0.3s ease-in;
+          opacity: 1;
+        }
+
+        .divider {
+          opacity: 0.4;
+          padding: 0 5px;
+        }
 
         // EVENT TYPES FOR BG
         &.standard {
@@ -26,36 +40,95 @@
           background: $lightestBlue;
         }
         &.coparent-visitation {
-          background: $bgYellow;
+          background: $bgGreen;
         }
 
         svg {
           font-size: 20px;
         }
-        
-        a, p, svg {
+
+        a,
+        p,
+        svg {
           color: $lightDarkGrey;
         }
-        
+
         .text {
           width: 100%;
-          
+
           // Top Text
           .top {
-            padding: 15px 18px;
+
+            #nav-website {
+              margin-left: auto;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+
+              * {
+                align-self: stretch;
+                display: flex;
+                align-items: center;
+              }
+
+              svg {
+                margin-right: 5px;
+                font-size: 20px;
+              }
+
+              a {
+                font-size: 14px;
+              }
+            }
+          }
+          
+          #more-children {
+            width: 100%;
             
-            .directions {
+            #more-button {
+              font-size: 14px;
+              color: $mainBlue;
               margin-left: auto;
               display: flex;
               align-items: center;
               
               svg {
-                margin-right: 5px;
+                position: relative;
+                top: -2px;
+                margin-left: 5px;
+                color: $mainBlue;
+                opacity: .7;
+              }
+            }
+            
+            #children-website {
+              .website {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
               }
               
-              a {
-                font-size: 14px;
+              .children {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                
+                svg {
+                  margin-left: auto;
+                  margin-right: 5px;
+                }
               }
+            }
+          }
+
+          .notes {
+            opacity: 0;
+            max-height: 0;
+            transition: all 0.3s ease-in-out;
+            padding: 0;
+            &.active {
+              max-height: 1000px;
+              opacity: 1;
             }
           }
 
@@ -63,15 +136,9 @@
           .reminders {
             flex-wrap: nowrap;
             display: flex;
-            padding: 0 10px 10px 0;
             align-items: center;
             width: 100%;
-            justify-content: flex-end;
-            
-            .divider {
-              opacity: .4;
-              padding: 0 5px;
-            }
+            justify-content: flex-start;
 
             svg {
               margin-right: 8px;
@@ -93,10 +160,11 @@
             justify-content: space-between;
             width: 100%;
             align-items: center;
-            padding: 0;
+            padding: 0 0 5px 0;
             color: $lightBlack;
             font-weight: bold;
-            letter-spacing: 0.8px;
+            max-width: 80%;
+            letter-spacing: 0.5px;
           }
 
           // DATE CONTAINER

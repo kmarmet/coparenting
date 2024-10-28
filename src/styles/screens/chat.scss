@@ -196,7 +196,7 @@
       .form {
         #message-input-container {
           #message-input {
-            color: $lightBlue;
+            color: $mainBlue;
           }
         }
       }
@@ -314,7 +314,7 @@
         justify-self: flex-start;
         margin-right: auto;
         #user-icon {
-          color: $lightBlue;
+          color: $mainBlue;
           font-size: 50px;
         }
         #user-name {
@@ -326,7 +326,7 @@
 
       #conversation-bookmark-icon {
         &.active {
-          color: $lightBlue;
+          color: $mainBlue;
         }
       }
 

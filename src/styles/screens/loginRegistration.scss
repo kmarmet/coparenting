@@ -63,7 +63,7 @@
         }
         .rs-anim-collapse {
           margin-bottom: 15px;
-          background-color: $lightBlue;
+          background-color: $mainBlue;
           p {
             color:white;
             padding: 10px;
@@ -76,7 +76,7 @@
       }
       .form {
         #coparent-input-container, #child-input-container {
-          background-color: $lightBlue;
+          background-color: $mainBlue;
           
           p,label {
             color: white;
@@ -246,7 +246,7 @@
     /*#region  LIGHT THEME*/
     &.light {
       #install-button {
-        background-color: $lightBlue;
+        background-color: $mainBlue;
       }
     }
     /*#endregion  LIGHT THEME*/

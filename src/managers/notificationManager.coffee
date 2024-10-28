@@ -4,7 +4,12 @@ import PushAlertApi from '@api/pushAlert'
 
 export default NotificationManager =
   getUserSubId: (userPhone) =>
-    subId = await DB.getTable("#{DB.tables.pushAlertSubscribers}/#{userPhone}")
+    dbRef = ref(getDatabase())
+    subId = ''
+    await get(child(dbRef, "#{DB.tables.pushAlertSubscribers}")).then (snapshot) ->
+      _subId = snapshot.val()
+      subId = _subId[userPhone]
+
     return subId
   sendToShareWith: (coparentPhones, title, message) =>
     for phone in coparentPhones
