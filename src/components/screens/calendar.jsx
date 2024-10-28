@@ -180,7 +180,6 @@ export default function EventCalendar() {
       if (weekendDays.includes(dayOfWeek)) {
         day.classList.add('weekend-day')
       }
-      console.log()
       let holidayDate = moment(day.getAttribute('aria-label')).format('MM/DD')
       if (selectedMonth) {
         formattedDay = moment(formattedDay).format(DateFormats.dateForDb)
@@ -475,12 +474,12 @@ export default function EventCalendar() {
     <>
       {/* HOLIDAYS CARD */}
       <BottomCard className={`${theme}`} onClose={viewAllEvents} showCard={showHolidaysCard} title={'View Holidays ✨'}>
-        <div className="flex buttons wrap stack">
-          <button className="card-button w-100" id="view-all-holidays-item" onClick={toggleAllHolidays}>
-            All Holidays ✨
+        <div className="flex buttons">
+          <button className="card-button" id="view-all-holidays-item" onClick={toggleAllHolidays}>
+            All ✨
           </button>
-          <button className="card-button w-100" id="view-visitation-holidays-item" onClick={toggleVisitationHolidays}>
-            Visitation Holidays 👦👧
+          <button className="card-button" id="view-visitation-holidays-item" onClick={toggleVisitationHolidays}>
+            Visitation 👦👧
           </button>
         </div>
       </BottomCard>
@@ -554,14 +553,14 @@ export default function EventCalendar() {
           {!showHolidays && (
             <div id="below-calendar" className={`${theme} mt-10`}>
               <div className="flex wrap">
-                <p className="blue" onClick={() => setShowHolidaysCard(!showHolidaysCard)} id="filter-button">
+                <p onClick={() => setShowHolidaysCard(!showHolidaysCard)} id="filter-button">
                   Holidays
                   <GiPartyPopper id={'filter-icon'} />
                 </p>
 
                 {/* SEARCH ICON */}
                 <LuCalendarSearch
-                  className="search-icon blue"
+                  className="search-icon"
                   onClick={() => {
                     setShowSearchCard(true)
                     addFlatpickrCalendar().then((r) => r)
@@ -575,8 +574,6 @@ export default function EventCalendar() {
           )}
 
           {existingEvents.length === 0 && <p className="description">No events on this day</p>}
-
-          {/* MAP/LOOP SEARCH/HOLIDAY RESULTS */}
 
           {/* MAP/LOOP DEFAULT EVENTS */}
           <div className="events">
@@ -697,7 +694,7 @@ export default function EventCalendar() {
                           {/* CHILDREN */}
                           {event.children && event.children.length > 0 && (
                             <div className="children flex">
-                              <FaChildren className={'ml-auto'} />
+                              <FaChildren />
                               <p
                                 className="fs-14 "
                                 dangerouslySetInnerHTML={{

@@ -1,11 +1,6 @@
 @import '../mixins';
 
 #external-overrides {
-  #expense-tracker {
-    &.page-container {
-      background: white;
-    }
-  }
   #add-expense-form {
     margin: 0;
     position: relative;
@@ -165,7 +160,7 @@
         }
 
         .lower-details {
-          background: $lightGrey;
+          background: white;
           border-radius: $bigBorderRadius;
 
           .lower-details-text {

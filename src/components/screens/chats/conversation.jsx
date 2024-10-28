@@ -217,7 +217,7 @@ const Conversation = () => {
     const screenHeight = window.screen.height - 330
     const defaultMessages = document.getElementById('default-messages')
     if (defaultMessages) {
-      document.getElementById('default-messages').style.height = `${screenHeight}px`
+      document.getElementById('default-messages').style.maxHeight = `${screenHeight}px`
     }
   }, [])
 

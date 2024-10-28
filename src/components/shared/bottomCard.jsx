@@ -1,8 +1,7 @@
 import React, { useContext } from 'react'
 import globalState from '../../context'
 import '../../prototypes'
-import Manager from '@manager'
-import { useSwipeable } from 'react-swipeable'
+import { RiArrowDownWideFill } from 'react-icons/ri'
 
 export default function BottomCard({ onClose, children, title, subtitle = '', showCard = false, className = '' }) {
   const { state, setState } = useContext(globalState)
@@ -19,14 +18,14 @@ export default function BottomCard({ onClose, children, title, subtitle = '', sh
 
   return (
     <div id="bottom-card" className={`${cardClasses()} ${alertType} `}>
-      <div className="flex" id="title-and-close-icon">
+      <div className="flex" id="title-and-close-icon" onClick={onClose}>
         <div id="title" dangerouslySetInnerHTML={{ __html: title }}></div>
-        <span className="material-icons-round" id="close-icon" onClick={onClose}>
-          close
-        </span>
+        <RiArrowDownWideFill id="close-icon" />
       </div>
-      {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
-      {children}
+      <div id="content">
+        {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
+        {children}
+      </div>
     </div>
   )
 }

@@ -35,6 +35,7 @@ import {
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import Swal from 'sweetalert2'
+
 function NewMemoryForm({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, navbarButton, updateKey, theme } = state
@@ -50,6 +51,8 @@ function NewMemoryForm({ showCard, hideCard }) {
     setMemoryNotes('')
     setImages([])
     setMemoryTitle('')
+    setState({ ...state, isLoading: false })
+    MyConfetti.fire()
   }
 
   const handleShareWithSelection = async (e) => {
@@ -94,9 +97,6 @@ function NewMemoryForm({ showCard, hideCard }) {
       return false
     }
 
-    MyConfetti.fire()
-
-    setState({ ...state, isLoading: false })
     hideCard()
 
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser.id, images)

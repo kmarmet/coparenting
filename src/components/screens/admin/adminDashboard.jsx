@@ -26,6 +26,8 @@ import DB from '@db'
 import Manager from '@manager'
 import DateFormats from '../../../constants/dateFormats'
 import DB_UserScoped from '@userScoped'
+import CheckboxGroup from '../../shared/checkboxGroup'
+import doc from '../../../models/doc'
 
 export default function AdminDashboard() {
   const { state, setState } = useContext(globalState)
@@ -33,6 +35,9 @@ export default function AdminDashboard() {
   const [chatRequests, setChatRequests] = useState([])
   const [getUserEmail, setGetUserEmail] = useState('')
   const [userToDisplayPhone, setUserToDisplayPhone] = useState(null)
+  const [getRecordsEvents, setGetRecordsEvents] = useState([])
+  const [getRecordsTable, setGetRecordsTable] = useState('')
+  const [getRecordsSearchValue, setGetRecordsSearchValue] = useState('')
   // eslint-disable-next-line no-undef
   new ClipboardJS('.chat-recovery-clipboard-button')
 
@@ -79,27 +84,107 @@ export default function AdminDashboard() {
     }
   }
 
+  const appendGetRecordsCode = async () => {
+    if (getRecordsTable === 'Calendar') {
+      const events = await DB.getTable(DB.tables.calendarEvents)
+      const scoped = events.filter((x) => x.title.toLowerCase().contains(getRecordsSearchValue.toLowerCase()))
+      console.log(scoped)
+      scoped.forEach((event) => {
+        Object.entries(event).forEach(([key, value], index) => {
+          const el = document.createElement('p')
+          if (value.length === 0) {
+            el.innerHTML = `<span class='key empty'>${key}</span>:<span class="value">${value}</span>`.replace(':', ': ')
+          } else {
+            el.innerHTML = `<span class='key'}>${key}</span>:<span class="value">${value}</span>`.replace(':', ': ')
+          }
+
+          document.querySelector('#code-block').appendChild(el)
+
+          if (index === scoped.length - 1) {
+            el.innerHTML += `<hr/>`
+          }
+        })
+      })
+    }
+    if (getRecordsTable === 'Users') {
+      const users = await DB.getTable(DB.tables.users)
+      let scoped = users.filter((x) => x.name.toLowerCase().contains(getRecordsSearchValue.toLowerCase()))[0]
+      scoped = flattenObject(scoped)
+      Object.entries(scoped).forEach(([key, value], index) => {
+        const el = document.createElement('p')
+        if (value.length === 0) {
+          el.innerHTML = `<span class='key empty'>${key}</span>:<span class="value">${value}</span>`.replace(':', ': ')
+        } else {
+          if (value.toString().contains('http')) {
+            console.log(value)
+            el.innerHTML = `<span class='key'}>${key}</span>:<a href=${value} target="_blank" class="value link">${value}</a>`.replace(':', ': ')
+          } else {
+            el.innerHTML = `<span class='key'}>${key}</span>:<span class="value">${value}</span>`.replace(':', ': ')
+          }
+        }
+        document.querySelector('#code-block').appendChild(el)
+      })
+    }
+
+    document.querySelectorAll('.key').forEach((key) => {
+      key.addEventListener('click', (e) => {
+        const parent = e.target.parentNode
+        if (parent.querySelector('.value').classList.contains('active')) {
+          parent.querySelector('.value').classList.remove('active')
+        } else {
+          parent.querySelector('.value').classList.add('active')
+        }
+      })
+    })
+  }
+
+  function flattenObject(obj, prefix = '') {
+    const result = {}
+
+    for (const key in obj) {
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        Object.assign(result, flattenObject(obj[key], prefix + key + '_'))
+      } else {
+        result[prefix + key] = obj[key]
+      }
+    }
+
+    return result
+  }
+
+  const handleGetRecordTypeSelection = (e) => {
+    Manager.handleCheckboxSelection(
+      e,
+      async (e) => {
+        setGetRecordsTable(e)
+      },
+      () => {},
+      false
+    )
+  }
+
   return (
     <div id="admin-dashboard-wrapper" className="page-container form">
       <div className="flex grid gap-10">
-        {/* GET USER */}
-        <div className="box">
-          <p className="box-title">Get User from Database</p>
-          <input type="email" onChange={(e) => setGetUserEmail(e.target.value)} placeholder="User's Email Addresss" className="mb-15" />
-          <button className="center button  mb-15" onClick={getUser}>
-            Get User
-          </button>
-          {userToDisplayPhone && (
-            <a
-              target="_blank"
-              href={` https://console.firebase.google.com/project/coparenting-app-aa9f9/database/coparenting-app-aa9f9-default-rtdb/data/~2Fusers~2F${userToDisplayPhone}`}>
-              Go to User
-            </a>
-          )}
+        {/* Get Database Record */}
+        <div className="tool-box">
+          <p className="box-title">Get Records</p>
+          <CheckboxGroup labels={['Calendar', 'Expenses', 'Users']} onCheck={handleGetRecordTypeSelection} />
+          <input type="text" className="mb-10" onChange={(e) => setGetRecordsSearchValue(e.target.value)} />
+          <div className="buttons flex">
+            <button className="button center" onClick={appendGetRecordsCode}>
+              Return Records
+            </button>
+            <button className="button center" onClick={() => (document.getElementById('code-block').innerHTML = '')}>
+              Clear
+            </button>
+          </div>
+          {/* CODE BLOCK */}
+          <div id="code-block"></div>
         </div>
 
         {/* SET UPDATE AVAILABLE */}
-        <div className="box">
+        <div className="tool-box">
           <p className="box-title">Set Update Available</p>
           <button className="button center" onClick={setNewUpdate}>
             Update
@@ -107,7 +192,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* DELETE EXPIRED STUFF */}
-        <div className="box">
+        <div className="tool-box">
           <p className="box-title">Delete Expired</p>
           <div className="buttons flex gap-10">
             <button className="button" onClick={deleteExpiredMemories}>
@@ -120,7 +205,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* SET HOLIDAYS */}
-        <div className="box">
+        <div className="tool-box">
           <p className="box-title">Set Holidays</p>
           <div className="buttons flex">
             <button className="button center" onClick={setHolidays}>
@@ -130,7 +215,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* CHAT RECOVERY SIGNATURE IMAGE/TIMESTAMP */}
-        <div className="box">
+        <div className="tool-box">
           <p className="box-title">Chat Recovery</p>
           <input type="email" placeholder="User's Email Address" onChange={(e) => setChatRecoveryRequestEmail(e.target.value)} />
           <div className="buttons flex mt-10">

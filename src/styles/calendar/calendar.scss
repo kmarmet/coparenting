@@ -58,11 +58,11 @@
         left: 10px;
         padding: 6px 15px;
         top: -1px;
-        border: 1px solid $mainBlue;
+        border: 1px solid $lightDarkGrey;
         font-size: 15px;
+        color: $lightDarkGrey;
         
         #filter-icon {
-          color: $mainBlue;
           font-size: 22px;
           position: relative;
           top: -2px;
@@ -84,6 +84,7 @@
         position: inherit;
         top: auto;
         right: 10px;
+        color: $lightDarkGrey;
       }
       
       #cal-info-container {

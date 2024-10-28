@@ -45,6 +45,7 @@
 
         svg {
           font-size: 20px;
+          margin-right: 8px;
         }
 
         a,
@@ -72,7 +73,7 @@
               }
 
               svg {
-                margin-right: 5px;
+                margin-right: 0;
                 font-size: 20px;
               }
 
@@ -95,7 +96,6 @@
               svg {
                 position: relative;
                 top: -2px;
-                margin-left: 5px;
                 color: $mainBlue;
                 opacity: .7;
               }
@@ -112,11 +112,6 @@
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
-                
-                svg {
-                  margin-left: auto;
-                  margin-right: 5px;
-                }
               }
             }
           }

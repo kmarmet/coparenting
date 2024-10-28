@@ -16,8 +16,8 @@
 	}
 	
 	button {
-	  background-color: #282a37;
-	  color: #7dc8da;
+	  background-color: $mainBlue;
+	  color: white;
 	  padding: 5px 15px;
 	  border-radius: 20px;
 	  font-size: 16px;
@@ -26,11 +26,57 @@
 	.grid {
 	  display: flex;
 	  
-	  .box {
+	  .tool-box {
 		padding: 20px;
 		background: $lightBorder;
 		border-radius: $borderRadius;
-		width: calc(100vw /2);
+		width: 100%;
+		margin-bottom: 15px;
+		
+		#code-block {
+		  background: #282a37;
+		  padding: 20px;
+		  border-radius: $borderRadius;
+		  color:white;
+		  margin-top: 15px;
+		  
+		  code {
+			-ms-word-wrap: break-word;
+			word-break: break-all;
+			max-width: 200px;
+		  }
+		  
+		  p {
+			color: white;
+			-ms-word-break: break-all;
+			word-break: break-all;
+			span {
+			  max-width: 200px;
+			  -ms-word-wrap: break-word;
+			  word-break: break-all;
+			  &.key {
+				color: #46b969;
+				font-weight: bold;
+				
+				&.empty {
+				  opacity: .3;
+				}
+			  }
+			  
+			  &.value {
+				display: none;
+				
+				&.active {
+				  display: inline;
+				}
+			  }
+			  
+			  &.indent-one {
+				margin-left: 10px;
+			  }
+			}
+		  }
+		}
 		
 		.data-ui {
 		  padding: 15px;
@@ -98,7 +144,7 @@
 	  @media screen and (max-width: 600px) {
 		display: block;
 		
-		.box {
+		.tool-box {
 		  width: 100%;
 		  margin-bottom: 10px;
 		}

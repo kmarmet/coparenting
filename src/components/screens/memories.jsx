@@ -94,20 +94,23 @@ export default function Memories() {
           setImgArray(arr)
           setMemories(validImages)
           setTimeout(() => {
+            setState({ ...state, isLoading: false })
+          }, 600)
+          setTimeout(() => {
             addImageAnimation()
           }, 200)
         } else {
           setMemories([])
         }
       }
-      setState({ ...state, isLoading: true })
     } else {
       setMemories([])
-      setState({ ...state, isLoading: true })
+      setState({ ...state, isLoading: false })
     }
   }
 
   const deleteMemory = async (path, toDelete) => {
+    setState({ ...state, isLoading: true })
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
 
     // Delete from Firebase Realtime DB
@@ -174,7 +177,11 @@ export default function Memories() {
           Upload photos of memories that are too good NOT to share <span className="material-icons heart">favorite</span>
         </p>
 
-        {memories && memories.length === 0 && <p className="caption center">There are currently no memories</p>}
+        {memories && memories.length === 0 && (
+          <div id="instructions-wrapper">
+            <p className="instructions center">There are currently no memories</p>
+          </div>
+        )}
         {/* GALLERY */}
         <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'.memory-image'}>
           <>
@@ -207,11 +214,14 @@ export default function Memories() {
               })}
           </>
         </LightGallery>
-        <div id="disclaimer">
-          <p className="blue">
-            All images will be automatically (and permanently) deleted after 30 days from their creation date. Feel free to download them at any time.
-          </p>
-        </div>
+        {imgArray.length > 0 && (
+          <div id="disclaimer">
+            <p className="blue">
+              All images will be automatically (and permanently) deleted after 30 days from their creation date. Feel free to download them at any
+              time.
+            </p>
+          </div>
+        )}
       </div>
     </>
   )

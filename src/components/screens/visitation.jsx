@@ -455,8 +455,7 @@ export default function Visitation() {
             {/* SCHEDULE SELECTION */}
             <label>Choose Visitation Schedule</label>
             <CheckboxGroup
-              boxWidth={50}
-              elClass="mt-10"
+              elClass="mt-10 gap-10"
               onCheck={handleScheduleTypeSelection}
               skipNameFormatting={true}
               labels={['50/50', 'Specific Weekends', 'Every Weekend', 'Every other Weekend']}
@@ -596,6 +595,7 @@ export default function Visitation() {
               <span className="asterisk">*</span>
             </label>
             <CheckboxGroup
+              elClass={'gap-10'}
               dataPhone={currentUser?.coparents.map((x) => x.phone)}
               labels={currentUser?.coparents.map((x) => x.name)}
               onCheck={handleShareWithSelection}
@@ -622,7 +622,7 @@ export default function Visitation() {
           {/* HOLIDAY SELECTION */}
           <label>Select the holidays YOU have the child(ren) this year</label>
           <CheckboxGroup
-            elClass={'holiday-checkboxes'}
+            elClass={'holiday-checkboxes gap-10'}
             boxWidth={50}
             onCheck={handleHolidaySelection}
             skipNameFormatting={true}

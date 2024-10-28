@@ -19,11 +19,7 @@ import NewExpenseForm from '../forms/newExpenseForm'
 import FirebaseStorage from '@firebaseStorage'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
-import { PiClockCountdownDuotone, PiTrashDuotone } from 'react-icons/pi'
-import { BsArrowsAngleExpand } from 'react-icons/bs'
-import { PiBellSimpleRinging } from 'react-icons/pi'
 
-import { MdPriceCheck } from 'react-icons/md'
 import {
   toCamelCase,
   getFirstWord,
@@ -45,6 +41,18 @@ import {
   getFileExtension,
 } from '../../globalFunctions'
 
+// ICONS
+import { ImAppleinc } from 'react-icons/im'
+import { IoLogoVenmo } from 'react-icons/io5'
+import { SiZelle } from 'react-icons/si'
+import { LiaCcPaypal } from 'react-icons/lia'
+import { PiClockCountdownDuotone, PiTrashDuotone } from 'react-icons/pi'
+import { BsArrowsAngleExpand } from 'react-icons/bs'
+import { PiBellSimpleRinging } from 'react-icons/pi'
+import { SiCashapp } from 'react-icons/si'
+import { MdPriceCheck } from 'react-icons/md'
+
+// VIEW TYPES
 const ViewTypes = {
   all: 'All',
   repeating: 'Repeating',
@@ -88,7 +96,6 @@ export default function ExpenseTracker() {
   }
 
   const deleteExpense = async (eventCount) => {
-    console.log('ran')
     if (Manager.isValid(currentExpense) && Manager.isValid(currentExpense.imageName, null, null, true)) {
       await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser.id, currentExpense.imageName, currentExpense)
     }
@@ -241,9 +248,11 @@ export default function ExpenseTracker() {
               <div className="options">
                 {/* ZELLE */}
                 <div className="option zelle">
-                  <p className="brand-name accent">Zelle</p>
+                  <div className="flex brand-name-wrapper zelle">
+                    <p className="brand-name accent mr-10">Zelle</p>
+                    <SiZelle className={'zelle-icon'} />
+                  </div>
                   <div className="flex">
-                    <img className="active" src={require('../../img/brandLogos/zelle.png')} alt="" />
                     <div className="text">
                       <p className="description ">Safely send money to co-parent, no matter where they bank.</p>
                       <a href="https://www.zellepay.com/how-it-works" target="_blank" className="setup-instructions mb-10">
@@ -260,11 +269,15 @@ export default function ExpenseTracker() {
                     allowFullScreen></iframe>
                 </div>
 
+                <hr />
+
                 {/* VENMO */}
                 <div className="option venmo">
-                  <p className="brand-name">Venmo</p>
+                  <div className="flex brand-name-wrapper venmo">
+                    <p className="brand-name mr-10">Venmo</p>
+                    <IoLogoVenmo className={'venmo-icon'} />
+                  </div>
                   <div className="flex">
-                    <img className="active" src={require('../../img/brandLogos/venmo.png')} alt="" />
                     <div className="text">
                       <p className="description ">Fast, safe, social payments.</p>
                       <a
@@ -283,11 +296,16 @@ export default function ExpenseTracker() {
                     referrerPolicy="strict-origin-when-cross-origin"
                     allowFullScreen></iframe>
                 </div>
+
+                <hr />
+
                 {/* APPLE PAY */}
                 <div className="option apple-cash">
-                  <p className="brand-name">Apple Cash</p>
+                  <div className="flex brand-name-wrapper apple">
+                    <p className="brand-name mr-10">Apple Cash</p>
+                    <ImAppleinc className={'apple-icon'} />
+                  </div>
                   <div className="flex ">
-                    <img className="active" src={require('../../img/brandLogos/applepay.png')} alt="" />
                     <div className="text">
                       <p className="description ">Use Apple Cash to send and receive money with people you know.</p>
                       <a href="https://support.apple.com/en-us/105013" target="_blank" className="setup-instructions mb-10">
@@ -297,11 +315,15 @@ export default function ExpenseTracker() {
                   </div>
                 </div>
 
+                <hr />
+
                 {/* PAYPAL */}
                 <div className="option paypal">
-                  <p className="brand-name">PayPal</p>
+                  <div className="flex brand-name-wrapper paypal">
+                    <p className="brand-name mr-10">PayPal</p>
+                    <LiaCcPaypal className={'paypal-icon'} />
+                  </div>
                   <div className="flex">
-                    <img className="active" src={require('../../img/brandLogos/paypal.png')} alt="" />
                     <div className="text">
                       <p className="description ">Send and request money, quickly and securely.</p>
                       <a href="https://www.paypal.com/us/digital-wallet/send-receive-money" target="_blank" className="setup-instructions mb-10">
@@ -311,11 +333,15 @@ export default function ExpenseTracker() {
                   </div>
                 </div>
 
+                <hr />
+
                 {/* CASHAPP */}
                 <div className="option cashapp">
-                  <p className="brand-name">CashApp</p>
+                  <div className="flex brand-name-wrapper cashapp">
+                    <p className="brand-name mr-10">CashApp</p>
+                    <SiCashapp />
+                  </div>
                   <div className="flex">
-                    <img className="active" src={require('../../img/brandLogos/cashapp.png')} alt="" />
                     <div className="text">
                       <p className="description ">Pay anyone, instantly.</p>
                       <a href="https://cash.app/help/6485-getting-started-with-cash-app" target="_blank" className="setup-instructions mb-10">
@@ -358,9 +384,11 @@ export default function ExpenseTracker() {
           )}
         </>
         {expenses.length === 0 && (
-          <p className="instructions center">
-            There are currently no expenses <PiConfettiDuotone className={'fs-22'} />
-          </p>
+          <div id="instructions-wrapper">
+            <p className="instructions center">
+              There are currently no expenses <PiConfettiDuotone className={'fs-22'} />
+            </p>
+          </div>
         )}
 
         {/* LOOP EXPENSES */}

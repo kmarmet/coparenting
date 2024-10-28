@@ -294,7 +294,7 @@ function NewExpenseForm({ showCard, hideCard }) {
   return (
     <div className="expenses-wrapper">
       {/* PAGE CONTAINER */}
-      <BottomCard title={'Add Expense'} showCard={showCard}>
+      <BottomCard title={'Add Expense'} showCard={showCard} onClose={hideCard}>
         <div id="add-expense-form" className={`${theme} form`}>
           {/* AMOUNT */}
           <div id="amount-input-wrapper" onClick={() => setShowNumpad(true)}>

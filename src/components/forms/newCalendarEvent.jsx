@@ -527,7 +527,7 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
                 <Accordion>
                   <Accordion.Panel expanded={showReminders}>
                     <CheckboxGroup
-                      elClass={`${theme} gap-10`}
+                      elClass={`${theme} `}
                       skipNameFormatting={true}
                       labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                       onCheck={handleReminderSelection}
@@ -583,11 +583,7 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
               </div>
               <Accordion>
                 <Accordion.Panel expanded={includeChildren}>
-                  <CheckboxGroup
-                    elClass={`${theme} gap-15 `}
-                    labels={currentUser.children.map((x) => x['general'].name)}
-                    onCheck={handleChildSelection}
-                  />
+                  <CheckboxGroup elClass={`${theme} `} labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
                 </Accordion.Panel>
               </Accordion>
             </div>
