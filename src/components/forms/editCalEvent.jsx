@@ -13,8 +13,8 @@ import PushAlertApi from '@api/pushAlert'
 import DateManager from '@managers/dateManager'
 import NotificationManager from '@managers/notificationManager'
 import ScreenNames from '@screenNames'
-import { useSwipeable } from '../../../node_modules/react-swipeable/es/index'
-import CalendarMapper from 'mappers/calMapper'
+import { useSwipeable } from 'react-swipeable'
+import CalendarMapper from '../../mappers/calMapper'
 import DateFormats from '../../constants/dateFormats'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
@@ -37,6 +37,7 @@ import {
   removeFileExtension,
   contains,
   displayAlert,
+  successAlert,
   uniqueArray,
   getFileExtension,
 } from '../../globalFunctions'
@@ -134,25 +135,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
 
     const validation = DateManager.formValidation(eventTitle, eventShareWith, eventFromDate)
     if (validation) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops',
-        text: validation,
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-        },
-      })
+      successAlert('Event Updated')
       return false
     }
 
@@ -199,6 +182,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
       }
     }
+
     Swal.fire({
       text: 'Event has been created',
       icon: 'success',
@@ -268,7 +252,9 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         if (eventReminderTimes.length === 0) {
           setEventReminderTimes([timeframe])
         } else {
-          setEventReminderTimes([...eventReminderTimes, timeframe])
+          if (!eventReminderTimes.includes(timeframe)) {
+            setEventReminderTimes([...eventReminderTimes, timeframe])
+          }
         }
       },
       (e) => {

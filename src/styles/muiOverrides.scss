@@ -2,7 +2,7 @@
 #external-overrides {
   // Primary calendar container
   .MuiPaper-root {
-    background-color: $darkBlueDarkest;
+    background-color: $lightBg;
     border-radius: 15px;
     width: 95vw !important;
     
@@ -10,12 +10,37 @@
 //      display: none;
     }
     
-    * {
-      color: white;
+    // Clock wheel wrapper
+    .MuiClock-squareMask {
+//      border-radius: 100%;
+    }
+    
+    
+    .MuiDialogActions-root {
+      
+      button {
+        background-color: $lightDarkGrey;
+        &:nth-child(2) {
+          background-color: $green;
+        }
+      }
+    }
+    
+    // Days Container
+    .css-1t0788u-MuiPickersSlideTransition-root-MuiDayCalendar-slideTransition {
+      min-height: 265px;
+    }
+
+    // Top Buttons
+    .css-1aim81g-MuiButtonBase-root-MuiButton-root-MuiPickersToolbarButton-root {
+      background-color: transparent;
+      border: 1px solid $mainBlue;
     }
     
     .MuiDialogActions-root {
-      padding: 10px 30px;
+      display: flex;
+      padding-bottom: 20px;
+      justify-content: center;
     }
     
     .MuiTypography-root {
@@ -47,20 +72,24 @@
       }
       
       .MuiSvgIcon-root {
-        font-size: 60px;
+        font-size: 40px;
         position: relative;
         top: -3px;
       }
     }
     .MuiDayCalendar-weekContainer {
       justify-content: center;
+      
+      .css-23p0if-MuiButtonBase-root-MuiPickersDay-root:not(.Mui-selected) {
+        border: 1px solid $borderColor;
+      }
     }
     
     .MuiDayCalendar-weekDayLabel {
       font-size: 16px;
       width: 50px;
       height: 50px;
-      color: white;
+      color: $lightDarkGrey;
       opacity: 0.7;
       font-weight: bold;
     }
@@ -152,8 +181,9 @@
     
     .Mui-selected {
       &.MuiTypography-subtitle2 {
-        background-color: $accent;
+        background-color: $mainBlue;
         width: 100%;
+        color:white;
         border-radius: 15px;
         display: flex;
         align-items: center;
@@ -170,19 +200,16 @@
       width: 50px;
       height: 50px;
       font-size: 16px;
-      color: white;
+      color: $mainBlue;
       &.Mui-selected {
         background-color: $accent;
         width: 45px;
         height: 45px;
         position: relative;
         top: 5px;
+        color:white;
       }
-      &.MuiButton-textPrimary {
-        &.css-1apkmlw-MuiButtonBase-root-MuiButton-root {
-          background-color: $accent;
-        }
-      }
+      
       
       &.MuiButton-root {
         color: white;
@@ -196,10 +223,6 @@
         height: 40px;
         padding: 0;
         margin-top: 10px;
-        
-        &:first-child {
-          background-color: transparent;
-        }
         &:nth-child(3) {
           margin-right: 8px;
         }
@@ -243,12 +266,17 @@
     }
   }
 
+  // Clock Wheel
   .MuiClock-pin,
   .MuiClockPointer-thumb {
-    background-color: white;
   }
   .MuiClockPointer-thumb {
     border: 16px solid $accent;
+    color: red;
+       color: red !important;
+     * {
+       color: red !important;
+     }
   }
 
   .MuiPickersLayout-contentWrapper,

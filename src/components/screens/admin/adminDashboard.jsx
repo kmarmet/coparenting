@@ -243,8 +243,8 @@ export default function AdminDashboard() {
                     {Manager.isValid(request.members, true) &&
                       request.members.map((member, memberIndex) => {
                         return (
-                          <>
-                            <div className="chat-recovery-request-member" key={memberIndex}>
+                          <div key={memberIndex}>
+                            <div className="chat-recovery-request-member">
                               <p>
                                 <b className="subset-prop">User:</b> {member.name}
                               </p>
@@ -253,7 +253,7 @@ export default function AdminDashboard() {
                               </p>
                             </div>
                             <hr />
-                          </>
+                          </div>
                         )
                       })}
                     <buttons className="flex buttons">

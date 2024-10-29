@@ -35,7 +35,7 @@ import {
   removeFileExtension,
 } from '../../globalFunctions'
 import NewCalendarEvent from '../forms/newCalendarEvent'
-import EditCalEvent from './editCalEvent'
+import EditCalEvent from '../forms/editCalEvent'
 import { TbLocation } from 'react-icons/tb'
 import { PiCalendarPlusDuotone, PiBellSimpleRinging, PiGlobeDuotone } from 'react-icons/pi'
 import { GiPartyPopper } from 'react-icons/gi'
@@ -350,6 +350,7 @@ export default function EventCalendar() {
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
           setState({ ...state, selectedNewEventDay: moment().format(DateFormats.dateForDb).toString() })
+          setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
         })
       },
       nextArrow: '<span class="calendar-arrow right material-icons-round">arrow_forward_ios</span>',
@@ -433,6 +434,15 @@ export default function EventCalendar() {
         },
       })
     }, 500)
+  }
+
+  const handleEventRowClick = (e, event) => {
+    const shouldShow = !event.isHoliday && e.target.tagName !== 'A' && e.target.id !== 'more-button'
+    const hasEditAccess = AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())
+    if (shouldShow && hasEditAccess) {
+      setEventToEdit(event)
+      setShowEditCard(true)
+    }
   }
 
   useEffect(() => {
@@ -573,9 +583,7 @@ export default function EventCalendar() {
             </div>
           )}
 
-          {existingEvents.length === 0 && <p className="description">No events on this day</p>}
-
-          {/* MAP/LOOP DEFAULT EVENTS */}
+          {/* MAP/LOOP EVENTS */}
           <div className="events">
             {Manager.isValid(existingEvents, true) &&
               existingEvents.map((event, index) => {
@@ -595,14 +603,7 @@ export default function EventCalendar() {
                 }
                 return (
                   <div
-                    onClick={(e) => {
-                      if (!event.isHoliday && e.target.tagName !== 'A' && e.target.tagName !== 'P') {
-                        if (AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())) {
-                          setEventToEdit(event)
-                          setShowEditCard(true)
-                        }
-                      }
-                    }}
+                    onClick={(e) => handleEventRowClick(e, event)}
                     key={index}
                     data-from-date={event.fromDate}
                     className={`${event.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
@@ -689,8 +690,8 @@ export default function EventCalendar() {
                           </>
                         )}
                       </div>
-                      <div className={`flex ${event?.notes?.length > 0 || event?.children?.lengthF > 0 ? 'pt-5' : ''}`} id="more-children">
-                        <div id="children-website">
+                      <div className={`flex ${event?.notes?.length > 0 || event?.children?.length > 0 ? 'pt-5' : ''}`} id="more-children">
+                        <div id="children">
                           {/* CHILDREN */}
                           {event.children && event.children.length > 0 && (
                             <div className="children flex">
@@ -707,12 +708,12 @@ export default function EventCalendar() {
                           <>
                             {!showNotes && (
                               <p onClick={() => setShowNotes(true)} id="more-button">
-                                MORE <FaAngleDown />
+                                SHOW MORE
                               </p>
                             )}
                             {showNotes && (
                               <p onClick={() => setShowNotes(false)} id="more-button">
-                                LESS <FaAngleUp />
+                                SHOW LESS
                               </p>
                             )}
                           </>

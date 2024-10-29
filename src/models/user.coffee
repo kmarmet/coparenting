@@ -16,8 +16,9 @@ export default class User
     @settings = {
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'
-    },
+    }
   ) ->
+
 
 
 

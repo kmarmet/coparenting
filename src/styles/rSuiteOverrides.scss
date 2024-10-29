@@ -13,42 +13,6 @@
       max-width: 245px;
     }
   }
-  /*#region  DARK THEME*/
-  .dark {
-    .flatpickr-day {
-      color: white !important;
-      &.selected {
-      }
-    }
-    .flatpickr-calendar {
-      .flatpickr-months {
-        .flatpickr-current-month,
-        .flatpickr-monthDropdown-months {
-          color: white;
-        }
-      }
-    }
-  }
-
-  /*#endregion  DARK THEME*/
-
-  /*#region  LIGHT THEME*/
-  .light {
-    .flatpickr-calendar {
-      .flatpickr-weekday {
-        color: $lightBlackLight;
-      }
-    }
-    .flatpickr-day {
-      &.selected {
-        &:hover {
-          transform: none;
-          pointer-events: none;
-        }
-      }
-    }
-  }
-  /*#endregion  LIGHT THEME*/
   .MuiFormControl-root {
     &.light {
       input {
@@ -77,10 +41,7 @@
     margin: 0 !important;
   }
   
-  // LINKS
-  a {
-    color: $linkColor !important;
-  }
+
   .rs-calendar-table-header-row {
     position: relative !important;
     left: -12px !important;
@@ -193,6 +154,11 @@
       &.dayContainer {
         height: 350px;
       }
+    }
+    
+    // LINKS
+    a {
+      color: $linkColor !important;
     }
 
     .flatpickr-days {

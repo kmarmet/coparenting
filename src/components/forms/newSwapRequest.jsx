@@ -297,13 +297,11 @@ export default function NewSwapRequest({ showCard, hideCard }) {
             <textarea id="rejection-reason-textarea" onChange={(e) => setRequestReason(e.target.value)}></textarea>
             {/* BUTTONS */}
             <div className="buttons gap">
-              {/*{showSubmitButton && (*/}
               {requestRange.length > 0 && shareWith.length > 0 && recipientName.length > 0 && (
                 <button className="button card-button" onClick={submit}>
-                  Create Request <span className="material-icons-round ml-10 fs-22">attach_money</span>
+                  Create Request
                 </button>
               )}
-              {/*)}*/}
               <button className="button card-button red" onClick={resetForm}>
                 Cancel
               </button>

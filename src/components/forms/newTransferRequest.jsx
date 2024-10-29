@@ -215,10 +215,9 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
             <div className="buttons gap">
               {moment(requestDate).format(DateFormats.dateForDb).replace('Invalid date', '').length > 0 && requestRecipientPhone.length > 0 && (
                 <button className="button card-button" onClick={submit}>
-                  Create Request <span className="material-icons ml-10 fs-22">update</span>
+                  Create Request
                 </button>
               )}
-              {/*)}*/}
               <button className="button card-button red" onClick={resetForm}>
                 Cancel
               </button>

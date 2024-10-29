@@ -27,9 +27,9 @@ import DB_UserScoped from '@userScoped'
 import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
 
 // ICONS
-import { PiChatsCircleDuotone } from 'react-icons/pi'
 import {
   PiCalendarDotsDuotone,
+  PiChatsCircleDuotone,
   PiHouseLineDuotone,
   PiSwapDuotone,
   PiCarProfileDuotone,

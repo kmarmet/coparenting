@@ -73,7 +73,7 @@
               }
 
               svg {
-                margin-right: 0;
+                margin-right: 5px;
                 font-size: 20px;
               }
 
@@ -88,16 +88,20 @@
             
             #more-button {
               font-size: 14px;
-              color: $mainBlue;
+              color: $lightDarkGrey;
               margin-left: auto;
               display: flex;
               align-items: center;
+              position: relative;
               
-              svg {
-                position: relative;
-                top: -2px;
-                color: $mainBlue;
-                opacity: .7;
+              &::after {
+                padding: 30px;
+                content: '';
+                position: absolute;
+                width: 100px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
               }
             }
             

@@ -39,7 +39,7 @@ import {
 } from '../../../globalFunctions'
 import moment from 'moment'
 import ModelNames from '../../../models/modelNames'
-import { getAuth, setPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, setPersistence, sendSignInLinkToEmail, createUserWithEmailAndPassword } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import InstallAppPopup from '../../installAppPopup'
@@ -48,7 +48,7 @@ import ParentPermissionCode from '../../../models/parentPermissionCode'
 import DateFormats from '../../../constants/dateFormats'
 import DateManager from '../../../managers/dateManager'
 import BottomCard from '../../shared/bottomCard'
-import EmailManager from '../../../managers/emailManager'
+import validator from 'validator'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -69,6 +69,13 @@ export default function Registration() {
   const [childVerificationCodeSent, setChildVerificationCodeSent] = useState(false)
   const [phoneIsVerified, setPhoneIsVerified] = useState(false)
   const [showVerificationCard, setShowVerificationCard] = useState(false)
+
+  const actionCodeSettings = {
+    handleCodeInApp: true,
+    // URL you want to redirect back to. The domain (www.example.com) for this
+    // URL must be in the authorized domains list in the Firebase Console.
+    url: 'https://peaceful-coparenting.app',
+  }
 
   // Firebase init
   const app = initializeApp(firebaseConfig)
@@ -154,6 +161,7 @@ export default function Registration() {
         .then(async (userCredential) => {
           // Signed up successfully
           const user = userCredential.user
+          user.emailVerified = true
           console.log('Signed up as:', user.email)
           newUser.emailVerified = true
           const cleanUser = Manager.cleanObject(newUser, ModelNames.user)
@@ -283,9 +291,10 @@ export default function Registration() {
       }
     })
 
-    if (userPhone.length === 0 || !phoneIsValid()) {
-      displayAlert('error', 'Phone number is not valid')
+    if (!validator.isMobilePhone(userPhone)) {
+      throwError('Phone number is not valid')
       isValid = false
+      return false
     }
 
     if (parentType.length === 0) {
@@ -293,7 +302,13 @@ export default function Registration() {
       isValid = false
     }
 
-    if (Manager.validation([userName, email, parentType]) > 0) {
+    if (!validator.isEmail(email)) {
+      throwError('Email address is not valid')
+      isValid = false
+      return false
+    }
+
+    if (Manager.validation([userName, parentType]) > 0) {
       displayAlert('error', 'Please fill out all fields')
       isValid = false
     }
@@ -338,7 +353,7 @@ export default function Registration() {
       const permissionCode = Manager.getUid().slice(0, 6)
       SmsManager.send(userPhone, SmsManager.getPhoneVerificationTemplate(permissionCode))
       // Enter code alert
-      displayAlert('input', 'Please enter the verification code sent to your phone', ``, async (e) => {
+      displayAlert('input', 'Please enter the verification code sent to your phone (case sensitive)', ``, async (e) => {
         if (permissionCode === e.value) {
           setPhoneIsVerified(true)
         } else {
@@ -351,25 +366,21 @@ export default function Registration() {
   }
 
   const sendEmailVerification = async () => {
-    if (email.length > 0 && contains(email, '.com') && contains(email, '@')) {
-      try {
-        const permissionCode = Manager.getUid().slice(0, 6)
-        EmailManager.SendEmailVerification(email, `${permissionCode}`)
-        successAlert('success', 'Verification Email Sent')
-
-        displayAlert('input', 'Please enter the verification code sent to your email', ``, async (e) => {
-          if (permissionCode === e.value) {
-            await submit()
-            setShowVerificationCard(false)
-          } else {
-            throwError('Verification code is incorrect, please try again')
-          }
+    try {
+      sendSignInLinkToEmail(auth, email, actionCodeSettings)
+        .then(async () => {
+          window.localStorage.setItem('emailForSignIn', email)
+          successAlert('Verification Email Sent')
+          await submit()
         })
-      } catch (err) {
-        console.log(err)
-      }
-    } else {
-      throwError('Email address provided is not valid')
+        .catch((error) => {
+          const errorCode = error.code
+          const errorMessage = error.message
+          // ...
+          console.log(errorMessage)
+        })
+    } catch (err) {
+      console.log(err)
     }
   }
 

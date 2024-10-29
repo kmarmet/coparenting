@@ -195,6 +195,27 @@ animate__faster`
   });
 };
 
+export var oneButtonAlert = function(title) {
+  return Swal.fire({
+    showClass: {
+      popup: `animate__animated
+animate__fadeInUp
+animate__faster`
+    },
+    hideClass: {
+      popup: `animate__animated
+animate__fadeOutDown
+animate__faster`
+    },
+    title: title,
+    showDenyButton: false,
+    showCancelButton: false,
+    confirmButtonText: "Okay",
+    denyButtonText: "Nevermind",
+    confirmButtonColor: '#00b389 !important'
+  });
+};
+
 export var displayAlert = function(type, title, text = '', onConfirm) {
   switch (true) {
     case type === "input":
@@ -240,5 +261,3 @@ animate__faster`
       });
   }
 };
-
-//# sourceMappingURL=globalFunctions.js.map

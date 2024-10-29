@@ -263,7 +263,7 @@ const Conversation = () => {
         />
       </BottomCard>
       <p className="screen-title ml-auto mr-auto pt-15 center-text conversation">{formatNameFirstNameOnly(messageToUser.name)}</p>
-      <div {...handlers} id="message-thread-container" className={`${theme} page-container conversation`}>
+      <div {...handlers} id="message-thread-container" className={`${theme}  conversation`}>
         {/* TOP BAR */}
         {!showSearchInput && (
           <div className="flex top-buttons">
@@ -370,17 +370,18 @@ const Conversation = () => {
             <div id="default-messages">
               {Manager.isValid(messagesToLoop, true) &&
                 messagesToLoop.map((messageObj, index) => {
-                  let timestamp = moment().format('ddd, MMMM Do @ hh:mm a')
+                  let timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ hh:mm a')
+                  // Message Sent Today
                   if (moment(messageObj.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
                     timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('hh:mm a')
                   }
                   return (
-                    <>
+                    <div key={index}>
                       <p className={messageObj.sender === currentUser.name ? 'from message' : 'to message'} {...bind(messageObj, messageObj)}>
                         {messageObj.message}
                       </p>
                       <span className={messageObj.sender === currentUser.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
-                    </>
+                    </div>
                   )
                 })}
               <div id="last-message-anchor"></div>

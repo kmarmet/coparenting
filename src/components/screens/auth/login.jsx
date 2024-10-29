@@ -49,7 +49,6 @@ export default function Login() {
 
       // SIGN USER IN BASED ON rememberMe KEY
       if (Manager.isValid(rememberMeKey)) {
-        console.log(auth.currentUser)
         setState({
           ...state,
           userIsLoggedIn: true,
@@ -117,6 +116,7 @@ export default function Login() {
     const foundUser = await tryGetCurrentUser()
     if (Manager.validation([email, password]) > 0) {
       displayAlert('error', 'Please fill out all fields')
+      setState({ ...state, isLoading: false })
       return false
     }
     signInWithEmailAndPassword(auth, email, password)
@@ -136,14 +136,17 @@ export default function Login() {
           setState({
             ...state,
             userIsLoggedIn: true,
+            isLoading: false,
             currentScreen: ScreenNames.calendar,
             currentUser: foundUser,
           })
         } else {
           console.log('no user')
+          setState({ ...state, isLoading: false })
         }
       })
       .catch((error) => {
+        setState({ ...state, isLoading: false })
         console.error('Sign in error:', error.message)
         displayAlert('error', 'Incorrect phone and/or password')
       })

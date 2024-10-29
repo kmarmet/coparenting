@@ -88,5 +88,3 @@ StateObj = {
 };
 
 export default StateObj;
-
-//# sourceMappingURL=stateObj.js.map

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ScreenNames from '@screenNames'
 import globalState from '../../../context.js'
 import Manager from '@manager'
@@ -21,39 +21,137 @@ import {
   uniqueArray,
   confirmAlert,
   getFileExtension,
+  oneButtonAlert,
 } from '../../../globalFunctions'
+import BottomCard from '../../shared/bottomCard'
+import UpdateContactInfo from './updateContactInfo'
+import { getAuth, signOut, updateEmail, sendEmailVerification } from 'firebase/auth'
+import validator from 'validator'
+
+// ICONS
+import { MdOutlineContactMail, MdOutlineContactPhone } from 'react-icons/md'
+import { PiChatsCircleDuotone } from 'react-icons/pi'
+import { PiHandWavingDuotone } from 'react-icons/pi'
+
+import DB_UserScoped from '@userScoped'
+import firebaseConfig from '../../../firebaseConfig'
+import { initializeApp } from 'firebase/app'
+
 export default function Account() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
+  const [updateType, setUpdateType] = useState('email')
+  const [showUpdateEmailCard, setShowUpdateEmailCard] = useState(false)
+  const [showPhoneUpdateCard, setShowPhoneUpdateCard] = useState(false)
+  const [updatedEmail, setUpdatedEmail] = useState('')
+  const [emailVerificationSent, setEmailVerificationSent] = useState(false)
+  // Firebase init
+  const app = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
+
+  const actionCodeSettings = {
+    handleCodeInApp: true,
+    // URL you want to redirect back to. The domain (www.example.com) for this
+    // URL must be in the authorized domains list in the Firebase Console.
+    url: 'https://peaceful-coparenting.app',
+  }
 
   useEffect(() => {
-    setState({ ...state, currentScreen: ScreenNames.account, showMenuButton: true, showBackButton: false })
     Manager.showPageContainer('show')
   }, [])
 
+  const logout = () => {
+    localStorage.removeItem('rememberKey')
+
+    signOut(auth)
+      .then(() => {
+        setState({
+          ...state,
+          currentScreen: ScreenNames.login,
+          currentUser: null,
+          userIsLoggedIn: false,
+        })
+        // Sign-out successful.
+        console.log('User signed out')
+      })
+      .catch((error) => {
+        // An error happened.
+      })
+  }
+
+  const updateUserEmail = async (newEmail) => {
+    updateEmail(auth.currentUser, newEmail, {
+      email: newEmail,
+    })
+    await DB_UserScoped.updateUserContactInfo(currentUser, currentUser.email, newEmail, 'email')
+
+    successAlert('Email has been updated!')
+    logout()
+  }
+
+  const update = async (updatedValue) => {
+    if (!Manager.isValid(updatedValue, false, false, true)) {
+      throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'Number' : 'Address'}`)
+      return false
+    }
+
+    // Update Phone
+    if (updateType === 'phone') {
+      if (!validator.isMobilePhone(updatedValue)) {
+        throwError('Phone number is not valid')
+        return false
+      }
+      await DB_UserScoped.updateUserContactInfo(currentUser, currentUser.phone, updatedValue, 'phone')
+      successAlert('Phone number has been updated')
+      localStorage.removeItem('rememberKey')
+      setTimeout(() => {
+        logout()
+      }, 1000)
+    }
+  }
   return (
     <>
-      <p className="screen-title ">Account</p>
+      <BottomCard
+        onClose={() => setShowUpdateEmailCard(false)}
+        showCard={showUpdateEmailCard}
+        title={`Update your ${uppercaseFirstLetterOfAllWords(updateType)}`}>
+        <UpdateContactInfo emailVerificationSent={emailVerificationSent} updateType={updateType} updateEmail={(e) => updateUserEmail(e)} />
+      </BottomCard>
+      <BottomCard
+        onClose={() => setShowPhoneUpdateCard(false)}
+        showCard={showPhoneUpdateCard}
+        title={`Update your ${uppercaseFirstLetterOfAllWords(updateType)}`}>
+        <UpdateContactInfo emailVerified={false} updateType={updateType} update={(e) => update(e)} />
+      </BottomCard>
       <div id="account-container" className={`${theme} page-container`}>
         <p id="user-name">
-          Hello {formatNameFirstNameOnly(currentUser?.name)}! <span className="material-icons-outlined">sentiment_very_satisfied</span>
+          Hello {formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone className={'fs-24'} />
         </p>
         <div className="sections">
           <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.forgotPassword })}>
             <span className="material-icons-round">password</span>Reset Password
           </p>
           <p
-            className="section"
-            onClick={() => setState({ ...state, currentScreen: ScreenNames.updateContactInfo, contactInfoToUpdateType: 'phone' })}>
-            <span className="material-icons-round">contact_phone</span>Update Phone Number
+            onClick={() => {
+              setUpdateType('phone')
+              setShowUpdateEmailCard(true)
+            }}
+            className="section">
+            <MdOutlineContactPhone className={'mr-10'} />
+            Update Phone Number
           </p>
           <p
             className="section"
-            onClick={() => setState({ ...state, currentScreen: ScreenNames.updateContactInfo, contactInfoToUpdateType: 'email' })}>
-            <span className="material-icons-round">contact_mail</span>Update Email Address
+            onClick={() => {
+              setUpdateType('email')
+              setShowUpdateEmailCard(true)
+            }}>
+            <MdOutlineContactMail className={'mr-10'} />
+            Update Email Address
           </p>
           <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.chatRecovery })}>
-            <span className="material-icons">question_answer</span>Chat Recovery
+            <PiChatsCircleDuotone className={'mr-10'} />
+            Chat Recovery
           </p>
         </div>
       </div>

@@ -37,7 +37,7 @@ import TransferRequests from '@screens/transferRequests.jsx'
 import Alert from '@shared/alert.jsx'
 import AppManager from '@managers/appManager.js'
 import ChatRecovery from '@screens/account/chatRecovery'
-import EditCalEvent from '@components/screens/editCalEvent.jsx'
+import EditCalEvent from '@components/forms/editCalEvent.jsx'
 import NewCalendarEvent from '@components/forms/newCalendarEvent.jsx'
 import NewChildForm from 'components/screens/childInfo/newChildForm.jsx'
 import NewMemoryForm from 'components/forms/newMemoryForm.jsx'
@@ -139,8 +139,7 @@ export default function App() {
 
   // ON PAGE LOAD
   useEffect(() => {
-    setState({ ...state, isLoading: true, showMenuButton: false, showNavbar: true })
-    const user = auth.currentUser
+    setState({ ...state, showMenuButton: false, showNavbar: true, menuIsOpen: false })
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
     }
@@ -154,6 +153,8 @@ export default function App() {
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        const user = auth.currentUser
+        console.log(user)
         console.log('signed in')
       } else {
         console.log('signed out')

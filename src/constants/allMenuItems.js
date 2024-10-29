@@ -81,6 +81,4 @@ AllMenuItems = [
 
 export default AllMenuItems;
 
-// sourceMappingURL=allMenuItems.js.map
-
 //# sourceMappingURL=allMenuItems.js.map
