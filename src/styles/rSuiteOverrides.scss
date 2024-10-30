@@ -257,7 +257,6 @@
           transform-origin: center;
           position: relative;
           max-width: 39px;
-          margin: 0 8px;
           font-weight: bold !important;
           top: 0;
           padding-top: 8px;
@@ -326,8 +325,12 @@
     .flatpickr-days,
     .dayContainer {
       width: calc(100vw - 30px);
-      max-width: calc(100vw);
+      max-width:calc(100vw - 30px);
       margin: 0 auto;
+      
+      .flatpickr-day {
+        max-width: 52px !important;
+      }
       
       &.flatpickr-innerContainer {
         padding-bottom: 15px;

@@ -105,7 +105,7 @@ function ChatRecovery() {
       messages = Manager.convertToArray(messages)
 
       if (messageType === 'Bookmarked') {
-        messages = messages.filter((x) => x.saved === true)
+        messages = messages.filter((x) => x.bookmarked === true)
       }
 
       setConvoMessages(messages)

@@ -49,6 +49,7 @@ import DateFormats from '../../../constants/dateFormats'
 import DateManager from '../../../managers/dateManager'
 import BottomCard from '../../shared/bottomCard'
 import validator from 'validator'
+import EmailManager from '../../../managers/emailManager'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -89,8 +90,7 @@ export default function Registration() {
 
   // SEND VERIFICATION CODE
   const sendChildVerificationCode = async () => {
-    const validPhone = phoneIsValid()
-    if (validPhone) {
+    if (validator.isMobilePhone(userPhone)) {
       const permissionCode = Manager.getUid().slice(0, 6)
       SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, permissionCode))
       setChildVerificationCodeSent(true)
@@ -123,7 +123,7 @@ export default function Registration() {
 
               // Expired
               if (duration >= 5) {
-                displayAlert('error', 'The code has expired, please send another code')
+                throwError('The code has expired, please send another code')
                 const deleteKey = await DB.getFlatTableKey(DB.tables.parentPermissionCodes)
                 await DB.deleteByPath(`${DB.tables.parentPermissionCodes}/${deleteKey}`)
               } else {
@@ -154,6 +154,7 @@ export default function Registration() {
       newUser.parentType = parentType
       newUser.settings.theme = 'light'
       newUser.updatedApp = true
+      newUser.emailVerified = false
       newUser.settings.eveningReminderSummaryHour = '8pm'
       newUser.settings.morningReminderSummaryHour = '10am'
 
@@ -161,9 +162,7 @@ export default function Registration() {
         .then(async (userCredential) => {
           // Signed up successfully
           const user = userCredential.user
-          user.emailVerified = true
           console.log('Signed up as:', user.email)
-          newUser.emailVerified = true
           const cleanUser = Manager.cleanObject(newUser, ModelNames.user)
           await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
           successAlert(`Welcome aboard ${newUser.name}!`)
@@ -200,6 +199,7 @@ export default function Registration() {
         childUser.settings.morningReminderSummaryHour = '10am'
         childUser.general.name = userName
         childUser.general.phone = userPhone
+        childUser.emailVerified = false
         childUser.updatedApp = true
         const cleanChild = Manager.cleanObject(childUser, ModelNames.childUser)
         const dbRef = ref(getDatabase())
@@ -230,7 +230,7 @@ export default function Registration() {
         setState({ ...state, currentScreen: ScreenNames.login })
       } else {
         // Parent account does not exist
-        displayAlert('error', `There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`)
+        throwError(`There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`)
         return false
       }
     }
@@ -242,38 +242,38 @@ export default function Registration() {
       users = Manager.convertToArray(users)
       let foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
       if (foundUser) {
-        displayAlert('error', 'Account already exists, please login')
+        throwError('Account already exists, please login')
         isValid = false
         setAccountAlreadyExists(true)
       } else {
         if (userPhone === parentPhone) {
-          displayAlert('error', "Your phone number cannot be the same as your parent's phone number")
+          throwError("Your phone number cannot be the same as your parent's phone number")
           isValid = false
         }
       }
     })
     if (userPhone.length === 0 || !phoneIsValid()) {
-      displayAlert('error', 'Phone number is not valid')
+      throwError('Phone number is not valid')
       isValid = false
     }
     return isValid
     if (userName.length === 0) {
-      displayAlert('error', 'Your name is required')
+      throwError('Your name is required')
       isValid = false
     }
     return isValid
     if (password.length === 0) {
-      displayAlert('error', 'Your password is required')
+      throwError('Your password is required')
       isValid = false
     }
     return isValid
     if (confirmedPassword.length === 0) {
-      displayAlert('error', 'Confirmed password is required')
+      throwError('Confirmed password is required')
       isValid = false
     }
     return isValid
     if (confirmedPassword !== password) {
-      displayAlert('error', 'Password and confirmed password do not match')
+      throwError('Password and confirmed password do not match')
       isValid = false
     }
     return isValid
@@ -285,7 +285,7 @@ export default function Registration() {
       users = Manager.convertToArray(users)
       const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
       if (foundUser) {
-        displayAlert('error', 'Account already exists, please login')
+        throwError('Account already exists, please login')
         setAccountAlreadyExists(true)
         isValid = false
       }
@@ -298,7 +298,7 @@ export default function Registration() {
     }
 
     if (parentType.length === 0) {
-      displayAlert('error', 'Please select your parent type')
+      throwError('Please select your parent type')
       isValid = false
     }
 
@@ -309,17 +309,17 @@ export default function Registration() {
     }
 
     if (Manager.validation([userName, parentType]) > 0) {
-      displayAlert('error', 'Please fill out all fields')
+      throwError('Please fill out all fields')
       isValid = false
     }
 
     if (children.length === 0) {
-      displayAlert('error', 'Please enter at least one child')
+      throwError('Please enter at least one child')
       isValid = false
     }
 
     if (coparents?.length === 0) {
-      displayAlert('error', 'Please enter at least one co-parent')
+      throwError('Please enter at least one co-parent')
       isValid = false
     }
 
@@ -367,6 +367,7 @@ export default function Registration() {
 
   const sendEmailVerification = async () => {
     try {
+      // EmailManager.SendEmailVerification(email)
       sendSignInLinkToEmail(auth, email, actionCodeSettings)
         .then(async () => {
           window.localStorage.setItem('emailForSignIn', email)

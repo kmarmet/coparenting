@@ -42,7 +42,7 @@ const ChatManager = {
         return false
       }
       const sortedArray = messages.sort((a, b) => moment(a.timestamp, 'MM/DD/yyyy hh:mma').unix() - moment(b.timestamp, 'MM/DD/yyyy hh:mma').unix())
-      const bookmarkedMessages = messages.filter((x) => x.saved === true)
+      const bookmarkedMessages = messages.filter((x) => x.bookmarked === true)
       return { messages: sortedArray, bookmarkedMessages, key, chats }
     }
   },
@@ -97,17 +97,12 @@ const ChatManager = {
     const database = getDatabase()
     const scopedChat = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
     const { key } = scopedChat
-    await DB.getTable(`chats/${key}/messages`).then((snapshot) => {
-      let asArray = Manager.convertToArray(snapshot)
-      asArray.forEach(async (snap) => {
-        const messageKey = await DB.getNestedSnapshotKey(`chats/${key}/messages`, snap, 'id')
-        if (snap.id === messageId) {
-          const dbRef = ref(database, `chats/${key}/messages/${messageKey}`)
-          snap['saved'] = bookmarkState
-          await update(dbRef, snap)
-        }
-      })
-    })
+    let chatMessages = Manager.convertToArray(scopedChat.chats.messages)
+    const messageToToggleBookmarkState = chatMessages.filter((x) => x.id === messageId)[0]
+    const messageKey = await DB.getSnapshotKey(`${DB.tables.chats}/${key}/messages`, messageToToggleBookmarkState, 'id')
+    const dbRef = ref(database, `${DB.tables.chats}/${key}/messages/${messageKey}`)
+    const messageBookmarkState = messageToToggleBookmarkState.bookmarked
+    await update(dbRef, { ['bookmarked']: !messageBookmarkState })
   },
   markMessagesRead: async (currentUser, messageToUser) => {
     const dbRef = ref(getDatabase())

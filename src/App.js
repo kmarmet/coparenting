@@ -63,6 +63,7 @@ import {
   getFirstWord,
   formatFileName,
   isAllUppercase,
+  inputAlert,
   removeSpacesAndLowerCase,
   stringHasNumbers,
   wordCount,
@@ -137,6 +138,24 @@ export default function App() {
     }
   }
 
+  const showEmailVerificationInput = (foundUser, permissionCode) => {
+    inputAlert(
+      'It appears that your email address has not been verified',
+      'For security purposes, we have sent a verification code to your email. Please enter the  code here (case sensitive).',
+      async (e) => {
+        if (permissionCode === e.value) {
+          successAlert('Your email has been verified!')
+          await DB_UserScoped.updateByPath(`${DB.tables.users}/${foundUser.phone}/emailVerified`, true)
+        } else {
+          throwError('Verification code is incorrect, please try again')
+          window.location.reload()
+        }
+      },
+      false,
+      false
+    )
+  }
+
   // ON PAGE LOAD
   useEffect(() => {
     setState({ ...state, showMenuButton: false, showNavbar: true, menuIsOpen: false })
@@ -148,12 +167,12 @@ export default function App() {
     AppManager.deleteExpiredMemories().then((r) => r)
     disableUpdateAlert().then((r) => r)
     // throw new Error('Something went wrong')
-    // AppManager.setHolidays()
     document.body.appendChild(myCanvas)
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const user = auth.currentUser
+
         console.log(user)
         console.log('signed in')
       } else {
@@ -162,6 +181,16 @@ export default function App() {
       }
     })
   }, [])
+
+  useEffect(() => {
+    if (currentUser && currentUser.hasOwnProperty('email')) {
+      if (!currentUser.emailVerified) {
+        const permissionCode = Manager.getUid().slice(0, 6)
+        EmailManager.SendEmailVerification(currentUser.email, permissionCode)
+        showEmailVerificationInput(currentUser, permissionCode)
+      }
+    }
+  }, [currentUser])
 
   // Show update alert -> set user prop
   useEffect(() => {

@@ -169,6 +169,30 @@ export oneButtonAlert = (title) ->
     denyButtonText: "Nevermind"
     confirmButtonColor: '#00b389 !important'
 
+export inputAlert = (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true) ->
+  Swal.fire
+    title: title
+    text: text
+    icon: ''
+    input: 'text'
+    showCancelButton: showCancelButton
+    confirmButtonText: "Confirm"
+    allowOutsideClick: allowOutsideClick
+    showClass:
+      popup: """
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          """
+    hideClass:
+      popup: """
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          """
+  .then (result) ->
+    if result.isConfirmed
+      if onConfirm then onConfirm(result)
 
 
 export displayAlert = (type, title, text = '', onConfirm) ->

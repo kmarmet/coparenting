@@ -27,15 +27,17 @@ import {
   contains,
   uniqueArray,
   getFileExtension,
+  inputAlert,
+  successAlert,
+  throwError,
 } from '../../../globalFunctions'
+import EmailManager from '../../../managers/emailManager'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
   const { theme } = state
   const [email, setEmail] = useState(null)
-  const [phone, setPhone] = useState(null)
   const [password, setPassword] = useState(null)
-  const [rememberMe, setRememberMe] = useState(false)
   const [viewPassword, setViewPassword] = useState(false)
 
   const app = initializeApp(firebaseConfig)
@@ -44,6 +46,7 @@ export default function Login() {
   const autoLogin = async () => {
     const foundUser = await tryGetCurrentUser()
     const rememberMeKey = localStorage.getItem('rememberKey')
+
     if (foundUser) {
       subscribeUser(foundUser)
 
@@ -66,18 +69,22 @@ export default function Login() {
 
   const tryGetCurrentUser = async () =>
     new Promise(async (resolve) => {
-      await DB.getTable(DB.tables.users).then(async (users) => {
-        users = Manager.convertToArray(users)
-        const rememberMeKey = localStorage.getItem('rememberKey')
-        let foundUser
-        foundUser = users.filter((user) => user.id === rememberMeKey)[0]
-        if (foundUser) {
-          resolve(foundUser || null)
-        } else {
-          foundUser = users.filter((user) => user.email === email)[0]
-          resolve(foundUser || null)
-        }
-      })
+      await DB.getTable(DB.tables.users)
+        .then(async (users) => {
+          users = Manager.convertToArray(users)
+          const rememberMeKey = localStorage.getItem('rememberKey')
+          let foundUser
+          foundUser = users.filter((user) => user.id === rememberMeKey)[0]
+          if (foundUser) {
+            resolve(foundUser || null)
+          } else {
+            foundUser = users.filter((user) => user.email === email)[0]
+            resolve(foundUser || null)
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     })
 
   const subscribeUser = (user) => {
@@ -114,11 +121,13 @@ export default function Login() {
 
   const signIn = async () => {
     const foundUser = await tryGetCurrentUser()
+
     if (Manager.validation([email, password]) > 0) {
-      displayAlert('error', 'Please fill out all fields')
+      throwError('Please fill out all fields')
       setState({ ...state, isLoading: false })
       return false
     }
+    console.log(email, password)
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user
@@ -141,25 +150,23 @@ export default function Login() {
             currentUser: foundUser,
           })
         } else {
-          console.log('no user')
+          console.log('No Firebase User Found')
           setState({ ...state, isLoading: false })
         }
       })
       .catch((error) => {
         setState({ ...state, isLoading: false })
         console.error('Sign in error:', error.message)
-        displayAlert('error', 'Incorrect phone and/or password')
+        throwError('Incorrect phone and/or password')
       })
   }
   const toggleRememberMe = (e) => {
     const clickedEl = e.currentTarget
     const checkbox = clickedEl.querySelector('.box')
     if (checkbox.classList.contains('active')) {
-      setRememberMe(false)
       checkbox.classList.remove('active')
     } else {
       checkbox.classList.add('active')
-      setRememberMe(true)
     }
   }
 

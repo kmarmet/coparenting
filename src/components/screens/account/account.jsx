@@ -16,6 +16,7 @@ import {
   removeFileExtension,
   contains,
   displayAlert,
+  inputAlert,
   throwError,
   successAlert,
   uniqueArray,
@@ -25,8 +26,9 @@ import {
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import UpdateContactInfo from './updateContactInfo'
-import { getAuth, signOut, updateEmail, sendEmailVerification } from 'firebase/auth'
+import { getAuth, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth'
 import validator from 'validator'
+import SmsManager from '../../../managers/smsManager'
 
 // ICONS
 import { MdOutlineContactMail, MdOutlineContactPhone } from 'react-icons/md'
@@ -36,6 +38,7 @@ import { PiHandWavingDuotone } from 'react-icons/pi'
 import DB_UserScoped from '@userScoped'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
+import DB from '@db'
 
 export default function Account() {
   const { state, setState } = useContext(globalState)
@@ -43,22 +46,10 @@ export default function Account() {
   const [updateType, setUpdateType] = useState('email')
   const [showUpdateEmailCard, setShowUpdateEmailCard] = useState(false)
   const [showPhoneUpdateCard, setShowPhoneUpdateCard] = useState(false)
-  const [updatedEmail, setUpdatedEmail] = useState('')
-  const [emailVerificationSent, setEmailVerificationSent] = useState(false)
+
   // Firebase init
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
-
-  const actionCodeSettings = {
-    handleCodeInApp: true,
-    // URL you want to redirect back to. The domain (www.example.com) for this
-    // URL must be in the authorized domains list in the Firebase Console.
-    url: 'https://peaceful-coparenting.app',
-  }
-
-  useEffect(() => {
-    Manager.showPageContainer('show')
-  }, [])
 
   const logout = () => {
     localStorage.removeItem('rememberKey')
@@ -80,49 +71,87 @@ export default function Account() {
   }
 
   const updateUserEmail = async (newEmail) => {
-    updateEmail(auth.currentUser, newEmail, {
-      email: newEmail,
-    })
-    await DB_UserScoped.updateUserContactInfo(currentUser, currentUser.email, newEmail, 'email')
-
+    setShowUpdateEmailCard(false)
     successAlert('Email has been updated!')
-    logout()
+    if (!Manager.isValid(newEmail, false, false, true)) {
+      throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'Number' : 'Address'}`)
+      return false
+    }
+    if (!validator.isEmail(newEmail)) {
+      throwError('Email is not valid')
+      return false
+    }
+    inputAlert('Enter Your Password', 'To update your email, we need to re-authenticate your account for security purpose', (e) => {
+      console.log(e.value)
+      const user = auth.currentUser
+      const credential = EmailAuthProvider.credential(user.email, e.value)
+      reauthenticateWithCredential(auth.currentUser, credential)
+        .then(async () => {
+          // User re-authenticated.
+          await updateEmail(auth.currentUser, newEmail, {
+            email: newEmail,
+          })
+          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser.phone}/email`, newEmail)
+          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser.phone}/emailVerified`, false)
+          localStorage.removeItem('rememberKey')
+          logout()
+        })
+        .catch((error) => {
+          // An error ocurred
+          console.log(error.message)
+          // ...
+        })
+    })
   }
 
-  const update = async (updatedValue) => {
-    if (!Manager.isValid(updatedValue, false, false, true)) {
+  const updateUserPhone = async (newPhone) => {
+    console.log(newPhone)
+    if (!Manager.isValid(newPhone, false, false, true)) {
       throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'Number' : 'Address'}`)
+      return false
+    }
+    if (!validator.isMobilePhone(newPhone)) {
+      throwError('Phone number is not valid')
       return false
     }
 
     // Update Phone
     if (updateType === 'phone') {
-      if (!validator.isMobilePhone(updatedValue)) {
-        throwError('Phone number is not valid')
-        return false
-      }
-      await DB_UserScoped.updateUserContactInfo(currentUser, currentUser.phone, updatedValue, 'phone')
+      await DB_UserScoped.updateUserContactInfo(currentUser, currentUser.phone, newPhone, 'phone')
       successAlert('Phone number has been updated')
+      setShowPhoneUpdateCard(false)
       localStorage.removeItem('rememberKey')
-      setTimeout(() => {
-        logout()
-      }, 1000)
+      logout()
     }
   }
+
+  useEffect(() => {
+    Manager.showPageContainer('show')
+  }, [])
   return (
     <>
+      {/* UPDATE EMAIL */}
       <BottomCard
         onClose={() => setShowUpdateEmailCard(false)}
         showCard={showUpdateEmailCard}
         title={`Update your ${uppercaseFirstLetterOfAllWords(updateType)}`}>
-        <UpdateContactInfo emailVerificationSent={emailVerificationSent} updateType={updateType} updateEmail={(e) => updateUserEmail(e)} />
+        <UpdateContactInfo updatePhone={() => {}} updateType={updateType} updateEmail={(e) => updateUserEmail(e)} />
       </BottomCard>
+
+      {/* UPDATE PHONE */}
       <BottomCard
         onClose={() => setShowPhoneUpdateCard(false)}
         showCard={showPhoneUpdateCard}
         title={`Update your ${uppercaseFirstLetterOfAllWords(updateType)}`}>
-        <UpdateContactInfo emailVerified={false} updateType={updateType} update={(e) => update(e)} />
+        <UpdateContactInfo
+          updateEmail={() => {
+            console.log('here')
+          }}
+          updatePhone={(e) => updateUserPhone(e)}
+        />
       </BottomCard>
+
+      {/* PAGE CONTAINER */}
       <div id="account-container" className={`${theme} page-container`}>
         <p id="user-name">
           Hello {formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone className={'fs-24'} />

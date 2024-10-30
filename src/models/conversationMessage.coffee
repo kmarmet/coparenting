@@ -4,7 +4,7 @@ import Manager from "../managers/manager"
 export default class ConversationMessage
   constructor: (
     @id = Manager.getUid()
-    @saved = false
+    @bookmarked = false
     @sender = ''
     @recipient = ''
     @timestamp = ''

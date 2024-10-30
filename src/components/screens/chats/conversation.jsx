@@ -58,17 +58,15 @@ const Conversation = () => {
   const bind = useLongPress(async (e, messageObject) => {
     const el = e.target.parentNode
     const messageId = messageObject.context.id
-    const isSavedAlready = messageObject.context.saved
+    const isSavedAlready = messageObject.context.bookmarked
     toggleLongpressAnimation(el)
     if (isSavedAlready) {
       ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, false).finally(() => {
         setTimeout(() => {
           getExistingMessages()
         }, 500)
-        successAlert('Bookmark Removed')
       })
     } else {
-      successAlert('Message Bookmarked!')
       ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, true).finally(() => {
         setTimeout(() => {
           getExistingMessages()
@@ -97,6 +95,7 @@ const Conversation = () => {
     const conversation = new ConversationThread()
     const conversationMessage = new ConversationMessage()
     const dbRef = ref(getDatabase())
+
     // Messages
     conversationMessage.id = Manager.getUid()
     conversationMessage.timestamp = moment().format('MM/DD/yyyy hh:mma')
@@ -105,8 +104,11 @@ const Conversation = () => {
     conversationMessage.message = messageInputValue
     conversationMessage.readState = 'delivered'
     conversationMessage.notificationSent = false
-    conversationMessage.saved = false
+    conversationMessage.bookmarked = false
+
+    console.log(messageToUser.name)
     const cleanMessages = Manager.cleanObject(conversationMessage, ModelNames.conversationMessage)
+
     //Thread
     const { name, id, phone } = messageToUser
     const { name: crName, id: crId, phone: crPhone } = currentUser
@@ -116,7 +118,6 @@ const Conversation = () => {
     conversation.members = [memberOne, memberTwo]
     conversation.timestamp = moment().format('MM/DD/yyyy hh:mma')
     conversation.messages = [cleanMessages]
-
     const cleanThread = Manager.cleanObject(conversation, ModelNames.conversationThread)
 
     const existingChatFromDB = existingChat
@@ -200,25 +201,19 @@ const Conversation = () => {
     }, 100)
   }
 
-  useEffect(() => {
+  const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-
     onValue(child(dbRef, DB.tables.chats), async (snapshot) => {
       await getExistingMessages().then((r) => r)
     })
-
+  }
+  useEffect(() => {
+    onTableChange().then((r) => r)
     setTimeout(() => {
       setState({ ...state, showNavbar: false })
     }, 500)
     scrollToLatestMessage()
     Manager.showPageContainer('show')
-
-    // Set max screen height for message wrapper
-    const screenHeight = window.screen.height - 330
-    const defaultMessages = document.getElementById('default-messages')
-    if (defaultMessages) {
-      document.getElementById('default-messages').style.maxHeight = `${screenHeight}px`
-    }
   }, [])
 
   useEffect(() => {
@@ -262,7 +257,6 @@ const Conversation = () => {
           }}
         />
       </BottomCard>
-      <p className="screen-title ml-auto mr-auto pt-15 center-text conversation">{formatNameFirstNameOnly(messageToUser.name)}</p>
       <div {...handlers} id="message-thread-container" className={`${theme}  conversation`}>
         {/* TOP BAR */}
         {!showSearchInput && (
@@ -308,7 +302,7 @@ const Conversation = () => {
         )}
 
         {/* SEARCH RESULTS */}
-        {bookmarks.length === 0 && (
+        {bookmarks.length === 0 && searchResults.length > 0 && (
           <div id="messages" className="search-results">
             {Manager.isValid(searchResults, true) &&
               searchResults.map((messageObj, index) => {
@@ -346,7 +340,7 @@ const Conversation = () => {
                 sender = formatNameFirstNameOnly(messageObj.sender)
               }
               return (
-                messageObj.saved === true && (
+                messageObj.bookmarked === true && (
                   <>
                     <p
                       key={index}
@@ -388,7 +382,7 @@ const Conversation = () => {
             </div>
 
             {/* MESSAGE INPUT */}
-            <div className="form">
+            <div className="form message-input-form">
               <EmojiPicker
                 lazyLoadEmojis={true}
                 open={showEmojis}
@@ -399,6 +393,8 @@ const Conversation = () => {
                   document.querySelector('#message-input').value += e.emoji
                 }}
               />
+
+              {/* SEND BUTTON */}
               <div className="flex" id="message-input-container">
                 <textarea placeholder="Enter message..." id="message-input" rows={1}></textarea>
                 <button
@@ -409,6 +405,8 @@ const Conversation = () => {
                   Send
                 </button>
               </div>
+
+              {/* UNDER MESSAGE ICONS */}
               <div id="under-message-input">
                 <div className="flex" id="icons">
                   <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 🗓 ️')}>

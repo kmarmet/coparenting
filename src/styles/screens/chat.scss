@@ -179,7 +179,6 @@
   display: flex;
   flex-direction: column;
   width: 100vw;
-
   .search-results {
     display: none;
 
@@ -231,6 +230,7 @@
     border-bottom: 1px solid $lightBorder;
     width: 100vw;
     padding: 0 10px;
+    background-color: $lightBg;
 
     #user-info {
       justify-self: flex-start;
@@ -268,15 +268,15 @@
   #default-messages,
   #messages,
   #bookmark-messages {
-    margin-top: auto;
-    max-width: calc(100vw);
+    margin:0;
+    max-width: calc(100vw - 3px);
     width: 100vw;
-    left: 0;
-    display: block;
-    position: fixed;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
     overflow: auto;
-    top: 90px;
-    padding: 0 15px;
+    padding: 90px 15px 120px 15px;
+    background-color: white;
 
     @media screen and (min-width: 800px) {
       min-width: 10%;
@@ -309,6 +309,8 @@
       user-select: none;
       font-weight: 500;
       position: relative;
+      
+      @include buttonPress;
 
       &.longpress {
         p {
@@ -419,6 +421,7 @@
     background: $lightBg;
     left: 0;
     padding: 10px 10px 20px 10px;
+    z-index: 100;
 
     #send-button {
       background: $lightAccent;

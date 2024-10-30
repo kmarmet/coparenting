@@ -221,7 +221,7 @@ const DB_UserScoped = {
     } else {
       dbRef = ref(database, `${DB.tables.users}/${currentUser.phone}`)
     }
-    await update(dbRef, { [prop]: value })
+    update(dbRef, { [prop]: value })
   },
   updateUserChild: async (currentUser, activeChild, section, prop, value) => {
     const dbRef = ref(getDatabase())
@@ -239,50 +239,11 @@ const DB_UserScoped = {
   },
   updateUserRecord: async (phoneUid, propPath, value) => {
     const dbRef = ref(getDatabase())
-    set(child(dbRef, `${DB.tables.users}/${phoneUid}/${propPath}`), value)
+    await set(child(dbRef, `${DB.tables.users}/${phoneUid}/${propPath}`), value)
   },
-  recursiveObjectUpdate: (obj, currentValue, updatedValue, propNameToUpdate) => {
-    let updatedObject
-    for (const key in obj) {
-      if (key === 'pushAlertSubscribers' && propNameToUpdate === 'phone') {
-        let updatedPushAlertSubs = {}
-        for (let prop in obj[key]) {
-          if (prop === currentValue) {
-            prop = updatedValue
-            updatedPushAlertSubs[prop] = obj[key][currentValue]
-          } else {
-            updatedPushAlertSubs[prop] = obj[key][currentValue]
-          }
-        }
-        obj['pushAlertSubscribers'] = updatedPushAlertSubs
-      }
-      if (key === 'users' && propNameToUpdate === 'phone') {
-        let updatedUsers = {}
-        for (let prop in obj[key]) {
-          if (prop === currentValue) {
-            prop = updatedValue
-            updatedUsers[prop] = obj[key][currentValue]
-          } else {
-            updatedUsers[prop] = obj[key][currentValue]
-          }
-        }
-        obj['users'] = updatedUsers
-      }
-
-      if (obj.hasOwnProperty(key)) {
-        const value = obj[key]
-        if (value === currentValue) {
-          obj[key] = updatedValue
-        }
-
-        if (typeof value === 'object' && value !== null) {
-          // Recursively iterate over nested objects
-          DB_UserScoped.recursiveObjectUpdate(value, currentValue, updatedValue)
-        }
-      }
-    }
-    updatedObject = obj
-    return updatedObject
+  updateByPath: (path, newValue) => {
+    const dbRef = ref(getDatabase())
+    set(child(dbRef, path), newValue)
   },
   updateUserContactInfo: async (currentUser, currentValue, updatedValue, propNameToUpdate) => {
     const dbRef = ref(getDatabase())
@@ -348,6 +309,51 @@ const DB_UserScoped = {
 
     const key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/coparents`, coparent, 'id')
     await remove(child(dbRef, `users/${currentUser.phone}/coparents/${key}`))
+  },
+
+  // MISC.
+  recursiveObjectUpdate: (obj, currentValue, updatedValue, propNameToUpdate) => {
+    let updatedObject
+    for (const key in obj) {
+      if (key === 'pushAlertSubscribers' && propNameToUpdate === 'phone') {
+        let updatedPushAlertSubs = {}
+        for (let prop in obj[key]) {
+          if (prop === currentValue) {
+            prop = updatedValue
+            updatedPushAlertSubs[prop] = obj[key][currentValue]
+          } else {
+            updatedPushAlertSubs[prop] = obj[key][currentValue]
+          }
+        }
+        obj['pushAlertSubscribers'] = updatedPushAlertSubs
+      }
+      if (key === 'users' && propNameToUpdate === 'phone') {
+        let updatedUsers = {}
+        for (let prop in obj[key]) {
+          if (prop === currentValue) {
+            prop = updatedValue
+            updatedUsers[prop] = obj[key][currentValue]
+          } else {
+            updatedUsers[prop] = obj[key][currentValue]
+          }
+        }
+        obj['users'] = updatedUsers
+      }
+
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key]
+        if (value === currentValue) {
+          obj[key] = updatedValue
+        }
+
+        if (typeof value === 'object' && value !== null) {
+          // Recursively iterate over nested objects
+          DB_UserScoped.recursiveObjectUpdate(value, currentValue, updatedValue)
+        }
+      }
+    }
+    updatedObject = obj
+    return updatedObject
   },
 }
 

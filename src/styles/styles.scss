@@ -380,6 +380,7 @@
 
     button,
     .button {
+      @include  buttonPress;
       &.bottom {
         @include button;
       }

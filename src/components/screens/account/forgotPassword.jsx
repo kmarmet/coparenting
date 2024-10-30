@@ -22,6 +22,8 @@ import {
   displayAlert,
   uniqueArray,
   getFileExtension,
+  successAlert,
+  inputAlert,
 } from '../../../globalFunctions'
 import { getAuth, sendCustomPasswordResetEmail, sendPasswordResetEmail } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
@@ -44,6 +46,7 @@ export default function ForgotPassword() {
         const foundUser = users.filter((x) => x.email === email)[0]
 
         if (Manager.isValid(foundUser)) {
+          successAlert('A reset link has been sent to your email')
           setState({
             ...state,
             currentScreen: ScreenNames.login,

@@ -238,6 +238,9 @@ const DB = {
     } else {
       toUpdate = tableRecords.filter((x) => x.id === recordToUpdate.id)[0]
     }
+    console.log(prop)
+    console.log(toUpdate[prop])
+    console.log(tableRecords)
     toUpdate[prop] = value
     set(child(dbRef, tableName), tableRecords)
   },

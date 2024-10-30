@@ -39,6 +39,7 @@ import EditCalEvent from '../forms/editCalEvent'
 import { TbLocation } from 'react-icons/tb'
 import { PiCalendarPlusDuotone, PiBellSimpleRinging, PiGlobeDuotone } from 'react-icons/pi'
 import { GiPartyPopper } from 'react-icons/gi'
+import DB_UserScoped from '@userScoped'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)

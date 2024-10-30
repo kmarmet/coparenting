@@ -250,6 +250,7 @@ export default function NewCalendarEvent({ showCard, hideCard }) {
 
   const handleShareWithSelection = async (e) => {
     await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
+      console.log(updated)
       setShareWith(updated)
     })
   }

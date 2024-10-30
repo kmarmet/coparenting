@@ -644,7 +644,8 @@
   transition: all 0.2s linear;
   &:active {
     transform: scale(0.8);
-    background-color: darken($bgColor, 5%);
+    opacity: .5;
+//    background-color: darken($bgColor, 5%);
     border: 0;
   }
 }
@@ -2184,7 +2185,8 @@
     justify-content: center;
     z-index: 10000;
     gap: 10px;
-    background: white;
+    border: 0;
+//    background: white;
 
     .card-button {
       box-shadow: none;

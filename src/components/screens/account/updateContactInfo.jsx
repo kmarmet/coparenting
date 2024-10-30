@@ -8,7 +8,7 @@ import ScreenNames from '@screenNames'
 import { useSwipeable } from 'react-swipeable'
 import BottomButton from '../../shared/bottomButton'
 
-export default function UpdateContactInfo({ updateType, update, updateEmail }) {
+export default function UpdateContactInfo({ updateType, updatePhone, updateEmail }) {
   const { state, setState } = useContext(globalState)
   const { contactInfoToUpdateType, currentUser, theme } = state
 
@@ -36,7 +36,7 @@ export default function UpdateContactInfo({ updateType, update, updateEmail }) {
             <>
               <>
                 <label>
-                  Email Address <span className="asterisk">*</span>
+                  New Email Address <span className="asterisk">*</span>
                 </label>
                 <input className="mb-15" type="email" onChange={(e) => setEmail(e.currentTarget.value)} />
               </>
@@ -50,11 +50,11 @@ export default function UpdateContactInfo({ updateType, update, updateEmail }) {
           {updateType === 'phone' && (
             <>
               <label>
-                Phone Number <span className="asterisk">*</span>
+                New Phone Number <span className="asterisk">*</span>
               </label>
               <input className="mb-15" type="phone" onChange={(e) => setPhone(e.currentTarget.value)} />
               <div className="flex buttons gap">
-                <button className="button card-button" onClick={() => update(phone)}>
+                <button className="button card-button" onClick={() => updatePhone(phone)}>
                   Submit <span className="material-icons-round ml-10 fs-22">check</span>
                 </button>
               </div>
