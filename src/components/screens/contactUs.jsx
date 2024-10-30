@@ -40,6 +40,7 @@ export default function ContactUs() {
   const [showFeedbackCard, setShowFeedbackCard] = useState(false)
   const [supportNotes, setSupportNotes] = useState('')
   const [showSupportCard, setShowSupportCard] = useState(false)
+
   const resetFormFeatureRequestForm = () => {
     Manager.resetForm('feature-request-wrapper')
     setFeatureName('')
@@ -52,6 +53,12 @@ export default function ContactUs() {
     setFeatureDescription('')
   }
 
+  const resetSupportForm = () => {
+    Manager.resetForm('support-wrapper')
+    setFeatureName('')
+    setFeatureDescription('')
+  }
+
   const submitFeatureRequest = () => {
     if (featureDescription.length === 0) {
       displayAlert('error', 'Please enter a description of the feature you would like to add')
@@ -60,7 +67,7 @@ export default function ContactUs() {
 
     successAlert('We have received your feature request!')
     EmailManager.SendFeatureRequest(currentUser.email, `Feature Name: ${featureName} \n Description: ${featureDescription}`)
-
+    setShowFeatureRequestCard(false)
     resetFormFeatureRequestForm()
   }
 
@@ -72,7 +79,8 @@ export default function ContactUs() {
 
     successAlert('Thank you for reporting this issue. We will reply soon!')
     EmailManager.SendSupportEmail(currentUser.email, supportNotes)
-    resetForm()
+    setShowSupportCard(false)
+    resetSupportForm()
   }
 
   const submitFeedback = () => {
@@ -83,6 +91,7 @@ export default function ContactUs() {
 
     successAlert('Thank you! We have received your app feedback!')
     EmailManager.SendAppFeedback(currentUser.email, feedback)
+    setShowFeedbackCard(false)
     resetFeedbackForm()
   }
 
@@ -131,7 +140,7 @@ export default function ContactUs() {
       </BottomCard>
 
       {/* CONTACT SUPPORT */}
-      <BottomCard title={'How can we Help?'} showCard={showSupportCard} onClose={() => setShowSupportCard(false)}>
+      <BottomCard className="support-wrapper" title={'How can we Help?'} showCard={showSupportCard} onClose={() => setShowSupportCard(false)}>
         <div className="support-wrapper">
           <div id="support-container" className={`${theme} form`}>
             <div className="form">

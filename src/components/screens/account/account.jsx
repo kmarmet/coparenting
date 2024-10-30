@@ -82,7 +82,6 @@ export default function Account() {
       return false
     }
     inputAlert('Enter Your Password', 'To update your email, we need to re-authenticate your account for security purpose', (e) => {
-      console.log(e.value)
       const user = auth.currentUser
       const credential = EmailAuthProvider.credential(user.email, e.value)
       reauthenticateWithCredential(auth.currentUser, credential)

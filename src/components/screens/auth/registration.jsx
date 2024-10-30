@@ -43,13 +43,10 @@ import { getAuth, setPersistence, sendSignInLinkToEmail, createUserWithEmailAndP
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import InstallAppPopup from '../../installAppPopup'
-import db_userScoped from '@userScoped'
 import ParentPermissionCode from '../../../models/parentPermissionCode'
 import DateFormats from '../../../constants/dateFormats'
-import DateManager from '../../../managers/dateManager'
 import BottomCard from '../../shared/bottomCard'
 import validator from 'validator'
-import EmailManager from '../../../managers/emailManager'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)

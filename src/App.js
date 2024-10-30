@@ -3,7 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { initializeApp } from 'firebase/app'
 import { child, get, getDatabase, onValue, ref, set } from 'firebase/database'
-import { getAuth, setPersistence, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
+import { getAuth, setPersistence, signOut, onAuthStateChanged } from 'firebase/auth'
 
 import ScreenNames from '@screenNames'
 import globalState from './context.js'
@@ -156,6 +156,25 @@ export default function App() {
     )
   }
 
+  const logout = () => {
+    localStorage.removeItem('rememberKey')
+
+    signOut(auth)
+      .then(() => {
+        setState({
+          ...state,
+          currentScreen: ScreenNames.login,
+          currentUser: null,
+          userIsLoggedIn: false,
+        })
+        // Sign-out successful.
+        console.log('User signed out')
+      })
+      .catch((error) => {
+        // An error happened.
+      })
+  }
+
   // ON PAGE LOAD
   useEffect(() => {
     setState({ ...state, showMenuButton: false, showNavbar: true, menuIsOpen: false })
@@ -189,20 +208,20 @@ export default function App() {
         EmailManager.SendEmailVerification(currentUser.email, permissionCode)
         showEmailVerificationInput(currentUser, permissionCode)
       }
-    }
-  }, [currentUser])
-
-  // Show update alert -> set user prop
-  useEffect(() => {
-    if (Manager.isValid(currentUser) && currentUser.hasOwnProperty('phone')) {
       if (!currentUser.updatedApp) {
         confirmAlert('Update Available', 'Update', false, async () => {
           await DB_UserScoped.updateUserRecord(currentUser.phone, 'updatedApp', true)
-          window.location.reload()
+          logout()
+          setTimeout(() => {
+            window.location.reload()
+          }, 300)
         })
       }
     }
   }, [currentUser])
+
+  // Show update alert -> set user prop
+  useEffect(() => {}, [currentUser])
 
   useEffect(() => {
     document.querySelector('#app-container').style.height = `${window.screen.height}px`

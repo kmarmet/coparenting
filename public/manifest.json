@@ -6,10 +6,6 @@
   "display": "fullscreen",
   "background_color": "#f4f8fb",
   "theme_color": "#f4f8fb",
-  "display_override": [
-    "fullscreen",
-    "minimal-ui"
-  ],
   "icons": [
     {
       "src": "192.png",

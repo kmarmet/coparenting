@@ -11,6 +11,8 @@ import { getAuth, setPersistence, signInWithEmailAndPassword } from 'firebase/au
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import { PiEyeDuotone, PiEyeClosedDuotone } from 'react-icons/pi'
+import validator from 'validator'
+
 import {
   toCamelCase,
   getFirstWord,
@@ -88,10 +90,11 @@ export default function Login() {
     })
 
   const subscribeUser = (user) => {
+    // eslint-disable-next-line no-undef
+    let pushalertbyiw = []
     ;(pushalertbyiw = window.pushalertbyiw || []).push(['addToSegment', 38837, onSubscribe])
 
     async function onSubscribe(result) {
-      let pushalertbyiw = []
       if (result.success) {
         ;(pushalertbyiw = window.pushalertbyiw || []).push(['onReady', onPushAlertReady])
       } else {
@@ -111,6 +114,7 @@ export default function Login() {
           if (user && phone === user.phone) {
             return false
           } else {
+            // eslint-disable-next-line no-undef
             const subId = PushAlertCo.subs_id
             set(child(dbRef, `pushAlertSubscribers/${user.phone}/`), subId)
           }
@@ -121,13 +125,16 @@ export default function Login() {
 
   const signIn = async () => {
     const foundUser = await tryGetCurrentUser()
+    if (!validator.isEmail(email)) {
+      throwError('Email address is not valid')
+      return false
+    }
 
     if (Manager.validation([email, password]) > 0) {
       throwError('Please fill out all fields')
       setState({ ...state, isLoading: false })
       return false
     }
-    console.log(email, password)
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user
