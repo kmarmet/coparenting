@@ -2,6 +2,6 @@ ScheduleTypes =
   variableWeekends: 'variableWeekends'
   fiftyFifty: 'fiftyFifty'
   everyOtherWeekend: 'everyOtherWeekend'
-  specificWeekends: 'specificWeekends'
+  customWeekends: 'customWeekends'
   everyWeekend: 'everyWeekend'
 export default ScheduleTypes

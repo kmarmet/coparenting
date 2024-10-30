@@ -1,18 +1,18 @@
 import ReminderTimes from 'constants/reminderTimes'
 import DateManager from 'managers/dateManager'
-import scheduleTypes from 'constants/scheduleTypes'
+import ScheduleTypes from 'constants/scheduleTypes'
 
 VisitationMapper =
   formattedScheduleTypes: (type) ->
     switch true
       when type.contains '50'
-        return scheduleTypes.fiftyFifty
-      when type.contains 'Specific Weekends'
-        return scheduleTypes.specificWeekends
+        return ScheduleTypes.fiftyFifty
+      when type.contains 'Custom Weekends'
+        return ScheduleTypes.customWeekends
       when type.contains 'Every Weekend'
-        return scheduleTypes.everyOtherWeekend
+        return ScheduleTypes.everyWeekend
       when type.contains 'Every other Weekend'
-        return scheduleTypes.everyOtherWeekend
+        return ScheduleTypes.everyOtherWeekend
     null
 
 

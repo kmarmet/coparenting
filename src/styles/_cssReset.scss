@@ -50,8 +50,9 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow: hidden !important;
-  max-height: 100vh !important;
+//  max-height: 100vh !important;
   background-color: $lightBg !important;
+  height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
   
   &.dark {
 //      background-color: $darkBg;

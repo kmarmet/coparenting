@@ -22,7 +22,7 @@
   }
   .rs-input-group {
     input {
-      background-color: $darkBlue !important;
+      background: white !important;
     }
   }
 
@@ -126,7 +126,7 @@
     }
   }
   .flatpickr-calendar {
-    width: calc(100vw - 20px);
+    width: 100%;
     position: relative;
     box-shadow: none;
     left: 0;
@@ -324,9 +324,17 @@
     .flatpickr-innerContainer,
     .flatpickr-days,
     .dayContainer {
-      width: calc(100vw - 30px);
-      max-width:calc(100vw - 30px);
       margin: 0 auto;
+      width: 100%;
+      
+      &.dayContainer {
+        max-width: 100% !important;
+        margin: 0 !important;
+      }
+      
+      &.flatpickr-days {
+        margin: 0 !important;
+      }
       
       .flatpickr-day {
         max-width: 52px !important;
@@ -486,7 +494,9 @@
     }
 
     .flatpickr-rContainer {
-      width: 100vw;
+      width: 100%;
+      * {
+      }
     }
   }
 

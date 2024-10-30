@@ -3,25 +3,11 @@
 #external-overrides {
   #coparenting-setup-container {
     z-index: 1000000;
-
-    &.dark {
-      .help-icon {
-        color: $darkBlueMedium;
-      }
-      .text {
-        p {
-          color: $offWhite;
-        }
-      }
-      .note-container {
-        background-color: $darkBlue;
-        border-radius: $borderRadius;
-        .note {
-          color: $offWhite;
-        }
-      }
+    
+    .ff-note {
+      padding: 10px;
+      border: 2px solid red;
     }
-
     /*#region rSuite */
     .rs-panel-body,
     .rs-panel-btn {
@@ -35,7 +21,7 @@
     }
 
     .rs-panel-btn {
-      &::active {
+      &:active {
         background-color: transparent !important;
       }
     }
@@ -109,17 +95,12 @@
       padding: 10px;
       &.ff-note {
         line-height: 0;
-        padding: 0;
 
         &.active {
           padding: 10px;
           line-height: 1.5;
         }
       }
-    }
-
-    .ff-note {
-      @include fadeAndExpand;
     }
 
     // Sections

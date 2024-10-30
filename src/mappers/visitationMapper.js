@@ -5,19 +5,19 @@ import ReminderTimes from 'constants/reminderTimes';
 
 import DateManager from 'managers/dateManager';
 
-import scheduleTypes from 'constants/scheduleTypes';
+import ScheduleTypes from 'constants/scheduleTypes';
 
 VisitationMapper = {
   formattedScheduleTypes: function(type) {
     switch (true) {
       case type.contains('50'):
-        return scheduleTypes.fiftyFifty;
-      case type.contains('Specific Weekends'):
-        return scheduleTypes.specificWeekends;
+        return ScheduleTypes.fiftyFifty;
+      case type.contains('Custom Weekends'):
+        return ScheduleTypes.customWeekends;
       case type.contains('Every Weekend'):
-        return scheduleTypes.everyOtherWeekend;
+        return ScheduleTypes.everyWeekend;
       case type.contains('Every other Weekend'):
-        return scheduleTypes.everyOtherWeekend;
+        return ScheduleTypes.everyOtherWeekend;
     }
     return null;
   }

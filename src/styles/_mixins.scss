@@ -22,13 +22,25 @@
   margin-top: 100vh;
   background: $lightBg;
   overflow: auto;
-  padding: 15px 15px 300px 15px;
+  overflow-x: hidden;
+  //  padding: 15px 15px 300px 15px;
+  //  border: env(SAFE-AREA-INSET-TOP,
+  //          5px) solid red;
+  height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
+  max-width: env(safe-area-inset-top) - env(safe-area-inset-bottom);
+  max-height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
+  width: env(safe-area-inset-left) env(safe-area-inset-right);
+  //  margin: env(safe-area-inset-right);
+  //  // you can also use fallback values
+  //  padding-top: env(safe-area-inset-top);
+  //  padding-right: env(safe-area-inset-right);
+  //  padding-bottom: env(safe-area-inset-bottom);
+  //  padding-left: env(safe-area-inset-left);
+  padding: 15px 15px 200px 15px;
 
   &.active {
     opacity: 1;
     margin-top: 0;
-    width: calc(100vw - 4px);
-
     &.conversation {
       padding-bottom: 0;
       background-color: white;
@@ -37,8 +49,6 @@
   }
 
   &.calendar {
-    padding-left: 0;
-    padding-right: 0;
   }
 
   &.login {
@@ -644,8 +654,8 @@
   transition: all 0.2s linear;
   &:active {
     transform: scale(0.8);
-    opacity: .5;
-//    background-color: darken($bgColor, 5%);
+    opacity: 0.5;
+    //    background-color: darken($bgColor, 5%);
     border: 0;
   }
 }
@@ -926,7 +936,7 @@
     height: 230px;
     opacity: 1;
   }
-  
+
   .flex {
     &.row {
       margin: 0;
@@ -937,7 +947,7 @@
     height: 100%;
     width: calc(100% / 3);
     text-align: center;
-    padding: 10px ;
+    padding: 10px;
     margin: 0;
     font-size: 20px;
     border: 0;
@@ -1072,15 +1082,15 @@
   gap: 8px;
 
   &.gap-5 {
-//    gap: 5px;
+    //    gap: 5px;
   }
 
   &.gap-10 {
-//    gap: 10px;
+    //    gap: 10px;
   }
 
   &.gap-15 {
-//    gap: 15px;
+    //    gap: 15px;
   }
 
   #checkbox-container,
@@ -2018,7 +2028,6 @@
   }
 }
 @mixin bottomCard {
-  width: 100vw;
   min-height: 30vh;
   background-color: white;
   position: fixed;
@@ -2042,43 +2051,27 @@
     transition: all 0.4s ease-in-out;
   }
 
-  #content {
-    margin-top: 50px;
-  }
-
   #toc-scroll-button {
     margin-bottom: 15px;
   }
 
-  #title-and-close-icon {
-    position: fixed;
-    display: flex;
-    align-items: center;
-    width: calc(100% - 35px);
-    background: white;
+  #title {
+    text-align: center;
     justify-content: center;
-    padding: 20px 10px 10px;
-    @include centerHoriz;
-    margin-top: -20px;
-    border-radius: 5px;
-    z-index: 10;
-
-    #title {
-      text-align: center;
-      justify-content: center;
-      line-height: 1;
-      border-radius: 25px 25px 0 0;
-      color: $lightBlack;
-    }
-    #close-icon {
-      margin-left: 15px;
-      justify-self: flex-end;
-      display: flex;
-	  color: $lightBlack;
-      align-items: center;
-      font-size: 25px;
-      border-radius: 25px 25px 0 0;
-    }
+    line-height: 1.3;
+    border-radius: 25px 25px 0 0;
+    color: $lightBlack;
+  }
+  #close-icon {
+    color: white;
+    background-color: $accent;
+    border-radius: 100%;
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    z-index: $maxZIndex;
+    padding: 5px;
+    @include shadow;
   }
 
   #error:not(#title) {
@@ -2186,7 +2179,7 @@
     z-index: 10000;
     gap: 10px;
     border: 0;
-//    background: white;
+    //    background: white;
 
     .card-button {
       box-shadow: none;
@@ -2560,6 +2553,7 @@
   max-height: 600px;
   overflow: auto;
   z-index: -1;
+  padding: env(safe-area-inset-top) 0 0 env(safe-area-inset-left);
 
   &.active {
     width: 75vw;
@@ -2655,11 +2649,14 @@
   max-height: 90vh;
   overflow: auto;
   z-index: $maxZIndex;
-  @include centerHoriz;
   transition: all 0.5s ease-in-out;
   border-radius: 0 0 30px 30px;
   opacity: 0;
+  height: calc(75px + env(safe-area-inset-bottom));
   bottom: -200px;
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  align-items: center;
 
   &.active {
     bottom: 0;
@@ -2671,7 +2668,8 @@
     justify-content: space-between;
     align-items: center;
     overflow: auto;
-    padding: 15px 10px 30px 10px;
+    width: 100vw;
+    padding: 0 15px;
 
     .menu-item {
       opacity: 0.8;
