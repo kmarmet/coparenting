@@ -1,68 +1,30 @@
 import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
-import moment from 'moment'
 import Manager from '@manager'
 import DB from '@db'
 import SecurityManager from './securityManager'
+import {
+  contains,
+  displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
+} from '../globalFunctions'
 
 const ChatManager = {
-  getChats: async (currentUser) =>
-    await new Promise(async (resolve) => {
-      const dbRef = ref(getDatabase())
-      await get(child(dbRef, `chats`)).then(async (dbChats) => {
-        let scopedChats = []
-        const allChats = Manager.convertToArray(dbChats.val())
-        const coparentPhones = currentUser?.coparents.map((x) => x.phone)
-        let coparents = currentUser?.coparents.filter((x) => coparentPhones.includes(x.phone))
-        allChats.forEach((thisChat) => {
-          if (thisChat !== undefined && thisChat.members !== undefined) {
-            const threadMembers = thisChat.members.map((x) => x.phone)
-            coparents.forEach((coparent) => {
-              // Ensure currentUser/coparent are in thread before passing it
-              if (threadMembers.includes(coparent.phone) && threadMembers.includes(currentUser.phone)) {
-                scopedChats.push(thisChat)
-              }
-            })
-          }
-        })
-        resolve(scopedChats)
-      })
-    }),
-  getExistingMessages: async (currentUser, messageToUser) => {
-    const existingThread = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
-    if (existingThread) {
-      const { key, chats } = existingThread
-      let messages = chats.messages
-      if (!Array.isArray(messages)) {
-        messages = Manager.convertToArray(messages)
-      }
-      if (!Manager.isValid(messages, true)) {
-        return false
-      }
-      const sortedArray = messages.sort((a, b) => moment(a.timestamp, 'MM/DD/yyyy hh:mma').unix() - moment(b.timestamp, 'MM/DD/yyyy hh:mma').unix())
-      const bookmarkedMessages = messages.filter((x) => x.bookmarked === true)
-      return { messages: sortedArray, bookmarkedMessages, key, chats }
-    }
-  },
-  getActiveChats: async (currentUser) => {
-    const chats = await SecurityManager.getChats(currentUser)
-    let activeChats = []
-    if (Manager.isValid(chats, true)) {
-      for (let chat of chats) {
-        const memberPhones = chat.members.map((x) => x.phone)
-        if (memberPhones.includes(currentUser.phone)) {
-          activeChats.push({
-            memberPhones,
-            chat,
-          })
-        }
-      }
-    }
-    return activeChats
-  },
   getScopedChat: async (currentUser, messageToUserPhone) =>
     await new Promise(async (resolve, reject) => {
       const dbRef = ref(getDatabase())
-      await get(child(dbRef, `chats`))
+      await get(child(dbRef, `${DB.tables.chats}/${currentUser.phone}`))
         .then(async (snapshot) => {
           if (snapshot.exists()) {
             snapshot.forEach((shot) => {
@@ -82,12 +44,13 @@ const ChatManager = {
     }),
   deleteAndArchive: async (currentUser, coparent) => {
     const dbRef = ref(getDatabase())
-    const scopedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
-    const { chats } = scopedChat
-    await DB.add(DB.tables.archivedChats, chats).finally(async () => {
-      const idToDelete = await DB.getSnapshotKey(DB.tables.chats, chats, 'id')
-      console.log(idToDelete)
-      remove(child(dbRef, `${DB.tables.chats}/${idToDelete}/`))
+    const securedChats = await SecurityManager.getChats(currentUser)
+    const securedChat = securedChats.filter(
+      (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(coparent.phone)
+    )[0]
+    await DB.add(DB.tables.archivedChats, securedChat).finally(async () => {
+      const idToDelete = await DB.getSnapshotKey(`${DB.tables.chats}/${currentUser.phone}`, securedChat, 'id')
+      remove(child(dbRef, `${DB.tables.chats}/${currentUser.phone}/${idToDelete}/`))
     })
   },
   toggleMessageBookmark: async (currentUser, messageToUser, messageId, bookmarkState) => {
@@ -101,47 +64,29 @@ const ChatManager = {
     const messageBookmarkState = messageToToggleBookmarkState.bookmarked
     await update(dbRef, { ['bookmarked']: !messageBookmarkState })
   },
-  markMessagesRead: async (currentUser, messageToUser) => {
+  markMessagesRead: async (currentUser, messageToUser, chat) => {
     const dbRef = ref(getDatabase())
+    let messages = Manager.convertToArray(chat.messages)
+    let allMessages = []
 
-    const execute = async () =>
-      new Promise(async (resolve) => {
-        // Get threads where currentUser is a member
-        let currentUserChats = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
-        const { key, chats } = currentUserChats
-        if (!Manager.isValid(currentUserChats, false, true) || Object.keys(currentUserChats).length === 0) {
-          return false
+    // Mark unread messages as read
+    if (Manager.isValid(messages, true)) {
+      messages.forEach((message) => {
+        if (message.readState === 'delivered' && formatNameFirstNameOnly(message.recipient) === formatNameFirstNameOnly(currentUser.name)) {
+          message.readState = 'read'
+          allMessages.push(message)
+        } else {
+          allMessages.push(message)
         }
-
-        let membersMessages = chats.messages
-        let allMessages = []
-
-        // Mark unread messages as read
-        if (Manager.isValid(membersMessages, true)) {
-          membersMessages.forEach((message) => {
-            if (message.readState === 'delivered' && message.fromName === messageToUser.name) {
-              message.readState = 'read'
-              allMessages.push(message)
-            } else {
-              allMessages.push(message)
-            }
-          })
-        }
-
-        if (allMessages.length === 0) {
-          return false
-        }
-
-        resolve({ allMessages, key })
       })
-    const results = await execute()
-    const { key, allMessages } = results
-    set(child(dbRef, `chats/${key}/messages`), Manager.getUniqueArray(allMessages).flat())
-    // AppManager.clearAppBadge()
+    }
+    const chatKey = await DB.getSnapshotKey(`chats/${currentUser.phone}`, chat, 'id')
+    console.log(`chats/${currentUser.phone}/${chatKey}/messages`)
+    set(child(dbRef, `chats/${currentUser.phone}/${chatKey}/messages`), Manager.getUniqueArray(allMessages).flat())
   },
-  addMessage: (chatKey, newMessage) => {
+  addMessage: (currentUser, chatKey, newMessage) => {
     const db = getDatabase()
-    const postListRef = ref(db, `chats/${chatKey}/messages`)
+    const postListRef = ref(db, `chats/${currentUser.phone}/${chatKey}/messages`)
     const newPostRef = push(postListRef)
     set(newPostRef, newMessage)
   },

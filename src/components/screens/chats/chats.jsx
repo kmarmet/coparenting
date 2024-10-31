@@ -27,15 +27,15 @@ import {
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
+import DB from '@db'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, navbarButton } = state
   const [showNewThreadForm, setShowNewThreadForm] = useState(false)
   const [threads, setThreads] = useState([])
-  const [confirmTitle, setConfirmTitle] = useState('')
   const [selectedCoparent, setSelectedCoparent] = useState(null)
-  const [activeChatsMembers, setActiveChatsMembers] = useState([])
+  const [activeThreadPhones, setActiveThreadPhones] = useState([])
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
   const [showDeleteButton, setShowDeleteButton] = useState(false)
 
@@ -55,13 +55,30 @@ const Chats = () => {
 
   const getChats = async () => {
     let securedChats = await SecurityManager.getChats(currentUser)
-    const chatMembers = securedChats.flat().map((x) => x.members)
-    const chatMemberPhones = chatMembers.flat().map((x) => x.phone)
-    setActiveChatsMembers(chatMemberPhones)
-    if (Manager.isValid(securedChats, true)) {
-      setThreads(securedChats.flat())
-    } else {
-      setThreads([])
+
+    // User does not have a chat with root access by phone
+    if (!Manager.isValid(securedChats, true)) {
+      const allChats = await DB.getTable('chats')
+      const allChatsFlattened = allChats.flat()
+      let activeChats = []
+      for (let chat of allChatsFlattened) {
+        const members = chat.members.map((x) => x.phone)
+        if (members.includes(currentUser.phone)) {
+          activeChats.push(chat)
+        }
+      }
+      setThreads(activeChats)
+    }
+    // User has root (phone) access
+    else {
+      const members = securedChats.map((x) => x.members).flat()
+      const phones = members.map((x) => x.phone)
+      setActiveThreadPhones(phones)
+      if (Manager.isValid(securedChats, true)) {
+        setThreads(securedChats)
+      } else {
+        setThreads([])
+      }
     }
   }
 
@@ -176,20 +193,22 @@ const Chats = () => {
           showCard={showNewConvoCard}
           title={'New Conversation'}>
           {Manager.isValid(currentUser?.coparents, true) &&
-            currentUser?.coparents
-              .filter((x) => !activeChatsMembers.includes(x.phone))
-              .map((coparent, index) => {
-                return (
-                  <p
-                    key={index}
-                    className="coparent-name new-thread-coparent-name"
-                    onClick={() => {
-                      openMessageThread(coparent.phone).then((r) => r)
-                    }}>
-                    {coparent.name}
-                  </p>
-                )
-              })}
+            currentUser?.coparents.map((coparent, index) => {
+              return (
+                <div key={index}>
+                  {!activeThreadPhones.includes(coparent.phone) && (
+                    <p
+                      className="coparent-name new-thread-coparent-name"
+                      onClick={() => {
+                        openMessageThread(coparent.phone).then((r) => r)
+                      }}>
+                      {coparent.name}
+                    </p>
+                  )}
+                  {activeThreadPhones.includes(coparent.phone) && <p>All available co-parents aleady have an open conversation with you. </p>}
+                </div>
+              )
+            })}
         </BottomCard>
       </div>
     </>

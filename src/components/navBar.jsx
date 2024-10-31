@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
 import Manager from '@manager'
@@ -27,7 +27,7 @@ import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNav
 
 export default function NavBar() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, showCenterNavbarButton, theme, showNavbar, navbarButton } = state
+  const { currentScreen, menuIsOpen, showCenterNavbarButton, theme, showNavbar, navbarButton, unreadMessageCount } = state
 
   const changeCurrentScreen = (screen) => {
     if (ScreensToHideCenterNavbarButton.includes(screen)) {
@@ -53,6 +53,10 @@ export default function NavBar() {
     Manager.showPageContainer('show')
   }
 
+  useEffect(() => {
+    console.log(unreadMessageCount)
+  }, [])
+
   return (
     <>
       <div id="navbar" className={`${theme} ${showNavbar ? 'active' : ''}`}>
@@ -72,8 +76,10 @@ export default function NavBar() {
 
             {/* CHATS */}
             <div
+              id="chat-menu-item"
               onClick={() => changeCurrentScreen(ScreenNames.chats)}
               className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
+              {unreadMessageCount > 0 && <p className="navbar-activity-badge">{unreadMessageCount}</p>}
               <PiChatsCircleDuotone />
             </div>
 

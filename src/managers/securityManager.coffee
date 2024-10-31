@@ -101,14 +101,23 @@ SecurityManager =
           returnRecords.push(suggestion)
     return returnRecords.flat()
   getChats: (currentUser) ->
-    returnRecords = []
-    chats = Manager.convertToArray(await DB.getTable(DB.tables.chats)).flat()
+    securedChats = []
+    chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}/#{currentUser.phone}")).flat()
     if Manager.isValid(chats,true)
       for chat in chats
-        for member in chat.members
-          if member.phone == currentUser.phone
-            returnRecords.push(chat)
-    return returnRecords.flat()
+        members = chat.members.map (x) -> x.phone
+        if members.includes(currentUser.phone)
+          securedChats.push(chat)
+    return securedChats.flat()
+  getCoparentChats: (currentUser) ->
+    allChats = await DB.getTable('chats')
+    activeChats = []
+    allChatsFlattened = allChats.flat()
+    for chat in allChatsFlattened
+      members = chat.members.map (x) -> x.phone
+      if currentUser.phone in members
+        activeChats.push chat
+    return activeChats
 
 
 export default SecurityManager

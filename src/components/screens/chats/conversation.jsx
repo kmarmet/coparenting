@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { child, getDatabase, onValue, ref, set } from 'firebase/database'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
 import moment from 'moment'
 import 'rsuite/dist/rsuite.min.css'
 import PushAlertApi from '@api/pushAlert.js'
@@ -33,12 +33,14 @@ import {
   spaceBetweenWords,
   stringHasNumbers,
   successAlert,
+  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
+import SecurityManager from '../../../managers/securityManager'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -52,7 +54,7 @@ const Conversation = () => {
   const [showBookmarks, setShowBookmarks] = useState(false)
   const [chatKey, setChatKey] = useState(null)
   const [showSearchCard, setShowSearchCard] = useState(false)
-
+  const [threadOwnerPhone, setThreadOwnerPhone] = useState('')
   // Longpress/bookmark
   const bind = useLongPress(async (e, messageObject) => {
     const el = e.target.parentNode
@@ -86,7 +88,7 @@ const Conversation = () => {
     let messageInputValue = document.querySelector('#message-input').value
 
     if (messageInputValue.length === 0) {
-      displayAlert('error', 'Please enter a message')
+      throwError('Please enter a message')
       return false
     }
 
@@ -105,7 +107,6 @@ const Conversation = () => {
     conversationMessage.notificationSent = false
     conversationMessage.bookmarked = false
 
-    console.log(messageToUser.name)
     const cleanMessages = Manager.cleanObject(conversationMessage, ModelNames.conversationMessage)
 
     //Thread
@@ -123,22 +124,19 @@ const Conversation = () => {
 
     // Existing chat
     if (Manager.isValid(existingChatFromDB)) {
-      ChatManager.addMessage(chatKey, cleanThread.messages[0])
+      const chatKey = await DB.getSnapshotKey(`${DB.tables.chats}/${threadOwnerPhone}`, existingChatFromDB, 'id')
+      let threadOwner = currentUser
+
+      if (threadOwnerPhone !== currentUser.phone) {
+        threadOwner = messageToUser
+      }
+
+      ChatManager.addMessage(threadOwner, chatKey, cleanThread.messages[0])
     }
     // Create new chat (if one doesn't exist between members)
     else {
-      if (Manager.isValid(cleanThread.messages)) {
-        cleanThread.firstMessageFrom = currentUser.phone
-        let existingChats = await DB.getTable('chats')
-        if (Array.isArray(existingChats) && existingChats.length > 0) {
-          existingChats = existingChats.filter((x) => x)
-          set(child(dbRef, `chats`), [...existingChats, cleanThread])
-        } else {
-          await DB.add(DB.tables.chats, cleanThread)
-        }
-      }
+      await DB.add(`${DB.tables.chats}/${threadOwnerPhone}`, cleanThread)
     }
-    // console.log(existingChatFromDB)
     let updatedMessages = existingChatFromDB?.messages
 
     if (Manager.isValid(updatedMessages, true)) {
@@ -151,7 +149,7 @@ const Conversation = () => {
     }
     document.getElementById('message-input').value = ''
     const subId = await NotificationManager.getUserSubId(messageToUser.phone)
-    PushAlertApi.sendMessage('New Message', `You have an unread message in a conversation`, subId)
+    PushAlertApi.sendMessage('New Message', `You have an unread conversation message 💬`, subId)
     await getExistingMessages()
     AppManager.setAppBadge(1)
     scrollToLatestMessage()
@@ -170,24 +168,64 @@ const Conversation = () => {
   }
 
   const getExistingMessages = async () => {
-    const scopedChat = await ChatManager.getExistingMessages(currentUser, messageToUser)
-    const { key, messages, bookmarkedMessages, chats } = scopedChat
-    setChatKey(key)
-    if (messages.length > 0) {
-      if (bookmarkedMessages.length === 0) {
-        setShowBookmarks(false)
-        const bookmarkIcon = document.querySelector('.bookmark-icon')
-        if (bookmarkIcon) {
-          bookmarkIcon.classList.remove('active')
+    const securedChats = await SecurityManager.getChats(currentUser)
+    const securedChat = securedChats.filter(
+      (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(messageToUser.phone)
+    )[0]
+
+    // User has root (phone) access
+    if (securedChat) {
+      const bookmarkedMessages = securedChats.filter((x) => x.bookmarked)
+      const messages = Manager.convertToArray(securedChat?.messages) || []
+
+      // Mark read
+      await ChatManager.markMessagesRead(currentUser, messageToUser, securedChat)
+
+      if (messages.length > 0) {
+        if (bookmarkedMessages.length === 0) {
+          setShowBookmarks(false)
+          const bookmarkIcon = document.querySelector('.bookmark-icon')
+          if (bookmarkIcon) {
+            bookmarkIcon.classList.remove('active')
+          }
         }
+        setBookmarks(bookmarkedMessages)
+        setMessagesToLoop(messages.flat())
+        setExistingChat(securedChat)
+        setThreadOwnerPhone(currentUser.phone)
+      } else {
+        setMessagesToLoop([])
+        setExistingChat(null)
       }
-      setBookmarks(bookmarkedMessages)
-      setMessagesToLoop(messages.flat())
-      setExistingChat(chats)
     } else {
-      setMessagesToLoop([])
-      setExistingChat(null)
+      // User does not have a chat with root access by phone
+      const activeChats = await SecurityManager.getCoparentChats(currentUser)
+      const coparentChat = activeChats.filter(
+        (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(messageToUser.phone)
+      )[0]
+      const bookmarkedMessages = activeChats.filter((x) => x.bookmarked)
+      const messages = Manager.convertToArray(coparentChat?.messages) || []
+
+      // Mark as read
+      await ChatManager.markMessagesRead(messageToUser, messageToUser, coparentChat)
+
+      if (messages.length > 0) {
+        if (bookmarkedMessages.length === 0) {
+          setShowBookmarks(false)
+          const bookmarkIcon = document.querySelector('.bookmark-icon')
+          if (bookmarkIcon) {
+            bookmarkIcon.classList.remove('active')
+          }
+        }
+        setThreadOwnerPhone(messageToUser.phone)
+        setBookmarks(bookmarkedMessages)
+        setMessagesToLoop(messages.flat())
+        setExistingChat(coparentChat)
+      }
     }
+    setTimeout(() => {
+      setState({ ...state, unreadMessageCount: 0 })
+    }, 500)
     scrollToLatestMessage()
   }
 

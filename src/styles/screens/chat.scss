@@ -282,6 +282,7 @@
     overflow: auto;
     padding: 90px 15px 120px 15px;
     background-color: white;
+    min-height: 100vh;
 
     @media screen and (min-width: 800px) {
       min-width: 10%;

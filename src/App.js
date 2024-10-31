@@ -78,6 +78,7 @@ import {
 } from './globalFunctions'
 import DB_UserScoped from '@userScoped'
 import ContactUs from './components/screens/contactUs'
+import SecurityManager from './managers/securityManager'
 
 export default function App() {
   // Initialize Firebase
@@ -172,7 +173,38 @@ export default function App() {
       })
   }
 
-  const getUnreadMessageCount = async () => {}
+  const getUnreadMessageCount = async () => {
+    const activeChats = Manager.convertToArray(await SecurityManager.getChats(currentUser))
+
+    // No chats/currentUser.phone
+    if (!Manager.isValid(activeChats, true)) {
+      const coparentChats = await SecurityManager.getCoparentChats(currentUser)
+      const allMessages = coparentChats.map((x) => x.messages).flat()
+      let coparentMessages = []
+      if (Manager.isValid(allMessages, true)) {
+        for (let message of allMessages) {
+          coparentMessages.push(Manager.convertToArray(message).flat())
+        }
+        coparentMessages = coparentMessages.flat()
+        const unreadMessages = coparentMessages.filter(
+          (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
+        )
+        setTimeout(() => {
+          setState({ ...state, unreadMessageCount: unreadMessages.length })
+        }, 500)
+      }
+    } else {
+      if (Manager.isValid(activeChats, true)) {
+        for (let chat of activeChats) {
+          const messages = Manager.convertToArray(chat.messages).flat()
+          const unreadMessages = messages.filter((x) => x.recipient === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered')
+          setTimeout(() => {
+            setState({ ...state, unreadMessageCount: unreadMessages.length })
+          }, 500)
+        }
+      }
+    }
+  }
 
   // Clear app badge
   useEffect(() => {
@@ -197,7 +229,7 @@ export default function App() {
       if (user) {
         const user = auth.currentUser
 
-        console.log(user)
+        // console.log(user)
         console.log('signed in')
       } else {
         console.log('signed out')

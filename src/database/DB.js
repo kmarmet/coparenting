@@ -91,10 +91,10 @@ const DB = {
     })
     return await getRecords
   },
-  getSnapshotKey: async (tableName, objectToCheck, propertyToCompare) =>
+  getSnapshotKey: async (path, objectToCheck, propertyToCompare) =>
     await new Promise(async (resolve) => {
       const dbRef = ref(getDatabase())
-      await get(child(dbRef, tableName)).then((snapshot) => {
+      await get(child(dbRef, path)).then((snapshot) => {
         if (snapshot.exists()) {
           snapshot.forEach((event) => {
             if (event.val()[propertyToCompare] == objectToCheck[propertyToCompare]) {
@@ -137,13 +137,12 @@ const DB = {
         }
       })
     }),
-  add: async (tableName, data) =>
+  add: async (path, data) =>
     await new Promise(async (resolve) => {
       const dbRef = ref(getDatabase())
       let tableData = []
-      tableData = await DB.getTable(tableName)
-      tableData = Manager.convertToArray(tableData)
-      if (Manager.isValid(tableData)) {
+      tableData = await DB.getTable(path)
+      if (Manager.isValid(tableData, true)) {
         if (tableData.length > 0) {
           tableData = [...tableData, data].filter((item) => item)
         } else {
@@ -154,8 +153,9 @@ const DB = {
       else {
         tableData = [data]
       }
+      console.log(tableData)
       resolve('')
-      await set(child(dbRef, tableName), tableData)
+      await set(child(dbRef, path), tableData)
     }),
   delete: async (tableName, id) => {
     const dbRef = ref(getDatabase())

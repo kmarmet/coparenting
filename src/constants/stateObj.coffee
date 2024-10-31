@@ -35,7 +35,7 @@ StateObj =
   theme: 'light'
   transferRequestToEdit: {}
   unreadMessages: null
-  unreadMessagesCountSet: false
+  unreadMessageCount: 0
   userIsLoggedIn: false
   users: []
   updateAvailable: false,
@@ -75,7 +75,7 @@ StateObj =
   setTransferRequestToEdit: (request) ->
   setUnreadMessages: (count) ->
   setUpdateAvailable: (bool) ->
-  setUnreadMessagesCountSet: (bool) ->
+  setUnreadMessageCount: (num) ->
   setUserIsLoggedIn: (isLoggedIn) ->
   setUsers: (users) ->
   setViewExpenseForm: (show) ->
