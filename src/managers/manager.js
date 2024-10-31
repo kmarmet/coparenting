@@ -126,7 +126,7 @@ const Manager = {
       return v.toString(16)
     })
   },
-  toCamelCase: (str) => {
+  toCamelCase(str) {
     // Using replace method with regEx
     return str
       .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
@@ -207,15 +207,22 @@ const Manager = {
         return false
       }
       if (Object.keys(variable).length === 0) {
+        console.log(variable)
         return false
       }
       for (let prop in variable) {
         if (!prop) {
+          console.log('not prop')
           return false
         }
-        if (!variable[prop] || variable[prop] === undefined) {
+
+        if (variable[prop].length === 0) {
           return false
         }
+        // if (!variable[prop] || variable[prop] === undefined) {
+        //   console.log(variable, prop)
+        //   return false
+        // }
       }
     } else {
       if (!variable) {

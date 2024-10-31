@@ -28,52 +28,49 @@ import {
   uniqueArray,
   getFileExtension,
   lowercaseShouldBeLowercase,
+  successAlert,
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
 
-function General() {
+function General({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+  const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [generalValues, setGeneralValues] = useState([])
   const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'general', prop)
-    setState({ ...state, activeInfoChild: updatedChild })
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', Manager.toCamelCase(prop))
+    setActiveChild(updatedChild)
     setSelectedChild()
     setArrowDirection('down')
   }
 
   const setSelectedChild = () => {
-    if (Manager.isValid(activeInfoChild.general, false)) {
+    if (Manager.isValid(activeChild.general)) {
       // Set info
-      let values = Object.entries(activeInfoChild.general)
-      setGeneralValues(values.filter((x) => x[0] !== 'profilePic'))
+      let values = Object.entries(activeChild.general)
+      setGeneralValues(values.filter((x) => x[0] !== 'profilepic'))
     }
   }
 
   const update = async (section, prop, value, isArray) => {
     // Update DB
     successAlert('Updated!')
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', prop, value)
-    setState({ ...state, activeInfoChild: updatedChild })
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', prop, value)
+    setActiveChild(updatedChild)
   }
 
   useEffect(() => {
     setSelectedChild()
-  }, [])
-
-  useEffect(() => {
-    setSelectedChild()
-  }, [activeInfoChild])
+  }, [activeChild])
 
   return (
     <div className="info-section section general form">
       <Accordion>
         {/* EXPAND ACCORDION */}
         <p
-          className={activeInfoChild.general === undefined ? 'disabled header general' : 'header general'}
+          className={!Manager.isValid(activeChild.general) ? 'disabled header general' : 'header general'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.general')
             setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
@@ -93,7 +90,6 @@ function General() {
             generalValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
               const value = prop[1]
-              // console.log(value)
               return (
                 <div key={index}>
                   <label className="w-100">{infoLabel}</label>
@@ -109,7 +105,7 @@ function General() {
                         onPlaceSelected={async (place) => {
                           await update('general', 'address', place.formatted_address, false)
                         }}
-                        placeholder={Manager.isValid(activeInfoChild.general.address) ? activeInfoChild.general.address : 'Location'}
+                        placeholder={Manager.isValid(activeChild?.general?.address) ? activeChild?.general?.address : 'Location'}
                       />
                     )}
                     {!contains(infoLabel.toLowerCase(), 'address') && (

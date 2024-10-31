@@ -52,7 +52,7 @@
 
       .profile-pic-container {
         transform-origin: center;
-        @include glow;
+        border: 3px solid $borderColor;
       }
     }
 
@@ -87,13 +87,37 @@
         text-align: center;
       }
 
-      .after {
+      svg {
+        font-size: 50px;
+        color: white;
+        opacity: 0.8;
+        margin: 0 auto;
         display: block;
+        width: 100%;
+        position: fixed;
+        z-index: 10;
+      }
+      
+      input {
+        z-index: 100;
+        position: relative;
+      }
+
+      &.no-image {
+        .after {
+          height: 100%;
+        }
+      }
+
+      .after {
         background: rgba(0, 0, 0, 0.6);
-        height: 20px;
         bottom: 0;
         position: absolute;
         width: 100%;
+        height: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         span {
           font-size: 16px !important;
@@ -211,7 +235,7 @@
 
       .child-name {
         font-size: 20px;
-          color: black;
+        color: black;
         font-weight: 500;
         border: 0;
         font-optical-sizing: auto;
@@ -294,9 +318,9 @@
           overflow: hidden;
           height: 45px;
           align-items: center;
-          
+
           &.disabled {
-            opacity: .5;
+            opacity: 0.5;
           }
 
           &.behavior {

@@ -10,6 +10,7 @@ import Behavior from '../childInfo/behavior'
 import General from '../childInfo/general'
 import Medical from '../childInfo/medical'
 import Schooling from '../childInfo/schooling'
+import BottomCard from '../../shared/bottomCard'
 import {
   toCamelCase,
   getFirstWord,
@@ -23,35 +24,38 @@ import {
   formatNameFirstNameOnly,
   removeFileExtension,
   displayAlert,
+  throwError,
   uniqueArray,
 } from '../../../globalFunctions'
 import NewChildForm from './newChildForm'
 import ChildSelector from './childSelector'
-import DateFormats from '../../../constants/dateFormats'
+import { BiImageAdd } from 'react-icons/bi'
 import DB_UserScoped from '@userScoped'
 
 export default function ChildInfo() {
   // @ts-ignore
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, navbarButton, activeInfoChild } = state
+  const { currentUser, theme, navbarButton } = state
   const [showCard, setShowCard] = useState(false)
   const imgRef = useRef()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showSelectorCard, setShowSelectorCard] = useState(false)
-
+  const [activeInfoChild, setActiveInfoChild] = useState(null)
+  const [showNewChildForm, setShowNewChildForm] = useState(false)
   const uploadProfilePic = async (img) => {
     setState({ ...state, isLoading: true })
     // @ts-ignore
     const imgFiles = document.getElementById('upload-input').files
     if (imgFiles.length === 0) {
-      displayAlert('error', 'Please choose an image')
+      throwError('Please choose an image')
       return false
     }
 
-    // Upload -> Set child/general/profilePic
-    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, activeInfoChild.id, img, 'profilePic').then(async (url) => {
-      const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilePic', url)
-      setState({ ...state, isLoading: false, activeInfoChild: updatedChild })
+    // Upload -> Set child/general/profilepic
+    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, activeInfoChild.id, img, 'profilepic').then(async (url) => {
+      const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilepic', url)
+      setState({ ...state, isLoading: false })
+      setActiveInfoChild(updatedChild)
     })
   }
 
@@ -60,15 +64,30 @@ export default function ChildInfo() {
     await uploadProfilePic(img)
   }
 
+  const onTableChange = async () => {
+    const dbRef = ref(getDatabase())
+
+    onValue(child(dbRef, `${DB.tables.users}/${currentUser.phone}/children`), async (snapshot) => {
+      const kiddos = snapshot.val()
+      if (!activeInfoChild) {
+        setActiveInfoChild(kiddos[0])
+      } else {
+        const newActiveChild = kiddos.filter((x) => x.id === activeInfoChild.id)[0]
+        setActiveInfoChild(newActiveChild)
+      }
+    })
+  }
+
   useEffect(() => {
+    onTableChange().then((r) => r)
+
     setTimeout(() => {
       setState({
         ...state,
-        activeInfoChild: currentUser.children[0],
         navbarButton: {
           ...navbarButton,
           action: () => {
-            setShowCard(true)
+            setShowNewChildForm(true)
           },
         },
       })
@@ -79,34 +98,54 @@ export default function ChildInfo() {
   return (
     <div>
       {/* CHILD SELECTOR */}
-      <ChildSelector hideCard={() => setShowSelectorCard(false)} showCard={showSelectorCard} />
+      <BottomCard
+        onClose={() => setShowSelectorCard(false)}
+        title={'Choose Child'}
+        subtitle="Select which child you would like to view & edit"
+        showCard={showSelectorCard}
+        className={`success`}>
+        <ChildSelector
+          setActiveChild={(child) => {
+            setActiveInfoChild(child)
+            setShowSelectorCard(false)
+          }}
+        />
+      </BottomCard>
 
       {/* CUSTOM INFO FORM */}
-      <CustomChildInfo activeChild={activeInfoChild} showCard={showInfoCard} hideCard={async () => setShowInfoCard(false)} />
+      <BottomCard className="custom-child-info-wrapper" onClose={() => setShowInfoCard(false)} title={'Add Custom Info'} showCard={showInfoCard}>
+        <CustomChildInfo setActiveChild={(child) => setActiveInfoChild(child)} activeChild={activeInfoChild} onClose={() => setShowInfoCard(false)} />
+      </BottomCard>
 
       {/* NEW CHILD + */}
-      <NewChildForm showCard={showCard} hideCard={() => setShowCard(false)} />
+      <BottomCard className="new-child-wrapper" title={'Add Child'} showCard={showNewChildForm} onClose={() => setShowNewChildForm(false)}>
+        <NewChildForm hideCard={() => setShowNewChildForm(false)} />
+      </BottomCard>
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
         {/* PROFILE PIC */}
         <div id="children-container" className="mb-10">
           <>
-            {Manager.isValid(activeInfoChild?.general['profilepic']) && (
-              <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild.general['profilepic']})` }}>
-                <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
-                <div className="after">
-                  <span className="material-icons-outlined">flip_camera_ios</span>
-                </div>
-              </div>
-            )}
-            {!Manager.isValid(activeInfoChild?.general['profilepic']) && (
-              <div className="profile-pic-container" style={{ backgroundImage: `url(${require('../../../img/upload-image-placeholder.jpg')})` }}>
-                <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
-                <div className="after">
-                  <span className="material-icons-outlined">flip_camera_ios</span>
-                </div>
-              </div>
+            {activeInfoChild && activeInfoChild?.general && (
+              <>
+                {Manager.isValid(activeInfoChild?.general['profilepic']) && (
+                  <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilepic']})` }}>
+                    <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
+                    <div className="after">
+                      <span className="material-icons-outlined">flip_camera_ios</span>
+                    </div>
+                  </div>
+                )}
+                {!Manager.isValid(activeInfoChild?.general['profilepic']) && (
+                  <div className="profile-pic-container no-image">
+                    <div className="after">
+                      <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
+                      <BiImageAdd />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             <span className="child-name">{formatNameFirstNameOnly(activeInfoChild?.general?.name)}</span>
@@ -118,10 +157,10 @@ export default function ChildInfo() {
           <div id="child-info">
             {activeInfoChild && (
               <div className="form">
-                <General />
-                <Medical />
-                <Schooling />
-                <Behavior />
+                <General activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                <Medical activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                <Schooling activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                <Behavior activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
               </div>
             )}
           </div>

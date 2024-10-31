@@ -19,7 +19,7 @@ import {
 } from '../../../globalFunctions'
 import DB from '@db'
 
-function ChildSelector({ showCard, hideCard }) {
+function ChildSelector({ setActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, activeInfoChild } = state
   const [children, setChildren] = useState(currentUser?.children)
@@ -34,29 +34,16 @@ function ChildSelector({ showCard, hideCard }) {
   }, [activeInfoChild])
 
   return (
-    <BottomCard
-      onClose={hideCard}
-      title={'Choose Child'}
-      subtitle="Select which child you would like to view & edit"
-      showCard={showCard}
-      className={`success`}>
-      <div className="flex gap wrap mt-15">
-        {Manager.isValid(children, true) &&
-          children.map((child, index) => {
-            return (
-              <p
-                className="child-name mt-0 w-30"
-                key={index}
-                onClick={(e) => {
-                  setState({ ...state, activeInfoChild: child })
-                  hideCard()
-                }}>
-                {formatNameFirstNameOnly(child.general.name)}
-              </p>
-            )
-          })}
-      </div>
-    </BottomCard>
+    <div className="flex gap wrap mt-15">
+      {Manager.isValid(children, true) &&
+        children.map((child, index) => {
+          return (
+            <p className="child-name mt-0 w-30" key={index} onClick={(e) => setActiveChild(child)}>
+              {formatNameFirstNameOnly(child?.general?.name)}
+            </p>
+          )
+        })}
+    </div>
   )
 }
 

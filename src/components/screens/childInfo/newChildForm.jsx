@@ -33,7 +33,7 @@ import {
 } from '../../../globalFunctions'
 import ModelNames from '../../../models/modelNames'
 
-const NewChildForm = ({ showCard, hideCard }) => {
+const NewChildForm = ({ hideCard }) => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
 
@@ -99,58 +99,46 @@ const NewChildForm = ({ showCard, hideCard }) => {
   }, [])
 
   return (
-    <BottomCard
-      className="new-child-wrapper"
-      title={'Add Child'}
-      showCard={showCard}
-      onClose={() => {
-        resetForm()
-      }}>
-      <div id="new-child-container" className={`${theme}  form`}>
-        <div className="form new-child-form">
-          <p className="screen-title pl-0">Add Child</p>
-          {/* NAME */}
-          <label>
-            Name <span className="asterisk">*</span>
-          </label>
-          <input className="mb-10" type="text" onChange={(e) => setName(e.target.value)} />
-          <label>
-            Date of Birth <span className="asterisk">*</span>
-          </label>
-          <MobileDatePicker className="mb-10 mt-0 w-100 event-from-date mui-input" onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
-          <label>Phone Number</label>
-          <input type="tel" className="mb-10" onChange={(e) => setPhoneNumber(e.target.value)} />
-          <label>Home Address</label>
-          <Autocomplete
-            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-            options={{
-              types: ['geocode', 'establishment'],
-              componentRestrictions: { country: 'usa' },
-            }}
-            className="mb-15"
-            onPlaceSelected={(place) => {
-              setAddress(place.formatted_address)
-            }}
-          />
+    <div id="new-child-container" className={`${theme}  form`}>
+      <div className="form new-child-form">
+        <p className="screen-title pl-0">Add Child</p>
+        {/* NAME */}
+        <label>
+          Name <span className="asterisk">*</span>
+        </label>
+        <input className="mb-10" type="text" onChange={(e) => setName(e.target.value)} />
+        <label>
+          Date of Birth <span className="asterisk">*</span>
+        </label>
+        <MobileDatePicker className="mb-10 mt-0 w-100 event-from-date mui-input" onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
+        <label>Phone Number</label>
+        <input type="tel" className="mb-10" onChange={(e) => setPhoneNumber(e.target.value)} />
+        <label>Home Address</label>
+        <Autocomplete
+          apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+          options={{
+            types: ['geocode', 'establishment'],
+            componentRestrictions: { country: 'usa' },
+          }}
+          className="mb-15"
+          onPlaceSelected={(place) => {
+            setAddress(place.formatted_address)
+          }}
+        />
 
-          {/* GENDER */}
-          <label>Gender</label>
-          <CheckboxGroup boxWidth={20} elClass="mb-20" labels={['Male', 'Female']} onCheck={(e) => handleGenderSelect(e)} />
-        </div>
-        <div className="flex buttons gap">
-          <button className="button card-button" onClick={submit}>
-            Add {name.length > 0 ? name : ''} <span className="material-icons-round ml-10 fs-22">check</span>
-          </button>
-          <button
-            className="button card-button delete"
-            onClick={() => {
-              setShowCard(false)
-            }}>
-            Cancel
-          </button>
-        </div>
+        {/* GENDER */}
+        <label>Gender</label>
+        <CheckboxGroup boxWidth={20} elClass="mb-20" labels={['Male', 'Female']} onCheck={(e) => handleGenderSelect(e)} />
       </div>
-    </BottomCard>
+      <div className="flex buttons gap">
+        <button className="button card-button" onClick={submit}>
+          Add {name.length > 0 ? name : ''} <span className="material-icons-round ml-10 fs-22">check</span>
+        </button>
+        <button className="button card-button delete" onClick={hideCard}>
+          Cancel
+        </button>
+      </div>
+    </div>
   )
 }
 

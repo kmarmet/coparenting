@@ -213,13 +213,13 @@ const DB = {
     const key = await DB.getSnapshotKey(DB.tables.memories, memory, 'id')
     remove(child(dbRef, `${DB.tables.memories}/${key}`))
   },
-  getTable: async (tableName) => {
+  getTable: async (tableName, returnObject = false) => {
     const dbRef = ref(getDatabase())
     let tableData = []
     await get(child(dbRef, tableName)).then((snapshot) => {
       tableData = snapshot.val()
     })
-    return Manager.convertToArray(tableData)
+    return returnObject ? tableData : Manager.convertToArray(tableData)
   },
   updateIsAvailable: async (tableName) => {
     const dbRef = ref(getDatabase())

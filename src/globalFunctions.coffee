@@ -1,10 +1,11 @@
 import Swal from "sweetalert2"
 
 # Strings
-export toCamelCase = (input) ->
-  input.toString().replace /(?:^\w|[A-Z]|\b\w)/g, (word, index) ->
+export toCamelCase = (str) ->
+  return str.replace /(?:^\w|[A-Z]|\b\w)/g, (word, index) ->
     if index == 0 then word.toLowerCase() else word.toUpperCase()
-    input.replace /\s+/g, ''
+  str =  str.replace(/\s+/g, '').replaceAll(" ",  "")
+  return str
 
 export throwError = (title) ->
   displayAlert("error", title)

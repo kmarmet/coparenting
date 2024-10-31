@@ -23,34 +23,35 @@ import {
   uniqueArray,
   getFileExtension,
   lowercaseShouldBeLowercase,
+  successAlert,
 } from '../../../globalFunctions'
 import DateFormats from '../../../constants/dateFormats'
 import DB_UserScoped from '@userScoped'
 
-function Schooling() {
+function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+  const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [schoolingValues, setSchoolingValues] = useState([])
   const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'schooling', prop)
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'schooling', Manager.toCamelCase(prop))
     setSelectedChild()
     setArrowDirection('down')
-    setState({ ...state, activeInfoChild: updatedChild })
+    setActiveChild(updatedChild)
   }
 
   const update = async (section, prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'schooling', prop, value)
-    setState({ ...state, activeInfoChild: updatedChild })
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', Manager.toCamelCase(prop), value)
     successAlert('Updated!')
+    setActiveChild(updatedChild)
   }
 
   const setSelectedChild = () => {
-    if (Manager.isValid(activeInfoChild.schooling, false, true)) {
+    if (Manager.isValid(activeChild.schooling)) {
       // Set info
-      let values = Object.entries(activeInfoChild.schooling)
+      let values = Object.entries(activeChild.schooling)
       setSchoolingValues(values)
     } else {
       setSchoolingValues([])
@@ -59,30 +60,26 @@ function Schooling() {
 
   useEffect(() => {
     setSelectedChild()
-  }, [activeInfoChild])
-
-  useEffect(() => {
-    setSelectedChild()
-  }, [])
+  }, [activeChild])
 
   return (
     <div className="info-section section schooling">
       <Accordion>
         <p
-          className={activeInfoChild.schooling === undefined ? 'disabled header schooling' : 'header schooling'}
+          className={!Manager.isValid(activeChild.schooling) ? 'disabled header schooling' : 'header schooling'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.schooling')
             setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
             } else {
-              if (activeInfoChild.schooling !== undefined) {
+              if (activeChild.schooling !== undefined) {
                 parent.classList.add('active')
               }
             }
             setExpandAccordion(!expandAccordion)
           }}>
-          <span className="material-icons-round">school</span> Schooling {activeInfoChild.schooling === undefined ? '- No Info' : ''}
+          <span className="material-icons-round">school</span> Schooling {!Manager.isValid(activeChild.schooling) ? '- No Info' : ''}
           <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
         </p>
         <Accordion.Panel expanded={expandAccordion}>

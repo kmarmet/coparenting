@@ -212,6 +212,7 @@ export default function App() {
         confirmAlert('Update Available', 'Update', false, async () => {
           await DB_UserScoped.updateUserRecord(currentUser.phone, 'updatedApp', true)
           logout()
+
           setTimeout(() => {
             window.location.reload()
           }, 300)

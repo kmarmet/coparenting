@@ -19,6 +19,7 @@ import {
   removeFileExtension,
   camelCaseToString,
   contains,
+  successAlert,
   displayAlert,
   uniqueArray,
   getFileExtension,
@@ -26,59 +27,55 @@ import {
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
 
-function Behavior() {
+function Behavior({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+  const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [behaviorValues, setBehaviorValues] = useState([])
   const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'behavior', prop)
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'behavior', Manager.toCamelCase(prop))
     setSelectedChild()
     setArrowDirection('down')
-    setState({ ...state, activeInfoChild: updatedChild })
+    setActiveChild(updatedChild)
   }
 
   const update = async (section, prop, value, isArray) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'behavior', prop, value)
-    setState({ ...state, activeInfoChild: updatedChild })
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'behavior', Manager.toCamelCase(prop), value)
+    setActiveChild(updatedChild)
     successAlert('Updated!')
   }
   const setSelectedChild = () => {
-    if (Manager.isValid(activeInfoChild.behavior, false, true)) {
+    if (Manager.isValid(activeChild.behavior)) {
       // Set info
-      let values = Object.entries(activeInfoChild.behavior)
+      let values = Object.entries(activeChild.behavior)
       setBehaviorValues(values)
     }
   }
 
   useEffect(() => {
     setSelectedChild()
-  }, [])
-
-  useEffect(() => {
-    setSelectedChild()
-  }, [activeInfoChild])
+  }, [activeChild])
 
   return (
     <div className="info-section section behavior">
       <Accordion>
         <p
-          className={activeInfoChild.behavior === undefined ? 'disabled header behavior' : 'header behavior'}
+          className={!Manager.isValid(activeChild.behavior) ? 'disabled header behavior' : 'header behavior'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.behavior')
             setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
             } else {
-              if (activeInfoChild.behavior !== undefined) {
+              if (activeChild.behavior !== undefined) {
                 parent.classList.add('active')
               }
             }
             setExpandAccordion(!expandAccordion)
           }}>
-          <span className="material-icons-round">psychology</span> Behavior {activeInfoChild.behavior === undefined ? '- No Info' : ''}
+          <span className="material-icons-round">psychology</span> Behavior {!Manager.isValid(activeChild.behavior) ? '- No Info' : ''}
           <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
         </p>
         <Accordion.Panel expanded={expandAccordion === true ? true : false}>

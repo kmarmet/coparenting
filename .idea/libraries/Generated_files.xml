@@ -2,7 +2,6 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/src/api/dadJokes.js" />
         <item url="file://$PROJECT_DIR$/src/api/pushAlert.js" />
         <item url="file://$PROJECT_DIR$/src/constants/allMenuItems.js" />
         <item url="file://$PROJECT_DIR$/src/constants/dateFormats.js" />
@@ -18,26 +17,30 @@
         <item url="file://$PROJECT_DIR$/src/managers/appManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/calendarManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
+        <item url="file://$PROJECT_DIR$/src/managers/emailManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/smsManager.js" />
-        <item url="file://$PROJECT_DIR$/src/managers/themeManager.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
+        <item url="file://$PROJECT_DIR$/src/models/chatRecoveryRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
+        <item url="file://$PROJECT_DIR$/src/models/child/general.js" />
+        <item url="file://$PROJECT_DIR$/src/models/conversationMessage.js" />
         <item url="file://$PROJECT_DIR$/src/models/coparent.js" />
         <item url="file://$PROJECT_DIR$/src/models/memory.js" />
         <item url="file://$PROJECT_DIR$/src/models/modelNames.js" />
         <item url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
         <item url="file://$PROJECT_DIR$/src/models/shortcut.js" />
+        <item url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/titleSuggestion.js" />
+        <item url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/user.js" />
         <item url="file://$PROJECT_DIR$/src/prototypes.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/src/api/dadJokes.js" />
       <root url="file://$PROJECT_DIR$/src/api/pushAlert.js" />
       <root url="file://$PROJECT_DIR$/src/constants/allMenuItems.js" />
       <root url="file://$PROJECT_DIR$/src/constants/dateFormats.js" />
@@ -53,20 +56,25 @@
       <root url="file://$PROJECT_DIR$/src/managers/appManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/calendarManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/emailManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/smsManager.js" />
-      <root url="file://$PROJECT_DIR$/src/managers/themeManager.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
+      <root url="file://$PROJECT_DIR$/src/models/chatRecoveryRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
+      <root url="file://$PROJECT_DIR$/src/models/child/general.js" />
+      <root url="file://$PROJECT_DIR$/src/models/conversationMessage.js" />
       <root url="file://$PROJECT_DIR$/src/models/coparent.js" />
       <root url="file://$PROJECT_DIR$/src/models/memory.js" />
       <root url="file://$PROJECT_DIR$/src/models/modelNames.js" />
       <root url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
       <root url="file://$PROJECT_DIR$/src/models/shortcut.js" />
+      <root url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/titleSuggestion.js" />
+      <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
       <root url="file://$PROJECT_DIR$/src/prototypes.js" />
     </CLASSES>

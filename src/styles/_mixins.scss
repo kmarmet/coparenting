@@ -2042,6 +2042,7 @@
   opacity: 0;
   max-height: 0;
   overflow: auto;
+  width: 100vw;
 
   &.active {
     max-height: 70vh;
@@ -2049,6 +2050,7 @@
     bottom: 0;
     z-index: $maxZIndex;
     transition: all 0.4s ease-in-out;
+
   }
 
   #toc-scroll-button {
@@ -2652,7 +2654,7 @@
   transition: all 0.5s ease-in-out;
   border-radius: 0 0 30px 30px;
   opacity: 0;
-  height: calc(75px + env(safe-area-inset-bottom));
+  height: calc(90px + env(safe-area-inset-bottom));
   bottom: -200px;
   padding-bottom: env(safe-area-inset-bottom);
   display: flex;
@@ -2678,6 +2680,10 @@
       display: flex;
       width: 40px;
       color: $lightDarkGrey;
+      
+      svg {
+        font-size: 32px;
+      }
 
       &.settings {
         svg {
@@ -2703,7 +2709,7 @@
         opacity: 1;
 
         svg {
-          font-size: 28px;
+//          font-size: 50px;
         }
 
         .material-icons-round {

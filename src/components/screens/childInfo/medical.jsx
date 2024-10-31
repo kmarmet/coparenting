@@ -22,35 +22,35 @@ import {
   displayAlert,
   uniqueArray,
   getFileExtension,
+  successAlert,
   lowercaseShouldBeLowercase,
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
 
-function Medical() {
+function Medical({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+  const { currentUser, theme } = state
   const [expandAccordion, setExpandAccordion] = useState(false)
   const [medicalValues, setMedicalValues] = useState([])
   const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'medical', prop)
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', Manager.toCamelCase(prop))
     setArrowDirection('down')
-    console.log(prop)
-    setState({ ...state, activeInfoChild: updatedChild })
+    setActiveChild(updatedChild)
     setSelectedChild()
   }
 
-  const update = async (section, prop, value, isArray) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'medical', prop, value)
-    setState({ ...state, activeInfoChild: updatedChild })
+  const update = async (section, prop, value) => {
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'medical', Manager.toCamelCase(prop), value)
+    setActiveChild(updatedChild)
     successAlert('Updated!')
   }
 
   const setSelectedChild = () => {
-    if (Manager.isValid(activeInfoChild.medical, false)) {
+    if (Manager.isValid(activeChild.medical)) {
       // Set info
-      let values = Object.entries(activeInfoChild.medical)
+      let values = Object.entries(activeChild.medical)
       setMedicalValues(values)
     } else {
       setMedicalValues([])
@@ -59,13 +59,13 @@ function Medical() {
 
   useEffect(() => {
     setSelectedChild()
-  }, [activeInfoChild])
+  }, [activeChild])
 
   return (
     <div className="info-section section medical">
       <Accordion>
         <p
-          className={activeInfoChild.medical === undefined ? 'disabled header medical' : 'header medical'}
+          className={!Manager.isValid(activeChild.medical) ? 'disabled header medical' : 'header medical'}
           onClick={(e) => {
             const parent = document.querySelector('.info-section.medical')
             setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
@@ -73,13 +73,13 @@ function Medical() {
             if (parent.classList.contains('active')) {
               parent.classList.remove('active')
             } else {
-              if (activeInfoChild.medical !== undefined) {
+              if (activeChild.medical !== undefined) {
                 parent.classList.add('active')
               }
             }
             setExpandAccordion(!expandAccordion)
           }}>
-          <span className="material-icons-round">medical_information</span> Medical {activeInfoChild.medical === undefined ? '- No Info' : ''}
+          <span className="material-icons-round">medical_information</span> Medical {!Manager.isValid(activeChild.medical) ? '- No Info' : ''}
           <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
         </p>
         <Accordion.Panel expanded={expandAccordion === true ? true : false}>

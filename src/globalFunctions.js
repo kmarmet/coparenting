@@ -2,15 +2,16 @@
 import Swal from "sweetalert2";
 
 // Strings
-export var toCamelCase = function(input) {
-  return input.toString().replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+export var toCamelCase = function(str) {
+  return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
     if (index === 0) {
-      word.toLowerCase();
+      return word.toLowerCase();
     } else {
-      word.toUpperCase();
+      return word.toUpperCase();
     }
-    return input.replace(/\s+/g, '');
   });
+  str = str.replace(/\s+/g, '').replaceAll(" ", "");
+  return str;
 };
 
 export var throwError = function(title) {

@@ -194,11 +194,12 @@ const DB_UserScoped = {
   },
   addUserChildProp: async (currentUser, activeChild, infoSection, prop, value) => {
     const dbRef = ref(getDatabase())
+    console.log(activeChild)
     let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
     if (key !== null) {
-      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${prop.toLowerCase()}`), `${value}`)
+      await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${infoSection}/${prop}`), `${value}`)
     }
-    const returnChild = await DB.getTable(`users/${currentUser.phone}/children/${key}`)
+    const returnChild = await DB.getTable(`users/${currentUser.phone}/children/${key}`, true)
     return returnChild
   },
   addCoparentProp: async (currentUser, coparent, prop, value) => {
@@ -226,8 +227,8 @@ const DB_UserScoped = {
   updateUserChild: async (currentUser, activeChild, section, prop, value) => {
     const dbRef = ref(getDatabase())
     let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
-    await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop.toLowerCase()}`), value)
-    const returnChild = await DB.getTable(`users/${currentUser.phone}/children/${key}`)
+    await set(child(dbRef, `users/${currentUser.phone}/children/${key}/${section}/${prop}`), value)
+    const returnChild = await DB.getTable(`users/${currentUser.phone}/children/${key}`, true)
     return returnChild
   },
   updateCoparent: async (currentUser, coparent, prop, value) => {
@@ -300,8 +301,8 @@ const DB_UserScoped = {
   deleteUserChildPropByPath: async (currentUser, activeChild, section, prop) => {
     const dbRef = ref(getDatabase())
     let key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/children/`, activeChild, 'id')
-    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/${section}/${prop.toLowerCase()}`)
-    const returnChild = await DB.getTable(`users/${currentUser.phone}/children/${key}`)
+    await DB.deleteByPath(`/users/${currentUser.phone}/children/${key}/${section}/${prop}`)
+    const returnChild = await DB.getTable(`users/${currentUser.phone}/children/${key}`, true)
     return returnChild
   },
   deleteCoparent: async (currentUser, coparent) => {

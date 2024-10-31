@@ -425,6 +425,7 @@ export default function Visitation() {
         await addEveryWeekendToCalendar()
       })
     }
+    console.log(true)
   }, [scheduleType])
 
   useEffect(() => {
