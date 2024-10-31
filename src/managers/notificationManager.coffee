@@ -1,4 +1,4 @@
-import { child, get, getDatabase, onValue, push, ref, remove, set, update } from 'firebase/database'
+import { child, get, getDatabase, ref } from 'firebase/database'
 import DB from '@db'
 import PushAlertApi from '@api/pushAlert'
 

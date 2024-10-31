@@ -1,9 +1,8 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { initializeApp } from 'firebase/app'
-import { child, get, getDatabase, onValue, ref, set } from 'firebase/database'
-import { getAuth, setPersistence, signOut, onAuthStateChanged } from 'firebase/auth'
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
 
 import ScreenNames from '@screenNames'
 import globalState from './context.js'
@@ -11,8 +10,6 @@ import DB from '@db'
 import firebaseConfig from './firebaseConfig.js'
 import Manager from '@manager'
 import moment from 'moment'
-import Swal from 'sweetalert2'
-import { LogtoProvider, LogtoConfig, useLogto } from '@logto/react'
 
 // Screens
 import EventCalendar from '@screens/calendar.jsx'
@@ -59,25 +56,25 @@ import SlideOutMenu from './components/slideOutMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
 import DateFormats from './constants/dateFormats'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  inputAlert,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
+  confirmAlert,
   contains,
   displayAlert,
-  throwError,
-  successAlert,
-  uniqueArray,
-  confirmAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  inputAlert,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from './globalFunctions'
 import DB_UserScoped from '@userScoped'
 import ContactUs from './components/screens/contactUs'
@@ -175,17 +172,25 @@ export default function App() {
       })
   }
 
-  // ON PAGE LOAD
+  const getUnreadMessageCount = async () => {}
+
+  // Clear app badge
   useEffect(() => {
-    setState({ ...state, showMenuButton: false, showNavbar: true, menuIsOpen: false })
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
     }
+  }, [currentScreen])
+
+  // ON PAGE LOAD
+  useEffect(() => {
+    // Error Boundary Test
+    // throw new Error('Something went wrong')
+
+    setState({ ...state, showMenuButton: false, showNavbar: true, menuIsOpen: false })
 
     AppManager.deleteExpiredCalendarEvents().then((r) => r)
     AppManager.deleteExpiredMemories().then((r) => r)
     disableUpdateAlert().then((r) => r)
-    // throw new Error('Something went wrong')
     document.body.appendChild(myCanvas)
 
     onAuthStateChanged(auth, (user) => {
@@ -218,11 +223,9 @@ export default function App() {
           }, 300)
         })
       }
+      getUnreadMessageCount().then((r) => r)
     }
   }, [currentUser])
-
-  // Show update alert -> set user prop
-  useEffect(() => {}, [currentUser])
 
   useEffect(() => {
     document.querySelector('#app-container').style.height = `${window.screen.height}px`

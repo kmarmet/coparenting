@@ -1,6 +1,5 @@
-import { getStorage, ref, getDownloadURL, listAll, uploadBytes, deleteObject, put, firebase, putString, uploadString } from 'firebase/storage'
+import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from 'firebase/storage'
 import Manager from '@manager'
-import DB_UserScoped from '@userScoped'
 import DB from '@db'
 
 const FirebaseStorage = {

@@ -3,29 +3,26 @@ import { DebounceInput } from 'react-debounce-input'
 import { Accordion } from 'rsuite'
 import globalState from '../../../context'
 import Manager from '@manager'
-import DB from '@db'
-import { child, getDatabase, onValue, ref, set, get } from 'firebase/database'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   camelCaseToString,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
   lowercaseShouldBeLowercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
   successAlert,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
-import DateFormats from '../../../constants/dateFormats'
 import DB_UserScoped from '@userScoped'
 
 function Schooling({ activeChild, setActiveChild }) {

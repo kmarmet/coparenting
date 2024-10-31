@@ -3,36 +3,29 @@ import { useContext, useEffect, useState } from 'react'
 import ScreenNames from '@screenNames'
 import DB from '@db'
 import Manager from '@manager'
-import DB_UserScoped from '@userScoped'
 import globalState from '../../../context'
-import DocViewer from './docViewer'
-import DB_DocumentScoped from '@documentScoped'
-import AddNewButton from '../../shared/addNewButton'
-import FirebaseStorage from '@firebaseStorage'
 import DocumentsManager from '../../../managers/documentsManager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-import moment from 'moment'
 
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import SecurityManager from '../../../managers/securityManager'
 import UploadDocuments from './uploadDocuments'
-import DateFormats from '../../../constants/dateFormats'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)

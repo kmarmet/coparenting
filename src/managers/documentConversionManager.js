@@ -2,22 +2,22 @@ import Manager from '@manager'
 import { createWorker } from 'tesseract.js'
 import FirebaseStorage from '@firebaseStorage'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
   getPositionOfWordInText,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../globalFunctions'
 
 const DocumentConversionManager = {

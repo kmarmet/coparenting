@@ -1,10 +1,7 @@
-import { child, get, getDatabase, onValue, push, ref, remove, set, update } from 'firebase/database'
-import { getStorage, getDownloadURL, listAll, uploadBytes, deleteObject, put, firebase, bucket } from 'firebase/storage'
+import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
 import moment from 'moment'
 import Manager from '@manager'
-import FirebaseStorage from '@firebaseStorage'
 import DB from '@db'
-import AppManager from '@managers/appManager'
 import SecurityManager from './securityManager'
 
 const ChatManager = {

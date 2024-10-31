@@ -1,21 +1,19 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import ScreenNames from '@screenNames'
+import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '@manager'
-import BottomCard from '../../shared/bottomCard'
 import {
-  toCamelCase,
-  getFirstWord,
   formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
   formatNameFirstNameOnly,
+  getFirstWord,
+  isAllUppercase,
   removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
   uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import DB from '@db'
 

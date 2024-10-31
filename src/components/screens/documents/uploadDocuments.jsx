@@ -1,36 +1,31 @@
-import React, { useState, useEffect, useContext, startTransition } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '@manager'
 import ScreenNames from '@screenNames'
 import FirebaseStorage from '@firebaseStorage'
-import Modal from '@shared/modal'
-import DB from '@db'
-import SmsManager from '@managers/smsManager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import Doc from '../../../models/doc'
-import PushAlertApi from '@api/pushAlert'
 import NotificationManager from '@managers/notificationManager'
 import DocumentsManager from '../../../managers/documentsManager'
 
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
   uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import UploadInputs from '../../shared/uploadInputs'
-import DateFormats from '../../../constants/dateFormats'
 import SecurityManager from '../../../managers/securityManager'
 
 export default function UploadDocuments({ showCard, hideCard }) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Manager from '@manager'
 import globalState from '../../../context.js'
 import 'rsuite/dist/rsuite.min.css'
@@ -6,28 +6,27 @@ import ScreenNames from '@screenNames'
 import { useSwipeable } from 'react-swipeable'
 import ChatManager from '@managers/chatManager.js'
 import DB_UserScoped from '@userScoped'
-import { BiSolidMessageRoundedMinus } from 'react-icons/bi'
+import { BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
 
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
   confirmAlert,
-  removeFileExtension,
   contains,
   displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
   uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
-import { BiSolidEdit } from 'react-icons/bi'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -102,7 +101,7 @@ const Chats = () => {
               setShowNewConvoCard(true)
             },
             color: 'green',
-            icon: <BiSolidEdit />,
+            icon: <BiSolidEdit className={'fs-26'} />,
           },
         })
       }, 300)

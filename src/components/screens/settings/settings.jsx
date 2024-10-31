@@ -1,39 +1,32 @@
 import React, { useContext, useEffect, useState } from 'react'
-import ScreenNames from '@screenNames'
 import globalState from '../../../context'
 import Manager from '@manager'
-import CheckboxGroup from '@shared/checkboxGroup'
-import { Accordion, DatePicker } from 'rsuite'
 import moment from 'moment'
 import DB_UserScoped from '@userScoped'
-import ReminderTimes from 'constants/reminderTimes'
-import DB from '@db'
-import AllMenuItems from '../../../constants/allMenuItems'
 import '@prototypes'
 import Shortcut from '../../../models/shortcut.js'
 import MenuMapper from '../../../mappers/menuMapper.js'
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../../constants/dateFormats'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
+  confirmAlert,
   contains,
   displayAlert,
-  throwError,
-  successAlert,
-  uniqueArray,
-  confirmAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import DateManager from '../../../managers/dateManager'
 

@@ -1,31 +1,28 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import DB from '@db'
 import globalState from '../../../context'
-import Alert from '@shared/alert'
 import Manager from '@manager'
-import SmsManager from '@managers/smsManager'
 import ScreenNames from '@screenNames'
-import { useSwipeable } from 'react-swipeable'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
-  successAlert,
+  getFirstWord,
   inputAlert,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
-import { getAuth, sendCustomPasswordResetEmail, sendPasswordResetEmail } from 'firebase/auth'
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 

@@ -1,49 +1,44 @@
-import React, { useEffect, useState, useContext, useRef } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import DB from '@db'
 import tables from '@screenNames'
 import Manager from '@manager'
 import globalState from '../../context'
-import { Accordion } from 'rsuite'
 import moment from 'moment'
 import CheckboxGroup from '@shared/checkboxGroup'
 import Expense from '@models/expense'
 import PushAlertApi from '@api/pushAlert'
 import FirebaseStorage from '@firebaseStorage'
-import ScreenNames from '@screenNames'
 import NotificationManager from '@managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
-import { useSwipeable } from 'react-swipeable'
 import CalendarMapper from 'mappers/calMapper'
 import DateFormats from 'constants/dateFormats'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
-import { MobileTimePicker } from '@mui/x-date-pickers'
 import DatetimePickerViews from '../../constants/datetimePickerViews'
-import BottomButton from '../shared/bottomButton'
 import Numpad from '../shared/numpad'
 import Toggle from 'react-toggle'
+
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
-  throwError,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
 import BottomCard from '../shared/bottomCard'
 import UploadInputs from '../shared/uploadInputs'
 import DateManager from '../../managers/dateManager'
 import ModelNames from '../../models/modelNames'
-import Swal from 'sweetalert2'
 
 function NewExpenseForm({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)

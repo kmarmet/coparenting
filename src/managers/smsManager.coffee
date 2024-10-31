@@ -1,5 +1,3 @@
-import Manager from '@manager'
-
 apiKey = process.env.REACT_APP_SMS_API_KEY
 
 export default SmsManager =

@@ -2691,14 +2691,14 @@
         }
       }
 
-      &.active:not(#menu-button) {
+      &.active:not(#add-new-button) {
         opacity: 1;
         color: $mainBlue;
         position: relative;
         transition: all 0.3s ease-in-out;
       }
 
-      &#menu-button {
+      &#add-new-button {
         border-radius: 100%;
         display: flex;
         justify-content: center;

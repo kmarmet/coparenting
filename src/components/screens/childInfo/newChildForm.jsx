@@ -1,35 +1,30 @@
 import moment from 'moment'
-import React, { useState, useEffect, useContext } from 'react'
-import { getDatabase, ref, set, get, child, onValue } from 'firebase/database'
+import React, { useContext, useEffect, useState } from 'react'
 import DB from '@db'
 import globalState from '../../../context'
 import Manager from '@manager'
-import ScreenNames from '@screenNames'
 import Autocomplete from 'react-google-autocomplete'
 import General from '@models/child/general'
 import Child from '@models/child/child'
 import CheckboxGroup from '@shared/checkboxGroup'
 import DB_UserScoped from '@userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
-import { useSwipeable } from 'react-swipeable'
-import BottomButton from '../../shared/bottomButton'
-import BottomCard from '../../shared/bottomCard'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import ModelNames from '../../../models/modelNames'
 

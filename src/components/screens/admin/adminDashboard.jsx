@@ -1,33 +1,31 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import moment from 'moment'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   formatPhone,
-  uniqueArray,
   getFileExtension,
-  throwError,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
   successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import AppManager from '../../../managers/appManager'
 import DB from '@db'
 import Manager from '@manager'
 import DateFormats from '../../../constants/dateFormats'
-import DB_UserScoped from '@userScoped'
 import CheckboxGroup from '../../shared/checkboxGroup'
-import doc from '../../../models/doc'
 
 export default function AdminDashboard() {
   const { state, setState } = useContext(globalState)

@@ -1,29 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react'
-import ScreenNames from '@screenNames'
 import globalState from '../../context'
 import Manager from '@manager'
 import '@prototypes'
 import BottomCard from '../shared/bottomCard'
 import EmailManager from '../../managers/emailManager'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
+  confirmAlert,
   contains,
   displayAlert,
-  throwError,
-  successAlert,
-  uniqueArray,
-  confirmAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
 
 import { MdOutlineAppShortcut } from 'react-icons/md'

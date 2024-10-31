@@ -18,28 +18,28 @@ import ChildUser from 'models/child/childUser.js'
 import { phone } from 'phone'
 import ParentInput from '../../parentInput'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
-  throwError,
   displayAlert,
-  uniqueArray,
-  successAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   formatPhone,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import moment from 'moment'
 import ModelNames from '../../../models/modelNames'
-import { getAuth, setPersistence, sendSignInLinkToEmail, createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, getAuth, sendSignInLinkToEmail } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import InstallAppPopup from '../../installAppPopup'

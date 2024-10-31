@@ -3,11 +3,11 @@
   "short_name": "Peaceful coParenting",
   "start_url": "/",
   "id": "https://peaceful-coparenting.app/",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#f4f8fb",
   "theme_color": "#f4f8fb",
-  "orientation": "landscape",
-  "display_override": ["fullscreen", "minimal-ui"],
+  "orientation": "portrait",
+  "display_override": ["standalone", "minimal-ui"],
   "icons": [
     {
       "src": "192.png",

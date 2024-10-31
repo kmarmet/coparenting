@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
-import { DatePicker, DateRangePicker } from 'rsuite'
+import { DateRangePicker } from 'rsuite'
 import PushAlertApi from '@api/pushAlert'
 import SwapDurations from '@constants/swapDurations'
 import globalState from '../../context'
@@ -9,28 +9,26 @@ import SwapRequest from '../../models/swapRequest'
 import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import NotificationManager from '@managers/notificationManager.js'
-import BottomButton from 'components/shared/bottomButton'
-import ScreenNames from 'constants/screenNames'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import BottomCard from '../shared/bottomCard'
 import Toggle from 'react-toggle'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
 
 import Swal from 'sweetalert2'

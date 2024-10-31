@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext, useRef, createRef } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import DB from '@db'
 import Manager from '@manager'
 import globalState from '../../context.js'
-import { getDatabase, ref, set, get, child, onValue } from 'firebase/database'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
 import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
 import MyConfetti from '@shared/myConfetti.js'
@@ -13,7 +13,7 @@ import DateFormats from 'constants/dateFormats.js'
 import moment from 'moment'
 import '../../prototypes.js'
 import BottomCard from '../shared/bottomCard'
-import { PiConfettiDuotone } from 'react-icons/pi'
+import { PiBellSimpleRinging, PiClockCountdownDuotone, PiConfettiDuotone, PiTrashDuotone } from 'react-icons/pi'
 import SecurityManager from '../../managers/securityManager'
 import NewExpenseForm from '../forms/newExpenseForm'
 import FirebaseStorage from '@firebaseStorage'
@@ -21,35 +21,32 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
+  confirmAlert,
   contains,
   displayAlert,
-  throwError,
-  successAlert,
-  uniqueArray,
-  confirmAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
 
 // ICONS
 import { ImAppleinc } from 'react-icons/im'
 import { IoLogoVenmo } from 'react-icons/io5'
-import { SiZelle } from 'react-icons/si'
+import { SiCashapp, SiZelle } from 'react-icons/si'
 import { LiaCcPaypal } from 'react-icons/lia'
-import { PiClockCountdownDuotone, PiTrashDuotone } from 'react-icons/pi'
 import { BsArrowsAngleExpand } from 'react-icons/bs'
-import { PiBellSimpleRinging } from 'react-icons/pi'
-import { SiCashapp } from 'react-icons/si'
 import { MdPriceCheck } from 'react-icons/md'
 
 // VIEW TYPES

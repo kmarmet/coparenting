@@ -1,12 +1,13 @@
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
-import { Accordion, DatePicker, Dropdown, DateRangePicker } from 'rsuite'
+import { DateRangePicker } from 'rsuite'
 import Autocomplete from 'react-google-autocomplete'
 import scheduleTypes from '@constants/scheduleTypes'
 import globalState from '../../context'
 import DB from '@db'
 import CalendarEvent from '@models/calendarEvent'
 import Manager from '@manager'
+import Manger from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import VisitationManager from '@managers/visitationManager'
 import MyConfetti from '@shared/myConfetti'
@@ -15,28 +16,25 @@ import Note from '@shared/note'
 import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager'
 import VisitationMapper from 'mappers/visitationMapper'
-import ScreenNames from '@screenNames'
-import Manger from '@manager'
 import BottomButton from '../shared/bottomButton'
 import { MobileDatePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
-import user from '../../models/user'
 import CalendarManager from '../../managers/calendarManager'
 import CalendarMapper from '../../mappers/calMapper'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
-  uniqueArray,
   confirmAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
 import BottomCard from '../shared/bottomCard'
 import ScheduleTypes from '../../constants/scheduleTypes'

@@ -4,53 +4,56 @@ import FirebaseStorage from '@firebaseStorage'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import Manager from '@manager'
 import globalState from '../../context'
-import { Accordion } from 'rsuite'
-import ImageTheater from '../shared/imageTheater'
 import Memory from '../../models/memory'
 import SecurityManager from '../../managers/securityManager'
 import NewMemoryForm from '../forms/newMemoryForm'
-import moment from 'moment'
 import ModelNames from '../../models/modelNames'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import { HiOutlineSave } from 'react-icons/hi'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
+  capitalizeFirstWord,
   contains,
   displayAlert,
-  capitalizeFirstWord,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
-import { LuImageMinus } from 'react-icons/lu'
+import { LuImageMinus, LuImagePlus } from 'react-icons/lu'
 import { saveImageFromUrl } from '../../managers/imageManager'
-import { LuImagePlus } from 'react-icons/lu'
+import BottomCard from '../shared/bottomCard'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, navbarButton } = state
   const [memories, setMemories] = useState([])
-  const [showImageTheater, setShowImageTheater] = useState(false)
   const [imgArray, setImgArray] = useState([])
-  const [defaultTheaterIndex, setDefaultTheaterIndex] = useState(0)
   const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
   const dbRef = ref(getDatabase())
   const inputFile = useRef(null)
 
+  const navbarObject = {
+    ...navbarButton,
+    action: () => {
+      setShowNewMemoryCard(true)
+    },
+    icon: <LuImagePlus className={'fs-26'} />,
+  }
+
   const getSecuredMemories = async () => {
-    setState({ ...state, isLoading: true })
     let all = await SecurityManager.getMemories(currentUser)
     if (Manager.isValid(all, true)) {
+      setState({ ...state, isLoading: true, navbarButton: navbarObject })
       const resolvedImages = async () =>
         await new Promise(async (resolve, reject) => {
           let promises = []
@@ -94,7 +97,7 @@ export default function Memories() {
           setImgArray(arr)
           setMemories(validImages)
           setTimeout(() => {
-            setState({ ...state, isLoading: false })
+            setState({ ...state, isLoading: false, navbarButton: navbarObject })
           }, 600)
           setTimeout(() => {
             addImageAnimation()
@@ -105,26 +108,29 @@ export default function Memories() {
       }
     } else {
       setMemories([])
-      setState({ ...state, isLoading: false })
+      setState({ ...state, isLoading: false, navbarButton: navbarObject })
     }
   }
 
   const deleteMemory = async (path, toDelete) => {
+    document.querySelectorAll('.memory-image').forEach((memoryImage) => memoryImage.classList.remove('active'))
     setState({ ...state, isLoading: true })
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
 
     // Delete from Firebase Realtime DB
-    await DB.deleteMemory(DB.tables.memories, toDelete).then(async () => {
+    await DB.deleteMemory(currentUser.phone, toDelete).then(async () => {
       // Delete from Firebase Storage
       await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser.id, imageName)
     })
   }
 
   const addImageAnimation = async () => {
-    document.querySelectorAll('.img-container').forEach((memoryImage, i) => {
+    document.querySelectorAll('.memory-image').forEach((memoryImage, i) => {
       setTimeout(() => {
-        memoryImage.classList.add('active')
-      }, 200 * i)
+        setTimeout(() => {
+          memoryImage.classList.add('active')
+        }, 200 * i)
+      }, 500)
     })
   }
 
@@ -141,35 +147,23 @@ export default function Memories() {
     }
   }
 
-  useEffect(() => {
-    onValue(child(dbRef, DB.tables.memories), async (snapshot) => {
+  const onTableChange = async () => {
+    onValue(child(dbRef, `${DB.tables.memories}/${currentUser.phone}`), async (snapshot) => {
       await getSecuredMemories(currentUser)
-      // Navbar Button
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            setShowNewMemoryCard(true)
-          },
-          icon: <LuImagePlus />,
-        },
-      })
     })
+  }
+
+  useEffect(() => {
+    onTableChange().then((r) => r)
     Manager.showPageContainer()
   }, [])
 
   return (
     <>
-      {/* IMAGE THEATER */}
-      <ImageTheater
-        imgArray={imgArray}
-        defaultImageIndex={defaultTheaterIndex}
-        className={showImageTheater ? 'active' : ''}
-        onClose={() => setShowImageTheater(false)}></ImageTheater>
-
       {/* NEW MEMORY FORM */}
-      <NewMemoryForm showCard={showNewMemoryCard} hideCard={(e) => setShowNewMemoryCard(false)} />
+      <BottomCard title={'New Memory'} onClose={(e) => setShowNewMemoryCard(false)} showCard={showNewMemoryCard}>
+        <NewMemoryForm hideCard={(e) => setShowNewMemoryCard(false)} />
+      </BottomCard>
 
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
@@ -189,7 +183,7 @@ export default function Memories() {
               memories.map((imgObj, index) => {
                 return (
                   <>
-                    <div style={{ backgroundImage: `url(${imgObj.url})` }} key={index} className="memory-image" data-src={imgObj.url}></div>
+                    <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}></div>
                     <div className="below-image">
                       {Manager.isValid(imgObj?.shareWith, true) && !imgObj?.shareWith.includes(currentUser.phone) && (
                         <>
@@ -205,7 +199,7 @@ export default function Memories() {
                               <LuImageMinus className={'fs-26'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
                             </div>
                           </div>
-                          <div className="text">{capitalizeFirstWord(imgObj.notes)}</div>
+                          <div className="text">{capitalizeFirstWord(imgObj?.notes)}</div>
                         </>
                       )}
                     </div>

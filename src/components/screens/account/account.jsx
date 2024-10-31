@@ -3,37 +3,35 @@ import ScreenNames from '@screenNames'
 import globalState from '../../../context.js'
 import Manager from '@manager'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
+  confirmAlert,
   contains,
   displayAlert,
-  inputAlert,
-  throwError,
-  successAlert,
-  uniqueArray,
-  confirmAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  inputAlert,
+  isAllUppercase,
   oneButtonAlert,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import UpdateContactInfo from './updateContactInfo'
-import { getAuth, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth'
+import { EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail } from 'firebase/auth'
 import validator from 'validator'
-import SmsManager from '../../../managers/smsManager'
 
 // ICONS
 import { MdOutlineContactMail, MdOutlineContactPhone } from 'react-icons/md'
-import { PiChatsCircleDuotone } from 'react-icons/pi'
-import { PiHandWavingDuotone } from 'react-icons/pi'
+import { PiChatsCircleDuotone, PiHandWavingDuotone } from 'react-icons/pi'
 
 import DB_UserScoped from '@userScoped'
 import firebaseConfig from '../../../firebaseConfig'

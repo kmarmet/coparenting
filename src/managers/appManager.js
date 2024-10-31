@@ -11,13 +11,9 @@ import moment from "moment";
 
 import {
   child,
-  get,
   getDatabase,
-  push,
   ref,
-  remove,
-  set,
-  update
+  set
 } from 'firebase/database';
 
 import DateFormats from "../constants/dateFormats";

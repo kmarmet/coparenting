@@ -1,37 +1,37 @@
-import { child, getDatabase, onValue, ref, remove, set } from 'firebase/database'
+import { getDatabase, onValue, ref } from 'firebase/database'
 import React, { useContext, useEffect, useState } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../../context'
 import DB from '@db'
 import Manager from '@manager'
-import AddNewButton from '@shared/addNewButton.jsx'
 import Confirm from '@shared/confirm.jsx'
-import ScreenNames from '@screenNames'
 import DB_UserScoped from '@userScoped'
 import CustomCoparentInfo from './customCoparentInfo'
-import PopupCard from 'components/shared/popupCard'
-import BottomCard from '../../shared/bottomCard'
 import NewCoparentForm from './newCoparentForm'
 import {
-  toCamelCase,
-  formatTitleWords,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  lowercaseShouldBeLowercase,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
+  formatTitleWords,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  lowercaseShouldBeLowercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
+import { MdOutlinePersonAddAlt1 } from 'react-icons/md'
+import { IoMdRemoveCircle } from 'react-icons/io'
+import BottomCard from '../../shared/bottomCard'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -43,14 +43,17 @@ export default function Coparents() {
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
   const [coparentData, setCoparentData] = useState([])
   const [confirmTitle, setConfirmTitle] = useState('')
-  const [showNewCoparentForm, setShowNewCoparentForm] = useState(false)
-
-  const deleteProp = async (prop) => await DB_UserScoped.deleteCoparentInfoProp(currentUser, prop, selectedCoparent)
+  const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
+  const [activeCoparentInfo, setActiveCoparentInfo] = useState(null)
+  const deleteProp = async (prop) => {
+    console.log(selectedCoparent)
+    await DB_UserScoped.deleteCoparentInfoProp(currentUser, Manager.toCamelCase(prop), selectedCoparent)
+  }
 
   const update = async (prop, value) => {
     // Update DB
     successAlert('Updated!')
-    const updatedChild = await DB_UserScoped.updateCoparent(currentUser, selectedCoparent, prop, value)
+    const updatedChild = await DB_UserScoped.updateCoparent(currentUser, selectedCoparent, Manager.toCamelCase(prop), value)
     setSelectedCoparent(updatedChild)
   }
 
@@ -72,11 +75,22 @@ export default function Coparents() {
   const onValueChange = async () => {
     if (currentUser) {
       const dbRef = getDatabase()
-      const userRef = ref(dbRef, `${DB.tables.users}`)
+      const userRef = ref(dbRef, `${DB.tables.users}/${currentUser.phone}/coparents`)
       onValue(userRef, async (snapshot) => {
         await getCoparents()
       })
     }
+  }
+
+  const formatParentType = (type) => {
+    if (type) {
+      type = type
+        .replace('Biological Parent', 'Bio')
+        .replace('Biological', 'Bio')
+        .replace('Step-Parent', 'Step')
+        .replace('SpousesCoparent', "Spouse's Co-parent")
+    }
+    return type
   }
 
   useEffect(() => {
@@ -100,15 +114,18 @@ export default function Coparents() {
     if (autocompleteInput) {
       document.querySelector('.pac-target-input').setAttribute('placeholder', 'Enter updated address')
     }
-    setState({
-      ...state,
-      navbarButton: {
-        ...navbarButton,
-        action: () => {
-          setShowNewCoparentForm(true)
+    setTimeout(() => {
+      setState({
+        ...state,
+        navbarButton: {
+          ...navbarButton,
+          action: () => {
+            setShowNewCoparentFormCard(true)
+          },
+          icon: <MdOutlinePersonAddAlt1 />,
         },
-      },
-    })
+      })
+    }, 300)
   }, [])
 
   return (
@@ -125,17 +142,20 @@ export default function Coparents() {
       />
 
       {/* CUSTOM INFO FORM */}
-      <CustomCoparentInfo
-        showCard={showCustomInfoCard}
-        hideCard={() => {
-          setShowCustomInfoCard(false)
-        }}
-      />
+      <BottomCard title={'Add Custom Info'} showCard={showCustomInfoCard} onClose={() => setShowCustomInfoCard(false)}>
+        <CustomCoparentInfo
+          hideCard={() => setShowCustomInfoCard(false)}
+          activeCoparent={selectedCoparent}
+          setActiveCoparent={(coparent) => setActiveCoparentInfo(coparent)}
+        />
+      </BottomCard>
 
       {!selectedCoparent && <p className="dead-center">No coparents at this time</p>}
 
       {/* NEW COPARENT FORM */}
-      <NewCoparentForm showCard={showNewCoparentForm} hideCard={() => setShowNewCoparentForm(false)} />
+      <BottomCard title={'Add Co-Parent'} showCard={showNewCoparentFormCard} onClose={() => setShowNewCoparentFormCard(false)}>
+        <NewCoparentForm hideCard={() => setShowNewCoparentFormCard(false)} />
+      </BottomCard>
 
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container coparents-wrapper form`}>
@@ -152,14 +172,8 @@ export default function Coparents() {
                   data-name={coparent.name}
                   key={index}>
                   <span className="material-icons-round">escalator_warning</span>
-                  <span className="coparent-name">{coparent.name.formatNameFirstNameOnly()}</span>
-                  <span className="coparent-type">
-                    {coparent.parentType
-                      .replace('Biological Parent', 'Bio')
-                      .replace('Biological', 'Bio')
-                      .replace('Step-Parent', 'Step')
-                      .replace('SpousesCoparent', "Spouse's Co-parent")}
-                  </span>
+                  <span className="coparent-name">{formatNameFirstNameOnly(coparent.name)}</span>
+                  <span className="coparent-type">{formatParentType(coparent.parentType)}</span>
                 </div>
               )
             })}
@@ -204,9 +218,7 @@ export default function Coparents() {
                                 }}
                               />
                             )}
-                            <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
-                              delete
-                            </span>
+                            <IoMdRemoveCircle className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
                           </div>
                         </div>
                       )}

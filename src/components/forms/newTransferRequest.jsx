@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import Manager from '@manager'
 import Autocomplete from 'react-google-autocomplete'
@@ -8,30 +8,29 @@ import moment from 'moment'
 import DB from '@db'
 import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
-import ScreenNames from '@screenNames'
-import BottomButton from 'components/shared/bottomButton'
 import DB_UserScoped from '@userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import BottomCard from '../shared/bottomCard'
+
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
 
 export default function NewTransferChangeRequest({ showCard, hideCard }) {

@@ -5,7 +5,6 @@ import FirebaseStorage from '@firebaseStorage'
 import AppManager from '@managers/appManager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import MyConfetti from '@shared/myConfetti'
-import ScreenNames from 'constants/screenNames'
 import globalState from 'context'
 import Manager from 'managers/manager'
 import NotificationManager from 'managers/notificationManager'
@@ -14,29 +13,29 @@ import { DebounceInput } from 'react-debounce-input'
 import DateFormats from '../../constants/dateFormats'
 import moment from 'moment'
 import Memory from '../../models/memory'
-import BottomCard from '../shared/bottomCard'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
-import Swal from 'sweetalert2'
 
-function NewMemoryForm({ showCard, hideCard }) {
+function NewMemoryForm({ hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, navbarButton, updateKey, theme } = state
   const [shareWith, setShareWith] = useState([])
@@ -52,7 +51,6 @@ function NewMemoryForm({ showCard, hideCard }) {
     setImages([])
     setMemoryTitle('')
     setState({ ...state, isLoading: false })
-    MyConfetti.fire()
   }
 
   const handleShareWithSelection = async (e) => {
@@ -63,11 +61,11 @@ function NewMemoryForm({ showCard, hideCard }) {
 
   const submit = async () => {
     if (images !== undefined && images.length === 0) {
-      displayAlert('error', 'Please choose an image')
+      throwError('Please choose an image')
       return false
     }
     if (!Manager.isValid(shareWith, true)) {
-      displayAlert('error', 'Please select who can see this memory')
+      throwError('Please select who can see this memory')
       return false
     }
 
@@ -76,7 +74,7 @@ function NewMemoryForm({ showCard, hideCard }) {
     })
 
     if (notAnImage) {
-      displayAlert('error', 'Files uploaded MUST be images (.png, .jpg, .jpeg, etc.).')
+      throwError('Files uploaded MUST be images (.png, .jpg, .jpeg, etc.).')
       return false
     }
 
@@ -93,12 +91,14 @@ function NewMemoryForm({ showCard, hideCard }) {
     })
 
     if (existingMemoriesFound) {
-      displayAlert('error', 'This memory already exists')
+      throwError('This memory already exists')
       return false
     }
 
+    MyConfetti.fire()
     hideCard()
 
+    // Upload Image
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser.id, images)
       .then(() => {
         const checkedCheckbox = document.querySelector('.share-with-container .box.active')
@@ -125,7 +125,7 @@ function NewMemoryForm({ showCard, hideCard }) {
 
             const cleanedObject = Manager.cleanObject(newMemory, ModelNames.memory)
 
-            await DB.add('memories', cleanedObject)
+            await DB.add(`${DB.tables.memories}/${currentUser.phone}`, cleanedObject)
           }
 
           // Send Notification
@@ -145,46 +145,44 @@ function NewMemoryForm({ showCard, hideCard }) {
 
   return (
     <div className="new-memory-wrapper">
-      <BottomCard title={'New Memory'} onClose={hideCard} showCard={showCard}>
-        <div id="new-memory-form-container" className={`${theme} form`}>
-          <div className="form">
-            {currentUser && (
-              <div className="share-with-container mb-20">
-                <label>
-                  <span className="material-icons-round">visibility</span>Who should see it?<span className="asterisk">*</span>
-                </label>
-                <CheckboxGroup
-                  dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                  labels={currentUser?.coparents.map((x) => x.name)}
-                  onCheck={handleShareWithSelection}
-                />
-              </div>
-            )}
-            <label>Title</label>
-            <DebounceInput
-              minLength={2}
-              className={'mb-20'}
-              debounceTimeout={500}
-              onChange={(e) => {
-                const inputValue = e.target.value
-                setMemoryTitle(inputValue)
-              }}
-            />
-            <label>Image Description/Notes</label>
-            <textarea className="mb-15" onChange={(e) => setMemoryNotes(e.target.value)}></textarea>
-            <UploadInputs
-              containerClass={theme}
-              uploadType={'image'}
-              actualUploadButtonText={'Upload Memory'}
-              getImages={(files) => {
-                setImages(files)
-              }}
-              uploadButtonText="Choose Image"
-              upload={submit}
-            />
-          </div>
+      <div id="new-memory-form-container" className={`${theme} form`}>
+        <div className="form">
+          {currentUser && (
+            <div className="share-with-container mb-20">
+              <label>
+                <span className="material-icons-round">visibility</span>Who should see it?<span className="asterisk">*</span>
+              </label>
+              <CheckboxGroup
+                dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                labels={currentUser?.coparents.map((x) => x.name)}
+                onCheck={handleShareWithSelection}
+              />
+            </div>
+          )}
+          <label>Title</label>
+          <DebounceInput
+            minLength={2}
+            className={'mb-20'}
+            debounceTimeout={500}
+            onChange={(e) => {
+              const inputValue = e.target.value
+              setMemoryTitle(inputValue)
+            }}
+          />
+          <label>Image Description/Notes</label>
+          <textarea className="mb-15" onChange={(e) => setMemoryNotes(e.target.value)}></textarea>
+          <UploadInputs
+            containerClass={theme}
+            uploadType={'image'}
+            actualUploadButtonText={'Upload Memory'}
+            getImages={(files) => {
+              setImages(files)
+            }}
+            uploadButtonText="Choose Image"
+            upload={submit}
+          />
         </div>
-      </BottomCard>
+      </div>
     </div>
   )
 }

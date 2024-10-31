@@ -1,30 +1,28 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react'
+import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
 import Manager from '@manager'
-import { PiCalendarDotsDuotone, PiImagesSquareDuotone } from 'react-icons/pi'
+import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone } from 'react-icons/pi'
 import { CgMenu } from 'react-icons/cg'
 import { BiFace } from 'react-icons/bi'
-import { PiChatsCircleDuotone } from 'react-icons/pi'
 import { FiSettings } from 'react-icons/fi'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../globalFunctions'
-import DB_UserScoped from '@userScoped'
 import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
 
 export default function NavBar() {
@@ -32,12 +30,6 @@ export default function NavBar() {
   const { currentScreen, menuIsOpen, showCenterNavbarButton, theme, showNavbar, navbarButton } = state
 
   const changeCurrentScreen = (screen) => {
-    if (screen === ScreenNames.calendar) {
-      const cal = document.querySelector('.flatpickr-calendar')
-      if (cal) {
-        cal.classList.remove('hide')
-      }
-    }
     if (ScreensToHideCenterNavbarButton.includes(screen)) {
       setState({
         ...state,
@@ -55,12 +47,6 @@ export default function NavBar() {
         ...state,
         currentScreen: screen,
         showCenterNavbarButton: true,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {},
-          icon: 'add',
-          color: 'green',
-        },
       })
     }
 
@@ -75,9 +61,6 @@ export default function NavBar() {
             {/* FULL MENU  */}
             <div onClick={() => setState({ ...state, menuIsOpen: true })} className={` menu-item`}>
               <CgMenu />
-              {/*<span className={`material-icons-outlined`} id="show-full-menu-icon">*/}
-              {/*  menu*/}
-              {/*</span>*/}
             </div>
 
             {/* CALENDAR */}
@@ -85,7 +68,6 @@ export default function NavBar() {
               onClick={() => changeCurrentScreen(ScreenNames.calendar)}
               className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
               <PiCalendarDotsDuotone />
-              {/*<span className={`${currentScreen === ScreenNames.calendar ? 'material-icons-round' : 'material-icons-outlined'}`}>calendar_month</span>*/}
             </div>
 
             {/* CHATS */}
@@ -93,7 +75,6 @@ export default function NavBar() {
               onClick={() => changeCurrentScreen(ScreenNames.chats)}
               className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
               <PiChatsCircleDuotone />
-              {/*<span className={`${currentScreen === ScreenNames.chats ? 'material-icons-round' : 'material-icons-outlined'}`}>question_answer</span>*/}
             </div>
 
             {/* ADD NEW BUTTON */}
@@ -105,8 +86,8 @@ export default function NavBar() {
                     navbarButton.action()
                   }
                 }}
-                id="menu-button">
-                <span className={`material-icons-round menu-icon ${navbarButton.color}`}>{navbarButton.icon}</span>
+                id="add-new-button">
+                <span className={`material-icons-round add-new-icon ${navbarButton.color}`}>{navbarButton.icon}</span>
               </div>
             )}
 

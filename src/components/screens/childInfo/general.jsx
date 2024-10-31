@@ -1,34 +1,28 @@
-import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 import Autocomplete from 'react-google-autocomplete'
 import { Accordion } from 'rsuite'
 import globalState from '../../../context'
 import Manager from '@manager'
-import DB from '@db'
-import { child, getDatabase, onValue, ref, set, get } from 'firebase/database'
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
-import { MobileTimePicker } from '@mui/x-date-pickers'
-import ScreenNames from '@screenNames'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   camelCaseToString,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
   lowercaseShouldBeLowercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
   successAlert,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
 

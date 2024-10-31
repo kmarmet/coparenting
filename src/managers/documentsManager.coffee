@@ -1,26 +1,23 @@
 import Manager from "./manager"
 import DB from "../database/DB"
-import DateManager from "./dateManager"
-import moment from "moment"
-import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
+import { child, getDatabase, ref, set } from 'firebase/database'
 import FirebaseStorage from "../database/firebaseStorage"
 import DB_UserScoped from "../database/db_userScoped"
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
-  getWordFromString
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount
 } from "../globalFunctions"
 
 export default DocumentsManager =

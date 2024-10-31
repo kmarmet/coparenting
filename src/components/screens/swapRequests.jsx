@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import DB from '@db'
-import Modal from '@shared/modal.jsx'
 import Manager from '@manager'
 import globalState from '../../context.js'
 import 'rsuite/dist/rsuite.min.css'
 import moment from 'moment'
-import { getDatabase, ref, set, get, child, onValue } from 'firebase/database'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
 import SwapDurations from '@constants/swapDurations.js'
 import PushAlertApi from '@api/pushAlert'
 import NotificationManager from '@managers/notificationManager.js'
@@ -14,22 +13,22 @@ import DateManager from 'managers/dateManager.js'
 import SecurityManager from '../../managers/securityManager'
 import NewSwapRequest from '../forms/newSwapRequest'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
-  successAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
 
 const Decisions = {

@@ -5,21 +5,21 @@ import DB from '@db'
 import '../prototypes'
 import ModelNames from '../models/modelNames'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../globalFunctions'
 import CalendarEvent from '../models/calendarEvent'
 import Expense from '../models/expense'
@@ -29,7 +29,6 @@ import TransferChangeRequest from '../models/transferChangeRequest'
 import User from '../models/user'
 import TitleSuggestion from '../models/titleSuggestion'
 import Coparent from '../models/coparent'
-import Conversation from '../components/screens/chats/conversation'
 import ConversationMessage from '../models/conversationMessage'
 import ConversationThread from '../models/conversationThread'
 import ChildUser from '../models/child/childUser'
@@ -89,9 +88,9 @@ const Manager = {
     return returnObject
   },
   resetForm: (parentClass) => {
-    const inputs = document.querySelector(`.${parentClass}`).querySelectorAll('input, textarea')
-    const toggles = document.querySelector(`.${parentClass}`).querySelectorAll('.react-toggle--checked')
-    const checkboxes = document.querySelector(`.${parentClass}`).querySelectorAll('.box')
+    const inputs = document.querySelector(`.${parentClass}`)?.querySelectorAll('input, textarea')
+    const toggles = document.querySelector(`.${parentClass}`)?.querySelectorAll('.react-toggle--checked')
+    const checkboxes = document.querySelector(`.${parentClass}`)?.querySelectorAll('.box')
     // Inputs/Textareas
     if (Manager.isValid(inputs, true)) {
       inputs.forEach((input) => {
@@ -169,7 +168,6 @@ const Manager = {
     const interval = setInterval(() => {
       const pageContainer = document.querySelector('.page-container')
       if (pageContainer) {
-        pageContainer.style.maxHeight = `${window.screen.height}px`
         pageContainer.classList.add('active')
         clearInterval(interval)
       }
@@ -207,12 +205,10 @@ const Manager = {
         return false
       }
       if (Object.keys(variable).length === 0) {
-        console.log(variable)
         return false
       }
       for (let prop in variable) {
         if (!prop) {
-          console.log('not prop')
           return false
         }
 

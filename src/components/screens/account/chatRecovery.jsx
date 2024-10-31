@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { DebounceInput } from 'react-debounce-input'
 import globalState from '../../../context'
 import DB from '@db'
 import Manager from '@manager'
@@ -17,26 +16,25 @@ import TitleSuggestionWrapper from '../../shared/titleSuggestionWrapper'
 import ChatRecoveryRequest from '../../../models/chatRecoveryRequest'
 import { saveImageFromUrl } from '../../../managers/imageManager'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
+  confirmAlert,
   contains,
   displayAlert,
-  throwError,
-  successAlert,
-  uniqueArray,
-  confirmAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
-import ImageManager from '../../../managers/imageManager'
 
 function ChatRecovery() {
   const { state, setState } = useContext(globalState)

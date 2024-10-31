@@ -1,6 +1,5 @@
 import Manager from '@manager'
-import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
-import FirebaseStorage from './firebaseStorage'
+import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
 import DB_UserScoped from '@userScoped'
 
 const DB = {
@@ -43,7 +42,7 @@ const DB = {
     })
     return key
   },
-  getAllFilteredRecords: async (tableName, currentUser, objectName, type = 'by-phone') => {
+  getAllFilteredRecords: async (path, currentUser, objectName, type = 'by-phone') => {
     const getRecords = new Promise(async (resolve, reject) => {
       const coparentPhones = currentUser?.coparents.map((x) => x.phone)
 
@@ -71,13 +70,13 @@ const DB = {
         coparentRecords = await coparentsPromise
 
         // Current user Records
-        const currentUserRecords = Manager.convertToArray(await DB_UserScoped.getRecordsByUser(tableName, currentUser, objectName))
+        const currentUserRecords = Manager.convertToArray(await DB_UserScoped.getRecordsByUser(path, currentUser, objectName))
         const allRecords = currentUserRecords.concat(coparentRecords).flat()
         resolve(allRecords)
       }
       // Get root table (not dependent on user phone)
       else {
-        if (tableName === DB.tables.documents) {
+        if (path === DB.tables.documents) {
           await DB.getTable(DB.tables.documents).then((docs) => {
             if (docs && docs.length > 0) {
               docs.forEach((doc) => {
@@ -210,13 +209,13 @@ const DB = {
   },
   deleteMemory: async (phoneUid, memory) => {
     const dbRef = ref(getDatabase())
-    const key = await DB.getSnapshotKey(DB.tables.memories, memory, 'id')
-    remove(child(dbRef, `${DB.tables.memories}/${key}`))
+    const key = await DB.getSnapshotKey(`${DB.tables.memories}/${phoneUid}`, memory, 'id')
+    remove(child(dbRef, `${DB.tables.memories}/${phoneUid}/${key}`))
   },
-  getTable: async (tableName, returnObject = false) => {
+  getTable: async (path, returnObject = false) => {
     const dbRef = ref(getDatabase())
     let tableData = []
-    await get(child(dbRef, tableName)).then((snapshot) => {
+    await get(child(dbRef, path)).then((snapshot) => {
       tableData = snapshot.val()
     })
     return returnObject ? tableData : Manager.convertToArray(tableData)

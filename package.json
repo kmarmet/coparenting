@@ -73,8 +73,10 @@
   },
   "scripts": {
     "dev": "craco start",
-    "build": "rm -rf build && craco build && compress-cra",
+    "deleteBuild": "del /S /F build",
+    "build": "del /S /Q /F build && craco build && compress-cra",
     "removeUnusedPackages": "rm -rf node_modules && npm install",
+    "minify": "minify-all-js ./build/static/js ../build/new",
     "generate-splash": "pwa-asset-generator splash.png ./assets --splash-only  --background \"#ffffff\" -o false -r padding \"0px\"\n",
     "generate-icons": "pwa-asset-generator icon.png ./assets --icon-only --background \"#ffffff\" padding \"0px\"\n"
   },
@@ -101,6 +103,7 @@
     "@babel/preset-react": "7.24.7",
     "@craco/craco": "7.1.0",
     "craco-alias": "3.0.1",
-    "sass": "1.77.4"
+    "sass": "1.77.4",
+    "uglify-js": "^3.19.3"
   }
 }

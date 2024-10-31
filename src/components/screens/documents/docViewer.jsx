@@ -1,33 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react'
-import ScreenNames from '@screenNames'
 import globalState from '../../../context'
-import DB from '@db'
 import FirebaseStorage from '../../../database/firebaseStorage'
 import TableOfContentsListItem from '../../tableOfContentsListItem'
 import DocumentConversionManager from '@managers/documentConversionManager'
-import ImageManager from '@managers/imageManager'
 import Manager from '@manager'
 import BottomCard from '../../shared/bottomCard'
 import { DebounceInput } from 'react-debounce-input'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
-import DB_UserScoped from '@userScoped'
-import DocumentsManager from '../../../managers/documentsManager'
 import SecurityManager from '../../../managers/securityManager'
 
 export default function DocViewer() {

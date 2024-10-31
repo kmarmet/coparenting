@@ -17,5 +17,6 @@
     ".svg",
     ".map"
   ],
+  "retainUncompressedFiles": false,
   "directory": "/build"
 }

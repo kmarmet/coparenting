@@ -1,6 +1,5 @@
-import { child, getDatabase, onValue, ref, set, get } from 'firebase/database'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import ScreenNames from '@screenNames'
 import globalState from '../../../context'
 import DB from '@db'
 import FirebaseStorage from '@firebaseStorage'
@@ -12,25 +11,26 @@ import Medical from '../childInfo/medical'
 import Schooling from '../childInfo/schooling'
 import BottomCard from '../../shared/bottomCard'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
   throwError,
+  toCamelCase,
   uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import NewChildForm from './newChildForm'
 import ChildSelector from './childSelector'
 import { BiImageAdd } from 'react-icons/bi'
 import DB_UserScoped from '@userScoped'
+import { IoPersonAddOutline } from 'react-icons/io5'
 
 export default function ChildInfo() {
   // @ts-ignore
@@ -89,6 +89,8 @@ export default function ChildInfo() {
           action: () => {
             setShowNewChildForm(true)
           },
+          color: 'green',
+          icon: <IoPersonAddOutline className={'fs-26'} />,
         },
       })
     }, 300)

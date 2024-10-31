@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { child, getDatabase, onValue, ref, set, push } from 'firebase/database'
+import { child, getDatabase, onValue, ref, set } from 'firebase/database'
 import moment from 'moment'
 import 'rsuite/dist/rsuite.min.css'
 import PushAlertApi from '@api/pushAlert.js'
@@ -20,24 +20,23 @@ import EmojiPicker from 'emoji-picker-react'
 import ChatManager from '@managers/chatManager.js'
 import DateFormats from '../../../constants/dateFormats'
 import ModelNames from '../../../models/modelNames'
-import Swal from 'sweetalert2'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
-  successAlert,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 

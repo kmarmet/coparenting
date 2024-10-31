@@ -1,18 +1,18 @@
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
   uniqueArray,
-  getFileExtension
+  uppercaseFirstLetterOfAllWords,
+  wordCount
 } from "../globalFunctions"
 
 import Manager from '@manager'
@@ -82,7 +82,7 @@ SecurityManager =
     return returnRecords.flat()
   getMemories: (currentUser) ->
     returnRecords = []
-    allMemories = Manager.convertToArray(await DB.getTable(DB.tables.memories)).flat()
+    allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}/#{currentUser.phone}")).flat()
     if Manager.isValid(allMemories,true)
       for memory in allMemories
         shareWith = memory.shareWith

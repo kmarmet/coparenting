@@ -1,21 +1,21 @@
 import DB from "@db"
 import "../prototypes"
-import calMapper from "../mappers/calMapper"
-import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
+import { child, getDatabase, ref, remove, set } from 'firebase/database'
 import Manager from "./manager"
 import {
-  toCamelCase,
-  getFirstWord,
   formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
   formatNameFirstNameOnly,
+  getFirstWord,
+  isAllUppercase,
   removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from "../globalFunctions"
+
 export default CalendarManager =
   getUniqueArrayOfObjects: (arr, key) =>
     output = Object.entries(Object.assign({}, ...arr))

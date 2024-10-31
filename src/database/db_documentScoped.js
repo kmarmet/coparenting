@@ -1,7 +1,3 @@
-import moment from 'moment'
-import Manager from '@manager'
-import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
-import FirebaseStorage from './firebaseStorage'
 import DB from '@db'
 
 const DB_DocumentScoped = {

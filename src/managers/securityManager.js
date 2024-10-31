@@ -2,20 +2,20 @@
 var SecurityManager;
 
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
   uniqueArray,
-  getFileExtension
+  uppercaseFirstLetterOfAllWords,
+  wordCount
 } from "../globalFunctions";
 
 import Manager from '@manager';
@@ -127,7 +127,7 @@ SecurityManager = {
   getMemories: async function(currentUser) {
     var allMemories, i, len, memory, returnRecords, shareWith;
     returnRecords = [];
-    allMemories = Manager.convertToArray((await DB.getTable(DB.tables.memories))).flat();
+    allMemories = Manager.convertToArray((await DB.getTable(`${DB.tables.memories}/${currentUser.phone}`))).flat();
     if (Manager.isValid(allMemories, true)) {
       for (i = 0, len = allMemories.length; i < len; i++) {
         memory = allMemories[i];

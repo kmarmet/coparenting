@@ -3,9 +3,8 @@ import ReactDOM from 'react-dom/client'
 import '../src/styles/bundle.scss'
 import App from './App'
 import { ErrorBoundary } from 'react-error-boundary'
-import PopupCard from 'components/shared/popupCard'
-import ScreenNames from '@screenNames'
 import { getAuth, signOut } from 'firebase/auth'
+
 const a = document.getElementsByTagName('a')
 
 if ('serviceWorker' in navigator) {
@@ -85,25 +84,26 @@ root.render(
         </div>
         <hr />
         <div id="text-container">
-          <p className="heading mb-5">First Steps to Try</p>
+          <p className="heading mb-5">Try this first</p>
         </div>
 
         {/* REFRESH THE APP */}
         <div id="text-container">
           <div className="flex mb-5" id="steps">
             <span className="step-number">1.</span>
-            <button className="link" onClick={() => window.location.reload()}>
+            <button
+              className="link"
+              onClick={() => {
+                logout()
+                setTimeout(() => {
+                  window.location.reload()
+                }, 300)
+              }}>
               Refresh the App
             </button>
           </div>
-          <div className="flex mb-5" id="steps">
-            <span className="step-number">2.</span>
-            <button className="link" onClick={logout}>
-              Sign Out then Sign In
-            </button>
-          </div>
           <p className="mt-15">
-            <b>If those two steps did not resolve the issue, please follow the steps below.</b>
+            <b>If that did not resolve the issue, please follow the steps below.</b>
           </p>
         </div>
         <hr />

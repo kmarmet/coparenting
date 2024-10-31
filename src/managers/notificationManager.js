@@ -5,12 +5,7 @@ import {
   child,
   get,
   getDatabase,
-  onValue,
-  push,
-  ref,
-  remove,
-  set,
-  update
+  ref
 } from 'firebase/database';
 
 import DB from '@db';

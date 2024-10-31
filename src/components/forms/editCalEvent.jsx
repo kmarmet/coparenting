@@ -1,6 +1,6 @@
 import { child, getDatabase, ref, set } from 'firebase/database'
 import moment from 'moment'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
 import { Accordion, DateRangePicker } from 'rsuite'
 import EventLengths from '@constants/eventLengths'
@@ -12,43 +12,39 @@ import CheckboxGroup from '@shared/checkboxGroup'
 import PushAlertApi from '@api/pushAlert'
 import DateManager from '@managers/dateManager'
 import NotificationManager from '@managers/notificationManager'
-import ScreenNames from '@screenNames'
-import { useSwipeable } from 'react-swipeable'
 import CalendarMapper from '../../mappers/calMapper'
 import DateFormats from '../../constants/dateFormats'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import CalendarManager from '../../managers/calendarManager'
-import BottomCard from '../shared/bottomCard'
 import Toggle from 'react-toggle'
 
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
   confirmAlert,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  successAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
-import Swal from 'sweetalert2'
 import { IoTodayOutline } from 'react-icons/io5'
 import { HiOutlineCalendarDays } from 'react-icons/hi2'
 import { AiOutlineDelete } from 'react-icons/ai'
 
-export default function EditCalEvent({ event, showCard, hideCard }) {
+export default function EditCalEvent({ event, hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
 
@@ -183,24 +179,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       }
     }
 
-    Swal.fire({
-      text: 'Event has been created',
-      icon: 'success',
-      showClass: {
-        popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-      },
-      hideClass: {
-        popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-      },
-    })
+    successAlert('Event Created')
     resetForm()
   }
 
@@ -290,7 +269,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
     if (eventCount === 1) {
       await DB.delete(DB.tables.calendarEvents, event?.id)
-      hideCard()
+      resetForm()
     } else {
       let clonedEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
       if (Manager.isValid(clonedEvents, true)) {
@@ -298,7 +277,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         for (const event of clonedEvents) {
           await CalendarManager.deleteEvent(DB.tables.calendarEvents, event.id)
         }
-        hideCard()
+        resetForm()
       }
     }
   }
@@ -336,260 +315,256 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   }, [])
 
   return (
-    <BottomCard className={`${theme} edit-event-form`} onClose={resetForm} showCard={showCard} error={error} title={`Edit Event`}>
-      <div id="edit-cal-event-container" className={`${theme} form`}>
-        <div className="content">
-          {/* SINGLE DAY / MULTIPLE DAYS */}
-          <div className="action-pills calendar-event">
-            <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
-              <IoTodayOutline className={'single-day-icon'} />
-              <p>Single Day</p>
-            </div>
-            <div className={`flex right ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
-              <HiOutlineCalendarDays className={'multiple-day-icon'} />
-              <p>Multiple Days</p>
-            </div>
+    <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
+      <div className="content">
+        {/* SINGLE DAY / MULTIPLE DAYS */}
+        <div className="action-pills calendar-event">
+          <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
+            <IoTodayOutline className={'single-day-icon'} />
+            <p>Single Day</p>
           </div>
-
-          {/* TITLE */}
-          <label>
-            Title<span className="asterisk">*</span>
-          </label>
-          <input
-            id="event-title-input"
-            value={eventTitle.length > 0 ? eventTitle : ''}
-            onChange={(e) => setEventTitle(e.target.value)}
-            className={`${errorFields.includes('title') ? 'required-field-error mb-0 w-100' : 'mb-0 w-100'}`}
-            type="text"
-          />
-          {/* DATE */}
-          <div className="flex mt-15 mb-15" id={'date-input-container'}>
-            {eventLength === EventLengths.single && (
-              <>
-                <div className="w-100">
-                  <label className="mb-0">
-                    Date <span className="asterisk">*</span>
-                  </label>
-                  <MobileDatePicker
-                    defaultValue={moment(event?.fromDate)}
-                    className={`${theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
-                    onAccept={(e) => {
-                      removeError('date')
-                      setEventFromDate(e)
-                    }}
-                  />
-                </div>
-              </>
-            )}
-
-            {eventLength === EventLengths.multiple && (
-              <>
-                <div>
-                  <label>
-                    Date Range <span className="asterisk">*</span>
-                  </label>
-                  <DateRangePicker
-                    showOneCalendar
-                    showHeader={false}
-                    editable={false}
-                    id="event-date"
-                    placement="auto"
-                    character=" to "
-                    className={`${theme} event-date-range m-0 w-100`}
-                    format={'MM/dd/yyyy'}
-                    onChange={(e) => {
-                      let formattedDates = []
-                      if (e && e?.length > 0) {
-                        e.forEach((date) => {
-                          formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                        })
-                        setEventFromDate(formattedDates[0])
-                        setEventEndDate(formattedDates[1])
-                      }
-                    }}
-                  />
-                </div>
-              </>
-            )}
+          <div className={`flex right ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
+            <HiOutlineCalendarDays className={'multiple-day-icon'} />
+            <p>Multiple Days</p>
           </div>
-          {!isAllDay && (
-            <div className="flex gap mb-15">
-              <div>
-                <label>Start time</label>
-                <MobileTimePicker
-                  className={`${theme} event-date-range m-0 w-100`}
-                  onAccept={(e) => setEventStartTime(e)}
-                  minutesStep={5}
-                  defaultValue={DateManager.dateIsValid(event?.startTime) ? moment(event?.startTime, DateFormats.timeForDb) : null}
-                />
-              </div>
-              <div>
-                <label>End time</label>
-                <MobileTimePicker
-                  className={`${theme} event-date-range m-0 w-100`}
-                  minutesStep={5}
-                  onAccept={(e) => setEventEndTime(e)}
-                  defaultValue={DateManager.dateIsValid(event?.endTime) ? moment(event?.endTime, DateFormats.timeForDb) : null}
-                />
-              </div>
-            </div>
-          )}
+        </div>
 
-          {/* ALL DAY / HAS END DATE */}
-          <div className="flex">
-            <p>All Day</p>
-            <Toggle
-              icons={{
-                // checked: <span className="material-icons-round">notifications</span>,
-                unchecked: null,
-              }}
-              className={'ml-auto reminder-toggle'}
-              onChange={(e) => setIsAllDay(!isAllDay)}
-            />
-          </div>
-
-          {/* WHO IS ALLOWED TO SEE IT? */}
-          {Manager.isValid(currentUser?.coparents, true) && (
-            <div className={`share-with-container `}>
-              <label>
-                <span className="material-icons-round mr-10">visibility</span> Who is allowed to see it?
-                <span className="asterisk">*</span>
-              </label>
-              <CheckboxGroup
-                elClass={`${theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
-                dataPhone={
-                  currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
-                }
-                labels={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
-                onCheck={handleShareWithSelection}
-              />
-            </div>
-          )}
-
-          {/* REMINDER */}
-          {!isAllDay && (
+        {/* TITLE */}
+        <label>
+          Title<span className="asterisk">*</span>
+        </label>
+        <input
+          id="event-title-input"
+          value={eventTitle.length > 0 ? eventTitle : ''}
+          onChange={(e) => setEventTitle(e.target.value)}
+          className={`${errorFields.includes('title') ? 'required-field-error mb-0 w-100' : 'mb-0 w-100'}`}
+          type="text"
+        />
+        {/* DATE */}
+        <div className="flex mt-15 mb-15" id={'date-input-container'}>
+          {eventLength === EventLengths.single && (
             <>
-              <div className="flex">
-                <p>Remind Me</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">notifications</span>,
-                    unchecked: null,
+              <div className="w-100">
+                <label className="mb-0">
+                  Date <span className="asterisk">*</span>
+                </label>
+                <MobileDatePicker
+                  defaultValue={moment(event?.fromDate)}
+                  className={`${theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
+                  onAccept={(e) => {
+                    removeError('date')
+                    setEventFromDate(e)
                   }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setShowReminders(!showReminders)}
                 />
-              </div>
-              <div className="share-with-container mb-5">
-                <Accordion>
-                  <Accordion.Panel expanded={showReminders}>
-                    <CheckboxGroup
-                      elClass={`${theme} `}
-                      boxWidth={50}
-                      skipNameFormatting={true}
-                      dataPhone={
-                        currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
-                      }
-                      labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
-                      onCheck={handleReminderSelection}
-                    />
-                  </Accordion.Panel>
-                </Accordion>
               </div>
             </>
           )}
 
-          {/* SEND NOTIFICATION TO */}
-          {Manager.isValid(currentUser?.coparents, true) && currentUser.accountType === 'parent' && (
-            <div className="share-with-container mb-5">
-              <div className="flex">
-                <p>Remind Co-parent(s)</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">person</span>,
-                    unchecked: null,
+          {eventLength === EventLengths.multiple && (
+            <>
+              <div>
+                <label>
+                  Date Range <span className="asterisk">*</span>
+                </label>
+                <DateRangePicker
+                  showOneCalendar
+                  showHeader={false}
+                  editable={false}
+                  id="event-date"
+                  placement="auto"
+                  character=" to "
+                  className={`${theme} event-date-range m-0 w-100`}
+                  format={'MM/dd/yyyy'}
+                  onChange={(e) => {
+                    let formattedDates = []
+                    if (e && e?.length > 0) {
+                      e.forEach((date) => {
+                        formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
+                      })
+                      setEventFromDate(formattedDates[0])
+                      setEventEndDate(formattedDates[1])
+                    }
                   }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setRemindCoparents(!remindCoparents)}
                 />
               </div>
+            </>
+          )}
+        </div>
+        {!isAllDay && (
+          <div className="flex gap mb-15">
+            <div>
+              <label>Start time</label>
+              <MobileTimePicker
+                className={`${theme} event-date-range m-0 w-100`}
+                onAccept={(e) => setEventStartTime(e)}
+                minutesStep={5}
+                defaultValue={DateManager.dateIsValid(event?.startTime) ? moment(event?.startTime, DateFormats.timeForDb) : null}
+              />
+            </div>
+            <div>
+              <label>End time</label>
+              <MobileTimePicker
+                className={`${theme} event-date-range m-0 w-100`}
+                minutesStep={5}
+                onAccept={(e) => setEventEndTime(e)}
+                defaultValue={DateManager.dateIsValid(event?.endTime) ? moment(event?.endTime, DateFormats.timeForDb) : null}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ALL DAY / HAS END DATE */}
+        <div className="flex">
+          <p>All Day</p>
+          <Toggle
+            icons={{
+              // checked: <span className="material-icons-round">notifications</span>,
+              unchecked: null,
+            }}
+            className={'ml-auto reminder-toggle'}
+            onChange={(e) => setIsAllDay(!isAllDay)}
+          />
+        </div>
+
+        {/* WHO IS ALLOWED TO SEE IT? */}
+        {Manager.isValid(currentUser?.coparents, true) && (
+          <div className={`share-with-container `}>
+            <label>
+              <span className="material-icons-round mr-10">visibility</span> Who is allowed to see it?
+              <span className="asterisk">*</span>
+            </label>
+            <CheckboxGroup
+              elClass={`${theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
+              dataPhone={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)}
+              labels={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
+              onCheck={handleShareWithSelection}
+            />
+          </div>
+        )}
+
+        {/* REMINDER */}
+        {!isAllDay && (
+          <>
+            <div className="flex">
+              <p>Remind Me</p>
+              <Toggle
+                icons={{
+                  checked: <span className="material-icons-round">notifications</span>,
+                  unchecked: null,
+                }}
+                className={'ml-auto reminder-toggle'}
+                onChange={(e) => setShowReminders(!showReminders)}
+              />
+            </div>
+            <div className="share-with-container mb-5">
               <Accordion>
-                <Accordion.Panel expanded={remindCoparents}>
+                <Accordion.Panel expanded={showReminders}>
                   <CheckboxGroup
                     elClass={`${theme} `}
+                    boxWidth={50}
+                    skipNameFormatting={true}
                     dataPhone={
                       currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
                     }
-                    labels={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
-                    onCheck={handleShareWithSelection}
+                    labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                    onCheck={handleReminderSelection}
                   />
                 </Accordion.Panel>
               </Accordion>
             </div>
-          )}
+          </>
+        )}
 
-          {/* INCLUDING WHICH CHILDREN */}
-          {Manager.isValid(currentUser.children !== undefined, true) && (
-            <div className="share-with-container mb-5">
-              <div className="flex">
-                <p>Include Children</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">face</span>,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setIncludeChildren(!includeChildren)}
-                />
-              </div>
-              <Accordion>
-                <Accordion.Panel expanded={includeChildren}>
-                  <CheckboxGroup elClass={`${theme} `} labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
-                </Accordion.Panel>
-              </Accordion>
+        {/* SEND NOTIFICATION TO */}
+        {Manager.isValid(currentUser?.coparents, true) && currentUser.accountType === 'parent' && (
+          <div className="share-with-container mb-5">
+            <div className="flex">
+              <p>Remind Co-parent(s)</p>
+              <Toggle
+                icons={{
+                  checked: <span className="material-icons-round">person</span>,
+                  unchecked: null,
+                }}
+                className={'ml-auto reminder-toggle'}
+                onChange={(e) => setRemindCoparents(!remindCoparents)}
+              />
             </div>
-          )}
-        </div>
+            <Accordion>
+              <Accordion.Panel expanded={remindCoparents}>
+                <CheckboxGroup
+                  elClass={`${theme} `}
+                  dataPhone={
+                    currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
+                  }
+                  labels={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
+                  onCheck={handleShareWithSelection}
+                />
+              </Accordion.Panel>
+            </Accordion>
+          </div>
+        )}
 
-        {/* URL/WEBSITE */}
-        <label>URL/Website</label>
-        <input type="url" onChange={(e) => setEventWebsiteUrl(e.target.value)} className="mb-10" />
-
-        {/* LOCATION/ADDRESS */}
-        <label>Location</label>
-        <Autocomplete
-          placeholder={``}
-          apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-          options={{
-            types: ['geocode', 'establishment'],
-            componentRestrictions: { country: 'usa' },
-          }}
-          className="mb-10"
-          onPlaceSelected={(place) => {
-            setEventLocation(place.formatted_address)
-          }}
-        />
-
-        {/* NOTES */}
-        <label>Notes</label>
-        <textarea defaultValue={eventNotes} onChange={(e) => setEventNotes(e.target.value)}></textarea>
-        <div className="flex buttons gap">
-          <button className="button card-button" onClick={submit}>
-            Done Editing <span className="material-icons-round ml-10 fs-22">check</span>
-          </button>
-          <button
-            className="button card-button delete"
-            onClick={() => {
-              confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
-                hideCard()
-                await deleteEvent()
-                displayAlert('success', 'Event Deleted', 'Event Deleted')
-              })
-            }}>
-            Delete <AiOutlineDelete className={'fs-22 ml-5'} />
-          </button>
-        </div>
+        {/* INCLUDING WHICH CHILDREN */}
+        {Manager.isValid(currentUser.children !== undefined, true) && (
+          <div className="share-with-container mb-5">
+            <div className="flex">
+              <p>Include Children</p>
+              <Toggle
+                icons={{
+                  checked: <span className="material-icons-round">face</span>,
+                  unchecked: null,
+                }}
+                className={'ml-auto reminder-toggle'}
+                onChange={(e) => setIncludeChildren(!includeChildren)}
+              />
+            </div>
+            <Accordion>
+              <Accordion.Panel expanded={includeChildren}>
+                <CheckboxGroup elClass={`${theme} `} labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+              </Accordion.Panel>
+            </Accordion>
+          </div>
+        )}
       </div>
-    </BottomCard>
+
+      {/* URL/WEBSITE */}
+      <label>URL/Website</label>
+      <input type="url" onChange={(e) => setEventWebsiteUrl(e.target.value)} className="mb-10" />
+
+      {/* LOCATION/ADDRESS */}
+      <label>Location</label>
+      <Autocomplete
+        placeholder={``}
+        apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+        options={{
+          types: ['geocode', 'establishment'],
+          componentRestrictions: { country: 'usa' },
+        }}
+        className="mb-10"
+        onPlaceSelected={(place) => {
+          setEventLocation(place.formatted_address)
+        }}
+      />
+
+      {/* NOTES */}
+      <label>Notes</label>
+      <textarea defaultValue={eventNotes} onChange={(e) => setEventNotes(e.target.value)}></textarea>
+      <div className="flex buttons gap">
+        <button className="button card-button" onClick={submit}>
+          Done Editing <span className="material-icons-round ml-10 fs-22">check</span>
+        </button>
+        <button
+          className="button card-button delete"
+          onClick={() => {
+            confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
+              hideCard()
+              await deleteEvent()
+              displayAlert('success', 'Event Deleted', 'Event Deleted')
+            })
+          }}>
+          Delete <AiOutlineDelete className={'fs-22 ml-5'} />
+        </button>
+      </div>
+    </div>
   )
 }

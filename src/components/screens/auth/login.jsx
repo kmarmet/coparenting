@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useLayoutEffect, useState } from 'react'
+import React, { useContext, useLayoutEffect, useState } from 'react'
 import ScreenNames from '@screenNames'
 import globalState from '../../../context.js'
 import DB from '@db'
@@ -6,34 +6,33 @@ import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup.jsx'
 import DB_UserScoped from '@userScoped'
 import InstallAppPopup from 'components/installAppPopup.jsx'
-import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
-import { getAuth, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
+import { child, getDatabase, ref, set } from 'firebase/database'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
-import { PiEyeDuotone, PiEyeClosedDuotone } from 'react-icons/pi'
+import { PiEyeClosedDuotone, PiEyeDuotone } from 'react-icons/pi'
 import validator from 'validator'
 
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  displayAlert,
-  removeFileExtension,
   contains,
-  uniqueArray,
+  displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
   inputAlert,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
   successAlert,
   throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../../globalFunctions'
-import EmailManager from '../../../managers/emailManager'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)

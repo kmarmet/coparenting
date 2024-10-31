@@ -1,12 +1,8 @@
-import moment from 'moment'
-import React, { useState, useEffect, useContext } from 'react'
-import { getDatabase, ref, set, get, child, onValue } from 'firebase/database'
-import DB from '@db'
+import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '@manager'
 import ScreenNames from '@screenNames'
 import { useSwipeable } from 'react-swipeable'
-import BottomButton from '../../shared/bottomButton'
 
 export default function UpdateContactInfo({ updateType, updatePhone, updateEmail }) {
   const { state, setState } = useContext(globalState)
