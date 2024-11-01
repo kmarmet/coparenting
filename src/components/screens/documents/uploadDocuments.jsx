@@ -180,6 +180,11 @@ export default function UploadDocuments({ showCard, hideCard }) {
             upload={upload}
           />
         </div>
+        <div className="buttons">
+          <button className="button card-button cancel" onClick={resetForm}>
+            Cancel
+          </button>
+        </div>
       </BottomCard>
     </div>
   )

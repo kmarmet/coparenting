@@ -399,7 +399,7 @@ export default function EventCalendar() {
   const toggleVisitationHolidays = async () => {
     const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
     let userVisitationHolidays = allEvents.filter(
-      (x) => x.isHoliday === true && x.phone === currentUser.phone && contains(x.title.toLowerCase(), 'holiday')
+      (x) => x.isHoliday === true && x.ownerPhone === currentUser.phone && contains(x.title.toLowerCase(), 'holiday')
     )
     userVisitationHolidays.forEach((holiday) => {
       const holidayName = CalendarMapper.holidayDateToName(moment(holiday.fromDate).format('MM/DD'))

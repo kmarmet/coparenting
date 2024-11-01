@@ -300,7 +300,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                   Create Request
                 </button>
               )}
-              <button className="button card-button red" onClick={resetForm}>
+              <button className="button card-button cancel" onClick={resetForm}>
                 Cancel
               </button>
             </div>

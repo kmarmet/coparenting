@@ -240,11 +240,14 @@
         border: 0;
         font-optical-sizing: auto;
         font-style: normal;
-        padding-top: 10px;
       }
     }
 
     #child-info {
+//      border: 2px solid red;
+//      height: calc(100vh - 300px);
+//      max-height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
+      overflow: auto;
       .rs-panel-body {
         padding: 0 10px;
       }

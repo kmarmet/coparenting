@@ -2,7 +2,6 @@ import React, { useContext } from 'react'
 import globalState from '../../context'
 import '../../prototypes'
 // Icons
-import { CgClose } from 'react-icons/cg'
 
 export default function BottomCard({ onClose, children, title, subtitle = '', showCard = false, className = '' }) {
   const { state, setState } = useContext(globalState)
@@ -19,7 +18,6 @@ export default function BottomCard({ onClose, children, title, subtitle = '', sh
 
   return (
     <div id="bottom-card" className={`${cardClasses()} ${alertType} `}>
-      <CgClose id="close-icon" className={'fs-35'} onClick={onClose} />
       <div id="title" dangerouslySetInnerHTML={{ __html: title }}></div>
 
       <div id="content" className="mt-15">

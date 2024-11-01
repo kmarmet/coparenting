@@ -19,6 +19,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../globalFunctions'
+import DB_UserScoped from '@userScoped'
 
 const ChatManager = {
   getScopedChat: async (currentUser, messageToUserPhone) =>
@@ -43,20 +44,14 @@ const ChatManager = {
         })
     }),
   deleteAndArchive: async (currentUser, coparent) => {
-    const dbRef = ref(getDatabase())
     const securedChats = await SecurityManager.getChats(currentUser)
     const securedChat = securedChats.filter(
       (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(coparent.phone)
     )[0]
     const chatKey = await DB.getNestedSnapshotKey(`${DB.tables.chats}`, securedChat, 'id')
     const visMembersWithoutCurrentUser = securedChat.threadVisibilityMembers.filter((x) => x.phone !== currentUser.phone)
-    // console.log(visMembersWithoutCurrentUser)
-    // await DB_UserScoped.updateByPath(`${DB.tables.chats}/${securedChat.threadOwner}/${chatKey}/threadVisibilityMembers`, visMembersWithoutCurrentUser)
-    // const idToDelete = await DB.getSnapshotKey(`${DB.tables.chats}/${currentUser.phone}`, securedChat, 'id')
-    // remove(child(dbRef, `${DB.tables.chats}/${currentUser.phone}/${idToDelete}/`))
-    // await DB.add(DB.tables.archivedChats, securedChat).finally(async () => {
-    //   remove(child(dbRef, `${DB.tables.chats}/${securedChat.threadOwner}/${chatKey}/`))
-    // })
+    await DB_UserScoped.updateByPath(`${DB.tables.chats}/${chatKey}/threadVisibilityMembers`, visMembersWithoutCurrentUser)
+    await DB.add(`${DB.tables.archivedChats}/${currentUser.phone}`, securedChat)
   },
   toggleMessageBookmark: async (currentUser, messageToUser, messageId, bookmarkState) => {
     const database = getDatabase()
@@ -85,12 +80,12 @@ const ChatManager = {
         }
       })
     }
-    const chatKey = await DB.getSnapshotKey(`chats/${currentUser.phone}`, chat, 'id')
+    const chatKey = await DB.getSnapshotKey(`chats`, chat, 'id')
     if (chatKey) {
-      set(child(dbRef, `chats/${currentUser.phone}/${chatKey}/messages`), Manager.getUniqueArray(allMessages).flat())
+      set(child(dbRef, `chats/${chatKey}/messages`), Manager.getUniqueArray(allMessages).flat())
     }
   },
-  addConvoOrMessageByPath: async (path, data) => {
+  addConvoOrMessageByPath: async (path, data, convoOrMessage) => {
     const dbRef = ref(getDatabase())
     if (!Array.isArray(data)) {
       data = [data]

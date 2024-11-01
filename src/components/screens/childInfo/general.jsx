@@ -51,9 +51,11 @@ function General({ activeChild, setActiveChild }) {
   const update = async (section, prop, value, isArray) => {
     // Update DB
     successAlert('Updated!')
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', prop, value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', Manager.toCamelCase(prop), value)
     setActiveChild(updatedChild)
   }
+
+  const formatInfoLabel = (infoLabel) => lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(infoLabel)))
 
   useEffect(() => {
     setSelectedChild()
@@ -82,7 +84,7 @@ function General({ activeChild, setActiveChild }) {
           {/* LOOP INFO */}
           {Manager.isValid(generalValues, true) &&
             generalValues.map((prop, index) => {
-              const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
+              const infoLabel = formatInfoLabel(prop[0])
               const value = prop[1]
               return (
                 <div key={index}>

@@ -24,6 +24,7 @@
         <item url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
+        <item url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
         <item url="file://$PROJECT_DIR$/src/models/chatRecoveryRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/general.js" />
@@ -64,6 +65,7 @@
       <root url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
+      <root url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
       <root url="file://$PROJECT_DIR$/src/models/chatRecoveryRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
       <root url="file://$PROJECT_DIR$/src/models/child/general.js" />

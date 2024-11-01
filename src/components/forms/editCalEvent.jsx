@@ -110,7 +110,7 @@ export default function EditCalEvent({ event, hideCard }) {
     eventToEdit.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
 
     // Not Required
-    eventToEdit.phone = currentUser.phone
+    eventToEdit.ownerPhone = currentUser.phone
     eventToEdit.createdBy = currentUser.name
     eventToEdit.notes = eventNotes
     eventToEdit.reminderTimes = eventReminderTimes
@@ -550,7 +550,7 @@ export default function EditCalEvent({ event, hideCard }) {
       <textarea defaultValue={eventNotes} onChange={(e) => setEventNotes(e.target.value)}></textarea>
       <div className="flex buttons gap">
         <button className="button card-button" onClick={submit}>
-          Done Editing <span className="material-icons-round ml-10 fs-22">check</span>
+          Done <span className="material-icons-round ml-10 fs-22">check</span>
         </button>
         <button
           className="button card-button delete"
@@ -562,6 +562,9 @@ export default function EditCalEvent({ event, hideCard }) {
             })
           }}>
           Delete <AiOutlineDelete className={'fs-22 ml-5'} />
+        </button>
+        <button className="button card-button cancel" onClick={hideCard}>
+          Cancel
         </button>
       </div>
     </div>

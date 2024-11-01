@@ -121,11 +121,11 @@ function NewMemoryForm({ hideCard }) {
             newMemory.title = memoryTitle
             newMemory.shareWith = shareWith
             newMemory.creationDate = moment().format(DateFormats.dateForDb)
-            newMemory.createdBy = currentUser.phone
+            newMemory.ownerPhone = currentUser.phone
 
             const cleanedObject = Manager.cleanObject(newMemory, ModelNames.memory)
 
-            await DB.add(`${DB.tables.memories}/${currentUser.phone}`, cleanedObject)
+            await DB.add(`${DB.tables.memories}`, cleanedObject)
           }
 
           // Send Notification
@@ -182,6 +182,11 @@ function NewMemoryForm({ hideCard }) {
             upload={submit}
           />
         </div>
+      </div>
+      <div className="buttons">
+        <button className="button card-button cancel" onClick={hideCard}>
+          Cancel
+        </button>
       </div>
     </div>
   )

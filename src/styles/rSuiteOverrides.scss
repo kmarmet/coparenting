@@ -171,6 +171,7 @@
         align-items: center;
         justify-content: center;
         flex-wrap: wrap;
+        width: calc(100% /7);
 
         &:hover {
           background: transparent !important;
@@ -337,7 +338,7 @@
       }
       
       .flatpickr-day {
-        max-width: 52px !important;
+//        max-width: 52px !important;
       }
       
       &.flatpickr-innerContainer {

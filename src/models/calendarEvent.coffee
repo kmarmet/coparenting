@@ -7,7 +7,7 @@ export default class CalendarEvent
     @toDate = ''
     @fromDate = ''
     @startTime = ''
-    @phone = ''
+    @ownerPhone = ''
     @children = []
     @location = ''
     @title = ''

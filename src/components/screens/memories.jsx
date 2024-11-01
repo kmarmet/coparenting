@@ -52,6 +52,7 @@ export default function Memories() {
 
   const getSecuredMemories = async () => {
     let all = await SecurityManager.getMemories(currentUser)
+    console.log(all)
     if (Manager.isValid(all, true)) {
       setState({ ...state, isLoading: true, navbarButton: navbarObject })
       const resolvedImages = async () =>
@@ -148,7 +149,7 @@ export default function Memories() {
   }
 
   const onTableChange = async () => {
-    onValue(child(dbRef, `${DB.tables.memories}/${currentUser.phone}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.memories}`), async (snapshot) => {
       await getSecuredMemories(currentUser)
     })
   }

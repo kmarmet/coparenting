@@ -4,7 +4,7 @@ import Manager from '@manager'
 import ScreenNames from '@screenNames'
 import { useSwipeable } from 'react-swipeable'
 
-export default function UpdateContactInfo({ updateType, updatePhone, updateEmail }) {
+export default function UpdateContactInfo({ updateType, updatePhone, updateEmail, hideCard }) {
   const { state, setState } = useContext(globalState)
   const { contactInfoToUpdateType, currentUser, theme } = state
 
@@ -25,7 +25,6 @@ export default function UpdateContactInfo({ updateType, updatePhone, updateEmail
 
   return (
     <>
-      <p className="screen-title ">Update Your Info</p>
       <div {...handlers} id="update-contact-info-container" className={`${theme}  form`}>
         <div className="form">
           {updateType === 'email' && (
@@ -40,6 +39,9 @@ export default function UpdateContactInfo({ updateType, updatePhone, updateEmail
                 <button className="button card-button w-80" onClick={() => updateEmail(email)}>
                   Submit <span className="material-icons-round ml-10 fs-22">check</span>
                 </button>
+                <button className="button card-button cancel" onClick={hideCard}>
+                  Cancel
+                </button>
               </div>
             </>
           )}
@@ -52,6 +54,9 @@ export default function UpdateContactInfo({ updateType, updatePhone, updateEmail
               <div className="flex buttons gap">
                 <button className="button card-button" onClick={() => updatePhone(phone)}>
                   Submit <span className="material-icons-round ml-10 fs-22">check</span>
+                </button>
+                <button className="button card-button cancel" onClick={hideCard}>
+                  Cancel
                 </button>
               </div>
             </>

@@ -93,7 +93,6 @@ const DB = {
   },
   getSnapshotKey: async (path, objectToCheck, propertyToCompare) =>
     await new Promise(async (resolve) => {
-      console.log(path, objectToCheck, propertyToCompare)
       const dbRef = ref(getDatabase())
       await get(child(dbRef, path)).then((snapshot) => {
         if (snapshot.exists()) {
@@ -210,8 +209,8 @@ const DB = {
   },
   deleteMemory: async (phoneUid, memory) => {
     const dbRef = ref(getDatabase())
-    const key = await DB.getSnapshotKey(`${DB.tables.memories}/${phoneUid}`, memory, 'id')
-    remove(child(dbRef, `${DB.tables.memories}/${phoneUid}/${key}`))
+    const key = await DB.getSnapshotKey(`${DB.tables.memories}`, memory, 'id')
+    remove(child(dbRef, `${DB.tables.memories}/${key}`))
   },
   getTable: async (path, returnObject = false) => {
     const dbRef = ref(getDatabase())

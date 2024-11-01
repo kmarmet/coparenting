@@ -129,7 +129,7 @@ const NewChildForm = ({ hideCard }) => {
         <button className="button card-button" onClick={submit}>
           Add {name.length > 0 ? name : ''} <span className="material-icons-round ml-10 fs-22">check</span>
         </button>
-        <button className="button card-button delete" onClick={hideCard}>
+        <button className="button card-button cancel" onClick={hideCard}>
           Cancel
         </button>
       </div>

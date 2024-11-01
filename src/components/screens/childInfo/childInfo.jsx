@@ -78,6 +78,12 @@ export default function ChildInfo() {
     })
   }
 
+  const updateActiveChild = async (child) => {
+    const children = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/children`)
+    const thisChild = children.filter((x) => x.id === child.id)[0]
+    setActiveInfoChild(thisChild)
+  }
+
   useEffect(() => {
     onTableChange().then((r) => r)
 
@@ -107,8 +113,8 @@ export default function ChildInfo() {
         showCard={showSelectorCard}
         className={`success`}>
         <ChildSelector
-          setActiveChild={(child) => {
-            setActiveInfoChild(child)
+          setActiveChild={async (child) => {
+            await updateActiveChild(child)
             setShowSelectorCard(false)
           }}
         />
@@ -127,7 +133,7 @@ export default function ChildInfo() {
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
         {/* PROFILE PIC */}
-        <div id="children-container" className="mb-10">
+        <div id="children-container">
           <>
             {activeInfoChild && activeInfoChild?.general && (
               <>

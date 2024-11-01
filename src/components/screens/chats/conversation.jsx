@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import moment from 'moment'
 import 'rsuite/dist/rsuite.min.css'
-import PushAlertApi from '@api/pushAlert.js'
 import ScreenNames from '@screenNames'
 import globalState from '../../../context.js'
 import DB from '@db'
@@ -55,6 +54,7 @@ const Conversation = () => {
   const [chatKey, setChatKey] = useState(null)
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [threadOwnerPhone, setThreadOwnerPhone] = useState('')
+
   // Longpress/bookmark
   const bind = useLongPress(async (e, messageObject) => {
     const el = e.target.parentNode
@@ -120,21 +120,16 @@ const Conversation = () => {
     conversation.threadOwner = currentUser.phone
     const cleanThread = Manager.cleanObject(conversation, ModelNames.conversationThread)
 
-    let threadOwner = currentUser
-
-    if (threadOwnerPhone !== currentUser.phone) {
-      threadOwner = messageToUser
-    }
-
     // Existing chat
     if (Manager.isValid(existingChat)) {
-      const chatKey = await DB.getSnapshotKey(`${DB.tables.chats}/${existingChat.threadOwner}`, existingChat, 'id')
-      await ChatManager.addConvoOrMessageByPath(`${DB.tables.chats}/${existingChat.threadOwner}/${chatKey}/messages`, cleanThread.messages[0])
+      const chatKey = await DB.getSnapshotKey(`${DB.tables.chats}`, existingChat, 'id')
+      await ChatManager.addConvoOrMessageByPath(`${DB.tables.chats}/${chatKey}/messages`, cleanThread.messages[0])
     }
     // Create new chat (if one doesn't exist between members)
     else {
-      await ChatManager.addConvoOrMessageByPath(`${DB.tables.chats}/${threadOwnerPhone}`, cleanThread)
+      await ChatManager.addConvoOrMessageByPath(`${DB.tables.chats}`, cleanThread)
     }
+
     let updatedMessages = existingChat?.messages
 
     if (Manager.isValid(updatedMessages, true)) {
@@ -147,7 +142,7 @@ const Conversation = () => {
     }
     document.getElementById('message-input').value = ''
     const subId = await NotificationManager.getUserSubId(messageToUser.phone)
-    PushAlertApi.sendMessage('New Message', `You have an unread conversation message 💬`, subId)
+    // PushAlertApi.sendMessage('New Message', `You have an unread conversation message 💬`, subId)
     await getExistingMessages()
     AppManager.setAppBadge(1)
     scrollToLatestMessage()
@@ -210,7 +205,7 @@ const Conversation = () => {
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.chats}/${currentUser.phone}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.chats}`), async (snapshot) => {
       await getExistingMessages().then((r) => r)
     })
   }

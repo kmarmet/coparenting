@@ -132,7 +132,12 @@ export default function Account() {
         onClose={() => setShowUpdateEmailCard(false)}
         showCard={showUpdateEmailCard}
         title={`Update your ${uppercaseFirstLetterOfAllWords(updateType)}`}>
-        <UpdateContactInfo updatePhone={() => {}} updateType={updateType} updateEmail={(e) => updateUserEmail(e)} />
+        <UpdateContactInfo
+          hideCard={() => setShowUpdateEmailCard(false)}
+          updatePhone={() => {}}
+          updateType={updateType}
+          updateEmail={(e) => updateUserEmail(e)}
+        />
       </BottomCard>
 
       {/* UPDATE PHONE */}
@@ -141,6 +146,7 @@ export default function Account() {
         showCard={showPhoneUpdateCard}
         title={`Update your ${uppercaseFirstLetterOfAllWords(updateType)}`}>
         <UpdateContactInfo
+          hideCard={() => setShowPhoneUpdateCard(false)}
           updateEmail={() => {
             console.log('here')
           }}

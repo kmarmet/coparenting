@@ -118,7 +118,7 @@ export default function NewCalendarEvent({ hideCard }) {
     newEvent.directionsLink = Manager.isValid(eventLocation) ? Manager.getDirectionsLink(eventLocation) : ''
     newEvent.location = eventLocation || ''
     newEvent.children = children || []
-    newEvent.phone = currentUser.phone
+    newEvent.ownerPhone = currentUser.phone
     newEvent.createdBy = currentUser.name
     newEvent.shareWith = Manager.getUniqueArray(shareWith).flat()
     newEvent.notes = notes || ''
@@ -207,7 +207,7 @@ export default function NewCalendarEvent({ hideCard }) {
         repeatingDateObject.directionsLink = eventLocation || ''
         repeatingDateObject.location = eventLocation || ''
         repeatingDateObject.children = children || []
-        repeatingDateObject.phone = currentUser.phone
+        repeatingDateObject.ownerPhone = currentUser.phone
         repeatingDateObject.createdBy = currentUser.name
         repeatingDateObject.notes = notes || ''
         repeatingDateObject.websiteUrl = websiteUrl || ''
@@ -247,7 +247,6 @@ export default function NewCalendarEvent({ hideCard }) {
 
   const handleShareWithSelection = async (e) => {
     await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
-      console.log(updated)
       setShareWith(updated)
     })
   }
@@ -318,7 +317,7 @@ export default function NewCalendarEvent({ hideCard }) {
       clonedDateObject.directionsLink = eventLocation || ''
       clonedDateObject.location = eventLocation || ''
       clonedDateObject.children = children || []
-      clonedDateObject.phone = currentUser.phone
+      clonedDateObject.ownerPhone = currentUser.phone
       clonedDateObject.createdBy = currentUser.name
       clonedDateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
       clonedDateObject.notes = notes || ''
@@ -578,7 +577,7 @@ export default function NewCalendarEvent({ hideCard }) {
             </div>
             <Accordion>
               <Accordion.Panel expanded={includeChildren}>
-                <CheckboxGroup elClass={`${theme} `} labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+                <CheckboxGroup elClass={`${theme} `} labels={currentUser?.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
               </Accordion.Panel>
             </Accordion>
           </div>
@@ -675,12 +674,10 @@ export default function NewCalendarEvent({ hideCard }) {
         <textarea onChange={(e) => setNotes(e.target.value)}></textarea>
 
         <div className="buttons gap">
-          {/*{showSubmitButton && (*/}
           <button className="button card-button" onClick={submit}>
             Create Event <span className="material-icons-round ml-10 fs-22">event_available</span>
           </button>
-          {/*)}*/}
-          <button className="button card-button red" onClick={resetForm}>
+          <button className="button card-button cancel" onClick={resetForm}>
             Cancel
           </button>
         </div>

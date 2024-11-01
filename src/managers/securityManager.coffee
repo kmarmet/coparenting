@@ -26,7 +26,7 @@ SecurityManager =
       for event in allEvents
         shareWith = event.shareWith
         if Manager.dateIsValid(event.fromDate) and event.fromDate.length > 0
-          if (event.phone == currentUser.phone)
+          if (event.ownerPhone == currentUser.phone)
             returnRecords.push(event)
           if Manager.isValid(shareWith, true) and shareWith.includes(currentUser.phone)
               returnRecords.push(event)
@@ -82,11 +82,11 @@ SecurityManager =
     return returnRecords.flat()
   getMemories: (currentUser) ->
     returnRecords = []
-    allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}/#{currentUser.phone}")).flat()
+    allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}")).flat()
     if Manager.isValid(allMemories,true)
       for memory in allMemories
         shareWith = memory.shareWith
-        if (memory.createdBy == currentUser.phone)
+        if (memory.ownerPhone == currentUser.phone)
           returnRecords.push(memory)
         if Manager.isValid(shareWith, true)
           if shareWith.includes(currentUser.phone)
@@ -101,19 +101,18 @@ SecurityManager =
           returnRecords.push(suggestion)
     return returnRecords.flat()
   getChats: (currentUser) ->
-    chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}/#{currentUser.phone}")).flat()
+    chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}")).flat()
     securedChats = []
     # User does not have a chat with root access by phone
-    if not Manager.isValid(chats, true)
+    if Manager.isValid(chats, true)
       allChats = await DB.getTable('chats')
       for chat in allChats.flat()
-        members = chat.members.map (x) -> x.phone
-        if currentUser.phone in members
-          securedChats.push(chat)
-
-    # User has root (phone) access
-    if Manager.isValid(chats,true)
-      securedChats = chats
+        if Manager.isValid(chat.threadVisibilityMembers, true)
+          visibilityMemberPhones = chat.threadVisibilityMembers.map (x) -> x.phone
+          if visibilityMemberPhones.includes (currentUser.phone)
+            members = chat.members.map (x) -> x.phone
+            if currentUser.phone in members
+              securedChats.push(chat)
     return securedChats.flat()
   getCoparentChats: (currentUser) ->
     allChats = await DB.getTable('chats')

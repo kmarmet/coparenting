@@ -33,7 +33,7 @@ SecurityManager = {
         event = allEvents[i];
         shareWith = event.shareWith;
         if (Manager.dateIsValid(event.fromDate) && event.fromDate.length > 0) {
-          if (event.phone === currentUser.phone) {
+          if (event.ownerPhone === currentUser.phone) {
             returnRecords.push(event);
           }
           if (Manager.isValid(shareWith, true) && shareWith.includes(currentUser.phone)) {
@@ -128,12 +128,12 @@ SecurityManager = {
   getMemories: async function(currentUser) {
     var allMemories, i, len, memory, returnRecords, shareWith;
     returnRecords = [];
-    allMemories = Manager.convertToArray((await DB.getTable(`${DB.tables.memories}/${currentUser.phone}`))).flat();
+    allMemories = Manager.convertToArray((await DB.getTable(`${DB.tables.memories}`))).flat();
     if (Manager.isValid(allMemories, true)) {
       for (i = 0, len = allMemories.length; i < len; i++) {
         memory = allMemories[i];
         shareWith = memory.shareWith;
-        if (memory.createdBy === currentUser.phone) {
+        if (memory.ownerPhone === currentUser.phone) {
           returnRecords.push(memory);
         }
         if (Manager.isValid(shareWith, true)) {
@@ -160,26 +160,29 @@ SecurityManager = {
     return returnRecords.flat();
   },
   getChats: async function(currentUser) {
-    var allChats, chat, chats, i, len, members, ref, ref1, securedChats;
-    chats = Manager.convertToArray((await DB.getTable(`${DB.tables.chats}/${currentUser.phone}`))).flat();
+    var allChats, chat, chats, i, len, members, ref, ref1, securedChats, visibilityMemberPhones;
+    chats = Manager.convertToArray((await DB.getTable(`${DB.tables.chats}`))).flat();
     securedChats = [];
     // User does not have a chat with root access by phone
-    if (!Manager.isValid(chats, true)) {
+    if (Manager.isValid(chats, true)) {
       allChats = (await DB.getTable('chats'));
       ref = allChats.flat();
       for (i = 0, len = ref.length; i < len; i++) {
         chat = ref[i];
-        members = chat.members.map(function(x) {
-          return x.phone;
-        });
-        if (ref1 = currentUser.phone, indexOf.call(members, ref1) >= 0) {
-          securedChats.push(chat);
+        if (Manager.isValid(chat.threadVisibilityMembers, true)) {
+          visibilityMemberPhones = chat.threadVisibilityMembers.map(function(x) {
+            return x.phone;
+          });
+          if (visibilityMemberPhones.includes(currentUser.phone)) {
+            members = chat.members.map(function(x) {
+              return x.phone;
+            });
+            if (ref1 = currentUser.phone, indexOf.call(members, ref1) >= 0) {
+              securedChats.push(chat);
+            }
+          }
         }
       }
-    }
-    // User has root (phone) access
-    if (Manager.isValid(chats, true)) {
-      securedChats = chats;
     }
     return securedChats.flat();
   },

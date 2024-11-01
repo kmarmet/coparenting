@@ -27,8 +27,8 @@
   //  border: env(SAFE-AREA-INSET-TOP,
   //          5px) solid red;
   height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
+  max-height: 100vh;
   max-width: env(safe-area-inset-top) - env(safe-area-inset-bottom);
-  max-height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
   width: env(safe-area-inset-left) env(safe-area-inset-right);
   //  margin: env(safe-area-inset-right);
   //  // you can also use fallback values
@@ -37,6 +37,7 @@
   //  padding-bottom: env(safe-area-inset-bottom);
   //  padding-left: env(safe-area-inset-left);
   padding: 15px 15px 200px 15px;
+  
 
   &.active {
     opacity: 1;
@@ -2181,7 +2182,6 @@
     z-index: 10000;
     gap: 10px;
     border: 0;
-    //    background: white;
 
     .card-button {
       box-shadow: none;
@@ -2197,6 +2197,10 @@
       &.delete,
       &.red {
         background: $red;
+      }
+      
+      &.cancel {
+        background-color: $darkGrey;
       }
     }
 
