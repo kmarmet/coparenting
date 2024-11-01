@@ -121,7 +121,7 @@ export default function App() {
     document.querySelectorAll('.slide-out-menu-item').forEach((menuItem, i) => {
       setTimeout(() => {
         menuItem.classList.add('visible')
-      }, 60 * i)
+      }, 55 * i)
     })
   }
 
@@ -197,7 +197,9 @@ export default function App() {
       if (Manager.isValid(activeChats, true)) {
         for (let chat of activeChats) {
           const messages = Manager.convertToArray(chat.messages).flat()
-          const unreadMessages = messages.filter((x) => x.recipient === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered')
+          const unreadMessages = messages.filter(
+            (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
+          )
           setTimeout(() => {
             setState({ ...state, unreadMessageCount: unreadMessages.length })
           }, 500)

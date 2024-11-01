@@ -101,13 +101,19 @@ SecurityManager =
           returnRecords.push(suggestion)
     return returnRecords.flat()
   getChats: (currentUser) ->
-    securedChats = []
     chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}/#{currentUser.phone}")).flat()
-    if Manager.isValid(chats,true)
-      for chat in chats
+    securedChats = []
+    # User does not have a chat with root access by phone
+    if not Manager.isValid(chats, true)
+      allChats = await DB.getTable('chats')
+      for chat in allChats.flat()
         members = chat.members.map (x) -> x.phone
-        if members.includes(currentUser.phone)
+        if currentUser.phone in members
           securedChats.push(chat)
+
+    # User has root (phone) access
+    if Manager.isValid(chats,true)
+      securedChats = chats
     return securedChats.flat()
   getCoparentChats: (currentUser) ->
     allChats = await DB.getTable('chats')

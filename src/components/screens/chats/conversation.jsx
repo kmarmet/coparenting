@@ -95,7 +95,6 @@ const Conversation = () => {
     // Fill models
     const conversation = new ConversationThread()
     const conversationMessage = new ConversationMessage()
-    const dbRef = ref(getDatabase())
 
     // Messages
     conversationMessage.id = Manager.getUid()
@@ -106,8 +105,7 @@ const Conversation = () => {
     conversationMessage.readState = 'delivered'
     conversationMessage.notificationSent = false
     conversationMessage.bookmarked = false
-
-    const cleanMessages = Manager.cleanObject(conversationMessage, ModelNames.conversationMessage)
+    const cleanMessage = Manager.cleanObject(conversationMessage, ModelNames.conversationMessage)
 
     //Thread
     const { name, id, phone } = messageToUser
@@ -117,27 +115,27 @@ const Conversation = () => {
     conversation.id = Manager.getUid()
     conversation.members = [memberOne, memberTwo]
     conversation.timestamp = moment().format('MM/DD/yyyy hh:mma')
-    conversation.messages = [cleanMessages]
+    conversation.threadVisibilityMembers = [memberOne, memberTwo]
+    conversation.messages = [cleanMessage]
+    conversation.threadOwner = currentUser.phone
     const cleanThread = Manager.cleanObject(conversation, ModelNames.conversationThread)
 
-    const existingChatFromDB = existingChat
+    let threadOwner = currentUser
+
+    if (threadOwnerPhone !== currentUser.phone) {
+      threadOwner = messageToUser
+    }
 
     // Existing chat
-    if (Manager.isValid(existingChatFromDB)) {
-      const chatKey = await DB.getSnapshotKey(`${DB.tables.chats}/${threadOwnerPhone}`, existingChatFromDB, 'id')
-      let threadOwner = currentUser
-
-      if (threadOwnerPhone !== currentUser.phone) {
-        threadOwner = messageToUser
-      }
-
-      ChatManager.addMessage(threadOwner, chatKey, cleanThread.messages[0])
+    if (Manager.isValid(existingChat)) {
+      const chatKey = await DB.getSnapshotKey(`${DB.tables.chats}/${existingChat.threadOwner}`, existingChat, 'id')
+      await ChatManager.addConvoOrMessageByPath(`${DB.tables.chats}/${existingChat.threadOwner}/${chatKey}/messages`, cleanThread.messages[0])
     }
     // Create new chat (if one doesn't exist between members)
     else {
-      await DB.add(`${DB.tables.chats}/${threadOwnerPhone}`, cleanThread)
+      await ChatManager.addConvoOrMessageByPath(`${DB.tables.chats}/${threadOwnerPhone}`, cleanThread)
     }
-    let updatedMessages = existingChatFromDB?.messages
+    let updatedMessages = existingChat?.messages
 
     if (Manager.isValid(updatedMessages, true)) {
       if (!Array.isArray(updatedMessages)) {
@@ -168,64 +166,36 @@ const Conversation = () => {
   }
 
   const getExistingMessages = async () => {
-    const securedChats = await SecurityManager.getChats(currentUser)
+    let securedChats = await SecurityManager.getChats(currentUser)
     const securedChat = securedChats.filter(
       (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(messageToUser.phone)
     )[0]
 
-    // User has root (phone) access
-    if (securedChat) {
-      const bookmarkedMessages = securedChats.filter((x) => x.bookmarked)
-      const messages = Manager.convertToArray(securedChat?.messages) || []
+    const bookmarkedMessages = securedChats.filter((x) => x?.bookmarked)
+    const messages = Manager.convertToArray(securedChat?.messages) || []
 
-      // Mark read
+    if (messages.length > 0) {
+      if (bookmarkedMessages.length === 0) {
+        setShowBookmarks(false)
+        const bookmarkIcon = document.querySelector('.bookmark-icon')
+        if (bookmarkIcon) {
+          bookmarkIcon.classList.remove('active')
+        }
+      }
+      setBookmarks(bookmarkedMessages)
+      setMessagesToLoop(messages.flat())
+      setExistingChat(securedChat)
+      setThreadOwnerPhone(currentUser.phone)
       await ChatManager.markMessagesRead(currentUser, messageToUser, securedChat)
-
-      if (messages.length > 0) {
-        if (bookmarkedMessages.length === 0) {
-          setShowBookmarks(false)
-          const bookmarkIcon = document.querySelector('.bookmark-icon')
-          if (bookmarkIcon) {
-            bookmarkIcon.classList.remove('active')
-          }
-        }
-        setBookmarks(bookmarkedMessages)
-        setMessagesToLoop(messages.flat())
-        setExistingChat(securedChat)
-        setThreadOwnerPhone(currentUser.phone)
-      } else {
-        setMessagesToLoop([])
-        setExistingChat(null)
-      }
     } else {
-      // User does not have a chat with root access by phone
-      const activeChats = await SecurityManager.getCoparentChats(currentUser)
-      const coparentChat = activeChats.filter(
-        (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(messageToUser.phone)
-      )[0]
-      const bookmarkedMessages = activeChats.filter((x) => x.bookmarked)
-      const messages = Manager.convertToArray(coparentChat?.messages) || []
-
-      // Mark as read
-      await ChatManager.markMessagesRead(messageToUser, messageToUser, coparentChat)
-
-      if (messages.length > 0) {
-        if (bookmarkedMessages.length === 0) {
-          setShowBookmarks(false)
-          const bookmarkIcon = document.querySelector('.bookmark-icon')
-          if (bookmarkIcon) {
-            bookmarkIcon.classList.remove('active')
-          }
-        }
-        setThreadOwnerPhone(messageToUser.phone)
-        setBookmarks(bookmarkedMessages)
-        setMessagesToLoop(messages.flat())
-        setExistingChat(coparentChat)
-      }
+      setThreadOwnerPhone(currentUser.phone)
+      setMessagesToLoop([])
+      setExistingChat(null)
     }
     setTimeout(() => {
       setState({ ...state, unreadMessageCount: 0 })
     }, 500)
+    // Mark read
     scrollToLatestMessage()
   }
 
@@ -240,14 +210,15 @@ const Conversation = () => {
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, DB.tables.chats), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.chats}/${currentUser.phone}`), async (snapshot) => {
       await getExistingMessages().then((r) => r)
     })
   }
+
   useEffect(() => {
     onTableChange().then((r) => r)
     setTimeout(() => {
-      setState({ ...state, showNavbar: false })
+      setState({ ...state, showNavbar: false, currentScreen: ScreenNames.conversation })
     }, 500)
     scrollToLatestMessage()
     Manager.showPageContainer('show')

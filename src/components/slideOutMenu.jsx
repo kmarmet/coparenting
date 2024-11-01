@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react'
+import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
 import Manager from '@manager'
@@ -6,21 +6,21 @@ import AppManager from '@managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
 
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../globalFunctions'
 
 import DB_UserScoped from '@userScoped'
@@ -29,24 +29,25 @@ import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNav
 // ICONS
 import {
   PiCalendarDotsDuotone,
+  PiCarProfileDuotone,
   PiChatsCircleDuotone,
   PiHouseLineDuotone,
-  PiSwapDuotone,
-  PiCarProfileDuotone,
+  PiImagesSquareDuotone,
   PiMoneyWavyDuotone,
   PiMoonStarsDuotone,
-  PiImagesSquareDuotone,
-  PiToolboxDuotone,
   PiSignOutDuotone,
   PiSunDuotone,
+  PiSwapDuotone,
+  PiToolboxDuotone,
 } from 'react-icons/pi'
 import { RiMailSendLine } from 'react-icons/ri'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
-import { BsWrenchAdjustableCircle, BsPeople } from 'react-icons/bs'
+import { BsPeople } from 'react-icons/bs'
 import { MdOutlineManageAccounts } from 'react-icons/md'
 import { FiSettings } from 'react-icons/fi'
 import { BiFace } from 'react-icons/bi'
-import { LuPanelLeftClose } from 'react-icons/lu'
+import { FaSquareCaretLeft } from 'react-icons/fa6'
+
 export default function SlideOutMenu() {
   const { state, setState } = useContext(globalState)
   const { currentScreen, menuIsOpen, theme, currentUser, showCenterNavbarButton } = state
@@ -93,10 +94,6 @@ export default function SlideOutMenu() {
         // An error happened.
       })
   }
-
-  useEffect(() => {
-    document.getElementById('slide-out-menu').style.maxHeight = `${window.screen.height}px`
-  }, [])
 
   return (
     <>
@@ -229,24 +226,24 @@ export default function SlideOutMenu() {
         {/* THEME TOGGLE */}
         {menuIsOpen && (
           <div id="bottom-bar" className={theme}>
-            <div className={`slide-out-menu-item visible`} onClick={logout}>
+            <div className={`slide-out-menu-item`} onClick={logout}>
               <PiSignOutDuotone />
               <p>Logout</p>
             </div>
             {theme === 'dark' && (
-              <p className="theme-text" onClick={() => changeTheme('light')}>
+              <p className="theme-text slide-out-menu-item" onClick={() => changeTheme('light')}>
                 <PiSunDuotone />
                 Switch to Light Mode
               </p>
             )}
             {theme === 'light' && (
-              <p className="theme-text" onClick={() => changeTheme('dark')}>
+              <p className="theme-text slide-out-menu-item" onClick={() => changeTheme('dark')}>
                 <PiMoonStarsDuotone /> Switch to Dark Mode
               </p>
             )}
           </div>
         )}
-        {menuIsOpen && <LuPanelLeftClose id={'menu-close-icon'} onClick={() => setState({ ...state, menuIsOpen: false })} />}
+        {menuIsOpen && <FaSquareCaretLeft id={'menu-close-icon'} onClick={() => setState({ ...state, menuIsOpen: false })} />}
       </div>
     </>
   )

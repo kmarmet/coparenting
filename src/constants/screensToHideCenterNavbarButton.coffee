@@ -6,6 +6,7 @@ ScreensToHideCenterNavbarButton = [
   ScreenNames.contactUs
   ScreenNames.visitation
   ScreenNames.adminDashboard
+  ScreenNames.conversation
 ]
 
 

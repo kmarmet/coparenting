@@ -1,4 +1,4 @@
-import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
+import { child, get, getDatabase, ref, set, update } from 'firebase/database'
 import Manager from '@manager'
 import DB from '@db'
 import SecurityManager from './securityManager'
@@ -48,10 +48,15 @@ const ChatManager = {
     const securedChat = securedChats.filter(
       (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(coparent.phone)
     )[0]
-    await DB.add(DB.tables.archivedChats, securedChat).finally(async () => {
-      const idToDelete = await DB.getSnapshotKey(`${DB.tables.chats}/${currentUser.phone}`, securedChat, 'id')
-      remove(child(dbRef, `${DB.tables.chats}/${currentUser.phone}/${idToDelete}/`))
-    })
+    const chatKey = await DB.getNestedSnapshotKey(`${DB.tables.chats}`, securedChat, 'id')
+    const visMembersWithoutCurrentUser = securedChat.threadVisibilityMembers.filter((x) => x.phone !== currentUser.phone)
+    // console.log(visMembersWithoutCurrentUser)
+    // await DB_UserScoped.updateByPath(`${DB.tables.chats}/${securedChat.threadOwner}/${chatKey}/threadVisibilityMembers`, visMembersWithoutCurrentUser)
+    // const idToDelete = await DB.getSnapshotKey(`${DB.tables.chats}/${currentUser.phone}`, securedChat, 'id')
+    // remove(child(dbRef, `${DB.tables.chats}/${currentUser.phone}/${idToDelete}/`))
+    // await DB.add(DB.tables.archivedChats, securedChat).finally(async () => {
+    //   remove(child(dbRef, `${DB.tables.chats}/${securedChat.threadOwner}/${chatKey}/`))
+    // })
   },
   toggleMessageBookmark: async (currentUser, messageToUser, messageId, bookmarkState) => {
     const database = getDatabase()
@@ -81,14 +86,18 @@ const ChatManager = {
       })
     }
     const chatKey = await DB.getSnapshotKey(`chats/${currentUser.phone}`, chat, 'id')
-    console.log(`chats/${currentUser.phone}/${chatKey}/messages`)
-    set(child(dbRef, `chats/${currentUser.phone}/${chatKey}/messages`), Manager.getUniqueArray(allMessages).flat())
+    if (chatKey) {
+      set(child(dbRef, `chats/${currentUser.phone}/${chatKey}/messages`), Manager.getUniqueArray(allMessages).flat())
+    }
   },
-  addMessage: (currentUser, chatKey, newMessage) => {
-    const db = getDatabase()
-    const postListRef = ref(db, `chats/${currentUser.phone}/${chatKey}/messages`)
-    const newPostRef = push(postListRef)
-    set(newPostRef, newMessage)
+  addConvoOrMessageByPath: async (path, data) => {
+    const dbRef = ref(getDatabase())
+    if (!Array.isArray(data)) {
+      data = [data]
+    }
+    const currentConversations = await DB.getTable(path)
+    const toAdd = [...currentConversations, [...data]].filter((x) => x !== undefined).flat()
+    set(child(dbRef, path), toAdd).catch((error) => {})
   },
 }
 

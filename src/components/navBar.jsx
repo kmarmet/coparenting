@@ -24,6 +24,7 @@ import {
   wordCount,
 } from '../globalFunctions'
 import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
+import screensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
 
 export default function NavBar() {
   const { state, setState } = useContext(globalState)
@@ -54,12 +55,16 @@ export default function NavBar() {
   }
 
   useEffect(() => {
-    console.log(unreadMessageCount)
-  }, [])
+    if (currentScreen === ScreenNames.conversation) {
+      setState({ ...state, showNavbar: false })
+    }
+  }, [currentScreen])
 
   return (
     <>
-      <div id="navbar" className={`${theme} ${showNavbar ? 'active' : ''}`}>
+      <div
+        id="navbar"
+        className={`${theme} ${showNavbar && !screensToHideCenterNavbarButton.includes(currentScreen) ? 'active' : ''} ${menuIsOpen ? 'hide' : ''}`}>
         {!menuIsOpen && (
           <div id="menu-items" className="flex">
             {/* FULL MENU  */}

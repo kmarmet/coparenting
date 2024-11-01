@@ -160,19 +160,26 @@ SecurityManager = {
     return returnRecords.flat();
   },
   getChats: async function(currentUser) {
-    var chat, chats, i, len, members, securedChats;
-    securedChats = [];
+    var allChats, chat, chats, i, len, members, ref, ref1, securedChats;
     chats = Manager.convertToArray((await DB.getTable(`${DB.tables.chats}/${currentUser.phone}`))).flat();
-    if (Manager.isValid(chats, true)) {
-      for (i = 0, len = chats.length; i < len; i++) {
-        chat = chats[i];
+    securedChats = [];
+    // User does not have a chat with root access by phone
+    if (!Manager.isValid(chats, true)) {
+      allChats = (await DB.getTable('chats'));
+      ref = allChats.flat();
+      for (i = 0, len = ref.length; i < len; i++) {
+        chat = ref[i];
         members = chat.members.map(function(x) {
           return x.phone;
         });
-        if (members.includes(currentUser.phone)) {
+        if (ref1 = currentUser.phone, indexOf.call(members, ref1) >= 0) {
           securedChats.push(chat);
         }
       }
+    }
+    // User has root (phone) access
+    if (Manager.isValid(chats, true)) {
+      securedChats = chats;
     }
     return securedChats.flat();
   },

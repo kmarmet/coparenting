@@ -93,6 +93,7 @@ const DB = {
   },
   getSnapshotKey: async (path, objectToCheck, propertyToCompare) =>
     await new Promise(async (resolve) => {
+      console.log(path, objectToCheck, propertyToCompare)
       const dbRef = ref(getDatabase())
       await get(child(dbRef, path)).then((snapshot) => {
         if (snapshot.exists()) {

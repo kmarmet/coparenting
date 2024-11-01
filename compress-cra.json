@@ -1,5 +1,5 @@
 {
-  "algorithms": ["br", "gz"],
+  "algorithms": ["gz"],
   "filetypes": [
     ".html",
     ".js",

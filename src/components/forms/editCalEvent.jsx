@@ -59,7 +59,7 @@ export default function EditCalEvent({ event, hideCard }) {
   const [eventEndTime, setEventEndTime] = useState('')
   const [eventChildren, setEventChildren] = useState(event?.children || [])
   const [eventReminderTimes, setEventReminderTimes] = useState('')
-  const [eventShareWith, setEventShareWith] = useState(event?.shareWith)
+  const [eventShareWith, setEventShareWith] = useState(event?.shareWith || [])
   // State
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
   const [repeatingDatesToSubmit, setRepeatingDatesToSubmit] = useState([])
@@ -130,8 +130,7 @@ export default function EditCalEvent({ event, hideCard }) {
     eventToEdit.sentReminders = []
 
     const validation = DateManager.formValidation(eventTitle, eventShareWith, eventFromDate)
-    if (validation) {
-      successAlert('Event Updated')
+    if (!validation) {
       return false
     }
 
@@ -179,7 +178,7 @@ export default function EditCalEvent({ event, hideCard }) {
       }
     }
 
-    successAlert('Event Created')
+    successAlert('Event Updated')
     resetForm()
   }
 

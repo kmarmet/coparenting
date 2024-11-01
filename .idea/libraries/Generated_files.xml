@@ -28,6 +28,7 @@
         <item url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/general.js" />
         <item url="file://$PROJECT_DIR$/src/models/conversationMessage.js" />
+        <item url="file://$PROJECT_DIR$/src/models/conversationThread.js" />
         <item url="file://$PROJECT_DIR$/src/models/coparent.js" />
         <item url="file://$PROJECT_DIR$/src/models/memory.js" />
         <item url="file://$PROJECT_DIR$/src/models/modelNames.js" />
@@ -67,6 +68,7 @@
       <root url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
       <root url="file://$PROJECT_DIR$/src/models/child/general.js" />
       <root url="file://$PROJECT_DIR$/src/models/conversationMessage.js" />
+      <root url="file://$PROJECT_DIR$/src/models/conversationThread.js" />
       <root url="file://$PROJECT_DIR$/src/models/coparent.js" />
       <root url="file://$PROJECT_DIR$/src/models/memory.js" />
       <root url="file://$PROJECT_DIR$/src/models/modelNames.js" />

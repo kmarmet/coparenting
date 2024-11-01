@@ -27,7 +27,6 @@ import {
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
-import DB from '@db'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -55,31 +54,7 @@ const Chats = () => {
 
   const getChats = async () => {
     let securedChats = await SecurityManager.getChats(currentUser)
-
-    // User does not have a chat with root access by phone
-    if (!Manager.isValid(securedChats, true)) {
-      const allChats = await DB.getTable('chats')
-      const allChatsFlattened = allChats.flat()
-      let activeChats = []
-      for (let chat of allChatsFlattened) {
-        const members = chat.members.map((x) => x.phone)
-        if (members.includes(currentUser.phone)) {
-          activeChats.push(chat)
-        }
-      }
-      setThreads(activeChats)
-    }
-    // User has root (phone) access
-    else {
-      const members = securedChats.map((x) => x.members).flat()
-      const phones = members.map((x) => x.phone)
-      setActiveThreadPhones(phones)
-      if (Manager.isValid(securedChats, true)) {
-        setThreads(securedChats)
-      } else {
-        setThreads([])
-      }
-    }
+    setThreads(securedChats)
   }
 
   const archive = async (coparent) => {
