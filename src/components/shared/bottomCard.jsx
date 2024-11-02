@@ -10,8 +10,21 @@ export default function BottomCard({ onClose, children, title, subtitle = '', sh
 
   const cardClasses = () => {
     let classes = theme + ' ' + className
+    const navbar = document.getElementById('navbar')
+    const pageContainer = document.querySelector('.page-container')
     if (showCard) {
+      if (navbar && pageContainer) {
+        navbar.classList.add('hide')
+        setTimeout(() => {
+          pageContainer.classList.add('disable-scroll')
+        }, 500)
+      }
       classes += ' active '
+    } else {
+      if (navbar && pageContainer) {
+        pageContainer.classList.remove('disable-scroll')
+        navbar.classList.remove('hide')
+      }
     }
     return classes
   }

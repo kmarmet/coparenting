@@ -368,19 +368,17 @@ export default function EventCalendar() {
         })
         const date = moment(e[0]).format(DateFormats.dateForDb).toString()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-          setTimeout(async () => {
-            await getSecuredEvents(date, moment(e[0]).format('MM'))
-            setState({
-              ...state,
-              navbarButton: {
-                ...navbarButton,
-                action: () => setShowNewEventCard(true),
-                icon: <PiCalendarPlusDuotone />,
-                color: 'green',
-              },
-              selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString(),
-            })
-          }, 500)
+          await getSecuredEvents(date, moment(e[0]).format('MM'))
+          setState({
+            ...state,
+            navbarButton: {
+              ...navbarButton,
+              action: () => setShowNewEventCard(true),
+              icon: <PiCalendarPlusDuotone />,
+              color: 'green',
+            },
+            selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString(),
+          })
         })
       },
     })
@@ -470,80 +468,94 @@ export default function EventCalendar() {
 
   return (
     <>
-      {/* HOLIDAYS CARD */}
-      <BottomCard className={`${theme}`} onClose={viewAllEvents} showCard={showHolidaysCard} title={'View Holidays ✨'}>
-        <div className="flex buttons">
-          <button className="card-button" id="view-all-holidays-item" onClick={toggleAllHolidays}>
-            All ✨
-          </button>
-          <button className="card-button" id="view-visitation-holidays-item" onClick={toggleVisitationHolidays}>
-            Visitation 👦👧
-          </button>
-        </div>
-      </BottomCard>
+      {/* CARDS */}
+      <>
+        {/* HOLIDAYS CARD */}
+        <BottomCard className={`${theme} view-holidays`} onClose={viewAllEvents} showCard={showHolidaysCard} title={'View Holidays ✨'}>
+          <div className="flex buttons">
+            <button className="card-button" id="view-all-holidays-item" onClick={toggleAllHolidays}>
+              All ✨
+            </button>
+            <button className="card-button" id="view-visitation-holidays-item" onClick={toggleVisitationHolidays}>
+              Visitation 👦
+            </button>
+            <button className="card-button cancel" onClick={() => setShowHolidaysCard(false)}>
+              Close
+            </button>
+          </div>
+        </BottomCard>
 
-      {/* SEARCH CARD */}
-      <BottomCard
-        className="form search-card"
-        title={'Find Events'}
-        onClose={() => {
-          addFlatpickrCalendar().then((r) => r)
-          setShowSearchCard(false)
-        }}
-        showCard={showSearchCard}>
-        <div className={'mb-5 flex form search-card'} id="search-container">
-          <DebounceInput
-            placeholder="Enter an event name..."
-            minLength={2}
-            className={'search-input'}
-            debounceTimeout={500}
-            onChange={(e) => {
-              const inputValue = e.target.value
-              if (inputValue.length > 3) {
-                let results = []
-                if (Manager.isValid(allEventsFromDb, true)) {
-                  results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
-                }
-                if (results.length > 0) {
-                  setExistingEvents(results)
-                  toggleCalendar('hide')
-                  CalendarManager.hideCalendar()
-                  Manager.scrollToTopOfPage()
+        {/* SEARCH CARD */}
+        <BottomCard
+          className="form search-card"
+          title={'Find Events'}
+          onClose={() => {
+            addFlatpickrCalendar().then((r) => r)
+            setShowSearchCard(false)
+          }}
+          showCard={showSearchCard}>
+          <div className={'mb-5 flex form search-card'} id="search-container">
+            <DebounceInput
+              placeholder="Enter an event name..."
+              minLength={2}
+              className={'search-input'}
+              debounceTimeout={500}
+              onChange={(e) => {
+                const inputValue = e.target.value
+                if (inputValue.length > 3) {
+                  let results = []
+                  if (Manager.isValid(allEventsFromDb, true)) {
+                    results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+                  }
+                  if (results.length > 0) {
+                    setExistingEvents(results)
+                    toggleCalendar('hide')
+                    CalendarManager.hideCalendar()
+                    Manager.scrollToTopOfPage()
+                  } else {
+                    addFlatpickrCalendar().then((r) => r)
+                  }
                 } else {
-                  addFlatpickrCalendar().then((r) => r)
+                  if (inputValue.length === 0) {
+                    setShowSearchCard(false)
+                    addFlatpickrCalendar().then((r) => r)
+                  }
                 }
-              } else {
-                addFlatpickrCalendar().then((r) => r)
-              }
-            }}
-          />
-        </div>
-      </BottomCard>
+              }}
+            />
+            <div className="buttons">
+              <button className="card-button cancel" onClick={() => setShowSearchCard(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </BottomCard>
 
-      {/* NEW EVENT */}
-      <BottomCard
-        className={`${theme} new-event-form `}
-        onClose={() => setShowNewEventCard(false)}
-        showCard={showNewEventCard}
-        title={'Add New Event'}>
-        <NewCalendarEvent hideCard={() => setShowNewEventCard(false)} />
-      </BottomCard>
+        {/* NEW EVENT */}
+        <BottomCard
+          className={`${theme} new-event-form `}
+          onClose={() => setShowNewEventCard(false)}
+          showCard={showNewEventCard}
+          title={'Add New Event'}>
+          <NewCalendarEvent hideCard={() => setShowNewEventCard(false)} />
+        </BottomCard>
 
-      {/* EDIT EVENT */}
-      <BottomCard
-        showCard={showEditCard}
-        onClose={async (e) => {
-          await getSecuredEvents(eventToEdit?.fromDate)
-          setShowEditCard(false)
-        }}>
-        <EditCalEvent
-          event={eventToEdit}
-          hideCard={async (e) => {
+        {/* EDIT EVENT */}
+        <BottomCard
+          showCard={showEditCard}
+          onClose={async (e) => {
             await getSecuredEvents(eventToEdit?.fromDate)
             setShowEditCard(false)
-          }}
-        />
-      </BottomCard>
+          }}>
+          <EditCalEvent
+            event={eventToEdit}
+            hideCard={async (e) => {
+              await getSecuredEvents(eventToEdit?.fromDate)
+              setShowEditCard(false)
+            }}
+          />
+        </BottomCard>
+      </>
 
       {/* PAGE CONTAINER */}
       {/* CALENDAR */}
@@ -558,10 +570,10 @@ export default function EventCalendar() {
               })
             : ''
         }>
-        {/* PAGE CONTAINER */}
+        <p className="screen-title">Calendar</p>
         <div id="calendar-ui-container" className={`${theme}`} {...handlers}></div>
         {/* BELOW CALENDAR */}
-        {!showHolidays && (
+        {!showHolidays && !showSearchCard && (
           <div id="below-calendar" className={`${theme} mt-10`}>
             <div className="flex">
               <p onClick={() => setShowHolidaysCard(!showHolidaysCard)} id="filter-button">

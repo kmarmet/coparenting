@@ -36,7 +36,6 @@ export default CalendarManager =
     VisitationManager.deleteAllHolidaysForUser(currentUser)
     currentEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
     eventsToAdd = [currentEvents..., newEvents...].filter((x) -> x?).flat()
-    console.log(eventsToAdd)
     try
       await set(child(dbRef, "#{DB.tables.calendarEvents}"), eventsToAdd)
     catch error

@@ -131,7 +131,6 @@ export default function Memories() {
     else {
       const memoryKey = await DB.getSnapshotKey(`${DB.tables.memories}`, record, 'id')
       const updatedShareWith = record.shareWith.filter((x) => x !== currentUser.phone)
-      console.log(memoryKey, updatedShareWith)
       await DB.updateByPath(`${DB.tables.memories}/${memoryKey}/shareWith`, updatedShareWith)
     }
   }

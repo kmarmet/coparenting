@@ -66,7 +66,6 @@ export default CalendarManager = {
     eventsToAdd = [...currentEvents, ...newEvents].filter(function(x) {
       return x != null;
     }).flat();
-    console.log(eventsToAdd);
     try {
       return (await set(child(dbRef, `${DB.tables.calendarEvents}`), eventsToAdd));
     } catch (error1) {

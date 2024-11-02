@@ -163,17 +163,16 @@ const Manager = {
   },
   // ON PAGE LOAD
   showPageContainer: (hideOrShow = 'show') => {
-    Manager.centerDatepicker()
-
     const interval = setInterval(() => {
       const pageContainer = document.querySelector('.page-container')
       if (pageContainer) {
-        pageContainer.style.maxHeight = `${window.screen.height - 200}px`
+        Manager.centerDatepicker()
+        pageContainer.style.maxHeight = `${window.screen.height - 180}px`
         pageContainer.classList.add('active')
+        Manager.scrollToTopOfPage()
         clearInterval(interval)
       }
     }, 200)
-    Manager.scrollToTopOfPage()
   },
   hideKeyboard: (parentClass) => {
     const parent = document.querySelector(`.${parentClass}`)

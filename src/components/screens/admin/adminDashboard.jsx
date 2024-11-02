@@ -26,9 +26,10 @@ import DB from '@db'
 import Manager from '@manager'
 import DateFormats from '../../../constants/dateFormats'
 import CheckboxGroup from '../../shared/checkboxGroup'
+import DateManager from '../../../managers/dateManager'
 
 export default function AdminDashboard() {
-  const { state, setState } = useContext(globalState)
+  const { state, setState, currentUser } = useContext(globalState)
   const [chatRecoveryRequestEmail, setChatRecoveryRequestEmail] = useState('')
   const [chatRequests, setChatRequests] = useState([])
   const [getUserEmail, setGetUserEmail] = useState('')
@@ -45,7 +46,7 @@ export default function AdminDashboard() {
   }
   const deletedExpiredCalEvents = async () => AppManager.deleteExpiredCalendarEvents().then((r) => r)
   const deleteExpiredMemories = async () => AppManager.deleteExpiredMemories().then((r) => r)
-  const setHolidays = async () => AppManager.setHolidays()
+  const setHolidays = async () => AppManager.setHolidays(currentUser)
 
   // CHAT RECOVERY REQUESTS
   const getChatRecoveryRequest = async () => {
@@ -202,13 +203,14 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* SET HOLIDAYS */}
+        {/* HOLIDAYS */}
         <div className="tool-box">
           <p className="box-title">Set Holidays</p>
           <div className="buttons flex">
             <button className="button center" onClick={setHolidays}>
               Add to Cal
             </button>
+            <button onClick={() => DateManager.deleteAllHolidays()}>Delete All</button>
           </div>
         </div>
 

@@ -186,7 +186,11 @@ const Chats = () => {
               )
             })}
           <div className="buttons">
-            <button className="button card-button cancel" onClick={() => setShowNewConvoCard(false)}>
+            <button
+              className="button card-button cancel"
+              onClick={() => {
+                setShowNewConvoCard(false)
+              }}>
               Cancel
             </button>
           </div>

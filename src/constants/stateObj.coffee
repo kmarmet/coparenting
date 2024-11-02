@@ -1,9 +1,11 @@
 import ScreenNames from "./screenNames"
+import ActivitySet from "../models/activitySet"
 
 StateObj =
   alertMessage: ''
   alertType: ''
   activeInfoChild: null
+  activitySet: new ActivitySet(),
   confirmMessage: ''
   contactInfoToUpdateType: 'email'
   currentScreen: ScreenNames.login
@@ -43,6 +45,7 @@ StateObj =
   viewSwapRequestForm: false
   viewTransferRequestForm: false
   setAlertMessage: (alertMessage) ->
+  setActivitySet: (set) ->
   setAlertType: (type) ->
   setActiveInfoChild: (child) ->
   setActiveInfoCoparent: (coparent) ->

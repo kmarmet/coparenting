@@ -179,6 +179,48 @@ const VisitationManager = {
     }
     return dateArray
   },
+  getVisitationHolidays: async () => {
+    let holidays = await DateManager.getHolidays()
+    let visitationHolidays = []
+    let visitationRelatedHolidays = [
+      "New Year's Day",
+      'Good Friday',
+      'Memorial Day',
+      'Juneteenth',
+      'Independence Day',
+      'Columbus Day',
+      'Labor Day',
+      'Thanksgiving Day',
+      'Christmas Day',
+      'Christmas Eve',
+      "New Year's Eve",
+      'Halloween',
+      'Easter',
+      "Father's Day",
+      "Mother's Day",
+    ]
+    holidays.forEach((holiday) => {
+      visitationRelatedHolidays.forEach((mainHoliday) => {
+        if (mainHoliday.getFirstWord() === holiday.name.getFirstWord()) {
+          const exists = visitationHolidays.filter((x) => x.name.contains(holiday.name))
+          if (exists.length === 0) {
+            if (holiday.name === 'Juneteenth National Independence Day') {
+              holiday.name = 'Juneteenth'
+            }
+            if (holiday.name === "New Year's Day") {
+              holiday.date = '2025-01-01'
+            }
+            const holidayObject = {
+              name: holiday.name,
+              date: holiday.date,
+            }
+            visitationHolidays.push(holidayObject)
+          }
+        }
+      })
+    })
+    return Manager.getUniqueArray(visitationHolidays).flat()
+  },
   getSchedule: async (currentUser) => {
     return new Promise(async (resolve) => {
       await DB.getTable(DB.tables.calendarEvents).then((events) => {

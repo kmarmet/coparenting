@@ -32,6 +32,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
+
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 
@@ -172,21 +173,17 @@ function NewMemoryForm({ hideCard }) {
           <label>Image Description/Notes</label>
           <textarea className="mb-15" onChange={(e) => setMemoryNotes(e.target.value)}></textarea>
           <UploadInputs
+            onClose={hideCard}
             containerClass={theme}
             uploadType={'image'}
-            actualUploadButtonText={'Upload Memory'}
+            actualUploadButtonText={'Upload'}
             getImages={(files) => {
               setImages(files)
             }}
-            uploadButtonText="Choose Image"
+            uploadButtonText={`Choose`}
             upload={submit}
           />
         </div>
-      </div>
-      <div className="buttons">
-        <button className="button card-button cancel" onClick={hideCard}>
-          Cancel
-        </button>
       </div>
     </div>
   )

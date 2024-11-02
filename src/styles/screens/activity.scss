@@ -1,0 +1,142 @@
+@import '../variables';
+@import '../palette';
+@import '../mixins';
+
+#external-overrides {
+  #activity-wrapper {
+    svg,
+    button {
+      @include buttonPress;
+    }
+
+    #top-of-screen-bar {
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+
+      .screen-title {
+        width: auto;
+      }
+      button {
+        border-radius: $borderRadius;
+        background: $green;
+        color: white;
+        display: flex;
+        align-items: center;
+        padding: 3px 15px;
+
+        svg {
+          font-size: 20px;
+          margin-left: 10px;
+        }
+      }
+    }
+    #activity-cards {
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+
+      .activity-card {
+        width: calc((100% / 2) - 5px);
+        min-height: 150px;
+        border-radius: $bigBorderRadius;
+        padding: 12px;
+        margin-bottom: 10px;
+
+        &:first-child {
+          background: $bgGreen;
+        }
+		
+		&.calendar {
+		  background: #d3edf8;
+		}
+		
+		&.documents {
+		  background: #FFD0FF;
+		}
+
+        &.expenses {
+          background: #ffea95;
+        }
+
+        &.memories {
+          background: #fca976;
+        }
+
+        &.transfer-requests {
+          background: #9bbfff;
+        }
+		
+		&.swap-requests {
+		  background: #ceb5fc;
+		}
+
+        .text {
+          text-align: center;
+        }
+
+        .view-button-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          svg {
+            font-size: 18px;
+            margin-left: 5px;
+          }
+
+          .view-button {
+            background: transparent;
+            color: $lightBlack;
+            margin: 10px auto 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            padding-bottom: 2px;
+            border-bottom: 1px solid $lightDarkGrey;
+            font-size: 14px;
+          }
+        }
+
+        .count {
+          margin-top: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .count-number {
+            font-size: 28px;
+            font-weight: 600;
+            margin-left: 10px;
+          }
+        }
+
+        #top-of-card {
+          align-items: center;
+          justify-content: space-between;
+
+          .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+          }
+          .svg-wrapper {
+            padding: 5px;
+            background-color: $green;
+            border-radius: $borderRadius;
+            align-items: center;
+            justify-content: space-between;
+            display: flex;
+
+            svg {
+              font-size: 18px;
+              color: white;
+            }
+          }
+        }
+      }
+    }
+  }
+}

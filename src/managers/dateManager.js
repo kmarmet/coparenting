@@ -3,8 +3,24 @@ import DB from '@db'
 import Manager from '@manager'
 import CalendarEvent from '@models/calendarEvent'
 import DateFormats from '@constants/dateFormats'
-import '../prototypes'
 import CalendarManager from './calendarManager'
+import {
+  contains,
+  displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
+} from '../globalFunctions'
 
 const DateManager = {
   reminderTimes: {
@@ -169,48 +185,6 @@ const DateManager = {
           resolve(holidays)
         })
     }),
-  getVisitationHolidays: async () => {
-    let holidays = await DateManager.getHolidays()
-    let visitationHolidays = []
-    let visitationRelatedHolidays = [
-      "New Year's Day",
-      'Good Friday',
-      'Memorial Day',
-      'Juneteenth',
-      'Independence Day',
-      'Columbus Day',
-      'Labor Day',
-      'Thanksgiving Day',
-      'Christmas Day',
-      'Christmas Eve',
-      "New Year's Eve",
-      'Halloween',
-      'Easter',
-      "Father's Day",
-      "Mother's Day",
-    ]
-    holidays.forEach((holiday) => {
-      visitationRelatedHolidays.forEach((mainHoliday) => {
-        if (mainHoliday.getFirstWord() === holiday.name.getFirstWord()) {
-          const exists = visitationHolidays.filter((x) => x.name.contains(holiday.name))
-          if (exists.length === 0) {
-            if (holiday.name === 'Juneteenth National Independence Day') {
-              holiday.name = 'Juneteenth'
-            }
-            if (holiday.name === "New Year's Day") {
-              holiday.date = '2025-01-01'
-            }
-            const holidayObject = {
-              name: holiday.name,
-              date: holiday.date,
-            }
-            visitationHolidays.push(holidayObject)
-          }
-        }
-      })
-    })
-    return Manager.getUniqueArray(visitationHolidays).flat()
-  },
   getDuration: (timeInterval, start, end) => {
     if (timeInterval === 'days') {
       return moment.duration(moment(end).diff(moment(start))).asDays()
@@ -225,34 +199,10 @@ const DateManager = {
       return moment.duration(moment(end).diff(moment(start))).asMinutes()
     }
   },
-  getJsDate: (inputDate) => {
-    const month = moment(inputDate).format('MM')
-    const day = moment(inputDate).format('DD')
-    const newDate = new Date(`${moment().year()},${month},${day}`)
-    return newDate
-  },
-  standardToMilitaryTime: (time) => {
-    if (time.indexOf('am') > -1) {
-      return Number(time.replace('am', ''))
-    }
-    if (time.indexOf('pm') > -1) {
-      console.log(time)
-      return Number(time.replace('pm', '').replace(' ', '')) + 12
-    }
-  },
-  getJsDatetime: (date, time) => {
-    const month = parseInt(moment(date).format('M')) - 1
-    const year = parseInt(moment().year())
-    let hour = parseInt(moment(time, 'hh:mma').format('HH'))
-    const minute = parseInt(moment(time, 'hh:mma').format('mm'))
-    const day = parseInt(moment(date).format('DD'))
-    let returnDate = new Date(year, month, day, hour, minute)
-    return returnDate
-  },
   addDays: (inputDate, numberOfDays) => {
     return moment(new Date(inputDate.setDate(inputDate.getDate() + numberOfDays))).format(DateFormats.forDb)
   },
-  setHolidays: async () => {
+  setHolidays: async (currentUser) => {
     let users = await DB.getTable(DB.tables.users)
     let userPhones = Manager.convertToArray(users).map((x) => x.phone)
     const calEvents = await DB.getTable(DB.tables.calendarEvents)
@@ -260,7 +210,7 @@ const DateManager = {
     DateManager.getHolidays().then(async (holidays) => {
       let events = []
       const switchCheck = (title, holidayName) => {
-        return !!title.contains(holidayName)
+        return !!contains(title, holidayName)
       }
 
       // SET EMOJIS
@@ -299,6 +249,7 @@ const DateManager = {
             newEvent.title = holiday.name
         }
         newEvent.id = Manager.getUid()
+        newEvent.holidayName = holiday.name
         const alreadyExistsCount = events.filter((x) => moment(x.fromDate).format('MM/DD/yyyy') === moment(holiday.date).format('MM/DD/yyyy')).length
         if (alreadyExistsCount === 0 && ~existingCalendarHolidays.includes(moment(holiday.date).format('MM/DD/yyyy'))) {
           newEvent.fromDate = moment(holiday.date).format('MM/DD/yyyy')
@@ -310,8 +261,8 @@ const DateManager = {
       }
 
       events = events.filter((value, index, self) => index === self.findIndex((t) => t.fromDate === value.fromDate))
-      // console.log(events)
-      await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(events).flat())
+      console.log(events)
+      await CalendarManager.addMultipleCalEvents(currentUser, Manager.getUniqueArray(events).flat())
     })
   },
   dateIsValid: (inputDate) => {
@@ -336,6 +287,16 @@ const DateManager = {
     }
     // console.log(moment(returnDate, inputFormats).format(outputFormat))
     return moment(returnDate, formatted).format(outputFormat)
+  },
+
+  // DELETE
+  deleteAllHolidays: async (currentUser) => {
+    const allEvents = await DB.getTable(DB.tables.calendarEvents)
+    for (let event of allEvents) {
+      if (event?.isHoliday) {
+        await DB.delete(DB.tables.calendarEvents, event.id)
+      }
+    }
   },
 }
 

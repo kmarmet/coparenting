@@ -13,7 +13,6 @@ import VisitationManager from '@managers/visitationManager'
 import MyConfetti from '@shared/myConfetti'
 import Note from '@shared/note'
 import DB_UserScoped from '@userScoped'
-import DateManager from 'managers/dateManager'
 import VisitationMapper from 'mappers/visitationMapper'
 import { MobileDatePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
@@ -355,7 +354,7 @@ export default function Visitation() {
   }
 
   const getVisitationHolidays = async (currentUser) => {
-    const _holidays = await DateManager.getVisitationHolidays()
+    const _holidays = await VisitationManager.getVisitationHolidays()
     const userEvents = await SecurityManager.getCalendarEvents(currentUser)
     let userHolidays = []
     if (Manager.isValid(userEvents, true)) {

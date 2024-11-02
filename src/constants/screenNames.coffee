@@ -1,4 +1,5 @@
-ScreenNames=
+ScreenNames =
+  activity: 'activity'
   adminDashboard: 'adminDashboard'
   expenseTracker: 'expenseTracker'
   swapRequests: 'swapRequests'

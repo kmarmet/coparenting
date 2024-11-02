@@ -14,36 +14,36 @@
         transform: scale(1.5);
         padding: 0 0 0 8px;
       }
-      
+
       input {
         border: 1px solid $lightBorder;
       }
-      
+
       .flex {
-        align-items:center;
+        align-items: center;
         width: 100%;
         justify-content: space-between;
-        
+
         &.form {
           width: calc(100vw - 20px);
           margin: 0 auto;
         }
-        
+
         &.wrap {
           width: 100%;
           justify-content: space-between;
         }
       }
-      
+
       #view-holidays-button {
         height: 25px;
       }
-      
+
       #today-button {
         padding: 0 10px;
         margin: 0;
       }
-      
+
       #filter-button {
         border-radius: $borderRadius;
         display: flex;
@@ -51,55 +51,56 @@
         justify-content: space-between;
         font-weight: 600;
         padding: 6px 15px;
-        border: 1px solid $lightDarkGrey;
+        border: 1px solid $mainBlue;
         font-size: 15px;
-        color: $lightDarkGrey;
-        
+        color: $mainBlue;
+
         #filter-icon {
           font-size: 22px;
           position: relative;
           top: -2px;
           margin-left: 8px;
+          color: $mainBlue;
         }
       }
-      
+
       &.active {
         height: auto;
         transform: scale(1);
       }
-      
+
       .search-icon {
-        font-size: 25px;
+        font-size: 27px;
         display: flex;
         align-items: center;
         color: $lightDarkGrey;
       }
-      
+
       #cal-info-container {
         padding: 10px;
         border-radius: $borderRadius;
         @include shadow;
         @include fadeAndExpand;
         background-color: $darkBlue;
-        
+
         &.active {
           margin-bottom: 15px;
         }
-        
+
         p:not(.small) {
           font-weight: 500;
         }
-        
+
         #legend-title,
         #tips-title {
           font-weight: bold;
         }
-        
+
         .small {
           font-size: 15px;
           margin-left: 15px;
           opacity: 0.9;
-          
+
           span {
             color: $linkColor;
             font-size: 15px;
@@ -107,26 +108,26 @@
             border-bottom: 1px solid $linkColor;
           }
         }
-        
+
         // LEGEND
         #calendar-legend {
           margin: 0 auto;
           justify-content: flex-start;
-          
+
           .column {
             font-weight: 400;
             opacity: 0.9;
             margin-left: 10px;
-            
+
             span {
               position: relative;
               top: 2px;
             }
-            
+
             &.one {
               display: flex;
               align-items: center;
-              
+
               .visitation {
                 display: block;
                 background: $green;
@@ -137,11 +138,11 @@
                 top: 1px;
               }
             }
-            
+
             &.two {
               display: flex;
               align-items: center;
-              
+
               .dot {
                 margin-right: 10px;
                 display: block;

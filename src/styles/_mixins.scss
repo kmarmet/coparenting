@@ -23,9 +23,6 @@
   background: $lightBg;
   overflow: auto;
   overflow-x: hidden;
-  //  padding: 15px 15px 300px 15px;
-  //  border: env(SAFE-AREA-INSET-TOP,
-  //          5px) solid red;
   height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
   max-height: 100vh;
   max-width: env(safe-area-inset-top) - env(safe-area-inset-bottom);
@@ -37,16 +34,20 @@
   //  padding-bottom: env(safe-area-inset-bottom);
   //  padding-left: env(safe-area-inset-left);
   padding: 15px;
-  
 
   &.active {
     opacity: 1;
     margin-top: 0;
+    z-index: 1;
     &.conversation {
       padding-bottom: 0;
       background-color: white;
       overflow: hidden;
     }
+  }
+  
+  &.disable-scroll {
+    overflow: hidden;
   }
 
   &.calendar {
@@ -54,6 +55,10 @@
 
   &.login {
     max-height: 100vh;
+  }
+  
+  &#activity-wrapper {
+    background: white;
   }
 
   @media screen and (max-width: 800px) {
@@ -90,8 +95,8 @@
   align-items: center;
   position: relative;
   color: $mainBlue;
-  font-weight: 400;
-  margin-top: 15px;
+  font-weight: 500;
+  padding-bottom: 10px;
 
   &.active {
     transform: scale(1);
@@ -312,7 +317,6 @@
 
 // FORM
 @mixin form {
-
   &.transfer-change {
     input {
       &:first-child {
@@ -322,7 +326,7 @@
   }
 
   input {
-    &:is(:-webkit-autofill, :autofill, :-webkit-autofill:focus) {
+    &:is(:-webkit-autofill, :-webkit-autofill:focus) {
       margin: 0 auto;
       display: block;
       width: 100%;
@@ -382,20 +386,20 @@
     font-size: 16px;
     line-height: 1.5;
     margin-bottom: 5px;
-    
+
     span:not(.asterisk) {
       font-weight: 600;
       font-size: 16px;
       line-height: 1.5;
       color: $lightBlack;
     }
-    
+
     svg {
       font-size: 22px;
       margin-right: 8px;
-      opacity: .7;
+      opacity: 0.7;
     }
-    
+
     * {
       display: inline;
     }
@@ -1131,43 +1135,39 @@
 @mixin uploadInputs() {
   display: flex;
   width: 100%;
+  gap: 5px;
   #file-upload-button {
     border: 0;
   }
-  /*#region  LIGHT THEME*/
-  &.light {
-    position: relative;
-    gap: 8px;
-    .custom-file-upload,
-    #file-upload-button {
-      height: 40px;
-    }
-    .custom-file-upload {
-      background-color: $mainBlue;
+  .custom-file-upload,
+  #file-upload-button {
+//    height: 40px;
+  }
+  .custom-file-upload {
+    background-color: $mainBlue;
+    color: white;
+    display: flex;
+    justify-content: center;
+    border-radius: $borderRadius;
+//    padding: 8px 20px;
+  }
+  #file-upload-button {
+    display: none !important;
+    border: 0;
+    background-color: $green;
+//    width: 50%;
+    color: white;
+    border-radius: 20px;
+    label {
       color: white;
       display: flex;
       justify-content: center;
-      border-radius: 20px;
-    }
-    #file-upload-button {
-      display: none !important;
-      border: 0;
-      background-color: $green;
-      width: 50%;
-      color: white;
-      border-radius: 20px;
-      label {
-        color: white;
-        display: flex;
-        justify-content: center;
-      }
     }
   }
-  /*#endregion  LIGHT THEME*/
 
   .custom-file-upload {
-    width: 50%;
-    height: 40px;
+//    width: 50%;
+//    height: 40px;
   }
 }
 @mixin popupContainers {
@@ -2041,7 +2041,6 @@
     bottom: 0;
     z-index: $maxZIndex;
     transition: all 0.4s ease-in-out;
-
   }
 
   #toc-scroll-button {
@@ -2188,7 +2187,7 @@
       &.red {
         background: $red;
       }
-      
+
       &.cancel {
         background-color: $darkGrey;
       }
@@ -2329,6 +2328,13 @@
     #title {
       color: $red;
     }
+  }
+
+  &.view-holidays {
+    min-height: 2vh;
+    height: 1vh;
+    max-height: 1vh;
+    padding-bottom: 150px;
   }
 
   // CUSTOM INFO
@@ -2675,10 +2681,10 @@
       display: flex;
       width: 40px;
       color: $lightDarkGrey;
-      
+
       &#chat-menu-item {
         position: relative;
-        
+
         .navbar-activity-badge {
           position: absolute;
           top: -2px;
@@ -2696,7 +2702,7 @@
           font-size: 12px;
         }
       }
-      
+
       svg {
         font-size: 32px;
       }
@@ -2725,7 +2731,7 @@
         opacity: 1;
 
         svg {
-//          font-size: 50px;
+          //          font-size: 50px;
         }
 
         .material-icons-round {

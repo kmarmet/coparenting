@@ -3,10 +3,13 @@ var StateObj;
 
 import ScreenNames from "./screenNames";
 
+import ActivitySet from "../models/activitySet";
+
 StateObj = {
   alertMessage: '',
   alertType: '',
   activeInfoChild: null,
+  activitySet: new ActivitySet(),
   confirmMessage: '',
   contactInfoToUpdateType: 'email',
   currentScreen: ScreenNames.login,
@@ -47,6 +50,7 @@ StateObj = {
   viewSwapRequestForm: false,
   viewTransferRequestForm: false,
   setAlertMessage: function(alertMessage) {},
+  setActivitySet: function(set) {},
   setAlertType: function(type) {},
   setActiveInfoChild: function(child) {},
   setActiveInfoCoparent: function(coparent) {},

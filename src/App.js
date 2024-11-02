@@ -12,6 +12,7 @@ import Manager from '@manager'
 import moment from 'moment'
 
 // Screens
+import Activity from './components/screens/activity'
 import EventCalendar from '@screens/calendar.jsx'
 import InstallAppPopup from '@components/installAppPopup.jsx'
 import Account from '@screens/account/account.jsx'
@@ -79,6 +80,7 @@ import {
 import DB_UserScoped from '@userScoped'
 import ContactUs from './components/screens/contactUs'
 import SecurityManager from './managers/securityManager'
+import ActivitySet from './models/activitySet'
 
 export default function App() {
   // Initialize Firebase
@@ -109,7 +111,7 @@ export default function App() {
   })
 
   // State to include in App.js
-  const { setTheme, isLoading, theme, previousScreen, currentScreen, menuIsOpen, showBackButton, currentUser } = state
+  const { isLoading, theme, currentScreen, menuIsOpen, currentUser } = state
 
   const deleteMenuAnimation = () => {
     document.querySelectorAll('.slide-out-menu-item').forEach((menuItem, i) => {
@@ -173,6 +175,34 @@ export default function App() {
       })
   }
 
+  const setActivities = async () => {
+    let newActivitySet = new ActivitySet()
+    newActivitySet.chat = { unreadMessageCount: 0, chatSenders: [] }
+    const activeChats = Manager.convertToArray(await SecurityManager.getChats(currentUser))
+    let chatSenders = []
+    let unreadMessageCount = 0
+    for (let chat of activeChats) {
+      const messages = Manager.convertToArray(chat.messages).flat()
+      const unreadMessages = messages.filter(
+        (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
+      )
+      for (let unreadMessage of Manager.convertToArray(unreadMessages)) {
+        if (unreadMessage?.sender && !chatSenders.includes(formatNameFirstNameOnly(unreadMessage?.sender))) {
+          chatSenders = [...chatSenders, formatNameFirstNameOnly(unreadMessage?.sender)]
+        }
+      }
+
+      unreadMessageCount = unreadMessages.length
+    }
+    // Set Activity Set
+    newActivitySet.chat.chatSenders = chatSenders
+    newActivitySet.chat.unreadMessageCount = unreadMessageCount
+    console.log(newActivitySet)
+    setTimeout(() => {
+      setState({ ...state, activitySet: newActivitySet })
+    }, 1000)
+  }
+
   const getUnreadMessageCount = async () => {
     const activeChats = Manager.convertToArray(await SecurityManager.getChats(currentUser))
 
@@ -191,8 +221,8 @@ export default function App() {
             (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
           )
           setTimeout(() => {
-            setState({ ...state, unreadMessageCount: unreadMessages.length })
-          }, 500)
+            setState({ ...state, unreadMessageCount: unreadMessages.length, showNavbar: true, menuIsOpen: false })
+          }, 1000)
         }
       }
     } else {
@@ -203,8 +233,8 @@ export default function App() {
             (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
           )
           setTimeout(() => {
-            setState({ ...state, unreadMessageCount: unreadMessages.length })
-          }, 500)
+            setState({ ...state, unreadMessageCount: unreadMessages.length, showNavbar: true, menuIsOpen: false })
+          }, 1000)
         }
       }
     }
@@ -221,8 +251,6 @@ export default function App() {
   useEffect(() => {
     // Error Boundary Test
     // throw new Error('Something went wrong')
-
-    setState({ ...state, showMenuButton: false, showNavbar: true, menuIsOpen: false })
 
     AppManager.deleteExpiredCalendarEvents().then((r) => r)
     AppManager.deleteExpiredMemories().then((r) => r)
@@ -259,14 +287,12 @@ export default function App() {
           }, 300)
         })
       }
+      // setActivities().then((r) => r)
       getUnreadMessageCount().then((r) => r)
     }
   }, [currentUser])
 
   useEffect(() => {
-    document.querySelector('#app-container').style.height = `${window.screen.height}px`
-    document.querySelector('html').style.height = `${window.screen.height}px`
-
     if (menuIsOpen) {
       document.querySelector('#app-container').classList.add('pushed')
       addMenuItemAnimation()
@@ -332,6 +358,7 @@ export default function App() {
             {currentScreen === ScreenNames.newCoparent && <NewCoparentForm />}
 
             {/* STANDARD */}
+            {currentScreen === ScreenNames.activity && <Activity />}
             {currentScreen === ScreenNames.calendar && <EventCalendar />}
             {currentScreen === ScreenNames.settings && <Settings />}
             {currentScreen === ScreenNames.account && <Account />}
