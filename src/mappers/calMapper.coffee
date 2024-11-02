@@ -122,6 +122,8 @@ CalendarMapper =
         'Labor Day'
       when date == '10/14'
         'Columbus Day'
+      when date == '10/31'
+        'Halloween'
       when date == '12/25'
         'Christmas Day'
       when date == '12/24'

@@ -243,7 +243,7 @@
           font-weight: bold !important;
           position: relative;
           top: 1px;
-          color: $lightestBlue !important;
+          color: $mainBlue !important;
 
           .visitation-dot,
           .dot {
@@ -939,6 +939,11 @@
       border-radius: 0;
       height: 60px;
       color: $lightBlack !important;
+      
+      &.today {
+        opacity: 1;
+      }
+      
       &:hover {
         background: transparent !important;
         border: 0 !important;
@@ -947,7 +952,7 @@
       }
       
       &.weekend-day {
-        color: $green !important;
+        color: $lightDarkGrey !important;
       }
 
       &.prevMonthDay {

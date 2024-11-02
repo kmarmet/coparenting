@@ -32,6 +32,7 @@ import {
 import { LuImageMinus, LuImagePlus } from 'react-icons/lu'
 import { saveImageFromUrl } from '../../managers/imageManager'
 import BottomCard from '../shared/bottomCard'
+import NoDataFallbackText from '../shared/noDataFallbackText'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -113,16 +114,26 @@ export default function Memories() {
     }
   }
 
-  const deleteMemory = async (path, toDelete) => {
+  const deleteMemory = async (path, record) => {
     document.querySelectorAll('.memory-image').forEach((memoryImage) => memoryImage.classList.remove('active'))
     setState({ ...state, isLoading: true })
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
 
-    // Delete from Firebase Realtime DB
-    await DB.deleteMemory(currentUser.phone, toDelete).then(async () => {
-      // Delete from Firebase Storage
-      await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser.id, imageName)
-    })
+    // Current user is record owner
+    if (record.ownerPhone === currentUser.phone) {
+      // Delete from Firebase Realtime DB
+      await DB.deleteMemory(currentUser.phone, record).then(async () => {
+        // Delete from Firebase Storage
+        await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser.id, imageName)
+      })
+    }
+    // Memory was shared with current user -> hide it
+    else {
+      const memoryKey = await DB.getSnapshotKey(`${DB.tables.memories}`, record, 'id')
+      const updatedShareWith = record.shareWith.filter((x) => x !== currentUser.phone)
+      console.log(memoryKey, updatedShareWith)
+      await DB.updateByPath(`${DB.tables.memories}/${memoryKey}/shareWith`, updatedShareWith)
+    }
   }
 
   const addImageAnimation = async () => {
@@ -172,11 +183,7 @@ export default function Memories() {
           Upload photos of memories that are too good NOT to share <span className="material-icons heart">favorite</span>
         </p>
 
-        {memories && memories.length === 0 && (
-          <div id="instructions-wrapper">
-            <p className="instructions center">There are currently no memories</p>
-          </div>
-        )}
+        {memories && memories.length === 0 && <NoDataFallbackText text={'There are currently no memories'} />}
         {/* GALLERY */}
         <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'.memory-image'}>
           <>
@@ -186,23 +193,19 @@ export default function Memories() {
                   <>
                     <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}></div>
                     <div className="below-image">
-                      {Manager.isValid(imgObj?.shareWith, true) && !imgObj?.shareWith.includes(currentUser.phone) && (
-                        <>
-                          <div className="top flex">
-                            <p className="title">{uppercaseFirstLetterOfAllWords(imgObj.title)}</p>
-                            <div className="buttons flex">
-                              <HiOutlineSave
-                                onClick={(e) => {
-                                  saveMemoryImage(e)
-                                }}
-                                className={'fs-30'}
-                              />
-                              <LuImageMinus className={'fs-26'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
-                            </div>
-                          </div>
-                          <div className="text">{capitalizeFirstWord(imgObj?.notes)}</div>
-                        </>
-                      )}
+                      <div className="top flex">
+                        <p className="title">{uppercaseFirstLetterOfAllWords(imgObj.title)}</p>
+                        <div className="buttons flex">
+                          <HiOutlineSave
+                            onClick={(e) => {
+                              saveMemoryImage(e)
+                            }}
+                            className={'fs-30'}
+                          />
+                          <LuImageMinus className={'fs-26'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
+                        </div>
+                      </div>
+                      <div className="text">{capitalizeFirstWord(imgObj?.notes)}</div>
                     </div>
                   </>
                 )

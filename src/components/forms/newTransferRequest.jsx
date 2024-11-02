@@ -14,6 +14,8 @@ import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import BottomCard from '../shared/bottomCard'
+import { FaRegEye } from 'react-icons/fa'
+import { IoPersonCircleOutline } from 'react-icons/io5'
 
 import {
   contains,
@@ -32,6 +34,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
+import Label from '../shared/label'
 
 export default function NewTransferChangeRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -160,7 +163,7 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
             {/*  NEW LOCATION*/}
             <label>New Location</label>
             <Autocomplete
-              placeholder={''}
+              placeholder={currentUser.defaultTransferLocation}
               apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
               options={{
                 types: ['geocode', 'establishment'],
@@ -187,29 +190,22 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
 
             {/* SEND REQUEST TO */}
             {currentUser && (
-              <div className="share-with-container">
-                <label>
-                  <span className="material-icons-round notifications">notifications</span>Who is the request being sent to?
-                  <span className="asterisk">*</span>
-                </label>
+              <Label icon={<IoPersonCircleOutline />} text={'Who is the request being sent to?'}>
                 <CheckboxGroup
                   dataPhone={currentUser?.coparents.map((x) => x.phone)}
                   labels={currentUser?.coparents.map((x) => x.name)}
                   onCheck={handleRequestRecipient}
                 />
-              </div>
+              </Label>
             )}
             {currentUser && (
-              <div className="share-with-container">
-                <label>
-                  <span className="material-icons-round">visibility</span> Who is allowed to see it? <span className="asterisk">*</span>
-                </label>
+              <Label icon={<FaRegEye />} text={'Who is allowed to see it?'} required={true}>
                 <CheckboxGroup
                   dataPhone={currentUser?.coparents.map((x) => x.phone)}
                   labels={currentUser?.coparents.map((x) => x.name)}
                   onCheck={handleShareWithSelection}
                 />
-              </div>
+              </Label>
             )}
             <div className="buttons gap">
               {moment(requestDate).format(DateFormats.dateForDb).replace('Invalid date', '').length > 0 && requestRecipientPhone.length > 0 && (

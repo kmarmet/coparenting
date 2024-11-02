@@ -179,19 +179,21 @@ export default function App() {
     // No chats/currentUser.phone
     if (!Manager.isValid(activeChats, true)) {
       const coparentChats = await SecurityManager.getCoparentChats(currentUser)
-      const allMessages = coparentChats.map((x) => x.messages).flat()
-      let coparentMessages = []
-      if (Manager.isValid(allMessages, true)) {
-        for (let message of allMessages) {
-          coparentMessages.push(Manager.convertToArray(message).flat())
+      if (Manager.isValid(coparentChats, true)) {
+        const allMessages = coparentChats.map((x) => x.messages).flat()
+        let coparentMessages = []
+        if (Manager.isValid(allMessages, true)) {
+          for (let message of allMessages) {
+            coparentMessages.push(Manager.convertToArray(message).flat())
+          }
+          coparentMessages = coparentMessages.flat()
+          const unreadMessages = coparentMessages.filter(
+            (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
+          )
+          setTimeout(() => {
+            setState({ ...state, unreadMessageCount: unreadMessages.length })
+          }, 500)
         }
-        coparentMessages = coparentMessages.flat()
-        const unreadMessages = coparentMessages.filter(
-          (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
-        )
-        setTimeout(() => {
-          setState({ ...state, unreadMessageCount: unreadMessages.length })
-        }, 500)
       }
     } else {
       if (Manager.isValid(activeChats, true)) {

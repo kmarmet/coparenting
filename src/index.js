@@ -5,12 +5,7 @@ import App from './App'
 import { ErrorBoundary } from 'react-error-boundary'
 import { getAuth, signOut } from 'firebase/auth'
 
-const a = document.getElementsByTagName('a')
-
 if ('serviceWorker' in navigator) {
-  const CACHE_NAME = 'app-cache'
-  const PRECACHE_ASSETS = ['/build', '/src']
-
   navigator.serviceWorker
 
     .register(`${process.env.PUBLIC_URL}/sw.js`)
@@ -30,6 +25,12 @@ if ('serviceWorker' in navigator) {
     registration.update().then(() => {
       console.log('PWA Updated')
     })
+  })
+
+  // eslint-disable-next-line no-restricted-globals
+  self.addEventListener('install', (event) => {
+    // eslint-disable-next-line no-restricted-globals
+    self.skipWaiting()
   })
 
   // function forceSWupdate() {

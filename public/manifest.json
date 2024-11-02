@@ -8,6 +8,7 @@
   "theme_color": "#f4f8fb",
   "orientation": "portrait",
   "display_override": ["standalone", "minimal-ui"],
+  "form_factor": "narrow",
   "icons": [
     {
       "src": "192.png",

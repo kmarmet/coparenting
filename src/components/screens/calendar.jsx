@@ -66,10 +66,10 @@ export default function EventCalendar() {
   const formatEvents = (events) => {
     let dateArr = []
     events.forEach((event, index) => {
-      if (dateArr.findIndex((x) => x.some((d) => d.date === event.date || d.fromDate === event.date)) === -1) {
+      if (dateArr.findIndex((x) => x.some((d) => d.date === event?.date || d.fromDate === event?.date)) === -1) {
         dateArr.push([event])
       } else {
-        const arrIndex = dateArr.findIndex((x) => x.some((d) => d.date === event.date || d.fromDate === event.date))
+        const arrIndex = dateArr.findIndex((x) => x.some((d) => d.date === event?.date || d.fromDate === event?.date))
         dateArr[arrIndex].push(event)
       }
     })
@@ -106,7 +106,7 @@ export default function EventCalendar() {
 
       // Sort dates with time
       securedEvents.forEach((event) => {
-        if (Manager.isValid(event.startTime, false, false, true)) {
+        if (Manager.isValid(event?.startTime, false, false, true)) {
           datesWithTime.push(event)
         } else {
           datesWithoutTime.push(event)
@@ -119,9 +119,9 @@ export default function EventCalendar() {
     }
     let eventsWithMultipleDays = []
     eventsToAddDotsTo.forEach((event, index) => {
-      if (event.fromDate && event.toDate && event.fromDate !== event.toDate) {
-        if (eventsWithMultipleDays.filter((x) => x.fromDate === event.fromDate).length === 0) {
-          const eventDaysCount = moment(event.toDate).diff(event.fromDate, 'days')
+      if (event?.fromDate && event?.toDate && event?.fromDate !== event?.toDate) {
+        if (eventsWithMultipleDays.filter((x) => x.fromDate === event?.fromDate).length === 0) {
+          const eventDaysCount = moment(event?.toDate).diff(event?.fromDate, 'days')
           const randomColor = Math.floor(Math.random() * 16777215).toString(16)
           eventsWithMultipleDays.push({ eventObj: event, daysCount: eventDaysCount, color: randomColor })
         }
@@ -131,19 +131,19 @@ export default function EventCalendar() {
     // Support showing each event for multi-day events
     eventsWithMultipleDays.forEach((event) => {
       let dateRange = []
-      for (let i = 0; i <= event.daysCount; i++) {
-        let formattedDay = moment(event.eventObj.fromDate).add(i, 'day').format(DateFormats.dateForDb)
+      for (let i = 0; i <= event?.daysCount; i++) {
+        let formattedDay = moment(event?.eventObj.fromDate).add(i, 'day').format(DateFormats.dateForDb)
         dateRange.push(formattedDay)
       }
       if (dateRange.includes(selectedDay)) {
         const eventToAdd = {
-          id: event.eventObj.id,
-          title: event.eventObj.title,
-          fromDate: event.eventObj.fromDate,
-          toDate: event.eventObj.toDate,
-          startTime: event.eventObj.startTime,
-          endTime: event.eventObj.endTime,
-          children: event.eventObj.children,
+          id: event?.eventObj.id,
+          title: event?.eventObj.title,
+          fromDate: event?.eventObj.fromDate,
+          toDate: event?.eventObj.toDate,
+          startTime: event?.eventObj.startTime,
+          endTime: event?.eventObj.endTime,
+          children: event?.eventObj.children,
         }
         if (!securedEvents.includes(eventToAdd)) {
           securedEvents.push(eventToAdd)
@@ -346,7 +346,6 @@ export default function EventCalendar() {
         Manager.showPageContainer('show')
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
-          setState({ ...state, selectedNewEventDay: moment().format(DateFormats.dateForDb).toString() })
           setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
         })
       },
@@ -367,18 +366,21 @@ export default function EventCalendar() {
         document.querySelectorAll('.event-row').forEach((eventRow, i) => {
           eventRow.classList.remove('active')
         })
-        setNavbarButton(
-          () => {
-            setShowNewEventCard(true)
-          },
-          <PiCalendarPlusDuotone />
-        )
         const date = moment(e[0]).format(DateFormats.dateForDb).toString()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           setTimeout(async () => {
             await getSecuredEvents(date, moment(e[0]).format('MM'))
-            setState({ ...state, selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString() })
-          }, 300)
+            setState({
+              ...state,
+              navbarButton: {
+                ...navbarButton,
+                action: () => setShowNewEventCard(true),
+                icon: <PiCalendarPlusDuotone />,
+                color: 'green',
+              },
+              selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString(),
+            })
+          }, 500)
         })
       },
     })
@@ -402,8 +404,7 @@ export default function EventCalendar() {
       (x) => x.isHoliday === true && x.ownerPhone === currentUser.phone && contains(x.title.toLowerCase(), 'holiday')
     )
     userVisitationHolidays.forEach((holiday) => {
-      const holidayName = CalendarMapper.holidayDateToName(moment(holiday.fromDate).format('MM/DD'))
-      holiday.title += ` (${holidayName})`
+      holiday.title += ` (${holiday.holidayName})`
     })
     setExistingEvents(userVisitationHolidays)
     setShowHolidaysCard(!showHolidaysCard)
@@ -434,7 +435,7 @@ export default function EventCalendar() {
   }
 
   const handleEventRowClick = (e, event) => {
-    const shouldShow = !event.isHoliday && e.target.tagName !== 'A' && e.target.id !== 'more-button'
+    const shouldShow = !event?.isHoliday && e.target.tagName !== 'A' && e.target.id !== 'more-button'
     const hasEditAccess = AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())
     if (shouldShow && hasEditAccess) {
       setEventToEdit(event)
@@ -460,21 +461,11 @@ export default function EventCalendar() {
 
   // ON PAGE LOAD
   useEffect(() => {
-    addFlatpickrCalendar().then((r) => r)
-    Manager.showPageContainer('show')
+    setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
     setTimeout(() => {
-      setState({
-        ...state,
-        selectedNewEventDay: moment(),
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            setShowNewEventCard(true)
-          },
-          icon: <PiCalendarPlusDuotone />,
-        },
-      })
-    }, 500)
+      addFlatpickrCalendar().then((r) => r)
+    }, 300)
+    Manager.showPageContainer('show')
   }, [])
 
   return (
@@ -542,13 +533,13 @@ export default function EventCalendar() {
       <BottomCard
         showCard={showEditCard}
         onClose={async (e) => {
-          await getSecuredEvents(eventToEdit.fromDate)
+          await getSecuredEvents(eventToEdit?.fromDate)
           setShowEditCard(false)
         }}>
         <EditCalEvent
           event={eventToEdit}
           hideCard={async (e) => {
-            await getSecuredEvents(eventToEdit.fromDate)
+            await getSecuredEvents(eventToEdit?.fromDate)
             setShowEditCard(false)
           }}
         />
@@ -572,7 +563,7 @@ export default function EventCalendar() {
         {/* BELOW CALENDAR */}
         {!showHolidays && (
           <div id="below-calendar" className={`${theme} mt-10`}>
-            <div className="flex wrap">
+            <div className="flex">
               <p onClick={() => setShowHolidaysCard(!showHolidaysCard)} id="filter-button">
                 Holidays
                 <GiPartyPopper id={'filter-icon'} />
@@ -598,14 +589,14 @@ export default function EventCalendar() {
           {Manager.isValid(existingEvents, true) &&
             existingEvents.map((event, index) => {
               let readableReminderTimes = []
-              event.reminderTimes?.forEach((time) => {
+              event?.reminderTimes?.forEach((time) => {
                 if (time && time !== undefined) {
                   readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
                 }
               })
               let eventType = 'standard'
-              if (event.fromVisitationSchedule) {
-                if (contains(event.createdBy?.toLowerCase(), currentUser.name.toLowerCase())) {
+              if (event?.fromVisitationSchedule) {
+                if (contains(event?.createdBy?.toLowerCase(), currentUser.name.toLowerCase())) {
                   eventType = 'current-user-visitation'
                 } else {
                   eventType = 'coparent-visitation'
@@ -615,14 +606,14 @@ export default function EventCalendar() {
                 <div
                   onClick={(e) => handleEventRowClick(e, event)}
                   key={index}
-                  data-from-date={event.fromDate}
-                  className={`${event.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
+                  data-from-date={event?.fromDate}
+                  className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
                   <div className="text">
                     <div className="top">
                       {/* DATE CONTAINER */}
                       <div id="date-container">
                         {/* FROM DATE */}
-                        {!contains(event.fromDate, 'Invalid') && event?.fromDate?.length > 0 && (
+                        {!contains(event?.fromDate, 'Invalid') && event?.fromDate?.length > 0 && (
                           <span className="fromDate">
                             {moment(event?.fromDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
                           </span>
@@ -632,40 +623,40 @@ export default function EventCalendar() {
                           <span className="toDate"> to </span>
                         )}
                         {/* TO DATE */}
-                        {!contains(event.toDate, 'Invalid') &&
-                          event.toDate?.length > 0 &&
-                          event.toDate !== event.fromDate &&
-                          moment(event.toDate).format(DateFormats.readableDay)}
+                        {!contains(event?.toDate, 'Invalid') &&
+                          event?.toDate?.length > 0 &&
+                          event?.toDate !== event?.fromDate &&
+                          moment(event?.toDate).format(DateFormats.readableDay)}
                         {/* ALL DAY */}
                         {event &&
-                          !Manager.isValid(event.startTime) &&
-                          (!Manager.isValid(event.toDate) || event.toDate.indexOf('Invalid') > -1) &&
-                          event.toDate !== event.fromDate && <span className="toDate">&nbsp;- ALL DAY</span>}
+                          !Manager.isValid(event?.startTime) &&
+                          (!Manager.isValid(event?.toDate) || event?.toDate.indexOf('Invalid') > -1) &&
+                          event?.toDate !== event?.fromDate && <span className="toDate">&nbsp;- ALL DAY</span>}
                         {/* TIMES */}
                         <span id="times">
-                          {!contains(event?.startTime, 'Invalid') && event.startTime?.length > 0 && (
+                          {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
                             <span className="from-time">
-                              <span className="at-symbol">&nbsp;@</span> {event.startTime}
+                              <span className="at-symbol">&nbsp;@</span> {event?.startTime}
                             </span>
                           )}
-                          {!contains(event?.endTime, 'Invalid') && event.endTime?.length > 0 && event.endTime !== event.startTime && (
-                            <span className="to-time"> - {event.endTime}</span>
+                          {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
+                            <span className="to-time"> - {event?.endTime}</span>
                           )}
                         </span>
                         {/* DIRECTIONS LINK */}
-                        {event.location && event.location.length > 0 && (
+                        {event?.location && event?.location.length > 0 && (
                           <div className="flex" id="nav-website">
-                            {event.websiteUrl && true && event.websiteUrl.length > 0 && (
+                            {event?.websiteUrl && true && event?.websiteUrl.length > 0 && (
                               <div className="website flex">
                                 <PiGlobeDuotone />
-                                <a target="_blank" href={event.websiteUrl} className="website-url fs-14" rel="noreferrer">
+                                <a target="_blank" href={event?.websiteUrl} className="website-url fs-14" rel="noreferrer">
                                   Website
                                 </a>
                               </div>
                             )}
                             <div className="directions">
                               <TbLocation />
-                              <a href={Manager.getDirectionsLink(event.location)} target="_blank">
+                              <a href={Manager.getDirectionsLink(event?.location)} target="_blank">
                                 Nav
                               </a>
                             </div>
@@ -673,14 +664,14 @@ export default function EventCalendar() {
                         )}
                       </div>
                       {/* TITLE */}
-                      <p className="title" data-event-id={event.id}>
-                        <b className={`event-title ${eventType}`}>{CalendarManager.formatEventTitle(event.title)}</b>
+                      <p className="title" data-event-id={event?.id}>
+                        <b className={`event-title ${eventType}`}>{CalendarManager.formatEventTitle(event?.title)}</b>
                       </p>
                     </div>
 
                     {/* NOTES */}
-                    {Manager.isValid(event.notes) && event.notes.length > 0 && (
-                      <p className={showNotes ? 'active notes pb-10' : 'notes 0'}>{event.notes}</p>
+                    {Manager.isValid(event?.notes) && event?.notes.length > 0 && (
+                      <p className={showNotes ? 'active notes pb-10' : 'notes 0'}>{event?.notes}</p>
                     )}
                     <div className="flex reminders">
                       {/* REMINDERS */}
@@ -703,13 +694,13 @@ export default function EventCalendar() {
                     <div className={`flex ${event?.notes?.length > 0 || event?.children?.length > 0 ? 'pt-5' : ''}`} id="more-children">
                       <div id="children">
                         {/* CHILDREN */}
-                        {event.children && event.children.length > 0 && (
+                        {event?.children && event?.children.length > 0 && (
                           <div className="children flex">
                             <FaChildren />
                             <p
                               className="fs-14 "
                               dangerouslySetInnerHTML={{
-                                __html: `${event.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                                __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
                               }}></p>
                           </div>
                         )}

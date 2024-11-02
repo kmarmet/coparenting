@@ -168,6 +168,7 @@ const Manager = {
     const interval = setInterval(() => {
       const pageContainer = document.querySelector('.page-container')
       if (pageContainer) {
+        pageContainer.style.maxHeight = `${window.screen.height - 200}px`
         pageContainer.classList.add('active')
         clearInterval(interval)
       }

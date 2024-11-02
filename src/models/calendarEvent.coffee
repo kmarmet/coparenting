@@ -21,5 +21,7 @@ export default class CalendarEvent
     @repeatInterval = ''
     @sentReminders = []
     @visitationPeriodEndDate = ''
-    @isHoliday = false
+    @isHoliday = false,
+    @holidayName = ''
+    @visitationSchedule = ''
   ) ->

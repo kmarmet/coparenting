@@ -168,74 +168,10 @@
       color: inherit;
     }
 
-    // ROOT LEVEL MODS
-    /*#region  LIGHT THEME*/
-    .light {
-      #search-button {
-        color: $darkBlueMedium;
-      }
-    }
-    /*#endregion  LIGHT THEME*/
-
-    /*#region  DARK THEME*/
-    .dark {
-      .button {
-        &.default {
-          &.default {
-            color: white;
-            //            border-radius: 20px;
-            background-color: $darkBlue;
-
-            &.red {
-              background-color: $red;
-            }
-          }
-        }
-      }
-      #search-button {
-        color: $darkBlueMedium;
-      }
-    }
-    /*#endregion  DARK THEME*/
-
     p {
       color: $lightBlack;
     }
 
-    // TOP LEVEL THEME MODS (page container)
-    .page-container {
-      /*#region  LIGHT THEME*/
-
-      &.light {
-        #upload-inputs {
-          label {
-            &:first-child {
-              background-color: $lightGrey;
-              color: $lightBlackLight;
-            }
-          }
-        }
-        .accordion-header {
-          background-color: $lightGrey;
-          color: $darkBlueMedium;
-          font-weight: 600;
-        }
-
-        .note {
-          background-color: $lightGrey;
-        }
-
-        .button {
-          &.default {
-            color: $lightBlackLight;
-            &.send-reminder {
-              color: $lightBlackLight;
-            }
-          }
-        }
-      }
-      /*#endregion  LIGHT THEME*/
-    }
 
     #navbar {
       @include navBar;
@@ -268,26 +204,6 @@
     span {
       &.link {
         color: $linkColor;
-      }
-    }
-
-    label {
-      @include fontType(300);
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      font-weight: 500;
-      line-height: 1.2;
-      font-size: 16px;
-
-      span {
-        font-size: 22px;
-        margin-right: 5px;
-        color: $accent;
-
-        &.notifications {
-          color: $accent;
-        }
       }
     }
 

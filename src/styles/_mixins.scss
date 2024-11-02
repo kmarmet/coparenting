@@ -36,7 +36,7 @@
   //  padding-right: env(safe-area-inset-right);
   //  padding-bottom: env(safe-area-inset-bottom);
   //  padding-left: env(safe-area-inset-left);
-  padding: 15px 15px 200px 15px;
+  padding: 15px;
   
 
   &.active {
@@ -80,27 +80,18 @@
 
 // SCREEN TITLE
 @mixin screenTitle {
-  font-size: 42px;
-  text-align: center;
+  font-size: 22px;
   width: 100vw;
   word-break: break-word;
   transition: all 0.6s linear;
   line-height: 1;
   display: flex;
   justify-content: flex-start;
-  padding-left: 15px;
   align-items: center;
-  left: -100vw;
   position: relative;
-  opacity: 0;
-  color: $darkBlueMedium;
-  font-family: 'Damion', cursive;
+  color: $mainBlue;
   font-weight: 400;
-  letter-spacing: 3px;
   margin-top: 15px;
-  margin-bottom: 15px;
-  transform: scale(0.6);
-  display: none;
 
   &.active {
     transform: scale(1);
@@ -321,25 +312,6 @@
 
 // FORM
 @mixin form {
-  &.dark {
-    input,
-    textarea {
-      background: $darkBlue;
-      color: $offWhite;
-    }
-  }
-
-  /*#region  LIGHT THEME*/
-  &.light {
-    input,
-    textarea {
-      border: 1px solid $lightBorder;
-    }
-  }
-  /*#endregion  LIGHT THEME*/
-  &.show {
-    display: block;
-  }
 
   &.transfer-change {
     input {
@@ -373,7 +345,7 @@
     border-radius: 8px;
     font-weight: 400;
     padding: 10px;
-    border: 0;
+    border: 1px solid $borderColor;
 
     &.required-field-error {
       border-bottom: 2px solid $red;
@@ -405,10 +377,28 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    color: $mainBlue;
+    color: $lightBlack;
     font-weight: 600;
     font-size: 16px;
     line-height: 1.5;
+    margin-bottom: 5px;
+    
+    span:not(.asterisk) {
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 1.5;
+      color: $lightBlack;
+    }
+    
+    svg {
+      font-size: 22px;
+      margin-right: 8px;
+      opacity: .7;
+    }
+    
+    * {
+      display: inline;
+    }
   }
 
   .button-group {
@@ -419,7 +409,7 @@
 
 /*#region  BUTTONS*/
 @mixin defaultButton() {
-  border-radius: 20px;
+  border-radius: $borderRadius;
   padding: 8px 20px;
   display: flex;
   align-items: center;

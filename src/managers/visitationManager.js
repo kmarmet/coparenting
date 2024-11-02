@@ -3,6 +3,7 @@ import DateManager from './dateManager'
 import Manager from '@manager'
 import DB from '@db'
 import DateFormats from '../constants/dateFormats'
+import { child, getDatabase, ref, set } from 'firebase/database'
 
 const VisitationManager = {
   weekendMapper: (input) => {
@@ -181,7 +182,7 @@ const VisitationManager = {
   getSchedule: async (currentUser) => {
     return new Promise(async (resolve) => {
       await DB.getTable(DB.tables.calendarEvents).then((events) => {
-        let scheduleEvents = events.filter((x) => x.fromVisitationSchedule === true && x.phone === currentUser.phone)
+        let scheduleEvents = events.filter((x) => x.fromVisitationSchedule === true && x.ownerPhone === currentUser.phone)
         resolve(scheduleEvents)
       })
     })
@@ -265,6 +266,31 @@ const VisitationManager = {
     for (const event of scheduleEvents) {
       await DB.delete(DB.tables.calendarEvents, event.id)
     }
+  },
+  deleteAllHolidaysForUser: async (currentUser) => {
+    const allEvents = await DB.getTable(DB.tables.calendarEvents)
+    for (let event of allEvents) {
+      if (event?.isHoliday && event?.ownerPhone === currentUser.phone) {
+        await DB.delete(DB.tables.calendarEvents, event.id)
+      }
+    }
+  },
+  addVisitationSchedule: async (vScheduleEvents) => {
+    const dbRef = ref(getDatabase())
+    let currentEvents = await DB.getTable(DB.tables.calendarEvents)
+    if (!Array.isArray(currentEvents)) {
+      currentEvents = []
+    }
+    // Delete Existing
+    currentEvents.forEach((event) => {
+      vScheduleEvents.forEach(async (newEvent) => {
+        if (event.fromDate === newEvent.fromDate && event.title === newEvent.title) {
+          await DB.delete(DB.tables.calendarEvents, event.id)
+        }
+      })
+    })
+    const eventsToAdd = [...currentEvents, [...vScheduleEvents]].filter((x) => x !== undefined).flat()
+    set(child(dbRef, `${DB.tables.calendarEvents}`), eventsToAdd)
   },
 }
 

@@ -24,7 +24,6 @@ import {
   wordCount,
 } from '../globalFunctions'
 import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
-import screensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
 
 export default function NavBar() {
   const { state, setState } = useContext(globalState)
@@ -62,9 +61,7 @@ export default function NavBar() {
 
   return (
     <>
-      <div
-        id="navbar"
-        className={`${theme} ${showNavbar && !screensToHideCenterNavbarButton.includes(currentScreen) ? 'active' : ''} ${menuIsOpen ? 'hide' : ''}`}>
+      <div id="navbar" className={`${theme} ${showNavbar ? 'active' : ''} ${menuIsOpen ? 'hide' : ''}`}>
         {!menuIsOpen && (
           <div id="menu-items" className="flex">
             {/* FULL MENU  */}

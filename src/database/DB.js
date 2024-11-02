@@ -56,7 +56,7 @@ const DB = {
           let toReturn = []
           for (const coparentPhone of coparentPhones) {
             await DB_UserScoped.getCoparentByPhone(coparentPhone).then(async (coparentObj) => {
-              let records = await DB_UserScoped.getRecordsByUser(tableName, coparentObj, objectName)
+              let records = await DB_UserScoped.getRecordsByUser(path, coparentObj, objectName)
               records = Manager.convertToArray(records)
               if (records && records.length > 0) {
                 records = records.filter((x) => x.shareWith.includes(coparentObj.phone) || x.shareWith.includes(currentUser.phone))
@@ -157,19 +157,6 @@ const DB = {
       resolve('')
       await set(child(dbRef, path), tableData)
     }),
-  delete: async (tableName, id) => {
-    const dbRef = ref(getDatabase())
-    let tableRecords = await DB.getTable(tableName)
-    if (Manager.isValid(tableRecords, true)) {
-      const deleteKey = await DB.getFlatTableKey(tableName, id)
-      await remove(child(dbRef, `${tableName}/${deleteKey}/`))
-    }
-  },
-
-  deleteByPath: (path) => {
-    const dbRef = ref(getDatabase())
-    remove(child(dbRef, path))
-  },
   addSuggestion: async (newSuggestion) => {
     const dbRef = ref(getDatabase())
     let currentSuggestions = await DB.getTable(DB.tables.suggestions)
@@ -184,22 +171,19 @@ const DB = {
       set(child(dbRef, `${DB.tables.suggestions}`), [...currentSuggestions, newSuggestion])
     }
   },
-  addVisitationSchedule: async (newEvents) => {
+  delete: async (path, id) => {
     const dbRef = ref(getDatabase())
-    let currentEvents = await DB.getTable(DB.tables.calendarEvents)
-    if (!Array.isArray(currentEvents)) {
-      currentEvents = []
+    let tableRecords = await DB.getTable(path)
+    if (Manager.isValid(tableRecords, true)) {
+      const deleteKey = await DB.getFlatTableKey(path, id)
+      if (Manager.isValid(deleteKey)) {
+        await remove(child(dbRef, `${path}/${deleteKey}/`))
+      }
     }
-    // Delete Existing
-    currentEvents.forEach((event) => {
-      newEvents.forEach(async (newEvent) => {
-        if (event.fromDate === newEvent.fromDate && event.title === newEvent.title) {
-          await DB.delete(DB.tables.calendarEvents, event.id)
-        }
-      })
-    })
-    const eventsToAdd = [...currentEvents, [...newEvents]].filter((x) => x !== undefined).flat()
-    set(child(dbRef, `${DB.tables.calendarEvents}`), eventsToAdd)
+  },
+  deleteByPath: (path) => {
+    const dbRef = ref(getDatabase())
+    remove(child(dbRef, path))
   },
   deleteImage: async (tableName, memory) => {
     const dbRef = ref(getDatabase())
@@ -212,6 +196,10 @@ const DB = {
     const key = await DB.getSnapshotKey(`${DB.tables.memories}`, memory, 'id')
     remove(child(dbRef, `${DB.tables.memories}/${key}`))
   },
+  removeShareWithAccess: async (path, currentUser, record) => {
+    const shareWith = record.shareWith
+    const dbShareWith = await DB.getTable(path)
+  },
   getTable: async (path, returnObject = false) => {
     const dbRef = ref(getDatabase())
     let tableData = []
@@ -220,13 +208,9 @@ const DB = {
     })
     return returnObject ? tableData : Manager.convertToArray(tableData)
   },
-  updateIsAvailable: async (tableName) => {
+  updateByPath: (path, newValue) => {
     const dbRef = ref(getDatabase())
-    let available = false
-    await get(child(dbRef, '/updateAvailable')).then((snapshot) => {
-      available = snapshot.val()
-    })
-    return available
+    set(child(dbRef, path), newValue)
   },
   updateRecord: async (tableName, recordToUpdate, prop, value, identifier) => {
     const dbRef = ref(getDatabase())

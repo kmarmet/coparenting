@@ -13,6 +13,8 @@ export default class User
     @allowNotifications = ''
     @id = Manager.getUid()
     @emailVerified = false
+    @defaultTransferLocation = ''
+    @defaultTransferNavLink = ''
     @settings = {
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'

@@ -20,13 +20,9 @@
       }
       
       .flex {
-        align-items: flex-start;
+        align-items:center;
         width: 100%;
-        .material-icons {
-          height: 40px;
-          position: relative;
-          top: -4px;
-        }
+        justify-content: space-between;
         
         &.form {
           width: calc(100vw - 20px);
@@ -54,10 +50,7 @@
         align-items: center;
         justify-content: space-between;
         font-weight: 600;
-        position: relative;
-        left: 10px;
         padding: 6px 15px;
-        top: -1px;
         border: 1px solid $lightDarkGrey;
         font-size: 15px;
         color: $lightDarkGrey;
@@ -76,14 +69,9 @@
       }
       
       .search-icon {
-        margin-right: 10px;
         font-size: 25px;
-        align-self: stretch;
         display: flex;
         align-items: center;
-        position: inherit;
-        top: auto;
-        right: 10px;
         color: $lightDarkGrey;
       }
       

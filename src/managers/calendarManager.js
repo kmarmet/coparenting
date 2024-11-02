@@ -29,6 +29,8 @@ import {
   wordCount
 } from "../globalFunctions";
 
+import VisitationManager from "./visitationManager";
+
 export default CalendarManager = {
   getUniqueArrayOfObjects: (arr, key) => {
     var i, len, obj, output, results;
@@ -56,13 +58,15 @@ export default CalendarManager = {
       });
     }
   },
-  addMultipleCalEvents: async function(newEvents) {
+  addMultipleCalEvents: async function(currentUser, newEvents) {
     var currentEvents, dbRef, error, eventsToAdd;
     dbRef = ref(getDatabase());
+    VisitationManager.deleteAllHolidaysForUser(currentUser);
     currentEvents = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents)));
     eventsToAdd = [...currentEvents, ...newEvents].filter(function(x) {
       return x != null;
     }).flat();
+    console.log(eventsToAdd);
     try {
       return (await set(child(dbRef, `${DB.tables.calendarEvents}`), eventsToAdd));
     } catch (error1) {

@@ -36,6 +36,8 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
+  successAlert,
+  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -48,7 +50,7 @@ import ModelNames from '../../models/modelNames'
 export default function NewCalendarEvent({ hideCard }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, selectedNewEventDay } = state
 
   // COMPONENT STATE
   const [eventFromDate, setEventFromDate] = useState('')
@@ -144,18 +146,18 @@ export default function NewCalendarEvent({ hideCard }) {
 
     // Repeating Events Validation
     if (repeatingEndDate.length === 0 && repeatInterval.length > 0) {
-      displayAlert('error', 'Oops', 'If you have chose to repeat this event, please select an end month')
+      throwError('If you have chose to repeat this event, please select an end month')
       return false
     }
 
     const validation = DateManager.formValidation(eventTitle, shareWith, eventFromDate)
     if (validation) {
-      displayAlert('error', 'Oops', validation)
+      throwError(validation)
       return false
     }
 
     if (reminderTimes.length > 0 && eventStartTime.length === 0) {
-      displayAlert('error', 'Oops', 'If you set reminder times, please also uncheck All Day and add a start time')
+      throwError('If you set reminder times, please also uncheck All Day and add a start time')
       return false
     }
 
@@ -356,6 +358,12 @@ export default function NewCalendarEvent({ hideCard }) {
   }, [clonedDates.length])
 
   useEffect(() => {
+    if (selectedNewEventDay) {
+      setEventFromDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
+    }
+  }, [selectedNewEventDay])
+
+  useEffect(() => {
     Manager.showPageContainer('show')
   }, [])
 
@@ -424,6 +432,7 @@ export default function NewCalendarEvent({ hideCard }) {
                   Date <span className="asterisk">*</span>
                 </label>
                 <MobileDatePicker
+                  value={moment(selectedNewEventDay)}
                   className={`${theme} m-0 w-100 event-from-date mui-input`}
                   onAccept={(e) => {
                     setEventFromDate(e)

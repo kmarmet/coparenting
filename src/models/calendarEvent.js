@@ -2,7 +2,7 @@
 var CalendarEvent;
 
 export default CalendarEvent = class CalendarEvent {
-  constructor(id = '', websiteUrl = '', notes = '', shareWith = [], toDate = '', fromDate = '', startTime = '', ownerPhone = '', children = [], location = '', title = '', createdBy = '', reminderTimes = [], directionsLink = '', endTime = '', morningSummaryReminderSent = false, eveningSummaryReminderSent = false, fromVisitationSchedule = false, repeatInterval = '', sentReminders = [], visitationPeriodEndDate = '', isHoliday = false) {
+  constructor(id = '', websiteUrl = '', notes = '', shareWith = [], toDate = '', fromDate = '', startTime = '', ownerPhone = '', children = [], location = '', title = '', createdBy = '', reminderTimes = [], directionsLink = '', endTime = '', morningSummaryReminderSent = false, eveningSummaryReminderSent = false, fromVisitationSchedule = false, repeatInterval = '', sentReminders = [], visitationPeriodEndDate = '', isHoliday = false, holidayName = '', visitationSchedule = '') {
     this.id = id;
     this.websiteUrl = websiteUrl;
     this.notes = notes;
@@ -25,6 +25,8 @@ export default CalendarEvent = class CalendarEvent {
     this.sentReminders = sentReminders;
     this.visitationPeriodEndDate = visitationPeriodEndDate;
     this.isHoliday = isHoliday;
+    this.holidayName = holidayName;
+    this.visitationSchedule = visitationSchedule;
   }
 
 };

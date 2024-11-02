@@ -27,6 +27,7 @@ import {
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
+import NoDataFallbackText from '../../shared/noDataFallbackText'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -157,7 +158,7 @@ const Chats = () => {
             )
           })}
 
-        {!showNewThreadForm && threads.length === 0 && <p className="instructions center">There are currently no conversations 🤷🏽‍♂️</p>}
+        {!showNewThreadForm && threads.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
 
         {/* NEW THREAD FORM */}
         <BottomCard

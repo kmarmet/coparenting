@@ -11,12 +11,10 @@ import Manger from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import VisitationManager from '@managers/visitationManager'
 import MyConfetti from '@shared/myConfetti'
-import Confirm from '@shared/confirm'
 import Note from '@shared/note'
 import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager'
 import VisitationMapper from 'mappers/visitationMapper'
-import BottomButton from '../shared/bottomButton'
 import { MobileDatePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
 import CalendarManager from '../../managers/calendarManager'
@@ -31,6 +29,8 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
+  successAlert,
+  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -38,6 +38,12 @@ import {
 } from '../../globalFunctions'
 import BottomCard from '../shared/bottomCard'
 import ScheduleTypes from '../../constants/scheduleTypes'
+import Label from '../shared/label'
+
+// Icons
+import { FaRegEye } from 'react-icons/fa'
+import { GrMapLocation } from 'react-icons/gr'
+import SecurityManager from '../../managers/securityManager'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -62,10 +68,10 @@ export default function Visitation() {
   const [showEveryOtherWeekendCard, setShowEveryOtherWeekendCard] = useState(false)
   const [showFiftyFiftyCard, setShowFiftyFiftyCard] = useState(false)
   const [shareWith, setShareWith] = useState([])
-  const [deleteMessage, setDeleteMessage] = useState('')
   const [showCustomWeekendsCard, setShowCustomWeekendsCard] = useState(false)
   const [scheduleType, setScheduleType] = useState('')
-  const [showEveryWeekendCard, setShowEveryWeekendCard] = useState(false)
+  const [existingScheduleEvents, setExistingScheduleEvents] = useState([])
+
   // Holiday
   const [selectedHolidayDates, setSelectedHolidayDates] = useState([])
   const [showFFExample, setShowFFExample] = useState(false)
@@ -78,19 +84,13 @@ export default function Visitation() {
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser.phone}/defaultTransferLocation`, location)
   }
 
-  const deleteSchedule = async () => {
-    const scheduleEvents = await VisitationManager.getSchedule(currentUser)
-    await VisitationManager.deleteSchedule(scheduleEvents)
-    setState({ ...state, alertType: 'success', showAlert: true, alertMessage: 'Schedule Deleted' })
-    setDeleteMessage('')
-  }
+  const deleteSchedule = async () => await VisitationManager.deleteSchedule(existingScheduleEvents)
 
   const resetScreen = () => {
     setScheduleType('')
     setDefaultSelectedWeekends([])
     setFifthWeekendSelection('')
     setShareWith([])
-    setDeleteMessage('')
     setFirstFFPeriodStart('')
     setFirstFFPeriodEnd('')
     setSecondFFPeriodStart('')
@@ -125,13 +125,14 @@ export default function Visitation() {
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${currentUser.name.formatNameFirstNameOnly()}'s Scheduled Visitation`
+      dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Scheduled Visitation`
       dateObject.fromDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
-      dateObject.phone = currentUser.phone
+      dateObject.ownerPhone = currentUser.phone
       dateObject.createdBy = currentUser.name
       dateObject.fromVisitationSchedule = true
       dateObject.id = Manager.getUid()
+      dateObject.visitationSchedule = ScheduleTypes.customWeekends
       dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
 
       if (events.length === 0) {
@@ -142,7 +143,7 @@ export default function Visitation() {
     })
 
     // Upload to DB
-    DB.addVisitationSchedule(events).then((r) => r)
+    VisitationManager.addVisitationSchedule(events).then((r) => r)
     MyConfetti.fire()
   }
 
@@ -167,20 +168,21 @@ export default function Visitation() {
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${currentUser.name.formatNameFirstNameOnly()}'s Scheduled Visitation`
+      dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Scheduled Visitation`
       dateObject.fromDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
-      dateObject.phone = currentUser.phone
+      dateObject.ownerPhone = currentUser.phone
       dateObject.createdBy = currentUser.name
       dateObject.fromVisitationSchedule = true
       dateObject.id = Manager.getUid()
+      dateObject.visitationSchedule = ScheduleTypes.everyOtherWeekend
       dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
 
       events.push(dateObject)
     })
 
     // Upload to DB
-    DB.addVisitationSchedule(events).then((r) => r)
+    VisitationManager.addVisitationSchedule(events).then((r) => r)
     MyConfetti.fire()
   }
 
@@ -196,20 +198,21 @@ export default function Visitation() {
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${currentUser.name.formatNameFirstNameOnly()}'s Scheduled Visitation`
+      dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Scheduled Visitation`
       dateObject.fromDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
-      dateObject.phone = currentUser.phone
+      dateObject.ownerPhone = currentUser.phone
       dateObject.createdBy = currentUser.name
       dateObject.fromVisitationSchedule = true
       dateObject.id = Manager.getUid()
+      dateObject.visitationSchedule = ScheduleTypes.everyWeekend
       dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
 
       events.push(dateObject)
     })
 
     // Upload to DB
-    DB.addVisitationSchedule(events).then((r) => r)
+    VisitationManager.addVisitationSchedule(events).then((r) => r)
     MyConfetti.fire()
   }
 
@@ -238,14 +241,15 @@ export default function Visitation() {
     scheduleDates.forEach((date, index) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${currentUser.name.formatNameFirstNameOnly()}'s Scheduled Visitation`
+      dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Scheduled Visitation`
       dateObject.fromDate = moment(date).format('MM/DD/yyyy')
       // Not Required
-      dateObject.phone = currentUser.phone
+      dateObject.ownerPhone = currentUser.phone
       dateObject.createdBy = currentUser.name
       dateObject.fromVisitationSchedule = true
       dateObject.shareWith = shareWith
       dateObject.id = Manager.getUid()
+      dateObject.visitationSchedule = ScheduleTypes.fiftyFifty
       dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
       if (events.length === 0) {
         events = [dateObject]
@@ -255,36 +259,39 @@ export default function Visitation() {
     })
 
     // Upload to DB
-    await DB.addVisitationSchedule(events).then((r) => r)
+    await VisitationManager.addVisitationSchedule(events).then((r) => r)
     MyConfetti.fire()
   }
 
+  // SET HOLIDAYS IN DATABASE
   const setHolidaysInDatabase = async () => {
     // Delete all user events before adding new
-    await CalendarManager.deleteMultipleEvents(userHolidayEvents, currentUser).finally(async () => {
-      // Holidays
-      if (Manager.isValid(selectedHolidayDates, true)) {
-        let events = []
-        selectedHolidayDates.forEach((holidayDateString) => {
-          const dateObject = new CalendarEvent()
-          const holidayName = CalendarMapper.holidayDateToName(holidayDateString)
-          // Required
-          dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Holiday Visitation`
-          dateObject.fromDate = moment(holidayDateString).format('MM/DD/yyyy')
-          dateObject.holidayName = holidayName
-          // Not Required
-          dateObject.phone = currentUser.phone
-          dateObject.createdBy = currentUser.name
-          dateObject.fromVisitationSchedule = true
-          dateObject.isHoliday = true
-          dateObject.id = Manager.getUid()
-          dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
-          events = [...events, dateObject]
-        })
-        // Upload to DB
-        await CalendarManager.addMultipleCalEvents(events)
-      }
-    })
+    // Holidays
+
+    // console.log(selectedHolidayDates)
+    if (Manager.isValid(selectedHolidayDates, true)) {
+      let events = []
+      selectedHolidayDates.forEach((holidayDateString) => {
+        const dateObject = new CalendarEvent()
+        const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format('MM/DD'))
+        // Required
+        dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Holiday Visitation`
+        dateObject.fromDate = moment(holidayDateString).format('MM/DD/yyyy')
+        dateObject.holidayName = holidayName
+        // Not Required
+        dateObject.ownerPhone = currentUser.phone
+        dateObject.createdBy = currentUser.name
+        dateObject.fromVisitationSchedule = true
+        dateObject.isHoliday = true
+        dateObject.id = Manager.getUid()
+        dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
+        events = [...events, dateObject]
+      })
+      // Upload to DB
+      await CalendarManager.addMultipleCalEvents(currentUser, events)
+    } else {
+      await VisitationManager.deleteAllHolidaysForUser(currentUser)
+    }
   }
 
   const handleSpecificWeekendSelection = (e) => {
@@ -347,15 +354,12 @@ export default function Visitation() {
     )
   }
 
-  const getVisitationHolidays = async () => {
-    const _holidays = []
-    await DateManager.getVisitationHolidays().then((holiday) => {
-      _holidays.push(holiday)
-    })
-    const userEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
+  const getVisitationHolidays = async (currentUser) => {
+    const _holidays = await DateManager.getVisitationHolidays()
+    const userEvents = await SecurityManager.getCalendarEvents(currentUser)
     let userHolidays = []
     if (Manager.isValid(userEvents, true)) {
-      userHolidays = userEvents.filter((x) => x.phone === currentUser.phone && x.fromVisitationSchedule === true && x.isHoliday === true)
+      userHolidays = userEvents.filter((x) => x.ownerPhone === currentUser.phone && x.fromVisitationSchedule === true && x.isHoliday === true)
     }
     return {
       holidays: _holidays.flat(),
@@ -381,7 +385,7 @@ export default function Visitation() {
   }
 
   const setAllStates = async () => {
-    await getVisitationHolidays().then((holidaysObject) => {
+    await getVisitationHolidays(currentUser).then((holidaysObject) => {
       const { holidays, userHolidays } = holidaysObject
       const userHolidaysList = Manger.convertToArray(CalendarMapper.eventsToHolidays(userHolidays))
       const userHolidaysDates = userHolidaysList.map((x) => x.date)
@@ -396,6 +400,16 @@ export default function Visitation() {
     })
   }
 
+  const getCurrentVisitationSchedule = async () => {
+    let scheduleEvents = await VisitationManager.getSchedule(currentUser)
+    scheduleEvents = scheduleEvents.filter((x) => x.isHoliday === false)
+
+    if (scheduleEvents.length > 0) {
+      setExistingScheduleEvents(scheduleEvents)
+    }
+  }
+
+  // On Schedule Type Change
   useEffect(() => {
     if (scheduleType === ScheduleTypes.fiftyFifty) {
       setShowFiftyFiftyCard(true)
@@ -423,254 +437,259 @@ export default function Visitation() {
         await addEveryWeekendToCalendar()
       })
     }
-    console.log(true)
   }, [scheduleType])
 
   useEffect(() => {
+    getCurrentVisitationSchedule().then((r) => r)
     Manager.showPageContainer('show')
     setAllStates().then((r) => r)
-    setTimeout(() => {
-      setState({ ...state, showMenuButton: true, showBackButton: false })
-    }, 500)
   }, [])
-
-  useEffect(() => {
-    setState({ ...state, showMenuButton: false, showBackButton: false })
-  }, [scheduleType])
 
   return (
     <div>
-      {/* CONFIRM ALERT */}
-      <Confirm
-        message={'Are you sure you would like to delete your visitation schedule? You can add another one any time.'}
-        title={deleteMessage}
-        onReject={() => {
-          setState({ ...state, showAlert: false })
-          setDeleteMessage('')
-        }}
-        onCancel={() => {
-          setState({ ...state, showAlert: false })
-          setDeleteMessage('')
-        }}
-        onAccept={deleteSchedule}
-      />
-      {/* BOTTOM BUTTONS */}
-      <BottomButton elClass={'red'} onClick={() => setDeleteMessage('DELETING SCHEDULE')} iconName="delete" bottom="160" />
-
-      {/* 50/50 SCHEDULE */}
-      <BottomCard className="form" title={'Add 50/50 Visitation Schedule'} showCard={showFiftyFiftyCard} onClose={() => setShowFiftyFiftyCard(false)}>
-        <div className="text">
-          <label>What is a 50/50 Visitation Schedule?</label>
-          <p className="mb-10">An arrangement where both you and your co-parent have equal time with your children.</p>
-          <p className="mb-10">
-            For the start of the next visitation period (and next period ONLY) you have your children, enter the date ranges for both the first half
-            of the 50/50 and the second half of the 50/50.
-          </p>
-          <p>
-            <i>
-              Use the <u>third period</u> date selector if it is necessary for your schedule.
-            </i>
-          </p>
-        </div>
-
-        <div className="note-container mt-15 mb-20">
-          <Note
-            elClass={showFFExample ? 'mb-10 ff-note active' : 'mb-10 ff-note'}
-            message={`<b class="white-text">Example</b> <br/> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:<br/><span class="fs-15">You would choose: 8/14-8/16 for the first period and 8/19-8/21 for the second period.</span>`}
-          />
-        </div>
-        {/* 50/50 DATE PICKERS */}
-        <>
-          <label className="h-20">
-            First Period <span className="asterisk">*</span>
-          </label>
-          <DateRangePicker
-            showOneCalendar
-            showHeader={false}
-            editable={false}
-            placement="auto"
-            character=" to "
-            className="mb-30 event-date"
-            format={'MM/dd/yyyy'}
-            onChange={(e) => {
-              let formattedDates = []
-              if (e && e.length > 0) {
-                e.forEach((date) => {
-                  formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                })
-                setFirstFFPeriodStart(formattedDates[0])
-                setFirstFFPeriodEnd(formattedDates[1])
-              }
-            }}
-          />
-          <label className="h-20">
-            Second Period <span className="asterisk">*</span>
-          </label>
-          <DateRangePicker
-            showOneCalendar
-            showHeader={false}
-            editable={false}
-            className="mb-30 event-date"
-            placement="auto"
-            label={''}
-            placeholder={''}
-            character=" to "
-            format={'MM/dd/yyyy'}
-            onChange={(e) => {
-              let formattedDates = []
-              if (e && e.length > 0) {
-                e.forEach((date) => {
-                  formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                })
-                setSecondFFPeriodStart(formattedDates[0])
-                setSecondFFPeriodEnd(formattedDates[1])
-              }
-            }}
-          />
-          <label className="h-20">Third Period</label>
-          <DateRangePicker
-            showOneCalendar
-            showHeader={false}
-            editable={false}
-            className="event-date mb-20"
-            placement="auto"
-            character=" to "
-            format={'MM/dd/yyyy'}
-            onChange={(e) => {
-              let formattedDates = []
-              if (e && e.length > 0) {
-                e.forEach((date) => {
-                  formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                })
-                setThirdFFPeriodStart(formattedDates[0])
-                setThirdFFPeriodEnd(formattedDates[1])
-              }
-            }}
-          />
-        </>
-
-        {/* BUTTONS */}
-        {firstFFPeriodStart.toString().length > 0 && secondFFPeriodStart.toString().length > 0 && (
-          <div className="buttons">
-            <button className="card-button" onClick={addFiftyFiftyToCal}>
-              Done <span className="material-icons-round pl-5">check</span>
-            </button>
+      {/* SCHEDULE CARDS */}
+      <>
+        {/* 50/50 SCHEDULE */}
+        <BottomCard
+          className="form"
+          title={'Add 50/50 Visitation Schedule'}
+          showCard={showFiftyFiftyCard}
+          onClose={() => setShowFiftyFiftyCard(false)}>
+          <div className="text">
+            <label>What is a 50/50 Visitation Schedule?</label>
+            <p className="mb-10">An arrangement where both you and your co-parent have equal time with your children.</p>
+            <p className="mb-10">
+              For the start of the next visitation period (and next period ONLY) you have your children, enter the date ranges for both the first half
+              of the 50/50 and the second half of the 50/50.
+            </p>
+            <p>
+              <i>
+                Use the <u>third period</u> date selector if it is necessary for your schedule.
+              </i>
+            </p>
           </div>
-        )}
-      </BottomCard>
 
-      {/* EVERY OTHER WEEKEND */}
-      <BottomCard
-        className="form"
-        title={'Add Every other Weekend Visitation Schedule'}
-        showCard={showEveryOtherWeekendCard}
-        onClose={() => setShowEveryOtherWeekendCard(false)}>
-        <>
-          <label className="flex">
-            Friday of the next weekend you have your child(ren) <span className="asterisk">*</span>
-          </label>
-          <MobileDatePicker onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100 mt-0`} />
-        </>
-        {firstEveryOtherWeekend._isValid === true && (
-          <div className="buttons">
-            <button className="card-button" onClick={addEveryOtherWeekendToCalendar}>
-              Done <span className="material-icons-round pl-5">check</span>
-            </button>
-          </div>
-        )}
-      </BottomCard>
-
-      {/* SPECIFIC WEEKENDS SCHEDULE */}
-      <BottomCard
-        className="form"
-        title={'Add Custom Weekends Visitation Schedule'}
-        showCard={showCustomWeekendsCard}
-        onClose={() => setShowCustomWeekendsCard(false)}>
-        <>
-          <div className="form mb-20">
-            <label>Which weekends will YOU have the child(ren)?</label>
-            <CheckboxGroup
-              boxWidth={50}
-              elClass={'mb-15'}
-              onCheck={handleSpecificWeekendSelection}
-              labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend']}
-            />
-            <label>If it is a month with 5 weekends, which additional weekend will YOU have the child(ren)?</label>
-            <CheckboxGroup
-              boxWidth={50}
-              onCheck={handleFifthWeekendSelection}
-              labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend']}
+          <div className="note-container mt-15 mb-20">
+            <Note
+              elClass={showFFExample ? 'mb-10 ff-note active' : 'mb-10 ff-note'}
+              message={`<b class="white-text">Example</b> <br/> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:<br/><span class="fs-15">You would choose: 8/14-8/16 for the first period and 8/19-8/21 for the second period.</span>`}
             />
           </div>
-        </>
-        {defaultSelectedWeekends.length > 0 && (
-          <div className="buttons">
-            <button className="card-button" onClick={addSpecificWeekendsToCalendar}>
-              Done <span className="material-icons-round pl-5">check</span>
-            </button>
-          </div>
-        )}
-      </BottomCard>
+          {/* 50/50 DATE PICKERS */}
+          <>
+            <label className="h-20">
+              First Period <span className="asterisk">*</span>
+            </label>
+            <DateRangePicker
+              showOneCalendar
+              showHeader={false}
+              editable={false}
+              placement="auto"
+              character=" to "
+              className="mb-30 event-date"
+              format={'MM/dd/yyyy'}
+              onChange={(e) => {
+                let formattedDates = []
+                if (e && e.length > 0) {
+                  e.forEach((date) => {
+                    formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
+                  })
+                  setFirstFFPeriodStart(formattedDates[0])
+                  setFirstFFPeriodEnd(formattedDates[1])
+                }
+              }}
+            />
+            <label className="h-20">
+              Second Period <span className="asterisk">*</span>
+            </label>
+            <DateRangePicker
+              showOneCalendar
+              showHeader={false}
+              editable={false}
+              className="mb-30 event-date"
+              placement="auto"
+              label={''}
+              placeholder={''}
+              character=" to "
+              format={'MM/dd/yyyy'}
+              onChange={(e) => {
+                let formattedDates = []
+                if (e && e.length > 0) {
+                  e.forEach((date) => {
+                    formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
+                  })
+                  setSecondFFPeriodStart(formattedDates[0])
+                  setSecondFFPeriodEnd(formattedDates[1])
+                }
+              }}
+            />
+            <label className="h-20">Third Period</label>
+            <DateRangePicker
+              showOneCalendar
+              showHeader={false}
+              editable={false}
+              className="event-date mb-20"
+              placement="auto"
+              character=" to "
+              format={'MM/dd/yyyy'}
+              onChange={(e) => {
+                let formattedDates = []
+                if (e && e.length > 0) {
+                  e.forEach((date) => {
+                    formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
+                  })
+                  setThirdFFPeriodStart(formattedDates[0])
+                  setThirdFFPeriodEnd(formattedDates[1])
+                }
+              }}
+            />
+          </>
+
+          {/* BUTTONS */}
+          {firstFFPeriodStart.toString().length > 0 && secondFFPeriodStart.toString().length > 0 && (
+            <div className="buttons">
+              <button className="card-button" onClick={addFiftyFiftyToCal}>
+                Done <span className="material-icons-round pl-5">check</span>
+              </button>
+            </div>
+          )}
+        </BottomCard>
+
+        {/* EVERY OTHER WEEKEND */}
+        <BottomCard
+          className="form"
+          title={'Add Every other Weekend Visitation Schedule'}
+          showCard={showEveryOtherWeekendCard}
+          onClose={() => setShowEveryOtherWeekendCard(false)}>
+          <>
+            <label className="flex">
+              Friday of the next weekend you have your child(ren) <span className="asterisk">*</span>
+            </label>
+            <MobileDatePicker onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100 mt-0`} />
+          </>
+          {firstEveryOtherWeekend._isValid === true && (
+            <div className="buttons">
+              <button className="card-button" onClick={addEveryOtherWeekendToCalendar}>
+                Done <span className="material-icons-round pl-5">check</span>
+              </button>
+            </div>
+          )}
+        </BottomCard>
+
+        {/* SPECIFIC WEEKENDS SCHEDULE */}
+        <BottomCard
+          className="form"
+          title={'Add Custom Weekends Visitation Schedule'}
+          showCard={showCustomWeekendsCard}
+          onClose={() => setShowCustomWeekendsCard(false)}>
+          <>
+            <div className="form mb-20">
+              <label>Which weekends will YOU have the child(ren)?</label>
+              <CheckboxGroup
+                boxWidth={50}
+                elClass={'mb-15'}
+                onCheck={handleSpecificWeekendSelection}
+                labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend']}
+              />
+              <label>If it is a month with 5 weekends, which additional weekend will YOU have the child(ren)?</label>
+              <CheckboxGroup
+                boxWidth={50}
+                onCheck={handleFifthWeekendSelection}
+                labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend']}
+              />
+            </div>
+          </>
+          {defaultSelectedWeekends.length > 0 && (
+            <div className="buttons">
+              <button className="card-button" onClick={addSpecificWeekendsToCalendar}>
+                Done <span className="material-icons-round pl-5">check</span>
+              </button>
+            </div>
+          )}
+        </BottomCard>
+      </>
 
       {/* PAGE CONTAINER */}
       <div id="visitation-container" className={`${theme} page-container form`}>
-        {/* SECTIONS */}
-        <div className="sections">
-          {/* VISITATION SCHEDULE */}
-          <div className="note-container">
-            <Note
-              elClass={'mt-10'}
-              message={'When you choose a visitation schedule, it will be visible in the calendar for you and chosen coparents to view.'}
-            />
-          </div>
+        {/* SCREEN TITLE */}
+        <p className="screen-title">Visitation</p>
 
-          {/* SCHEDULE SELECTION */}
-          {shareWith.length > 0 && (
-            <div className="section visitation-schedule mt-10 mb-10">
-              {/* SCHEDULE SELECTION */}
-              <label>Choose Visitation Schedule</label>
-              <CheckboxGroup
-                elClass="mt-10 gap-10"
-                onCheck={handleScheduleTypeSelection}
-                skipNameFormatting={true}
-                labels={['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']}
-              />
+        {/* ALREADY HAS EXISTING SCHEDULE */}
+        {existingScheduleEvents.length > 0 && (
+          <>
+            <p>
+              You currently have a 50/50 visitation schedule added to your calendar. If you would like to modify the current schedule or switch to
+              another schedule, please delete the current schedule first.
+            </p>
+            <div className="buttons flex mt-15">
+              <button
+                className="button red default center"
+                onClick={() => {
+                  confirmAlert('Are you sure you would like to permanently delete your current visitation schedule?', "I'm Sure", true, async () => {
+                    await deleteSchedule()
+                    successAlert('Event Deleted')
+                  })
+                }}>
+                Delete Current Schedule
+              </button>
             </div>
-          )}
+          </>
+        )}
 
-          {/* SHARE WITH */}
-          <div className="share-with-container">
-            <label>
-              <span className="material-icons-round warning mr-10">visibility</span> Who is allowed to see this visitation schedule?
-              <span className="asterisk">*</span>
-            </label>
-            <CheckboxGroup
-              elClass={'gap-10'}
-              dataPhone={currentUser?.coparents.map((x) => x.phone)}
-              labels={currentUser?.coparents.map((x) => x.name)}
-              onCheck={handleShareWithSelection}
-            />
+        {/* NO EXISTING SCHEDULE */}
+        {existingScheduleEvents.length === 0 && (
+          <div className="sections">
+            {/* VISITATION SCHEDULE */}
+            <div className="note-container mt-10 mb-15">
+              <Note message={'When you choose a visitation schedule, it will be visible in the calendar for you and chosen coparents to view.'} />
+            </div>
+
+            {/* SCHEDULE SELECTION */}
+            {shareWith.length > 0 && (
+              <div className="section visitation-schedule mt-10 mb-10">
+                {/* SCHEDULE SELECTION */}
+                <label>Choose Visitation Schedule</label>
+                <CheckboxGroup
+                  elClass="mt-10 gap-10"
+                  onCheck={handleScheduleTypeSelection}
+                  skipNameFormatting={true}
+                  labels={['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']}
+                />
+              </div>
+            )}
+
+            {/* SHARE WITH */}
+            <Label icon={<FaRegEye />} text={'Who will be allowed to see this visitation schedule?'} required={true}>
+              <CheckboxGroup
+                elClass={'gap-10'}
+                dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                labels={currentUser?.coparents.map((x) => x.name)}
+                onCheck={handleShareWithSelection}
+              />
+            </Label>
+
+            {/* LOCATION */}
+            <Label classes="mt-15" icon={<GrMapLocation />} text={'Preferred Transfer Location (for biological co-parent)'}>
+              <Autocomplete
+                placeholder={currentUser.defaultTransferLocation}
+                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                options={{
+                  types: ['geocode', 'establishment'],
+                  componentRestrictions: { country: 'usa' },
+                }}
+                className={`${theme} mb-15`}
+                onPlaceSelected={(place) => {
+                  updateDefaultTransferLocation(
+                    place.formatted_address,
+                    `https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`
+                  ).then((r) => successAlert('Preferred Transfer Location Set'))
+                }}
+              />
+            </Label>
           </div>
-
-          {/* LOCATION */}
-          <label>Preferred Transfer Location (for primary/biological co-parent)</label>
-          <Autocomplete
-            placeholder=""
-            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-            options={{
-              types: ['geocode', 'establishment'],
-              componentRestrictions: { country: 'usa' },
-            }}
-            className={`${theme} mb-15`}
-            onPlaceSelected={(place) => {
-              updateDefaultTransferLocation(
-                place.formatted_address,
-                `https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`
-              ).then((r) => r)
-            }}
-          />
-          {/* HOLIDAY SELECTION */}
-          <label>Select the holidays YOU have the child(ren) this year</label>
+        )}
+        {/* HOLIDAY SELECTION */}
+        <Label text={'Select the holidays YOU have the child(ren) this year'}>
           <CheckboxGroup
             elClass={'holiday-checkboxes gap-10'}
             boxWidth={50}
@@ -679,11 +698,11 @@ export default function Visitation() {
             labels={holidayLabels.map((x) => x.name).sort()}
             dataDate={dataDates}
           />
+        </Label>
 
-          <button className="button default green center" onClick={() => setHolidaysInDatabase()}>
-            Update Holidays
-          </button>
-        </div>
+        <button className="button default green center" onClick={() => setHolidaysInDatabase()}>
+          Update Holidays
+        </button>
       </div>
     </div>
   )

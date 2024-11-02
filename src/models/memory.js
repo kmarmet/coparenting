@@ -2,10 +2,9 @@
 var Memory;
 
 export default Memory = class Memory {
-  constructor(id = '', creationDate = '', phone = '', memoryName = '', notes = '', shareWith = [], title = '', url = '', ownerPhone = '') {
+  constructor(id = '', creationDate = '', memoryName = '', notes = '', shareWith = [], title = '', url = '', ownerPhone = '') {
     this.id = id;
     this.creationDate = creationDate;
-    this.phone = phone;
     this.memoryName = memoryName;
     this.notes = notes;
     this.shareWith = shareWith;

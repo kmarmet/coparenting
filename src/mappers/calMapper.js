@@ -145,6 +145,8 @@ CalendarMapper = {
         return 'Labor Day';
       case date === '10/14':
         return 'Columbus Day';
+      case date === '10/31':
+        return 'Halloween';
       case date === '12/25':
         return 'Christmas Day';
       case date === '12/24':
