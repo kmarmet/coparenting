@@ -45,7 +45,7 @@
       overflow: hidden;
     }
   }
-  
+
   &.disable-scroll {
     overflow: hidden;
   }
@@ -56,7 +56,7 @@
   &.login {
     max-height: 100vh;
   }
-  
+
   @media screen and (max-width: 800px) {
     width: 100vw;
     max-width: 100vw;
@@ -1137,7 +1137,7 @@
   }
   .custom-file-upload,
   #file-upload-button {
-//    height: 40px;
+    //    height: 40px;
   }
   .custom-file-upload {
     background-color: $mainBlue;
@@ -1145,13 +1145,13 @@
     display: flex;
     justify-content: center;
     border-radius: $borderRadius;
-//    padding: 8px 20px;
+    //    padding: 8px 20px;
   }
   #file-upload-button {
     display: none !important;
     border: 0;
     background-color: $green;
-//    width: 50%;
+    //    width: 50%;
     color: white;
     border-radius: 20px;
     label {
@@ -1162,8 +1162,8 @@
   }
 
   .custom-file-upload {
-//    width: 50%;
-//    height: 40px;
+    //    width: 50%;
+    //    height: 40px;
   }
 }
 @mixin popupContainers {
@@ -1910,7 +1910,7 @@
         display: flex;
         align-items: center;
         font-size: 18px;
-        
+
         svg {
           margin-left: 8px;
           font-size: 20px;
@@ -2653,23 +2653,35 @@
   background-color: $lightBg;
   position: fixed;
   overflow: auto;
-  z-index: -1;
   transition: all 0.5s ease-in-out;
   border-radius: 0 0 30px 30px;
-  opacity: 0;
   height: calc(90px + env(safe-area-inset-bottom));
-  bottom: -200px;
   padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
   display: flex;
   align-items: center;
   border-top: 1px solid $lightBorder;
+  bottom: 0;
+  opacity: 1;
+  z-index: $maxZIndex;
 
-  &.active {
-    bottom: 0;
-    opacity: 1;
-    z-index: $maxZIndex;
-    &.hide {
-      z-index: -1;
+  #svg-wrapper {
+    background-color: $green;
+    border-radius: 100%;
+    height: 45px;
+    width: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    #add-new-button {
+      font-size: 28px;
+      color: white;
+    }
+  }
+
+  &.calendar {
+    .add-new-button {
+      background-color: $green;
     }
   }
 
@@ -2762,11 +2774,6 @@
         }
       }
     }
-  }
-
-  .material-icons-round,
-  .material-icons-outlined {
-    font-size: 30px;
   }
 }
 /*#endregion  MENU*/

@@ -51,7 +51,6 @@ import './globalFunctions'
 import StateObj from './constants/stateObj'
 import EmailManager from './managers/emailManager'
 // Menus
-import NavBar from './components/navBar'
 import SlideOutMenu from './components/slideOutMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
 import DateFormats from './constants/dateFormats'
@@ -78,7 +77,6 @@ import {
 } from './globalFunctions'
 import DB_UserScoped from '@userScoped'
 import ContactUs from './components/screens/contactUs'
-import SecurityManager from './managers/securityManager'
 
 export default function App() {
   // Initialize Firebase
@@ -173,43 +171,6 @@ export default function App() {
       })
   }
 
-  const getUnreadMessageCount = async () => {
-    const activeChats = Manager.convertToArray(await SecurityManager.getChats(currentUser))
-
-    // No chats/currentUser.phone
-    if (!Manager.isValid(activeChats, true)) {
-      const coparentChats = await SecurityManager.getCoparentChats(currentUser)
-      if (Manager.isValid(coparentChats, true)) {
-        const allMessages = coparentChats.map((x) => x.messages).flat()
-        let coparentMessages = []
-        if (Manager.isValid(allMessages, true)) {
-          for (let message of allMessages) {
-            coparentMessages.push(Manager.convertToArray(message).flat())
-          }
-          coparentMessages = coparentMessages.flat()
-          const unreadMessages = coparentMessages.filter(
-            (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
-          )
-          setTimeout(() => {
-            setState({ ...state, unreadMessageCount: unreadMessages.length, showNavbar: true, menuIsOpen: false })
-          }, 1000)
-        }
-      }
-    } else {
-      if (Manager.isValid(activeChats, true)) {
-        for (let chat of activeChats) {
-          const messages = Manager.convertToArray(chat.messages).flat()
-          const unreadMessages = messages.filter(
-            (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
-          )
-          setTimeout(() => {
-            setState({ ...state, unreadMessageCount: unreadMessages.length, showNavbar: true, menuIsOpen: false })
-          }, 1000)
-        }
-      }
-    }
-  }
-
   // Clear app badge
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
@@ -288,9 +249,6 @@ export default function App() {
             <>
               {/* SLIDE OUT MENU */}
               <SlideOutMenu />
-
-              {/* NAVBAR  */}
-              <NavBar />
             </>
           )}
 

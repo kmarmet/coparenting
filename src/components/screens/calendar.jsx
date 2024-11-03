@@ -36,6 +36,7 @@ import EditCalEvent from '../forms/editCalEvent'
 import { TbLocation } from 'react-icons/tb'
 import { PiBellSimpleRinging, PiCalendarPlusDuotone, PiGlobeDuotone } from 'react-icons/pi'
 import { GiPartyPopper } from 'react-icons/gi'
+import NavBar from '../navBar'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -347,9 +348,6 @@ export default function EventCalendar() {
         Manager.showPageContainer('show')
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
-          // setTimeout(() => {
-          // setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
-          // }, 300)
         })
       },
       nextArrow: '<span class="calendar-arrow right material-icons-round">arrow_forward_ios</span>',
@@ -371,7 +369,6 @@ export default function EventCalendar() {
         })
         const date = moment(e[0]).format(DateFormats.dateForDb).toString()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-          console.log('here')
           await getSecuredEvents(date, moment(e[0]).format('MM'))
           setState({
             ...state,
@@ -461,6 +458,8 @@ export default function EventCalendar() {
       addFlatpickrCalendar().then((r) => r)
     }, 300)
     Manager.showPageContainer('show')
+
+    setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
   }, [])
 
   return (
@@ -735,6 +734,11 @@ export default function EventCalendar() {
             })}
         </div>
       </div>
+      {!showNewEventCard && !showSearchCard && !showEditCard && !showHolidaysCard && !showHolidays && (
+        <NavBar navbarClass={'calendar'}>
+          <PiCalendarPlusDuotone id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
+        </NavBar>
+      )}
     </>
   )
 }
