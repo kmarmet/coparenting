@@ -81,11 +81,11 @@
       flex-wrap: nowrap;
       padding: 0 10px;
       min-height: 80px;
-      
+
       &:first-child {
         margin-top: 15px;
       }
-      
+
       #thread-action-button {
         margin-right: 5px;
         color: $lightDarkGrey;
@@ -247,26 +247,35 @@
       }
       #user-name {
         margin-left: 8px;
+        color: $mainBlue;
         font-weight: 200;
         font-size: 18px;
       }
     }
 
-    #conversation-bookmark-icon {
-      &.active {
-        color: $mainBlue;
+    #right-side {
+      gap: 10px;
+
+      svg {
+        width: calc(100% / 4);
       }
-    }
 
-    #conversation-bookmark-icon,
-    #close-icon,
-    #search-icon {
-      color: $lightDarkGrey;
-      font-size: 25px;
+      #conversation-bookmark-icon {
+        &.active {
+          color: $mainBlue;
+        }
+      }
 
-      &#close-icon,
-      &#search-icon {
-        font-size: 28px;
+      #conversation-bookmark-icon,
+      #close-icon,
+      #search-icon {
+        color: $lightDarkGrey;
+        font-size: 25px;
+
+        &#close-icon,
+        &#search-icon {
+          font-size: 26px;
+        }
       }
     }
   }
@@ -274,16 +283,14 @@
   #default-messages,
   #messages,
   #bookmark-messages {
-    margin:0;
-    max-width: calc(100vw - 3px);
+    margin: 0;
     width: 100vw;
     display: flex;
     flex-direction: column;
     z-index: 10;
     overflow: auto;
-    padding: 90px 15px 120px 15px;
+    padding: 15px;
     background-color: white;
-    min-height: 100vh;
 
     @media screen and (min-width: 800px) {
       min-width: 10%;
@@ -316,7 +323,7 @@
       user-select: none;
       font-weight: 500;
       position: relative;
-      
+
       @include buttonPress;
 
       &.longpress {
@@ -347,6 +354,17 @@
           margin-right: auto;
           background-color: #ebf4fb;
           color: #7b8b9f;
+
+          &:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -25px;
+            width: 40px;
+            height: 25px;
+            background: radial-gradient(25px at top left, #0000 99%, #ebf4fb 102%);
+          }
+
           .under-message {
             float: left;
           }
@@ -358,6 +376,16 @@
           margin-left: auto;
           margin-right: 0;
           float: right;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -25px;
+            width: 40px;
+            height: 25px;
+            background: radial-gradient(25px at top right, #0000 99%, #f2f4f6 102%);
+          }
 
           .under-message {
             float: right;

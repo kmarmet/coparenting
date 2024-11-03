@@ -32,8 +32,8 @@ const DB = {
       return []
     }
   },
-  getFlatTableKey: async (table, id) => {
-    const records = Manager.convertToArray(await DB.getTable(table))
+  getFlatTableKey: async (path, id) => {
+    const records = await DB.getTable(path)
     let key
     records.forEach((record, index) => {
       if (record.id === id) {

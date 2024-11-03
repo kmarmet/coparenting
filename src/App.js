@@ -197,7 +197,6 @@ export default function App() {
     // Set Activity Set
     newActivitySet.chat.chatSenders = chatSenders
     newActivitySet.chat.unreadMessageCount = unreadMessageCount
-    console.log(newActivitySet)
     setTimeout(() => {
       setState({ ...state, activitySet: newActivitySet })
     }, 1000)

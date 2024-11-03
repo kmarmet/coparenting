@@ -40,6 +40,8 @@ import {
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
+import { PiBookmarksSimpleDuotone, PiInfoDuotone } from 'react-icons/pi'
+import { TbMessageCircleSearch } from 'react-icons/tb'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -51,7 +53,6 @@ const Conversation = () => {
   const [bookmarks, setBookmarks] = useState([])
   const [showEmojis, setShowEmojis] = useState(false)
   const [showBookmarks, setShowBookmarks] = useState(false)
-  const [chatKey, setChatKey] = useState(null)
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [threadOwnerPhone, setThreadOwnerPhone] = useState('')
 
@@ -62,17 +63,9 @@ const Conversation = () => {
     const isSavedAlready = messageObject.context.bookmarked
     toggleLongpressAnimation(el)
     if (isSavedAlready) {
-      ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, false).finally(() => {
-        setTimeout(() => {
-          getExistingMessages()
-        }, 500)
-      })
+      await ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, false)
     } else {
-      ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, true).finally(() => {
-        setTimeout(() => {
-          getExistingMessages()
-        }, 500)
-      })
+      await ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, true)
     }
   })
   const handlers = useSwipeable({
@@ -166,7 +159,7 @@ const Conversation = () => {
       (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(messageToUser.phone)
     )[0]
 
-    const bookmarkedMessages = securedChats.filter((x) => x?.bookmarked)
+    const bookmarkedMessages = securedChat?.messages?.filter((x) => x?.bookmarked)
     const messages = Manager.convertToArray(securedChat?.messages) || []
 
     if (messages.length > 0) {
@@ -188,8 +181,8 @@ const Conversation = () => {
       setExistingChat(null)
     }
     setTimeout(() => {
-      setState({ ...state, unreadMessageCount: 0 })
-    }, 500)
+      setState({ ...state, unreadMessageCount: 0, showNavbar: false, currentScreen: ScreenNames.conversation })
+    }, 1000)
     // Mark read
     scrollToLatestMessage()
   }
@@ -210,11 +203,38 @@ const Conversation = () => {
     })
   }
 
+  const setDynamicMessagesHeight = () => {
+    const topBarHeight = document.querySelector('.top-buttons').clientHeight
+    const sendMessageFormHeight = document.querySelector('.message-input-form').clientHeight
+    const entireScreenHeight = document.getElementById('message-thread-container').clientHeight
+    const messagesWrapper = document.getElementById('default-messages')
+
+    if (topBarHeight && sendMessageFormHeight && messagesWrapper && entireScreenHeight) {
+      messagesWrapper.style.setProperty('height', `calc(${entireScreenHeight}px - ${sendMessageFormHeight + topBarHeight}px)`)
+      messagesWrapper.style.marginTop = `${topBarHeight}px`
+    }
+  }
+
+  const setDynamicBookmarkMessagesHeight = () => {
+    const topBarHeight = document.querySelector('.top-buttons').clientHeight
+    const entireScreenHeight = document.getElementById('message-thread-container').clientHeight
+    const bookmarkMessagesWrapper = document.getElementById('bookmark-messages')
+    if (topBarHeight && entireScreenHeight && bookmarkMessagesWrapper) {
+      bookmarkMessagesWrapper.style.setProperty('height', `calc(${entireScreenHeight}px - ${topBarHeight}px)`)
+      bookmarkMessagesWrapper.style.marginTop = `${topBarHeight}px`
+    }
+  }
+
+  useEffect(() => {
+    if (showBookmarks) {
+      setDynamicBookmarkMessagesHeight()
+    } else {
+      setDynamicMessagesHeight()
+    }
+  }, [showBookmarks])
+
   useEffect(() => {
     onTableChange().then((r) => r)
-    setTimeout(() => {
-      setState({ ...state, showNavbar: false, currentScreen: ScreenNames.conversation })
-    }, 500)
     scrollToLatestMessage()
     Manager.showPageContainer('show')
   }, [])
@@ -259,6 +279,16 @@ const Conversation = () => {
             }
           }}
         />
+        <div
+          className="buttons"
+          onClick={() => {
+            setShowSearchInput(false)
+            setShowSearchCard(false)
+            setSearchResults([])
+            scrollToLatestMessage()
+          }}>
+          <button className="card-button cancel">Close</button>
+        </div>
       </BottomCard>
       <div {...handlers} id="message-thread-container" className={`${theme}  conversation`}>
         {/* TOP BAR */}
@@ -270,26 +300,21 @@ const Conversation = () => {
               </span>
               <p id="user-name">{formatNameFirstNameOnly(messageToUser.name)}</p>
             </div>
-            <div id="right-side" className="flex gap-5">
-              <span className="material-icons" id="search-icon" onClick={() => setShowSearchCard(true)}>
-                search
-              </span>
+            <div id="right-side" className="flex">
+              <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />
               {bookmarks.length > 0 && (
-                <span
+                <PiBookmarksSimpleDuotone
                   id="conversation-bookmark-icon"
                   className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
-                  onClick={(e) => viewBookmarks(e)}>
-                  bookmarks
-                </span>
+                  onClick={(e) => viewBookmarks(e)}
+                />
               )}
               <Tooltip
                 transitionName="rc-tooltip-zoom"
                 placement="left"
                 trigger={['click', 'hover']}
                 overlay={'Longpress on a message to bookmark it for viewing later'}>
-                <span className="material-icons top-bar-icon" id="conversation-bookmark-icon">
-                  bookmark
-                </span>
+                <PiInfoDuotone className="material-icons top-bar-icon" id="conversation-bookmark-icon" />
               </Tooltip>
               <span
                 onClick={() => {

@@ -55,6 +55,12 @@ const Chats = () => {
 
   const getChats = async () => {
     let securedChats = await SecurityManager.getChats(currentUser)
+    let threadPhones = []
+    for (let chat of securedChats) {
+      const threadMemberPhones = chat.members.map((x) => x.phone)
+      threadMemberPhones.forEach((phone) => threadPhones.push(phone))
+    }
+    setActiveThreadPhones(threadPhones)
     setThreads(securedChats)
   }
 
@@ -170,6 +176,7 @@ const Chats = () => {
           title={'New Conversation'}>
           {Manager.isValid(currentUser?.coparents, true) &&
             currentUser?.coparents.map((coparent, index) => {
+              console.log(activeThreadPhones)
               return (
                 <div key={index}>
                   {!activeThreadPhones.includes(coparent.phone) && (
