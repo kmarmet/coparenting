@@ -5,6 +5,7 @@ import Manager from '@manager'
 import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiSparkleDuotone } from 'react-icons/pi'
 import { CgMenu } from 'react-icons/cg'
 import { FiSettings } from 'react-icons/fi'
+
 import { BiFace } from 'react-icons/bi'
 import {
   contains,
@@ -24,8 +25,8 @@ import {
   wordCount,
 } from '../globalFunctions'
 import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
-import ActivitySet from '../models/activitySet'
 import SecurityManager from '../managers/securityManager'
+import DB from '@db'
 
 export default function NavBar() {
   const { state, setState } = useContext(globalState)
@@ -37,12 +38,6 @@ export default function NavBar() {
         ...state,
         currentScreen: screen,
         showCenterNavbarButton: false,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {},
-          icon: 'add',
-          color: 'green',
-        },
       })
     } else {
       setState({
@@ -55,9 +50,8 @@ export default function NavBar() {
     Manager.showPageContainer('show')
   }
 
-  const getChatActivity = async () => {
+  const getMessageCount = async () => {
     const activeChats = Manager.convertToArray(await SecurityManager.getChats(currentUser))
-    let chatSenders = []
     let unreadMessageCount = 0
     if (Manager.isValid(activeChats, true)) {
       for (let chat of activeChats) {
@@ -65,38 +59,84 @@ export default function NavBar() {
         const unreadMessages = messages.filter(
           (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
         )
-        for (let unreadMessage of Manager.convertToArray(unreadMessages)) {
-          if (unreadMessage?.sender && !chatSenders.includes(formatNameFirstNameOnly(unreadMessage?.sender))) {
-            chatSenders = [...chatSenders, formatNameFirstNameOnly(unreadMessage?.sender)]
-          }
-        }
-
         unreadMessageCount = unreadMessages?.length
       }
     }
 
-    return { chatSenders, unreadMessageCount }
+    return unreadMessageCount
+  }
+
+  const getExpenseCount = async () => {
+    const expenses = await SecurityManager.getExpenses(currentUser)
+    const unpaidExpenses = expenses.filter((x) => formatNameFirstNameOnly(x.payer.name) === formatNameFirstNameOnly(currentUser.name))
+    return unpaidExpenses.length
+  }
+
+  const getEventCount = async () => {
+    const allEvents = await SecurityManager.getCalendarEvents(currentUser)
+    const events = allEvents.filter((x) => x.ownerPhone === currentUser.phone)
+    return events.length
+  }
+
+  const getSwapCount = async () => {
+    const allRequests = await SecurityManager.getSwapRequests(currentUser)
+    const requestsToReturn = allRequests.filter((x) => x.recipientPhone === currentUser.phone)
+    return requestsToReturn.length
+  }
+
+  const getTransferCount = async () => {
+    const allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
+    const requestsToReturn = allRequests.filter((x) => x.recipientPhone === currentUser.phone)
+    return requestsToReturn.length
+  }
+
+  const getMemoryCount = async () => {
+    const allMemories = await SecurityManager.getMemories(currentUser)
+    return allMemories.length
+  }
+
+  const getDocumentCount = async () => {
+    const allDocs = await SecurityManager.getDocuments(currentUser)
+    return allDocs.length
   }
 
   const setActivities = async () => {
-    let newActivitySet = new ActivitySet()
-    newActivitySet.chat = { unreadMessageCount: 0, chatSenders: [] }
-    const chatActivity = await getChatActivity()
+    //TODO CHANGE PHONE
+    let newActivitySet = await DB.getTable(`${DB.tables.activitySets}/3307494534`, true)
+    const unreadMessageCount = await getMessageCount()
 
-    const { chatSenders, unreadMessageCount } = chatActivity
-    // Set Activity Set
-    newActivitySet.chat.chatSenders = chatSenders
-    newActivitySet.chat.unreadMessageCount = unreadMessageCount
-    setState({ ...state, activitySet: newActivitySet })
+    // Fill from DB
+    if (Manager.isValid(newActivitySet, false, true)) {
+      setTimeout(() => {
+        setState({ ...state, activitySet: newActivitySet, unreadMessageCount: unreadMessageCount })
+      }, 1000)
+    }
+    // Create new
+    else {
+      newActivitySet.expenseCount = await getExpenseCount()
+      newActivitySet.unreadMessageCount = unreadMessageCount
+      newActivitySet.eventCount = await getEventCount()
+      newActivitySet.swapRequestCount = await getSwapCount()
+      newActivitySet.transferRequestCount = await getTransferCount()
+      newActivitySet.memoryCount = await getMemoryCount()
+      newActivitySet.documentCount = await getDocumentCount()
+      console.log(newActivitySet)
+      setTimeout(() => {
+        setState({ ...state, activitySet: newActivitySet, unreadMessageCount: unreadMessageCount })
+      }, 1000)
+    }
   }
+
+  useEffect(() => {
+    setActivities().then((r) => r)
+  }, [])
 
   useEffect(() => {
     if (currentScreen === ScreenNames.conversation) {
       setState({ ...state, showNavbar: false })
     }
-    if (currentScreen === ScreenNames.activity && currentUser) {
-      console.log(true)
-      setActivities().then((r) => r)
+    if (currentScreen === ScreenNames.calendar) {
+      setState({ ...state, navbarButton: { ...navbarButton, color: 'red' } })
     }
   }, [currentScreen])
 

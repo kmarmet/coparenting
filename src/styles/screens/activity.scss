@@ -9,28 +9,6 @@
       @include buttonPress;
     }
 
-    #top-of-screen-bar {
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-
-      .screen-title {
-        width: auto;
-      }
-      button {
-        border-radius: $borderRadius;
-        background: $green;
-        color: white;
-        display: flex;
-        align-items: center;
-        padding: 3px 15px;
-
-        svg {
-          font-size: 20px;
-          margin-left: 10px;
-        }
-      }
-    }
     #activity-cards {
       gap: 8px;
       justify-content: center;
@@ -38,42 +16,88 @@
       flex-wrap: wrap;
 
       .activity-card {
-        width: calc((100% / 2) - 5px);
-        min-height: 150px;
-        border-radius: $bigBorderRadius;
-        padding: 12px;
-        margin-bottom: 10px;
+        width: 100%;
+        border-radius: $borderRadius;
+        padding: 8px 15px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        opacity: 0;
+        transition: all .8s ease-in-out;
+        margin-top: 100vh;
+        
+        &.active {
+          transition: all .8s ease-in-out;
+          opacity: 1;
+          margin-top: inherit;
+        }
 
+        /*#region  BgColors*/
         &:first-child {
           background: $bgGreen;
         }
-		
-		&.calendar {
-		  background: #d3edf8;
-		}
-		
-		&.documents {
-		  background: #FFD0FF;
-		}
+
+        &.calendar {
+          background: #d3edf8;
+        }
+
+        &.documents {
+          background: #ffd0ff;
+        }
 
         &.expenses {
-          background: #ffea95;
+          background: #fff2c0;
         }
 
         &.memories {
-          background: #fca976;
+          background: #fcba94;
         }
 
         &.transfer-requests {
-          background: #9bbfff;
+          background: #d0e0ff;
         }
-		
-		&.swap-requests {
-		  background: #ceb5fc;
-		}
+
+        &.swap-requests {
+          background: #e2d2fd;
+        }
+        /*#endregion  BgColors*/
+
+        .count-number {
+          font-size: 14px;
+          font-weight: 600;
+          display: flex;
+          background: transparent;
+          border: 1px solid $red;
+          color: $red;
+          align-items: center;
+          justify-content: center;
+          padding: 3px 0;
+          min-width: 40px;
+          border-radius: $bigBorderRadius;
+        }
 
         .text {
+          text-align: left;
+        }
+        
+        .card-title {
+          font-size: 18px;
+          font-weight: bold;
           text-align: center;
+        }
+        
+        svg {
+          margin-right: auto;
+          margin-left: 8px;
+        }
+
+        .tap-button {
+          font-size: 22px;
+          position: absolute;
+          bottom: 10px;
+          right: 10px;
+          color: $lightDarkGrey;
+          opacity: 0.8;
         }
 
         .view-button-wrapper {
@@ -100,40 +124,22 @@
           }
         }
 
-        .count {
-          margin-top: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        align-items: center;
+        justify-content: space-between;
 
-          .count-number {
-            font-size: 28px;
-            font-weight: 600;
-            margin-left: 10px;
-          }
-        }
-
-        #top-of-card {
+       
+        .svg-wrapper {
+          padding: 5px;
+          background-color: white;
+          border-radius: $borderRadius;
           align-items: center;
           justify-content: space-between;
+          display: flex;
 
-          .card-title {
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-          }
-          .svg-wrapper {
-            padding: 5px;
-            background-color: $green;
-            border-radius: $borderRadius;
-            align-items: center;
-            justify-content: space-between;
-            display: flex;
-
-            svg {
-              font-size: 18px;
-              color: white;
-            }
+          svg {
+            font-size: 16px;
+            color: $green;
+            background: white;
           }
         }
       }

@@ -39,6 +39,7 @@ import BottomCard from '../shared/bottomCard'
 import UploadInputs from '../shared/uploadInputs'
 import DateManager from '../../managers/dateManager'
 import ModelNames from '../../models/modelNames'
+import ActivitySet from '../../models/activitySet'
 
 function NewExpenseForm({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -137,6 +138,16 @@ function NewExpenseForm({ showCard, hideCard }) {
     }
 
     const cleanObject = Manager.cleanObject(newExpense, ModelNames.expense)
+
+    // Activity Set
+    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/3307494534`, true)
+    let newActivitySet = new ActivitySet()
+    let expenseCount = existingActivitySet?.expenseCount || 0
+    if (Manager.isValid(existingActivitySet, false, true)) {
+      newActivitySet = { ...existingActivitySet }
+    }
+    newActivitySet.expenseCount = expenseCount === 0 ? 1 : (expenseCount += 1)
+    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${payer.phone}`, newActivitySet)
 
     // Add to DB
     await DB.add(tables.expenseTracker, cleanObject).finally(async () => {

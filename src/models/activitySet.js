@@ -2,10 +2,7 @@
 var ActivitySet;
 
 export default ActivitySet = class ActivitySet {
-  constructor(id = '', memoryCount = 0, messageCount = 0, swapRequestCount = 0, transferRequestCount = 0, expenseCount = 0, eventCount = 0, documentCount = 0, chat = {
-      unreadMessageCount: 0,
-      chatSenders: []
-    }) {
+  constructor(id = '', memoryCount = 0, messageCount = 0, swapRequestCount = 0, transferRequestCount = 0, expenseCount = 0, eventCount = 0, documentCount = 0, unreadMessageCount = 0) {
     this.id = id;
     this.memoryCount = memoryCount;
     this.messageCount = messageCount;
@@ -14,7 +11,7 @@ export default ActivitySet = class ActivitySet {
     this.expenseCount = expenseCount;
     this.eventCount = eventCount;
     this.documentCount = documentCount;
-    this.chat = chat;
+    this.unreadMessageCount = unreadMessageCount;
   }
 
 };

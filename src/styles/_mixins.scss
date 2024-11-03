@@ -57,10 +57,6 @@
     max-height: 100vh;
   }
   
-  &#activity-wrapper {
-    background: white;
-  }
-
   @media screen and (max-width: 800px) {
     width: 100vw;
     max-width: 100vw;
@@ -1911,6 +1907,17 @@
         text-align: center;
         padding: 10px;
         text-align-last: center;
+        display: flex;
+        align-items: center;
+        font-size: 18px;
+        
+        svg {
+          margin-left: 8px;
+          font-size: 20px;
+          &:last-child {
+            margin-left: auto;
+          }
+        }
 
         &.android {
           background-color: #359948;
@@ -2645,7 +2652,6 @@
   width: 100vw;
   background-color: $lightBg;
   position: fixed;
-  max-height: 90vh;
   overflow: auto;
   z-index: -1;
   transition: all 0.5s ease-in-out;
@@ -2653,9 +2659,10 @@
   opacity: 0;
   height: calc(90px + env(safe-area-inset-bottom));
   bottom: -200px;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
   display: flex;
   align-items: center;
+  border-top: 1px solid $lightBorder;
 
   &.active {
     bottom: 0;

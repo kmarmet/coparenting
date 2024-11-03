@@ -3,7 +3,7 @@ export default class TransferChangeRequest
     @id = ''
     @date = ''
     @time = ''
-    @phone = ''
+    @ownerPhone = ''
     @location = ''
     @createdBy = ''
     @directionsLink = ''

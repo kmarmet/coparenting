@@ -35,6 +35,8 @@ import {
 
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
+import ActivitySet from '../../models/activitySet'
+import DB_UserScoped from '@userScoped'
 
 function NewMemoryForm({ hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -131,6 +133,7 @@ function NewMemoryForm({ hideCard }) {
 
           // Send Notification
           for (const coparentPhone of shareWith) {
+            await setActivitySets(coparentPhone)
             const subId = await NotificationManager.getUserSubId(coparentPhone)
             PushAlertApi.sendMessage(`Memories Await!`, `${formatNameFirstNameOnly(currentUser.name)} has uploaded a new memory!`, subId)
           }
@@ -138,6 +141,17 @@ function NewMemoryForm({ hideCard }) {
         AppManager.setAppBadge(1)
         resetForm()
       })
+  }
+
+  const setActivitySets = async (userPhone) => {
+    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
+    let newActivitySet = new ActivitySet()
+    let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
+    if (Manager.isValid(existingActivitySet, false, true)) {
+      newActivitySet = { ...existingActivitySet }
+    }
+    newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
+    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
   }
 
   useEffect(() => {

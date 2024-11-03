@@ -29,12 +29,15 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
+  successAlert,
+  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
 import Label from '../shared/label'
+import ActivitySet from '../../models/activitySet'
 
 export default function NewTransferChangeRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -63,13 +66,13 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
 
   const submit = async () => {
     if (requestRecipientPhone.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose who to send the request to', alertType: 'error' })
+      throwError('Please choose who to send the request to')
       return false
     } else if (requestLocation.length === 0 && requestTime.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose a new location or time', alertType: 'error' })
+      throwError('Please choose a new location or time')
       return false
     } else if (requestDate.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose the day of the requested transfer change', alertType: 'error' })
+      throwError('Please choose the day of the requested transfer change')
       return false
     } else {
       let newRequest = new TransferChangeRequest()
@@ -91,6 +94,8 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
         await DB_UserScoped.updateUserRecord(currentUser.phone, `coparents/${key}/preferredTransferLocation`, requestLocation)
       }
 
+      await setActivitySets(requestRecipientPhone)
+
       // Notify
       const subId = await NotificationManager.getUserSubId(requestRecipientPhone)
       PushAlertApi.sendMessage(`Transfer Change Request`, `${formatNameFirstNameOnly(currentUser.name)} has created a Transfer Change request`, subId)
@@ -99,6 +104,17 @@ export default function NewTransferChangeRequest({ showCard, hideCard }) {
       await DB.add(DB.tables.transferChangeRequests, newRequest)
       resetForm()
     }
+  }
+
+  const setActivitySets = async (userPhone) => {
+    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
+    let newActivitySet = new ActivitySet()
+    let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
+    if (Manager.isValid(existingActivitySet, false, true)) {
+      newActivitySet = { ...existingActivitySet }
+    }
+    newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
+    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
   }
 
   const handleShareWithSelection = async (e) => {

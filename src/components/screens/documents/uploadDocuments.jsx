@@ -27,6 +27,9 @@ import {
 import BottomCard from '../../shared/bottomCard'
 import UploadInputs from '../../shared/uploadInputs'
 import SecurityManager from '../../../managers/securityManager'
+import DB from '@db'
+import ActivitySet from '../../../models/activitySet'
+import DB_UserScoped from '@userScoped'
 
 export default function UploadDocuments({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -98,13 +101,28 @@ export default function UploadDocuments({ showCard, hideCard }) {
             })
           }
 
-          setState({ ...state, isLoading: false, formToShow: '' })
+          setState({ ...state, isLoading: false })
+
+          for (let coparentPhone of shareWith) {
+            await setActivitySets(coparentPhone)
+          }
 
           // Send Notification
           NotificationManager.sendToShareWith(shareWith, 'New Document', `${currentUser} has uploaded a new document`)
         })
       })
     await resetForm()
+  }
+
+  const setActivitySets = async (userPhone) => {
+    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
+    let newActivitySet = new ActivitySet()
+    let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
+    if (Manager.isValid(existingActivitySet, false, true)) {
+      newActivitySet = { ...existingActivitySet }
+    }
+    newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
+    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
   }
 
   const handleShareWithSelection = async (e) => {

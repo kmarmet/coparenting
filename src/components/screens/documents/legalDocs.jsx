@@ -11,7 +11,7 @@ import { useSwipeable } from 'react-swipeable'
 
 export default function ImageDocs() {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme } = state
   const [tocHeaders, setTocHeaders] = useState([])
   const [showTextContainer, setShowTextContainer] = useState(false)
   const [convertedImageCount, setConvertedImageCount] = useState(0)
@@ -109,7 +109,6 @@ export default function ImageDocs() {
       // Get all images
       getImages()
     }
-    setState({ ...state, previousScreen: ScreenNames.docsList })
     Manager.showPageContainer()
   }, [])
 

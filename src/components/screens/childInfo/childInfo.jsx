@@ -132,6 +132,7 @@ export default function ChildInfo() {
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
+        <p className="screen-title">Child Info</p>
         {/* PROFILE PIC */}
         <div id="children-container">
           <>

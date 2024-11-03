@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useContext, useRef } from 'react'
-import Modal from '@shared/modal'
+import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../context'
 import Manager from 'managers/manager'
 import PopupCard from './shared/popupCard'
 import { Accordion } from 'rsuite'
+import { FaApple } from 'react-icons/fa6'
+import { BsAndroid2 } from 'react-icons/bs'
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 
 export default function InstallAppPopup() {
   const { state, setState } = useContext(globalState)
@@ -23,7 +25,7 @@ export default function InstallAppPopup() {
       <div className="content">
         <Accordion>
           <p className="accordion-header mb-5" onClick={(e) => setExpandAppleAccordion(!expandAppleAccordion)}>
-            iOS <span className="material-icons-round">{expandAppleAccordion ? 'arrow_upward' : 'arrow_downward'}</span>
+            iOS <FaApple /> {expandAppleAccordion ? <FaChevronDown /> : <FaChevronUp />}
           </p>
           <Accordion.Panel expanded={expandAppleAccordion}>
             <div className="os-container apple">
@@ -58,7 +60,8 @@ export default function InstallAppPopup() {
         </Accordion>
         <Accordion>
           <p className="accordion-header mb-5 android" onClick={(e) => setExpandAndroidAccordion(!expandAndroidAccordion)}>
-            Android <span className="material-icons-round">{expandAndroidAccordion ? 'arrow_upward' : 'arrow_downward'}</span>
+            Android <BsAndroid2 />
+            {expandAndroidAccordion ? <FaChevronDown /> : <FaChevronUp />}
           </p>
           <Accordion.Panel expanded={expandAndroidAccordion}>
             <div className="os-container android">

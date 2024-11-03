@@ -89,6 +89,7 @@ const Chats = () => {
   }
 
   useEffect(() => {
+    console.log('ere')
     if (!selectedCoparent) {
       setTimeout(() => {
         setState({
@@ -117,6 +118,7 @@ const Chats = () => {
     <>
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
+        <p className="screen-title">Chats</p>
         {/* THREAD LINE ITEM */}
         {!showNewThreadForm &&
           threads.length > 0 &&

@@ -99,20 +99,17 @@ export default function Visitation() {
     setShowFFExample(false)
     const checkboxes = document.querySelectorAll('.box')
     checkboxes.forEach((box) => box.classList.remove('active'))
-    setTimeout(() => {
-      setState({ ...state, showMenuButton: true })
-    }, 500)
   }
 
   // Specific Weekends
   const addSpecificWeekendsToCalendar = async () => {
     if (!Manager.isValid(defaultSelectedWeekends, true) || !Manager.isValid(fifthWeekendSelection)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose default weekends and a five-month weekend', alertType: 'error' })
+      throwError('Please choose default weekends and a five-month weekend')
       return false
     }
 
     if (!Manager.isValid(shareWith, true)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please set who can see the schedule', alertType: 'error' })
+      throwError('Please set who can see the schedule')
       return false
     }
     // Set end date to the end of the year
@@ -149,16 +146,11 @@ export default function Visitation() {
   // Every Other Weekend
   const addEveryOtherWeekendToCalendar = async () => {
     if (firstEveryOtherWeekend.length === 0) {
-      setState({
-        ...state,
-        showAlert: true,
-        alertMessage: 'Please choose the Friday of the next weekend YOU have the child(ren)',
-        alertType: 'error',
-      })
+      throwError('Please choose the Friday of the next weekend YOU have the child(ren)')
       return false
     }
     if (!Manager.isValid(shareWith, true)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please set who can see the schedule', alertType: 'error' })
+      throwError('Please set who can see the schedule')
       return false
     }
     // Set end date to the end of the year
@@ -188,7 +180,7 @@ export default function Visitation() {
   // Every Weekend
   const addEveryWeekendToCalendar = async () => {
     if (!Manager.isValid(shareWith, true)) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please set who can see the schedule', alertType: 'error' })
+      throwError('Please set who can see the schedule')
       return false
     }
     // Set end date to the end of the year
@@ -218,12 +210,12 @@ export default function Visitation() {
   // 50/50
   const addFiftyFiftyToCal = async () => {
     if (firstFFPeriodEnd.length === 0 || firstFFPeriodStart.length === 0 || secondFFPeriodEnd.length === 0 || secondFFPeriodStart.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Both schedule ranges are required' })
+      throwError('Both schedule ranges are required')
       return false
     }
 
     if (shareWith.length === 0) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose who can see this visitation schedule', alertType: 'error' })
+      throwError('Please choose who can see this visitation schedule')
       return false
     }
 

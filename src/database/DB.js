@@ -19,6 +19,7 @@ const DB = {
     suggestions: 'suggestions',
     memories: 'memories',
     parentPermissionCodes: 'parentPermissionCodes',
+    activitySets: 'activitySets',
   },
   runQuery: async (table, query) => {
     const records = await DB.getTable(table)

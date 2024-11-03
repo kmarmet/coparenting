@@ -11,7 +11,7 @@ export default class SwapRequest
     @recipientPhone = ''
     @reason = ''
     @duration = ''
-    @phone = ''
+    @ownerPhone = ''
     @children = ''
     @fromHour = ''
     @toHour = ''

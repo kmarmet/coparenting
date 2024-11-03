@@ -101,7 +101,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       newRequest.duration = swapDuration || ''
       newRequest.fromHour = requestFromHour || ''
       newRequest.toHour = requestToHour || ''
-      newRequest.phone = currentUser.phone || ''
+      newRequest.ownerPhone = currentUser.phone || ''
       newRequest.createdBy = currentUser.name || ''
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
       newRequest.recipientPhone = currentUser?.coparents.filter((x) => x.name.contains(recipientName))[0].phone || ''

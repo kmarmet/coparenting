@@ -43,13 +43,13 @@ export default function Settings() {
 
   const submitShortcuts = async () => {
     if (shortcutsToSendToDb.length < 4 || shortcutsToSendToDb.length > 4) {
-      setState({ ...state, showAlert: true, alertMessage: 'Please choose at least four (only four) shortcuts', alertType: 'error' })
+      throwError('Please choose at least four (only four) shortcuts')
       return false
     }
     const toSendToDb = createShortcutArray(shortcutsToSendToDb)
     await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/shortcuts', toSendToDb)
 
-    setState({ ...state, alertMessage: 'Shortcuts have been updated!', alertType: 'success', showAlert: true })
+    throwError('Shortcuts have been updated!')
     setShortcutAccIsOpen(false)
   }
 
@@ -110,6 +110,7 @@ export default function Settings() {
   return (
     <>
       <div id="settings-container" className={`${theme} page-container form`}>
+        <p className="screen-title">Settings</p>
         {/* CALENDAR SETTINGS */}
         <label>Calendar</label>
         <div className="calendar-settings mb-10 form">

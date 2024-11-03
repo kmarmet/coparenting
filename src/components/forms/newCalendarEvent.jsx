@@ -45,6 +45,8 @@ import {
 } from '../../globalFunctions'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
+import ActivitySet from '../../models/activitySet'
+import DB_UserScoped from '@userScoped'
 
 // COMPONENT
 export default function NewCalendarEvent({ hideCard }) {
@@ -169,6 +171,7 @@ export default function NewCalendarEvent({ hideCard }) {
     // Add first/initial date before adding repeating/cloned
     await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
       for (const toShareWith of shareWith) {
+        await setActivitySets(toShareWith)
         const subId = await PushAlertApi.getSubId(toShareWith)
         await PushAlertApi.sendMessage(`New Calendar Event`, `${eventTitle} on ${moment(eventFromDate).format('ddd DD')}`, subId)
       }
@@ -186,6 +189,17 @@ export default function NewCalendarEvent({ hideCard }) {
     })
 
     resetForm()
+  }
+
+  const setActivitySets = async (userPhone) => {
+    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
+    let newActivitySet = new ActivitySet()
+    let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
+    if (Manager.isValid(existingActivitySet, false, true)) {
+      newActivitySet = { ...existingActivitySet }
+    }
+    newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
+    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
   }
 
   const addRepeatingEventsToDb = async () => {

@@ -32,7 +32,6 @@ import Visitation from '@screens/visitation.jsx'
 import Settings from '@screens/settings/settings.jsx'
 import SwapRequests from '@screens/swapRequests.jsx'
 import TransferRequests from '@screens/transferRequests.jsx'
-import Alert from '@shared/alert.jsx'
 import AppManager from '@managers/appManager.js'
 import ChatRecovery from '@screens/account/chatRecovery'
 import EditCalEvent from '@components/forms/editCalEvent.jsx'
@@ -80,7 +79,6 @@ import {
 import DB_UserScoped from '@userScoped'
 import ContactUs from './components/screens/contactUs'
 import SecurityManager from './managers/securityManager'
-import ActivitySet from './models/activitySet'
 
 export default function App() {
   // Initialize Firebase
@@ -175,33 +173,6 @@ export default function App() {
       })
   }
 
-  const setActivities = async () => {
-    let newActivitySet = new ActivitySet()
-    newActivitySet.chat = { unreadMessageCount: 0, chatSenders: [] }
-    const activeChats = Manager.convertToArray(await SecurityManager.getChats(currentUser))
-    let chatSenders = []
-    let unreadMessageCount = 0
-    for (let chat of activeChats) {
-      const messages = Manager.convertToArray(chat.messages).flat()
-      const unreadMessages = messages.filter(
-        (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
-      )
-      for (let unreadMessage of Manager.convertToArray(unreadMessages)) {
-        if (unreadMessage?.sender && !chatSenders.includes(formatNameFirstNameOnly(unreadMessage?.sender))) {
-          chatSenders = [...chatSenders, formatNameFirstNameOnly(unreadMessage?.sender)]
-        }
-      }
-
-      unreadMessageCount = unreadMessages.length
-    }
-    // Set Activity Set
-    newActivitySet.chat.chatSenders = chatSenders
-    newActivitySet.chat.unreadMessageCount = unreadMessageCount
-    setTimeout(() => {
-      setState({ ...state, activitySet: newActivitySet })
-    }, 1000)
-  }
-
   const getUnreadMessageCount = async () => {
     const activeChats = Manager.convertToArray(await SecurityManager.getChats(currentUser))
 
@@ -244,6 +215,7 @@ export default function App() {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
     }
+    // getUnreadMessageCount().then((r) => r)
   }, [currentScreen])
 
   // ON PAGE LOAD
@@ -286,8 +258,7 @@ export default function App() {
           }, 300)
         })
       }
-      // setActivities().then((r) => r)
-      getUnreadMessageCount().then((r) => r)
+      // getUnreadMessageCount().then((r) => r)
     }
   }, [currentUser])
 
@@ -322,9 +293,6 @@ export default function App() {
               <NavBar />
             </>
           )}
-
-          {/* ALERT */}
-          <Alert />
 
           {/* SCREENS */}
           <>

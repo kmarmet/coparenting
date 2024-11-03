@@ -49,6 +49,7 @@ export default function EventCalendar() {
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [showHolidays, setShowHolidays] = useState(false)
   const [showNotes, setShowNotes] = useState(false)
+
   // HANDLE SWIPE
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
@@ -346,7 +347,9 @@ export default function EventCalendar() {
         Manager.showPageContainer('show')
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
-          setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
+          // setTimeout(() => {
+          // setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
+          // }, 300)
         })
       },
       nextArrow: '<span class="calendar-arrow right material-icons-round">arrow_forward_ios</span>',
@@ -368,15 +371,10 @@ export default function EventCalendar() {
         })
         const date = moment(e[0]).format(DateFormats.dateForDb).toString()
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
+          console.log('here')
           await getSecuredEvents(date, moment(e[0]).format('MM'))
           setState({
             ...state,
-            navbarButton: {
-              ...navbarButton,
-              action: () => setShowNewEventCard(true),
-              icon: <PiCalendarPlusDuotone />,
-              color: 'green',
-            },
             selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString(),
           })
         })
@@ -459,7 +457,6 @@ export default function EventCalendar() {
 
   // ON PAGE LOAD
   useEffect(() => {
-    setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
     setTimeout(() => {
       addFlatpickrCalendar().then((r) => r)
     }, 300)

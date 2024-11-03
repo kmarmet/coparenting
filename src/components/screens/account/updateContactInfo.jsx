@@ -19,7 +19,6 @@ export default function UpdateContactInfo({ updateType, updatePhone, updateEmail
   })
 
   useEffect(() => {
-    setState({ ...state, previousScreen: ScreenNames.account, showBackButton: true, showMenuButton: false })
     Manager.showPageContainer('show')
   }, [])
 

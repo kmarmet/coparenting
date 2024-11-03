@@ -8,8 +8,5 @@ export default class ActivitySet
     @expenseCount = 0
     @eventCount = 0
     @documentCount = 0
-    @chat = {
-      unreadMessageCount: 0
-      chatSenders: []
-    }
+    @unreadMessageCount = 0
   ) ->

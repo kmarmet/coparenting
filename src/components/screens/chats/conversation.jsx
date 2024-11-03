@@ -9,7 +9,6 @@ import ConversationMessage from '../../../models/conversationMessage'
 import ConversationThread from '../../../models/conversationThread'
 import Manager from '@manager'
 import NotificationManager from '@managers/notificationManager.js'
-import { useSwipeable } from 'react-swipeable'
 import AppManager from '@managers/appManager.js'
 import { DebounceInput } from 'react-debounce-input'
 import { useLongPress } from 'use-long-press'
@@ -41,11 +40,14 @@ import {
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
 import { PiBookmarksSimpleDuotone, PiInfoDuotone } from 'react-icons/pi'
+import { CgClose } from 'react-icons/cg'
 import { TbMessageCircleSearch } from 'react-icons/tb'
+import ActivitySet from '../../../models/activitySet'
+import DB_UserScoped from '@userScoped'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, messageToUser, previousScreen, navbarButton } = state
+  const { currentUser, theme, messageToUser, navbarButton } = state
   const [existingChat, setExistingChat] = useState(null)
   const [messagesToLoop, setMessagesToLoop] = useState(null)
   const [searchResults, setSearchResults] = useState([])
@@ -54,7 +56,6 @@ const Conversation = () => {
   const [showEmojis, setShowEmojis] = useState(false)
   const [showBookmarks, setShowBookmarks] = useState(false)
   const [showSearchCard, setShowSearchCard] = useState(false)
-  const [threadOwnerPhone, setThreadOwnerPhone] = useState('')
 
   // Longpress/bookmark
   const bind = useLongPress(async (e, messageObject) => {
@@ -67,13 +68,6 @@ const Conversation = () => {
     } else {
       await ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, true)
     }
-  })
-  const handlers = useSwipeable({
-    onSwipedRight: (eventData) => {
-      //console.log("User Swiped!", eventData);
-      setState({ ...state, showMenuButton: true, currentScreen: ScreenNames.chats })
-      Manager.showPageContainer('show')
-    },
   })
 
   const submitMessage = async () => {
@@ -112,6 +106,15 @@ const Conversation = () => {
     conversation.messages = [cleanMessage]
     conversation.threadOwner = currentUser.phone
     const cleanThread = Manager.cleanObject(conversation, ModelNames.conversationThread)
+
+    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/3307494534`, true)
+    let newActivitySet = new ActivitySet()
+    let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
+    if (Manager.isValid(existingActivitySet, false, true)) {
+      newActivitySet = { ...existingActivitySet }
+    }
+    newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
+    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${messageToUser.phone}`, newActivitySet)
 
     // Existing chat
     if (Manager.isValid(existingChat)) {
@@ -173,10 +176,8 @@ const Conversation = () => {
       setBookmarks(bookmarkedMessages)
       setMessagesToLoop(messages.flat())
       setExistingChat(securedChat)
-      setThreadOwnerPhone(currentUser.phone)
       await ChatManager.markMessagesRead(currentUser, messageToUser, securedChat)
     } else {
-      setThreadOwnerPhone(currentUser.phone)
       setMessagesToLoop([])
       setExistingChat(null)
     }
@@ -290,7 +291,7 @@ const Conversation = () => {
           <button className="card-button cancel">Close</button>
         </div>
       </BottomCard>
-      <div {...handlers} id="message-thread-container" className={`${theme}  conversation`}>
+      <div id="message-thread-container" className={`${theme}  conversation`}>
         {/* TOP BAR */}
         {!showSearchInput && (
           <div className="flex top-buttons">
@@ -316,15 +317,14 @@ const Conversation = () => {
                 overlay={'Longpress on a message to bookmark it for viewing later'}>
                 <PiInfoDuotone className="material-icons top-bar-icon" id="conversation-bookmark-icon" />
               </Tooltip>
-              <span
+              <CgClose
                 onClick={() => {
                   setState({ ...state, currentScreen: ScreenNames.chats })
                   Manager.showPageContainer('show')
                 }}
                 className="material-icons"
-                id="close-icon">
-                close
-              </span>
+                id="close-icon"
+              />
             </div>
           </div>
         )}
