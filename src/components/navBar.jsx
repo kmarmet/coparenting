@@ -1,11 +1,11 @@
 import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
-import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiSparkleDuotone } from 'react-icons/pi'
+import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone } from 'react-icons/pi'
 import { CgMenu } from 'react-icons/cg'
 import { FiSettings } from 'react-icons/fi'
-
 import { BiFace } from 'react-icons/bi'
+
 import {
   contains,
   displayAlert,
@@ -73,18 +73,18 @@ export default function NavBar({ children, navbarClass }) {
             </div>
 
             {/* MEMORIES */}
-            {/*<div*/}
-            {/*  onClick={() => changeCurrentScreen(ScreenNames.memories)}*/}
-            {/*  className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'}`}>*/}
-            {/*  <PiImagesSquareDuotone />*/}
-            {/*</div>*/}
-
-            {/* ACTIVITY */}
             <div
-              onClick={() => changeCurrentScreen(ScreenNames.activity)}
-              className={`${currentScreen === ScreenNames.activity ? 'active menu-item' : 'menu-item'}`}>
-              <PiSparkleDuotone />
+              onClick={() => changeCurrentScreen(ScreenNames.memories)}
+              className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'}`}>
+              <PiImagesSquareDuotone />
             </div>
+
+            {/*/!* ACTIVITY *!/*/}
+            {/*<div*/}
+            {/*  onClick={() => changeCurrentScreen(ScreenNames.activity)}*/}
+            {/*  className={`${currentScreen === ScreenNames.activity ? 'active menu-item' : 'menu-item'}`}>*/}
+            {/*  <PiSparkleDuotone />*/}
+            {/*</div>*/}
 
             {/* SETTINGS */}
             <div

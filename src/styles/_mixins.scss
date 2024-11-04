@@ -2664,6 +2664,15 @@
   opacity: 1;
   z-index: $maxZIndex;
 
+  // Custom Colors
+  &.calendar {
+    &.close-holiday {
+      #svg-wrapper {
+        background: $red;
+      }
+    }
+  }
+
   #svg-wrapper {
     background-color: $green;
     border-radius: 100%;
@@ -2672,16 +2681,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     #add-new-button {
       font-size: 28px;
       color: white;
-    }
-  }
-
-  &.calendar {
-    .add-new-button {
-      background-color: $green;
     }
   }
 

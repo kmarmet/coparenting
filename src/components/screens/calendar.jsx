@@ -16,6 +16,8 @@ import { useSwipeable } from 'react-swipeable'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
 import { FaChildren } from 'react-icons/fa6'
+
+import { CgClose } from 'react-icons/cg'
 import {
   contains,
   displayAlert,
@@ -97,7 +99,7 @@ export default function EventCalendar() {
       }
       return 0
     })
-    if (selectedDay !== null) {
+    if (selectedDay) {
       securedEvents = securedEvents.filter((x) => {
         if (x.date === selectedDay.toString() || x.fromDate === selectedDay.toString()) {
           return x
@@ -158,6 +160,7 @@ export default function EventCalendar() {
     // Filter out dupes by event title
     let formattedDateArr = formatEvents(securedEvents)
     setExistingEvents(formattedDateArr.flat())
+    console.log(formattedDateArr)
     setTimeout(() => {
       addEventRowAnimation()
     }, 100)
@@ -321,18 +324,6 @@ export default function EventCalendar() {
     })
   }
 
-  const toggleCalendar = (stateAction) => {
-    const cal = document.querySelector('.flatpickr-calendar')
-    if (cal) {
-      if (stateAction === 'show') {
-        addEventRowAnimation()
-        cal.classList.remove('hide')
-      } else {
-        CalendarManager.hideCalendar()
-      }
-    }
-  }
-
   const formatWebsiteUrl = (url) => {
     return url.slice(0, url.indexOf('com') + 3)
   }
@@ -340,16 +331,15 @@ export default function EventCalendar() {
   // ADD FLATPICKR CALENDAR
   const addFlatpickrCalendar = async () => {
     const dbRef = ref(getDatabase())
-    toggleCalendar('show')
     flatpickr('#calendar-ui-container', {
       inline: true,
       defaultDate: new Date(),
       onReady: () => {
-        Manager.showPageContainer('show')
         onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
           await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
         })
       },
+      static: true,
       nextArrow: '<span class="calendar-arrow right material-icons-round">arrow_forward_ios</span>',
       prevArrow: '<span class="calendar-arrow left material-icons-round">arrow_back_ios</span>',
       appendTo: document.getElementById('calendar-ui-container'),
@@ -379,10 +369,9 @@ export default function EventCalendar() {
     })
   }
 
-  const toggleAllHolidays = async () => {
+  const showAllHolidays = async () => {
     const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
     const _holidays = allEvents.filter((x) => x.isHoliday === true).filter((x) => !contains(x?.title.toLowerCase(), 'visitation'))
-    toggleCalendar('hide')
     setShowHolidaysCard(!showHolidaysCard)
     setExistingEvents(_holidays)
     setShowHolidays(true)
@@ -391,7 +380,7 @@ export default function EventCalendar() {
     }, 200)
   }
 
-  const toggleVisitationHolidays = async () => {
+  const showVisitationHolidays = async () => {
     const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
     let userVisitationHolidays = allEvents.filter(
       (x) => x.isHoliday === true && x.ownerPhone === currentUser.phone && contains(x.title.toLowerCase(), 'holiday')
@@ -405,26 +394,11 @@ export default function EventCalendar() {
     setTimeout(() => {
       addEventRowAnimation()
     }, 200)
-    toggleCalendar('hide')
   }
 
   const viewAllEvents = async () => {
-    await addFlatpickrCalendar()
     setShowHolidaysCard(false)
-  }
-
-  const setNavbarButton = (action, icon = 'add', color = 'green') => {
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => action(),
-          icon: icon,
-          color: color,
-        },
-      })
-    }, 500)
+    setShowSearchCard(false)
   }
 
   const handleEventRowClick = (e, event) => {
@@ -438,17 +412,16 @@ export default function EventCalendar() {
 
   useEffect(() => {
     if (showHolidays) {
-      setNavbarButton(
-        async () => {
-          const today = moment().format(DateFormats.dateForDb).toString()
-          setShowHolidays(false)
-          setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
-          await addFlatpickrCalendar()
-          await getSecuredEvents(today)
-        },
-        'close',
-        'red'
-      )
+      const rows = document.querySelectorAll('.event-row')
+
+      if (rows && rows[0]) {
+        rows[0].scrollIntoView({ behavior: 'smooth' })
+      }
+    } else {
+      const flatpickrCal = document.querySelector('.flatpickr-calendar ')
+      if (flatpickrCal) {
+        document.querySelector('.flatpickr-calendar ').scrollIntoView({ behavior: 'smooth' })
+      }
     }
   }, [showHolidays])
 
@@ -458,8 +431,6 @@ export default function EventCalendar() {
       addFlatpickrCalendar().then((r) => r)
     }, 300)
     Manager.showPageContainer('show')
-
-    setNavbarButton(() => setShowNewEventCard(true), <PiCalendarPlusDuotone />, 'green')
   }, [])
 
   return (
@@ -469,11 +440,11 @@ export default function EventCalendar() {
         {/* HOLIDAYS CARD */}
         <BottomCard className={`${theme} view-holidays`} onClose={viewAllEvents} showCard={showHolidaysCard} title={'View Holidays ✨'}>
           <div className="flex buttons">
-            <button className="card-button" id="view-all-holidays-item" onClick={toggleAllHolidays}>
-              All ✨
+            <button className="card-button" id="view-all-holidays-item" onClick={showAllHolidays}>
+              All
             </button>
-            <button className="card-button" id="view-visitation-holidays-item" onClick={toggleVisitationHolidays}>
-              Visitation 👦
+            <button className="card-button" id="view-visitation-holidays-item" onClick={showVisitationHolidays}>
+              Visitation
             </button>
             <button className="card-button cancel" onClick={() => setShowHolidaysCard(false)}>
               Close
@@ -482,21 +453,14 @@ export default function EventCalendar() {
         </BottomCard>
 
         {/* SEARCH CARD */}
-        <BottomCard
-          className="form search-card"
-          title={'Find Events'}
-          onClose={() => {
-            addFlatpickrCalendar().then((r) => r)
-            setShowSearchCard(false)
-          }}
-          showCard={showSearchCard}>
+        <BottomCard className="form search-card" title={'Find Events'} onClose={async () => setShowSearchCard(false)} showCard={showSearchCard}>
           <div className={'mb-5 flex form search-card'} id="search-container">
             <DebounceInput
               placeholder="Enter an event name..."
               minLength={2}
               className={'search-input'}
               debounceTimeout={500}
-              onChange={(e) => {
+              onChange={async (e) => {
                 const inputValue = e.target.value
                 if (inputValue.length > 3) {
                   let results = []
@@ -505,22 +469,29 @@ export default function EventCalendar() {
                   }
                   if (results.length > 0) {
                     setExistingEvents(results)
-                    toggleCalendar('hide')
-                    CalendarManager.hideCalendar()
-                    Manager.scrollToTopOfPage()
-                  } else {
-                    addFlatpickrCalendar().then((r) => r)
+                    const rows = document.querySelectorAll('.event-row')
+
+                    if (rows) {
+                      rows[0].scrollIntoView({ behavior: 'smooth' })
+                    }
                   }
                 } else {
                   if (inputValue.length === 0) {
                     setShowSearchCard(false)
-                    addFlatpickrCalendar().then((r) => r)
+                    document.querySelector('.flatpickr-calendar').scrollIntoView({ behavior: 'smooth' })
+                    await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
                   }
                 }
               }}
             />
             <div className="buttons">
-              <button className="card-button cancel" onClick={() => setShowSearchCard(false)}>
+              <button
+                className="card-button cancel"
+                onClick={async () => {
+                  document.querySelector('.flatpickr-calendar').scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+                  setShowSearchCard(false)
+                }}>
                 Close
               </button>
             </div>
@@ -540,13 +511,13 @@ export default function EventCalendar() {
         <BottomCard
           showCard={showEditCard}
           onClose={async (e) => {
-            await getSecuredEvents(eventToEdit?.fromDate)
+            await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
             setShowEditCard(false)
           }}>
           <EditCalEvent
             event={eventToEdit}
             hideCard={async (e) => {
-              await getSecuredEvents(eventToEdit?.fromDate)
+              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
               setShowEditCard(false)
             }}
           />
@@ -554,19 +525,9 @@ export default function EventCalendar() {
       </>
 
       {/* PAGE CONTAINER */}
-      {/* CALENDAR */}
-      <div
-        id="calendar-container"
-        className={`page-container calendar ${theme} `}
-        onClick={(e) =>
-          menuIsOpen
-            ? setState({
-                ...state,
-                menuIsOpen: false,
-              })
-            : ''
-        }>
+      <div id="calendar-container" className={`page-container calendar ${theme} `}>
         <p className="screen-title">Calendar</p>
+        {/* CALENDAR UI */}
         <div id="calendar-ui-container" className={`${theme}`} {...handlers}></div>
         {/* BELOW CALENDAR */}
         {!showHolidays && !showSearchCard && (
@@ -582,7 +543,6 @@ export default function EventCalendar() {
                 className="search-icon"
                 onClick={() => {
                   setShowSearchCard(true)
-                  addFlatpickrCalendar().then((r) => r)
                   setTimeout(() => {
                     document.querySelector('.search-input').focus()
                   }, 100)
@@ -736,7 +696,12 @@ export default function EventCalendar() {
       </div>
       {!showNewEventCard && !showSearchCard && !showEditCard && !showHolidaysCard && !showHolidays && (
         <NavBar navbarClass={'calendar'}>
-          <PiCalendarPlusDuotone id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
+          <PiCalendarPlusDuotone className={'new-event'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
+        </NavBar>
+      )}
+      {showHolidays && (
+        <NavBar navbarClass={'calendar close-holiday'}>
+          <CgClose id={'add-new-button'} onClick={async () => setShowHolidays(false)} />
         </NavBar>
       )}
     </>

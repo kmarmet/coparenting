@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import '../../prototypes'
 // Icons
@@ -8,23 +8,23 @@ export default function BottomCard({ onClose, children, title, subtitle = '', sh
   const { currentUser, theme, alertType, formToShow } = state
   const isMobile = window.screen.width < 800
 
+  useEffect(() => {
+    const pageContainer = document.querySelector('.page-container')
+
+    if (pageContainer) {
+      if (showCard) {
+        pageContainer.classList.add('disable-scroll')
+      } else {
+        pageContainer.classList.remove('disable-scroll')
+      }
+    }
+  }, [showCard])
+
   const cardClasses = () => {
     let classes = theme + ' ' + className
-    const navbar = document.getElementById('navbar')
-    const pageContainer = document.querySelector('.page-container')
+
     if (showCard) {
-      if (navbar && pageContainer) {
-        navbar.classList.add('hide')
-        setTimeout(() => {
-          pageContainer.classList.add('disable-scroll')
-        }, 500)
-      }
       classes += ' active '
-    } else {
-      if (navbar && pageContainer) {
-        pageContainer.classList.remove('disable-scroll')
-        navbar.classList.remove('hide')
-      }
     }
     return classes
   }
