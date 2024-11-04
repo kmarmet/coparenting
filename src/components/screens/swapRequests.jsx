@@ -12,6 +12,7 @@ import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
 import SecurityManager from '../../managers/securityManager'
 import NewSwapRequest from '../forms/newSwapRequest'
+import { IoAdd } from 'react-icons/io5'
 import {
   contains,
   displayAlert,
@@ -30,6 +31,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
+import NavBar from '../navBar'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -82,27 +84,12 @@ export default function SwapRequests() {
     })
   }
 
-  const setNavbarButton = (action, icon = 'add', color = 'green') => {
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => action(),
-          icon: icon,
-          color: color,
-        },
-      })
-    }, 500)
-  }
-
   useEffect(() => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
       await getSecuredRequests().then((r) => r)
     })
     Manager.showPageContainer('show')
-    setNavbarButton(() => setShowCard(true))
   }, [])
 
   return (
@@ -201,6 +188,11 @@ export default function SwapRequests() {
             })}
         </div>
       </div>
+      {!showCard && (
+        <NavBar navbarClass={'swap-requests'}>
+          <IoAdd id={'add-new-button'} onClick={() => setShowCard(true)} />
+        </NavBar>
+      )}
     </>
   )
 }

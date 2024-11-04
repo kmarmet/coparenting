@@ -13,6 +13,7 @@ import moment from 'moment'
 import '../../prototypes.js'
 import BottomCard from '../shared/bottomCard'
 import { PiBellSimpleRinging, PiClockCountdownDuotone, PiConfettiDuotone, PiTrashDuotone } from 'react-icons/pi'
+import { AiOutlineFileAdd } from 'react-icons/ai'
 import SecurityManager from '../../managers/securityManager'
 import NewExpenseForm from '../forms/newExpenseForm'
 import FirebaseStorage from '@firebaseStorage'
@@ -47,6 +48,7 @@ import { SiCashapp, SiZelle } from 'react-icons/si'
 import { LiaCcPaypal } from 'react-icons/lia'
 import { BsArrowsAngleExpand } from 'react-icons/bs'
 import { MdPriceCheck } from 'react-icons/md'
+import NavBar from '../navBar'
 
 // VIEW TYPES
 const ViewTypes = {
@@ -160,20 +162,6 @@ export default function ExpenseTracker() {
     })
   }
 
-  const setNavbarButton = (action, icon = 'add', color = 'green') => {
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => action(),
-          icon: icon,
-          color: color,
-        },
-      })
-    }, 500)
-  }
-
   useEffect(() => {
     getSecuredExpenses().then((r) => r)
   }, [viewType])
@@ -185,7 +173,6 @@ export default function ExpenseTracker() {
       await getSecuredExpenses().then((r) => r)
     })
     Manager.showPageContainer('show')
-    setNavbarButton(() => setShowNewExpenseCard(true))
   }, [])
 
   useEffect(() => {
@@ -200,31 +187,31 @@ export default function ExpenseTracker() {
     <div>
       {/* CONFIRMS */}
       <>
-        {/* CONFIRM DELETE - SINGLE */}
-        <Confirm
-          message={`Are you sure you would like to delete the ${currentExpense?.name?.uppercaseFirstLetterOfAllWords()} expense?`}
-          title={deleteConfirmTitle}
-          onAccept={() => {
-            setDeleteConfirmTitle('')
-            deleteExpense('single').then((r) => r)
-          }}
-          onReject={() => setDeleteConfirmTitle('')}
-          onCancel={() => setDeleteConfirmTitle('')}
-        />
-        {/*  MULTIPLE CONFIRM - DELETE */}
-        <Confirm
-          onAccept={async () => {
-            await deleteExpense('multiple')
-            setDeleteConfirmTitle('')
-          }}
-          onCancel={() => setDeleteConfirmTitle('')}
-          buttonsText={['All Expenses', 'Just this Expense']}
-          onReject={() => {
-            deleteExpense('single').then((r) => r)
-          }}
-          message={deleteConfirmTitle}
-          subtitle={`Would you like to delete all expenses with this information or just this one?`}
-        />
+        {/*/!* CONFIRM DELETE - SINGLE *!/*/}
+        {/*<Confirm*/}
+        {/*  message={`Are you sure you would like to delete the ${currentExpense?.name?.uppercaseFirstLetterOfAllWords()} expense?`}*/}
+        {/*  title={deleteConfirmTitle}*/}
+        {/*  onAccept={() => {*/}
+        {/*    setDeleteConfirmTitle('')*/}
+        {/*    deleteExpense('single').then((r) => r)*/}
+        {/*  }}*/}
+        {/*  onReject={() => setDeleteConfirmTitle('')}*/}
+        {/*  onCancel={() => setDeleteConfirmTitle('')}*/}
+        {/*/>*/}
+        {/*/!*  MULTIPLE CONFIRM - DELETE *!/*/}
+        {/*<Confirm*/}
+        {/*  onAccept={async () => {*/}
+        {/*    await deleteExpense('multiple')*/}
+        {/*    setDeleteConfirmTitle('')*/}
+        {/*  }}*/}
+        {/*  onCancel={() => setDeleteConfirmTitle('')}*/}
+        {/*  buttonsText={['All Expenses', 'Just this Expense']}*/}
+        {/*  onReject={() => {*/}
+        {/*    deleteExpense('single').then((r) => r)*/}
+        {/*  }}*/}
+        {/*  message={deleteConfirmTitle}*/}
+        {/*  subtitle={`Would you like to delete all expenses with this information or just this one?`}*/}
+        {/*/>*/}
       </>
 
       {/* NEW EXPENSE FORM */}
@@ -257,9 +244,10 @@ export default function ExpenseTracker() {
                     </div>
                   </div>
                   <iframe
-                    src="https://www.youtube.com/embed/OTZcPfLlq4w"
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO"
                     title="Zelle® | How it Works"
-                    frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     referrerPolicy="strict-origin-when-cross-origin"
                     allowFullScreen></iframe>
@@ -347,6 +335,9 @@ export default function ExpenseTracker() {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="buttons" onClick={() => setShowPaymentOptionsCard(false)}>
+              <button className="card-button cancel">Close</button>
             </div>
           </BottomCard>
         )}
@@ -536,6 +527,11 @@ export default function ExpenseTracker() {
           </div>
         </div>
       </div>
+      {!showNewExpenseCard && !showPaymentOptionsCard && (
+        <NavBar navbarClass={'child-info'}>
+          <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)(true)} id={'add-new-button'} />
+        </NavBar>
+      )}
     </div>
   )
 }

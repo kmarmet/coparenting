@@ -31,6 +31,7 @@ import ChildSelector from './childSelector'
 import { BiImageAdd } from 'react-icons/bi'
 import DB_UserScoped from '@userScoped'
 import { IoPersonAddOutline } from 'react-icons/io5'
+import NavBar from '../../navBar'
 
 export default function ChildInfo() {
   // @ts-ignore
@@ -87,19 +88,6 @@ export default function ChildInfo() {
   useEffect(() => {
     onTableChange().then((r) => r)
 
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            setShowNewChildForm(true)
-          },
-          color: 'green',
-          icon: <IoPersonAddOutline className={'fs-26'} />,
-        },
-      })
-    }, 300)
     Manager.showPageContainer('show')
   }, [])
 
@@ -185,6 +173,11 @@ export default function ChildInfo() {
           </button>
         </>
       </div>
+      {!showNewChildForm && (
+        <NavBar navbarClass={'child-info'}>
+          <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />
+        </NavBar>
+      )}
     </div>
   )
 }

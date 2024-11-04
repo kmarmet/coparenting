@@ -60,15 +60,16 @@ const Conversation = () => {
   // Longpress/bookmark
   const bind = useLongPress(async (e, messageObject) => {
     const el = e.target.parentNode
-    const messageId = messageObject.context.id
-    const isSavedAlready = messageObject.context.bookmarked
-    toggleLongpressAnimation(el)
-    if (isSavedAlready) {
-      await ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, false)
-    } else {
-      await ChatManager.toggleMessageBookmark(currentUser, messageToUser, messageId, true)
-    }
   })
+
+  const handleMessageDblClick = async (messageObject) => {
+    const { bookmarked, id } = messageObject
+    if (bookmarked) {
+      await ChatManager.toggleMessageBookmark(currentUser, messageToUser, id, false)
+    } else {
+      await ChatManager.toggleMessageBookmark(currentUser, messageToUser, id, true)
+    }
+  }
 
   const submitMessage = async () => {
     // Clear input
@@ -226,18 +227,23 @@ const Conversation = () => {
     }
   }
 
-  useEffect(() => {
-    if (showBookmarks) {
-      setDynamicBookmarkMessagesHeight()
-    } else {
-      setDynamicMessagesHeight()
-    }
-  }, [showBookmarks])
+  // useEffect(() => {
+  //   if (showBookmarks) {
+  //     setDynamicBookmarkMessagesHeight()
+  //   } else {
+  //     setDynamicMessagesHeight()
+  //   }
+  // }, [showBookmarks])
 
   useEffect(() => {
     onTableChange().then((r) => r)
     scrollToLatestMessage()
     Manager.showPageContainer('show')
+    const appContainer = document.querySelector('.App')
+
+    if (appContainer) {
+      appContainer.classList.add('disable-scroll')
+    }
   }, [])
 
   useEffect(() => {
@@ -314,7 +320,7 @@ const Conversation = () => {
                 transitionName="rc-tooltip-zoom"
                 placement="left"
                 trigger={['click', 'hover']}
-                overlay={'Longpress on a message to bookmark it for viewing later'}>
+                overlay={'Double tap/click on a message to bookmark it for viewing later'}>
                 <PiInfoDuotone className="material-icons top-bar-icon" id="conversation-bookmark-icon" />
               </Tooltip>
               <CgClose
@@ -398,10 +404,8 @@ const Conversation = () => {
                     timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('hh:mm a')
                   }
                   return (
-                    <div key={index}>
-                      <p className={messageObj.sender === currentUser.name ? 'from message' : 'to message'} {...bind(messageObj, messageObj)}>
-                        {messageObj.message}
-                      </p>
+                    <div key={index} onDoubleClick={() => handleMessageDblClick(messageObj)}>
+                      <p className={messageObj.sender === currentUser.name ? 'from message' : 'to message'}>{messageObj.message}</p>
                       <span className={messageObj.sender === currentUser.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
                     </div>
                   )

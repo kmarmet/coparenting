@@ -149,6 +149,10 @@
     background-color: $lightBg;
     justify-content: flex-start;
     overflow-y: hidden;
+    
+    &.disable-scroll {
+      overflow: hidden;
+    }
 
     &.pushed {
       max-width: 1000px;

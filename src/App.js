@@ -224,11 +224,18 @@ export default function App() {
   }, [currentUser])
 
   useEffect(() => {
+    const navbar = document.getElementById('navbar')
     if (menuIsOpen) {
       document.querySelector('#app-container').classList.add('pushed')
+      if (navbar) {
+        navbar.classList.add('hide')
+      }
       addMenuItemAnimation()
     } else {
       document.querySelector('#app-container').classList.remove('pushed')
+      if (navbar) {
+        navbar.classList.remove('hide')
+      }
       deleteMenuAnimation()
     }
   }, [menuIsOpen])

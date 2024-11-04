@@ -10,7 +10,6 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
-import BottomCard from '../shared/bottomCard'
 
 import {
   contains,
@@ -32,7 +31,7 @@ import {
 } from '../../globalFunctions'
 import ModelNames from '../../models/modelNames'
 
-export default function ReviseChildTransferChangeRequest({ showCard, hideCard }) {
+export default function ReviseChildTransferChangeRequest({ hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, transferRequestToRevise } = state
   const [requestTime, setRequestTime] = useState('')
@@ -106,63 +105,61 @@ export default function ReviseChildTransferChangeRequest({ showCard, hideCard })
 
   return (
     <div className="revise-transfer-wrapper">
-      <BottomCard title={'Revise Request'} onClose={hideCard} showCard={showCard}>
-        <div id="transfer-change-container" className={`${theme} form`}>
-          <div className="form transfer-change">
-            <div className="flex gap">
-              <div>
-                {/* DAY */}
-                <label>
-                  Day<span className="asterisk">*</span>
-                </label>
-                <MobileDatePicker
-                  format={DateFormats.dateForDb}
-                  defaultValue={moment(transferRequestToRevise?.date, DateFormats.dateForDb)}
-                  className="mb-15 mt-0 w-100 day-input-wrapper"
-                  onChange={(e) => setRequestDate(e)}
-                />
-              </div>
-
-              {/* TIME */}
-              <div>
-                <label className="mt-0">
-                  New Time <span>&nbsp;</span>
-                </label>
-                <MobileTimePicker
-                  defaultValue={moment(transferRequestToRevise?.time, DateFormats.timeForDb)}
-                  className="mb-15 mt-0 w-100"
-                  onAccept={(e) => setRequestTime(e)}
-                />
-              </div>
+      <div id="transfer-change-container" className={`${theme} form`}>
+        <div className="form transfer-change">
+          <div className="flex gap">
+            <div>
+              {/* DAY */}
+              <label>
+                Day<span className="asterisk">*</span>
+              </label>
+              <MobileDatePicker
+                format={DateFormats.dateForDb}
+                defaultValue={moment(transferRequestToRevise?.date, DateFormats.dateForDb)}
+                className="mb-15 mt-0 w-100 day-input-wrapper"
+                onChange={(e) => setRequestDate(e)}
+              />
             </div>
 
-            {/*  NEW LOCATION*/}
-            <Autocomplete
-              defaultValue={transferRequestToRevise?.location}
-              placeholder="New Location"
-              apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-              options={{
-                types: ['geocode', 'establishment'],
-                componentRestrictions: { country: 'usa' },
-              }}
-              className="mb-15"
-              onPlaceSelected={(place) => {
-                setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
-                setRequestLocation(place.formatted_address)
-              }}
-            />
-
-            <div className="buttons gap">
-              <button className="button card-button" onClick={submit}>
-                Send Revision <span className="material-icons-round ml-10 fs-22">send</span>
-              </button>
-              <button className="button card-button red" onClick={resetForm}>
-                Cancel
-              </button>
+            {/* TIME */}
+            <div>
+              <label className="mt-0">
+                New Time <span>&nbsp;</span>
+              </label>
+              <MobileTimePicker
+                defaultValue={moment(transferRequestToRevise?.time, DateFormats.timeForDb)}
+                className="mb-15 mt-0 w-100"
+                onAccept={(e) => setRequestTime(e)}
+              />
             </div>
           </div>
+
+          {/*  NEW LOCATION*/}
+          <Autocomplete
+            defaultValue={transferRequestToRevise?.location}
+            placeholder="New Location"
+            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+            options={{
+              types: ['geocode', 'establishment'],
+              componentRestrictions: { country: 'usa' },
+            }}
+            className="mb-15"
+            onPlaceSelected={(place) => {
+              setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
+              setRequestLocation(place.formatted_address)
+            }}
+          />
+
+          <div className="buttons gap">
+            <button className="button card-button" onClick={submit}>
+              Send Revision <span className="material-icons-round ml-10 fs-22">send</span>
+            </button>
+            <button className="button card-button cancel" onClick={resetForm}>
+              Cancel
+            </button>
+          </div>
         </div>
-      </BottomCard>
+      </div>
     </div>
   )
 }

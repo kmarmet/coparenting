@@ -45,8 +45,7 @@ import {
 } from '../../globalFunctions'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
-import ActivitySet from '../../models/activitySet'
-import DB_UserScoped from '@userScoped'
+import Label from '../shared/label'
 
 // COMPONENT
 export default function NewCalendarEvent({ hideCard }) {
@@ -171,7 +170,7 @@ export default function NewCalendarEvent({ hideCard }) {
     // Add first/initial date before adding repeating/cloned
     await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
       for (const toShareWith of shareWith) {
-        await setActivitySets(toShareWith)
+        // await setActivitySets(toShareWith)
         const subId = await PushAlertApi.getSubId(toShareWith)
         await PushAlertApi.sendMessage(`New Calendar Event`, `${eventTitle} on ${moment(eventFromDate).format('ddd DD')}`, subId)
       }
@@ -191,16 +190,16 @@ export default function NewCalendarEvent({ hideCard }) {
     resetForm()
   }
 
-  const setActivitySets = async (userPhone) => {
-    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
-    let newActivitySet = new ActivitySet()
-    let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
-    if (Manager.isValid(existingActivitySet, false, true)) {
-      newActivitySet = { ...existingActivitySet }
-    }
-    newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
-    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
-  }
+  // const setActivitySets = async (userPhone) => {
+  //   const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
+  //   let newActivitySet = new ActivitySet()
+  //   let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
+  //   if (Manager.isValid(existingActivitySet, false, true)) {
+  //     newActivitySet = { ...existingActivitySet }
+  //   }
+  //   newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
+  //   await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
+  // }
 
   const addRepeatingEventsToDb = async () => {
     let repeatingEvents = []
@@ -399,9 +398,7 @@ export default function NewCalendarEvent({ hideCard }) {
 
         {/* CALENDAR FORM */}
         {/* TITLE */}
-        <label className="mt-0">
-          Title <span className="asterisk">*</span>
-        </label>
+        <Label text={'Title'} required={true} />
         <div className="title-suggestion-wrapper">
           <input
             className={`event-title event-title-input mb-0 ${titleSuggestions.length > 0 ? 'no-radius' : ''}`}
@@ -442,9 +439,7 @@ export default function NewCalendarEvent({ hideCard }) {
           {eventLength === EventLengths.single && (
             <>
               <div className="w-100">
-                <label className="mb-0">
-                  Date <span className="asterisk">*</span>
-                </label>
+                <Label text={'Date'} required={true} />
                 <MobileDatePicker
                   value={moment(selectedNewEventDay)}
                   className={`${theme} m-0 w-100 event-from-date mui-input`}
@@ -460,7 +455,7 @@ export default function NewCalendarEvent({ hideCard }) {
         {/* DATE RANGE */}
         {eventLength === EventLengths.multiple && (
           <>
-            <label className="mt-10">Date Range*</label>
+            <Label text={'Date Range'} required={true} />
             <DateRangePicker
               showOneCalendar
               showHeader={false}
@@ -488,11 +483,11 @@ export default function NewCalendarEvent({ hideCard }) {
         {!isAllDay && (
           <div className={'flex gap mb-15'}>
             <div>
-              <label>Start time</label>
+              <Label text={'Start time'} required={false} />
               <MobileTimePicker minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventStartTime(e)} />
             </div>
             <div>
-              <label>End time</label>
+              <Label text={'End time'} required={false} />
               <MobileTimePicker minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventEndTime(e)} />
             </div>
           </div>
@@ -513,10 +508,7 @@ export default function NewCalendarEvent({ hideCard }) {
         {/* WHO IS ALLOWED TO SEE IT? */}
         {Manager.isValid(currentUser?.coparents, true) && (
           <div className={`share-with-container `}>
-            <label>
-              <span className="material-icons-round mr-10">visibility</span> Who is allowed to see it?
-              <span className="asterisk">*</span>
-            </label>
+            <Label text={'Who is allowed to see it?'} required={true} />
             <CheckboxGroup
               elClass={`${theme}`}
               dataPhone={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)}
@@ -651,7 +643,7 @@ export default function NewCalendarEvent({ hideCard }) {
               </button>
               {showCloneInput && (
                 <div>
-                  <label>Select Dates</label>
+                  <Label text={'Select Dates'} required={false} />
                   <MultiDatePicker
                     className={`${theme} multidate-picker mb-15`}
                     placeholder=""
@@ -674,11 +666,11 @@ export default function NewCalendarEvent({ hideCard }) {
         )}
 
         {/* URL/WEBSITE */}
-        <label>URL/Website</label>
+        <Label text={'URL/Website'} required={false} />
         <input type="url" onChange={(e) => setWebsiteUrl(e.target.value)} className="mb-10" />
 
         {/* LOCATION/ADDRESS */}
-        <label>Location</label>
+        <Label text={'Location'} required={false} />
         <Autocomplete
           placeholder={``}
           apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
@@ -693,7 +685,7 @@ export default function NewCalendarEvent({ hideCard }) {
         />
 
         {/* NOTES */}
-        <label>Notes</label>
+        <Label text={'Notes'} required={false} />
         <textarea onChange={(e) => setNotes(e.target.value)}></textarea>
 
         <div className="buttons gap">

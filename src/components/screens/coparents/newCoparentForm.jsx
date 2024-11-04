@@ -133,7 +133,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
               </button>
             )}
             {/*)}*/}
-            <button className="button card-button red" onClick={resetForm}>
+            <button className="button card-button cancel" onClick={resetForm}>
               Cancel
             </button>
           </div>

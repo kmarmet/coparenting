@@ -72,14 +72,19 @@
     .thread-item {
       color: $blue;
       justify-content: space-between;
-      width: 100vw;
+      width: 100%;
       align-items: center;
       border-bottom: 0;
       flex-wrap: nowrap;
       min-height: 80px;
+      border-bottom: 1px solid $lightGrey;
 
       &:first-child {
         margin-top: 15px;
+      }
+      
+      .flex {
+        align-items: flex-start;
       }
 
       #thread-action-button {
@@ -88,13 +93,20 @@
         opacity: 0.8;
         font-size: 25px;
       }
+      
+      svg {
+        font-size: 60px;
+        position: relative;
+        top: -3px;
+        margin-right: 5px;
+      }
 
       .delete-icon {
-        animation: beatRed 1.5s ease-in-out infinite;
         color: $red;
         border-radius: 100%;
         opacity: 0;
         transition: all 0.3s ease-in-out;
+        font-size: 30px;
 
         &.active {
           opacity: 1;
@@ -106,8 +118,8 @@
         display: flex;
         position: relative;
         right: 0;
-        color: $blue;
         font-weight: bold;
+        color: $lightBlack;
         font-size: 20px;
         line-height: 1;
         vertical-align: middle;
@@ -181,6 +193,8 @@
   flex-direction: column;
   width: 100vw;
   overflow: hidden;
+  height: calc(100% - 190px);
+  margin-top: 70px;
   .search-results {
     display: none;
 
@@ -253,13 +267,8 @@
       gap: 10px;
 
       svg {
-        width: calc(100% / 4);
         font-size: 28px;
         color: $lightDarkGrey;
-        
-        &#close-icon {
-          font-size: 35px;
-        }
       }
 
       #conversation-bookmark-icon {
@@ -314,14 +323,6 @@
       user-select: none;
       font-weight: 500;
       position: relative;
-
-      @include buttonPress;
-
-      &.longpress {
-        p {
-          animation: beat 1.5s infinite;
-        }
-      }
 
       &.animation {
         position: relative;

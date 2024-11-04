@@ -528,12 +528,12 @@ export default function EditCalEvent({ event, hideCard }) {
 
       {/* URL/WEBSITE */}
       <label>URL/Website</label>
-      <input type="url" onChange={(e) => setEventWebsiteUrl(e.target.value)} className="mb-10" />
+      <input defaultValue={event?.websiteUrl} type="url" onChange={(e) => setEventWebsiteUrl(e.target.value)} className="mb-10" />
 
       {/* LOCATION/ADDRESS */}
       <label>Location</label>
       <Autocomplete
-        placeholder={``}
+        placeholder={event?.location}
         apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
         options={{
           types: ['geocode', 'establishment'],
@@ -547,7 +547,7 @@ export default function EditCalEvent({ event, hideCard }) {
 
       {/* NOTES */}
       <label>Notes</label>
-      <textarea defaultValue={eventNotes} onChange={(e) => setEventNotes(e.target.value)}></textarea>
+      <textarea defaultValue={event?.notes} onChange={(e) => setEventNotes(e.target.value)}></textarea>
       <div className="flex buttons gap">
         <button className="button card-button" onClick={submit}>
           Done <span className="material-icons-round ml-10 fs-22">check</span>

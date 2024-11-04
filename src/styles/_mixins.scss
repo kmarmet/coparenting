@@ -23,8 +23,9 @@
   background: $lightBg;
   overflow: auto;
   overflow-x: hidden;
-  height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
-  max-height: 100vh;
+  height:100%;
+//  height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
+//  max-height: 100vh;
   max-width: env(safe-area-inset-top) - env(safe-area-inset-bottom);
   width: env(safe-area-inset-left) env(safe-area-inset-right);
   //  margin: env(safe-area-inset-right);
@@ -82,7 +83,7 @@
 // SCREEN TITLE
 @mixin screenTitle {
   font-size: 22px;
-  width: 100vw;
+  width: 100%;
   word-break: break-word;
   transition: all 0.6s linear;
   line-height: 1;
@@ -2041,7 +2042,7 @@
   max-height: 0;
   overflow: auto;
   width: 100vw;
-
+  left: 0;
   &.active {
     max-height: 70vh;
     opacity: 1;
@@ -2178,6 +2179,7 @@
     z-index: 10000;
     gap: 10px;
     border: 0;
+    align-items: stretch;
 
     .card-button {
       box-shadow: none;
@@ -2508,6 +2510,7 @@
         margin: 10px auto 0 auto;
         display: block;
         border-radius: $borderRadius;
+        max-width: 100%;
         @include shadow;
       }
       img {
@@ -2552,7 +2555,6 @@
 
 /*#region  MENU*/
 @mixin slideOutMenu {
-  height: 100vh;
   display: block;
   border-right: 1px solid $lightBorder;
   transition: all 0.6s ease-in-out;
@@ -2561,6 +2563,7 @@
   overflow: auto;
   z-index: -1;
   padding: env(safe-area-inset-top) 0 0 env(safe-area-inset-left);
+  height: 100%;
 
   &.active {
     width: 75vw;
@@ -2663,12 +2666,31 @@
   bottom: 0;
   opacity: 1;
   z-index: $maxZIndex;
+  
+  &.hide {
+    display: none;
+    z-index: -1;
+  }
 
   // Custom Colors
   &.calendar {
     &.close-holiday {
       #svg-wrapper {
         background: $red;
+      }
+    }
+  }
+  &.child-info {
+    #svg-wrapper {
+      #add-new-button {
+        font-size: 25px;
+      }
+    }
+  }
+  &.documents {
+    #svg-wrapper {
+      #add-new-button {
+        font-size: 25px;
       }
     }
   }

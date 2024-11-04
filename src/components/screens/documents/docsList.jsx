@@ -26,6 +26,9 @@ import {
 } from '../../../globalFunctions'
 import SecurityManager from '../../../managers/securityManager'
 import UploadDocuments from './uploadDocuments'
+import NavBar from '../../navBar'
+import { GrDocumentUpload } from 'react-icons/gr'
+import BottomCard from '../../shared/bottomCard'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
@@ -80,7 +83,9 @@ export default function DocsList() {
   return (
     <div>
       <p className="screen-title ">Documents</p>
-      <UploadDocuments showCard={showCard} hideCard={() => setShowCard(false)} />
+      <BottomCard showCard={showCard} title={'Upload Document'} onClose={() => setShowCard(false)}>
+        <UploadDocuments hideCard={() => setShowCard(false)} />
+      </BottomCard>
       <div id="doc-selection-container" className={`${theme} page-container`}>
         {docs.length === 0 && <p className={`${theme} caption`}>there are currently no documents</p>}
         <p className="mb-10">Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise.</p>
@@ -130,6 +135,11 @@ export default function DocsList() {
           </button>
         )}
       </div>
+      {!showCard && (
+        <NavBar navbarClass={'documents'}>
+          <GrDocumentUpload id={'add-new-button'} onClick={() => setShowCard(true)} />
+        </NavBar>
+      )}
     </div>
   )
 }

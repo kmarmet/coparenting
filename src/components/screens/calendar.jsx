@@ -160,7 +160,6 @@ export default function EventCalendar() {
     // Filter out dupes by event title
     let formattedDateArr = formatEvents(securedEvents)
     setExistingEvents(formattedDateArr.flat())
-    console.log(formattedDateArr)
     setTimeout(() => {
       addEventRowAnimation()
     }, 100)
@@ -385,6 +384,7 @@ export default function EventCalendar() {
     let userVisitationHolidays = allEvents.filter(
       (x) => x.isHoliday === true && x.ownerPhone === currentUser.phone && contains(x.title.toLowerCase(), 'holiday')
     )
+    console.log(userVisitationHolidays)
     userVisitationHolidays.forEach((holiday) => {
       holiday.title += ` (${holiday.holidayName})`
     })
@@ -509,6 +509,7 @@ export default function EventCalendar() {
 
         {/* EDIT EVENT */}
         <BottomCard
+          title={'Edit Event'}
           showCard={showEditCard}
           onClose={async (e) => {
             await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
@@ -588,13 +589,12 @@ export default function EventCalendar() {
                         )}
                         {/* TO WORD */}
                         {!contains(event?.toDate, 'Invalid') && event?.toDate?.length > 0 && event?.toDate !== event?.fromDate && (
-                          <span className="toDate"> to </span>
+                          <span className="toDate">&nbsp;to&nbsp; </span>
                         )}
                         {/* TO DATE */}
-                        {!contains(event?.toDate, 'Invalid') &&
-                          event?.toDate?.length > 0 &&
-                          event?.toDate !== event?.fromDate &&
-                          moment(event?.toDate).format(DateFormats.readableDay)}
+                        {!contains(event?.toDate, 'Invalid') && event?.toDate?.length > 0 && event?.toDate !== event?.fromDate && (
+                          <span>{moment(event?.toDate).format(DateFormats.readableDay)}</span>
+                        )}
                         {/* ALL DAY */}
                         {event &&
                           !Manager.isValid(event?.startTime) &&
@@ -701,7 +701,14 @@ export default function EventCalendar() {
       )}
       {showHolidays && (
         <NavBar navbarClass={'calendar close-holiday'}>
-          <CgClose id={'add-new-button'} onClick={async () => setShowHolidays(false)} />
+          <CgClose
+            id={'add-new-button'}
+            onClick={async () => {
+              document.querySelector('.flatpickr-calendar').scrollIntoView({ behavior: 'smooth' })
+              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+              setShowHolidays(false)
+            }}
+          />
         </NavBar>
       )}
     </>

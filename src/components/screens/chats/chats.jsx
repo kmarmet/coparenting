@@ -7,7 +7,7 @@ import { useSwipeable } from 'react-swipeable'
 import ChatManager from '@managers/chatManager.js'
 import DB_UserScoped from '@userScoped'
 import { BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
-
+import { PiUserCircleDuotone } from 'react-icons/pi'
 import {
   confirmAlert,
   contains,
@@ -28,6 +28,7 @@ import {
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
+import NavBar from '../../navBar'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -89,25 +90,6 @@ const Chats = () => {
   }
 
   useEffect(() => {
-    console.log('ere')
-    if (!selectedCoparent) {
-      setTimeout(() => {
-        setState({
-          ...state,
-          showNavbar: true,
-          navbarButton: {
-            ...navbarButton,
-            action: () => {
-              setShowNewConvoCard(true)
-            },
-            color: 'green',
-            icon: <BiSolidEdit className={'fs-26'} />,
-          },
-        })
-      }, 300)
-    } else {
-    }
-
     if (currentUser.accountType === 'parent') {
       getChats().then((r) => r)
     }
@@ -138,7 +120,7 @@ const Chats = () => {
                 }}>
                 {/* COPARENT NAME */}
                 <div className="flex">
-                  <span className="fs-40 material-icons-round mr-5">account_circle</span>
+                  <PiUserCircleDuotone />
                   <p data-coparent-phone={coparent.phone} className="coparent-name">
                     {formatNameFirstNameOnly(coparent.name)}
                     {/* Last Message */}
@@ -160,7 +142,7 @@ const Chats = () => {
                       }
                     )
                   }
-                  className={`fs-24 delete-icon mr-10 ${showDeleteButton ? 'active' : ''}`}
+                  className={`delete-icon mr-10 ${showDeleteButton ? 'active' : ''}`}
                 />
               </div>
             )
@@ -205,6 +187,11 @@ const Chats = () => {
           </div>
         </BottomCard>
       </div>
+      {!showNewConvoCard && (
+        <NavBar navbarClass={'calendar'}>
+          <BiSolidEdit id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />
+        </NavBar>
+      )}
     </>
   )
 }

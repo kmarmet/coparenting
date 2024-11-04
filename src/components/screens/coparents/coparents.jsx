@@ -31,6 +31,8 @@ import {
 import { MdOutlinePersonAddAlt1 } from 'react-icons/md'
 import { IoMdRemoveCircle } from 'react-icons/io'
 import BottomCard from '../../shared/bottomCard'
+import NavBar from '../../navBar'
+import { BsPersonAdd } from 'react-icons/bs'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -45,7 +47,6 @@ export default function Coparents() {
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
   const [activeCoparentInfo, setActiveCoparentInfo] = useState(null)
   const deleteProp = async (prop) => {
-    console.log(selectedCoparent)
     await DB_UserScoped.deleteCoparentInfoProp(currentUser, Manager.toCamelCase(prop), selectedCoparent)
   }
 
@@ -129,16 +130,16 @@ export default function Coparents() {
 
   return (
     <>
-      <Confirm
-        onAccept={async () => {
-          await deleteCoparent()
-          setConfirmTitle('')
-        }}
-        onCancel={() => setConfirmTitle('')}
-        onReject={() => setConfirmTitle('')}
-        title={confirmTitle}
-        message={`Are you sure you would like to delete ${Manager.isValid(selectedCoparent) ? selectedCoparent.name + '?' : ''}`}
-      />
+      {/*<Confirm*/}
+      {/*  onAccept={async () => {*/}
+      {/*    await deleteCoparent()*/}
+      {/*    setConfirmTitle('')*/}
+      {/*  }}*/}
+      {/*  onCancel={() => setConfirmTitle('')}*/}
+      {/*  onReject={() => setConfirmTitle('')}*/}
+      {/*  title={confirmTitle}*/}
+      {/*  message={`Are you sure you would like to delete ${Manager.isValid(selectedCoparent) ? selectedCoparent.name + '?' : ''}`}*/}
+      {/*/>*/}
 
       {/* CUSTOM INFO FORM */}
       <BottomCard title={'Add Custom Info'} showCard={showCustomInfoCard} onClose={() => setShowCustomInfoCard(false)}>
@@ -244,6 +245,11 @@ export default function Coparents() {
           )}
         </div>
       </div>
+      {!showNewCoparentFormCard && (
+        <NavBar navbarClass={'calendar'}>
+          <BsPersonAdd id={'add-new-button'} onClick={() => setShowNewCoparentFormCard(true)} />
+        </NavBar>
+      )}
     </>
   )
 }

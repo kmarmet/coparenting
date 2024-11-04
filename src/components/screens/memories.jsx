@@ -33,6 +33,7 @@ import { LuImageMinus, LuImagePlus } from 'react-icons/lu'
 import { saveImageFromUrl } from '../../managers/imageManager'
 import BottomCard from '../shared/bottomCard'
 import NoDataFallbackText from '../shared/noDataFallbackText'
+import NavBar from '../navBar'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -43,19 +44,11 @@ export default function Memories() {
   const dbRef = ref(getDatabase())
   const inputFile = useRef(null)
 
-  const navbarObject = {
-    ...navbarButton,
-    action: () => {
-      setShowNewMemoryCard(true)
-    },
-    icon: <LuImagePlus className={'fs-26'} />,
-  }
-
   const getSecuredMemories = async () => {
     let all = await SecurityManager.getMemories(currentUser)
     console.log(all)
     if (Manager.isValid(all, true)) {
-      setState({ ...state, isLoading: true, navbarButton: navbarObject })
+      setState({ ...state, isLoading: true })
       const resolvedImages = async () =>
         await new Promise(async (resolve, reject) => {
           let promises = []
@@ -99,7 +92,7 @@ export default function Memories() {
           setImgArray(arr)
           setMemories(validImages)
           setTimeout(() => {
-            setState({ ...state, isLoading: false, navbarButton: navbarObject })
+            setState({ ...state, isLoading: false })
           }, 600)
           setTimeout(() => {
             addImageAnimation()
@@ -110,7 +103,7 @@ export default function Memories() {
       }
     } else {
       setMemories([])
-      setState({ ...state, isLoading: false, navbarButton: navbarObject })
+      setState({ ...state, isLoading: false })
     }
   }
 
@@ -220,6 +213,11 @@ export default function Memories() {
           </div>
         )}
       </div>
+      {!showNewMemoryCard && (
+        <NavBar navbarClass={'child-info'}>
+          <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />
+        </NavBar>
+      )}
     </>
   )
 }

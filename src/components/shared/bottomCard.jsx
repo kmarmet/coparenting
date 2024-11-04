@@ -10,7 +10,6 @@ export default function BottomCard({ onClose, children, title, subtitle = '', sh
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
-
     if (pageContainer) {
       if (showCard) {
         pageContainer.classList.add('disable-scroll')

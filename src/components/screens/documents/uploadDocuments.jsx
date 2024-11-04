@@ -19,19 +19,17 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
+  successAlert,
+  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import BottomCard from '../../shared/bottomCard'
 import UploadInputs from '../../shared/uploadInputs'
 import SecurityManager from '../../../managers/securityManager'
-import DB from '@db'
-import ActivitySet from '../../../models/activitySet'
-import DB_UserScoped from '@userScoped'
 
-export default function UploadDocuments({ showCard, hideCard }) {
+export default function UploadDocuments({ hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, formToShow } = state
   const [shareWith, setShareWith] = useState([])
@@ -51,17 +49,17 @@ export default function UploadDocuments({ showCard, hideCard }) {
 
     // Validation
     if (files.length === 0) {
-      displayAlert('error', 'Please choose a file to upload')
+      throwError('Please choose a file to upload')
       setState({ ...state, isLoading: false })
       return false
     }
     if (!Manager.isValid(shareWith, true) || !Manager.isValid(docType)) {
-      displayAlert('error', 'Document Type and Who should see it? are required')
+      throwError('Document Type and Who should see it? are required')
       setState({ ...state, isLoading: false })
       return false
     }
-    if (docType === 'document' && Object.entries(files).map((x) => !x[1].name.contains('.docx'))[0]) {
-      displayAlert('error', 'Uploaded file MUST be of type .docx')
+    if (docType === 'document' && Object.entries(files).map((x) => !contains(x[1].name, '.docx'))[0]) {
+      throwError('Uploaded file MUST be of type .docx')
       setState({ ...state, isLoading: false })
       return false
     }
@@ -71,7 +69,6 @@ export default function UploadDocuments({ showCard, hideCard }) {
     const existingDocument = securedDocuments.filter((x) => x.memoryName === image.name)[0]
     if (existingDocument) {
       // error
-      console.log('existing')
       setState({ ...state, isLoading: false })
       return false
     }
@@ -103,9 +100,9 @@ export default function UploadDocuments({ showCard, hideCard }) {
 
           setState({ ...state, isLoading: false })
 
-          for (let coparentPhone of shareWith) {
-            await setActivitySets(coparentPhone)
-          }
+          // for (let coparentPhone of shareWith) {
+          //   await setActivitySets(coparentPhone)
+          // }
 
           // Send Notification
           NotificationManager.sendToShareWith(shareWith, 'New Document', `${currentUser} has uploaded a new document`)
@@ -114,16 +111,16 @@ export default function UploadDocuments({ showCard, hideCard }) {
     await resetForm()
   }
 
-  const setActivitySets = async (userPhone) => {
-    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
-    let newActivitySet = new ActivitySet()
-    let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
-    if (Manager.isValid(existingActivitySet, false, true)) {
-      newActivitySet = { ...existingActivitySet }
-    }
-    newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
-    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
-  }
+  // const setActivitySets = async (userPhone) => {
+  //   const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
+  //   let newActivitySet = new ActivitySet()
+  //   let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
+  //   if (Manager.isValid(existingActivitySet, false, true)) {
+  //     newActivitySet = { ...existingActivitySet }
+  //   }
+  //   newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
+  //   await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
+  // }
 
   const handleShareWithSelection = async (e) => {
     await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
@@ -149,61 +146,54 @@ export default function UploadDocuments({ showCard, hideCard }) {
   return (
     <div className="upload-doc-wrapper">
       {/* PAGE CONTAINER */}
-      <BottomCard showCard={showCard} title={'Add Document'} onClose={hideCard}>
-        <div id="upload-documents-container" className={`${theme} form`}>
-          <p className={`${theme} text-screen-intro`}>If uploading a document</p>
-          <p className={`${theme} text-screen-intro`}>
-            Upload documents (.doc or .docx) , or images of documents you would like to save or share with a co-parent.
-          </p>
-          <p className={`${theme} text-screen-intro`}>
-            The uploaded document. If the document you are uploading is a different type is not .docx (.doc, .pdf, .txt, .etc) please click the link
-            below to convert it to .docx for free.
-          </p>
-          <p>
-            <span className="accent pr-5">
-              <b>MUST</b>
-            </span>
-            be of type <b className="pl-5">.docx</b>
-          </p>
-          <a href="https://convertio.co/" target="_blank" className="mb-10">
-            Convert to .docx
-          </a>
+      <div id="upload-documents-container" className={`${theme} form`}>
+        <p className={`${theme} text-screen-intro`}>
+          Upload documents (.doc or .docx) , or images of documents you would like to save or share with a co-parent.
+        </p>
+        <p className={`${theme} text-screen-intro`}>
+          The uploaded document. If the document you are uploading is a different type is not .docx (.doc, .pdf, .txt, .etc) please click the link
+          below to convert it to .docx for free.
+        </p>
+        <p>
+          <span className="accent pr-5">
+            <b>MUST</b>
+          </span>
+          be of type <b className="pl-5">.docx</b>
+        </p>
+        <a href="https://convertio.co/" target="_blank" className="mb-10">
+          Convert to .docx
+        </a>
 
-          {/* FORM */}
-          <div className="form">
-            {currentUser && (
-              <div className="share-with-container">
-                <label>
-                  <span className="material-icons-round">description</span> Document type <span className="asterisk">*</span>
-                </label>
-                <CheckboxGroup labels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
-                <label>
-                  <span className="material-icons-round">visibility</span>Who should see it?<span className="asterisk">*</span>
-                </label>
-                <CheckboxGroup
-                  dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                  labels={currentUser?.coparents.map((x) => x.name)}
-                  onCheck={handleShareWithSelection}
-                />
-              </div>
-            )}
-          </div>
+        {/* FORM */}
+        <div className="form">
+          {currentUser && (
+            <div className="share-with-container">
+              <label>
+                <span className="material-icons-round">description</span> Document type <span className="asterisk">*</span>
+              </label>
+              <CheckboxGroup labels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
+              <label>
+                <span className="material-icons-round">visibility</span>Who should see it?<span className="asterisk">*</span>
+              </label>
+              <CheckboxGroup
+                dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                labels={currentUser?.coparents.map((x) => x.name)}
+                onCheck={handleShareWithSelection}
+              />
+            </div>
+          )}
+        </div>
 
-          {/* UPLOAD BUTTONS */}
-          <UploadInputs
-            containerClass={theme}
-            actualUploadButtonText={'Upload'}
-            uploadButtonText={docType === 'document' ? 'Choose Document' : 'Choose Image'}
-            uploadType={docType}
-            upload={upload}
-          />
-        </div>
-        <div className="buttons">
-          <button className="button card-button cancel" onClick={resetForm}>
-            Cancel
-          </button>
-        </div>
-      </BottomCard>
+        {/* UPLOAD BUTTONS */}
+        <UploadInputs
+          onClose={hideCard}
+          containerClass={theme}
+          actualUploadButtonText={'Upload'}
+          uploadButtonText={docType === 'document' ? 'Document' : 'Image'}
+          uploadType={docType}
+          upload={upload}
+        />
+      </div>
     </div>
   )
 }

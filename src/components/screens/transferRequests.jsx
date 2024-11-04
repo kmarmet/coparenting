@@ -13,6 +13,9 @@ import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
 import SecurityManager from '../../managers/securityManager'
 import ReviseChildTransferChangeRequest from '../forms/reviseTransferRequest'
+import NavBar from '../navBar'
+import { IoAdd } from 'react-icons/io5'
+import BottomCard from '../shared/bottomCard'
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
@@ -66,25 +69,9 @@ export default function TransferRequests() {
     })
   }
 
-  const setNavbarButton = (action, icon = 'add', color = 'green') => {
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => action(),
-          icon: icon,
-          color: color,
-        },
-      })
-    }, 500)
-  }
-
   useEffect(() => {
     const dbRef = ref(getDatabase())
-    setNavbarButton(() => setShowNewRequestCard(true))
     onValue(child(dbRef, DB.tables.transferChangeRequests), async (snapshot) => {
-      setNavbarButton(() => setShowNewRequestCard(true))
       getSecuredRequests().then((r) => r)
     })
 
@@ -93,8 +80,12 @@ export default function TransferRequests() {
 
   return (
     <>
-      <NewTransferChangeRequest showCard={showNewRequestCard} hideCard={() => setShowNewRequestCard(false)} />
-      <ReviseChildTransferChangeRequest showCard={showRevisionCard} hideCard={() => setShowRevisionCard(false)} />
+      <BottomCard title={'New Request'} showCard={showNewRequestCard} onClose={() => setShowNewRequestCard(false)}>
+        <NewTransferChangeRequest hideCard={() => setShowNewRequestCard(false)} />
+      </BottomCard>
+      <BottomCard title={'Revise Request'} showCard={showRevisionCard} onClose={() => setShowRevisionCard(false)}>
+        <ReviseChildTransferChangeRequest hideCard={() => setShowRevisionCard(false)} />
+      </BottomCard>
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         {!viewTransferRequestForm && (
           <>
@@ -195,6 +186,12 @@ export default function TransferRequests() {
           </div>
         )}
       </div>
+
+      {!showNewRequestCard && !showRevisionCard && (
+        <NavBar navbarClass={'transfer-requests'}>
+          <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />
+        </NavBar>
+      )}
     </>
   )
 }

@@ -167,7 +167,7 @@ const Manager = {
       const pageContainer = document.querySelector('.page-container')
       if (pageContainer) {
         Manager.centerDatepicker()
-        pageContainer.style.maxHeight = `${window.screen.height - 90}px`
+        // pageContainer.style.maxHeight = `${window.screen.height - 90}px`
         pageContainer.classList.add('active')
         Manager.scrollToTopOfPage()
         clearInterval(interval)
