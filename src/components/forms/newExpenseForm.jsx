@@ -35,13 +35,12 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
-import BottomCard from '../shared/bottomCard'
 import UploadInputs from '../shared/uploadInputs'
 import DateManager from '../../managers/dateManager'
 import ModelNames from '../../models/modelNames'
 import ActivitySet from '../../models/activitySet'
 
-function NewExpenseForm({ showCard, hideCard }) {
+function NewExpenseForm({ hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, formToShow } = state
   const [expenseName, setExpenseName] = useState('')
@@ -300,200 +299,198 @@ function NewExpenseForm({ showCard, hideCard }) {
   return (
     <div className="expenses-wrapper">
       {/* PAGE CONTAINER */}
-      <BottomCard title={'Add Expense'} showCard={showCard} onClose={hideCard}>
-        <div id="add-expense-form" className={`${theme} form`}>
-          {/* AMOUNT */}
-          <div id="amount-input-wrapper" onClick={() => setShowNumpad(true)}>
-            <p id="amount-input">
-              <span className="flex defaults">
-                <span id="dollar-sign" className="pr-5">
-                  <sup>$</sup>
-                </span>
-                <span id="zero" className={expenseAmount.length > 0 ? 'active' : ''}>
-                  {expenseAmount.length > 0 ? expenseAmount : '0'}
-                </span>
+      <div id="add-expense-form" className={`${theme} form`}>
+        {/* AMOUNT */}
+        <div id="amount-input-wrapper" onClick={() => setShowNumpad(true)}>
+          <p id="amount-input">
+            <span className="flex defaults">
+              <span id="dollar-sign" className="pr-5">
+                <sup>$</sup>
               </span>
-            </p>
-          </div>
+              <span id="zero" className={expenseAmount.length > 0 ? 'active' : ''}>
+                {expenseAmount.length > 0 ? expenseAmount : '0'}
+              </span>
+            </span>
+          </p>
+        </div>
 
-          {/* NUMPAD */}
-          <Numpad
-            onSubmit={() => setShowNumpad(false)}
-            onNumClick={(e) => onNumpadPress(e)}
-            onBackspace={deleteLastNumber}
-            className={showNumpad ? 'active mt-10' : ''}
-          />
+        {/* NUMPAD */}
+        <Numpad
+          onSubmit={() => setShowNumpad(false)}
+          onNumClick={(e) => onNumpadPress(e)}
+          onBackspace={deleteLastNumber}
+          className={showNumpad ? 'active mt-10' : ''}
+        />
 
-          {/* DEFAULT EXPENSE AMOUNTS */}
-          <>
-            <div className="flex mb-15" id="default-expense-amounts">
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $10
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $20
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $30
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $40
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $50
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $60
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $70
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $80
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $90
-              </button>
-              <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
-                RESET
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $100
-              </button>
-            </div>
-          </>
-
-          {/* EXPENSE NAME */}
-          <div className="w-100">
-            <label>
-              Name<span className="asterisk">*</span>
-            </label>
-            <input type="text" className="mb-15 mt-0" onChange={(e) => setExpenseName(e.target.value)} />
-          </div>
-
-          {/* DUE DATE */}
-          <label>Due Date</label>
-          <MobileDatePicker
-            className="mb-15 mt-0 w-100"
-            onChange={(e) => {
-              setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
-            }}
-          />
-
-          {/* UPLOAD INPUTS */}
-          <UploadInputs
-            uploadType="image"
-            getImages={(files) => {
-              if (files.length === 0) {
-                throwError('Please choose an image first')
-              } else {
-                setExpenseImage(files[0])
-              }
-            }}
-            containerClass={theme}
-            actualUploadButtonText={'Upload'}
-            uploadButtonText="Choose Image"
-            upload={() => {}}
-          />
-          <textarea name="expense-notes" placeholder="Notes" className="mb-15" onChange={(e) => setExpenseNotes(e.target.value)}></textarea>
-          {currentUser && (
-            <div className="share-with-container">
-              <label>
-                <span className="material-icons">request_quote</span>Who will be paying the expense?
-                <span className="asterisk">*</span>
-              </label>
-              <CheckboxGroup
-                dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                labels={currentUser?.coparents.map((x) => x.name)}
-                onCheck={(e) => {
-                  const checkbox = e.target.closest('#checkbox-container')
-                  document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
-                  checkbox.classList.add('active')
-                  handlePayerSelection(e).then((r) => r)
-                }}
-              />
-            </div>
-          )}
-
-          {/* SHARE WITH */}
-          {currentUser && (
-            <div className="share-with-container">
-              <label>
-                <span className="material-icons-round">visibility</span> Who should see it?<span className="asterisk">*</span>
-              </label>
-              <CheckboxGroup
-                dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                labels={currentUser?.coparents.map((x) => x.name)}
-                onCheck={handleShareWithSelection}
-              />
-            </div>
-          )}
-
-          {/* INCLUDING WHICH CHILDREN */}
-          {currentUser && currentUser.children !== undefined && (
-            <div className="share-with-container ">
-              <div className="flex">
-                <p>Include Child(ren)</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">face</span>,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setIncludeChildren(!includeChildren)}
-                />
-              </div>
-              {includeChildren && <CheckboxGroup labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />}
-            </div>
-          )}
-
-          {/* REPEATING? */}
-          <div className="share-with-container" id="repeating-container">
-            <div className="share-with-container ">
-              <div className="flex">
-                <p>Repeating</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">event_repeat</span>,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setRepeating(!repeating)}
-                />
-              </div>
-              {repeating && (
-                <>
-                  <CheckboxGroup onCheck={handleRepeatingSelection} labels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
-                  <label className="mb-5">Month to end repeating expense</label>
-                  {repeatInterval && (
-                    <MobileDatePicker
-                      className={'mt-0 w-100'}
-                      format={DateFormats.readableMonth}
-                      views={DatetimePickerViews.monthAndYear}
-                      hasAmPm={false}
-                      onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
-                    />
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* BUTTONS */}
-          <div className="buttons gap">
-            {/*{showSubmitButton && (*/}
-            {expenseAmount.length > 0 && expenseName.length > 0 && shareWith.length > 0 && Manager.isValid(payer, false, true) && (
-              <button className="button card-button" onClick={submitNewExpense}>
-                Create Expense <span className="material-icons-round ml-10 fs-22">attach_money</span>
-              </button>
-            )}
-            {/*)}*/}
-            <button className="button card-button cancel" onClick={resetForm}>
-              Cancel
+        {/* DEFAULT EXPENSE AMOUNTS */}
+        <>
+          <div className="flex mb-15" id="default-expense-amounts">
+            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+              $10
+            </button>
+            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+              $20
+            </button>
+            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+              $30
+            </button>
+            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+              $40
+            </button>
+            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+              $50
+            </button>
+            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+              $60
+            </button>
+            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+              $70
+            </button>
+            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+              $80
+            </button>
+            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+              $90
+            </button>
+            <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
+              RESET
+            </button>
+            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+              $100
             </button>
           </div>
+        </>
+
+        {/* EXPENSE NAME */}
+        <div className="w-100">
+          <label>
+            Name<span className="asterisk">*</span>
+          </label>
+          <input type="text" className="mb-15 mt-0" onChange={(e) => setExpenseName(e.target.value)} />
         </div>
-      </BottomCard>
+
+        {/* DUE DATE */}
+        <label>Due Date</label>
+        <MobileDatePicker
+          className="mb-15 mt-0 w-100"
+          onChange={(e) => {
+            setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
+          }}
+        />
+
+        <textarea name="expense-notes" placeholder="Notes" className="mb-15" onChange={(e) => setExpenseNotes(e.target.value)}></textarea>
+        {currentUser && (
+          <div className="share-with-container">
+            <label>
+              <span className="material-icons">request_quote</span>Who will be paying the expense?
+              <span className="asterisk">*</span>
+            </label>
+            <CheckboxGroup
+              dataPhone={currentUser?.coparents.map((x) => x.phone)}
+              labels={currentUser?.coparents.map((x) => x.name)}
+              onCheck={(e) => {
+                const checkbox = e.target.closest('#checkbox-container')
+                document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
+                checkbox.classList.add('active')
+                handlePayerSelection(e).then((r) => r)
+              }}
+            />
+          </div>
+        )}
+
+        {/* SHARE WITH */}
+        {currentUser && (
+          <div className="share-with-container">
+            <label>
+              <span className="material-icons-round">visibility</span> Who should see it?<span className="asterisk">*</span>
+            </label>
+            <CheckboxGroup
+              dataPhone={currentUser?.coparents.map((x) => x.phone)}
+              labels={currentUser?.coparents.map((x) => x.name)}
+              onCheck={handleShareWithSelection}
+            />
+          </div>
+        )}
+
+        {/* INCLUDING WHICH CHILDREN */}
+        {currentUser && currentUser.children !== undefined && (
+          <div className="share-with-container ">
+            <div className="flex">
+              <p>Applicable Child(ren)</p>
+              <Toggle
+                icons={{
+                  checked: <span className="material-icons-round">face</span>,
+                  unchecked: null,
+                }}
+                className={'ml-auto reminder-toggle'}
+                onChange={(e) => setIncludeChildren(!includeChildren)}
+              />
+            </div>
+            {includeChildren && <CheckboxGroup labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />}
+          </div>
+        )}
+
+        {/* REPEATING? */}
+        <div className="share-with-container" id="repeating-container">
+          <div className="share-with-container ">
+            <div className="flex">
+              <p>Repeating</p>
+              <Toggle
+                icons={{
+                  checked: <span className="material-icons-round">event_repeat</span>,
+                  unchecked: null,
+                }}
+                className={'ml-auto reminder-toggle'}
+                onChange={(e) => setRepeating(!repeating)}
+              />
+            </div>
+            {repeating && (
+              <>
+                <CheckboxGroup onCheck={handleRepeatingSelection} labels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
+                <label className="mb-5">Month to end repeating expense</label>
+                {repeatInterval && (
+                  <MobileDatePicker
+                    className={'mt-0 w-100'}
+                    format={DateFormats.readableMonth}
+                    views={DatetimePickerViews.monthAndYear}
+                    hasAmPm={false}
+                    onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
+                  />
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* UPLOAD INPUTS */}
+        <UploadInputs
+          uploadType="image"
+          getImages={(files) => {
+            if (files.length === 0) {
+              throwError('Please choose an image first')
+            } else {
+              setExpenseImage(files[0])
+            }
+          }}
+          onClose={hideCard}
+          containerClass={`${theme} new-expense-card`}
+          actualUploadButtonText={'Upload'}
+          uploadButtonText="Choose Image"
+          upload={() => {}}
+        />
+
+        {/* BUTTONS */}
+        <div className="buttons gap">
+          {expenseAmount.length > 0 && expenseName.length > 0 && shareWith.length > 0 && Manager.isValid(payer, false, true) && (
+            <button className="button card-button" onClick={submitNewExpense}>
+              Create Expense <span className="material-icons-round ml-10 fs-22">attach_money</span>
+            </button>
+          )}
+          <button className="cancel card-button" onClick={hideCard}>
+            Cancel
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

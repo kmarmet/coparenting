@@ -71,7 +71,7 @@ export default function EditCalEvent({ event, hideCard }) {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [allEvents, setAllEvents] = useState([])
-
+  const [isVisitation, setIsVisitation] = useState(false)
   const resetForm = () => {
     Manager.resetForm('edit-event-form')
     setEventFromDate('')
@@ -124,7 +124,7 @@ export default function EditCalEvent({ event, hideCard }) {
     }
     eventToEdit.websiteUrl = eventWebsiteUrl
     eventToEdit.repeatInterval = event?.repeatInterval
-    eventToEdit.fromVisitationSchedule = false
+    eventToEdit.fromVisitationSchedule = isVisitation ? true : false
     eventToEdit.morningSummaryReminderSent = false
     eventToEdit.eveningSummaryReminderSent = false
     eventToEdit.sentReminders = []
@@ -414,7 +414,7 @@ export default function EditCalEvent({ event, hideCard }) {
 
         {/* ALL DAY / HAS END DATE */}
         <div className="flex">
-          <p>All Day</p>
+          P<p>All Day</p>
           <Toggle
             icons={{
               // checked: <span className="material-icons-round">notifications</span>,
@@ -422,6 +422,18 @@ export default function EditCalEvent({ event, hideCard }) {
             }}
             className={'ml-auto reminder-toggle'}
             onChange={(e) => setIsAllDay(!isAllDay)}
+          />
+        </div>
+
+        {/* IS VISITATION? */}
+        <div className="flex">
+          <p>Visitation Event</p>
+          <Toggle
+            icons={{
+              unchecked: null,
+            }}
+            className={'ml-auto reminder-toggle'}
+            onChange={(e) => setIsVisitation(!isVisitation)}
           />
         </div>
 
@@ -463,7 +475,7 @@ export default function EditCalEvent({ event, hideCard }) {
                     boxWidth={50}
                     skipNameFormatting={true}
                     dataPhone={
-                      currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
+                      currentUser.accountType === 'parent' ? currentUser?.coparents?.map((x) => x.phone) : currentUser?.parents?.map((x) => x.phone)
                     }
                     labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                     onCheck={handleReminderSelection}

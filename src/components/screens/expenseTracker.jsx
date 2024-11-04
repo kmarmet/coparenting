@@ -97,7 +97,7 @@ export default function ExpenseTracker() {
     if (Manager.isValid(currentExpense) && Manager.isValid(currentExpense.imageName, null, null, true)) {
       await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser.id, currentExpense.imageName, currentExpense)
     }
-    if (eventCount === 'single') {
+    if (eventCount === 1) {
       const deleteKey = await DB.getSnapshotKey(DB.tables.expenseTracker, currentExpense, 'id')
       await DB.deleteByPath(`${DB.tables.expenseTracker}/${deleteKey}`)
       setCurrentExpense(false)
@@ -185,38 +185,11 @@ export default function ExpenseTracker() {
 
   return (
     <div>
-      {/* CONFIRMS */}
-      <>
-        {/*/!* CONFIRM DELETE - SINGLE *!/*/}
-        {/*<Confirm*/}
-        {/*  message={`Are you sure you would like to delete the ${currentExpense?.name?.uppercaseFirstLetterOfAllWords()} expense?`}*/}
-        {/*  title={deleteConfirmTitle}*/}
-        {/*  onAccept={() => {*/}
-        {/*    setDeleteConfirmTitle('')*/}
-        {/*    deleteExpense('single').then((r) => r)*/}
-        {/*  }}*/}
-        {/*  onReject={() => setDeleteConfirmTitle('')}*/}
-        {/*  onCancel={() => setDeleteConfirmTitle('')}*/}
-        {/*/>*/}
-        {/*/!*  MULTIPLE CONFIRM - DELETE *!/*/}
-        {/*<Confirm*/}
-        {/*  onAccept={async () => {*/}
-        {/*    await deleteExpense('multiple')*/}
-        {/*    setDeleteConfirmTitle('')*/}
-        {/*  }}*/}
-        {/*  onCancel={() => setDeleteConfirmTitle('')}*/}
-        {/*  buttonsText={['All Expenses', 'Just this Expense']}*/}
-        {/*  onReject={() => {*/}
-        {/*    deleteExpense('single').then((r) => r)*/}
-        {/*  }}*/}
-        {/*  message={deleteConfirmTitle}*/}
-        {/*  subtitle={`Would you like to delete all expenses with this information or just this one?`}*/}
-        {/*/>*/}
-      </>
-
       {/* NEW EXPENSE FORM */}
-      <NewExpenseForm showCard={showNewExpenseCard} hideCard={(e) => setShowNewExpenseCard(false)} />
 
+      <BottomCard title={'Add Expense'} showCard={showNewExpenseCard} onClose={() => setShowNewExpenseCard(false)}>
+        <NewExpenseForm hideCard={(e) => setShowNewExpenseCard(false)} />
+      </BottomCard>
       {/* PAYMENT OPTIONS */}
       <>
         {showPaymentOptionsCard && (
@@ -407,6 +380,7 @@ export default function ExpenseTracker() {
                           <div
                             className="flex delete"
                             onClick={async () => {
+                              // confirmAlert = (title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm, onDeny)
                               setCurrentExpense(expense)
                               let existing = await DB.getTable(DB.tables.expenseTracker)
                               if (!Array.isArray(existing)) {
@@ -414,9 +388,13 @@ export default function ExpenseTracker() {
                               }
                               existing = existing.filter((x) => x.name === expense.name)
                               if (existing.length > 1) {
-                                setDeleteConfirmTitle('DELETE REPEATING EXPENSES')
+                                confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, () => {
+                                  deleteExpense(existing.length)
+                                })
                               } else {
-                                setDeleteConfirmTitle('DELETING EXPENSE')
+                                confirmAlert('Are you sure you would like to delete this expense?', "I'm Sure", true, () => {
+                                  deleteExpense(existing.length)
+                                })
                               }
                             }}>
                             <span>Delete</span> <PiTrashDuotone />
@@ -529,7 +507,7 @@ export default function ExpenseTracker() {
       </div>
       {!showNewExpenseCard && !showPaymentOptionsCard && (
         <NavBar navbarClass={'child-info'}>
-          <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)(true)} id={'add-new-button'} />
+          <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />
         </NavBar>
       )}
     </div>

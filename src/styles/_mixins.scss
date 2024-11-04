@@ -1133,12 +1133,28 @@
   display: flex;
   width: 100%;
   gap: 5px;
+  
+  &.new-expense-card {
+    margin-top: 10px;
+    .flex {
+      align-items: stretch;
+      gap: 5px;
+      width: 100%;
+      button, label, input {
+        width: 50%;
+        border-radius: $borderRadius;
+        height: 45px;
+        
+        &#upload-button {
+          background-color: $green;
+          color:white;
+        }
+      }
+    }
+  }
+  
   #file-upload-button {
     border: 0;
-  }
-  .custom-file-upload,
-  #file-upload-button {
-    //    height: 40px;
   }
   .custom-file-upload {
     background-color: $mainBlue;
@@ -1146,13 +1162,11 @@
     display: flex;
     justify-content: center;
     border-radius: $borderRadius;
-    //    padding: 8px 20px;
   }
   #file-upload-button {
     display: none !important;
     border: 0;
     background-color: $green;
-    //    width: 50%;
     color: white;
     border-radius: 20px;
     label {
@@ -1160,11 +1174,6 @@
       display: flex;
       justify-content: center;
     }
-  }
-
-  .custom-file-upload {
-    //    width: 50%;
-    //    height: 40px;
   }
 }
 @mixin popupContainers {

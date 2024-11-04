@@ -24,8 +24,8 @@ function UploadInputs({
 
   return (
     <div id="upload-inputs" className={containerClass}>
-      <div className="buttons">
-        <label htmlFor="upload-input" className={`card-button custom-file-upload  ${chooseImageClass}`}>
+      <div className="flex">
+        <label htmlFor="upload-input" className={` custom-file-upload  ${chooseImageClass}`}>
           {uploadButtonText} {getIcon()}
         </label>
         <button id="file-upload-button">
@@ -41,16 +41,13 @@ function UploadInputs({
         </button>
         <button
           id="upload-button"
-          className="button card-button  green"
+          className="button   green"
           onClick={() => {
             const files = document.getElementById('upload-input').files
             upload()
             getImages(files)
           }}>
           {actualUploadButtonText} <span className="material-icons-round">upload</span>
-        </button>
-        <button className="card-button cancel" onClick={onClose}>
-          Cancel
         </button>
       </div>
     </div>

@@ -128,10 +128,15 @@
   }
 }
 
+
+// REACT TOGGLE
 .react-toggle--checked,
 .react-toggle--focus,
 .react-toggle-thumb {
   box-shadow: none !important;
+}
+.react-toggle-track-check {
+  top: -5px;
 }
 
 #external-overrides {

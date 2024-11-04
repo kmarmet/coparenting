@@ -9,6 +9,7 @@ import DB_UserScoped from '@userScoped'
 import CustomCoparentInfo from './customCoparentInfo'
 import NewCoparentForm from './newCoparentForm'
 import {
+  confirmAlert,
   contains,
   displayAlert,
   formatFileName,
@@ -23,16 +24,17 @@ import {
   spaceBetweenWords,
   stringHasNumbers,
   successAlert,
+  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import { MdOutlinePersonAddAlt1 } from 'react-icons/md'
 import { IoMdRemoveCircle } from 'react-icons/io'
 import BottomCard from '../../shared/bottomCard'
 import NavBar from '../../navBar'
 import { BsPersonAdd } from 'react-icons/bs'
+import NoDataFallbackText from '../../shared/noDataFallbackText'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -57,19 +59,22 @@ export default function Coparents() {
     setSelectedCoparent(updatedChild)
   }
 
-  const deleteCoparent = async () => {
-    await DB_UserScoped.deleteCoparent(currentUser, selectedCoparent)
-  }
+  const deleteCoparent = async () => await DB_UserScoped.deleteCoparent(currentUser, selectedCoparent)
 
   const getCoparents = async () => {
     let all = []
     await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'coparents').then((coparent) => {
       all.push(coparent)
     })
-    all = all[0]
-    setSelectedCoparent(all[0])
-    all = all.filter((x) => x !== 'address')
-    setUserCoparents(all)
+    console.log(all)
+    if (Manager.isValid(all, true)) {
+      all = all[0]
+      setSelectedCoparent(all[0])
+      all = all.filter((x) => x !== 'address')
+      setUserCoparents(all)
+    } else {
+      setSelectedCoparent(null)
+    }
   }
 
   const onValueChange = async () => {
@@ -77,7 +82,12 @@ export default function Coparents() {
       const dbRef = getDatabase()
       const userRef = ref(dbRef, `${DB.tables.users}/${currentUser.phone}/coparents`)
       onValue(userRef, async (snapshot) => {
-        await getCoparents()
+        console.log(snapshot.val())
+        if (!snapshot.val()) {
+          setSelectedCoparent(null)
+        } else {
+          await getCoparents()
+        }
       })
     }
   }
@@ -88,7 +98,7 @@ export default function Coparents() {
         .replace('Biological Parent', 'Bio')
         .replace('Biological', 'Bio')
         .replace('Step-Parent', 'Step')
-        .replace('SpousesCoparent', "Spouse's Co-parent")
+        .replace("Partner's Co-Parent", "Partner's Co-parent")
     }
     return type
   }
@@ -99,6 +109,7 @@ export default function Coparents() {
     } else {
       if (Manager.isValid(currentUser?.coparents, true)) {
         setCoparentData(Object.entries(currentUser?.coparents[0]))
+        console.log(currentUser?.coparents)
         setSelectedCoparent(currentUser?.coparents[0])
       }
     }
@@ -114,33 +125,10 @@ export default function Coparents() {
     if (autocompleteInput) {
       document.querySelector('.pac-target-input').setAttribute('placeholder', 'Enter updated address')
     }
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            setShowNewCoparentFormCard(true)
-          },
-          icon: <MdOutlinePersonAddAlt1 />,
-        },
-      })
-    }, 300)
   }, [])
 
   return (
     <>
-      {/*<Confirm*/}
-      {/*  onAccept={async () => {*/}
-      {/*    await deleteCoparent()*/}
-      {/*    setConfirmTitle('')*/}
-      {/*  }}*/}
-      {/*  onCancel={() => setConfirmTitle('')}*/}
-      {/*  onReject={() => setConfirmTitle('')}*/}
-      {/*  title={confirmTitle}*/}
-      {/*  message={`Are you sure you would like to delete ${Manager.isValid(selectedCoparent) ? selectedCoparent.name + '?' : ''}`}*/}
-      {/*/>*/}
-
       {/* CUSTOM INFO FORM */}
       <BottomCard title={'Add Custom Info'} showCard={showCustomInfoCard} onClose={() => setShowCustomInfoCard(false)}>
         <CustomCoparentInfo
@@ -150,7 +138,7 @@ export default function Coparents() {
         />
       </BottomCard>
 
-      {!selectedCoparent && <p className="dead-center">No coparents at this time</p>}
+      {!selectedCoparent && <NoDataFallbackText text={'No Co-Parents Added'} />}
 
       {/* NEW COPARENT FORM */}
       <BottomCard title={'Add Co-Parent'} showCard={showNewCoparentFormCard} onClose={() => setShowNewCoparentFormCard(false)}>
@@ -173,7 +161,7 @@ export default function Coparents() {
                   key={index}>
                   <span className="material-icons-round">escalator_warning</span>
                   <span className="coparent-name">{formatNameFirstNameOnly(coparent.name)}</span>
-                  <span className="coparent-type">{formatParentType(coparent.parentType)}</span>
+                  <span className="coparent-type">{coparent.parentType}</span>
                 </div>
               )
             })}
@@ -238,6 +226,11 @@ export default function Coparents() {
                 className="button w-60 no-border default red center"
                 onClick={(e) => {
                   setConfirmTitle(`Deleting ${selectedCoparent.name}`)
+                  confirmAlert(`Are you sure you would like to remove ${selectedCoparent.name}`, "I'm Sure", true, async () => {
+                    await deleteCoparent()
+                    successAlert('Co-Parent Removed')
+                    setSelectedCoparent(null)
+                  })
                 }}>
                 Remove Co-parent <span className="material-icons">person_remove</span>
               </button>

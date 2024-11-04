@@ -15,12 +15,15 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
+  successAlert,
+  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../globalFunctions'
-import { phone } from 'phone'
+import Label from './shared/label'
+import validator from 'validator'
 
 export default function CoparentInputs({ add, coparentsLength = 1 }) {
   const { state, setState } = useContext(globalState)
@@ -28,12 +31,6 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
   const [userPhone, setUserPhone] = useState('')
   const [parentType, setParentType] = useState('')
   const [showAddButton, setShowAddButton] = useState(true)
-
-  const validatePhone = () => {
-    const validatePhone = phone(`+1${formatPhone(userPhone)}`)
-    const { isValid } = validatePhone
-    return isValid
-  }
 
   const handleCoparentType = (e) => {
     Manager.handleCheckboxSelection(
@@ -51,16 +48,11 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
       <p id="coparent-label">
         Co-Parent #{coparentsLength} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
       </p>
-      <label>
-        Name <span className="asterisk">*</span>
-      </label>
+      <Label text={'Name'} required={true}></Label>
       <input type="text" className="coparent-name" onChange={(e) => setName(e.target.value)} />
-      <label>
-        Phone Number <span className="asterisk">*</span>
-      </label>
+      <Label text={'Phone Number'} required={true}></Label>
       <input className="coparent-phone" type="phone" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
       <CheckboxGroup
-        boxWidth={50}
         className="coparent-type"
         skipNameFormatting={true}
         labels={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}
@@ -70,20 +62,20 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
         <button
           className="button default green"
           onClick={() => {
-            if (name.length == 0 || userPhone.length === 0 || parentType.length === 0) {
-              displayAlert('error', 'Please enter required fields')
+            if (parentType.length === 0) {
+              throwError('Please select a Parent Type')
               return false
             }
             if (name.length == 0 || userPhone.length === 0) {
-              displayAlert('error', 'Parent name and phone are required')
+              throwError('Parent name and phone are required')
               return false
             }
-            if (!validatePhone()) {
-              displayAlert('error', 'Please enter a valid phone number')
+            if (!validator.isMobilePhone(userPhone)) {
+              throwError('Phone number is not valid')
               return false
             }
             setShowAddButton(false)
-            add({ name, userPhone, parentType })
+            add({ name, phone: userPhone, parentType })
           }}>
           Add Co-Parent <span className="material-icons">check</span>
         </button>

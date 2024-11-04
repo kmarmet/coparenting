@@ -77,7 +77,7 @@ export default function NewCalendarEvent({ hideCard }) {
   const [showReminders, setShowReminders] = useState(false)
   const [remindCoparents, setRemindCoparents] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
-  const [error, setError] = useState('')
+  const [isVisitation, setIsVisitation] = useState(false)
 
   const resetForm = () => {
     Manager.resetForm('new-event-form')
@@ -101,16 +101,22 @@ export default function NewCalendarEvent({ hideCard }) {
     setTitleSuggestions([])
     setShowCloneInput(false)
     setShowReminders(false)
+    setIsVisitation(false)
     hideCard()
   }
 
   const submit = async () => {
     const newEvent = new CalendarEvent()
 
+    console.log(isVisitation)
+
     // Required
     newEvent.title = eventTitle
     if (Manager.isValid(newEvent.title) && newEvent.title.toLowerCase().indexOf('birthday') > -1) {
       newEvent.title += ' 🎂'
+    }
+    if (isVisitation) {
+      newEvent.title = `${formatNameFirstNameOnly(currentUser.name)}'s Visitation`
     }
     newEvent.fromDate = DateManager.dateIsValid(eventFromDate) ? moment(eventFromDate).format(DateFormats.dateForDb) : ''
     newEvent.toDate = DateManager.dateIsValid(eventToDate) ? moment(eventToDate).format(DateFormats.dateForDb) : ''
@@ -131,7 +137,7 @@ export default function NewCalendarEvent({ hideCard }) {
     newEvent.morningSummaryReminderSent = false
     newEvent.eveningSummaryReminderSent = false
     newEvent.sentReminders = []
-    newEvent.fromVisitationSchedule = false
+    newEvent.fromVisitationSchedule = isVisitation ? true : false
 
     // Insert Suggestion
     const alreadyExists =
@@ -151,6 +157,7 @@ export default function NewCalendarEvent({ hideCard }) {
       return false
     }
 
+    console.log(shareWith)
     const validation = DateManager.formValidation(eventTitle, shareWith, eventFromDate)
     if (validation) {
       throwError(validation)
@@ -262,6 +269,7 @@ export default function NewCalendarEvent({ hideCard }) {
 
   const handleShareWithSelection = async (e) => {
     await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
+      console.log(updated)
       setShareWith(updated)
     })
   }
@@ -502,6 +510,18 @@ export default function NewCalendarEvent({ hideCard }) {
             }}
             className={'ml-auto reminder-toggle'}
             onChange={(e) => setIsAllDay(!isAllDay)}
+          />
+        </div>
+
+        {/* IS VISITATION? */}
+        <div className="flex">
+          <p>Visitation Event</p>
+          <Toggle
+            icons={{
+              unchecked: null,
+            }}
+            className={'ml-auto visitation-toggle'}
+            onChange={(e) => setIsVisitation(!isVisitation)}
           />
         </div>
 

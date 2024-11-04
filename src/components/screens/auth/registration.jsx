@@ -15,7 +15,6 @@ import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
 import DB_UserScoped from '@userScoped'
 import ChildUser from 'models/child/childUser.js'
-import { phone } from 'phone'
 import ParentInput from '../../parentInput'
 import {
   contains,
@@ -66,7 +65,6 @@ export default function Registration() {
   const [parentTypeAccExpanded, setParentTypeAccExpanded] = useState(false)
   const [verificationCode, setVerificationCode] = useState(Manager.getUid().slice(0, 4))
   const [accountAlreadyExists, setAccountAlreadyExists] = useState(false)
-  const [childVerificationCodeSent, setChildVerificationCodeSent] = useState(false)
   const [phoneIsVerified, setPhoneIsVerified] = useState(false)
   const [showVerificationCard, setShowVerificationCard] = useState(false)
   const [phoneVerificationSent, setPhoneVerificationSent] = useState(false)
@@ -77,18 +75,11 @@ export default function Registration() {
   const auth = getAuth(app)
   const user = auth.currentUser
 
-  const phoneIsValid = () => {
-    const validatePhone = phone(`+1${formatPhone(userPhone)}`)
-    const { isValid } = validatePhone
-    return isValid
-  }
-
   // SEND VERIFICATION CODE
   const sendChildVerificationCode = async () => {
     if (validator.isMobilePhone(userPhone)) {
       const permissionCode = Manager.getUid().slice(0, 6)
       SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, permissionCode))
-      setChildVerificationCodeSent(true)
 
       // Add Parent Permission record to DB
       const parentPermissionCode = new ParentPermissionCode()
@@ -248,9 +239,10 @@ export default function Registration() {
         }
       }
     })
-    if (userPhone.length === 0 || !phoneIsValid()) {
+    if (!validator.isMobilePhone(userPhone)) {
       throwError('Phone number is not valid')
       isValid = false
+      return false
     }
     return isValid
     if (userName.length === 0) {
@@ -344,14 +336,14 @@ export default function Registration() {
 
   // SEND VERIFICATION CODE
   const sendPhoneVerificationCode = async () => {
-    const validPhone = phoneIsValid()
-    if (validPhone) {
+    if (!validator.isMobilePhone(userPhone)) {
+      throwError('Phone number is not valid')
+      return false
+    } else {
       const phoneCode = Manager.getUid().slice(0, 6)
       setPhoneVerificationCode(phoneCode)
       SmsManager.send(userPhone, SmsManager.getPhoneVerificationTemplate(phoneCode))
       setPhoneVerificationSent(true)
-    } else {
-      throwError('Phone number provided is not valid')
     }
   }
 
