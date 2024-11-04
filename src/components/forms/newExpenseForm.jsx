@@ -39,6 +39,7 @@ import UploadInputs from '../shared/uploadInputs'
 import DateManager from '../../managers/dateManager'
 import ModelNames from '../../models/modelNames'
 import ActivitySet from '../../models/activitySet'
+import Label from '../shared/label'
 
 function NewExpenseForm({ hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -363,14 +364,13 @@ function NewExpenseForm({ hideCard }) {
 
         {/* EXPENSE NAME */}
         <div className="w-100">
-          <label>
-            Name<span className="asterisk">*</span>
-          </label>
+          <Label text={'Name'} required={true}></Label>
           <input type="text" className="mb-15 mt-0" onChange={(e) => setExpenseName(e.target.value)} />
         </div>
 
         {/* DUE DATE */}
-        <label>Due Date</label>
+        <Label text={'Due Date'}></Label>
+
         <MobileDatePicker
           className="mb-15 mt-0 w-100"
           onChange={(e) => {

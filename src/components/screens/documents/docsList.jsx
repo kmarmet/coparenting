@@ -82,11 +82,12 @@ export default function DocsList() {
 
   return (
     <div>
-      <p className="screen-title ">Documents</p>
       <BottomCard showCard={showCard} title={'Upload Document'} onClose={() => setShowCard(false)}>
         <UploadDocuments hideCard={() => setShowCard(false)} />
       </BottomCard>
       <div id="doc-selection-container" className={`${theme} page-container`}>
+        <p className="screen-title ">Documents</p>
+
         {docs.length === 0 && <p className={`${theme} caption`}>there are currently no documents</p>}
         <p className="mb-10">Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise.</p>
         <p className="mb-10">If the document type you tap is an Image, the loading time may be a bit longer.</p>

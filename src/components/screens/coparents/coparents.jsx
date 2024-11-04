@@ -147,6 +147,7 @@ export default function Coparents() {
 
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container coparents-wrapper form`}>
+        <p className="screen-title">Co-Parents</p>
         {/* COPARENT ICONS CONTAINER */}
         <div id="coparent-container">
           {selectedCoparent &&

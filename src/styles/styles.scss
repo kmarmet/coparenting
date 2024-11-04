@@ -251,6 +251,10 @@
     #numpad-wrapper {
       @include numpad;
     }
+    
+    #label-wrapper {
+      @include label;
+    }
 
     #upload-inputs {
       @include uploadInputs;

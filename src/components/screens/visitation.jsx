@@ -43,6 +43,7 @@ import Label from '../shared/label'
 import { FaRegEye } from 'react-icons/fa'
 import { GrMapLocation } from 'react-icons/gr'
 import SecurityManager from '../../managers/securityManager'
+import NavBar from '../navBar'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -695,6 +696,7 @@ export default function Visitation() {
           Update Holidays
         </button>
       </div>
+      <NavBar navbarClass={'visitation no-add-new-button'}></NavBar>
     </div>
   )
 }

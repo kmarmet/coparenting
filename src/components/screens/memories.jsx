@@ -171,6 +171,7 @@ export default function Memories() {
 
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
+        <p className="screen-title">Memories</p>
         <p id="happy-subtitle" className={`${theme} mb-10 text-screen-intro`}>
           Upload photos of memories that are too good NOT to share <span className="material-icons heart">favorite</span>
         </p>

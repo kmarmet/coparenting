@@ -37,6 +37,7 @@ import DB_UserScoped from '@userScoped'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import DB from '@db'
+import NavBar from '../../navBar'
 
 export default function Account() {
   const { state, setState } = useContext(globalState)
@@ -156,6 +157,7 @@ export default function Account() {
 
       {/* PAGE CONTAINER */}
       <div id="account-container" className={`${theme} page-container`}>
+        <p className="screen-title">Account</p>
         <p id="user-name">
           Hello {formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone className={'fs-24'} />
         </p>
@@ -187,6 +189,7 @@ export default function Account() {
           </p>
         </div>
       </div>
+      <NavBar navbarClass={'account no-add-new-button'}></NavBar>
     </>
   )
 }

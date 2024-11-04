@@ -94,8 +94,10 @@ export default function SwapRequests() {
 
   return (
     <>
+      {/* TODO//ADD BOTTOM CARD DIRECTLY */}
       <NewSwapRequest showCard={showCard} hideCard={() => setShowCard(false)} />
       <div id="swap-requests" className={`${theme} page-container`}>
+        <p className="screen-title">Swap Requests</p>
         <>
           <p className="text-screen-intro mb-15">
             A Swap Request is a request for your child(ren) to stay with you during your co-parent's scheduled time to have them.

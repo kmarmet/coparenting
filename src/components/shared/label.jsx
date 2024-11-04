@@ -1,6 +1,6 @@
 export default function Label({ classes = '', children, text, required = false, icon = null }) {
   return (
-    <div className={`share-with-container ${classes}`}>
+    <div id="label-wrapper" className={`share-with-container ${classes}`}>
       <label>
         {icon ? icon : ''}
         <span>

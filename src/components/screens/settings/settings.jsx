@@ -29,6 +29,7 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import DateManager from '../../../managers/dateManager'
+import NavBar from '../../navBar'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
@@ -138,6 +139,7 @@ export default function Settings() {
           )}
         </div>
       </div>
+      <NavBar navbarClass={'settings no-add-new-button'}></NavBar>
     </>
   )
 }

@@ -43,6 +43,7 @@ import ModelNames from '../../models/modelNames'
 import { IoTodayOutline } from 'react-icons/io5'
 import { HiOutlineCalendarDays } from 'react-icons/hi2'
 import { AiOutlineDelete } from 'react-icons/ai'
+import Label from '../shared/label'
 
 export default function EditCalEvent({ event, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -329,9 +330,7 @@ export default function EditCalEvent({ event, hideCard }) {
         </div>
 
         {/* TITLE */}
-        <label>
-          Title<span className="asterisk">*</span>
-        </label>
+        <Label text={'Title'} required={true}></Label>
         <input
           id="event-title-input"
           value={eventTitle.length > 0 ? eventTitle : ''}
@@ -344,9 +343,7 @@ export default function EditCalEvent({ event, hideCard }) {
           {eventLength === EventLengths.single && (
             <>
               <div className="w-100">
-                <label className="mb-0">
-                  Date <span className="asterisk">*</span>
-                </label>
+                <Label text={'Date'} className="mb-0"></Label>
                 <MobileDatePicker
                   defaultValue={moment(event?.fromDate)}
                   className={`${theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
@@ -362,9 +359,7 @@ export default function EditCalEvent({ event, hideCard }) {
           {eventLength === EventLengths.multiple && (
             <>
               <div>
-                <label>
-                  Date Range <span className="asterisk">*</span>
-                </label>
+                <Label text={'Date Range'}></Label>
                 <DateRangePicker
                   showOneCalendar
                   showHeader={false}
@@ -392,7 +387,7 @@ export default function EditCalEvent({ event, hideCard }) {
         {!isAllDay && (
           <div className="flex gap mb-15">
             <div>
-              <label>Start time</label>
+              <Label text={'Start Time'}></Label>
               <MobileTimePicker
                 className={`${theme} event-date-range m-0 w-100`}
                 onAccept={(e) => setEventStartTime(e)}
@@ -401,7 +396,7 @@ export default function EditCalEvent({ event, hideCard }) {
               />
             </div>
             <div>
-              <label>End time</label>
+              <Label text={'End Time'}></Label>
               <MobileTimePicker
                 className={`${theme} event-date-range m-0 w-100`}
                 minutesStep={5}
@@ -414,7 +409,7 @@ export default function EditCalEvent({ event, hideCard }) {
 
         {/* ALL DAY / HAS END DATE */}
         <div className="flex">
-          P<p>All Day</p>
+          <p>All Day</p>
           <Toggle
             icons={{
               // checked: <span className="material-icons-round">notifications</span>,
@@ -440,10 +435,7 @@ export default function EditCalEvent({ event, hideCard }) {
         {/* WHO IS ALLOWED TO SEE IT? */}
         {Manager.isValid(currentUser?.coparents, true) && (
           <div className={`share-with-container `}>
-            <label>
-              <span className="material-icons-round mr-10">visibility</span> Who is allowed to see it?
-              <span className="asterisk">*</span>
-            </label>
+            <Label text={'Who is allowed to see it?'} required={true}></Label>
             <CheckboxGroup
               elClass={`${theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
               dataPhone={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)}
@@ -539,11 +531,11 @@ export default function EditCalEvent({ event, hideCard }) {
       </div>
 
       {/* URL/WEBSITE */}
-      <label>URL/Website</label>
+      <Label text={'URL/Website'}></Label>
       <input defaultValue={event?.websiteUrl} type="url" onChange={(e) => setEventWebsiteUrl(e.target.value)} className="mb-10" />
 
       {/* LOCATION/ADDRESS */}
-      <label>Location</label>
+      <Label text={'Location'}></Label>
       <Autocomplete
         placeholder={event?.location}
         apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
@@ -558,7 +550,7 @@ export default function EditCalEvent({ event, hideCard }) {
       />
 
       {/* NOTES */}
-      <label>Notes</label>
+      <Label text={'Notes'}></Label>
       <textarea defaultValue={event?.notes} onChange={(e) => setEventNotes(e.target.value)}></textarea>
       <div className="flex buttons gap">
         <button className="button card-button" onClick={submit}>

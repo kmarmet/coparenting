@@ -87,6 +87,7 @@ export default function TransferRequests() {
         <ReviseChildTransferChangeRequest hideCard={() => setShowRevisionCard(false)} />
       </BottomCard>
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
+        <p className="screen-title">Transfer Change Requests</p>
         {!viewTransferRequestForm && (
           <>
             <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>
