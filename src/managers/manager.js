@@ -174,6 +174,12 @@ const Manager = {
       }
     }, 200)
   },
+  getURLParam: (urlString, param) => {
+    const url = new URL(urlString)
+    const params = new URLSearchParams(url.search)
+
+    return params.get(param) || ''
+  },
   hideKeyboard: (parentClass) => {
     const parent = document.querySelector(`.${parentClass}`)
     if (parent) {

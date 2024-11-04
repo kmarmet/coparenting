@@ -7,7 +7,7 @@ import CheckboxGroup from '@shared/checkboxGroup.jsx'
 import DB_UserScoped from '@userScoped'
 import InstallAppPopup from 'components/installAppPopup.jsx'
 import { child, getDatabase, ref, set } from 'firebase/database'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, sendEmailVerification, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import { PiEyeClosedDuotone, PiEyeDuotone } from 'react-icons/pi'
@@ -22,6 +22,7 @@ import {
   getFirstWord,
   inputAlert,
   isAllUppercase,
+  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
@@ -122,6 +123,30 @@ export default function Login() {
     }
   }
 
+  const loginActions = async (foundUser) => {
+    if (foundUser) {
+      // console.log(user)
+      const rememberMeKey = localStorage.getItem('rememberKey')
+
+      if (rememberMeKey) {
+        localStorage.setItem('rememberKey', foundUser.id)
+        DB_UserScoped.updateUserRecord(foundUser.phone, 'rememberMe', true)
+      } else {
+        localStorage.setItem('rememberKey', foundUser.id)
+      }
+      setState({
+        ...state,
+        userIsLoggedIn: true,
+        isLoading: false,
+        currentScreen: ScreenNames.calendar,
+        currentUser: foundUser,
+      })
+    } else {
+      console.log('No Firebase User Found')
+      setState({ ...state, isLoading: false })
+    }
+  }
+
   const signIn = async () => {
     const foundUser = await tryGetCurrentUser()
     if (!validator.isEmail(email)) {
@@ -137,27 +162,29 @@ export default function Login() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user
-        if (foundUser) {
-          // console.log(user)
-          console.log('Signed in as:', user.email)
-          const rememberMeKey = localStorage.getItem('rememberKey')
 
-          if (rememberMeKey) {
-            localStorage.setItem('rememberKey', foundUser.id)
-            DB_UserScoped.updateUserRecord(foundUser.phone, 'rememberMe', true)
+        // USER NEEDS TO VERIFY EMAIL
+        if (!user.emailVerified) {
+          oneButtonAlert(
+            'Email Address Verification Needed',
+            `For security purposes, we need to verify ${user.email}. Please click the link sent to your email. Once your email is verified, come back here and tap/click 'Okay'`,
+            'info',
+            () => {}
+          )
+          sendEmailVerification(user)
+          if (foundUser) {
+            loginActions(foundUser)
           } else {
-            localStorage.setItem('rememberKey', foundUser.id)
+            console.log('No Firebase User Found')
+            setState({ ...state, isLoading: false })
           }
-          setState({
-            ...state,
-            userIsLoggedIn: true,
-            isLoading: false,
-            currentScreen: ScreenNames.calendar,
-            currentUser: foundUser,
-          })
         } else {
-          console.log('No Firebase User Found')
-          setState({ ...state, isLoading: false })
+          if (foundUser) {
+            loginActions(foundUser)
+          } else {
+            console.log('No Firebase User Found')
+            setState({ ...state, isLoading: false })
+          }
         }
       })
       .catch((error) => {
@@ -176,7 +203,27 @@ export default function Login() {
     }
   }
 
+  const logout = () => {
+    localStorage.removeItem('rememberKey')
+
+    signOut(auth)
+      .then(() => {
+        setState({
+          ...state,
+          currentScreen: ScreenNames.login,
+          currentUser: null,
+          userIsLoggedIn: false,
+        })
+        // Sign-out successful.
+        console.log('User signed out')
+      })
+      .catch((error) => {
+        // An error happened.
+      })
+  }
+
   useLayoutEffect(() => {
+    // logout()
     autoLogin().then((r) => r)
     Manager.showPageContainer('show')
     document.querySelector('.App').classList.remove('pushed')

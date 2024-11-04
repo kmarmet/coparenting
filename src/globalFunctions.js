@@ -196,7 +196,7 @@ animate__faster`
   });
 };
 
-export var oneButtonAlert = function(title) {
+export var oneButtonAlert = function(title, subtitle = "", icon = "", onConfirm) {
   return Swal.fire({
     showClass: {
       popup: `animate__animated
@@ -209,11 +209,19 @@ animate__fadeOutDown
 animate__faster`
     },
     title: title,
+    text: subtitle,
+    icon: icon,
     showDenyButton: false,
     showCancelButton: false,
     confirmButtonText: "Okay",
-    denyButtonText: "Nevermind",
-    confirmButtonColor: '#00b389 !important'
+    confirmButtonColor: '#00b389 !important',
+    allowOutsideClick: false
+  }).then(function(result) {
+    if (result.isConfirmed) {
+      if (onConfirm) {
+        return onConfirm(result);
+      }
+    }
   });
 };
 

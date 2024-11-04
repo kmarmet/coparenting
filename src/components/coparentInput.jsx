@@ -1,24 +1,24 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react'
+import React, { useContext, useState } from 'react'
 import CheckboxGroup from '@shared/checkboxGroup'
 import Manager from '@manager'
 import globalState from '../context'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   formatPhone,
-  uniqueArray,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../globalFunctions'
 import { phone } from 'phone'
 
@@ -62,7 +62,8 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
       <CheckboxGroup
         boxWidth={50}
         className="coparent-type"
-        labels={['Step-Parent', 'Biological Parent', "Spouse's Coparent"]}
+        skipNameFormatting={true}
+        labels={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}
         onCheck={handleCoparentType}
       />
       {showAddButton && (

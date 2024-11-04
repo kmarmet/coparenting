@@ -2,7 +2,6 @@ import Manager from "../managers/manager"
 
 export default class User
   constructor: (
-    @updatedApp = ''
     @name = ''
     @email = ''
     @phone = ''

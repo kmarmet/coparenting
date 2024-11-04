@@ -39,14 +39,16 @@ import {
 } from '../../../globalFunctions'
 import moment from 'moment'
 import ModelNames from '../../../models/modelNames'
-import { createUserWithEmailAndPassword, getAuth, sendSignInLinkToEmail } from 'firebase/auth'
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import InstallAppPopup from '../../installAppPopup'
 import ParentPermissionCode from '../../../models/parentPermissionCode'
 import DateFormats from '../../../constants/dateFormats'
 import BottomCard from '../../shared/bottomCard'
+import { PiInfoDuotone } from 'react-icons/pi'
 import validator from 'validator'
+import Label from '../../shared/label'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -67,17 +69,13 @@ export default function Registration() {
   const [childVerificationCodeSent, setChildVerificationCodeSent] = useState(false)
   const [phoneIsVerified, setPhoneIsVerified] = useState(false)
   const [showVerificationCard, setShowVerificationCard] = useState(false)
-
-  const actionCodeSettings = {
-    handleCodeInApp: true,
-    // URL you want to redirect back to. The domain (www.example.com) for this
-    // URL must be in the authorized domains list in the Firebase Console.
-    url: 'https://peaceful-coparenting.app',
-  }
-
+  const [phoneVerificationSent, setPhoneVerificationSent] = useState(false)
+  const [phoneVerificationCode, setPhoneVerificationCode] = useState('')
+  const [enteredPhoneCode, setEnteredPhoneCode] = useState('')
   // Firebase init
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
+  const user = auth.currentUser
 
   const phoneIsValid = () => {
     const validatePhone = phone(`+1${formatPhone(userPhone)}`)
@@ -169,6 +167,7 @@ export default function Registration() {
           console.error('Sign up error:', error.message)
           if (contains(error.message, 'email-already-in-use')) {
             throwError('Account already exists. If this is you, please login')
+            setShowVerificationCard(false)
           }
         })
 
@@ -347,38 +346,22 @@ export default function Registration() {
   const sendPhoneVerificationCode = async () => {
     const validPhone = phoneIsValid()
     if (validPhone) {
-      const permissionCode = Manager.getUid().slice(0, 6)
-      SmsManager.send(userPhone, SmsManager.getPhoneVerificationTemplate(permissionCode))
-      // Enter code alert
-      displayAlert('input', 'Please enter the verification code sent to your phone (case sensitive)', ``, async (e) => {
-        if (permissionCode === e.value) {
-          setPhoneIsVerified(true)
-        } else {
-          throwError('Verification code is incorrect, please try again')
-        }
-      })
+      const phoneCode = Manager.getUid().slice(0, 6)
+      setPhoneVerificationCode(phoneCode)
+      SmsManager.send(userPhone, SmsManager.getPhoneVerificationTemplate(phoneCode))
+      setPhoneVerificationSent(true)
     } else {
       throwError('Phone number provided is not valid')
     }
   }
 
-  const sendEmailVerification = async () => {
-    try {
-      // EmailManager.SendEmailVerification(email)
-      sendSignInLinkToEmail(auth, email, actionCodeSettings)
-        .then(async () => {
-          window.localStorage.setItem('emailForSignIn', email)
-          successAlert('Verification Email Sent')
-          await submit()
-        })
-        .catch((error) => {
-          const errorCode = error.code
-          const errorMessage = error.message
-          // ...
-          console.log(errorMessage)
-        })
-    } catch (err) {
-      console.log(err)
+  const verifyPhoneCode = async (e) => {
+    console.log(phoneVerificationCode === enteredPhoneCode)
+    if (phoneVerificationCode === enteredPhoneCode) {
+      setPhoneIsVerified(true)
+      await submit()
+    } else {
+      throwError('Verification code is incorrect, please try again')
     }
   }
 
@@ -395,28 +378,24 @@ export default function Registration() {
 
   return (
     <>
-      <BottomCard showCard={showVerificationCard} title={'Verify Your Phone & Email'} onClose={() => setShowVerificationCard(false)}>
-        <div id="email-verification-container" className=" form">
+      <BottomCard showCard={showVerificationCard} title={'Verify Your Phone'} onClose={() => setShowVerificationCard(false)}>
+        <div id="phone-verification-container" className=" form">
           <div className="form" autoComplete="off">
-            {!phoneIsVerified && (
+            {!phoneIsVerified && !phoneVerificationSent && (
               <>
-                <label>
-                  Phone Number <span className="asterisk">*</span>
-                </label>
+                <Label text={'Phone Number'} required={true}></Label>
                 <input defaultValue={userPhone} type="phone" onChange={(e) => setUserPhone(e.target.value)} />
                 <button className="button default green w-100 mt-15" onClick={sendPhoneVerificationCode}>
                   Send Phone Verification Code <span className="material-icons-round fs-22">phone_iphone</span>
                 </button>
               </>
             )}
-            {phoneIsVerified && (
+            {phoneVerificationSent && (
               <>
-                <label>
-                  Email Address<span className="asterisk">*</span>
-                </label>
-                <input autoComplete="off" className="mb-15" value={email} type="email" onChange={(e) => setEmail(e.target.value)} />
-                <button className="button default green w-100" onClick={sendEmailVerification}>
-                  Send Verification Email <span className="material-icons-round fs-22">forward_to_inbox</span>
+                <Label text={'Verification Code'} required={true}></Label>
+                <input type="phone" onChange={(e) => setEnteredPhoneCode(e.target.value)} />
+                <button className="button default green w-100 mt-15" onClick={verifyPhoneCode}>
+                  Verify <span className="material-icons-round fs-22">phone_iphone</span>
                 </button>
               </>
             )}
@@ -536,12 +515,9 @@ export default function Registration() {
         {!accountAlreadyExists && accountType && accountType === 'parent' && (
           <div className="form mb-20">
             <Accordion>
-              <label>
-                Which type of parent are you? <span className="asterisk">*</span>
-                <span onClick={() => setParentTypeAccExpanded(!parentTypeAccExpanded)} className="material-icons-round fs-25 yellow">
-                  help
-                </span>
-              </label>
+              <Label classes="flex" text={'Which type of parent are you?'} required={true}>
+                <PiInfoDuotone className={'ml-auto fs-24'} onClick={() => setParentTypeAccExpanded(!parentTypeAccExpanded)} />
+              </Label>
 
               <Accordion.Panel expanded={parentTypeAccExpanded}>
                 <p className="caption">
@@ -553,10 +529,14 @@ export default function Registration() {
                 <p className="caption">
                   <i>If you will be using the app as both Step-Parent and Biological, select Biological and we will handle the rest. </i>
                 </p>
-                <span className="material-icons-round fs-25 blue">insert_emoticon</span>
               </Accordion.Panel>
             </Accordion>
-            <CheckboxGroup elClass={'light'} labels={['Biological Parent', 'Step-Parent']} onCheck={handleParentType} />
+            <CheckboxGroup
+              skipNameFormatting={true}
+              elClass={'mt-15 parent-type'}
+              labels={['Biological Parent', 'Step-Parent']}
+              onCheck={handleParentType}
+            />
             <label>
               Name <span className="asterisk">*</span>
             </label>
@@ -619,7 +599,7 @@ export default function Registration() {
                   setShowVerificationCard(true)
                 }
               }}>
-              Verify Phone & Email<span className="material-icons-round fs-20">admin_panel_settings</span>
+              Verify Phone<span className="material-icons-round fs-20">admin_panel_settings</span>
             </button>
             <button className="button default w-60" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
               Back to Login

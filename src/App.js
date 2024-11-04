@@ -6,10 +6,7 @@ import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
 
 import ScreenNames from '@screenNames'
 import globalState from './context.js'
-import DB from '@db'
 import firebaseConfig from './firebaseConfig.js'
-import Manager from '@manager'
-import moment from 'moment'
 
 // Screens
 import Activity from './components/screens/activity'
@@ -49,11 +46,9 @@ import ReviseChildTransferChangeRequest from './components/forms/reviseTransferR
 import emailjs from '@emailjs/browser'
 import './globalFunctions'
 import StateObj from './constants/stateObj'
-import EmailManager from './managers/emailManager'
 // Menus
 import SlideOutMenu from './components/slideOutMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
-import DateFormats from './constants/dateFormats'
 import {
   confirmAlert,
   contains,
@@ -64,6 +59,7 @@ import {
   getFirstWord,
   inputAlert,
   isAllUppercase,
+  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
@@ -75,7 +71,6 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from './globalFunctions'
-import DB_UserScoped from '@userScoped'
 import ContactUs from './components/screens/contactUs'
 
 export default function App() {
@@ -123,35 +118,6 @@ export default function App() {
     })
   }
 
-  const disableUpdateAlert = async () => {
-    const lastUpdateObject = await AppManager.getLastUpdateObject()
-    const { lastUpdate } = lastUpdateObject
-    const now = moment().hour()
-    const expirationTime = moment(lastUpdate, DateFormats.fullDatetime).hour()
-    const duration = now - expirationTime
-    if (duration > 24) {
-      AppManager.setUpdateAvailable(false)
-    }
-  }
-
-  const showEmailVerificationInput = (foundUser, permissionCode) => {
-    inputAlert(
-      'It appears that your email address has not been verified',
-      'For security purposes, we have sent a verification code to your email. Please enter the  code here (case sensitive).',
-      async (e) => {
-        if (permissionCode === e.value) {
-          successAlert('Your email has been verified!')
-          await DB_UserScoped.updateByPath(`${DB.tables.users}/${foundUser.phone}/emailVerified`, true)
-        } else {
-          throwError('Verification code is incorrect, please try again')
-          window.location.reload()
-        }
-      },
-      false,
-      false
-    )
-  }
-
   const logout = () => {
     localStorage.removeItem('rememberKey')
 
@@ -186,42 +152,18 @@ export default function App() {
 
     AppManager.deleteExpiredCalendarEvents().then((r) => r)
     AppManager.deleteExpiredMemories().then((r) => r)
-    disableUpdateAlert().then((r) => r)
     document.body.appendChild(myCanvas)
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const user = auth.currentUser
-
         // console.log(user)
         console.log('signed in')
       } else {
-        console.log('signed out')
-        console.log(user)
+        console.log('signed out or user doesn"t exist')
       }
     })
   }, [])
-
-  useEffect(() => {
-    if (currentUser && currentUser.hasOwnProperty('email')) {
-      if (!currentUser.emailVerified) {
-        const permissionCode = Manager.getUid().slice(0, 6)
-        EmailManager.SendEmailVerification(currentUser.email, permissionCode)
-        showEmailVerificationInput(currentUser, permissionCode)
-      }
-      if (!currentUser.updatedApp) {
-        confirmAlert('Update Available', 'Update', false, async () => {
-          await DB_UserScoped.updateUserRecord(currentUser.phone, 'updatedApp', true)
-          logout()
-
-          setTimeout(() => {
-            window.location.reload()
-          }, 300)
-        })
-      }
-      // getUnreadMessageCount().then((r) => r)
-    }
-  }, [currentUser])
 
   useEffect(() => {
     const navbar = document.getElementById('navbar')
