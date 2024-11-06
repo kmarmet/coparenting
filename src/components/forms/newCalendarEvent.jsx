@@ -15,7 +15,6 @@ import DatetimePicker from '@shared/datetimePicker.jsx'
 import DateFormats from '../../constants/dateFormats'
 import DatetimePickerViews from '../../constants/datetimePickerViews'
 import DB from '@db'
-import PushAlertApi from '../../api/pushAlert'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateManager from '../../managers/dateManager'
@@ -46,6 +45,7 @@ import {
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import Label from '../shared/label'
+import PushAlertApi from '../../api/pushAlert'
 
 // COMPONENT
 export default function NewCalendarEvent({ hideCard }) {
@@ -54,25 +54,25 @@ export default function NewCalendarEvent({ hideCard }) {
   const { currentUser, theme, selectedNewEventDay } = state
 
   // COMPONENT STATE
+  const [eventLength, setEventLength] = useState(EventLengths.single)
   const [eventFromDate, setEventFromDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
   const [eventTitle, setEventTitle] = useState('')
   const [websiteUrl, setWebsiteUrl] = useState('')
   const [notes, setNotes] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
-  const [repeating, setRepeating] = useState(false)
   const [repeatInterval, setRepeatInterval] = useState('')
   const [eventToDate, setEventToDate] = useState('')
-  const [children, setChildren] = useState([])
-  const [reminderTimes, setReminderTimes] = useState([])
+  const [eventStartTime, setEventStartTime] = useState('')
+  const [eventEndTime, setEventEndTime] = useState('')
   const [shareWith, setShareWith] = useState([])
   const [clonedDates, setClonedDates] = useState([])
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
-  const [eventLength, setEventLength] = useState(EventLengths.single)
-  const [isAllDay, setIsAllDay] = useState(false)
-  const [eventStartTime, setEventStartTime] = useState('')
-  const [eventEndTime, setEventEndTime] = useState('')
   const [titleSuggestions, setTitleSuggestions] = useState([])
+  const [children, setChildren] = useState([])
+  const [reminderTimes, setReminderTimes] = useState([])
+  const [isAllDay, setIsAllDay] = useState(false)
+  const [repeating, setRepeating] = useState(false)
   const [showCloneInput, setShowCloneInput] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [remindCoparents, setRemindCoparents] = useState(false)
@@ -81,6 +81,7 @@ export default function NewCalendarEvent({ hideCard }) {
 
   const resetForm = () => {
     Manager.resetForm('new-event-form')
+    setEventLength(EventLengths.single)
     setEventFromDate('')
     setRepeatInterval('')
     setEventLocation('')
@@ -89,16 +90,15 @@ export default function NewCalendarEvent({ hideCard }) {
     setNotes('')
     setRepeatingEndDate('')
     setEventToDate('')
+    setEventStartTime('')
+    setEventEndTime('')
     setChildren([])
     setReminderTimes([])
     setShareWith([])
     setClonedDates([])
     setClonedDatesToSubmit([])
-    setEventLength(EventLengths.single)
-    setIsAllDay(false)
-    setEventStartTime('')
-    setEventEndTime('')
     setTitleSuggestions([])
+    setIsAllDay(false)
     setShowCloneInput(false)
     setShowReminders(false)
     setIsVisitation(false)
@@ -108,8 +108,6 @@ export default function NewCalendarEvent({ hideCard }) {
   const submit = async () => {
     const newEvent = new CalendarEvent()
 
-    console.log(isVisitation)
-
     // Required
     newEvent.title = eventTitle
     if (Manager.isValid(newEvent.title) && newEvent.title.toLowerCase().indexOf('birthday') > -1) {
@@ -118,8 +116,8 @@ export default function NewCalendarEvent({ hideCard }) {
     if (isVisitation) {
       newEvent.title = `${formatNameFirstNameOnly(currentUser.name)}'s Visitation`
     }
-    newEvent.fromDate = DateManager.dateIsValid(eventFromDate) ? moment(eventFromDate).format(DateFormats.dateForDb) : ''
-    newEvent.toDate = DateManager.dateIsValid(eventToDate) ? moment(eventToDate).format(DateFormats.dateForDb) : ''
+    newEvent.startDate = DateManager.dateIsValid(eventFromDate) ? moment(eventFromDate).format(DateFormats.dateForDb) : ''
+    newEvent.endDate = DateManager.dateIsValid(eventToDate) ? moment(eventToDate).format(DateFormats.dateForDb) : ''
     newEvent.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
     newEvent.endTime = DateManager.dateIsValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
     // Not Required
@@ -157,7 +155,6 @@ export default function NewCalendarEvent({ hideCard }) {
       return false
     }
 
-    console.log(shareWith)
     const validation = DateManager.formValidation(eventTitle, shareWith, eventFromDate)
     if (validation) {
       throwError(validation)
@@ -170,14 +167,12 @@ export default function NewCalendarEvent({ hideCard }) {
     }
 
     const cleanedObject = Manager.cleanObject(newEvent, ModelNames.calendarEvent)
-
     MyConfetti.fire()
     hideCard()
 
     // Add first/initial date before adding repeating/cloned
     await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
       for (const toShareWith of shareWith) {
-        // await setActivitySets(toShareWith)
         const subId = await PushAlertApi.getSubId(toShareWith)
         await PushAlertApi.sendMessage(`New Calendar Event`, `${eventTitle} on ${moment(eventFromDate).format('ddd DD')}`, subId)
       }
@@ -222,7 +217,7 @@ export default function NewCalendarEvent({ hideCard }) {
         // Required
         repeatingDateObject.id = Manager.getUid()
         repeatingDateObject.title = eventTitle
-        repeatingDateObject.fromDate = moment(date).format(DateFormats.monthDayYear)
+        repeatingDateObject.startDate = moment(date).format(DateFormats.monthDayYear)
         repeatingDateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
 
         // Not Required
@@ -237,7 +232,7 @@ export default function NewCalendarEvent({ hideCard }) {
         repeatingDateObject.endTime = eventEndTime || ''
         repeatingDateObject.reminderTimes = reminderTimes || []
         repeatingDateObject.sentReminders = []
-        repeatingDateObject.toDate = eventToDate || ''
+        repeatingDateObject.endDate = eventToDate || ''
         repeatingDateObject.repeatInterval = repeatInterval
         repeatingDateObject.fromVisitationSchedule = false
         repeatingDateObject.morningSummaryReminderSent = false
@@ -269,7 +264,6 @@ export default function NewCalendarEvent({ hideCard }) {
 
   const handleShareWithSelection = async (e) => {
     await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
-      console.log(updated)
       setShareWith(updated)
     })
   }
@@ -279,7 +273,6 @@ export default function NewCalendarEvent({ hideCard }) {
       e,
       (e) => {
         let timeframe = CalendarMapper.reminderTimes(e)
-
         if (reminderTimes.length === 0) {
           setReminderTimes([timeframe])
         } else {
@@ -332,8 +325,8 @@ export default function NewCalendarEvent({ hideCard }) {
       // Required
       clonedDateObject.title = eventTitle
       clonedDateObject.id = Manager.getUid()
-      clonedDateObject.fromDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
-      clonedDateObject.toDate = DateManager.dateIsValid(eventToDate) ? moment(eventToDate).format(DateFormats.dateForDb) : ''
+      clonedDateObject.startDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
+      clonedDateObject.endDate = DateManager.dateIsValid(eventToDate) ? moment(eventToDate).format(DateFormats.dateForDb) : ''
       clonedDateObject.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
       clonedDateObject.endTime = DateManager.dateIsValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
       // Not Required
@@ -349,7 +342,7 @@ export default function NewCalendarEvent({ hideCard }) {
       clonedDateObject.endTime = ''
       clonedDateObject.reminderTimes = reminderTimes || []
       clonedDateObject.sentReminders = []
-      clonedDateObject.toDate = ''
+      clonedDateObject.endDate = ''
       clonedDateObject.morningSummaryReminderSent = false
       clonedDateObject.repeatInterval = ''
       clonedDateObject.fromVisitationSchedule = false
@@ -442,6 +435,7 @@ export default function NewCalendarEvent({ hideCard }) {
             }}></TitleSuggestionWrapper>
         </div>
 
+        {/* FROM DATE */}
         <div className="flex gap mt-15 mb-15">
           {/* FROM DATE */}
           {eventLength === EventLengths.single && (

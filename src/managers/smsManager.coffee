@@ -22,7 +22,7 @@ export default SmsManager =
     dueDateInfo = if expense.dueDate?.length > 0 then "Due date is: #{expense.dueDate}" else ""
     "This is a reminder to pay the #{expense.name} expense. #{dueDateInfo} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getSwapRequestReminderTemplate: (recipient, request) ->
-    "This is a reminder to make a decision for the Swap Request on #{request.fromDate} created by #{request.createdBy} on #{request.dateAdded}. #{SmsManager.lineBreak}#{SmsManager.signature}"
+    "This is a reminder to make a decision for the Swap Request on #{request.startDate} created by #{request.createdBy} on #{request.dateAdded}. #{SmsManager.lineBreak}#{SmsManager.signature}"
   getTransferRequestTemplate: (request, createdBy) ->
     "A new Child Transfer Request has been created by #{createdBy} for #{request.date} at #{request.time} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getParentVerificationTemplate: (childName, verificationCode) ->

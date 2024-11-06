@@ -45,7 +45,7 @@ export default function TransferRequests() {
         const subId = await NotificationManager.getUserSubId(cop.phone)
         PushAlertApi.sendMessage(
           'Swap Request Decision',
-          SmsManager.getTransferRequestDecisionTemplate(`${request.fromDate}`.replace(',', ' to '), 'rejected', rejectionReason, currentUser.name),
+          SmsManager.getTransferRequestDecisionTemplate(`${request.startDate}`.replace(',', ' to '), 'rejected', rejectionReason, currentUser.name),
           subId
         )
       })
@@ -61,7 +61,7 @@ export default function TransferRequests() {
           'Swap Request Decision',
           SmsManager.send(
             cop.phone,
-            SmsManager.getTransferRequestDecisionTemplate(`${request.fromDate}`.replace(',', ' to '), 'approved', null, currentUser.name),
+            SmsManager.getTransferRequestDecisionTemplate(`${request.startDate}`.replace(',', ' to '), 'approved', null, currentUser.name),
             subId
           )
         )

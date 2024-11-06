@@ -769,9 +769,9 @@
   background-color: rgba(38, 38, 38, 0.3);
 }
 @mixin glow {
-  -webkit-box-shadow: 0px 0px 12px 0px $lightBlueDark;
-  -moz-box-shadow: 0px 0px 12px 0px $lightBlueDark;
-  box-shadow: 0px 0px 12px 0px $lightBlueDark;
+  -webkit-box-shadow: 0px 0px 12px 0px $mainBlue;
+  -moz-box-shadow: 0px 0px 12px 0px $mainBlue;
+  box-shadow: 0px 0px 12px 0px $mainBlue;
 }
 @mixin fadeBottom {
   mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
@@ -897,8 +897,8 @@
 
   &.dark {
     .suggestions {
-      background-color: $darkBlue;
       width: 90%;
+      background: $lightGrey;
       border-radius: 0 0 $borderRadius $borderRadius;
     }
   }
@@ -1777,7 +1777,7 @@
       width: calc(100% - 15px);
 
       p {
-        color: $purple;
+        color: $mainBlue;
         font-weight: bold;
         text-align: left;
         font-size: 20px;
@@ -1947,6 +1947,10 @@
             color: white;
           }
         }
+        
+        &.desktop {
+          background-color: $mainBlue;
+        }
 
         span {
           position: relative;
@@ -2080,7 +2084,7 @@
     justify-content: center;
     line-height: 1.3;
     border-radius: 25px 25px 0 0;
-    color: $lightBlack;
+    color: $mainBlue;
   }
   #close-icon {
     color: white;

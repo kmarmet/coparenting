@@ -43,7 +43,7 @@ export default AppManager =
     if Manager.isValid(events, true)
       events = events.filter (x) -> x?
       for event in events when Manager.isValid(event)
-        daysPassed = DateManager.getDuration('days', moment(), event.fromDate)
+        daysPassed = DateManager.getDuration('days', moment(), event.startDate)
         if daysPassed <= -30 and not event.isHoliday
           await DB.delete(DB.tables.calendarEvents, event.id)
           return

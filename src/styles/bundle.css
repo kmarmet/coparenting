@@ -6247,12 +6247,12 @@ select {
   display: block;
   width: 100%;
 }
-#external-overrides #calendar-container #date-container .fromDate,
-#external-overrides #calendar-container #date-container .toDate,
-#external-overrides #calendar-event-form-container #date-container .fromDate,
-#external-overrides #calendar-event-form-container #date-container .toDate,
-#external-overrides #edit-cal-event-container #date-container .fromDate,
-#external-overrides #edit-cal-event-container #date-container .toDate {
+#external-overrides #calendar-container #date-container .startDate,
+#external-overrides #calendar-container #date-container .endDate,
+#external-overrides #calendar-event-form-container #date-container .startDate,
+#external-overrides #calendar-event-form-container #date-container .endDate,
+#external-overrides #edit-cal-event-container #date-container .startDate,
+#external-overrides #edit-cal-event-container #date-container .endDate {
   font-size: 16px;
   color: var(--textColorWhite);
   text-align: left;

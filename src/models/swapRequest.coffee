@@ -1,12 +1,10 @@
-import Manager from "../managers/manager"
-
 export default class SwapRequest
   constructor: (
     @id = ''
-    @fromDate = ''
+    @startDate = ''
     @shareWith = []
     @createdBy = ''
-    @toDate = ''
+    @endDate = ''
     @dateAdded = ''
     @recipientPhone = ''
     @reason = ''

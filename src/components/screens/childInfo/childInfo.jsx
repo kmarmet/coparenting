@@ -106,6 +106,11 @@ export default function ChildInfo() {
             setShowSelectorCard(false)
           }}
         />
+        <div className="buttons">
+          <button className="card-button cancel" onClick={() => setShowSelectorCard(false)}>
+            Close
+          </button>
+        </div>
       </BottomCard>
 
       {/* CUSTOM INFO FORM */}
@@ -173,7 +178,7 @@ export default function ChildInfo() {
           </button>
         </>
       </div>
-      {!showNewChildForm && (
+      {!showNewChildForm && !showSelectorCard && !showInfoCard && (
         <NavBar navbarClass={'child-info'}>
           <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />
         </NavBar>

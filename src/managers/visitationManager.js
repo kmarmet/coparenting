@@ -326,7 +326,7 @@ const VisitationManager = {
     // Delete Existing
     currentEvents.forEach((event) => {
       vScheduleEvents.forEach(async (newEvent) => {
-        if (event.fromDate === newEvent.fromDate && event.title === newEvent.title) {
+        if (event.startDate === newEvent.startDate && event.title === newEvent.title) {
           await DB.delete(DB.tables.calendarEvents, event.id)
         }
       })

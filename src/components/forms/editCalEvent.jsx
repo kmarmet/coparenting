@@ -105,8 +105,8 @@ export default function EditCalEvent({ event, hideCard }) {
     eventToEdit.id = event?.id
     eventToEdit.title = eventTitle
     eventToEdit.shareWith = Manager.getUniqueArray(eventShareWith).flat()
-    eventToEdit.fromDate = moment(eventFromDate).format(DateFormats.dateForDb)
-    eventToEdit.toDate = moment(eventEndDate).format(DateFormats.dateForDb)
+    eventToEdit.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
+    eventToEdit.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
     eventToEdit.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
     eventToEdit.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
 
@@ -247,8 +247,8 @@ export default function EditCalEvent({ event, hideCard }) {
 
   const setDefaultValues = () => {
     setEventTitle(event?.title)
-    setEventFromDate(event?.fromDate)
-    setEventEndDate(event?.toDate)
+    setEventFromDate(event?.startDate)
+    setEventEndDate(event?.endDate)
     setEventLocation(event?.location)
     setEventStartTime(event?.startTime)
     setEventEndTime(event?.endTime)
@@ -345,7 +345,7 @@ export default function EditCalEvent({ event, hideCard }) {
               <div className="w-100">
                 <Label text={'Date'} className="mb-0"></Label>
                 <MobileDatePicker
-                  defaultValue={moment(event?.fromDate)}
+                  defaultValue={moment(event?.startDate)}
                   className={`${theme} ${errorFields.includes('date') ? 'required-field-error' : ''} m-0 w-100 event-from-date mui-input`}
                   onAccept={(e) => {
                     removeError('date')

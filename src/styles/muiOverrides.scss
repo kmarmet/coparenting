@@ -377,12 +377,6 @@
     -moz-user-select: none; // Firefox
     -webkit-text-select: none; // IOS Safari
     -webkit-user-select: none; // Safari
-    
-    &.dark {
-      input {
-        background-color: $darkBlue;
-      }
-    }
 
     &::placeholder {
       font-size: 14px;

@@ -25,6 +25,9 @@ import {
 } from '../../../globalFunctions'
 import SecurityManager from '../../../managers/securityManager'
 
+import { AiOutlineFileSearch } from 'react-icons/ai'
+import NavBar from '../../navBar'
+
 export default function DocViewer() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, formToShow, docToView, navbarButton } = state
@@ -33,7 +36,7 @@ export default function DocViewer() {
   const [searchResults, setSearchResults] = useState([])
   const [searchResultsIndex, setSearchResultsIndex] = useState(1)
   const [showSearch, setShowSearch] = useState(false)
-
+  const [searchResultsCount, setSearchResultsCount] = useState(0)
   const scrollToHeader = (header) => {
     closeSearch()
     const firstChar = header.slice(0, 1)
@@ -71,7 +74,10 @@ export default function DocViewer() {
     } else {
       // Allow search
       if (searchValue.length > 3) {
+        let resultsFound = allPars.filter((x) => x.textContent.toLowerCase().contains(searchValue.toLowerCase()))
+        setSearchResultsCount(resultsFound.length)
         let foundElement = allPars.filter((x) => x.textContent.toLowerCase().contains(searchValue.toLowerCase()))[0]
+        console.log(foundElement)
         let allParsNodes = document.querySelectorAll('#text-container p')
         allParsNodes = Array.from(allParsNodes)
         allParsNodes = allParsNodes.filter((x) => x.textContent.toLowerCase().contains(searchValue.toLowerCase()))
@@ -151,7 +157,6 @@ export default function DocViewer() {
     if (!Manager.isValid(coparentDocsObjects, true)) {
       return false
     }
-    console.log(coparentDocsObjects)
 
     const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
     if (!Manager.isValid(coparentsFromObject, true)) {
@@ -213,7 +218,7 @@ export default function DocViewer() {
       DocumentConversionManager.addHeaderClass(par)
     })
 
-    // Cleanup unecessary header classes
+    // Cleanup unnecessary header classes
     pars.forEach((par) => {
       if (!containsLettersRegex.test(par.textContent)) {
         par.classList.remove('header', 'highlight')
@@ -305,27 +310,15 @@ export default function DocViewer() {
   }, [tocHeaders])
 
   useEffect(() => {
+    setState({ ...state, isLoading: true })
     document.getElementById('text-container').innerText = ''
     Manager.showPageContainer('show')
-    convertAndAppendDocOrImage().finally(() => {})
-
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            setShowSearch(true)
-          },
-          icon: 'search',
-        },
-        isLoading: true,
-      })
-    }, 500)
+    convertAndAppendDocOrImage().then((r) => r)
   }, [])
 
   return (
     <div className="doc-viewer-container">
+      <p className="screen-title pt-10">Doc Viewer</p>
       {/* BOTTOM ACTIONS */}
       <div className={`${theme} flex form`} id="bottom-actions">
         {Manager.isValid(document.querySelectorAll('.header'), true) && (
@@ -335,17 +328,11 @@ export default function DocViewer() {
         )}
       </div>
       {/* INPUT */}
-      <BottomCard
-        className="form search-card"
-        showCard={showSearch}
-        title={'Search'}
-        onClose={() => {
-          closeSearch()
-        }}>
+      <BottomCard className="form search-card" showCard={showSearch} title={'Search'} onClose={() => closeSearch}>
         <div className="flex">
           <DebounceInput minLength={3} id="search-input" onChange={(e) => search(e.target.value)} debounceTimeout={500} />
           {/* SEARCH NAV */}
-          {searchResults.length > 0 && (
+          {searchResults.length > 0 && searchResultsCount > 1 && (
             <div id="input-and-nav">
               {/* NAVIGATION */}
               <div className="flex">
@@ -358,6 +345,11 @@ export default function DocViewer() {
               </div>
             </div>
           )}
+        </div>
+        <div className="buttons">
+          <button className="card-button cancel" onClick={closeSearch}>
+            Close
+          </button>
         </div>
       </BottomCard>
 
@@ -400,12 +392,22 @@ export default function DocViewer() {
                 })}
             </div>
           </div>
+          <div className="buttons">
+            <button className="card-button cancel" onClick={() => setShowCard(false)}>
+              Close
+            </button>
+          </div>
         </BottomCard>
       )}
 
       <div id="documents-container" className={`${theme} page-container form`}>
         <div id="text-container"></div>
       </div>
+      {!showSearch && !showCard && (
+        <NavBar>
+          <AiOutlineFileSearch id={'add-new-button'} onClick={() => setShowSearch(true)} />
+        </NavBar>
+      )}
     </div>
   )
 }

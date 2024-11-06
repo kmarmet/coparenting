@@ -89,11 +89,11 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     } else {
       let newRequest = new SwapRequest()
       if (swapDuration === SwapDurations.multiple || swapDuration === SwapDurations.single) {
-        newRequest.fromDate = requestRange[0]
-        newRequest.toDate = requestRange.length > 1 ? requestRange[1] : requestRange[0]
+        newRequest.startDate = requestRange[0]
+        newRequest.endDate = requestRange.length > 1 ? requestRange[1] : requestRange[0]
       } else {
-        newRequest.fromDate = requestRange[0]
-        newRequest.toDate = requestRange[0]
+        newRequest.startDate = requestRange[0]
+        newRequest.endDate = requestRange[0]
       }
       newRequest.id = Manager.getUid()
       newRequest.children = requestChildren || ''

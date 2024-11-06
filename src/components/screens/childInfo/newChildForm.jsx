@@ -96,7 +96,6 @@ const NewChildForm = ({ hideCard }) => {
   return (
     <div id="new-child-container" className={`${theme}  form`}>
       <div className="form new-child-form">
-        <p className="screen-title pl-0">Add Child</p>
         {/* NAME */}
         <label>
           Name <span className="asterisk">*</span>

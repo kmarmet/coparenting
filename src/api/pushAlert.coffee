@@ -26,7 +26,7 @@ PushAlertApi =
 
 # Template for swap request decision
     swapRequestDecision: (request, decision) ->
-      "A new Swap Request decision for #{request.fromDate} has been made by #{request.createdBy}#{PushAlertApi.lineBreak}#{PushAlertApi.lineBreak}Decision: #{decision}"
+      "A new Swap Request decision for #{request.startDate} has been made by #{request.createdBy}#{PushAlertApi.lineBreak}#{PushAlertApi.lineBreak}Decision: #{decision}"
 
 # Determine API URL based on environment
   apiUrl: ->

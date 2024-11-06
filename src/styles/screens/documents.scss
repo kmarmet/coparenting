@@ -25,16 +25,9 @@
       &#toc-button {
         width: 50vw;
         @include centerHoriz;
-        
-        &.dark {
-          background-color: $darkBlue;
-          color: $accent;
-        }
-        
-        &.light {
-          background-color: $darkBg;
-          color: $accent;
-        }
+        background-color: $green;
+        color:white;
+        @include shadow;
       }
       &#search-button {
         right: 10px;
@@ -65,58 +58,6 @@
 
   #documents-container,
   #doc-selection-container {
-    /*#region  LIGHT THEME*/
-    &.light {
-      .caption {
-        color: $darkGrey;
-        @include deadCenter;
-      }
-      .section {
-        color: $darkBlueMedium;
-      }
-
-      #text-container {
-        .header {
-          color: white;
-        }
-        p {
-          color: $lightBlackLight;
-          
-          &.highlight {
-            &.header {
-              background-color: $lightPurple;
-            }
-          }
-        }
-      }
-    }
-    /*#endregion  LIGHT THEME*/
-    
-    /*#region  DARK THEME*/
-    &.dark {
-      .caption {
-        color: $darkGrey;
-        @include deadCenter;
-      }
-      .section {
-        color: $darkBlueMedium;
-      }
-      #text-container {
-        .header {
-          color: $lightPurple;
-        }
-        p {
-          color: $offWhite;
-
-          &.highlight {
-            &.header {
-              background-color: $darkBlue;
-            }
-          }
-        }
-      }
-    }
-    /*#endregion  DARK THEME*/
     
     &#documents-container {
       #bottom-card {
@@ -138,7 +79,7 @@
         }
 
         .search-highlight {
-          border: 2px solid $purple;
+          border: 2px solid $mainBlue;
           @include glow;
           border-radius: $borderRadius;
           padding: 12px;
@@ -357,6 +298,7 @@
       position: relative;
       overflow: auto;
       overflow-x: hidden;
+      padding-bottom: 200px;
 
       &.active {
         display: block;
@@ -382,8 +324,8 @@
         line-height: 1.3;
         font-size: 20px;
         text-transform: capitalize;
-        background-color: #7e77fd94;
-        opacity: 0.9;
+        background-color: $mainBlue;
+        color:white;
         border-radius: 5px;
         display: flex;
         padding: 12px 0;
@@ -420,13 +362,13 @@
 
           &:not(.header) {
             background-color: transparent;
-            border-left: 4px solid $lightPurple;
-            border-right: 4px solid $lightPurple;
+            border-left: 4px solid $mainBlue;
+            border-right: 4px solid $mainBlue;
             border-radius: $borderRadius;
-            color: $lightPurple;
+            color: $mainBlue;
 
             * {
-              color: $lightPurple;
+              color: $mainBlue;
             }
 
             .highlight {

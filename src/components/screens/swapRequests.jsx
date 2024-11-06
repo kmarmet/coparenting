@@ -80,7 +80,7 @@ export default function SwapRequests() {
     successAlert('Reminder Sent')
     await DB_UserScoped.getCoparentByPhone(request.recipientPhone, currentUser).then(async (coparent) => {
       const subId = await PushAlertApi.getSubId(coparent.phone)
-      PushAlertApi.sendMessage(`Pending Swap Decision`, ` ${moment(request.fromDate).format('dddd, MMMM Do')}`, subId)
+      PushAlertApi.sendMessage(`Pending Swap Decision`, ` ${moment(request.startDate).format('dddd, MMMM Do')}`, subId)
     })
   }
 
@@ -115,17 +115,17 @@ export default function SwapRequests() {
                     </span>
                     {/* REQUEST DATE */}
                     <p id="request-date">
-                      {request.duration === SwapDurations.single && DateManager.formatDate(request.fromDate)}
+                      {request.duration === SwapDurations.single && DateManager.formatDate(request.startDate)}
                       {request.duration === SwapDurations.intra && (
                         <>
-                          <span>{DateManager.formatDate(request.fromDate)}</span>
+                          <span>{DateManager.formatDate(request.startDate)}</span>
                           <span>
                             {request.fromHour.replace(' ', '')} - {request.toHour.replace(' ', '')}
                           </span>
                         </>
                       )}
                       {request.duration === SwapDurations.multiple &&
-                        `${DateManager.formatDate(request.fromDate)} - ${DateManager.formatDate(request.toDate)}`}
+                        `${DateManager.formatDate(request.startDate)} - ${DateManager.formatDate(request.endDate)}`}
                     </p>
                   </div>
                   <div className={`content ${request?.reason?.length > 20 ? 'long-text' : ''}`}>

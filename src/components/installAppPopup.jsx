@@ -6,12 +6,13 @@ import { Accordion } from 'rsuite'
 import { FaApple } from 'react-icons/fa6'
 import { BsAndroid2 } from 'react-icons/bs'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
+import { TbDeviceDesktopDown } from 'react-icons/tb'
 
 export default function InstallAppPopup() {
   const { state, setState } = useContext(globalState)
   const [expandAppleAccordion, setExpandAppleAccordion] = useState(false)
   const [expandAndroidAccordion, setExpandAndroidAccordion] = useState(false)
-
+  const [expandDesktopAccordion, setExpandDesktopAccordion] = useState(false)
   useEffect(() => {
     Manager.showPageContainer('hide')
   }, [])
@@ -23,6 +24,7 @@ export default function InstallAppPopup() {
       className={`install-app`}
       title={'Install App <span class="material-icons-outlined">install_mobile</span>'}>
       <div className="content">
+        {/* IOS */}
         <Accordion>
           <p className="accordion-header mb-5" onClick={(e) => setExpandAppleAccordion(!expandAppleAccordion)}>
             iOS <FaApple /> {expandAppleAccordion ? <FaChevronDown /> : <FaChevronUp />}
@@ -58,6 +60,8 @@ export default function InstallAppPopup() {
             </div>
           </Accordion.Panel>
         </Accordion>
+
+        {/* ANDROID */}
         <Accordion>
           <p className="accordion-header mb-5 android" onClick={(e) => setExpandAndroidAccordion(!expandAndroidAccordion)}>
             Android <BsAndroid2 />
@@ -87,6 +91,31 @@ export default function InstallAppPopup() {
                 <div className="flex">
                   <span className="step-number">4.</span>
                   <p>Tap on the new icon on your Home Screen</p>
+                </div>
+              </div>
+            </div>
+          </Accordion.Panel>
+        </Accordion>
+
+        <Accordion>
+          <p className="accordion-header mb-5 desktop" onClick={(e) => setExpandDesktopAccordion(!expandDesktopAccordion)}>
+            Desktop/Laptop <TbDeviceDesktopDown /> {expandDesktopAccordion ? <FaChevronDown /> : <FaChevronUp />}
+          </p>
+          <Accordion.Panel expanded={expandDesktopAccordion}>
+            <div className="os-container apple">
+              <p className="while-viewing">While viewing the website...</p>
+              <div className="flex steps">
+                <img src={require('../img/desktop-installation.png')} alt="" />
+                <div className="flex mt-15">
+                  <span className="step-number">1.</span>
+                  <p>Tap the installation button in the address bar</p>
+                </div>
+
+                <div className="flex">
+                  <span className="step-number">2.</span>
+                  <p>
+                    Click <span className="emphasize">Install</span>
+                  </p>
                 </div>
               </div>
             </div>

@@ -82,7 +82,7 @@ export default AppManager = {
         if (!(Manager.isValid(event))) {
           continue;
         }
-        daysPassed = DateManager.getDuration('days', moment(), event.fromDate);
+        daysPassed = DateManager.getDuration('days', moment(), event.startDate);
         if (daysPassed <= -30 && !event.isHoliday) {
           await DB.delete(DB.tables.calendarEvents, event.id);
           return;

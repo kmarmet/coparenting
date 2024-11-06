@@ -1,28 +1,23 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../context'
-import DB from '@db'
-import { Dropdown } from 'rsuite'
 import Manager from '@manager'
-import { getDatabase, ref, set, get, child, onValue } from 'firebase/database'
 import DB_UserScoped from '@userScoped'
-import { Accordion } from 'rsuite'
-import BottomCard from './bottomCard'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '.././../globalFunctions'
 import CheckboxGroup from './checkboxGroup'
 import Autocomplete from 'react-google-autocomplete'
@@ -121,7 +116,7 @@ export default function CustomChildInfo({ onClose, setActiveChild, activeChild }
             Add<span className="ml-10 material-icons-outlined">auto_fix_high</span>
           </button>
         )}
-        <button className="button card-button red" onClick={resetForm}>
+        <button className="button card-button cancel" onClick={resetForm}>
           Cancel
         </button>
       </div>

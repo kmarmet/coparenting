@@ -25,7 +25,7 @@ SecurityManager =
     if Manager.isValid(allEvents,true)
       for event in allEvents
         shareWith = event.shareWith
-        if Manager.dateIsValid(event.fromDate) and event.fromDate.length > 0
+        if Manager.dateIsValid(event.startDate) and event.startDate.length > 0
           if (event.ownerPhone == currentUser.phone)
             returnRecords.push(event)
           if Manager.isValid(shareWith, true) and shareWith.includes(currentUser.phone)

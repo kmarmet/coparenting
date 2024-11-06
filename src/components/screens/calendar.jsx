@@ -70,10 +70,10 @@ export default function EventCalendar() {
   const formatEvents = (events) => {
     let dateArr = []
     events.forEach((event, index) => {
-      if (dateArr.findIndex((x) => x.some((d) => d.date === event?.date || d.fromDate === event?.date)) === -1) {
+      if (dateArr.findIndex((x) => x.some((d) => d.startDate === event?.startDate || d.startDate === event?.startDate)) === -1) {
         dateArr.push([event])
       } else {
-        const arrIndex = dateArr.findIndex((x) => x.some((d) => d.date === event?.date || d.fromDate === event?.date))
+        const arrIndex = dateArr.findIndex((x) => x.some((d) => d.date === event?.date || d.startDate === event?.date))
         dateArr[arrIndex].push(event)
       }
     })
@@ -83,25 +83,25 @@ export default function EventCalendar() {
   const getSecuredEvents = async (selectedDay, selectedMonth) => {
     let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
 
-    securedEvents = DateManager.sortCalendarEvents(securedEvents, 'fromDate', 'startTime')
+    securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
     const eventsToAddDotsTo = securedEvents.sort((a, b) => {
-      return a.time + b.time
+      return a.startTime + b.startTime
     })
 
     setAllEventsFromDb(securedEvents)
     // Sort desc
     securedEvents = securedEvents.sort((a, b) => {
-      if (a.time < b.time) {
+      if (a.startTime < b.startTime) {
         return -1
       }
-      if (a.time > b.time) {
+      if (a.startTime > b.startTime) {
         return 1
       }
       return 0
     })
     if (selectedDay) {
       securedEvents = securedEvents.filter((x) => {
-        if (x.date === selectedDay.toString() || x.fromDate === selectedDay.toString()) {
+        if (x.startDate === selectedDay.toString()) {
           return x
         }
       })
@@ -123,9 +123,9 @@ export default function EventCalendar() {
     }
     let eventsWithMultipleDays = []
     eventsToAddDotsTo.forEach((event, index) => {
-      if (event?.fromDate && event?.toDate && event?.fromDate !== event?.toDate) {
-        if (eventsWithMultipleDays.filter((x) => x.fromDate === event?.fromDate).length === 0) {
-          const eventDaysCount = moment(event?.toDate).diff(event?.fromDate, 'days')
+      if (event?.startDate && event?.endDate && event?.startDate !== event?.endDate) {
+        if (eventsWithMultipleDays.filter((x) => x.startDate === event?.startDate).length === 0) {
+          const eventDaysCount = moment(event?.endDate).diff(event?.startDate, 'days')
           const randomColor = Math.floor(Math.random() * 16777215).toString(16)
           eventsWithMultipleDays.push({ eventObj: event, daysCount: eventDaysCount, color: randomColor })
         }
@@ -135,16 +135,16 @@ export default function EventCalendar() {
     // Support showing each event for multi-day events
     eventsWithMultipleDays.forEach((event) => {
       let dateRange = []
-      for (let i = 0; i <= event?.daysCount; i++) {
-        let formattedDay = moment(event?.eventObj.fromDate).add(i, 'day').format(DateFormats.dateForDb)
+      for (let i = 1; i <= event?.daysCount; i++) {
+        let formattedDay = moment(event?.eventObj.startDate).add(i, 'day').format(DateFormats.dateForDb)
         dateRange.push(formattedDay)
       }
       if (dateRange.includes(selectedDay)) {
         const eventToAdd = {
           id: event?.eventObj.id,
           title: event?.eventObj.title,
-          fromDate: event?.eventObj.fromDate,
-          toDate: event?.eventObj.toDate,
+          startDate: event?.eventObj.startDate,
+          endDate: event?.eventObj.endDate,
           startTime: event?.eventObj.startTime,
           endTime: event?.eventObj.endTime,
           children: event?.eventObj.children,
@@ -154,6 +154,8 @@ export default function EventCalendar() {
         }
       }
     })
+
+    console.log(securedEvents)
 
     addDayIndicators(selectedMonth, eventsToAddDotsTo, eventsWithMultipleDays)
 
@@ -186,14 +188,14 @@ export default function EventCalendar() {
         formattedDay = moment(formattedDay).format(DateFormats.dateForDb)
       }
 
-      const dayHasEvent = events.filter((x) => x?.fromDate === formattedDay || x?.toDate === formattedDay).length > 0
+      const dayHasEvent = events.filter((x) => x?.startDate === formattedDay || x?.endDate === formattedDay).length > 0
 
       // IF DAY HAS EVENT(S)
       if (dayHasEvent) {
         const dotWrapper = document.createElement('span')
         dotWrapper.classList.add('dot-wrapper')
         // Add holiday emoji
-        if (events.filter((x) => x.fromDate === formattedDay && x.isHoliday === true).length > 0) {
+        if (events.filter((x) => x.startDate === formattedDay && x.isHoliday === true).length > 0) {
           const hoildayEmoji = document.createElement('span')
           hoildayEmoji.classList.add('holiday-emoji')
           switch (true) {
@@ -248,7 +250,7 @@ export default function EventCalendar() {
         }
 
         // PAYDAY EMOJI
-        if (events.filter((x) => x.fromDate === formattedDay && showPaydayEmoji(x.title)).length > 0) {
+        if (events.filter((x) => x.startDate === formattedDay && showPaydayEmoji(x.title)).length > 0) {
           const paydayEmoji = document.createElement('span')
           paydayEmoji.classList.add('payday-emoji')
 
@@ -259,7 +261,7 @@ export default function EventCalendar() {
         // VISITATION DOT
         const currentUserName = formatNameFirstNameOnly(currentUser.name)
         if (
-          events.filter((x) => x.fromDate === formattedDay && x.fromVisitationSchedule === true && contains(x?.title, currentUserName)).length > 0
+          events.filter((x) => x.startDate === formattedDay && x.fromVisitationSchedule === true && contains(x?.title, currentUserName)).length > 0
         ) {
           const visitationDot = document.createElement('span')
           visitationDot.classList.add('current-user-visitation-dot')
@@ -268,7 +270,7 @@ export default function EventCalendar() {
         }
 
         if (
-          events.filter((x) => x.fromDate === formattedDay && x.fromVisitationSchedule === true && !contains(x?.title, currentUserName)).length > 0
+          events.filter((x) => x.startDate === formattedDay && x.fromVisitationSchedule === true && !contains(x?.title, currentUserName)).length > 0
         ) {
           const visitationDot = document.createElement('span')
           visitationDot.classList.add('coparent-visitation-dot')
@@ -277,7 +279,7 @@ export default function EventCalendar() {
         }
 
         // STANDARD EVENT DOT
-        if (events.filter((x) => x.fromDate === formattedDay)) {
+        if (events.filter((x) => x.startDate === formattedDay)) {
           const standardEventDot = document.createElement('span')
           standardEventDot.classList.add('standard-event-dot')
           standardEventDot.classList.add('dot')
@@ -292,7 +294,7 @@ export default function EventCalendar() {
       }
       // Apply colors to multi-day events
       eventsWithMultipleDays.forEach((eventParentObj, index) => {
-        if (eventParentObj.eventObj.fromDate === formattedDay) {
+        if (eventParentObj.eventObj.startDate === formattedDay) {
           for (let i = 0; i <= eventParentObj.daysCount; i++) {
             document.querySelectorAll('.flatpickr-day').forEach((calDay) => {
               let formattedDay = moment(day.getAttribute('aria-label')).add(i, 'day').format(DateFormats.dateForDb)
@@ -552,7 +554,6 @@ export default function EventCalendar() {
             </div>
           </div>
         )}
-
         {/* MAP/LOOP EVENTS */}
         <div className="events">
           {Manager.isValid(existingEvents, true) &&
@@ -575,31 +576,31 @@ export default function EventCalendar() {
                 <div
                   onClick={(e) => handleEventRowClick(e, event)}
                   key={index}
-                  data-from-date={event?.fromDate}
+                  data-from-date={event?.startDate}
                   className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
                   <div className="text">
                     <div className="top">
                       {/* DATE CONTAINER */}
                       <div id="date-container">
                         {/* FROM DATE */}
-                        {!contains(event?.fromDate, 'Invalid') && event?.fromDate?.length > 0 && (
-                          <span className="fromDate">
-                            {moment(event?.fromDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
+                        {!contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
+                          <span className="start-date">
+                            {moment(event?.startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
                           </span>
                         )}
                         {/* TO WORD */}
-                        {!contains(event?.toDate, 'Invalid') && event?.toDate?.length > 0 && event?.toDate !== event?.fromDate && (
-                          <span className="toDate">&nbsp;to&nbsp; </span>
+                        {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                          <span className="end-date">&nbsp;to&nbsp; </span>
                         )}
                         {/* TO DATE */}
-                        {!contains(event?.toDate, 'Invalid') && event?.toDate?.length > 0 && event?.toDate !== event?.fromDate && (
-                          <span>{moment(event?.toDate).format(DateFormats.readableDay)}</span>
+                        {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                          <span>{moment(event?.endDate).format(DateFormats.readableDay)}</span>
                         )}
                         {/* ALL DAY */}
                         {event &&
                           !Manager.isValid(event?.startTime) &&
-                          (!Manager.isValid(event?.toDate) || event?.toDate.indexOf('Invalid') > -1) &&
-                          event?.toDate !== event?.fromDate && <span className="toDate">&nbsp;- ALL DAY</span>}
+                          (!Manager.isValid(event?.endDate) || event?.endDate.indexOf('Invalid') > -1) &&
+                          event?.endDate !== event?.startDate && <span className="end-date">&nbsp;- ALL DAY</span>}
                         {/* TIMES */}
                         <span id="times">
                           {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (

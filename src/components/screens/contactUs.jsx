@@ -25,9 +25,10 @@ import {
   wordCount,
 } from '../../globalFunctions'
 
-import { MdOutlineAppShortcut } from 'react-icons/md'
+import { MdOutlineAppShortcut, MdOutlineEmail } from 'react-icons/md'
 import { VscFeedback } from 'react-icons/vsc'
-import { AiTwotoneMail } from 'react-icons/ai'
+import Label from '../shared/label'
+import NavBar from '../navBar'
 
 export default function ContactUs() {
   const { state, setState } = useContext(globalState)
@@ -105,19 +106,20 @@ export default function ContactUs() {
         <div className="feature-request-wrapper">
           <div id="feature-request-container" className={`${theme} form`}>
             <div className="form">
-              <label>
-                Name of the feature <span className="asterisk">*</span>
-              </label>
+              <Label text={'Feature Name'} required={true}></Label>
               <input onChange={(e) => setFeatureName(e.target.value)} type="text" className="mb-15" />
-              <label>
-                Request Details <span className="asterisk">*</span>
-              </label>
+              <Label text={'Request Details'} required={true}></Label>
               <textarea onChange={(e) => setFeatureDescription(e.target.value)} className="mb-20"></textarea>
-              <button className="button green default center" onClick={submitFeatureRequest}>
-                Request Feature
-              </button>
             </div>
           </div>
+        </div>
+        <div className="buttons">
+          <button className="green card-button" onClick={submitFeatureRequest}>
+            Request Feature
+          </button>
+          <button className="card-button cancel" onClick={() => setShowFeatureRequestCard(false)}>
+            Cancel
+          </button>
         </div>
       </BottomCard>
 
@@ -126,15 +128,18 @@ export default function ContactUs() {
         <div className="feedback-wrapper">
           <div id="feedback-container" className={`${theme} form`}>
             <div className="form">
-              <label>
-                Your Feedback <span className="asterisk">*</span>
-              </label>
+              <Label text={'Your Feedback'} required={true}></Label>
               <textarea onChange={(e) => setFeedback(e.target.value)} className="mb-20"></textarea>
-              <button className="button default green center" onClick={submitFeedback}>
-                Send App Feedback
-              </button>
             </div>
           </div>
+        </div>
+        <div className="buttons">
+          <button className="card-button" onClick={submitFeedback}>
+            Send Feedback
+          </button>
+          <button className="card-button cancel" onClick={() => setShowFeedbackCard(false)}>
+            Cancel
+          </button>
         </div>
       </BottomCard>
 
@@ -143,20 +148,24 @@ export default function ContactUs() {
         <div className="support-wrapper">
           <div id="support-container" className={`${theme} form`}>
             <div className="form">
-              <label>
-                Problem Description or Question <span className="asterisk">*</span>
-              </label>
+              <Label text={'Problem Description or Question'} required={true}></Label>
               <textarea onChange={(e) => setSupportNotes(e.target.value)} className="mb-20"></textarea>
-              <button className="button default green center" onClick={submitSupportRequest}>
-                Get Support
-              </button>
             </div>
           </div>
+        </div>
+        <div className="buttons">
+          <button className="card-button" onClick={submitSupportRequest}>
+            Get Support
+          </button>
+          <button className="card-button cancel" onClick={() => setShowSupportCard(false)}>
+            Cancel
+          </button>
         </div>
       </BottomCard>
 
       {/* CONTACT US */}
-      <div id="contact-us-container" className={`${theme} form`}>
+      <div id="contact-us-container" className={`${theme} page-container form`}>
+        <p className="screen-title">Contact Us</p>
         {/* SECTIONS */}
         <div className="sections">
           <p className="section" onClick={() => setShowFeatureRequestCard(true)}>
@@ -168,11 +177,12 @@ export default function ContactUs() {
             Send App Feedback
           </p>
           <p className="section" onClick={() => setShowSupportCard(true)}>
-            <AiTwotoneMail />
+            <MdOutlineEmail />
             Contact Support
           </p>
         </div>
       </div>
+      {!showFeatureRequestCard && !showFeedbackCard && !showSupportCard && <NavBar navbarClass={'no-add-new-button'}></NavBar>}
     </>
   )
 }

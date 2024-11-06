@@ -123,7 +123,7 @@ export default function Visitation() {
       const dateObject = new CalendarEvent()
       // Required
       dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Scheduled Visitation`
-      dateObject.fromDate = moment(date).format(DateFormats.dateForDb)
+      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
       dateObject.ownerPhone = currentUser.phone
       dateObject.createdBy = currentUser.name
@@ -161,7 +161,7 @@ export default function Visitation() {
       const dateObject = new CalendarEvent()
       // Required
       dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Scheduled Visitation`
-      dateObject.fromDate = moment(date).format(DateFormats.dateForDb)
+      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
       dateObject.ownerPhone = currentUser.phone
       dateObject.createdBy = currentUser.name
@@ -191,7 +191,7 @@ export default function Visitation() {
       const dateObject = new CalendarEvent()
       // Required
       dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Scheduled Visitation`
-      dateObject.fromDate = moment(date).format(DateFormats.dateForDb)
+      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
       dateObject.ownerPhone = currentUser.phone
       dateObject.createdBy = currentUser.name
@@ -234,7 +234,7 @@ export default function Visitation() {
       const dateObject = new CalendarEvent()
       // Required
       dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Scheduled Visitation`
-      dateObject.fromDate = moment(date).format('MM/DD/yyyy')
+      dateObject.startDate = moment(date).format('MM/DD/yyyy')
       // Not Required
       dateObject.ownerPhone = currentUser.phone
       dateObject.createdBy = currentUser.name
@@ -268,7 +268,7 @@ export default function Visitation() {
         const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format('MM/DD'))
         // Required
         dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Holiday Visitation`
-        dateObject.fromDate = moment(holidayDateString).format('MM/DD/yyyy')
+        dateObject.startDate = moment(holidayDateString).format('MM/DD/yyyy')
         dateObject.holidayName = holidayName
         // Not Required
         dateObject.ownerPhone = currentUser.phone

@@ -27,14 +27,14 @@ const DateManager = {
     oneHour: 'hour',
     halfHour: 'halfHour',
   },
-  formValidation: (title, shareWith, fromDate) => {
+  formValidation: (title, shareWith, startDate) => {
     if (!Manager.isValid(title)) {
       return 'Please enter an event title'
     }
     if (!Manager.isValid(shareWith, true)) {
       return 'Please select who you would like to share this event with'
     }
-    if (!Manager.dateIsValid(fromDate)) {
+    if (!Manager.dateIsValid(startDate)) {
       return 'Please select an event date'
     }
     return null
@@ -206,7 +206,7 @@ const DateManager = {
     let users = await DB.getTable(DB.tables.users)
     let userPhones = Manager.convertToArray(users).map((x) => x.phone)
     const calEvents = await DB.getTable(DB.tables.calendarEvents)
-    const existingCalendarHolidays = calEvents.filter((x) => x.isHoliday === true).map((x) => x.fromDate)
+    const existingCalendarHolidays = calEvents.filter((x) => x.isHoliday === true).map((x) => x.startDate)
     DateManager.getHolidays().then(async (holidays) => {
       let events = []
       const switchCheck = (title, holidayName) => {
@@ -250,9 +250,9 @@ const DateManager = {
         }
         newEvent.id = Manager.getUid()
         newEvent.holidayName = holiday.name
-        const alreadyExistsCount = events.filter((x) => moment(x.fromDate).format('MM/DD/yyyy') === moment(holiday.date).format('MM/DD/yyyy')).length
+        const alreadyExistsCount = events.filter((x) => moment(x.startDate).format('MM/DD/yyyy') === moment(holiday.date).format('MM/DD/yyyy')).length
         if (alreadyExistsCount === 0 && ~existingCalendarHolidays.includes(moment(holiday.date).format('MM/DD/yyyy'))) {
-          newEvent.fromDate = moment(holiday.date).format('MM/DD/yyyy')
+          newEvent.startDate = moment(holiday.date).format('MM/DD/yyyy')
           newEvent.isHoliday = true
           // Not Required
           newEvent.shareWith = Manager.getUniqueArray(userPhones).flat()
@@ -260,7 +260,7 @@ const DateManager = {
         }
       }
 
-      events = events.filter((value, index, self) => index === self.findIndex((t) => t.fromDate === value.fromDate))
+      events = events.filter((value, index, self) => index === self.findIndex((t) => t.startDate === value.startDate))
       console.log(events)
       await CalendarManager.addMultipleCalEvents(currentUser, Manager.getUniqueArray(events).flat())
     })

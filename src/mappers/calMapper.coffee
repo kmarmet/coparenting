@@ -142,8 +142,8 @@ CalendarMapper =
       obj =
         name: ''
         date: ''
-      holidayName = CalendarMapper.holidayDateToName(holiday.fromDate)
-      holidayDate = holiday.fromDate
+      holidayName = CalendarMapper.holidayDateToName(holiday.startDate)
+      holidayDate = holiday.startDate
       obj.name = holidayName
       obj.date = holidayDate
       userHolidaysList.push(obj)

@@ -4,8 +4,8 @@ export default class CalendarEvent
     @websiteUrl = ''
     @notes = ''
     @shareWith = []
-    @toDate = ''
-    @fromDate = ''
+    @endDate = ''
+    @startDate = ''
     @startTime = ''
     @ownerPhone = ''
     @children = []

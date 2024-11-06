@@ -94,7 +94,6 @@ const DocumentConversionManager = {
         .then((result) => (returnHtml = result))
         .catch((error) => console.error(error))
     }
-
     return returnHtml
   },
   hasNumbers: (str) => {
