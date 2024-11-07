@@ -4,30 +4,25 @@ import moment from "moment"
 
 CalendarMapper =
   reminderTimes: (timeframe) ->
-    _timeframe = null
+    console.log(timeframe)
     if timeframe.indexOf('hour') > -1
-      _timeframe = ReminderTimes.hour
+      return ReminderTimes.hour
     if timeframe.indexOf('30') > -1
-      _timeframe = ReminderTimes.halfHour
+      return ReminderTimes.halfHour
     if timeframe.indexOf('5') > -1
-      _timeframe = ReminderTimes.fiveMinutes
+      return ReminderTimes.fiveMinutes
     if timeframe.indexOf('event') > -1
-      _timeframe = ReminderTimes.timeOfEvent
-
-    return _timeframe
+      return ReminderTimes.timeOfEvent
 
   readableReminderBeforeTimeframes: (timeframe) ->
-    _timeframe = null
     if timeframe.indexOf('hour') > -1
-      _timeframe = '1 hour before'
+      return  '1 hour before'
     if timeframe.indexOf('halfHour') > -1
-      _timeframe = '30 minutes before'
+      return  '30 minutes before'
     if timeframe.indexOf('fiveMinutes') > -1
-      _timeframe = '5 minutes before'
+      return  '5 minutes before'
     if timeframe.indexOf('timeOfEvent') > -1
-      _timeframe = 'At time of event'
-
-    return _timeframe
+      return  'At time of event'
 
   readableRepeatIntervals: (selectedInterval) ->
     interval = null

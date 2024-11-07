@@ -273,11 +273,7 @@ export default function NewCalendarEvent({ hideCard }) {
       e,
       (e) => {
         let timeframe = CalendarMapper.reminderTimes(e)
-        if (reminderTimes.length === 0) {
-          setReminderTimes([timeframe])
-        } else {
-          setReminderTimes([...reminderTimes, timeframe])
-        }
+        setReminderTimes([...reminderTimes, timeframe])
       },
       (e) => {
         let mapped = CalendarMapper.reminderTimes(e)
@@ -550,7 +546,8 @@ export default function NewCalendarEvent({ hideCard }) {
               <Accordion>
                 <Accordion.Panel expanded={showReminders}>
                   <CheckboxGroup
-                    elClass={`${theme} `}
+                    containerClass={'reminder-times'}
+                    elClass={`${theme}`}
                     skipNameFormatting={true}
                     labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                     onCheck={handleReminderSelection}

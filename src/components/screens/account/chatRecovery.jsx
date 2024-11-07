@@ -3,7 +3,6 @@ import globalState from '../../../context'
 import DB from '@db'
 import Manager from '@manager'
 import ScreenNames from '@screenNames'
-import { useSwipeable } from 'react-swipeable'
 import SignaturePad from 'signature_pad'
 import FirebaseStorage from '@firebaseStorage'
 import moment from 'moment'
@@ -35,6 +34,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
+import NavBar from '../../navBar'
 
 function ChatRecovery() {
   const { state, setState } = useContext(globalState)
@@ -47,13 +47,7 @@ function ChatRecovery() {
   const [convoMessages, setConvoMessages] = useState([])
   const [titleSuggestions, setTitleSuggestions] = useState([])
   const [signatureUrl, setSignatureUrl] = useState('')
-
-  const handlers = useSwipeable({
-    onSwipedRight: (eventData) => {
-      setState({ ...state, currentScreen: ScreenNames.account })
-    },
-  })
-
+  const [convoImageUrl, setConvoImageUrl] = useState('')
   const submit = async () => {
     if (reason.length === 0) {
       throwError('Please provide a reason for recovering this deleted conversation')
@@ -83,17 +77,21 @@ function ChatRecovery() {
     const signatureImage = new Image()
     signatureImage.id = 'pic'
     let scopedChat
-    let deletedChats = Manager.convertToArray(await DB.getTable(DB.tables.archivedChats))
+    let archivedChats = await DB.getTable(`${DB.tables.archivedChats}/${currentUser.phone}`)
+    archivedChats = archivedChats.filter((r) => r)
 
-    deletedChats.forEach((chat) => {
-      const memberPhones = chat.members.map((x) => x.phone)
-      if (memberPhones.includes(currentUser.phone) && memberPhones.includes(coparentPhone)) {
-        scopedChat = chat
+    if (Manager.isValid(archivedChats, true)) {
+      for (let chat of archivedChats) {
+        const memberPhones = chat?.members?.map((x) => x.phone)
+        if (memberPhones?.includes(currentUser.phone) && memberPhones?.includes(coparentPhone)) {
+          scopedChat = chat
+          break
+        }
       }
-    })
+    }
 
     // Error if no scoped chat
-    if (!Manager.isValid(scopedChat) || scopedChat?.messages.length === 0) {
+    if (!Manager.isValid(scopedChat) || scopedChat[0]?.messages?.length === 0) {
       throwError('We could not find an archived chat with the details provided.')
       setViewConvo(false)
       setState({ ...state, isLoading: false })
@@ -136,7 +134,7 @@ function ChatRecovery() {
     }
   }
 
-  const saveImageLocal = () => saveImageFromUrl('#image-wrapper', null, 'Chat Recovery Conversation')
+  const saveImageLocal = () => saveImageFromUrl('#image-wrapper', convoImageUrl, 'Chat Recovery Conversation')
 
   const handleMessageTypeSelection = async (e) => {
     Manager.handleCheckboxSelection(
@@ -158,6 +156,7 @@ function ChatRecovery() {
       .then(function (dataUrl) {
         const img = new Image()
         img.src = dataUrl
+        setConvoImageUrl(dataUrl)
         imageWrapper.appendChild(img)
       })
       .catch(function (error) {
@@ -181,7 +180,7 @@ function ChatRecovery() {
     <>
       {!viewConvo && (
         <>
-          <div {...handlers} id="chat-request-container" className={`${theme} page-container form`}>
+          <div id="chat-request-container" className={`${theme} page-container form`}>
             <div className="form">
               {/* PHONE */}
               <label>
@@ -263,7 +262,7 @@ function ChatRecovery() {
         </>
       )}
       <div className="conversation-container">
-        <div {...handlers} id="chat-request-container" className={`${theme} page-container active form`}>
+        <div id="chat-request-container" className={`${theme} page-container active form`}>
           <p className="mb-15">
             If you require a copy (image) of the signature applied when requesting this chat, or the date and time, please{' '}
             <span className="link" onClick={() => setState({ ...state, currentScreen: ScreenNames.contactSupport })}>
@@ -294,6 +293,7 @@ function ChatRecovery() {
           </div>
         </div>
       </div>
+      <NavBar navbarClass={'calendar no-add-new-button'}></NavBar>
     </>
   )
 }

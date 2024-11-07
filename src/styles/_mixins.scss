@@ -34,7 +34,7 @@
   //  padding-right: env(safe-area-inset-right);
   //  padding-bottom: env(safe-area-inset-bottom);
   //  padding-left: env(safe-area-inset-left);
-  padding: 15px;
+  padding: 15px 15px 200px 15px;
 
   &.active {
     opacity: 1;
@@ -2051,12 +2051,11 @@
   }
 }
 @mixin bottomCard {
-  min-height: 30vh;
   background-color: white;
   position: fixed;
   z-index: -1;
   border-radius: 25px 25px 0 0;
-  padding: 20px 20px 200px 20px;
+  padding: 0;
   box-shadow:
     0px 50px 25px rgba(0, 0, 0, 0.56),
     00px -25px 15px rgba(0, 0, 0, 0.56);
@@ -2066,9 +2065,14 @@
   max-height: 0;
   overflow: auto;
   width: 100vw;
+  min-height: 0;
+    height: 0;
   left: 0;
   &.active {
+    padding: 20px 20px 200px 20px;
+    min-height: 30vh;
     max-height: 70vh;
+    height: auto;
     opacity: 1;
     bottom: 0;
     z-index: $maxZIndex;

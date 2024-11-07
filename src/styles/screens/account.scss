@@ -16,6 +16,12 @@
                 border-radius: $borderRadius;
             }
         }
+        
+        #image-wrapper {
+            img {
+                filter: brightness(0);
+            }
+        }
     }
 
     #account-container {

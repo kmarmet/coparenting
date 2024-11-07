@@ -1,6 +1,5 @@
 import moment from 'moment'
 // @ts-ignore
-import ReminderTimes from 'constants/reminderTimes'
 import DB from '@db'
 import '../prototypes'
 import ModelNames from '../models/modelNames'
@@ -32,6 +31,7 @@ import Coparent from '../models/coparent'
 import ConversationMessage from '../models/conversationMessage'
 import ConversationThread from '../models/conversationThread'
 import ChildUser from '../models/child/childUser'
+import CalMapper from '../mappers/calMapper'
 
 const Manager = {
   cleanObject: (object, modelName) => {
@@ -355,7 +355,7 @@ const Manager = {
     }
     return shareWith
   },
-  setDefaultCheckboxes: (checkboxGroupName, object, propName, isArray = false) => {
+  setDefaultCheckboxes: (checkboxGroupName, object, propName, isArray = false, values) => {
     const getRepeatingEvents = async () => {
       const eventTitle = object.title
       let repeatingEvents = await DB.getTable(DB.tables.calendarEvents)
@@ -385,44 +385,14 @@ const Manager = {
     }
 
     // Reminder Times
-    if (checkboxGroupName === 'reminderTimes') {
-      const reminderIsValid = Manager.isValid(object[propName], isArray ? true : false)
-      let reminderTimes = []
+    if (checkboxGroupName === 'reminder-times') {
+      const reminderIsValid = Manager.isValid(values, true)
+      let reminderTimes = values
       if (reminderIsValid) {
-        if (object.reminderTimes.includes(ReminderTimes.hour)) {
-          const hourBox = document.querySelector(`[data-label='1 hour before']`)
-
-          if (Manager.isValid(hourBox)) {
-            hourBox.querySelector('.box').classList.add('active')
-            reminderTimes.push(ReminderTimes.hour)
-          }
-        }
-        if (object.reminderTimes.includes(ReminderTimes.halfHour)) {
-          const halfHourBox = document.querySelector(`[data-label='30 minutes before']`)
-
-          if (Manager.isValid(halfHourBox)) {
-            halfHourBox.querySelector('.box').classList.add('active')
-            reminderTimes.push(ReminderTimes.halfHour)
-          }
-        }
-        if (object.reminderTimes.includes(ReminderTimes.fiveMinutes)) {
-          const fiveMinsBox = document.querySelector(`[data-label='5 minutes before']`)
-
-          if (Manager.isValid(fiveMinsBox)) {
-            fiveMinsBox.querySelector('.box').classList.add('active')
-            reminderTimes.push(ReminderTimes.fiveMinutes)
-          }
-        }
-        if (object.reminderTimes.includes(ReminderTimes.timeOfEvent)) {
-          const timeOfEventBox = document.querySelector(`[data-label='At time of event']`)
-
-          if (Manager.isValid(timeOfEventBox)) {
-            timeOfEventBox.querySelector('.box').classList.add('active')
-            reminderTimes.push(ReminderTimes.timeOfEvent)
-          }
+        for (let timeframe of reminderTimes) {
+          document.querySelector(`[data-label='${CalMapper.readableReminderBeforeTimeframes(timeframe)}'] .box`).classList.add('active')
         }
       }
-      return reminderTimes
     }
   },
   dateIsValid: (date) => {

@@ -13,6 +13,7 @@ import PushAlertApi from '@api/pushAlert'
 import DateManager from '@managers/dateManager'
 import NotificationManager from '@managers/notificationManager'
 import CalendarMapper from '../../mappers/calMapper'
+import CalMapper from '../../mappers/calMapper'
 import DateFormats from '../../constants/dateFormats'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
@@ -33,6 +34,7 @@ import {
   spaceBetweenWords,
   stringHasNumbers,
   successAlert,
+  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -59,7 +61,7 @@ export default function EditCalEvent({ event, hideCard }) {
   const [eventEndDate, setEventEndDate] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
   const [eventChildren, setEventChildren] = useState(event?.children || [])
-  const [eventReminderTimes, setEventReminderTimes] = useState('')
+  const [eventReminderTimes, setEventReminderTimes] = useState([])
   const [eventShareWith, setEventShareWith] = useState(event?.shareWith || [])
   // State
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
@@ -104,6 +106,7 @@ export default function EditCalEvent({ event, hideCard }) {
     // Required
     eventToEdit.id = event?.id
     eventToEdit.title = eventTitle
+    eventToEdit.reminderTimes = eventReminderTimes
     eventToEdit.shareWith = Manager.getUniqueArray(eventShareWith).flat()
     eventToEdit.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
     eventToEdit.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
@@ -130,8 +133,17 @@ export default function EditCalEvent({ event, hideCard }) {
     eventToEdit.eveningSummaryReminderSent = false
     eventToEdit.sentReminders = []
 
-    const validation = DateManager.formValidation(eventTitle, eventShareWith, eventFromDate)
-    if (!validation) {
+    if (!eventTitle || eventTitle.length === 0) {
+      throwError('Event title is required')
+      return false
+    }
+
+    if (!Manager.isValid(eventShareWith, true)) {
+      throwError('Please select who you would like to share with event with')
+      return false
+    }
+    if (!eventFromDate || eventFromDate.length === 0) {
+      throwError('Please select a date for this event')
       return false
     }
 
@@ -162,7 +174,6 @@ export default function EditCalEvent({ event, hideCard }) {
 
     // Update Single Event
     else {
-      // Get record key and Update DB
       const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
       await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, cleanedObject).then(async (result) => {
         await afterUpdateCallback()
@@ -228,17 +239,17 @@ export default function EditCalEvent({ event, hideCard }) {
       e,
       (e) => {
         let timeframe = CalendarMapper.reminderTimes(e)
-        if (eventReminderTimes.length === 0) {
+        if (eventReminderTimes?.length === 0) {
           setEventReminderTimes([timeframe])
         } else {
-          if (!eventReminderTimes.includes(timeframe)) {
+          if (!eventReminderTimes?.includes(timeframe)) {
             setEventReminderTimes([...eventReminderTimes, timeframe])
           }
         }
       },
       (e) => {
         let mapped = CalendarMapper.reminderTimes(e)
-        let filtered = eventReminderTimes.filter((x) => x !== mapped)
+        let filtered = eventReminderTimes?.filter((x) => x !== mapped)
         setEventReminderTimes(filtered)
       },
       true
@@ -253,10 +264,13 @@ export default function EditCalEvent({ event, hideCard }) {
     setEventStartTime(event?.startTime)
     setEventEndTime(event?.endTime)
     setEventLength(EventLengths.single)
+    setEventReminderTimes(event?.reminderTimes || [])
 
-    // Reminders
-    const times = Manager.setDefaultCheckboxes('reminderTimes', event, 'reminderTimes', true)
-    setEventReminderTimes(times || [])
+    // Reminder Toggle
+    if (Manager.isValid(event?.reminderTimes, true)) {
+      document.querySelector('.reminder-times .react-toggle').classList.add('react-toggle--checked')
+      setShowReminders(true)
+    }
 
     // Repeating
     if (Manager.isValid(event?.repeatInterval) && event?.repeatInterval.length > 0) {
@@ -412,7 +426,6 @@ export default function EditCalEvent({ event, hideCard }) {
           <p>All Day</p>
           <Toggle
             icons={{
-              // checked: <span className="material-icons-round">notifications</span>,
               unchecked: null,
             }}
             className={'ml-auto reminder-toggle'}
@@ -448,7 +461,7 @@ export default function EditCalEvent({ event, hideCard }) {
         {/* REMINDER */}
         {!isAllDay && (
           <>
-            <div className="flex">
+            <div className="flex reminder-times">
               <p>Remind Me</p>
               <Toggle
                 icons={{
@@ -464,7 +477,9 @@ export default function EditCalEvent({ event, hideCard }) {
                 <Accordion.Panel expanded={showReminders}>
                   <CheckboxGroup
                     elClass={`${theme} `}
+                    containerClass={'reminder-times'}
                     boxWidth={50}
+                    defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
                     skipNameFormatting={true}
                     dataPhone={
                       currentUser.accountType === 'parent' ? currentUser?.coparents?.map((x) => x.phone) : currentUser?.parents?.map((x) => x.phone)

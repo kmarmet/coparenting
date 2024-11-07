@@ -2,24 +2,33 @@ import Manager from '@manager'
 import React, { useContext } from 'react'
 import globalState from '../../context'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
-  uniqueArray,
+  formatFileName,
+  formatNameFirstNameOnly,
   getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../../globalFunctions'
 
-export default function CheckboxGroup({ labels, onCheck, elClass = '', dataPhone, dataDate, skipNameFormatting = false, defaultLabel }) {
+export default function CheckboxGroup({
+  labels,
+  onCheck,
+  containerClass = '',
+  elClass = '',
+  dataPhone,
+  dataDate,
+  skipNameFormatting = false,
+  defaultLabels,
+}) {
   const { state, setState } = useContext(globalState)
   const { theme } = state
   return (
@@ -49,12 +58,12 @@ export default function CheckboxGroup({ labels, onCheck, elClass = '', dataPhone
               data-phone={thisPhone ? thisPhone : ''}
               data-label={label ? label : ''}
               data-date={thisDate ? thisDate : ''}
-              className={`flex`}
+              className={`flex ${containerClass}`}
               key={index}
               onClick={(e) => {
                 onCheck(e)
               }}>
-              <div className={`box ${defaultLabel && defaultLabel === label ? 'active' : ''}`}>
+              <div className={`box ${Manager.isValid(defaultLabels, true) && defaultLabels.includes(label) ? 'active' : ''}`}>
                 {/*<span className="checkmark-icon material-icons-round">check</span>*/}
                 <div id="inner-circle"></div>
               </div>

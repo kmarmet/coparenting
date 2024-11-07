@@ -244,6 +244,7 @@ const Conversation = () => {
     if (appContainer) {
       appContainer.classList.add('disable-scroll')
     }
+    document.getElementById('message-input').focus()
   }, [])
 
   useEffect(() => {

@@ -39,7 +39,6 @@
     }
   }
   #chats-container {
-
     #close-new-conversation-button {
       position: fixed;
       display: flex;
@@ -82,7 +81,7 @@
       &:first-child {
         margin-top: 15px;
       }
-      
+
       .flex {
         align-items: flex-start;
       }
@@ -93,7 +92,7 @@
         opacity: 0.8;
         font-size: 25px;
       }
-      
+
       svg {
         font-size: 60px;
         position: relative;
@@ -193,10 +192,13 @@
   flex-direction: column;
   width: 100vw;
   overflow: hidden;
-  height: calc(100% - 190px);
-  margin-top: 70px;
+  max-height: 100vh;
+  //  height: calc(100% - 190px);
+  //  margin-top: 70px;
   .search-results {
+    height: 100vh;
     display: none;
+    
 
     &.active {
       display: block;
@@ -282,15 +284,17 @@
   #default-messages,
   #messages,
   #bookmark-messages {
-    margin: 0;
+    //    margin: 0;
     width: 100vw;
-    display: flex;
-    flex-direction: column;
+    //    display: flex;
+    //    flex-direction: column;
     z-index: 10;
     overflow: auto;
-    padding: 15px;
     background-color: white;
     overflow-x: hidden;
+    padding: 90px 15px 15px 15px;
+    height: 100%;
+    max-height: 100vh;
 
     @media screen and (min-width: 800px) {
       min-width: 10%;
@@ -442,13 +446,12 @@
   }
 
   .form {
-    position: fixed;
-    bottom: 0;
     width: 100vw;
     background: $lightBg;
-    left: 0;
     padding: 10px 10px 20px 10px;
     z-index: 100;
+    max-height: 120px;
+    overflow: hidden;
 
     #send-button {
       background: $lightAccent;

@@ -155,8 +155,6 @@ export default function EventCalendar() {
       }
     })
 
-    console.log(securedEvents)
-
     addDayIndicators(selectedMonth, eventsToAddDotsTo, eventsWithMultipleDays)
 
     // Filter out dupes by event title

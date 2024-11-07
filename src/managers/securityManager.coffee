@@ -92,6 +92,15 @@ SecurityManager =
           if shareWith.includes(currentUser.phone)
             returnRecords.push(memory)
     return returnRecords.flat()
+  getArchivedChats: (currentUser) ->
+    returnRecords = []
+    allArchivedChats = Manager.convertToArray(await DB.getTable("#{DB.tables.archivedChats}")).flat()
+    if Manager.isValid(allArchivedChats,true)
+      for chatArray in allArchivedChats
+        for chat in chatArray
+          if (chat.threadOwner == currentUser.phone)
+            returnRecords.push(chat)
+    return returnRecords.flat()
   getTitleSuggestions: (currentUser) ->
     returnRecords = []
     suggestions = Manager.convertToArray(await DB.getTable(DB.tables.suggestions)).flat()
