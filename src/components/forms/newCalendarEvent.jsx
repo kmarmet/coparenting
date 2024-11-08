@@ -734,7 +734,7 @@ export default function NewCalendarEvent({ hideCard }) {
         <hr className="mb-10" />
 
         {/* URL/WEBSITE */}
-        <InputWrapper labelText={'URL/Website'} required={false} inputType={'url'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
+        <InputWrapper labelText={'Website'} required={false} inputType={'url'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
 
         {/* LOCATION/ADDRESS */}
         <InputWrapper labelText={'Location'} required={false} inputType={'location'}>

@@ -73,7 +73,7 @@ export default function SlideOutMenu() {
   const changeTheme = async (theme) => {
     await DB_UserScoped.updateUserRecord(currentUser.phone, `settings/theme`, theme)
     setState({ ...state, theme: theme })
-    Manager.showPageContainer()
+    window.location.reload()
   }
 
   const logout = () => {

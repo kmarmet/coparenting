@@ -17,6 +17,8 @@ import 'rc-tooltip/assets/bootstrap_white.css'
 import EmojiPicker from 'emoji-picker-react'
 import ChatManager from '@managers/chatManager.js'
 import DateFormats from '../../../constants/dateFormats'
+import { PiBookmarksSimpleDuotone, PiInfoDuotone, PiUserCircleDuotone } from 'react-icons/pi'
+
 import ModelNames from '../../../models/modelNames'
 import {
   contains,
@@ -40,7 +42,6 @@ import {
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
-import { PiBookmarksSimpleDuotone, PiInfoDuotone } from 'react-icons/pi'
 import { CgClose } from 'react-icons/cg'
 import { TbMessageCircleSearch } from 'react-icons/tb'
 import ActivitySet from '../../../models/activitySet'
@@ -304,9 +305,7 @@ const Conversation = () => {
         {!showSearchInput && (
           <div className="flex top-buttons">
             <div className="flex" id="user-info">
-              <span id="user-icon" className="material-icons-round">
-                account_circle
-              </span>
+              <PiUserCircleDuotone id={'user-icon'} />
               <p id="user-name">{formatNameFirstNameOnly(messageToUser.name)}</p>
             </div>
             <div id="right-side" className="flex">

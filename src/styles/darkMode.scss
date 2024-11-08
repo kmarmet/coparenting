@@ -1,0 +1,350 @@
+@import './variables';
+@import './mixins';
+@import './palette';
+
+#external-overrides {
+  #app-container {
+    &.dark {
+      background: $darkBg;
+
+      p {
+        color: white;
+        opacity: 0.9;
+      }
+
+      hr {
+        border-color: $translucentLightest;
+      }
+
+      // PAGE CONTAINER
+      .page-container {
+        background: $darkBg;
+      }
+
+      .screen-title {
+        color: $mainBlue;
+      }
+
+      // CHATS
+      #chats-container {
+        .thread-item {
+          border-bottom: 1px solid $translucentLightest;
+
+          .coparent-name {
+            color: white;
+            opacity: 0.9;
+          }
+        }
+      }
+      #message-thread-container {
+        .top-buttons {
+          background-color: $darkLightBg;
+          padding: 10px;
+          border-bottom: 1px solid $translucentLightest;
+        }
+
+        .form {
+          background: $darkLightBg;
+
+          textarea {
+            background: $translucentLightest;
+            border: 0;
+          }
+
+          #send-button {
+            background: $darkPurple;
+          }
+        }
+
+        #default-messages {
+          background: $darkBg;
+
+          .message {
+            &.from {
+              background: $darkLightBg;
+              &:after {
+                background: radial-gradient(30px at top left, rgba(0, 0, 0, 0) 99%, $darkLightBg 102%);
+              }
+              color: white;
+            }
+
+            &.to {
+              background: $mainBlue;
+              &:after {
+                background: radial-gradient(30px at top right, rgba(0, 0, 0, 0) 99%, $mainBlue 102%);
+              }
+              color: white;
+            }
+          }
+        }
+      }
+
+      // SLIDE OUT MENU
+      #slide-out-menu {
+        p,
+        svg {
+          color: $darkPurple;
+          opacity: 0.4;
+        }
+
+        .slide-out-menu-item {
+          &.active {
+            background: $darkPurple;
+            svg,
+            p {
+              color: $darkBg;
+              opacity: 1;
+            }
+          }
+        }
+      }
+
+      // NAVBAR
+      #navbar {
+        background: $darkBg;
+        border-top: 1px solid $translucentLightest;
+
+        #svg-wrapper {
+          background: $darkGreen;
+          border: 0;
+        }
+
+        #menu-items {
+          .menu-item {
+            &.active:not(#add-new-button) {
+              color: $darkPurple;
+            }
+          }
+        }
+      }
+
+      // FLATPICKR CAL
+      .flatpickr-calendar {
+        background: $darkLightBg;
+        border: 1px solid $translucentLightest;
+
+        .flatpickr-current-month {
+          input {
+            &.cur-year {
+              color: white !important;
+            }
+          }
+        }
+        .flatpickr-current-month {
+          .flatpickr-monthDropdown-months {
+            color: white !important;
+            opacity: 0.9;
+          }
+        }
+
+        .flatpickr-days {
+          .flatpickr-day {
+            color: white !important;
+
+            &.weekend-day {
+              opacity: 0.6 !important;
+            }
+          }
+        }
+      }
+
+      // STANDARD CHECKBOXES
+      #checkbox-group {
+        #checkbox-container {
+          &.flex {
+            span {
+              color: white;
+              opacity: 0.9;
+            }
+          }
+        }
+      }
+
+      // SHARE WITH CHECKBOXES [
+      #share-with-checkbox-group {
+        #share-with-checkbox-container {
+          &.flex {
+            span {
+              color: white;
+              opacity: 0.9;
+            }
+
+            .box {
+              #inner-circle {
+                border: 4px solid $translucentLightest;
+              }
+              &.active {
+                #inner-circle {
+                  background: $darkPurple;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // INPUT WRAPPER
+      #input-wrapper {
+        input,
+        textarea {
+          background: $translucentLighter;
+          border: 0;
+          color: white;
+          opacity: 0.9;
+
+          &::placeholder {
+            color: white;
+          }
+        }
+
+        &.active {
+          input,
+          textarea {
+            width: 100%;
+            &::placeholder {
+              opacity: 0;
+            }
+          }
+        }
+
+        .floating-label {
+          background: transparent;
+
+          span {
+            opacity: 1;
+          }
+        }
+
+        &.date {
+          .floating-label {
+            background: transparent;
+
+            span {
+              opacity: 1;
+            }
+          }
+        }
+      }
+      
+      // CHILD INFO
+      #child-info-container {
+        .child-name {
+          color: $darkPurple;
+        }
+        &.active {
+          .profile-pic-container {
+            border: 3px solid $translucentLightest
+          }
+        }
+      }
+
+      // FORM
+      .form {
+        input {
+          border: 0;
+          background: $translucentLightest;
+        }
+        label {
+          color: white;
+
+          span {
+            color: white;
+            opacity: 0.9;
+          }
+        }
+      }
+
+      // REACT TOGGLE
+      .react-toggle--checked {
+        .react-toggle-track {
+          background: $darkPurple !important;
+        }
+      }
+
+      // BOTTOM CARD [
+      #bottom-card {
+        background: $darkLightBg;
+
+        #title {
+          color: $darkPurple;
+        }
+
+        p {
+          color: white;
+          opacity: 0.9;
+        }
+
+        hr {
+          border-color: $translucentLightest;
+        }
+
+        .buttons {
+          background: $darkLightBg;
+          #blur {
+            filter: blur(5px);
+            background: $darkLightBg;
+            width: 100vw;
+            padding-top: 15px;
+            bottom: 10px;
+          }
+          .card-button {
+            &.cancel {
+              border: 1px solid white;
+              color: white;
+              opacity: 0.6;
+            }
+            &.delete {
+              border: 1px solid $red;
+              color: $red;
+            }
+            background-color: transparent;
+            color: $green;
+            border: 1px solid $green;
+          }
+        }
+      }
+
+      // CALENDAR
+      #calendar-container {
+        .events {
+          .event-row {
+            p,b, span {
+              color:white;
+              opacity: .9;
+              
+              &.start-date, &#times, &.reminder-times {
+                opacity: .6;
+              }
+            }
+            
+            svg {
+              opacity: 1;
+              color: $darkPurple;
+            }
+
+            &.standard {
+              background: $darkLightBg;
+              border: 1px solid $translucentLightest;
+            }
+
+            &.coparent-visitation {
+              background: $darkBlue;
+              border: 1px solid $translucentLightest;
+            }
+
+            &.current-user-visitation {
+              border: 1px solid $translucentLightest;
+              background: #017959;
+            }
+
+            #children {
+              p {
+                opacity: 0.5;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
