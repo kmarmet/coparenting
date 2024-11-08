@@ -128,7 +128,6 @@
   }
 }
 
-
 // REACT TOGGLE
 .react-toggle--checked,
 .react-toggle--focus,
@@ -154,7 +153,7 @@
     background-color: $lightBg;
     justify-content: flex-start;
     overflow-y: hidden;
-    
+
     &.disable-scroll {
       overflow: hidden;
     }
@@ -180,7 +179,6 @@
     p {
       color: $lightBlack;
     }
-
 
     #navbar {
       @include navBar;
@@ -238,6 +236,10 @@
       @include bottomCard;
     }
 
+    #share-with-checkbox-group {
+      @include checkboxGroup;
+    }
+
     /*#endregion ELEMENT DEFAULTS*/
 
     /*#region MIXINS */
@@ -251,7 +253,7 @@
     #numpad-wrapper {
       @include numpad;
     }
-    
+
     #label-wrapper {
       @include label;
     }
@@ -309,7 +311,7 @@
 
     button,
     .button {
-      @include  buttonPress;
+      @include buttonPress;
       &.bottom {
         @include button;
       }

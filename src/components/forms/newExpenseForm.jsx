@@ -387,7 +387,7 @@ function NewExpenseForm({ hideCard }) {
             </label>
             <CheckboxGroup
               dataPhone={currentUser?.coparents.map((x) => x.phone)}
-              labels={currentUser?.coparents.map((x) => x.name)}
+              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
               onCheck={(e) => {
                 const checkbox = e.target.closest('#checkbox-container')
                 document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
@@ -406,7 +406,7 @@ function NewExpenseForm({ hideCard }) {
             </label>
             <CheckboxGroup
               dataPhone={currentUser?.coparents.map((x) => x.phone)}
-              labels={currentUser?.coparents.map((x) => x.name)}
+              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
               onCheck={handleShareWithSelection}
             />
           </div>
@@ -426,7 +426,7 @@ function NewExpenseForm({ hideCard }) {
                 onChange={(e) => setIncludeChildren(!includeChildren)}
               />
             </div>
-            {includeChildren && <CheckboxGroup labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />}
+            {includeChildren && <CheckboxGroup checkboxLabels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />}
           </div>
         )}
 
@@ -446,7 +446,7 @@ function NewExpenseForm({ hideCard }) {
             </div>
             {repeating && (
               <>
-                <CheckboxGroup onCheck={handleRepeatingSelection} labels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
+                <CheckboxGroup onCheck={handleRepeatingSelection} checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
                 <label className="mb-5">Month to end repeating expense</label>
                 {repeatInterval && (
                   <MobileDatePicker

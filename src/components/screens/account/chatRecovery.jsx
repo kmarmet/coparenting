@@ -228,7 +228,7 @@ function ChatRecovery() {
                 defaultLabel={'All'}
                 boxWidth={50}
                 onCheck={handleMessageTypeSelection}
-                labels={['All', 'Bookmarked Only']}
+                checkboxLabels={['All', 'Bookmarked Only']}
                 skipNameFormatting={true}
               />
 

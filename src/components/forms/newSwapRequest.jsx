@@ -255,7 +255,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                 </label>
                 <CheckboxGroup
                   dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                  labels={currentUser?.coparents.map((x) => x.name)}
+                  checkboxLabels={currentUser?.coparents.map((x) => x.name)}
                   onCheck={handleRecipientSelection}
                 />
 
@@ -266,7 +266,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                   </label>
                   <CheckboxGroup
                     dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                    labels={currentUser?.coparents.map((x) => x.name)}
+                    checkboxLabels={currentUser?.coparents.map((x) => x.name)}
                     onCheck={handleShareWithSelection}
                   />
                 </div>
@@ -287,7 +287,9 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                     onChange={(e) => setIncludeChildren(!includeChildren)}
                   />
                 </div>
-                {includeChildren && <CheckboxGroup labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />}
+                {includeChildren && (
+                  <CheckboxGroup checkboxLabels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+                )}
               </div>
             )}
 

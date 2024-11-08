@@ -55,7 +55,7 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
       <CheckboxGroup
         className="coparent-type"
         skipNameFormatting={true}
-        labels={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}
+        checkboxLabels={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}
         onCheck={handleCoparentType}
       />
       {showAddButton && (

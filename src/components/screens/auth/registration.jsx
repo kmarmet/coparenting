@@ -526,7 +526,7 @@ export default function Registration() {
             <CheckboxGroup
               skipNameFormatting={true}
               elClass={'mt-15 parent-type'}
-              labels={['Biological Parent', 'Step-Parent']}
+              checkboxLabels={['Biological Parent', 'Step-Parent']}
               onCheck={handleParentType}
             />
             <label>

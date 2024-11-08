@@ -121,7 +121,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
           <CheckboxGroup
             boxWidth={50}
             className="coparent-type"
-            labels={['Step-Parent', 'Biological Parent', "Spouse's Co-parent"]}
+            checkboxLabels={['Step-Parent', 'Biological Parent', "Spouse's Co-parent"]}
             onCheck={handleCoparentType}
           />
           {/* BUTTONS */}

@@ -10,7 +10,6 @@ import CalendarEvent from '@models/calendarEvent'
 import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import PushAlertApi from '@api/pushAlert'
-import DateManager from '@managers/dateManager'
 import NotificationManager from '@managers/notificationManager'
 import CalendarMapper from '../../mappers/calMapper'
 import CalMapper from '../../mappers/calMapper'
@@ -46,6 +45,7 @@ import { IoTodayOutline } from 'react-icons/io5'
 import { HiOutlineCalendarDays } from 'react-icons/hi2'
 import { AiOutlineDelete } from 'react-icons/ai'
 import Label from '../shared/label'
+import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 
 export default function EditCalEvent({ event, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -75,8 +75,15 @@ export default function EditCalEvent({ event, hideCard }) {
   const [showReminders, setShowReminders] = useState(false)
   const [allEvents, setAllEvents] = useState([])
   const [isVisitation, setIsVisitation] = useState(false)
+
   const resetForm = () => {
     Manager.resetForm('edit-event-form')
+    const toggles = document.querySelectorAll(`.react-toggle`)
+    for (let toggle of toggles) {
+      toggle.classList.remove('react-toggle--checked')
+      toggle.querySelector('input').value = 'off'
+    }
+    document.querySelectorAll(`.box`).forEach((box) => box.classList.remove('active'))
     setEventFromDate('')
     setEventLocation('')
     setEventTitle('')
@@ -92,6 +99,7 @@ export default function EditCalEvent({ event, hideCard }) {
     setClonedDatesToSubmit([])
     setRepeatingDatesToSubmit([])
     setIsAllDay(false)
+    event = null
     setError('')
     hideCard()
   }
@@ -107,7 +115,7 @@ export default function EditCalEvent({ event, hideCard }) {
     eventToEdit.id = event?.id
     eventToEdit.title = eventTitle
     eventToEdit.reminderTimes = eventReminderTimes
-    eventToEdit.shareWith = Manager.getUniqueArray(eventShareWith).flat()
+    eventToEdit.shareWith = Manager.getUniqueArray(eventShareWith).flat() || []
     eventToEdit.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
     eventToEdit.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
     eventToEdit.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
@@ -117,7 +125,7 @@ export default function EditCalEvent({ event, hideCard }) {
     eventToEdit.ownerPhone = currentUser.phone
     eventToEdit.createdBy = currentUser.name
     eventToEdit.notes = eventNotes
-    eventToEdit.reminderTimes = eventReminderTimes
+    eventToEdit.reminderTimes = eventReminderTimes || []
     eventToEdit.children = eventChildren
     eventToEdit.directionsLink = Manager.getDirectionsLink(eventLocation)
     eventToEdit.location = eventLocation
@@ -229,9 +237,8 @@ export default function EditCalEvent({ event, hideCard }) {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, event.shareWith).then((updated) => {
-      setEventShareWith(updated)
-    })
+    const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
+    setEventShareWith(shareWithNumbers)
   }
 
   const handleReminderSelection = async (e) => {
@@ -256,20 +263,51 @@ export default function EditCalEvent({ event, hideCard }) {
     )
   }
 
+  const handleRemindCoparentsSelection = (e) => {
+    Manager.handleCheckboxSelection(
+      e,
+      (e) => {
+        if (remindCoparents?.length === 0) {
+          setRemindCoparents([e])
+        } else {
+          if (!remindCoparents?.includes(e)) {
+            setRemindCoparents([...remindCoparents, e])
+          }
+        }
+      },
+      (e) => {
+        let filtered = remindCoparents?.filter((x) => x !== e)
+        setRemindCoparents(filtered)
+      },
+      true
+    )
+  }
+
   const setDefaultValues = () => {
     setEventTitle(event?.title)
     setEventFromDate(event?.startDate)
     setEventEndDate(event?.endDate)
     setEventLocation(event?.location)
-    setEventStartTime(event?.startTime)
-    setEventEndTime(event?.endTime)
     setEventLength(EventLengths.single)
     setEventReminderTimes(event?.reminderTimes || [])
+    setEventStartTime(event?.startTime)
+    setEventEndTime(event?.endTime)
+
+    const checkboxClasses = []
 
     // Reminder Toggle
+    console.log(event?.reminderTimes)
     if (Manager.isValid(event?.reminderTimes, true)) {
-      document.querySelector('.reminder-times .react-toggle').classList.add('react-toggle--checked')
+      checkboxClasses.push('.reminder-times')
       setShowReminders(true)
+    }
+
+    if (Manager.isValid(checkboxClasses, true)) {
+      for (let checkboxClass of checkboxClasses) {
+        const toggle = document.querySelector(`${checkboxClass} .react-toggle`)
+        toggle.classList.add('react-toggle--checked')
+        toggle.querySelector('input').value = 'on'
+      }
     }
 
     // Repeating
@@ -398,25 +436,33 @@ export default function EditCalEvent({ event, hideCard }) {
             </>
           )}
         </div>
+
+        {/* START TIME */}
         {!isAllDay && (
           <div className="flex gap mb-15">
             <div>
               <Label text={'Start Time'}></Label>
-              <MobileTimePicker
-                className={`${theme} event-date-range m-0 w-100`}
-                onAccept={(e) => setEventStartTime(e)}
-                minutesStep={5}
-                defaultValue={DateManager.dateIsValid(event?.startTime) ? moment(event?.startTime, DateFormats.timeForDb) : null}
-              />
+              {Manager.isValid(event) && (
+                <MobileTimePicker
+                  className={`${theme}`}
+                  onAccept={(e) => setEventStartTime(e)}
+                  minutesStep={5}
+                  defaultValue={moment(event?.startTime, 'hh:mma')}
+                />
+              )}
             </div>
+
+            {/* END TIME */}
             <div>
               <Label text={'End Time'}></Label>
-              <MobileTimePicker
-                className={`${theme} event-date-range m-0 w-100`}
-                minutesStep={5}
-                onAccept={(e) => setEventEndTime(e)}
-                defaultValue={DateManager.dateIsValid(event?.endTime) ? moment(event?.endTime, DateFormats.timeForDb) : null}
-              />
+              {Manager.isValid(event) && (
+                <MobileTimePicker
+                  className={`${theme}`}
+                  minutesStep={5}
+                  onAccept={(e) => setEventEndTime(e)}
+                  defaultValue={moment(event?.endTime, 'hh:mma')}
+                />
+              )}
             </div>
           </div>
         )}
@@ -446,16 +492,15 @@ export default function EditCalEvent({ event, hideCard }) {
         </div>
 
         {/* WHO IS ALLOWED TO SEE IT? */}
-        {Manager.isValid(currentUser?.coparents, true) && (
-          <div className={`share-with-container `}>
-            <Label text={'Who is allowed to see it?'} required={true}></Label>
-            <CheckboxGroup
-              elClass={`${theme} ${errorFields.includes('share-with') ? 'required-field-error' : ''}`}
-              dataPhone={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)}
-              labels={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
-              onCheck={handleShareWithSelection}
-            />
-          </div>
+        {Manager.isValid(currentUser?.coparents, true) && currentUser.accountType === 'parent' && (
+          <ShareWithCheckboxes
+            shareWith={event?.shareWith}
+            onCheck={(e) => handleShareWithSelection(e)}
+            defaultPhones={event?.shareWith}
+            labelText={'Who is allowed to see it?*'}
+            containerClass={'share-with-coparents'}
+            checkboxLabels={event?.shareWith}
+          />
         )}
 
         {/* REMINDER */}
@@ -484,7 +529,7 @@ export default function EditCalEvent({ event, hideCard }) {
                     dataPhone={
                       currentUser.accountType === 'parent' ? currentUser?.coparents?.map((x) => x.phone) : currentUser?.parents?.map((x) => x.phone)
                     }
-                    labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                    checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                     onCheck={handleReminderSelection}
                   />
                 </Accordion.Panel>
@@ -514,8 +559,10 @@ export default function EditCalEvent({ event, hideCard }) {
                   dataPhone={
                     currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
                   }
-                  labels={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
-                  onCheck={handleShareWithSelection}
+                  checkboxLabels={
+                    currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)
+                  }
+                  onCheck={handleRemindCoparentsSelection}
                 />
               </Accordion.Panel>
             </Accordion>
@@ -538,7 +585,11 @@ export default function EditCalEvent({ event, hideCard }) {
             </div>
             <Accordion>
               <Accordion.Panel expanded={includeChildren}>
-                <CheckboxGroup elClass={`${theme} `} labels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+                <CheckboxGroup
+                  elClass={`${theme} `}
+                  checkboxLabels={currentUser.children.map((x) => x['general'].name)}
+                  onCheck={handleChildSelection}
+                />
               </Accordion.Panel>
             </Accordion>
           </div>
@@ -582,7 +633,7 @@ export default function EditCalEvent({ event, hideCard }) {
           }}>
           Delete <AiOutlineDelete className={'fs-22 ml-5'} />
         </button>
-        <button className="button card-button cancel" onClick={hideCard}>
+        <button className="button card-button cancel" onClick={resetForm}>
           Cancel
         </button>
       </div>

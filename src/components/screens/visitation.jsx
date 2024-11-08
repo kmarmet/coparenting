@@ -581,13 +581,13 @@ export default function Visitation() {
                 boxWidth={50}
                 elClass={'mb-15'}
                 onCheck={handleSpecificWeekendSelection}
-                labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend']}
+                checkboxLabels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend']}
               />
               <label>If it is a month with 5 weekends, which additional weekend will YOU have the child(ren)?</label>
               <CheckboxGroup
                 boxWidth={50}
                 onCheck={handleFifthWeekendSelection}
-                labels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend']}
+                checkboxLabels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend']}
               />
             </div>
           </>
@@ -645,7 +645,7 @@ export default function Visitation() {
                   elClass="mt-10 gap-10"
                   onCheck={handleScheduleTypeSelection}
                   skipNameFormatting={true}
-                  labels={['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']}
+                  checkboxLabels={['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']}
                 />
               </div>
             )}
@@ -655,7 +655,7 @@ export default function Visitation() {
               <CheckboxGroup
                 elClass={'gap-10'}
                 dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                labels={currentUser?.coparents.map((x) => x.name)}
+                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
                 onCheck={handleShareWithSelection}
               />
             </Label>
@@ -687,7 +687,7 @@ export default function Visitation() {
             boxWidth={50}
             onCheck={handleHolidaySelection}
             skipNameFormatting={true}
-            labels={holidayLabels.map((x) => x.name).sort()}
+            checkboxLabels={holidayLabels.map((x) => x.name).sort()}
             dataDate={dataDates}
           />
         </Label>

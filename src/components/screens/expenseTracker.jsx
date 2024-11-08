@@ -334,7 +334,7 @@ export default function ExpenseTracker() {
               <CheckboxGroup
                 defaultLabel={'All'}
                 skipNameFormatting={true}
-                labels={['All', 'Single Date', 'Repeating']}
+                checkboxLabels={['All', 'Single Date', 'Repeating']}
                 onCheck={handleViewTypeSelection}
                 elClass={'view-type'}
                 dataPhone={[]}

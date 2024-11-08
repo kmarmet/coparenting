@@ -1,5 +1,5 @@
 import Manager from '@manager'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import {
   contains,
@@ -20,54 +20,58 @@ import {
 } from '../../globalFunctions'
 import Label from './label'
 
-export default function CheckboxGroup({
-  checkboxLabels,
+function ShareWithCheckboxes({
   onCheck,
   containerClass = '',
-  elClass = '',
+  checkboxGroupClass = '',
   dataPhone,
-  dataDate,
-  skipNameFormatting = false,
-  defaultLabels,
+  defaultPhones,
   labelText = '',
   required = false,
+  shareWith,
 }) {
   const { state, setState } = useContext(globalState)
-  const { theme } = state
+  const { theme, currentUser } = state
+  const [names, setNames] = useState([])
+
+  const setUserNames = async () => {
+    const userNames = await Manager.getNamesFromPhone(shareWith)
+    if (Manager.isValid(userNames)) {
+      setNames(userNames)
+    }
+  }
+
+  useEffect(() => {
+    if (Manager.isValid(shareWith, true)) {
+      setUserNames().then((r) => r)
+    }
+  }, [shareWith])
+
   return (
-    <div id="checkbox-group" className={`${theme} ${elClass}`}>
-      {Manager.isValid(checkboxLabels, true) &&
-        checkboxLabels.map((label, index) => {
-          let thisPhone = checkboxLabels[index]
-          let thisDate = null
+    <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass}`}>
+      {Manager.isValid(shareWith, true) &&
+        Manager.isValid(names, true) &&
+        shareWith.map((phone, index) => {
+          let thisPhone = shareWith[index]
           if (Manager.isValid(dataPhone)) {
             if (Manager.isValid(dataPhone[index])) {
               thisPhone = dataPhone[index]
             }
           }
-          if (Manager.isValid(dataDate)) {
-            thisDate = dataDate[index]
-            if (thisDate !== undefined) {
-              thisDate = dataDate[index]
-            }
-          }
-          if (Manager.isValid(label) && !stringHasNumbers(label) && !skipNameFormatting) {
-            label = formatNameFirstNameOnly(label.toString())
-          }
+          const userName = names.filter((x) => x?.phone === phone)[0]?.name
+
           return (
             <div key={index}>
               <Label text={labelText} required={required}></Label>
               <div
-                id="checkbox-container"
+                id="share-with-checkbox-container"
                 data-phone={thisPhone ? thisPhone : ''}
-                data-label={label ? label : ''}
-                data-date={thisDate ? thisDate : ''}
                 className={`flex ${containerClass}`}
                 onClick={(e) => onCheck(e)}>
-                <div className={`box ${Manager.isValid(defaultLabels, true) && defaultLabels.includes(label) ? 'active' : ''}`}>
+                <div className={`box ${Manager.isValid(defaultPhones, true) && defaultPhones.includes(phone) ? 'active' : ''}`}>
                   <div id="inner-circle"></div>
                 </div>
-                <span>{label}</span>
+                <span>{formatNameFirstNameOnly(userName)}</span>
               </div>
             </div>
           )
@@ -75,3 +79,5 @@ export default function CheckboxGroup({
     </div>
   )
 }
+
+export default ShareWithCheckboxes

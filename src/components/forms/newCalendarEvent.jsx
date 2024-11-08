@@ -31,6 +31,7 @@ import {
   getFileExtension,
   getFirstWord,
   isAllUppercase,
+  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
@@ -46,6 +47,7 @@ import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import Label from '../shared/label'
 import PushAlertApi from '../../api/pushAlert'
+import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 
 // COMPONENT
 export default function NewCalendarEvent({ hideCard }) {
@@ -262,10 +264,9 @@ export default function NewCalendarEvent({ hideCard }) {
     setChildren(childrenArr)
   }
 
-  const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
-      setShareWith(updated)
-    })
+  const handleShareWithSelection = (e) => {
+    const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, shareWith)
+    setShareWith(shareWithNumbers)
   }
 
   const handleReminderSelection = async (e) => {
@@ -517,15 +518,13 @@ export default function NewCalendarEvent({ hideCard }) {
 
         {/* WHO IS ALLOWED TO SEE IT? */}
         {Manager.isValid(currentUser?.coparents, true) && (
-          <div className={`share-with-container `}>
-            <Label text={'Who is allowed to see it?'} required={true} />
-            <CheckboxGroup
-              elClass={`${theme}`}
-              dataPhone={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)}
-              labels={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
-              onCheck={handleShareWithSelection}
-            />
-          </div>
+          <ShareWithCheckboxes
+            shareWith={currentUser.coparents.map((x) => x.phone)}
+            onCheck={(e) => handleShareWithSelection(e)}
+            labelText={'Who is allowed to see it?*'}
+            containerClass={'share-with-coparents'}
+            checkboxLabels={currentUser.coparents.map((x) => x.phone)}
+          />
         )}
 
         {/* REMINDER */}
@@ -549,7 +548,7 @@ export default function NewCalendarEvent({ hideCard }) {
                     containerClass={'reminder-times'}
                     elClass={`${theme}`}
                     skipNameFormatting={true}
-                    labels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                    checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                     onCheck={handleReminderSelection}
                   />
                 </Accordion.Panel>
@@ -579,7 +578,9 @@ export default function NewCalendarEvent({ hideCard }) {
                   dataPhone={
                     currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
                   }
-                  labels={currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)}
+                  checkboxLabels={
+                    currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)
+                  }
                   onCheck={handleShareWithSelection}
                 />
               </Accordion.Panel>
@@ -603,7 +604,11 @@ export default function NewCalendarEvent({ hideCard }) {
             </div>
             <Accordion>
               <Accordion.Panel expanded={includeChildren}>
-                <CheckboxGroup elClass={`${theme} `} labels={currentUser?.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+                <CheckboxGroup
+                  elClass={`${theme} `}
+                  checkboxLabels={currentUser?.children.map((x) => x['general'].name)}
+                  onCheck={handleChildSelection}
+                />
               </Accordion.Panel>
             </Accordion>
           </div>
@@ -631,7 +636,7 @@ export default function NewCalendarEvent({ hideCard }) {
                     elClass={`${theme} `}
                     boxWidth={35}
                     onCheck={handleRepeatingSelection}
-                    labels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
+                    checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
                   />
                   {repeatInterval && (
                     <DatetimePicker

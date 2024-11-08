@@ -168,7 +168,7 @@ export default function AdminDashboard() {
         {/* Get Database Record */}
         <div className="tool-box">
           <p className="box-title">Get Records</p>
-          <CheckboxGroup labels={['Calendar', 'Expenses', 'Users']} onCheck={handleGetRecordTypeSelection} />
+          <CheckboxGroup checkboxLabels={['Calendar', 'Expenses', 'Users']} onCheck={handleGetRecordTypeSelection} />
           <input type="text" className="mb-10" onChange={(e) => setGetRecordsSearchValue(e.target.value)} />
           <div className="buttons flex">
             <button className="button center" onClick={appendGetRecordsCode}>

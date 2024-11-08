@@ -280,7 +280,7 @@ export default function Login() {
             </div>
 
             {/* REMEMBER ME */}
-            <CheckboxGroup elClass={'light'} boxWidth={50} onCheck={toggleRememberMe} labels={['Remember Me']} skipNameFormatting={true} />
+            <CheckboxGroup elClass={'light'} boxWidth={50} onCheck={toggleRememberMe} checkboxLabels={['Remember Me']} skipNameFormatting={true} />
             <div className="flex w-100 mb-15 gap">
               <button className="button default green w-50" onClick={signIn}>
                 Login <span className="material-icons-round">lock_open</span>

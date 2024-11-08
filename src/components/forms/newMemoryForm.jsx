@@ -169,7 +169,7 @@ function NewMemoryForm({ hideCard }) {
               </label>
               <CheckboxGroup
                 dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                labels={currentUser?.coparents.map((x) => x.name)}
+                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
                 onCheck={handleShareWithSelection}
               />
             </div>

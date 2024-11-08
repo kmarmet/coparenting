@@ -194,7 +194,7 @@ export default function NewTransferChangeRequest({ hideCard }) {
             boxWidth={100}
             skipNameFormatting={true}
             dataPhone={currentUser?.coparents.map((x) => x.phone)}
-            labels={['Set as Preferred Transfer Location']}
+            checkboxLabels={['Set as Preferred Transfer Location']}
             onCheck={handlePreferredLocation}
           />
 
@@ -207,7 +207,7 @@ export default function NewTransferChangeRequest({ hideCard }) {
             <Label icon={<IoPersonCircleOutline />} text={'Who is the request being sent to?'}>
               <CheckboxGroup
                 dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                labels={currentUser?.coparents.map((x) => x.name)}
+                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
                 onCheck={handleRequestRecipient}
               />
             </Label>
@@ -216,7 +216,7 @@ export default function NewTransferChangeRequest({ hideCard }) {
             <Label icon={<FaRegEye />} text={'Who is allowed to see it?'} required={true}>
               <CheckboxGroup
                 dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                labels={currentUser?.coparents.map((x) => x.name)}
+                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
                 onCheck={handleShareWithSelection}
               />
             </Label>

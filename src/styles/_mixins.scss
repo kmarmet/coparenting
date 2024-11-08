@@ -1081,6 +1081,10 @@
   margin-bottom: 10px;
   padding: 0;
   gap: 8px;
+  
+  #label-wrapper {
+    width: 100%;
+  }
 
   &.gap-5 {
     //    gap: 5px;
@@ -1095,7 +1099,7 @@
   }
 
   #checkbox-container,
-  #standalone-checkbox-container {
+  #standalone-checkbox-container, #share-with-checkbox-container {
     min-width: 40%;
     &.flex {
       align-items: center;

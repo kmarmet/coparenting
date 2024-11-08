@@ -155,11 +155,23 @@ const Manager = {
     let currentDate = `${month}/${day}/${year}`
     return currentDate
   },
-  createVerificationCode: () => {
-    return Math.floor(100000 + Math.random() * 900000)
-  },
   scrollToTopOfPage: () => {
     window.scrollTo(0, 0)
+  },
+  getNamesFromPhone: async (phones) => {
+    let userObjectsToReturn = []
+    if (Manager.isValid(phones, true)) {
+      const users = await DB.getTable(DB.tables.users)
+      for (let user of users) {
+        if (phones.includes(user.phone)) {
+          userObjectsToReturn.push({
+            name: user.name,
+            phone: user.phone,
+          })
+        }
+      }
+    }
+    return userObjectsToReturn.flat()
   },
   // ON PAGE LOAD
   showPageContainer: (hideOrShow = 'show') => {
@@ -269,23 +281,6 @@ const Manager = {
 
     return directionsLink
   },
-  formatPhoneNumber(phoneNumberString) {
-    let input = phoneNumberString.replace('(', '').replace(')', '').replace(' ', '').substring(0, 10)
-
-    const areaCode = input.substring(0, 3)
-    const middle = input.substring(3, 6)
-    const last = input.substring(6, 10)
-
-    if (input.length > 6) {
-      input = `${areaCode}-${middle}-${last}`
-    } else if (input.length > 3) {
-      input = `(${areaCode}) ${middle}`
-    } else if (input.length > 0) {
-      input = `(${areaCode}`
-    }
-
-    return input
-  },
   getUniqueArrayOfObjects: (arr, key) => {
     let setObj = new Set(arr.map(JSON.stringify))
     let output = Array.from(setObj).map(JSON.parse)
@@ -312,10 +307,9 @@ const Manager = {
       if (checkCallback) checkCallback(label)
     }
   },
-  handleShareWithSelection: async (e, currentUser, shareWith) => {
-    let returnValue = []
+  handleShareWithSelection: (e, currentUser, shareWith) => {
     const clickedEl = e.currentTarget
-    const checkbox = clickedEl.querySelector('.share-with-container .box')
+    const checkbox = clickedEl.querySelector('#share-with-checkbox-container .box')
     const selectedValue = clickedEl.getAttribute('data-phone')
     // Uncheck
     if (checkbox.classList.contains('active')) {
@@ -341,21 +335,24 @@ const Manager = {
           }
         })
       } else {
-        currentUser?.parents.forEach((parent) => {
-          if (parent.phone == selectedValue) {
-            if (shareWith.length === 0) {
-              shareWith = [parent.phone]
-            } else {
-              shareWith = [...shareWith, parent.phone]
+        if (currentUser.accountType === 'child') {
+          currentUser?.parents.forEach((parent) => {
+            if (parent.phone == selectedValue) {
+              if (shareWith.length === 0) {
+                shareWith = [parent.phone]
+              } else {
+                shareWith = [...shareWith, parent.phone]
+              }
             }
-          }
-        })
+          })
+        }
       }
       checkbox.classList.add('active')
     }
+    console.log(shareWith)
     return shareWith
   },
-  setDefaultCheckboxes: (checkboxGroupName, object, propName, isArray = false, values) => {
+  setDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) => {
     const getRepeatingEvents = async () => {
       const eventTitle = object.title
       let repeatingEvents = await DB.getTable(DB.tables.calendarEvents)
@@ -368,24 +365,21 @@ const Manager = {
       return repeatingEvents
     }
     // Share With
-    if (checkboxGroupName === 'shareWith') {
-      let checkboxes = document.querySelectorAll(`[data-phone]`)
-      checkboxes.forEach((checkbox) => {
-        const dataPhone = checkbox.getAttribute('data-phone')
-        if (contains(object[propName], dataPhone)) {
-          checkbox.querySelector('.box').classList.add('active')
-        }
-      })
+    if (checkboxContainerClass === 'share-with') {
+      for (let phone of values) {
+        console.log(`.${checkboxContainerClass} [data-phone='${phone}'] .box`)
+        document.querySelector(`.${checkboxContainerClass} [data-phone='${phone}'] .box`).classList.add('active')
+      }
     }
 
     // Repeating
-    if (checkboxGroupName === 'repeating') {
+    if (checkboxContainerClass === 'repeating') {
       const repeatingEvents = getRepeatingEvents()
       return repeatingEvents
     }
 
     // Reminder Times
-    if (checkboxGroupName === 'reminder-times') {
+    if (checkboxContainerClass === 'reminder-times') {
       const reminderIsValid = Manager.isValid(values, true)
       let reminderTimes = values
       if (reminderIsValid) {

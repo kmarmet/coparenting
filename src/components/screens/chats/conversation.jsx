@@ -26,6 +26,7 @@ import {
   getFileExtension,
   getFirstWord,
   isAllUppercase,
+  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,

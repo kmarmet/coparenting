@@ -25,10 +25,13 @@ import {
   formatNameFirstNameOnly,
   getFirstWord,
   isAllUppercase,
+  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
+  successAlert,
+  throwError,
   toCamelCase,
   uppercaseFirstLetterOfAllWords,
   wordCount,
@@ -323,10 +326,6 @@ export default function EventCalendar() {
     })
   }
 
-  const formatWebsiteUrl = (url) => {
-    return url.slice(0, url.indexOf('com') + 3)
-  }
-
   // ADD FLATPICKR CALENDAR
   const addFlatpickrCalendar = async () => {
     const dbRef = ref(getDatabase())
@@ -401,12 +400,15 @@ export default function EventCalendar() {
     setShowSearchCard(false)
   }
 
-  const handleEventRowClick = (e, event) => {
+  const handleEventRowClick = async (e, event) => {
     const shouldShow = !event?.isHoliday && e.target.tagName !== 'A' && e.target.id !== 'more-button'
     const hasEditAccess = AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())
-    if (shouldShow && hasEditAccess) {
+    if (shouldShow && hasEditAccess && event.ownerPhone === currentUser.phone) {
       setEventToEdit(event)
       setShowEditCard(true)
+    } else {
+      const owner = await Manager.getNamesFromPhone([event.ownerPhone])
+      oneButtonAlert('Cannot Edit', `${owner[0].name} is the creator of this event, please ask them to edit it.`, 'warning')
     }
   }
 

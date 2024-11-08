@@ -80,7 +80,7 @@ export default function CustomChildInfo({ onClose, setActiveChild, activeChild }
       <label>
         Info Type <span className="asterisk">*</span>
       </label>
-      <CheckboxGroup defaultLabel={'text'} labels={['Text', 'Location']} onCheck={handleInfoTypeSelection} />
+      <CheckboxGroup defaultLabel={'text'} checkboxLabels={['Text', 'Location']} onCheck={handleInfoTypeSelection} />
 
       {/* INPUTS */}
       {infoType === 'text' && (
