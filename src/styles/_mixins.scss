@@ -888,20 +888,11 @@
   label  {
     font-size: 22px;
     margin-right: 8px;
-    opacity: 0.7;
   }
 }
 @mixin titleSuggestionDropdown {
   transition: all 0.3s ease-in-out;
   height: 0;
-
-  &.dark {
-    .suggestions {
-      width: 90%;
-      background: $lightGrey;
-      border-radius: 0 0 $borderRadius $borderRadius;
-    }
-  }
 
   &.active {
     height: auto;
@@ -1080,7 +1071,7 @@
   flex-wrap: wrap;
   margin-bottom: 10px;
   padding: 0;
-  gap: 8px;
+  gap: 5px 10px;
   
   #label-wrapper {
     width: 100%;
@@ -1114,14 +1105,14 @@
       }
 
       .box {
-        height: 22px;
-        width: 22px;
+        height: 18px;
+        width: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.5s ease-out;
         border-radius: 100%;
-        min-width: 22px;
+        min-width: 18px;
         border: 1.5px solid $lightDarkGrey;
 
         &.active {
@@ -1132,8 +1123,8 @@
         }
 
         #inner-circle {
-          height: 20px;
-          width: 20px;
+          height: 16px;
+          width: 16px;
           border: 3px solid white;
           border-radius: 100%;
           transition: all 0.3s ease-out;
@@ -2072,6 +2063,7 @@
   min-height: 0;
     height: 0;
   left: 0;
+  
   &.active {
     padding: 20px 20px 200px 20px;
     min-height: 30vh;
@@ -2081,6 +2073,17 @@
     bottom: 0;
     z-index: $maxZIndex;
     transition: all 0.4s ease-in-out;
+    
+    &.new-calendar-event, &.edit-calendar-event {
+      min-height: 90vh;
+    }
+  }
+  
+   textarea, input {
+    margin-bottom: 15px;
+  }
+  .flex {
+    margin-bottom: 8px;
   }
 
   #toc-scroll-button {
@@ -2231,7 +2234,8 @@
       }
 
       &.cancel {
-        background-color: $darkGrey;
+        background-color: $buttonGrey;
+        color: $lightBlack;
       }
     }
 
@@ -2261,7 +2265,11 @@
   }
 
   .flex {
-    margin-bottom: 10px;
+//    margin-bottom: 10px;
+    
+    &.title-suggestion-dropdown {
+        margin: 0;
+    }
     p {
       padding-left: 0;
     }

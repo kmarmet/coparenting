@@ -29,8 +29,6 @@ import {
   wordCount
 } from "../globalFunctions";
 
-import VisitationManager from "./visitationManager";
-
 export default CalendarManager = {
   getUniqueArrayOfObjects: (arr, key) => {
     var i, len, obj, output, results;
@@ -61,8 +59,8 @@ export default CalendarManager = {
   addMultipleCalEvents: async function(currentUser, newEvents) {
     var currentEvents, dbRef, error, eventsToAdd;
     dbRef = ref(getDatabase());
-    VisitationManager.deleteAllHolidaysForUser(currentUser);
-    currentEvents = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents)));
+    currentEvents = (await DB.getTable(DB.tables.calendarEvents));
+    console.log(newEvents);
     eventsToAdd = [...currentEvents, ...newEvents].filter(function(x) {
       return x != null;
     }).flat();

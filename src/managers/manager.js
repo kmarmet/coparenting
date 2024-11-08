@@ -287,14 +287,14 @@ const Manager = {
     // [...new Map(arr.map((item) => [item[key], item])).values()];
     return output
   },
-  handleCheckboxSelection: (element, checkCallback, uncheckCallback, canSelectAll = false) => {
+  handleCheckboxSelection: (element, onCheck, onCheckRemoval, canSelectAll = false) => {
     const clickedEl = element.currentTarget
     const checkbox = clickedEl.querySelector('.box')
 
     if (checkbox.classList.contains('active')) {
       const label = clickedEl.dataset['label']
       checkbox.classList.remove('active')
-      if (uncheckCallback) uncheckCallback(label)
+      if (onCheckRemoval) onCheckRemoval(label)
     } else {
       const label = clickedEl.dataset['label']
       const notActiveLabels = clickedEl.parentNode.querySelectorAll(`[data-label]:not([data-label="${label}"])`)
@@ -304,7 +304,7 @@ const Manager = {
         })
       }
       clickedEl.querySelector('.box').classList.add('active')
-      if (checkCallback) checkCallback(label)
+      if (onCheck) onCheck(label)
     }
   },
   handleShareWithSelection: (e, currentUser, shareWith) => {

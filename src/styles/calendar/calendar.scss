@@ -1,9 +1,20 @@
 @import '../mixins';
 
 #external-overrides {
+  #calendar-event-form-container {
+    .event-times-wrapper {
+      margin: 0;
+      *:not(input) {
+        margin: 0 !important;
+        padding: 0 !important;
+
+        input {
+          margin: 0 !important;
+        }
+      }
+    }
+  }
   #calendar-container {
-    
-    
     // BELOW CALENDAR
     #below-calendar {
       display: block;

@@ -21,6 +21,7 @@ import DateManager from '../../managers/dateManager'
 import TitleSuggestion from '../../models/titleSuggestion'
 import CalendarManager from '../../managers/calendarManager'
 import TitleSuggestionWrapper from '../shared/titleSuggestionWrapper'
+import { FaClone } from 'react-icons/fa6'
 import Toggle from 'react-toggle'
 import '../../styles/reactToggle.css'
 import {
@@ -45,9 +46,9 @@ import {
 } from '../../globalFunctions'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
-import Label from '../shared/label'
 import PushAlertApi from '../../api/pushAlert'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import InputWrapper from '../shared/inputWrapper'
 
 // COMPONENT
 export default function NewCalendarEvent({ hideCard }) {
@@ -73,37 +74,49 @@ export default function NewCalendarEvent({ hideCard }) {
   const [titleSuggestions, setTitleSuggestions] = useState([])
   const [children, setChildren] = useState([])
   const [reminderTimes, setReminderTimes] = useState([])
+  const [coparentsToRemind, setCoparentsToRemind] = useState([])
   const [isAllDay, setIsAllDay] = useState(false)
   const [repeating, setRepeating] = useState(false)
   const [showCloneInput, setShowCloneInput] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
-  const [remindCoparents, setRemindCoparents] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
+  const [showCoparentReminderToggle, setShowCoparentReminderToggle] = useState(false)
 
   const resetForm = () => {
     Manager.resetForm('new-event-form')
+    const toggles = document.querySelectorAll(`.react-toggle`)
+    for (let toggle of toggles) {
+      toggle.classList.remove('react-toggle--checked')
+      toggle.querySelector('input').value = 'off'
+    }
+    document.querySelectorAll(`.box`).forEach((box) => box.classList.remove('active'))
+    document.querySelectorAll('.input-container').forEach((container) => container.classList.remove('active'))
     setEventLength(EventLengths.single)
     setEventFromDate('')
-    setRepeatInterval('')
     setEventLocation('')
     setEventTitle('')
     setWebsiteUrl('')
     setNotes('')
     setRepeatingEndDate('')
+    setRepeatInterval('')
     setEventToDate('')
     setEventStartTime('')
     setEventEndTime('')
-    setChildren([])
-    setReminderTimes([])
     setShareWith([])
     setClonedDates([])
     setClonedDatesToSubmit([])
     setTitleSuggestions([])
+    setChildren([])
+    setReminderTimes([])
+    setCoparentsToRemind([])
     setIsAllDay(false)
+    setRepeating(false)
     setShowCloneInput(false)
     setShowReminders(false)
+    setIncludeChildren(false)
     setIsVisitation(false)
+    setShowCoparentReminderToggle(false)
     hideCard()
   }
 
@@ -247,7 +260,7 @@ export default function NewCalendarEvent({ hideCard }) {
         repeatingEvents.push(repeatingDateObject)
       })
       // Upload to DB
-      await CalendarManager.addMultipleCalEvents(repeatingEvents)
+      await CalendarManager.addMultipleCalEvents(currentUser, repeatingEvents)
     }
   }
 
@@ -269,7 +282,21 @@ export default function NewCalendarEvent({ hideCard }) {
     setShareWith(shareWithNumbers)
   }
 
-  const handleReminderSelection = async (e) => {
+  const handleCoparentsToRemindSelection = async (e) => {
+    Manager.handleCheckboxSelection(
+      e,
+      (e) => {
+        setCoparentsToRemind([...coparentsToRemind, e])
+      },
+      (e) => {
+        let filtered = coparentsToRemind.filter((x) => x !== e)
+        setCoparentsToRemind(filtered)
+      },
+      true
+    )
+  }
+
+  const handleReminderSelection = (e) => {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
@@ -396,11 +423,11 @@ export default function NewCalendarEvent({ hideCard }) {
 
         {/* CALENDAR FORM */}
         {/* TITLE */}
-        <Label text={'Title'} required={true} />
         <div className="title-suggestion-wrapper">
-          <input
-            className={`event-title event-title-input mb-0 ${titleSuggestions.length > 0 ? 'no-radius' : ''}`}
-            type="text"
+          <InputWrapper
+            inputType={'text'}
+            labelText={'Title'}
+            required={true}
             onChange={async (e) => {
               const inputValue = e.target.value
               if (inputValue.length > 1) {
@@ -433,19 +460,21 @@ export default function NewCalendarEvent({ hideCard }) {
         </div>
 
         {/* FROM DATE */}
-        <div className="flex gap mt-15 mb-15">
+        <div className="flex gap m-0">
           {/* FROM DATE */}
           {eventLength === EventLengths.single && (
             <>
               <div className="w-100">
-                <Label text={'Date'} required={true} />
-                <MobileDatePicker
-                  value={moment(selectedNewEventDay)}
-                  className={`${theme} m-0 w-100 event-from-date mui-input`}
-                  onAccept={(e) => {
-                    setEventFromDate(e)
-                  }}
-                />
+                <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
+                  <MobileDatePicker
+                    disablePast={true}
+                    value={moment(selectedNewEventDay)}
+                    className={`${theme} m-0 w-100 event-from-date mui-input`}
+                    onAccept={(e) => {
+                      setEventFromDate(e)
+                    }}
+                  />
+                </InputWrapper>
               </div>
             </>
           )}
@@ -454,43 +483,67 @@ export default function NewCalendarEvent({ hideCard }) {
         {/* DATE RANGE */}
         {eventLength === EventLengths.multiple && (
           <>
-            <Label text={'Date Range'} required={true} />
-            <DateRangePicker
-              showOneCalendar
-              showHeader={false}
-              editable={false}
-              id="event-date"
-              placement="auto"
-              character=" to "
-              className={`${theme} mb-15`}
-              format={'MM/dd/yyyy'}
-              onChange={(e) => {
-                let formattedDates = []
-                if (e && e.length > 0) {
-                  e.forEach((date) => {
-                    formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                  })
-                  setEventFromDate(formattedDates[0])
-                  setEventToDate(formattedDates[1])
-                }
-              }}
-            />
+            <InputWrapper labelText={'Date Range'} required={true} inputType={'date'}>
+              <DateRangePicker
+                showOneCalendar
+                showHeader={false}
+                editable={false}
+                id="event-date"
+                placement="auto"
+                character=" to "
+                className={`${theme} mb-15`}
+                format={'MM/dd/yyyy'}
+                onChange={(e) => {
+                  let formattedDates = []
+                  if (e && e.length > 0) {
+                    e.forEach((date) => {
+                      formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
+                    })
+                    setEventFromDate(formattedDates[0])
+                    setEventToDate(formattedDates[1])
+                  }
+                }}
+              />
+            </InputWrapper>
           </>
         )}
 
         {/* EVENT WITH TIME */}
         {!isAllDay && (
-          <div className={'flex gap mb-15'}>
+          <div className={'flex gap event-times-wrapper mb-15'}>
             <div>
-              <Label text={'Start time'} required={false} />
-              <MobileTimePicker minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventStartTime(e)} />
+              <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
+                <MobileTimePicker defaultValue={moment()} minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventStartTime(e)} />
+              </InputWrapper>
             </div>
+            <span>&nbsp;to&nbsp;</span>
             <div>
-              <Label text={'End time'} required={false} />
-              <MobileTimePicker minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventEndTime(e)} />
+              <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
+                <MobileTimePicker
+                  defaultValue={moment().add(1, 'hour')}
+                  minutesStep={5}
+                  className={`${theme} m-0`}
+                  onAccept={(e) => setEventEndTime(e)}
+                />
+              </InputWrapper>
             </div>
           </div>
         )}
+
+        <hr />
+
+        {/* WHO IS ALLOWED TO SEE IT? */}
+        {Manager.isValid(currentUser?.coparents, true) && (
+          <ShareWithCheckboxes
+            shareWith={currentUser.coparents.map((x) => x.phone)}
+            onCheck={(e) => handleShareWithSelection(e)}
+            labelText={'Who is allowed to see it?*'}
+            containerClass={'share-with-coparents'}
+            checkboxLabels={currentUser.coparents.map((x) => x.phone)}
+          />
+        )}
+
+        <hr />
 
         {/* ALL DAY / HAS END DATE */}
         <div className="flex">
@@ -515,17 +568,6 @@ export default function NewCalendarEvent({ hideCard }) {
             onChange={(e) => setIsVisitation(!isVisitation)}
           />
         </div>
-
-        {/* WHO IS ALLOWED TO SEE IT? */}
-        {Manager.isValid(currentUser?.coparents, true) && (
-          <ShareWithCheckboxes
-            shareWith={currentUser.coparents.map((x) => x.phone)}
-            onCheck={(e) => handleShareWithSelection(e)}
-            labelText={'Who is allowed to see it?*'}
-            containerClass={'share-with-coparents'}
-            checkboxLabels={currentUser.coparents.map((x) => x.phone)}
-          />
-        )}
 
         {/* REMINDER */}
         {!isAllDay && (
@@ -557,8 +599,8 @@ export default function NewCalendarEvent({ hideCard }) {
           </>
         )}
 
-        {/* SEND NOTIFICATION TO */}
-        {Manager.isValid(currentUser?.coparents, true) && (!currentUser.accountType || currentUser.accountType === 'parent') && (
+        {/* REMIND COPARENTS*/}
+        {Manager.isValid(currentUser?.coparents, true) && (
           <div className="share-with-container">
             <div className="flex">
               <p>Remind Co-parent(s)</p>
@@ -568,21 +610,27 @@ export default function NewCalendarEvent({ hideCard }) {
                   unchecked: null,
                 }}
                 className={'ml-auto reminder-toggle'}
-                onChange={(e) => setRemindCoparents(!remindCoparents)}
+                onChange={(e) => setShowCoparentReminderToggle(showCoparentReminderToggle === true ? false : true)}
               />
             </div>
             <Accordion>
-              <Accordion.Panel expanded={remindCoparents}>
-                <CheckboxGroup
-                  elClass={`${theme} `}
-                  dataPhone={
-                    currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.phone) : currentUser.parents.map((x) => x.phone)
-                  }
-                  checkboxLabels={
-                    currentUser.accountType === 'parent' ? currentUser?.coparents.map((x) => x.name) : currentUser.parents.map((x) => x.name)
-                  }
-                  onCheck={handleShareWithSelection}
-                />
+              <Accordion.Panel expanded={showCoparentReminderToggle}>
+                {currentUser.accountType === 'parent' && (
+                  <CheckboxGroup
+                    elClass={`${theme} `}
+                    dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                    checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+                    onCheck={handleCoparentsToRemindSelection}
+                  />
+                )}
+                {currentUser.accountType === 'child' && (
+                  <CheckboxGroup
+                    elClass={`${theme} `}
+                    dataPhone={currentUser.parents.map((x) => x.phone)}
+                    checkboxLabels={currentUser.parents.map((x) => x.name)}
+                    onCheck={handleCoparentsToRemindSelection}
+                  />
+                )}
               </Accordion.Panel>
             </Accordion>
           </div>
@@ -652,17 +700,25 @@ export default function NewCalendarEvent({ hideCard }) {
               </Accordion>
             </div>
 
+            <div className="flex">
+              <p>Copy Event to Other Dates</p>
+              <Toggle
+                icons={{
+                  checked: <FaClone />,
+                  unchecked: null,
+                }}
+                className={'ml-auto reminder-toggle'}
+                onChange={(e) => setShowCloneInput(!showCloneInput)}
+              />
+            </div>
+
             {/* CLONED */}
-            <div className="mt-15">
-              <button className={`${theme} default center add-clone-button mt-20 mb-15`} onClick={() => setShowCloneInput(true)}>
-                Copy Event to Other Dates
-              </button>
-              {showCloneInput && (
-                <div>
-                  <Label text={'Select Dates'} required={false} />
+            {showCloneInput && (
+              <div>
+                <InputWrapper labelText={'Select Dates'} required={false} inputType={'date'}>
                   <MultiDatePicker
                     className={`${theme} multidate-picker mb-15`}
-                    placeholder=""
+                    placeholder="Select dates"
                     placement="auto"
                     label=""
                     onOpen={() => Manager.hideKeyboard()}
@@ -675,34 +731,33 @@ export default function NewCalendarEvent({ hideCard }) {
                       }
                     }}
                   />
-                </div>
-              )}
-            </div>
+                </InputWrapper>
+              </div>
+            )}
           </>
         )}
 
         {/* URL/WEBSITE */}
-        <Label text={'URL/Website'} required={false} />
-        <input type="url" onChange={(e) => setWebsiteUrl(e.target.value)} className="mb-10" />
+        <InputWrapper labelText={'URL/Website'} required={false} inputType={'url'} onChange={(e) => setWebsiteUrl(e.target.value)}></InputWrapper>
 
         {/* LOCATION/ADDRESS */}
-        <Label text={'Location'} required={false} />
-        <Autocomplete
-          placeholder={``}
-          apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-          options={{
-            types: ['geocode', 'establishment'],
-            componentRestrictions: { country: 'usa' },
-          }}
-          className="mb-10"
-          onPlaceSelected={(place) => {
-            setEventLocation(place.formatted_address)
-          }}
-        />
+        <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
+          <Autocomplete
+            placeholder={'Location'}
+            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+            options={{
+              types: ['geocode', 'establishment'],
+              componentRestrictions: { country: 'usa' },
+            }}
+            className="mb-10"
+            onPlaceSelected={(place) => {
+              setEventLocation(place.formatted_address)
+            }}
+          />
+        </InputWrapper>
 
         {/* NOTES */}
-        <Label text={'Notes'} required={false} />
-        <textarea onChange={(e) => setNotes(e.target.value)}></textarea>
+        <InputWrapper labelText={'Notes'} required={false} inputType={'textarea'} onChange={(e) => setNotes(e.target.value)}></InputWrapper>
 
         <div className="buttons gap">
           <button className="button card-button" onClick={submit}>

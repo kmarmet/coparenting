@@ -13,6 +13,7 @@ export default class CalendarEvent
     @title = ''
     @createdBy = ''
     @reminderTimes = []
+    @coparentsToRemindPhones = []
     @directionsLink = ''
     @endTime = ''
     @morningSummaryReminderSent = false

@@ -1121,7 +1121,12 @@
 
   .rs-tag-icon-close {
     position: relative;
-    top: -5px !important;
+    
+    svg {
+      font-size: 20px !important;
+      align-self: stretch !important;
+      height: 100% !important;
+    }
   }
 
   .rs-tag {

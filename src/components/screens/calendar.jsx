@@ -502,7 +502,7 @@ export default function EventCalendar() {
 
         {/* NEW EVENT */}
         <BottomCard
-          className={`${theme} new-event-form `}
+          className={`${theme} new-event-form new-calendar-event`}
           onClose={() => setShowNewEventCard(false)}
           showCard={showNewEventCard}
           title={'Add New Event'}>
@@ -513,6 +513,7 @@ export default function EventCalendar() {
         <BottomCard
           title={'Edit Event'}
           showCard={showEditCard}
+          className="edit-calendar-event"
           onClose={async (e) => {
             await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
             setShowEditCard(false)

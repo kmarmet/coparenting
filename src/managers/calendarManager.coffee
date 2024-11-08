@@ -15,7 +15,6 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from "../globalFunctions"
-import VisitationManager from "./visitationManager"
 
 export default CalendarManager =
   getUniqueArrayOfObjects: (arr, key) =>
@@ -33,8 +32,8 @@ export default CalendarManager =
       allCals.forEach((cal) => cal.remove())
   addMultipleCalEvents: (currentUser, newEvents) ->
     dbRef = ref(getDatabase())
-    VisitationManager.deleteAllHolidaysForUser(currentUser)
-    currentEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
+    currentEvents = await DB.getTable(DB.tables.calendarEvents)
+    console.log(newEvents)
     eventsToAdd = [currentEvents..., newEvents...].filter((x) -> x?).flat()
     try
       await set(child(dbRef, "#{DB.tables.calendarEvents}"), eventsToAdd)
