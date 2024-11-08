@@ -7,6 +7,11 @@
       padding-bottom: 200px;
       hr {
         width: 100%;
+        &.event-hr {
+          margin: 10px auto;
+          width: 70%;
+          
+        }
       }
       .material-icons-round {
         color: $mainBlue;

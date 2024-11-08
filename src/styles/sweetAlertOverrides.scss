@@ -1,4 +1,6 @@
 @import "./palette";
+@import "./_variables.scss";
+@import "./_mixins.scss";
 
 div {
   &:where(.swal2-container) {
@@ -16,10 +18,25 @@ div {
 }
 
 .swal2-title {
-  font-size: 25px;
+  font-size: 24px;
   line-height: 1.3;
 }
 
 .swal2-icon {
   transform: scale(.9);
+}
+
+.swal2-popup {
+  border-radius: $bigBorderRadius;
+  @include bestShadow;
+}
+
+.swal2-backdrop-show {
+  background: rgba(0,0,0,.6) !important;
+}
+
+.swal2-actions {
+  button {
+    border-radius: 8px !important;
+  }
 }

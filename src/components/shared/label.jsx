@@ -5,7 +5,7 @@ export default function Label({ classes = '', children, text, required = false, 
         {icon ? icon : ''}
         <span>
           {text}
-          {required ? <span className="asterisk">*</span> : ''}
+          {required && <span className="asterisk">*</span>}
         </span>
       </label>
       {children}

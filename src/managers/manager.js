@@ -88,9 +88,16 @@ const Manager = {
     return returnObject
   },
   resetForm: (parentClass) => {
+    const inputWrappers = document.querySelectorAll('.input-container')
     const inputs = document.querySelector(`.${parentClass}`)?.querySelectorAll('input, textarea')
-    const toggles = document.querySelector(`.${parentClass}`)?.querySelectorAll('.react-toggle--checked')
+    const toggles = document.querySelectorAll('.react-toggle')
     const checkboxes = document.querySelector(`.${parentClass}`)?.querySelectorAll('.box')
+
+    // Input Wrappers
+    if (Manager.isValid(inputWrappers, true)) {
+      inputWrappers.forEach((wrapper) => wrapper.classList.remove('active'))
+    }
+
     // Inputs/Textareas
     if (Manager.isValid(inputs, true)) {
       inputs.forEach((input) => {
@@ -100,7 +107,10 @@ const Manager = {
 
     // Toggles
     if (Manager.isValid(toggles, true)) {
-      toggles.forEach((toggle) => toggle.classList.remove('react-toggle--checked'))
+      toggles.forEach((toggle) => {
+        toggle.classList.remove('react-toggle--checked')
+        toggle.querySelector('input').value = 'off'
+      })
     }
 
     // Checkboxes

@@ -401,14 +401,19 @@ export default function EventCalendar() {
   }
 
   const handleEventRowClick = async (e, event) => {
-    const shouldShow = !event?.isHoliday && e.target.tagName !== 'A' && e.target.id !== 'more-button'
-    const hasEditAccess = AppManager.getAccountType() === 'parent' || !Manager.isValid(AppManager.getAccountType())
-    if (shouldShow && hasEditAccess && event.ownerPhone === currentUser.phone) {
+    if (e.currentTarget.id === 'more-button') {
+      return false
+    }
+    const shouldShowEditCard = !event?.isHoliday && e.target.tagName !== 'A' && e.target.id !== 'more-button'
+    const hasEditAccess = AppManager.getAccountType(currentUser) === 'parent' && event.ownerPhone === currentUser.phone
+    if (shouldShowEditCard && hasEditAccess) {
       setEventToEdit(event)
       setShowEditCard(true)
     } else {
-      const owner = await Manager.getNamesFromPhone([event.ownerPhone])
-      oneButtonAlert('Cannot Edit', `${owner[0].name} is the creator of this event, please ask them to edit it.`, 'warning')
+      if (!hasEditAccess) {
+        const owner = await Manager.getNamesFromPhone([event.ownerPhone])
+        oneButtonAlert('Cannot Edit', `${owner[0].name} is the creator of this event, please ask them to edit it.`, 'warning')
+      }
     }
   }
 
@@ -574,124 +579,122 @@ export default function EventCalendar() {
                 }
               }
               return (
-                <div
-                  onClick={(e) => handleEventRowClick(e, event)}
-                  key={index}
-                  data-from-date={event?.startDate}
-                  className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
-                  <div className="text">
-                    <div className="top">
-                      {/* DATE CONTAINER */}
-                      <div id="date-container">
-                        {/* FROM DATE */}
-                        {!contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
-                          <span className="start-date">
-                            {moment(event?.startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
-                          </span>
-                        )}
-                        {/* TO WORD */}
-                        {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
-                          <span className="end-date">&nbsp;to&nbsp; </span>
-                        )}
-                        {/* TO DATE */}
-                        {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
-                          <span>{moment(event?.endDate).format(DateFormats.readableDay)}</span>
-                        )}
-                        {/* ALL DAY */}
-                        {event &&
-                          !Manager.isValid(event?.startTime) &&
-                          (!Manager.isValid(event?.endDate) || event?.endDate.indexOf('Invalid') > -1) &&
-                          event?.endDate !== event?.startDate && <span className="end-date">&nbsp;- ALL DAY</span>}
-                        {/* TIMES */}
-                        <span id="times">
-                          {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
-                            <span className="from-time">
-                              <span className="at-symbol">&nbsp;@</span> {event?.startTime}
+                <>
+                  <div
+                    onClick={(e) => handleEventRowClick(e, event)}
+                    key={index}
+                    data-from-date={event?.startDate}
+                    className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
+                    <div className="text">
+                      <div className="top">
+                        {/* DATE CONTAINER */}
+                        <div id="date-container">
+                          {/* FROM DATE */}
+                          {!contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
+                            <span className="start-date">
+                              {moment(event?.startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
                             </span>
                           )}
-                          {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
-                            <span className="to-time"> - {event?.endTime}</span>
+                          {/* TO WORD */}
+                          {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                            <span className="end-date">&nbsp;to&nbsp; </span>
                           )}
-                        </span>
-                        {/* DIRECTIONS LINK */}
-                        {event?.location && event?.location.length > 0 && (
-                          <div className="flex" id="nav-website">
-                            {event?.websiteUrl && true && event?.websiteUrl.length > 0 && (
-                              <div className="website flex">
-                                <PiGlobeDuotone />
-                                <a target="_blank" href={event?.websiteUrl} className="website-url fs-14" rel="noreferrer">
-                                  Website
+                          {/* TO DATE */}
+                          {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                            <span>{moment(event?.endDate).format(DateFormats.readableDay)}</span>
+                          )}
+                          {/* ALL DAY */}
+                          {event &&
+                            !Manager.isValid(event?.startTime) &&
+                            (!Manager.isValid(event?.endDate) || event?.endDate.indexOf('Invalid') > -1) &&
+                            event?.endDate !== event?.startDate && <span className="end-date">&nbsp;- ALL DAY</span>}
+                          {/* TIMES */}
+                          <span id="times">
+                            {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
+                              <span className="from-time">
+                                <span className="at-symbol">&nbsp;@</span> {event?.startTime}
+                              </span>
+                            )}
+                            {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
+                              <span className="to-time"> - {event?.endTime}</span>
+                            )}
+                          </span>
+                          {/* DIRECTIONS LINK */}
+                          {event?.location && event?.location.length > 0 && (
+                            <div className="flex" id="nav-website">
+                              {event?.websiteUrl && true && event?.websiteUrl.length > 0 && (
+                                <div className="website flex">
+                                  <PiGlobeDuotone />
+                                  <a target="_blank" href={event?.websiteUrl} className="website-url fs-14" rel="noreferrer">
+                                    Website
+                                  </a>
+                                </div>
+                              )}
+                              <div className="directions">
+                                <TbLocation />
+                                <a href={Manager.getDirectionsLink(event?.location)} target="_blank">
+                                  Nav
                                 </a>
                               </div>
-                            )}
-                            <div className="directions">
-                              <TbLocation />
-                              <a href={Manager.getDirectionsLink(event?.location)} target="_blank">
-                                Nav
-                              </a>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
+                        {/* TITLE */}
+                        <p className="title" data-event-id={event?.id}>
+                          <b className={`event-title ${eventType}`}>{CalendarManager.formatEventTitle(event?.title)}</b>
+                        </p>
                       </div>
-                      {/* TITLE */}
-                      <p className="title" data-event-id={event?.id}>
-                        <b className={`event-title ${eventType}`}>{CalendarManager.formatEventTitle(event?.title)}</b>
-                      </p>
-                    </div>
 
-                    {/* NOTES */}
-                    {Manager.isValid(event?.notes) && event?.notes.length > 0 && (
-                      <p className={showNotes ? 'active notes pb-10' : 'notes 0'}>{event?.notes}</p>
-                    )}
-                    <div className="flex reminders">
-                      {/* REMINDERS */}
-                      {Manager.isValid(readableReminderTimes, true) && (
-                        <>
-                          <PiBellSimpleRinging className={'event-icon'} />
-                          <p
-                            className="flex reminder-times"
-                            dangerouslySetInnerHTML={{
-                              __html: `${readableReminderTimes
-                                .join('|')
-                                .replaceAll('|', '<span class="divider">|</span>')
-                                .replaceAll(' minutes before', 'mins')
-                                .replaceAll('At time of event', 'Event Time')
-                                .replaceAll(' hour before', 'hr')}`,
-                            }}></p>
-                        </>
+                      {/* NOTES */}
+                      {Manager.isValid(event?.notes) && event?.notes.length > 0 && (
+                        <p className={showNotes ? 'active notes pb-10' : 'notes 0'}>{event?.notes}</p>
                       )}
-                    </div>
-                    <div className={`flex ${event?.notes?.length > 0 || event?.children?.length > 0 ? 'pt-5' : ''}`} id="more-children">
-                      <div id="children">
-                        {/* CHILDREN */}
-                        {event?.children && event?.children.length > 0 && (
-                          <div className="children flex">
-                            <FaChildren />
+                      <div className="flex reminders">
+                        {/* REMINDERS */}
+                        {Manager.isValid(readableReminderTimes, true) && (
+                          <>
+                            <PiBellSimpleRinging className={'event-icon'} />
                             <p
-                              className="fs-14 "
+                              className="flex reminder-times"
                               dangerouslySetInnerHTML={{
-                                __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                                __html: `${readableReminderTimes.join('|').replaceAll('|', '<span class="divider">|</span>').replaceAll(' minutes before', 'mins').replaceAll('At time of event', 'Event Time').replaceAll(' hour before', 'hr')}`,
                               }}></p>
-                          </div>
+                          </>
                         )}
                       </div>
-                      {event?.notes && event?.notes.length > 0 && (
-                        <>
-                          {!showNotes && (
-                            <p onClick={() => setShowNotes(true)} id="more-button">
-                              SHOW MORE
-                            </p>
+                      <div className={`flex ${event?.notes?.length > 0 || event?.children?.length > 0 ? 'pt-5' : ''}`} id="more-children">
+                        <div id="children">
+                          {/* CHILDREN */}
+                          {event?.children && event?.children.length > 0 && (
+                            <div className="children flex">
+                              <FaChildren />
+                              <p
+                                className="fs-14 "
+                                dangerouslySetInnerHTML={{
+                                  __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                                }}></p>
+                            </div>
                           )}
-                          {showNotes && (
-                            <p onClick={() => setShowNotes(false)} id="more-button">
-                              SHOW LESS
-                            </p>
-                          )}
-                        </>
-                      )}
+                        </div>
+                        {event?.notes && event?.notes.length > 0 && (
+                          <>
+                            {!showNotes && (
+                              <p onClick={() => setShowNotes(true)} id="more-button">
+                                SHOW MORE
+                              </p>
+                            )}
+                            {showNotes && (
+                              <p onClick={() => setShowNotes(false)} id="more-button">
+                                SHOW LESS
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
+                  <hr className="event-hr" />
+                </>
               )
             })}
         </div>

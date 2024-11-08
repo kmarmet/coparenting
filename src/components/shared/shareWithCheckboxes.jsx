@@ -29,6 +29,7 @@ function ShareWithCheckboxes({
   labelText = '',
   required = false,
   shareWith,
+  icon = '',
 }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
@@ -62,7 +63,7 @@ function ShareWithCheckboxes({
 
           return (
             <div key={index}>
-              <Label text={labelText} required={required}></Label>
+              <Label icon={icon} text={labelText} required={required}></Label>
               <div
                 id="share-with-checkbox-container"
                 data-phone={thisPhone ? thisPhone : ''}

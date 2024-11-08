@@ -24,6 +24,7 @@ import TitleSuggestionWrapper from '../shared/titleSuggestionWrapper'
 import { FaClone } from 'react-icons/fa6'
 import Toggle from 'react-toggle'
 import '../../styles/reactToggle.css'
+import { ImEye } from 'react-icons/im'
 import {
   contains,
   displayAlert,
@@ -56,27 +57,29 @@ export default function NewCalendarEvent({ hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, selectedNewEventDay } = state
 
-  // COMPONENT STATE
+  // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
   const [eventFromDate, setEventFromDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
   const [eventTitle, setEventTitle] = useState('')
-  const [websiteUrl, setWebsiteUrl] = useState('')
-  const [notes, setNotes] = useState('')
+  const [eventWebsite, setEventWebsite] = useState('')
+  const [eventNotes, setEventNotes] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
   const [repeatInterval, setRepeatInterval] = useState('')
   const [eventToDate, setEventToDate] = useState('')
   const [eventStartTime, setEventStartTime] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
-  const [shareWith, setShareWith] = useState([])
+  const [eventShareWith, setEventShareWith] = useState([])
   const [clonedDates, setClonedDates] = useState([])
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
   const [titleSuggestions, setTitleSuggestions] = useState([])
-  const [children, setChildren] = useState([])
-  const [reminderTimes, setReminderTimes] = useState([])
+  const [eventChildren, setEventChildren] = useState([])
+  const [eventReminderTimes, setEventReminderTimes] = useState([])
   const [coparentsToRemind, setCoparentsToRemind] = useState([])
+  const [eventIsRepeating, setEventIsRepeating] = useState(false)
+
+  // COMPONENT STATE
   const [isAllDay, setIsAllDay] = useState(false)
-  const [repeating, setRepeating] = useState(false)
   const [showCloneInput, setShowCloneInput] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
@@ -85,33 +88,26 @@ export default function NewCalendarEvent({ hideCard }) {
 
   const resetForm = () => {
     Manager.resetForm('new-event-form')
-    const toggles = document.querySelectorAll(`.react-toggle`)
-    for (let toggle of toggles) {
-      toggle.classList.remove('react-toggle--checked')
-      toggle.querySelector('input').value = 'off'
-    }
-    document.querySelectorAll(`.box`).forEach((box) => box.classList.remove('active'))
-    document.querySelectorAll('.input-container').forEach((container) => container.classList.remove('active'))
     setEventLength(EventLengths.single)
     setEventFromDate('')
     setEventLocation('')
     setEventTitle('')
-    setWebsiteUrl('')
-    setNotes('')
+    setEventWebsite('')
+    setEventNotes('')
     setRepeatingEndDate('')
     setRepeatInterval('')
     setEventToDate('')
     setEventStartTime('')
     setEventEndTime('')
-    setShareWith([])
+    setEventShareWith([])
     setClonedDates([])
     setClonedDatesToSubmit([])
     setTitleSuggestions([])
-    setChildren([])
-    setReminderTimes([])
+    setEventChildren([])
+    setEventReminderTimes([])
     setCoparentsToRemind([])
     setIsAllDay(false)
-    setRepeating(false)
+    setEventIsRepeating(false)
     setShowCloneInput(false)
     setShowReminders(false)
     setIncludeChildren(false)
@@ -139,13 +135,13 @@ export default function NewCalendarEvent({ hideCard }) {
     newEvent.id = Manager.getUid()
     newEvent.directionsLink = Manager.isValid(eventLocation) ? Manager.getDirectionsLink(eventLocation) : ''
     newEvent.location = eventLocation || ''
-    newEvent.children = children || []
+    newEvent.children = eventChildren || []
     newEvent.ownerPhone = currentUser.phone
     newEvent.createdBy = currentUser.name
-    newEvent.shareWith = Manager.getUniqueArray(shareWith).flat()
-    newEvent.notes = notes || ''
-    newEvent.websiteUrl = websiteUrl || ''
-    newEvent.reminderTimes = reminderTimes || []
+    newEvent.shareWith = Manager.getUniqueArray(eventShareWith).flat()
+    newEvent.notes = eventNotes
+    newEvent.websiteUrl = eventWebsite
+    newEvent.reminderTimes = eventReminderTimes || []
     newEvent.repeatInterval = repeatInterval
     newEvent.morningSummaryReminderSent = false
     newEvent.eveningSummaryReminderSent = false
@@ -170,13 +166,13 @@ export default function NewCalendarEvent({ hideCard }) {
       return false
     }
 
-    const validation = DateManager.formValidation(eventTitle, shareWith, eventFromDate)
+    const validation = DateManager.formValidation(eventTitle, eventShareWith, eventFromDate)
     if (validation) {
       throwError(validation)
       return false
     }
 
-    if (reminderTimes.length > 0 && eventStartTime.length === 0) {
+    if (eventReminderTimes.length > 0 && eventStartTime.length === 0) {
       throwError('If you set reminder times, please also uncheck All Day and add a start time')
       return false
     }
@@ -187,7 +183,7 @@ export default function NewCalendarEvent({ hideCard }) {
 
     // Add first/initial date before adding repeating/cloned
     await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
-      for (const toShareWith of shareWith) {
+      for (const toShareWith of eventShareWith) {
         const subId = await PushAlertApi.getSubId(toShareWith)
         await PushAlertApi.sendMessage(`New Calendar Event`, `${eventTitle} on ${moment(eventFromDate).format('ddd DD')}`, subId)
       }
@@ -233,19 +229,19 @@ export default function NewCalendarEvent({ hideCard }) {
         repeatingDateObject.id = Manager.getUid()
         repeatingDateObject.title = eventTitle
         repeatingDateObject.startDate = moment(date).format(DateFormats.monthDayYear)
-        repeatingDateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
+        repeatingDateObject.shareWith = Manager.getUniqueArray(eventShareWith).flat()
 
         // Not Required
         repeatingDateObject.directionsLink = eventLocation || ''
         repeatingDateObject.location = eventLocation || ''
-        repeatingDateObject.children = children || []
+        repeatingDateObject.children = eventChildren || []
         repeatingDateObject.ownerPhone = currentUser.phone
         repeatingDateObject.createdBy = currentUser.name
-        repeatingDateObject.notes = notes || ''
-        repeatingDateObject.websiteUrl = websiteUrl || ''
+        repeatingDateObject.notes = eventNotes || ''
+        repeatingDateObject.websiteUrl = eventWebsite || ''
         repeatingDateObject.startTime = eventStartTime || ''
         repeatingDateObject.endTime = eventEndTime || ''
-        repeatingDateObject.reminderTimes = reminderTimes || []
+        repeatingDateObject.reminderTimes = eventReminderTimes || []
         repeatingDateObject.sentReminders = []
         repeatingDateObject.endDate = eventToDate || ''
         repeatingDateObject.repeatInterval = repeatInterval
@@ -269,17 +265,17 @@ export default function NewCalendarEvent({ hideCard }) {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
-        childrenArr = [...children, e]
+        childrenArr = [...eventChildren, e]
       },
       (e) => {},
       true
     )
-    setChildren(childrenArr)
+    setEventChildren(childrenArr)
   }
 
   const handleShareWithSelection = (e) => {
-    const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, shareWith)
-    setShareWith(shareWithNumbers)
+    const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
+    setEventShareWith(shareWithNumbers)
   }
 
   const handleCoparentsToRemindSelection = async (e) => {
@@ -301,12 +297,12 @@ export default function NewCalendarEvent({ hideCard }) {
       e,
       (e) => {
         let timeframe = CalendarMapper.reminderTimes(e)
-        setReminderTimes([...reminderTimes, timeframe])
+        setEventReminderTimes([...eventReminderTimes, timeframe])
       },
       (e) => {
         let mapped = CalendarMapper.reminderTimes(e)
-        let filtered = reminderTimes.filter((x) => x !== mapped)
-        setReminderTimes(filtered)
+        let filtered = eventReminderTimes.filter((x) => x !== mapped)
+        setEventReminderTimes(filtered)
       },
       true
     )
@@ -356,15 +352,15 @@ export default function NewCalendarEvent({ hideCard }) {
       // Not Required
       clonedDateObject.directionsLink = eventLocation || ''
       clonedDateObject.location = eventLocation || ''
-      clonedDateObject.children = children || []
+      clonedDateObject.children = eventChildren || []
       clonedDateObject.ownerPhone = currentUser.phone
       clonedDateObject.createdBy = currentUser.name
-      clonedDateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
-      clonedDateObject.notes = notes || ''
-      clonedDateObject.websiteUrl = websiteUrl || ''
+      clonedDateObject.shareWith = Manager.getUniqueArray(eventShareWith).flat()
+      clonedDateObject.notes = eventNotes || ''
+      clonedDateObject.websiteUrl = eventWebsite || ''
       clonedDateObject.startTime = ''
       clonedDateObject.endTime = ''
-      clonedDateObject.reminderTimes = reminderTimes || []
+      clonedDateObject.reminderTimes = eventReminderTimes || []
       clonedDateObject.sentReminders = []
       clonedDateObject.endDate = ''
       clonedDateObject.morningSummaryReminderSent = false
@@ -425,6 +421,7 @@ export default function NewCalendarEvent({ hideCard }) {
         {/* TITLE */}
         <div className="title-suggestion-wrapper">
           <InputWrapper
+            inputClasses="event-title-input"
             inputType={'text'}
             labelText={'Title'}
             required={true}
@@ -513,18 +510,13 @@ export default function NewCalendarEvent({ hideCard }) {
           <div className={'flex gap event-times-wrapper mb-15'}>
             <div>
               <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
-                <MobileTimePicker defaultValue={moment()} minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventStartTime(e)} />
+                <MobileTimePicker defaultValue={null} minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventStartTime(e)} />
               </InputWrapper>
             </div>
             <span>&nbsp;to&nbsp;</span>
             <div>
               <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
-                <MobileTimePicker
-                  defaultValue={moment().add(1, 'hour')}
-                  minutesStep={5}
-                  className={`${theme} m-0`}
-                  onAccept={(e) => setEventEndTime(e)}
-                />
+                <MobileTimePicker defaultValue={null} minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventEndTime(e)} />
               </InputWrapper>
             </div>
           </div>
@@ -535,9 +527,11 @@ export default function NewCalendarEvent({ hideCard }) {
         {/* WHO IS ALLOWED TO SEE IT? */}
         {Manager.isValid(currentUser?.coparents, true) && (
           <ShareWithCheckboxes
+            icon={<ImEye />}
+            required={true}
             shareWith={currentUser.coparents.map((x) => x.phone)}
             onCheck={(e) => handleShareWithSelection(e)}
-            labelText={'Who is allowed to see it?*'}
+            labelText={'Who is allowed to see it?'}
             containerClass={'share-with-coparents'}
             checkboxLabels={currentUser.coparents.map((x) => x.phone)}
           />
@@ -675,11 +669,11 @@ export default function NewCalendarEvent({ hideCard }) {
                     unchecked: null,
                   }}
                   className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setRepeating(!repeating)}
+                  onChange={(e) => setEventIsRepeating(!eventIsRepeating)}
                 />
               </div>
               <Accordion>
-                <Accordion.Panel expanded={repeating}>
+                <Accordion.Panel expanded={eventIsRepeating}>
                   <CheckboxGroup
                     elClass={`${theme} `}
                     boxWidth={35}
@@ -737,8 +731,15 @@ export default function NewCalendarEvent({ hideCard }) {
           </>
         )}
 
+        <hr className="mb-10" />
+
         {/* URL/WEBSITE */}
-        <InputWrapper labelText={'URL/Website'} required={false} inputType={'url'} onChange={(e) => setWebsiteUrl(e.target.value)}></InputWrapper>
+        <InputWrapper
+          defaultValue="https://www."
+          labelText={'URL/Website'}
+          required={false}
+          inputType={'url'}
+          onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
 
         {/* LOCATION/ADDRESS */}
         <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
@@ -757,9 +758,10 @@ export default function NewCalendarEvent({ hideCard }) {
         </InputWrapper>
 
         {/* NOTES */}
-        <InputWrapper labelText={'Notes'} required={false} inputType={'textarea'} onChange={(e) => setNotes(e.target.value)}></InputWrapper>
+        <InputWrapper labelText={'Notes'} required={false} inputType={'textarea'} onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
 
         <div className="buttons gap">
+          <div id="blur"></div>
           <button className="button card-button" onClick={submit}>
             Create Event <span className="material-icons-round ml-10 fs-22">event_available</span>
           </button>

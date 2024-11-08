@@ -140,7 +140,8 @@
   align-items: center !important;
   height: 100% !important;
 
-  .material-icons-round, svg {
+  .material-icons-round,
+  svg {
     margin: auto 0;
     align-self: stretch;
     color: white !important;
@@ -191,47 +192,77 @@
 
     #input-wrapper {
       position: relative;
-display: flex;
+      display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: flex-start;
       width: 100%;
+      height: 65px;
+      
+      .MuiInputBase-root {
+        height: 43px;
+      }
+      
+      &.textarea {
+        height: 150px;
+      }
+      
+      &.date {
+        .floating-label {
+          opacity: 1;
+          background-color: white;
+          padding-left: 5px;
+          top: 5px;
+          
+          span {
+            font-size: 14px;
+            color: $mainBlue;
+            
+            &.asterisk {
+              color: $red;
+            }
+          }
+        }
+      }
+      
       &.active {
         input,
         textarea {
           width: 100%;
-//          margin: 0;
           &::placeholder {
             color: transparent;
           }
         }
-        &.date {
-          .floating-label {
-            top: 14px;
-            z-index: 10;
-          }
-        }
         .floating-label {
-          position: relative;
           opacity: 1;
-          top: 16px;
-          left: 15px;
           padding-left: 5px;
           background-color: white;
-          width: auto;
-          display: inline-block;
 
           span {
             font-size: 14px;
             color: $mainBlue;
+            
+            &.asterisk {
+              color: $red;
+            }
           }
         }
       }
 
+      input,textarea {
+        position: relative;
+        top: -10px;
+      }
+
       .floating-label {
-        position: absolute;
+        position: relative;
         transition: all 0.4s ease-in-out;
         opacity: 0;
+        z-index: 10;
+        top: 6px;
+        left: 15px;
+        width: auto;
+        display: inline-block;
       }
     }
 

@@ -18,6 +18,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { MobileTimePicker } from '@mui/x-date-pickers'
 import CalendarManager from '../../managers/calendarManager'
 import Toggle from 'react-toggle'
+import { ImEye } from 'react-icons/im'
 
 import {
   confirmAlert,
@@ -46,6 +47,7 @@ import { HiOutlineCalendarDays } from 'react-icons/hi2'
 import { AiOutlineDelete } from 'react-icons/ai'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
+import DateManager from '../../managers/dateManager'
 
 export default function EditCalEvent({ event, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -66,9 +68,7 @@ export default function EditCalEvent({ event, hideCard }) {
   // State
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
   const [repeatingDatesToSubmit, setRepeatingDatesToSubmit] = useState([])
-  const [errorFields, setErrorFields] = useState([])
   const [eventLength, setEventLength] = useState(EventLengths.single)
-  const [error, setError] = useState('')
   const [isAllDay, setIsAllDay] = useState(false)
   const [coparentsToRemind, setCoparentsToRemind] = useState([])
   const [includeChildren, setIncludeChildren] = useState(false)
@@ -76,15 +76,11 @@ export default function EditCalEvent({ event, hideCard }) {
   const [allEvents, setAllEvents] = useState([])
   const [isVisitation, setIsVisitation] = useState(false)
   const [showCoparentsToRemind, setShowCoparentsToRemind] = useState(false)
+  const [defaultStartTime, setDefaultStartTime] = useState(moment())
+  const [defaultEndTime, setDefaultEndTime] = useState(moment())
+
   const resetForm = () => {
     Manager.resetForm('edit-event-form')
-    const toggles = document.querySelectorAll(`.react-toggle`)
-    for (let toggle of toggles) {
-      toggle.classList.remove('react-toggle--checked')
-      toggle.querySelector('input').value = 'off'
-    }
-    document.querySelectorAll(`.box`).forEach((box) => box.classList.remove('active'))
-    document.querySelectorAll('.input-container').forEach((container) => container.classList.remove('active'))
     setEventFromDate('')
     setEventLocation('')
     setEventTitle('')
@@ -98,9 +94,7 @@ export default function EditCalEvent({ event, hideCard }) {
     setEventShareWith(event?.shareWith || [])
     setClonedDatesToSubmit([])
     setRepeatingDatesToSubmit([])
-    setErrorFields([])
     setEventLength(EventLengths.single)
-    setError('')
     setIsAllDay(false)
     setCoparentsToRemind(false)
     setIncludeChildren(false)
@@ -124,8 +118,11 @@ export default function EditCalEvent({ event, hideCard }) {
     eventToEdit.shareWith = Manager.getUniqueArray(eventShareWith).flat() || []
     eventToEdit.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
     eventToEdit.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
-    eventToEdit.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
-    eventToEdit.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
+
+    if (!isAllDay) {
+      eventToEdit.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
+      eventToEdit.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
+    }
 
     // Not Required
     eventToEdit.ownerPhone = currentUser.phone
@@ -206,11 +203,6 @@ export default function EditCalEvent({ event, hideCard }) {
 
     successAlert('Event Updated')
     resetForm()
-  }
-
-  const removeError = (field) => {
-    const filtered = errorFields.filter((x) => x !== field)
-    setErrorFields(filtered)
   }
 
   const afterUpdateCallback = async () => {
@@ -299,6 +291,10 @@ export default function EditCalEvent({ event, hideCard }) {
     setEventReminderTimes(event?.reminderTimes || [])
     setEventStartTime(event?.startTime)
     setEventEndTime(event?.endTime)
+    setEventNotes(event?.notes)
+    setEventShareWith(event?.shareWith)
+    setDefaultEndTime(DateManager.dateIsValid(event?.endTime) ? moment(event?.endTime, 'hh:mma') : null)
+    setDefaultStartTime(DateManager.dateIsValid(event?.startTime) ? moment(event?.startTime, 'hh:mma') : null)
 
     const checkboxClasses = []
 
@@ -386,7 +382,6 @@ export default function EditCalEvent({ event, hideCard }) {
 
   useEffect(() => {
     if (Manager.isValid(event)) {
-      console.log(event)
       setDefaultValues()
     }
   }, [event])
@@ -445,6 +440,7 @@ export default function EditCalEvent({ event, hideCard }) {
             </>
           )}
 
+          {/* DATE RANGE */}
           {eventLength === EventLengths.multiple && (
             <>
               <div>
@@ -454,6 +450,7 @@ export default function EditCalEvent({ event, hideCard }) {
                     showHeader={false}
                     editable={false}
                     id="event-date"
+                    disablePast={true}
                     placement="auto"
                     character=" to "
                     className={`${theme} mb-15`}
@@ -481,7 +478,13 @@ export default function EditCalEvent({ event, hideCard }) {
             {/* START TIME */}
             <div>
               <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
-                <MobileTimePicker defaultValue={moment()} minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventStartTime(e)} />
+                <MobileTimePicker
+                  format={'h:mma'}
+                  value={defaultStartTime}
+                  minutesStep={5}
+                  className={`${theme} m-0`}
+                  onAccept={(e) => setEventStartTime(e)}
+                />
               </InputWrapper>
             </div>
 
@@ -489,7 +492,8 @@ export default function EditCalEvent({ event, hideCard }) {
             <div>
               <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
                 <MobileTimePicker
-                  defaultValue={moment().add(1, 'hour')}
+                  format={'h:mma'}
+                  value={defaultEndTime}
                   minutesStep={5}
                   className={`${theme} m-0`}
                   onAccept={(e) => setEventEndTime(e)}
@@ -502,10 +506,12 @@ export default function EditCalEvent({ event, hideCard }) {
         {/* WHO IS ALLOWED TO SEE IT? */}
         {Manager.isValid(currentUser?.coparents, true) && currentUser.accountType === 'parent' && (
           <ShareWithCheckboxes
+            required={true}
             shareWith={event?.shareWith}
             onCheck={(e) => handleShareWithSelection(e)}
             defaultPhones={event?.shareWith}
-            labelText={'Who is allowed to see it?*'}
+            icon={<ImEye />}
+            labelText={'Who is allowed to see it?'}
             containerClass={'share-with-coparents'}
             checkboxLabels={event?.shareWith}
           />
@@ -633,13 +639,21 @@ export default function EditCalEvent({ event, hideCard }) {
         )}
       </div>
 
+      <hr />
+
       {/* URL/WEBSITE */}
-      <InputWrapper labelText={'URL/Website'} required={false} inputType={'url'} onChange={(e) => setEventWebsiteUrl(e.target.value)}></InputWrapper>
+      <InputWrapper
+        defaultValue={eventWebsiteUrl}
+        labelText={'URL/Website'}
+        required={false}
+        inputType={'url'}
+        onChange={(e) => setEventWebsiteUrl(e.target.value)}></InputWrapper>
 
       {/* LOCATION/ADDRESS */}
       <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
         <Autocomplete
           placeholder={'Location'}
+          defaultValue={event?.location}
           apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
           options={{
             types: ['geocode', 'establishment'],
@@ -652,8 +666,14 @@ export default function EditCalEvent({ event, hideCard }) {
       </InputWrapper>
 
       {/* NOTES */}
-      <InputWrapper labelText={'Notes'} required={false} inputType={'textarea'} onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
+      <InputWrapper
+        defaultValue={event?.notes}
+        labelText={'Notes'}
+        required={false}
+        inputType={'textarea'}
+        onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
       <div className="flex buttons gap">
+        <div id="blur"></div>
         <button className="button card-button" onClick={submit}>
           Done <span className="material-icons-round ml-10 fs-22">check</span>
         </button>
