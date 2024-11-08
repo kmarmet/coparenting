@@ -231,7 +231,6 @@ const DB = {
   updateEntireRecord: async (path, newRecord) => {
     const dbRef = getDatabase()
     // ref(path).update(newRecord)
-    console.log(newRecord)
     update(ref(dbRef, path), newRecord)
     // update((ref(dbRef, tableName), { newRecord }))
   },

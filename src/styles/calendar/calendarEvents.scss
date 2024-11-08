@@ -31,6 +31,19 @@
           transition: all 0.3s ease-in;
           opacity: 1;
         }
+        
+        .no-edit-access-icon {
+          position: relative;
+          bottom: 0;
+          right: 0;
+          left: inherit;
+          margin-right: 0;
+          justify-self: flex-end;
+          margin-left: auto;
+          display: flex;
+          justify-content: flex-end;
+          font-size: 18px;
+        }
 
         .divider {
           opacity: 0.4;

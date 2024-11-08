@@ -712,8 +712,8 @@ export default function NewCalendarEvent({ hideCard }) {
                 <InputWrapper labelText={'Select Dates'} required={false} inputType={'date'}>
                   <MultiDatePicker
                     className={`${theme} multidate-picker mb-15`}
-                    placeholder="Select dates"
                     placement="auto"
+                    placeholder={null}
                     label=""
                     onOpen={() => Manager.hideKeyboard()}
                     onChange={(e) => {
@@ -734,12 +734,7 @@ export default function NewCalendarEvent({ hideCard }) {
         <hr className="mb-10" />
 
         {/* URL/WEBSITE */}
-        <InputWrapper
-          defaultValue="https://www."
-          labelText={'URL/Website'}
-          required={false}
-          inputType={'url'}
-          onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
+        <InputWrapper labelText={'URL/Website'} required={false} inputType={'url'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
 
         {/* LOCATION/ADDRESS */}
         <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
@@ -763,7 +758,10 @@ export default function NewCalendarEvent({ hideCard }) {
         <div className="buttons gap">
           <div id="blur"></div>
           <button className="button card-button" onClick={submit}>
-            Create Event <span className="material-icons-round ml-10 fs-22">event_available</span>
+            Create Event{' '}
+            <span className="material-icons-round ml-10 fs-22" onClick={submit}>
+              event_available
+            </span>
           </button>
           <button className="button card-button cancel" onClick={resetForm}>
             Cancel

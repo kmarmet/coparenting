@@ -9,7 +9,6 @@ import moment from "moment";
 
 CalendarMapper = {
   reminderTimes: function(timeframe) {
-    console.log(timeframe);
     if (timeframe.indexOf('hour') > -1) {
       return ReminderTimes.hour;
     }

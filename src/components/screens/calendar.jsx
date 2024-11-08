@@ -16,6 +16,7 @@ import { useSwipeable } from 'react-swipeable'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
 import { FaChildren } from 'react-icons/fa6'
+import { MdOutlineEditOff } from 'react-icons/md'
 
 import { CgClose } from 'react-icons/cg'
 import {
@@ -662,6 +663,7 @@ export default function EventCalendar() {
                           </>
                         )}
                       </div>
+                      {event.ownerPhone !== currentUser.phone && <MdOutlineEditOff className={'no-edit-access-icon'} />}
                       <div className={`flex ${event?.notes?.length > 0 || event?.children?.length > 0 ? 'pt-5' : ''}`} id="more-children">
                         <div id="children">
                           {/* CHILDREN */}

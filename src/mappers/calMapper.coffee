@@ -4,7 +4,6 @@ import moment from "moment"
 
 CalendarMapper =
   reminderTimes: (timeframe) ->
-    console.log(timeframe)
     if timeframe.indexOf('hour') > -1
       return ReminderTimes.hour
     if timeframe.indexOf('30') > -1
