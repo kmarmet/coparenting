@@ -85,7 +85,7 @@ export default function NewCalendarEvent({ hideCard }) {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
   const [showCoparentReminderToggle, setShowCoparentReminderToggle] = useState(false)
-
+  const [resetKey, setResetKey] = useState(Manager.getUid())
   const resetForm = () => {
     Manager.resetForm('new-event-form')
     setEventLength(EventLengths.single)
@@ -113,6 +113,7 @@ export default function NewCalendarEvent({ hideCard }) {
     setIncludeChildren(false)
     setIsVisitation(false)
     setShowCoparentReminderToggle(false)
+    setResetKey(Manager.getUid())
     hideCard()
   }
 
@@ -418,6 +419,7 @@ export default function NewCalendarEvent({ hideCard }) {
         {/* TITLE */}
         <div className="title-suggestion-wrapper">
           <InputWrapper
+            refreshKey={resetKey}
             inputClasses="event-title-input"
             inputType={'input'}
             labelText={'Title'}
