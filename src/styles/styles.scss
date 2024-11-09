@@ -206,14 +206,13 @@ aside {
     
     hr {
       height: 1px;
-      background-color: #f4f8fb;
-      width: 80%;
+      background-color: #fffbfb;
+      width: 100%;
       margin: 20px auto;
-      background-image: -webkit-gradient( linear, left bottom, right bottom, color-stop(0.04, #f4f8fb), color-stop(0.5, #9b9b9b), color-stop(0.98, white) );
+//      background-image: -webkit-gradient( linear, left bottom, right bottom, color-stop(0.04, #f4f8fb), color-stop(0.5, #9b9b9b), color-stop(0.98, white) );
       &.event-hr {
         margin: 10px auto;
         width: 70%;
-        
       }
     }
 
@@ -326,9 +325,6 @@ aside {
     }
 
     #alert-container,
-    #confirm-container {
-      @include popupContainers;
-    }
 
     .page-container {
       @include pageContainer;
@@ -366,13 +362,6 @@ aside {
     /*#endregion MIXINS */
 
     /*#region  CLASS/ID DEFAULTS*/
-    #image-theater-wrapper {
-      @include imageTheater;
-    }
-
-    #popup-card-container {
-      @include popupCardContainer;
-    }
 
     svg {
       font-size: 30px;
@@ -383,6 +372,14 @@ aside {
     }
     .material-icons {
       font-family: 'Material Icons';
+    }
+    
+    #popup-card-container {
+      @include popupCardContainer;
+    }
+    
+    #confirm-container {
+      @include popupContainers;
     }
 
     .dead-center {

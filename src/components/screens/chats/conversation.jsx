@@ -14,7 +14,7 @@ import { DebounceInput } from 'react-debounce-input'
 import 'rc-tooltip/assets/bootstrap_white.css'
 import ChatManager from '@managers/chatManager.js'
 import DateFormats from '../../../constants/dateFormats'
-import { PiBookmarkSimpleDuotone, PiBookmarksSimpleDuotone, PiUserCircleDuotone } from 'react-icons/pi'
+import { PiBookmarkSimpleDuotone, PiBookmarksSimpleDuotone } from 'react-icons/pi'
 import ModelNames from '../../../models/modelNames'
 import {
   contains,
@@ -70,6 +70,7 @@ const Conversation = () => {
   }
 
   const submitMessage = async () => {
+    adjustHeightOnKeyboard()
     // Clear input
     let messageInputValue = document.querySelector('#message-input').value
 
@@ -143,13 +144,6 @@ const Conversation = () => {
     scrollToLatestMessage()
   }
 
-  const toggleLongpressAnimation = (e) => {
-    e.classList.add('longpress')
-    setTimeout(() => {
-      e.classList.remove('longpress')
-    }, 400)
-  }
-
   const viewBookmarks = async (e) => {
     setShowBookmarks(!showBookmarks)
     scrollToLatestMessage()
@@ -203,37 +197,26 @@ const Conversation = () => {
     })
   }
 
-  const setDynamicMessagesHeight = () => {
-    const topBarHeight = document.querySelector('.top-buttons').clientHeight
-    const sendMessageFormHeight = document.querySelector('.message-input-form').clientHeight
-    const entireScreenHeight = document.getElementById('message-thread-container').clientHeight
-    const messagesWrapper = document.getElementById('default-messages')
+  function adjustHeightOnKeyboard() {
+    const vh = window.innerHeight * 0.01
+    const messageThreadContainer = document.getElementById('message-thread-container')
+    const defaultMessages = document.getElementById('default-messages')
+    const bookmarkedMessages = document.getElementById('bookmark-messages')
 
-    if (topBarHeight && sendMessageFormHeight && messagesWrapper && entireScreenHeight) {
-      messagesWrapper.style.setProperty('height', `calc(${entireScreenHeight}px - ${sendMessageFormHeight + topBarHeight}px)`)
-      messagesWrapper.style.marginTop = `${topBarHeight}px`
+    if (messageThreadContainer) {
+      messageThreadContainer.style.setProperty('--vh', `${vh}px`)
+    }
+    if (defaultMessages) {
+      defaultMessages.style.setProperty('--vh', `${vh}px`)
+    }
+
+    if (bookmarkedMessages) {
+      bookmarkedMessages.style.setProperty('--vh', `${vh}px`)
     }
   }
-
-  const setDynamicBookmarkMessagesHeight = () => {
-    const topBarHeight = document.querySelector('.top-buttons').clientHeight
-    const entireScreenHeight = document.getElementById('message-thread-container').clientHeight
-    const bookmarkMessagesWrapper = document.getElementById('bookmark-messages')
-    if (topBarHeight && entireScreenHeight && bookmarkMessagesWrapper) {
-      bookmarkMessagesWrapper.style.setProperty('height', `calc(${entireScreenHeight}px - ${topBarHeight}px)`)
-      bookmarkMessagesWrapper.style.marginTop = `${topBarHeight}px`
-    }
-  }
-
-  // useEffect(() => {
-  //   if (showBookmarks) {
-  //     setDynamicBookmarkMessagesHeight()
-  //   } else {
-  //     setDynamicMessagesHeight()
-  //   }
-  // }, [showBookmarks])
 
   useEffect(() => {
+    window.addEventListener('resize', adjustHeightOnKeyboard)
     onTableChange().then((r) => r)
     scrollToLatestMessage()
     Manager.showPageContainer('show')
@@ -301,7 +284,6 @@ const Conversation = () => {
         {!showSearchInput && (
           <div className="flex top-buttons">
             <div className="flex" id="user-info">
-              <PiUserCircleDuotone id={'user-icon'} />
               <p id="user-name">{formatNameFirstNameOnly(messageToUser.name)}</p>
             </div>
             <div id="right-side" className="flex">

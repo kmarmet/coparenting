@@ -4,6 +4,7 @@ import ScreenNames from '@screenNames'
 import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone } from 'react-icons/pi'
 import { CgMenu } from 'react-icons/cg'
 import { VscSettings } from 'react-icons/vsc'
+import { FaChild } from 'react-icons/fa'
 import {
   contains,
   displayAlert,
@@ -49,7 +50,6 @@ export default function NavBar({ children, navbarClass }) {
               onClick={() => changeCurrentScreen(ScreenNames.calendar)}
               className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
               <PiCalendarDotsDuotone />
-              <span>Calendar</span>
             </div>
 
             {/* CHATS */}
@@ -59,26 +59,23 @@ export default function NavBar({ children, navbarClass }) {
               className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
               {unreadMessageCount > 0 && <p className="navbar-activity-badge"></p>}
               <PiChatsCircleDuotone />
-              <span>Chats</span>
             </div>
 
             {/* ADD NEW BUTTON */}
             <div id="svg-wrapper">{children}</div>
 
             {/* CHILD INFO */}
-            {/*<div*/}
-            {/*  onClick={() => changeCurrentScreen(ScreenNames.childInfo)}*/}
-            {/*  className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>*/}
-            {/*  <FaChild />*/}
-            {/*  <span>Children</span>*/}
-            {/*</div>*/}
+            <div
+              onClick={() => changeCurrentScreen(ScreenNames.childInfo)}
+              className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>
+              <FaChild />
+            </div>
 
             {/*/!* MEMORIES *!/*/}
             <div
               onClick={() => changeCurrentScreen(ScreenNames.memories)}
               className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'}`}>
               <PiImagesSquareDuotone />
-              <span>Memories</span>
             </div>
 
             {/*/!* ACTIVITY *!/*/}
@@ -93,7 +90,6 @@ export default function NavBar({ children, navbarClass }) {
               onClick={() => changeCurrentScreen(ScreenNames.settings)}
               className={`${currentScreen === ScreenNames.settings ? 'active menu-item settings' : 'menu-item settings'}`}>
               <VscSettings />
-              <span>Settings</span>
             </div>
           </div>
         )}

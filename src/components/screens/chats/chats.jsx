@@ -7,7 +7,6 @@ import { useSwipeable } from 'react-swipeable'
 import ChatManager from '@managers/chatManager.js'
 import DB_UserScoped from '@userScoped'
 import { BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
-import { PiUserCircleDuotone } from 'react-icons/pi'
 import {
   confirmAlert,
   contains,
@@ -121,7 +120,7 @@ const Chats = () => {
                   }}>
                   {/* COPARENT NAME */}
                   <div className="flex">
-                    <PiUserCircleDuotone />
+                    <div className="user-initial">{coparent.name.charAt(0).toUpperCase()}</div>
                     <p data-coparent-phone={coparent.phone} className="coparent-name">
                       {formatNameFirstNameOnly(coparent.name)}
                       {/* Last Message */}

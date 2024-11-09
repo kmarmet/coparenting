@@ -101,6 +101,20 @@
         top: -3px;
         margin-right: 5px;
       }
+      
+      .user-initial {
+        font-size: 28px;
+        font-weight: bold;
+        height: 40px;
+        width: 45px;
+        border: 2px solid $mainBlue;
+        border-radius: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: $lightBlue;
+        margin-right: 10px;
+      }
 
       .delete-icon {
         color: $red;

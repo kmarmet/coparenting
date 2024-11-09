@@ -1,9 +1,24 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import '../../prototypes'
-// Icons
+import { IoCloseOutline } from 'react-icons/io5'
+import { PiTrashSimpleDuotone } from 'react-icons/pi'
 
-export default function BottomCard({ onClose, children, title, subtitle = '', showCard = false, className = '' }) {
+export default function BottomCard({
+  submitText,
+  submitIcon,
+  onSubmit,
+  onDelete,
+  onClose,
+  children,
+  title,
+  refreshKey = 0,
+  subtitle = '',
+  showCard = false,
+  className = '',
+  hasDelete = false,
+  hasSubmitButton = true,
+}) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, alertType, formToShow } = state
   const isMobile = window.screen.width < 800
@@ -30,13 +45,22 @@ export default function BottomCard({ onClose, children, title, subtitle = '', sh
   }
 
   return (
-    <div id="bottom-card" className={`${cardClasses()} ${alertType} `}>
+    <div key={refreshKey} id="bottom-card" className={`${cardClasses()} ${alertType} `}>
       <div id="title" dangerouslySetInnerHTML={{ __html: title }}></div>
       <hr id="title-hr" />
 
       <div id="content" className="mt-15">
         {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
         {children}
+      </div>
+      <div className="flex buttons">
+        {hasSubmitButton && (
+          <button className="button card-button submit" onClick={onSubmit}>
+            {submitText} {submitIcon}
+          </button>
+        )}
+        {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
+        <IoCloseOutline className="close-icon" onClick={onClose} />
       </div>
     </div>
   )

@@ -56,6 +56,8 @@ export default function EventCalendar() {
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [showHolidays, setShowHolidays] = useState(false)
   const [showNotes, setShowNotes] = useState(false)
+  const [searchResults, setSearchResults] = useState([])
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
   // HANDLE SWIPE
   const handlers = useSwipeable({
@@ -418,6 +420,8 @@ export default function EventCalendar() {
     }
   }
 
+  const updateRefreshKey = () => setRefreshKey(Manager.getUid())
+
   useEffect(() => {
     if (showHolidays) {
       const rows = document.querySelectorAll('.event-row')
@@ -446,24 +450,54 @@ export default function EventCalendar() {
       {/* CARDS */}
       <>
         {/* HOLIDAYS CARD */}
-        <BottomCard className={`${theme} view-holidays`} onClose={viewAllEvents} showCard={showHolidaysCard} title={'View Holidays ✨'}>
-          <div className="flex buttons">
+        <BottomCard
+          hasSubmitButton={false}
+          className={`${theme} view-holidays`}
+          onClose={viewAllEvents}
+          showCard={showHolidaysCard}
+          title={'View Holidays ✨'}>
+          <div id="holiday-card-buttons">
             <button className="card-button" id="view-all-holidays-item" onClick={showAllHolidays}>
               All
             </button>
             <button className="card-button" id="view-visitation-holidays-item" onClick={showVisitationHolidays}>
               Visitation
             </button>
-            <button className="card-button cancel" onClick={() => setShowHolidaysCard(false)}>
-              Close
-            </button>
           </div>
         </BottomCard>
 
         {/* SEARCH CARD */}
-        <BottomCard className="form search-card" title={'Find Events'} onClose={async () => setShowSearchCard(false)} showCard={showSearchCard}>
+        <BottomCard
+          submitIcon={<LuCalendarSearch />}
+          submitText={'Search'}
+          className="form search-card"
+          title={'Find Events'}
+          onClose={async () => {
+            document.querySelector('.flatpickr-calendar').scrollIntoView({ behavior: 'smooth', block: 'start' })
+            await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+            setShowSearchCard(false)
+            updateRefreshKey()
+          }}
+          onSubmit={() => {
+            if (!Manager.isValid(searchResults, true)) {
+              throwError('Please enter a search value')
+              return false
+            } else {
+              setExistingEvents(searchResults)
+              setTimeout(() => {
+                addEventRowAnimation()
+                const rows = document.querySelectorAll('.event-row')
+
+                if (rows) {
+                  rows[0].scrollIntoView({ behavior: 'smooth' })
+                }
+              }, 400)
+            }
+          }}
+          showCard={showSearchCard}>
           <div className={'mb-5 flex form search-card'} id="search-container">
             <DebounceInput
+              key={refreshKey}
               placeholder="Enter an event name..."
               minLength={2}
               className={'search-input'}
@@ -476,62 +510,33 @@ export default function EventCalendar() {
                     results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
                   }
                   if (results.length > 0) {
-                    setExistingEvents(results)
-                    const rows = document.querySelectorAll('.event-row')
-
-                    if (rows) {
-                      rows[0].scrollIntoView({ behavior: 'smooth' })
-                    }
+                    setSearchResults(results)
                   }
                 } else {
                   if (inputValue.length === 0) {
                     setShowSearchCard(false)
                     document.querySelector('.flatpickr-calendar').scrollIntoView({ behavior: 'smooth' })
                     await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+                    updateRefreshKey()
                   }
                 }
               }}
             />
-            <div className="buttons">
-              <button
-                className="card-button cancel"
-                onClick={async () => {
-                  document.querySelector('.flatpickr-calendar').scrollIntoView({ behavior: 'smooth', block: 'start' })
-                  await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-                  setShowSearchCard(false)
-                }}>
-                Close
-              </button>
-            </div>
           </div>
         </BottomCard>
 
         {/* NEW EVENT */}
-        <BottomCard
-          className={`${theme} new-event-form new-calendar-event`}
-          onClose={() => setShowNewEventCard(false)}
-          showCard={showNewEventCard}
-          title={'Add New Event'}>
-          <NewCalendarEvent hideCard={() => setShowNewEventCard(false)} />
-        </BottomCard>
+        <NewCalendarEvent showCard={showNewEventCard} onClose={() => setShowNewEventCard(false)} />
 
         {/* EDIT EVENT */}
-        <BottomCard
-          title={'Edit Event'}
+        <EditCalEvent
           showCard={showEditCard}
-          className="edit-calendar-event"
           onClose={async (e) => {
             await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
             setShowEditCard(false)
-          }}>
-          <EditCalEvent
-            event={eventToEdit}
-            hideCard={async (e) => {
-              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-              setShowEditCard(false)
-            }}
-          />
-        </BottomCard>
+          }}
+          event={eventToEdit}
+        />
       </>
 
       {/* PAGE CONTAINER */}

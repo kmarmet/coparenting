@@ -21,7 +21,7 @@ import DateManager from '../../managers/dateManager'
 import TitleSuggestion from '../../models/titleSuggestion'
 import CalendarManager from '../../managers/calendarManager'
 import TitleSuggestionWrapper from '../shared/titleSuggestionWrapper'
-import { FaClone } from 'react-icons/fa6'
+import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
 import Toggle from 'react-toggle'
 import '../../styles/reactToggle.css'
 import { ImEye } from 'react-icons/im'
@@ -50,9 +50,10 @@ import ModelNames from '../../models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import NotificationManager from '../../managers/notificationManager'
+import BottomCard from '../shared/bottomCard'
 
 // COMPONENT
-export default function NewCalendarEvent({ hideCard }) {
+export default function NewCalendarEvent({ showCard, onClose }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, selectedNewEventDay } = state
@@ -114,7 +115,7 @@ export default function NewCalendarEvent({ hideCard }) {
     setIsVisitation(false)
     setShowCoparentReminderToggle(false)
     setResetKey(Manager.getUid())
-    hideCard()
+    onClose()
   }
 
   const submit = async () => {
@@ -180,7 +181,7 @@ export default function NewCalendarEvent({ hideCard }) {
 
     const cleanedObject = Manager.cleanObject(newEvent, ModelNames.calendarEvent)
     MyConfetti.fire()
-    hideCard()
+    onClose()
 
     // Add first/initial date before adding repeating/cloned
     await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
@@ -402,371 +403,367 @@ export default function NewCalendarEvent({ hideCard }) {
   return (
     <div>
       {/* FORM WRAPPER */}
-      <div id="calendar-event-form-container" className={`form ${theme}`}>
-        {/* Event Length */}
-        <div className="action-pills calendar-event">
-          <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
-            <span className="material-icons-round">event</span>
-            <p>Single Day</p>
+      <BottomCard
+        submitText={'Create Event'}
+        className={`${theme} new-event-form new-calendar-event`}
+        onClose={onClose}
+        onSubmit={submit}
+        submitIcon={<FaRegCalendarCheck />}
+        showCard={showCard}
+        title={'Add New Event'}>
+        <div id="calendar-event-form-container" className={`form ${theme}`}>
+          {/* Event Length */}
+          <div className="action-pills calendar-event">
+            <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
+              <span className="material-icons-round">event</span>
+              <p>Single Day</p>
+            </div>
+            <div className={`flex right ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
+              <span className="material-icons-round">date_range</span>
+              <p>Multiple Days</p>
+            </div>
           </div>
-          <div className={`flex right ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
-            <span className="material-icons-round">date_range</span>
-            <p>Multiple Days</p>
-          </div>
-        </div>
 
-        {/* CALENDAR FORM */}
-        {/* TITLE */}
-        <div className="title-suggestion-wrapper">
-          <InputWrapper
-            refreshKey={resetKey}
-            inputClasses="event-title-input"
-            inputType={'input'}
-            labelText={'Title'}
-            required={true}
-            onChange={async (e) => {
-              const inputValue = e.target.value
-              if (inputValue.length > 1) {
-                const dbSuggestions = await SecurityManager.getTitleSuggestions(currentUser)
+          {/* CALENDAR FORM */}
+          {/* TITLE */}
+          <div className="title-suggestion-wrapper">
+            <InputWrapper
+              refreshKey={resetKey}
+              inputClasses="event-title-input"
+              inputType={'input'}
+              labelText={'Title'}
+              required={true}
+              onChange={async (e) => {
+                const inputValue = e.target.value
+                if (inputValue.length > 1) {
+                  const dbSuggestions = await SecurityManager.getTitleSuggestions(currentUser)
 
-                if (Manager.isValid(dbSuggestions, true)) {
-                  const matching = dbSuggestions.filter(
-                    (x) =>
-                      x.formName === 'calendar' &&
-                      x.ownerPhone === currentUser.phone &&
-                      contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
-                  )
-                  setTitleSuggestions(Manager.getUniqueArray(matching).flat())
+                  if (Manager.isValid(dbSuggestions, true)) {
+                    const matching = dbSuggestions.filter(
+                      (x) =>
+                        x.formName === 'calendar' &&
+                        x.ownerPhone === currentUser.phone &&
+                        contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
+                    )
+                    setTitleSuggestions(Manager.getUniqueArray(matching).flat())
+                  }
+                } else {
+                  setTitleSuggestions([])
                 }
-              } else {
+                setEventTitle(inputValue)
+              }}
+            />
+            <TitleSuggestionWrapper
+              suggestions={titleSuggestions}
+              setSuggestions={() => setTitleSuggestions([])}
+              onClick={(e) => {
+                const suggestion = e.target.textContent
+                setEventTitle(suggestion)
                 setTitleSuggestions([])
-              }
-              setEventTitle(inputValue)
-            }}
-          />
-          <TitleSuggestionWrapper
-            suggestions={titleSuggestions}
-            setSuggestions={() => setTitleSuggestions([])}
-            onClick={(e) => {
-              const suggestion = e.target.textContent
-              setEventTitle(suggestion)
-              setTitleSuggestions([])
-              document.querySelector('.event-title-input').value = suggestion
-            }}></TitleSuggestionWrapper>
-        </div>
+                document.querySelector('.event-title-input').value = suggestion
+              }}></TitleSuggestionWrapper>
+          </div>
 
-        {/* FROM DATE */}
-        <div className="flex gap m-0">
           {/* FROM DATE */}
-          {eventLength === EventLengths.single && (
+          <div className="flex gap m-0">
+            {/* FROM DATE */}
+            {eventLength === EventLengths.single && (
+              <>
+                <div className="w-100">
+                  <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
+                    <MobileDatePicker
+                      disablePast={true}
+                      value={moment(selectedNewEventDay)}
+                      className={`${theme} m-0 w-100 event-from-date mui-input`}
+                      onAccept={(e) => {
+                        setEventFromDate(e)
+                      }}
+                    />
+                  </InputWrapper>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* DATE RANGE */}
+          {eventLength === EventLengths.multiple && (
             <>
-              <div className="w-100">
-                <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
-                  <MobileDatePicker
-                    disablePast={true}
-                    value={moment(selectedNewEventDay)}
-                    className={`${theme} m-0 w-100 event-from-date mui-input`}
-                    onAccept={(e) => {
-                      setEventFromDate(e)
-                    }}
-                  />
-                </InputWrapper>
-              </div>
+              <InputWrapper labelText={'Date Range'} required={true} inputType={'date'}>
+                <DateRangePicker
+                  showOneCalendar
+                  showHeader={false}
+                  editable={false}
+                  id="event-date"
+                  placement="auto"
+                  character=" to "
+                  className={`${theme} mb-15`}
+                  format={'MM/dd/yyyy'}
+                  onChange={(e) => {
+                    let formattedDates = []
+                    if (e && e.length > 0) {
+                      e.forEach((date) => {
+                        formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
+                      })
+                      setEventFromDate(formattedDates[0])
+                      setEventToDate(formattedDates[1])
+                    }
+                  }}
+                />
+              </InputWrapper>
             </>
           )}
-        </div>
 
-        {/* DATE RANGE */}
-        {eventLength === EventLengths.multiple && (
-          <>
-            <InputWrapper labelText={'Date Range'} required={true} inputType={'date'}>
-              <DateRangePicker
-                showOneCalendar
-                showHeader={false}
-                editable={false}
-                id="event-date"
-                placement="auto"
-                character=" to "
-                className={`${theme} mb-15`}
-                format={'MM/dd/yyyy'}
-                onChange={(e) => {
-                  let formattedDates = []
-                  if (e && e.length > 0) {
-                    e.forEach((date) => {
-                      formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                    })
-                    setEventFromDate(formattedDates[0])
-                    setEventToDate(formattedDates[1])
-                  }
-                }}
-              />
-            </InputWrapper>
-          </>
-        )}
+          {/* EVENT WITH TIME */}
+          {!isAllDay && (
+            <div className={'flex gap event-times-wrapper mb-15'}>
+              <div>
+                <InputWrapper wrapperClasses="higher-label" labelText={'Start Time'} required={false} inputType={'date'}>
+                  <MobileTimePicker defaultValue={null} minutesStep={5} className={`${theme}`} onAccept={(e) => setEventStartTime(e)} />
+                </InputWrapper>
+              </div>
+              <span>&nbsp;to&nbsp;</span>
+              <div>
+                <InputWrapper wrapperClasses="higher-label" labelText={'End Time'} required={false} inputType={'date'}>
+                  <MobileTimePicker defaultValue={null} minutesStep={5} className={`${theme} `} onAccept={(e) => setEventEndTime(e)} />
+                </InputWrapper>
+              </div>
+            </div>
+          )}
 
-        {/* EVENT WITH TIME */}
-        {!isAllDay && (
-          <div className={'flex gap event-times-wrapper mb-15'}>
-            <div>
-              <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
-                <MobileTimePicker defaultValue={null} minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventStartTime(e)} />
-              </InputWrapper>
-            </div>
-            <span>&nbsp;to&nbsp;</span>
-            <div>
-              <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
-                <MobileTimePicker defaultValue={null} minutesStep={5} className={`${theme} m-0`} onAccept={(e) => setEventEndTime(e)} />
-              </InputWrapper>
-            </div>
+          <hr />
+
+          {/* WHO IS ALLOWED TO SEE IT? */}
+          {Manager.isValid(currentUser?.coparents, true) && (
+            <ShareWithCheckboxes
+              icon={<ImEye />}
+              required={true}
+              shareWith={currentUser.coparents.map((x) => x.phone)}
+              onCheck={(e) => handleShareWithSelection(e)}
+              labelText={'Who is allowed to see it?'}
+              containerClass={'share-with-coparents'}
+              checkboxLabels={currentUser.coparents.map((x) => x.phone)}
+            />
+          )}
+
+          <hr />
+
+          {/* ALL DAY / HAS END DATE */}
+          <div className="flex">
+            <p>All Day</p>
+            <Toggle
+              icons={{
+                unchecked: null,
+              }}
+              className={'ml-auto reminder-toggle'}
+              onChange={(e) => setIsAllDay(!isAllDay)}
+            />
           </div>
-        )}
 
-        <hr />
-
-        {/* WHO IS ALLOWED TO SEE IT? */}
-        {Manager.isValid(currentUser?.coparents, true) && (
-          <ShareWithCheckboxes
-            icon={<ImEye />}
-            required={true}
-            shareWith={currentUser.coparents.map((x) => x.phone)}
-            onCheck={(e) => handleShareWithSelection(e)}
-            labelText={'Who is allowed to see it?'}
-            containerClass={'share-with-coparents'}
-            checkboxLabels={currentUser.coparents.map((x) => x.phone)}
-          />
-        )}
-
-        <hr />
-
-        {/* ALL DAY / HAS END DATE */}
-        <div className="flex">
-          <p>All Day</p>
-          <Toggle
-            icons={{
-              unchecked: null,
-            }}
-            className={'ml-auto reminder-toggle'}
-            onChange={(e) => setIsAllDay(!isAllDay)}
-          />
-        </div>
-
-        {/* IS VISITATION? */}
-        <div className="flex">
-          <p>Visitation Event</p>
-          <Toggle
-            icons={{
-              unchecked: null,
-            }}
-            className={'ml-auto visitation-toggle'}
-            onChange={(e) => setIsVisitation(!isVisitation)}
-          />
-        </div>
-
-        {/* REMINDER */}
-        {!isAllDay && (
-          <>
-            <div className="flex">
-              <p>Remind Me</p>
-              <Toggle
-                icons={{
-                  checked: <span className="material-icons-round">notifications</span>,
-                  unchecked: null,
-                }}
-                className={'ml-auto reminder-toggle'}
-                onChange={(e) => setShowReminders(!showReminders)}
-              />
-            </div>
-            <div className="share-with-container">
-              <Accordion>
-                <Accordion.Panel expanded={showReminders}>
-                  <CheckboxGroup
-                    containerClass={'reminder-times'}
-                    elClass={`${theme}`}
-                    skipNameFormatting={true}
-                    checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
-                    onCheck={handleReminderSelection}
-                  />
-                </Accordion.Panel>
-              </Accordion>
-            </div>
-          </>
-        )}
-
-        {/* REMIND COPARENTS*/}
-        {Manager.isValid(currentUser?.coparents, true) && (
-          <div className="share-with-container">
-            <div className="flex">
-              <p>Remind Co-parent(s)</p>
-              <Toggle
-                icons={{
-                  checked: <span className="material-icons-round">person</span>,
-                  unchecked: null,
-                }}
-                className={'ml-auto reminder-toggle'}
-                onChange={(e) => setShowCoparentReminderToggle(showCoparentReminderToggle === true ? false : true)}
-              />
-            </div>
-            <Accordion>
-              <Accordion.Panel expanded={showCoparentReminderToggle}>
-                {currentUser.accountType === 'parent' && (
-                  <CheckboxGroup
-                    elClass={`${theme} `}
-                    dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                    checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-                    onCheck={handleCoparentsToRemindSelection}
-                  />
-                )}
-                {currentUser.accountType === 'child' && (
-                  <CheckboxGroup
-                    elClass={`${theme} `}
-                    dataPhone={currentUser.parents.map((x) => x.phone)}
-                    checkboxLabels={currentUser.parents.map((x) => x.name)}
-                    onCheck={handleCoparentsToRemindSelection}
-                  />
-                )}
-              </Accordion.Panel>
-            </Accordion>
+          {/* IS VISITATION? */}
+          <div className="flex">
+            <p>Visitation Event</p>
+            <Toggle
+              icons={{
+                unchecked: null,
+              }}
+              className={'ml-auto visitation-toggle'}
+              onChange={(e) => setIsVisitation(!isVisitation)}
+            />
           </div>
-        )}
 
-        {/* INCLUDING WHICH CHILDREN */}
-        {Manager.isValid(currentUser.children !== undefined, true) && (
-          <div className="share-with-container">
-            <div className="flex">
-              <p>Include Children</p>
-              <Toggle
-                icons={{
-                  checked: <span className="material-icons-round">face</span>,
-                  unchecked: null,
-                }}
-                className={'ml-auto reminder-toggle'}
-                onChange={(e) => setIncludeChildren(!includeChildren)}
-              />
-            </div>
-            <Accordion>
-              <Accordion.Panel expanded={includeChildren}>
-                <CheckboxGroup
-                  elClass={`${theme} `}
-                  checkboxLabels={currentUser?.children.map((x) => x['general'].name)}
-                  onCheck={handleChildSelection}
-                />
-              </Accordion.Panel>
-            </Accordion>
-          </div>
-        )}
-
-        {/* REPEATING/CLONED */}
-        {(!currentUser.accountType || currentUser.accountType === 'parent') && (
-          <>
-            {/* REPEATING */}
-            <div className="share-with-container" id="repeating-container">
+          {/* REMINDER */}
+          {!isAllDay && (
+            <>
               <div className="flex">
-                <p>Repeating</p>
+                <p>Remind Me</p>
                 <Toggle
                   icons={{
-                    checked: <span className="material-icons-round">event_repeat</span>,
+                    checked: <span className="material-icons-round">notifications</span>,
                     unchecked: null,
                   }}
                   className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setEventIsRepeating(!eventIsRepeating)}
+                  onChange={(e) => setShowReminders(!showReminders)}
+                />
+              </div>
+              <div className="share-with-container">
+                <Accordion>
+                  <Accordion.Panel expanded={showReminders}>
+                    <CheckboxGroup
+                      containerClass={'reminder-times'}
+                      elClass={`${theme}`}
+                      skipNameFormatting={true}
+                      checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                      onCheck={handleReminderSelection}
+                    />
+                  </Accordion.Panel>
+                </Accordion>
+              </div>
+            </>
+          )}
+
+          {/* REMIND COPARENTS*/}
+          {Manager.isValid(currentUser?.coparents, true) && (
+            <div className="share-with-container">
+              <div className="flex">
+                <p>Remind Co-parent(s)</p>
+                <Toggle
+                  icons={{
+                    checked: <span className="material-icons-round">person</span>,
+                    unchecked: null,
+                  }}
+                  className={'ml-auto reminder-toggle'}
+                  onChange={(e) => setShowCoparentReminderToggle(showCoparentReminderToggle === true ? false : true)}
                 />
               </div>
               <Accordion>
-                <Accordion.Panel expanded={eventIsRepeating}>
-                  <CheckboxGroup
-                    elClass={`${theme} `}
-                    boxWidth={35}
-                    onCheck={handleRepeatingSelection}
-                    checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
-                  />
-                  {repeatInterval && (
-                    <DatetimePicker
-                      className={`mt-0 w-100`}
-                      label={'Month to end repeating events'}
-                      format={DateFormats.readableMonth}
-                      views={DatetimePickerViews.monthAndYear}
-                      hasAmPm={false}
-                      onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
+                <Accordion.Panel expanded={showCoparentReminderToggle}>
+                  {currentUser.accountType === 'parent' && (
+                    <CheckboxGroup
+                      elClass={`${theme} `}
+                      dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                      checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+                      onCheck={handleCoparentsToRemindSelection}
+                    />
+                  )}
+                  {currentUser.accountType === 'child' && (
+                    <CheckboxGroup
+                      elClass={`${theme} `}
+                      dataPhone={currentUser.parents.map((x) => x.phone)}
+                      checkboxLabels={currentUser.parents.map((x) => x.name)}
+                      onCheck={handleCoparentsToRemindSelection}
                     />
                   )}
                 </Accordion.Panel>
               </Accordion>
             </div>
+          )}
 
-            <div className="flex">
-              <p>Copy Event to Other Dates</p>
-              <Toggle
-                icons={{
-                  checked: <FaClone />,
-                  unchecked: null,
-                }}
-                className={'ml-auto reminder-toggle'}
-                onChange={(e) => setShowCloneInput(!showCloneInput)}
-              />
-            </div>
-
-            {/* CLONED */}
-            {showCloneInput && (
-              <div>
-                <InputWrapper labelText={'Select Dates'} required={false} inputType={'date'}>
-                  <MultiDatePicker
-                    className={`${theme} multidate-picker mb-15`}
-                    placement="auto"
-                    placeholder={null}
-                    label=""
-                    onOpen={() => Manager.hideKeyboard()}
-                    onChange={(e) => {
-                      if (!Array.isArray(clonedDates)) {
-                        e = [e]
-                        setClonedDates(e)
-                      } else {
-                        setClonedDates(e)
-                      }
-                    }}
-                  />
-                </InputWrapper>
+          {/* INCLUDING WHICH CHILDREN */}
+          {Manager.isValid(currentUser.children !== undefined, true) && (
+            <div className="share-with-container">
+              <div className="flex">
+                <p>Include Children</p>
+                <Toggle
+                  icons={{
+                    checked: <span className="material-icons-round">face</span>,
+                    unchecked: null,
+                  }}
+                  className={'ml-auto reminder-toggle'}
+                  onChange={(e) => setIncludeChildren(!includeChildren)}
+                />
               </div>
-            )}
-          </>
-        )}
+              <Accordion>
+                <Accordion.Panel expanded={includeChildren}>
+                  <CheckboxGroup
+                    elClass={`${theme} `}
+                    checkboxLabels={currentUser?.children.map((x) => x['general'].name)}
+                    onCheck={handleChildSelection}
+                  />
+                </Accordion.Panel>
+              </Accordion>
+            </div>
+          )}
 
-        <hr />
+          {/* REPEATING/CLONED */}
+          {(!currentUser.accountType || currentUser.accountType === 'parent') && (
+            <>
+              {/* REPEATING */}
+              <div className="share-with-container" id="repeating-container">
+                <div className="flex">
+                  <p>Repeating</p>
+                  <Toggle
+                    icons={{
+                      checked: <span className="material-icons-round">event_repeat</span>,
+                      unchecked: null,
+                    }}
+                    className={'ml-auto reminder-toggle'}
+                    onChange={(e) => setEventIsRepeating(!eventIsRepeating)}
+                  />
+                </div>
+                <Accordion>
+                  <Accordion.Panel expanded={eventIsRepeating}>
+                    <CheckboxGroup
+                      elClass={`${theme} `}
+                      boxWidth={35}
+                      onCheck={handleRepeatingSelection}
+                      checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
+                    />
+                    {repeatInterval && (
+                      <DatetimePicker
+                        className={`mt-0 w-100`}
+                        label={'Month to end repeating events'}
+                        format={DateFormats.readableMonth}
+                        views={DatetimePickerViews.monthAndYear}
+                        hasAmPm={false}
+                        onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
+                      />
+                    )}
+                  </Accordion.Panel>
+                </Accordion>
+              </div>
 
-        {/* URL/WEBSITE */}
-        <InputWrapper labelText={'Website'} required={false} inputType={'input'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
+              <div className="flex">
+                <p>Copy Event to Other Dates</p>
+                <Toggle
+                  icons={{
+                    checked: <FaClone />,
+                    unchecked: null,
+                  }}
+                  className={'ml-auto reminder-toggle'}
+                  onChange={(e) => setShowCloneInput(!showCloneInput)}
+                />
+              </div>
 
-        {/* LOCATION/ADDRESS */}
-        <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
-          <Autocomplete
-            placeholder={'Location'}
-            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-            options={{
-              types: ['geocode', 'establishment'],
-              componentRestrictions: { country: 'usa' },
-            }}
-            className="mb-10"
-            onPlaceSelected={(place) => {
-              setEventLocation(place.formatted_address)
-            }}
-          />
-        </InputWrapper>
+              {/* CLONED */}
+              {showCloneInput && (
+                <div>
+                  <InputWrapper labelText={'Select Dates'} required={false} inputType={'date'}>
+                    <MultiDatePicker
+                      className={`${theme} multidate-picker mb-15`}
+                      placement="auto"
+                      placeholder={null}
+                      label=""
+                      onOpen={() => Manager.hideKeyboard()}
+                      onChange={(e) => {
+                        if (!Array.isArray(clonedDates)) {
+                          e = [e]
+                          setClonedDates(e)
+                        } else {
+                          setClonedDates(e)
+                        }
+                      }}
+                    />
+                  </InputWrapper>
+                </div>
+              )}
+            </>
+          )}
 
-        {/* NOTES */}
-        <InputWrapper labelText={'Notes'} required={false} inputType={'textarea'} onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
+          <hr />
 
-        <div className="buttons gap">
-          <div id="blur"></div>
-          <button className="button card-button primary " onClick={submit}>
-            Create Event{' '}
-            <span className="material-icons-round ml-10 fs-22" onClick={submit}>
-              event_available
-            </span>
-          </button>
-          <button className="button card-button cancel" onClick={resetForm}>
-            Cancel
-          </button>
+          {/* URL/WEBSITE */}
+          <InputWrapper labelText={'Website'} required={false} inputType={'input'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
+
+          {/* LOCATION/ADDRESS */}
+          <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
+            <Autocomplete
+              placeholder={'Location'}
+              apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+              options={{
+                types: ['geocode', 'establishment'],
+                componentRestrictions: { country: 'usa' },
+              }}
+              className="mb-10"
+              onPlaceSelected={(place) => {
+                setEventLocation(place.formatted_address)
+              }}
+            />
+          </InputWrapper>
+
+          {/* NOTES */}
+          <InputWrapper labelText={'Notes'} required={false} inputType={'textarea'} onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
         </div>
-      </div>
+      </BottomCard>
     </div>
   )
 }
