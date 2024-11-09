@@ -1,4 +1,3 @@
-import PushAlertApi from '@api/pushAlert'
 import UploadInputs from '@components/shared/uploadInputs'
 import DB from '@db'
 import FirebaseStorage from '@firebaseStorage'
@@ -8,7 +7,6 @@ import globalState from 'context'
 import Manager from 'managers/manager'
 import NotificationManager from 'managers/notificationManager'
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { DebounceInput } from 'react-debounce-input'
 import DateFormats from '../../constants/dateFormats'
 import moment from 'moment'
 import Memory from '../../models/memory'
@@ -38,6 +36,7 @@ import ModelNames from '../../models/modelNames'
 import ActivitySet from '../../models/activitySet'
 import DB_UserScoped from '@userScoped'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import InputWrapper from '../shared/inputWrapper'
 
 function NewMemoryForm({ hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -47,6 +46,7 @@ function NewMemoryForm({ hideCard }) {
   const [images, setImages] = useState([])
   const [memoryTitle, setMemoryTitle] = useState('')
   const inputFile = useRef(null)
+  const [resetKey, setResetKey] = useState(Manager.getUid())
 
   const resetForm = () => {
     Manager.resetForm('new-memory-wrapper')
@@ -55,6 +55,8 @@ function NewMemoryForm({ hideCard }) {
     setImages([])
     setMemoryTitle('')
     setState({ ...state, isLoading: false })
+    hideCard()
+    setResetKey(Manager.getUid())
   }
 
   const handleShareWithSelection = async (e) => {
@@ -132,11 +134,7 @@ function NewMemoryForm({ hideCard }) {
           }
 
           // Send Notification
-          for (const coparentPhone of shareWith) {
-            await setActivitySets(coparentPhone)
-            const subId = await NotificationManager.getUserSubId(coparentPhone)
-            PushAlertApi.sendMessage(`Memories Await!`, `${formatNameFirstNameOnly(currentUser.name)} has uploaded a new memory!`, subId)
-          }
+          NotificationManager.sendToShareWith(shareWith, 'Memories Await!', `${formatNameFirstNameOnly(currentUser.name)} has uploaded a new memory!`)
         })
         AppManager.setAppBadge(1)
         resetForm()
@@ -156,6 +154,7 @@ function NewMemoryForm({ hideCard }) {
 
   useEffect(() => {
     Manager.showPageContainer()
+    setResetKey(Manager.getUid())
   }, [])
 
   return (
@@ -173,18 +172,18 @@ function NewMemoryForm({ hideCard }) {
               checkboxLabels={currentUser?.coparents.map((x) => x.name)}
             />
           )}
-          <label>Title</label>
-          <DebounceInput
-            minLength={2}
-            className={'mb-20'}
-            debounceTimeout={500}
-            onChange={(e) => {
-              const inputValue = e.target.value
-              setMemoryTitle(inputValue)
-            }}
-          />
-          <label>Image Description/Notes</label>
-          <textarea className="mb-15" onChange={(e) => setMemoryNotes(e.target.value)}></textarea>
+          <InputWrapper
+            refreshKey={resetKey}
+            inputType={'input'}
+            defaultValue="Title"
+            labelText={'Title'}
+            onChange={(e) => setMemoryTitle(e.target.value)}></InputWrapper>
+          <InputWrapper
+            refreshKey={resetKey}
+            onChange={(e) => setMemoryNotes(e.target.value)}
+            inputType={'textarea'}
+            defaultValue="Image Description/Notes"
+            labelText={'Image Description/Notes'}></InputWrapper>
           <UploadInputs
             onClose={hideCard}
             containerClass={`${theme} new-memory-card`}
@@ -197,7 +196,7 @@ function NewMemoryForm({ hideCard }) {
             upload={submit}
           />
           <div className="buttons">
-            <button className="cancel card-button" onClick={hideCard}>
+            <button className="cancel card-button" onClick={resetForm}>
               Cancel
             </button>
           </div>

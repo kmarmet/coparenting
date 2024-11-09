@@ -580,10 +580,9 @@ export default function EventCalendar() {
                 }
               }
               return (
-                <>
+                <div key={index}>
                   <div
                     onClick={(e) => handleEventRowClick(e, event)}
-                    key={index}
                     data-from-date={event?.startDate}
                     className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
                     <div className="text">
@@ -697,7 +696,7 @@ export default function EventCalendar() {
                     </div>
                   </div>
                   <hr className="event-hr" />
-                </>
+                </div>
               )
             })}
         </div>

@@ -103,10 +103,6 @@ export default function UploadDocuments({ hideCard }) {
 
           setState({ ...state, isLoading: false })
 
-          // for (let coparentPhone of shareWith) {
-          //   await setActivitySets(coparentPhone)
-          // }
-
           // Send Notification
           NotificationManager.sendToShareWith(shareWith, 'New Document', `${currentUser} has uploaded a new document`)
         })

@@ -47,9 +47,9 @@ import {
 } from '../../globalFunctions'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
-import PushAlertApi from '../../api/pushAlert'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
+import NotificationManager from '../../managers/notificationManager'
 
 // COMPONENT
 export default function NewCalendarEvent({ hideCard }) {
@@ -183,10 +183,7 @@ export default function NewCalendarEvent({ hideCard }) {
 
     // Add first/initial date before adding repeating/cloned
     await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
-      for (const toShareWith of eventShareWith) {
-        const subId = await PushAlertApi.getSubId(toShareWith)
-        await PushAlertApi.sendMessage(`New Calendar Event`, `${eventTitle} on ${moment(eventFromDate).format('ddd DD')}`, subId)
-      }
+      NotificationManager.sendToShareWith(eventShareWith, 'New Calendar Event', `${eventTitle} on ${moment(eventFromDate).format('ddd DD')}`)
 
       // Add cloned dates
       if (Manager.isValid(clonedDatesToSubmit, true)) {
@@ -422,7 +419,7 @@ export default function NewCalendarEvent({ hideCard }) {
         <div className="title-suggestion-wrapper">
           <InputWrapper
             inputClasses="event-title-input"
-            inputType={'text'}
+            inputType={'input'}
             labelText={'Title'}
             required={true}
             onChange={async (e) => {
@@ -734,7 +731,7 @@ export default function NewCalendarEvent({ hideCard }) {
         <hr />
 
         {/* URL/WEBSITE */}
-        <InputWrapper labelText={'Website'} required={false} inputType={'url'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
+        <InputWrapper labelText={'Website'} required={false} inputType={'input'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
 
         {/* LOCATION/ADDRESS */}
         <InputWrapper labelText={'Location'} required={false} inputType={'location'}>

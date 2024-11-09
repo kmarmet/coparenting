@@ -101,6 +101,7 @@ const Manager = {
     // Inputs/Textareas
     if (Manager.isValid(inputs, true)) {
       inputs.forEach((input) => {
+        console.log(input)
         input.value = ''
       })
     }

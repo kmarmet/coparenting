@@ -1275,37 +1275,12 @@
         width: 50%;
         border-radius: $borderRadius;
         height: 45px;
-
-        &#upload-button {
-          background-color: $green;
-          color: white;
-        }
       }
     }
   }
 
-  #file-upload-button {
-    border: 0;
-  }
-  .custom-file-upload {
-    background-color: $mainBlue;
-    color: white;
-    display: flex;
-    justify-content: center;
-    border-radius: $borderRadius;
-    margin-right: 10px;
-  }
-  #file-upload-button {
-    display: none !important;
-    border: 0;
-    background-color: $green;
-    color: white;
-    border-radius: 20px;
-    label {
-      color: white;
-      display: flex;
-      justify-content: center;
-    }
+  #upload-input {
+    width: 100%;
   }
 }
 @mixin popupContainers {
