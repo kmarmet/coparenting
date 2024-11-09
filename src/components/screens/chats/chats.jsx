@@ -108,9 +108,8 @@ const Chats = () => {
             const coparentMessages = Manager.convertToArray(thread.messages).filter((x) => x.sender === coparent.name)
             const lastMessage = coparentMessages[coparentMessages.length - 1]?.message
             return (
-              <>
+              <div key={index}>
                 <div
-                  key={Manager.getUid()}
                   className="flex thread-item"
                   {...handlers}
                   onClick={(e) => {
@@ -146,7 +145,7 @@ const Chats = () => {
                   />
                 </div>
                 <hr id="chats-hr" />
-              </>
+              </div>
             )
           })}
 

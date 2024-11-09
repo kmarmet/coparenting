@@ -6,21 +6,7 @@
     .events {
       padding-bottom: 200px;
       hr {
-        height: 1px;
-        background-color: #E6E6E6;
-        width: 66.0em;
-        margin: 0 auto;
-        background-image: linear-gradient(to left , white 2%, #E6E6E6 50%, white 98%);
-        background-image: -o-linear-gradient(to left , white 2%, #E6E6E6 50%, white 98%);
-        background-image: -moz-linear-gradient(to left , white 2%, #E6E6E6 50%, white 98%);
-        background-image: -webkit-linear-gradient(to left , white 2%, #E6E6E6 50%, white 98%);
-        background-image: -ms-linear-gradient(to left , white 2%, #E6E6E6 50%, white 98%);
-        background-image: -webkit-gradient( linear, left bottom, right bottom, color-stop(0.02, white), color-stop(0.5, $lightDarkGrey), color-stop(0.98, white) );
-        &.event-hr {
-          margin: 10px auto;
-          width: 70%;
-          
-        }
+        width: 80%;
       }
       .material-icons-round {
         color: $mainBlue;

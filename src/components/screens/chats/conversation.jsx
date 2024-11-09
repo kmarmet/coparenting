@@ -42,6 +42,7 @@ import { CgClose } from 'react-icons/cg'
 import { TbMessageCircleSearch } from 'react-icons/tb'
 import ActivitySet from '../../../models/activitySet'
 import DB_UserScoped from '@userScoped'
+import ContentEditable from '../../shared/contentEditable'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -51,12 +52,13 @@ const Conversation = () => {
   const [searchResults, setSearchResults] = useState([])
   const [showSearchInput, setShowSearchInput] = useState(false)
   const [bookmarks, setBookmarks] = useState([])
-  const [showEmojis, setShowEmojis] = useState(false)
   const [showBookmarks, setShowBookmarks] = useState(false)
   const [showSearchCard, setShowSearchCard] = useState(false)
+  const [messageText, setMessageText] = useState('')
+  const [searchInputQuery, setSearchInputQuery] = useState('')
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
   const bookmarkMessage = async (messageObject, bookmarkButton) => {
-    console.log(bookmarkButton)
     bookmarkButton.classList.add('pressed')
     setTimeout(function () {
       bookmarkButton.classList.remove('pressed')
@@ -72,9 +74,9 @@ const Conversation = () => {
   const submitMessage = async () => {
     adjustHeightOnKeyboard()
     // Clear input
-    let messageInputValue = document.querySelector('#message-input').value
+    let messageInputValue = document.querySelector('.message-input')
 
-    if (messageInputValue.length === 0) {
+    if (messageInputValue.textContent.length === 0) {
       throwError('Please enter a message')
       return false
     }
@@ -88,7 +90,7 @@ const Conversation = () => {
     conversationMessage.timestamp = moment().format('MM/DD/yyyy hh:mma')
     conversationMessage.sender = currentUser.name
     conversationMessage.recipient = messageToUser.name
-    conversationMessage.message = messageInputValue
+    conversationMessage.message = messageText
     conversationMessage.readState = 'delivered'
     conversationMessage.notificationSent = false
     conversationMessage.bookmarked = false
@@ -136,12 +138,14 @@ const Conversation = () => {
     } else {
       setMessagesToLoop([])
     }
-    document.getElementById('message-input').value = ''
     const subId = await NotificationManager.getUserSubId(messageToUser.phone)
     // PushAlertApi.sendMessage('New Message', `You have an unread conversation message 💬`, subId)
     await getExistingMessages()
     AppManager.setAppBadge(1)
     scrollToLatestMessage()
+    messageInputValue.innerHTML = ''
+    setMessageText('')
+    setRefreshKey(Manager.getUid())
   }
 
   const viewBookmarks = async (e) => {
@@ -198,21 +202,30 @@ const Conversation = () => {
   }
 
   function adjustHeightOnKeyboard() {
-    const vh = window.innerHeight * 0.01
-    const messageThreadContainer = document.getElementById('message-thread-container')
-    const defaultMessages = document.getElementById('default-messages')
-    const bookmarkedMessages = document.getElementById('bookmark-messages')
+    setTimeout(() => {
+      const vh = window.innerHeight
+      const messageThreadContainer = document.getElementById('message-thread-container')
+      const defaultMessages = document.getElementById('default-messages')
+      const bookmarkedMessages = document.getElementById('bookmark-messages')
 
-    if (messageThreadContainer) {
-      messageThreadContainer.style.setProperty('--vh', `${vh}px`)
-    }
-    if (defaultMessages) {
-      defaultMessages.style.setProperty('--vh', `${vh}px`)
-    }
+      if (messageThreadContainer) {
+        messageThreadContainer.style.height = `${vh}px`
+        messageThreadContainer.style.maxHeight = `${vh}px`
+      }
+      if (defaultMessages) {
+        defaultMessages.style.height = `${vh}px`
+        defaultMessages.style.maxHeight = `${vh}px`
+      }
 
-    if (bookmarkedMessages) {
-      bookmarkedMessages.style.setProperty('--vh', `${vh}px`)
-    }
+      if (bookmarkedMessages) {
+        bookmarkedMessages.style.height = `${vh}px`
+        bookmarkedMessages.style.maxHeight = `${vh}px`
+      }
+    }, 300)
+  }
+
+  const handleMessageTyping = (input) => {
+    setMessageText(input.target.textContent)
   }
 
   useEffect(() => {
@@ -225,7 +238,10 @@ const Conversation = () => {
     if (appContainer) {
       appContainer.classList.add('disable-scroll')
     }
-    document.getElementById('message-input').focus()
+    const messageInput = document.getElementById('message-input')
+    if (messageInput) {
+      messageInput.focus()
+    }
   }, [])
 
   useEffect(() => {
@@ -244,13 +260,27 @@ const Conversation = () => {
     <>
       <BottomCard
         title={'Search'}
-        className="form"
+        className="form conversation-search-card"
+        submitText={'Search'}
+        submitIcon={<TbMessageCircleSearch />}
         showCard={showSearchCard}
+        onSubmit={() => {
+          if (searchInputQuery.length === 0) {
+            throwError('Please enter a search value')
+            return false
+          }
+          const results = messagesToLoop.filter((x) => x.message.toLowerCase().indexOf(searchInputQuery.toLowerCase()) > -1)
+          setBookmarks([])
+          setSearchResults(results)
+          setSearchInputQuery('')
+        }}
+        refreshKey={refreshKey}
         onClose={() => {
           setShowSearchInput(false)
           setShowSearchCard(false)
           setSearchResults([])
           scrollToLatestMessage()
+          setRefreshKey(Manager.getUid())
         }}>
         <DebounceInput
           placeholder="Find a message..."
@@ -259,12 +289,7 @@ const Conversation = () => {
           debounceTimeout={500}
           onChange={(e) => {
             if (e.target.value.length > 2) {
-              const results = messagesToLoop.filter((x) => x.message.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1)
-              setBookmarks([])
-              setSearchResults(results)
-            } else {
-              setSearchResults([])
-              scrollToLatestMessage()
+              setSearchInputQuery(e.target.value)
             }
           }}
         />
@@ -396,7 +421,7 @@ const Conversation = () => {
             <div className="form message-input-form">
               {/* SEND BUTTON */}
               <div className="flex" id="message-input-container">
-                <textarea placeholder="Enter message..." id="message-input" rows={1}></textarea>
+                <ContentEditable classNames={'message-input'} onChange={handleMessageTyping} />
                 <button
                   onClick={async () => {
                     const screen = document.getElementById('message-thread-container')
@@ -412,33 +437,6 @@ const Conversation = () => {
                   id="send-button">
                   Send
                 </button>
-              </div>
-
-              {/* UNDER MESSAGE ICONS */}
-              <div id="under-message-input">
-                <div className="flex" id="icons">
-                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 🗓 ️')}>
-                    🗓️
-                  </span>
-                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 💭 ')}>
-                    💭
-                  </span>
-                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 🙂 ')}>
-                    🙂
-                  </span>
-                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 👌 ')}>
-                    👌
-                  </span>
-                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 👍 ')}>
-                    👍
-                  </span>
-                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 🎉 ')}>
-                    🎉
-                  </span>
-                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 😯 ')}>
-                    😯
-                  </span>
-                </div>
               </div>
             </div>
           </>

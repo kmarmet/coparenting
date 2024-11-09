@@ -2367,6 +2367,12 @@
     max-height: 250px;
     padding-bottom: 150px;
   }
+  
+  // CONVERSATION SEARCH CARD
+  &.conversation-search-card {
+    min-height: 200px;
+    max-height: 200px;
+  }
 
   // CUSTOM INFO
   &.custom-child-info-wrapper {
