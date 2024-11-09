@@ -49,6 +49,7 @@ import { LiaCcPaypal } from 'react-icons/lia'
 import { BsArrowsAngleExpand } from 'react-icons/bs'
 import { MdPriceCheck } from 'react-icons/md'
 import NavBar from '../navBar'
+import Label from '../shared/label'
 
 // VIEW TYPES
 const ViewTypes = {
@@ -68,6 +69,7 @@ export default function ExpenseTracker() {
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
   const [viewType, setViewType] = useState(ViewTypes.all)
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
+  const [showFullExpenseCard, setShowFullExpenseCard] = useState(false)
   let contentEditable = useRef()
 
   const markAsPaid = async () => {
@@ -166,6 +168,15 @@ export default function ExpenseTracker() {
     })
   }
 
+  const handleFullExpenseToggle = async (e, expenseId) => {
+    console.log(e.target.classList)
+    if (!e.target.classList.contains('name') && !e.target.classList.contains('delete')) {
+      // setShowFullExpenseCard(true)
+      const expenseToShow = document.querySelector(`[data-expense-id='${expenseId}']`)
+      expenseToShow.classList.add('active')
+    }
+  }
+
   useEffect(() => {
     getSecuredExpenses().then((r) => r)
   }, [viewType])
@@ -191,13 +202,12 @@ export default function ExpenseTracker() {
     <div>
       {/* NEW EXPENSE FORM */}
 
-      <BottomCard title={'Add Expense'} showCard={showNewExpenseCard} onClose={() => setShowNewExpenseCard(false)}>
-        <NewExpenseForm hideCard={(e) => setShowNewExpenseCard(false)} />
-      </BottomCard>
+      <NewExpenseForm showCard={showNewExpenseCard} hideCard={(e) => setShowNewExpenseCard(false)} />
       {/* PAYMENT OPTIONS */}
       <>
         {showPaymentOptionsCard && (
           <BottomCard
+            hasSubmitButton={false}
             subtitle="There are a multitude of simple and FREE ways to send money to a co-parent for expenses, or for any other reason. Please look below to
               see which option works best for you."
             title={'Payment/Transfer Options'}
@@ -313,15 +323,13 @@ export default function ExpenseTracker() {
                 </div>
               </div>
             </div>
-            <div className="buttons" onClick={() => setShowPaymentOptionsCard(false)}>
-              <button className="card-button cancel">Close</button>
-            </div>
           </BottomCard>
         )}
       </>
 
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>
+        <p className="screen-title">Expense Tracker</p>
         <p className={`${theme}  text-screen-intro`}>
           Add expenses to be paid by your co-parent. If a new expense is created for you to pay, you will have the opportunity to approve or reject
           it.
@@ -334,7 +342,7 @@ export default function ExpenseTracker() {
         <>
           {(expenses.length > 0 || viewType === ViewTypes.repeating) && (
             <>
-              <label className="mb-10">Which type of expenses would you like to view?</label>
+              <Label text={'Which type of expense would you like to view?'}></Label>
               <CheckboxGroup
                 defaultLabel={'All'}
                 skipNameFormatting={true}
@@ -343,7 +351,8 @@ export default function ExpenseTracker() {
                 elClass={'view-type'}
                 dataPhone={[]}
               />
-              <p className={`${theme} description`}>tap a field to edit - tap outside the field when you are done</p>
+              <p className={`${theme} description`}>tap/click a field to edit (tap outside the field when you are done)</p>
+              <p className={`${theme} description`}>tap/click the expense to view details</p>
             </>
           )}
         </>
@@ -361,23 +370,13 @@ export default function ExpenseTracker() {
             {Manager.isValid(expenses, true) &&
               expenses.map((expense, index) => {
                 return (
-                  <div key={Manager.getUid()} data-expense-id={expense.id} className={`expense mb-20`}>
+                  <div
+                    onClick={(e) => handleFullExpenseToggle(e, expense.id)}
+                    key={Manager.getUid()}
+                    data-expense-id={expense.id}
+                    className={` expense mb-20`}>
                     <div className="content">
                       <div className="lower-details">
-                        {/* EXPENSE IMAGE */}
-                        {Manager.isValid(expense.imageUrl) && (
-                          <div id="expense-image">
-                            <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
-                              <div
-                                style={{ backgroundImage: `url(${expense.imageUrl})` }}
-                                data-src={expense.imageUrl}
-                                id="img-container"
-                                className="flex"></div>
-                            </LightGallery>
-                            <BsArrowsAngleExpand />
-                          </div>
-                        )}
-
                         {/* LOWER DETAILS TEXT */}
                         <div className="lower-details-text">
                           {/* DELETE */}
@@ -408,6 +407,8 @@ export default function ExpenseTracker() {
                             dangerouslySetInnerHTML={{ __html: uppercaseFirstLetterOfAllWords(expense.name).toString() }}
                             className="name"></p>
 
+                          {expense?.category?.length > 0 && <p id="expense-category">Category: {expense.category}</p>}
+                          {(!expense.category || expense?.category?.length === 0) && <p id="expense-category">Category: None</p>}
                           {/* AMOUNT */}
                           <span
                             className="amount mb-10"
@@ -416,86 +417,104 @@ export default function ExpenseTracker() {
                             }}
                             contentEditable
                             dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
-                          {/* PAY TO */}
-                          <div className="flex editable">
-                            <p className="recipient subtext">Pay to:</p>
-                            <span
-                              onBlur={(e) => {
-                                handleEditable(e, expense, 'recipientName', e.currentTarget.innerHTML).then((r) => r)
-                              }}
-                              contentEditable
-                              dangerouslySetInnerHTML={{ __html: expense.recipientName }}
-                              className="recipient subtext"></span>
-                          </div>
 
-                          {/* CHILDREN */}
-                          {expense && expense.children && expense.children.length > 0 && (
-                            <div className="flex">
-                              <p>Children</p>
-                              <span>{expense.children.join(', ')}</span>
-                            </div>
-                          )}
-
-                          {/* DATE ADDED */}
-                          <div className="group flex">
-                            <p id="date-added-text">Date Added:</p>
-                            <span>{DateManager.formatDate(expense.dateAdded)}</span>
-                          </div>
-
-                          {/* NOTES */}
-                          {expense.notes && expense.notes.length > 0 && (
-                            <div className="flex editable notes">
-                              <p>Notes:</p>
-                              <span
-                                onBlur={(e) => {
-                                  handleEditable(e, expense, 'notes', e.currentTarget.innerHTML)
-                                }}
-                                contentEditable
-                                dangerouslySetInnerHTML={{ __html: expense.notes }}></span>
-                            </div>
-                          )}
-
-                          {/* DUE DATE */}
-                          {expense.dueDate && expense.dueDate.length > 0 && (
+                          {/* EXPENSE CONTENT TO TOGGLE */}
+                          <div id="content-to-toggle">
+                            {/* PAY TO */}
                             <div className="flex editable">
-                              <p>Due Date:</p>
-
+                              <p className="recipient subtext">Pay to:</p>
                               <span
                                 onBlur={(e) => {
-                                  handleEditable(e, expense, 'dueDate', e.currentTarget.innerHTML).then((r) => r)
+                                  handleEditable(e, expense, 'recipientName', e.currentTarget.innerHTML).then((r) => r)
                                 }}
                                 contentEditable
-                                dangerouslySetInnerHTML={{ __html: DateManager.formatDate(expense.dueDate) }}></span>
+                                dangerouslySetInnerHTML={{ __html: expense.recipientName }}
+                                className="recipient subtext"></span>
                             </div>
-                          )}
 
-                          {/* DUE IN... */}
-                          {expense.dueDate.length > 0 && (
-                            <div className="flex due-in">
-                              <p>Countdown:</p>
-                              <span>
-                                <PiClockCountdownDuotone className={'fs-24 mr-5'} />
-                                {moment(moment(expense.dueDate).startOf('day')).fromNow().toString()}
-                              </span>
+                            {/* CHILDREN */}
+                            {expense && expense.children && expense.children.length > 0 && (
+                              <div className="flex">
+                                <p>Children</p>
+                                <span>{expense.children.join(', ')}</span>
+                              </div>
+                            )}
+
+                            {/* DATE ADDED */}
+                            <div className="group flex">
+                              <p id="date-added-text">Date Added:</p>
+                              <span>{DateManager.formatDate(expense.dateAdded)}</span>
                             </div>
-                          )}
-                        </div>
 
-                        {/* BUTTONS */}
-                        <div id="button-group" className="flex">
-                          <button
-                            onClick={() => {
-                              setCurrentExpense(expense)
-                              setExecutePaid(true)
-                            }}
-                            className="green-text">
-                            Paid <MdPriceCheck className={'fs-22'} />
-                          </button>
-                          {expense.phone === currentUser.phone && (
-                            <button className="send-reminder" onClick={() => sendReminder(expense)}>
-                              Send Reminder <PiBellSimpleRinging className={'fs-18'} />
+                            {/* EXPENSE IMAGE */}
+                            {Manager.isValid(expense.imageUrl) && (
+                              <div id="expense-image">
+                                <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
+                                  <div
+                                    style={{ backgroundImage: `url(${expense.imageUrl})` }}
+                                    data-src={expense.imageUrl}
+                                    id="img-container"
+                                    className="flex"></div>
+                                </LightGallery>
+                                <BsArrowsAngleExpand />
+                              </div>
+                            )}
+
+                            {/* NOTES */}
+                            {expense.notes && expense.notes.length > 0 && (
+                              <div className="flex editable notes">
+                                <p>Notes:</p>
+                                <span
+                                  onBlur={(e) => {
+                                    handleEditable(e, expense, 'notes', e.currentTarget.innerHTML)
+                                  }}
+                                  contentEditable
+                                  dangerouslySetInnerHTML={{ __html: expense.notes }}></span>
+                              </div>
+                            )}
+
+                            {/* DUE DATE */}
+                            {expense.dueDate && expense.dueDate.length > 0 && (
+                              <div className="flex editable">
+                                <p>Due Date:</p>
+
+                                <span
+                                  onBlur={(e) => {
+                                    handleEditable(e, expense, 'dueDate', e.currentTarget.innerHTML).then((r) => r)
+                                  }}
+                                  contentEditable
+                                  dangerouslySetInnerHTML={{ __html: DateManager.formatDate(expense.dueDate) }}></span>
+                              </div>
+                            )}
+
+                            {/* DUE IN... */}
+                            {expense.dueDate.length > 0 && (
+                              <div className="flex due-in">
+                                <p>Countdown:</p>
+                                <span>
+                                  <PiClockCountdownDuotone className={'fs-24 mr-5'} />
+                                  {moment(moment(expense.dueDate).startOf('day')).fromNow().toString()}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* BUTTONS */}
+                          <div id="button-group" className="flex">
+                            <button
+                              onClick={() => {
+                                setCurrentExpense(expense)
+                                setExecutePaid(true)
+                              }}
+                              className="green-text">
+                              Paid <MdPriceCheck className={'fs-22'} />
                             </button>
-                          )}
+                            {expense.phone === currentUser.phone && (
+                              <button className="send-reminder" onClick={() => sendReminder(expense)}>
+                                Send Reminder <PiBellSimpleRinging className={'fs-18'} />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -320,7 +320,8 @@
     .calendar-arrow {
       font-size: 25px !important;
       position: relative;
-      opacity: 0.7;
+      opacity: .3 !important;
+      top: 1px;
 
       &.left {
       }
@@ -401,7 +402,7 @@
       .flatpickr-current-month,
       .flatpickr-monthDropdown-months {
         padding: 0;
-        font-weight: 600 !important;
+        font-weight: $fwMedium !important;
 
         .arrowUp,
         .arrowDown {

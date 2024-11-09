@@ -42,6 +42,12 @@
     #chats-hr {
       margin-top: 0;
     }
+    hr {
+      width: 80%;
+      margin-right: auto;
+      display: block;
+      margin-left: 50px;
+    }
     #close-new-conversation-button {
       position: fixed;
       display: flex;
@@ -78,11 +84,7 @@
       align-items: center;
       border-bottom: 0;
       flex-wrap: nowrap;
-      min-height: 80px;
-
-      &:first-child {
-        margin-top: 15px;
-      }
+      padding-bottom: 10px;
 
       .flex {
         align-items: flex-start;
@@ -287,10 +289,10 @@
     }
 
     #right-side {
-      gap: 10px;
+      gap: 15px;
 
       svg {
-        font-size: 28px;
+        font-size: 26px;
         color: $lightDarkGrey;
       }
 
@@ -343,7 +345,7 @@
       -webkit-user-select: none;
       -ms-user-select: none;
       user-select: none;
-      font-weight: 500;
+      font-weight: 400;
       position: relative;
 
       &.animation {
@@ -516,6 +518,7 @@
 
     #message-input-container {
       gap: 10px;
+      padding-bottom: 25px;
       .message-input {
         background-color: white;
         color: #7b8b9f;

@@ -17,6 +17,11 @@ import DatetimePickerViews from '../../constants/datetimePickerViews'
 import Numpad from '../shared/numpad'
 import Toggle from 'react-toggle'
 import { ImEye } from 'react-icons/im'
+import { PiMoneyWavyDuotone } from 'react-icons/pi'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import InputLabel from '@mui/material/InputLabel'
+import FormControl from '@mui/material/FormControl'
 
 import {
   contains,
@@ -42,8 +47,11 @@ import ModelNames from '../../models/modelNames'
 import ActivitySet from '../../models/activitySet'
 import Label from '../shared/label'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import BottomCard from '../shared/bottomCard'
+import InputWrapper from '../shared/inputWrapper'
+import ExpenseCategories from '../../constants/expenseCategories'
 
-function NewExpenseForm({ hideCard }) {
+function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, formToShow } = state
   const [expenseName, setExpenseName] = useState('')
@@ -53,6 +61,7 @@ function NewExpenseForm({ hideCard }) {
   const [expenseImage, setExpenseImage] = useState('')
   const [includeChildren, setIncludeChildren] = useState(false)
   const [repeating, setRepeating] = useState(false)
+  const [expenseCategory, setExpenseCategory] = useState('')
   const [payer, setPayer] = useState({
     phone: '',
     name: '',
@@ -107,6 +116,7 @@ function NewExpenseForm({ hideCard }) {
     newExpense.name = expenseName
     newExpense.children = expenseChildren
     newExpense.amount = expenseAmount
+    newExpense.category = expenseCategory
     newExpense.phone = currentUser.phone
     newExpense.dueDate = DateManager.dateIsValid(expenseDueDate) ? moment(expenseDueDate).format(DateFormats.dateForDb) : ''
     newExpense.dateAdded = Manager.getCurrentDate()
@@ -294,206 +304,222 @@ function NewExpenseForm({ hideCard }) {
     }, 50)
   }
 
+  const handleCategorySelection = async (category) => {
+    setExpenseCategory(category.target.value)
+  }
+
   useEffect(() => {
     Manager.showPageContainer('show')
   }, [])
 
   return (
-    <div className="expenses-wrapper">
-      {/* PAGE CONTAINER */}
-      <div id="add-expense-form" className={`${theme} form`}>
-        {/* AMOUNT */}
-        <div id="amount-input-wrapper" onClick={() => setShowNumpad(true)}>
-          <p id="amount-input">
-            <span className="flex defaults">
-              <span id="dollar-sign" className="pr-5">
-                <sup>$</sup>
+    <BottomCard
+      hasDelete={false}
+      onSubmit={submitNewExpense}
+      submitIcon={<PiMoneyWavyDuotone />}
+      submitText={'Create Expense'}
+      title={'Add Expense'}
+      showCard={showCard}
+      onClose={hideCard}>
+      <div className="expenses-wrapper">
+        {/* PAGE CONTAINER */}
+        <div id="add-expense-form" className={`${theme} form`}>
+          {/* AMOUNT */}
+          <div id="amount-input-wrapper" onClick={() => setShowNumpad(true)}>
+            <p id="amount-input">
+              <span className="flex defaults">
+                <span id="dollar-sign" className="pr-5">
+                  <sup>$</sup>
+                </span>
+                <span id="zero" className={expenseAmount.length > 0 ? 'active' : ''}>
+                  {expenseAmount.length > 0 ? expenseAmount : '0'}
+                </span>
               </span>
-              <span id="zero" className={expenseAmount.length > 0 ? 'active' : ''}>
-                {expenseAmount.length > 0 ? expenseAmount : '0'}
-              </span>
-            </span>
-          </p>
-        </div>
-
-        {/* NUMPAD */}
-        <Numpad
-          onSubmit={() => setShowNumpad(false)}
-          onNumClick={(e) => onNumpadPress(e)}
-          onBackspace={deleteLastNumber}
-          className={showNumpad ? 'active mt-10' : ''}
-        />
-
-        {/* DEFAULT EXPENSE AMOUNTS */}
-        <>
-          <div className="flex mb-15" id="default-expense-amounts">
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $10
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $20
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $30
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $40
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $50
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $60
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $70
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $80
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $90
-            </button>
-            <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
-              RESET
-            </button>
-            <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-              $100
-            </button>
+            </p>
           </div>
-        </>
 
-        {/* EXPENSE NAME */}
-        <div className="w-100">
-          <Label text={'Name'} required={true}></Label>
-          <input type="text" className="mb-15 mt-0" onChange={(e) => setExpenseName(e.target.value)} />
-        </div>
+          {/* NUMPAD */}
+          <Numpad
+            onSubmit={() => setShowNumpad(false)}
+            onNumClick={(e) => onNumpadPress(e)}
+            onBackspace={deleteLastNumber}
+            className={showNumpad ? 'active mt-10' : ''}
+          />
 
-        {/* DUE DATE */}
-        <Label text={'Due Date'}></Label>
+          {/* DEFAULT EXPENSE AMOUNTS */}
+          <>
+            <div className="flex mb-15" id="default-expense-amounts">
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $10
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $20
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $30
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $40
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $50
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $60
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $70
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $80
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $90
+              </button>
+              <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
+                RESET
+              </button>
+              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
+                $100
+              </button>
+            </div>
+          </>
 
-        <MobileDatePicker
-          className="mb-15 mt-0 w-100"
-          onChange={(e) => {
-            setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
-          }}
-        />
+          {/* EXPENSE TYPE */}
+          <FormControl fullWidth className={'mt-10'}>
+            <InputLabel className={'w-100'}>Expense Type</InputLabel>
+            <Select value={expenseCategory} label="Expense Type" onChange={handleCategorySelection}>
+              {ExpenseCategories.map((type, index) => {
+                return (
+                  <MenuItem key={index} value={type}>
+                    {type}
+                  </MenuItem>
+                )
+              })}
+            </Select>
+          </FormControl>
 
-        <textarea name="expense-notes" placeholder="Notes" className="mb-15" onChange={(e) => setExpenseNotes(e.target.value)}></textarea>
-        {currentUser && (
-          <div className="share-with-container">
-            <Label text={'Who will be paying the expense?'} required={true}></Label>
-            <CheckboxGroup
-              dataPhone={currentUser?.coparents.map((x) => x.phone)}
-              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-              onCheck={(e) => {
-                const checkbox = e.target.closest('#checkbox-container')
-                document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
-                checkbox.classList.add('active')
-                handlePayerSelection(e).then((r) => r)
+          {/* EXPENSE NAME */}
+          <InputWrapper onChange={(e) => setExpenseName(e.target.value)} inputType={'input'} labelText={'Name'} required={true}></InputWrapper>
+
+          {/* DUE DATE */}
+          <InputWrapper inputType={'date'} labelText={'Due Date'}>
+            <MobileDatePicker
+              className="mt-0 w-100"
+              onChange={(e) => {
+                setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
               }}
             />
-          </div>
-        )}
+          </InputWrapper>
 
-        {/* SHARE WITH */}
-        {currentUser && (
-          <div className="share-with-container">
-            <ShareWithCheckboxes
-              icon={<ImEye />}
-              shareWith={currentUser.coparents.map((x) => x.phone)}
-              onCheck={handleShareWithSelection}
-              labelText={'Who is allowed to see it?'}
-              containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents.map((x) => x.phone)}
-              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-            />
-          </div>
-        )}
+          <InputWrapper
+            onChange={(e) => setExpenseNotes(e.target.value)}
+            onChange={(e) => setExpenseName(e.target.value)}
+            inputType={'textarea'}
+            labelText={'Notes'}></InputWrapper>
 
-        {/* INCLUDING WHICH CHILDREN */}
-        {currentUser && currentUser.children !== undefined && (
-          <div className="share-with-container ">
-            <div className="flex">
-              <p>Applicable Child(ren)</p>
-              <Toggle
-                icons={{
-                  checked: <span className="material-icons-round">face</span>,
-                  unchecked: null,
+          {currentUser && (
+            <div className="share-with-container">
+              <Label text={'Who will be paying the expense?'} required={true}></Label>
+              <CheckboxGroup
+                dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+                onCheck={(e) => {
+                  const checkbox = e.target.closest('#checkbox-container')
+                  document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
+                  checkbox.classList.add('active')
+                  handlePayerSelection(e).then((r) => r)
                 }}
-                className={'ml-auto reminder-toggle'}
-                onChange={(e) => setIncludeChildren(!includeChildren)}
               />
             </div>
-            {includeChildren && <CheckboxGroup checkboxLabels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />}
-          </div>
-        )}
+          )}
 
-        {/* REPEATING? */}
-        <div className="share-with-container" id="repeating-container">
-          <div className="share-with-container ">
-            <div className="flex">
-              <p>Repeating</p>
-              <Toggle
-                icons={{
-                  checked: <span className="material-icons-round">event_repeat</span>,
-                  unchecked: null,
-                }}
-                className={'ml-auto reminder-toggle'}
-                onChange={(e) => setRepeating(!repeating)}
+          {/* SHARE WITH */}
+          {currentUser && (
+            <div className="share-with-container">
+              <ShareWithCheckboxes
+                icon={<ImEye />}
+                shareWith={currentUser.coparents.map((x) => x.phone)}
+                onCheck={handleShareWithSelection}
+                labelText={'Who is allowed to see it?'}
+                containerClass={'share-with-coparents'}
+                dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
               />
             </div>
-            {repeating && (
-              <>
-                <CheckboxGroup onCheck={handleRepeatingSelection} checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
-                <label className="mb-5">Month to end repeating expense</label>
-                {repeatInterval && (
-                  <MobileDatePicker
-                    className={'mt-0 w-100'}
-                    format={DateFormats.readableMonth}
-                    views={DatetimePickerViews.monthAndYear}
-                    hasAmPm={false}
-                    onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
-                  />
-                )}
-              </>
-            )}
+          )}
+
+          {/* INCLUDING WHICH CHILDREN */}
+          {currentUser && currentUser.children !== undefined && (
+            <div className="share-with-container ">
+              <div className="flex">
+                <p>Applicable Child(ren)</p>
+                <Toggle
+                  icons={{
+                    checked: <span className="material-icons-round">face</span>,
+                    unchecked: null,
+                  }}
+                  className={'ml-auto reminder-toggle'}
+                  onChange={(e) => setIncludeChildren(!includeChildren)}
+                />
+              </div>
+              {includeChildren && (
+                <CheckboxGroup checkboxLabels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+              )}
+            </div>
+          )}
+
+          {/* REPEATING? */}
+          <div className="share-with-container" id="repeating-container">
+            <div className="share-with-container ">
+              <div className="flex">
+                <p>Repeating</p>
+                <Toggle
+                  icons={{
+                    checked: <span className="material-icons-round">event_repeat</span>,
+                    unchecked: null,
+                  }}
+                  className={'ml-auto reminder-toggle'}
+                  onChange={(e) => setRepeating(!repeating)}
+                />
+              </div>
+              {repeating && (
+                <>
+                  <CheckboxGroup onCheck={handleRepeatingSelection} checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
+                  <label className="mb-5">Month to end repeating expense</label>
+                  {repeatInterval && (
+                    <MobileDatePicker
+                      className={'mt-0 w-100'}
+                      format={DateFormats.readableMonth}
+                      views={DatetimePickerViews.monthAndYear}
+                      hasAmPm={false}
+                      onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
+                    />
+                  )}
+                </>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* UPLOAD INPUTS */}
-        <UploadInputs
-          uploadType="image"
-          getImages={(files) => {
-            if (files.length === 0) {
-              throwError('Please choose an image first')
-            } else {
-              setExpenseImage(files[0])
-            }
-          }}
-          onClose={hideCard}
-          containerClass={`${theme} new-expense-card`}
-          actualUploadButtonText={'Upload'}
-          uploadButtonText="Choose"
-          upload={() => {}}
-        />
-
-        {/* BUTTONS */}
-        <div className="buttons gap">
-          <>
-            <div id="blur"></div>
-            {expenseAmount.length > 0 && expenseName.length > 0 && shareWith.length > 0 && Manager.isValid(payer, false, true) && (
-              <button className="button primary card-button" onClick={submitNewExpense}>
-                Create Expense <span className="material-icons-round ml-10 fs-22">attach_money</span>
-              </button>
-            )}
-            <button className="cancel card-button" onClick={hideCard}>
-              Cancel
-            </button>
-          </>
+          {/* UPLOAD INPUTS */}
+          <UploadInputs
+            uploadType="image"
+            getImages={(files) => {
+              if (files.length === 0) {
+                throwError('Please choose an image first')
+              } else {
+                setExpenseImage(files[0])
+              }
+            }}
+            onClose={hideCard}
+            containerClass={`${theme} new-expense-card`}
+            actualUploadButtonText={'Upload'}
+            uploadButtonText="Choose"
+            upload={() => {}}
+          />
         </div>
       </div>
-    </div>
+    </BottomCard>
   )
 }
 

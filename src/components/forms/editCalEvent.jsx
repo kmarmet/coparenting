@@ -641,7 +641,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           )}
         </div>
 
-        <hr />
+        <hr className="mb-0" />
 
         {/* URL/WEBSITE */}
         <InputWrapper

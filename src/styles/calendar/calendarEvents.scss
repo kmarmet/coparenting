@@ -1,5 +1,6 @@
 @import '../colors';
 @import '../palette';
+@import "../variables";
 
 #external-overrides {
   #calendar-container {
@@ -174,7 +175,7 @@
             align-items: center;
             padding: 0 0 5px 0;
             color: $lightBlack;
-            font-weight: bold;
+            font-weight: $fwMedium;
             max-width: 80%;
             letter-spacing: 0.5px;
           }

@@ -739,7 +739,7 @@ export default function NewCalendarEvent({ showCard, onClose }) {
             </>
           )}
 
-          <hr />
+          <hr className="mb-0" />
 
           {/* URL/WEBSITE */}
           <InputWrapper labelText={'Website'} required={false} inputType={'input'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>

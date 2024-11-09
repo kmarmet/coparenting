@@ -202,31 +202,27 @@ const Conversation = () => {
   }
 
   function adjustHeightOnKeyboard() {
-    setTimeout(() => {
-      const vh = window.innerHeight
-      const messageThreadContainer = document.getElementById('message-thread-container')
-      const defaultMessages = document.getElementById('default-messages')
-      const bookmarkedMessages = document.getElementById('bookmark-messages')
+    const vh = window.innerHeight
+    const messageThreadContainer = document.getElementById('message-thread-container')
+    // const defaultMessages = document.getElementById('default-messages')
+    // const bookmarkedMessages = document.getElementById('bookmark-messages')
 
-      if (messageThreadContainer) {
-        messageThreadContainer.style.height = `${vh}px`
-        messageThreadContainer.style.maxHeight = `${vh}px`
-      }
-      if (defaultMessages) {
-        defaultMessages.style.height = `${vh}px`
-        defaultMessages.style.maxHeight = `${vh}px`
-      }
-
-      if (bookmarkedMessages) {
-        bookmarkedMessages.style.height = `${vh}px`
-        bookmarkedMessages.style.maxHeight = `${vh}px`
-      }
-    }, 300)
+    if (messageThreadContainer) {
+      messageThreadContainer.style.height = `${vh + 288}px`
+      messageThreadContainer.style.maxHeight = `${vh + 288}px`
+    }
+    // if (defaultMessages) {
+    //   defaultMessages.style.height = `${vh}px`
+    //   defaultMessages.style.maxHeight = `${vh}px`
+    // }
+    //
+    // if (bookmarkedMessages) {
+    //   bookmarkedMessages.style.height = `${vh}px`
+    //   bookmarkedMessages.style.maxHeight = `${vh}px`
+    // }
   }
 
-  const handleMessageTyping = (input) => {
-    setMessageText(input.target.textContent)
-  }
+  const handleMessageTyping = (input) => setMessageText(input.target.textContent)
 
   useEffect(() => {
     window.addEventListener('resize', adjustHeightOnKeyboard)
@@ -424,15 +420,14 @@ const Conversation = () => {
                 <ContentEditable classNames={'message-input'} onChange={handleMessageTyping} />
                 <button
                   onClick={async () => {
-                    const screen = document.getElementById('message-thread-container')
-                    const messagesWrapper = document.getElementById('default-messages')
-                    const screenHeight = screen.clientHeight
-                    const conversationHeight = messagesWrapper.clientHeight
+                    const messageThreadContainer = document.getElementById('message-thread-container')
+                    const vh = window.innerHeight
+
                     await submitMessage()
                     setTimeout(() => {
-                      screen.style.height = `${screenHeight}px`
-                      messagesWrapper.style.height = `${conversationHeight}px`
-                    }, 500)
+                      messageThreadContainer.style.height = `${vh}px`
+                      messageThreadContainer.style.maxHeight = `${vh}px`
+                    }, 300)
                   }}
                   id="send-button">
                   Send

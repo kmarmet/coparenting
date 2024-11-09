@@ -16,6 +16,7 @@ export default class Expense
     @notes,
     @recipientName,
     @repeating = false,
+    @category = '',
     @payer = ''
   ) ->
 

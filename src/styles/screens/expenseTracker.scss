@@ -12,12 +12,15 @@
     #amount-input-wrapper {
       margin: 0 auto;
       width: 200px;
+
       #dollar-sign {
-        font-size: 25px;
         color: $green;
+        sup {
+          font-size: 20px;
+        }
       }
       #zero {
-        font-size: 25px;
+        font-size: 30px;
         opacity: 0.7;
 
         &.active {
@@ -45,6 +48,11 @@
       flex-wrap: wrap;
       gap: 10px;
       justify-content: center;
+
+      .reset {
+        font-weight: $fwMedium;
+      }
+
       button {
         border-radius: $borderRadius;
         width: calc(100% / 5);
@@ -129,33 +137,51 @@
     #expenses-card-container {
       margin-top: 10px;
       background-color: transparent;
-      
+
       .content {
         border-radius: $bigBorderRadius;
       }
 
       .expense {
-        border: 0;
         border-radius: $bigBorderRadius;
         display: block;
-        border: 1px solid $borderColor;
+        max-height: 100px;
+        overflow: hidden;
+        transition: all 0.3s ease-in-out;
+        &.active {
+          overflow: auto;
+          max-height: 10000px;
+          transition: all .3s ease-in-out;
+          
+          #content-to-toggle {
+            opacity: 1;
+          }
+        }
 
         &:last-child {
           border-bottom: 0;
+          
         }
         
+        #content-to-toggle {
+          transition: all 0.3s ease-in-out;
+          opacity: 0;
+        }
+
         #expense-image {
           position: relative;
           img {
             border-radius: $bigBorderRadius $bigBorderRadius 0 0;
+            height: 50px;
+            width: 50px;
           }
           svg {
             position: absolute;
             bottom: 15px;
             right: 15px;
             font-size: 20px;
-            color:white;
-            opacity: .6;
+            color: white;
+            opacity: 0.6;
           }
         }
 
@@ -167,21 +193,21 @@
             border-radius: $bigBorderRadius;
             position: relative;
             padding: 20px;
-            
+
             p {
               color: $lightBlack;
             }
-            
+
             span {
               display: flex;
               align-items: center;
             }
-            
+
             .delete {
               position: relative;
               z-index: 1000000;
               align-items: center;
-              
+
               &.flex {
                 position: absolute;
                 top: 15px;
@@ -198,7 +224,6 @@
                   font-size: 14px;
                   width: auto;
                   font-weight: 300;
-
                 }
 
                 svg {
@@ -211,32 +236,39 @@
             }
 
             .amount {
-              font-size: 18px;
-              color: $lightBlack;
+              font-size: 22px;
+              color: $red;
               font-weight: bold;
-              margin-top: 15px;
               margin-bottom: 5px;
-              display: block;
+              display: inline;
+              margin-left: auto;
+              width: auto;
+              float: right;
+              text-align: right;
             }
 
             .name {
               line-height: 1;
               font-weight: 600;
-              width: 100%;
+              width: auto;
               color: $mainBlue;
-              display: flex;
-              justify-content: space-between;
+              display: inline;
               font-size: 18px;
-              align-items: center;
+            }
+
+            #expense-category {
+              opacity: 0.7;
+              padding-top: 3px;
+              font-style: italic;
             }
 
             .flex {
-              margin-bottom: 10px;
               border-radius: $borderRadius;
               align-items: center;
-              width: 100%;
+              width: auto;
               flex-wrap: nowrap;
-              
+              margin-top: 10px;
+
               &.due-in {
                 span {
                   color: $red;
@@ -282,11 +314,13 @@
           }
 
           #img-container {
-            width: 100%;
-            height: 200px;
-            background-size:  cover ;
-            border-radius: $bigBorderRadius $bigBorderRadius 0 0;
+            width: 50px;
+            height: 50px;
+            background-size: cover;
+            border-radius: $borderRadius;
             background-position: center;
+            float: left;
+            justify-self: flex-start;
           }
 
           #img-expand-text {
@@ -296,12 +330,11 @@
             font-style: italic;
           }
 
-          .group{
+          .group {
             border-radius: $borderRadius;
             margin-bottom: 5px;
             align-items: center;
             line-height: 1;
-
 
             &.subtext {
               p {
@@ -310,11 +343,10 @@
             }
           }
         }
-        
+
         #button-group {
           width: 100%;
-          gap: 5px;
-          padding: 0 20px 20px 20px;
+          gap: 10px;
           border-radius: $bigBorderRadius;
           button {
             border-radius: $borderRadius;
@@ -326,13 +358,13 @@
             justify-content: center;
             line-height: 1;
             height: 40px;
-            
+
             &:first-child {
               background-color: $green;
               color: white;
               border: 1px solid $green;
             }
-            
+
             &:last-child {
               background-color: transparent;
               border: 1px solid $green;
@@ -340,7 +372,7 @@
             }
           }
         }
-        
+
         .content {
           .rs-panel-body {
             padding: 0;

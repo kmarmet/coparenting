@@ -153,10 +153,9 @@ const Chats = () => {
 
         {/* NEW THREAD FORM */}
         <BottomCard
+          hasSubmitButton={false}
           className="new-conversation"
-          onClose={() => {
-            setShowNewConvoCard(false)
-          }}
+          onClose={() => setShowNewConvoCard(false)}
           showCard={showNewConvoCard}
           title={'New Conversation'}>
           {Manager.isValid(currentUser?.coparents, true) &&
@@ -177,15 +176,6 @@ const Chats = () => {
                 </div>
               )
             })}
-          <div className="buttons">
-            <button
-              className="button card-button cancel"
-              onClick={() => {
-                setShowNewConvoCard(false)
-              }}>
-              Cancel
-            </button>
-          </div>
         </BottomCard>
       </div>
       {!showNewConvoCard && (

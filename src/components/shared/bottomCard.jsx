@@ -53,7 +53,7 @@ export default function BottomCard({
         {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
         {children}
       </div>
-      <div className="flex buttons">
+      <div className={`${!hasDelete && !hasSubmitButton ? 'hide-bg' : ''} flex buttons`}>
         {hasSubmitButton && (
           <button className="button card-button submit" onClick={onSubmit}>
             {submitText} {submitIcon}
