@@ -11,14 +11,10 @@ import Manager from '@manager'
 import NotificationManager from '@managers/notificationManager.js'
 import AppManager from '@managers/appManager.js'
 import { DebounceInput } from 'react-debounce-input'
-import { useLongPress } from 'use-long-press'
-import Tooltip from 'rc-tooltip'
 import 'rc-tooltip/assets/bootstrap_white.css'
-import EmojiPicker from 'emoji-picker-react'
 import ChatManager from '@managers/chatManager.js'
 import DateFormats from '../../../constants/dateFormats'
-import { PiBookmarksSimpleDuotone, PiInfoDuotone, PiUserCircleDuotone } from 'react-icons/pi'
-
+import { PiBookmarkSimpleDuotone, PiBookmarksSimpleDuotone, PiUserCircleDuotone } from 'react-icons/pi'
 import ModelNames from '../../../models/modelNames'
 import {
   contains,
@@ -59,12 +55,12 @@ const Conversation = () => {
   const [showBookmarks, setShowBookmarks] = useState(false)
   const [showSearchCard, setShowSearchCard] = useState(false)
 
-  // Longpress/bookmark
-  const bind = useLongPress(async (e, messageObject) => {
-    const el = e.target.parentNode
-  })
-
-  const handleMessageDblClick = async (messageObject) => {
+  const bookmarkMessage = async (messageObject, bookmarkButton) => {
+    console.log(bookmarkButton)
+    bookmarkButton.classList.add('pressed')
+    setTimeout(function () {
+      bookmarkButton.classList.remove('pressed')
+    }, 350)
     const { bookmarked, id } = messageObject
     if (bookmarked) {
       await ChatManager.toggleMessageBookmark(currentUser, messageToUser, id, false)
@@ -317,13 +313,6 @@ const Conversation = () => {
                   onClick={(e) => viewBookmarks(e)}
                 />
               )}
-              <Tooltip
-                transitionName="rc-tooltip-zoom"
-                placement="left"
-                trigger={['click', 'hover']}
-                overlay={'Double tap/click on a message to bookmark it for viewing later'}>
-                <PiInfoDuotone className="material-icons top-bar-icon" id="conversation-bookmark-icon" />
-              </Tooltip>
               <CgClose
                 onClick={() => {
                   setState({ ...state, currentScreen: ScreenNames.chats })
@@ -349,10 +338,7 @@ const Conversation = () => {
                 }
                 return (
                   <>
-                    <p
-                      key={index}
-                      {...bind(messageObj, messageObj)}
-                      className={messageObj.sender === currentUser.name ? 'message from' : 'to message'}>
+                    <p key={index} className={messageObj.sender === currentUser.name ? 'message from' : 'to message'}>
                       {messageObj.message}
                     </p>
                     <span className={messageObj.sender === currentUser.name ? 'timestamp from' : 'to timestamp'}>
@@ -377,11 +363,12 @@ const Conversation = () => {
               return (
                 messageObj.bookmarked === true && (
                   <>
-                    <p
-                      key={index}
-                      {...bind(messageObj, messageObj)}
-                      className={messageObj.sender === currentUser.name ? 'message from' : 'to message'}>
+                    <p key={index} className={messageObj.sender === currentUser.name ? 'message from' : 'to message'}>
                       {messageObj.message}
+                      <PiBookmarkSimpleDuotone
+                        className={messageObj.bookmarked ? 'bookmarked sparkle' : 'sparkle'}
+                        onClick={(e) => bookmarkMessage(messageObj, e.target)}
+                      />
                     </p>
                     <span className={messageObj.sender === currentUser.name ? 'timestamp from' : 'to timestamp'}>
                       From {sender} on&nbsp; {moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
@@ -405,8 +392,17 @@ const Conversation = () => {
                     timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('hh:mm a')
                   }
                   return (
-                    <div key={index} onDoubleClick={() => handleMessageDblClick(messageObj)}>
-                      <p className={messageObj.sender === currentUser.name ? 'from message' : 'to message'}>{messageObj.message}</p>
+                    <div key={index}>
+                      <p
+                        className={
+                          messageObj.sender === currentUser.name ? 'from message sparkle-on-click-button' : 'to message sparkle-on-click-button'
+                        }>
+                        {messageObj.message}
+                        <PiBookmarkSimpleDuotone
+                          className={messageObj.bookmarked ? 'bookmarked pressed' : 'pressed'}
+                          onClick={(e) => bookmarkMessage(messageObj, e.target.parentNode)}
+                        />
+                      </p>
                       <span className={messageObj.sender === currentUser.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
                     </div>
                   )
@@ -416,23 +412,20 @@ const Conversation = () => {
 
             {/* MESSAGE INPUT */}
             <div className="form message-input-form">
-              <EmojiPicker
-                lazyLoadEmojis={true}
-                open={showEmojis}
-                emojiStyle="apple"
-                theme={theme || 'dark'}
-                onEmojiClick={(e) => {
-                  setShowEmojis(!showEmojis)
-                  document.querySelector('#message-input').value += e.emoji
-                }}
-              />
-
               {/* SEND BUTTON */}
               <div className="flex" id="message-input-container">
                 <textarea placeholder="Enter message..." id="message-input" rows={1}></textarea>
                 <button
                   onClick={async () => {
+                    const screen = document.getElementById('message-thread-container')
+                    const messagesWrapper = document.getElementById('default-messages')
+                    const screenHeight = screen.clientHeight
+                    const conversationHeight = messagesWrapper.clientHeight
                     await submitMessage()
+                    setTimeout(() => {
+                      screen.style.height = `${screenHeight}px`
+                      messagesWrapper.style.height = `${conversationHeight}px`
+                    }, 500)
                   }}
                   id="send-button">
                   Send
@@ -457,8 +450,11 @@ const Conversation = () => {
                   <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 👍 ')}>
                     👍
                   </span>
-                  <span onClick={() => setShowEmojis(!showEmojis)} id="emoji-icon">
-                    😀
+                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 🎉 ')}>
+                    🎉
+                  </span>
+                  <span className="emoji" onClick={() => (document.getElementById('message-input').value += ' 😯 ')}>
+                    😯
                   </span>
                 </div>
               </div>

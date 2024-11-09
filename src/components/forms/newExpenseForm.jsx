@@ -16,6 +16,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import DatetimePickerViews from '../../constants/datetimePickerViews'
 import Numpad from '../shared/numpad'
 import Toggle from 'react-toggle'
+import { ImEye } from 'react-icons/im'
 
 import {
   contains,
@@ -40,6 +41,7 @@ import DateManager from '../../managers/dateManager'
 import ModelNames from '../../models/modelNames'
 import ActivitySet from '../../models/activitySet'
 import Label from '../shared/label'
+import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 
 function NewExpenseForm({ hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -210,9 +212,8 @@ function NewExpenseForm({ hideCard }) {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
-      setShareWith(updated)
-    })
+    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
+    setShareWith(updated)
   }
 
   const handlePayerSelection = async (e) => {
@@ -381,10 +382,7 @@ function NewExpenseForm({ hideCard }) {
         <textarea name="expense-notes" placeholder="Notes" className="mb-15" onChange={(e) => setExpenseNotes(e.target.value)}></textarea>
         {currentUser && (
           <div className="share-with-container">
-            <label>
-              <span className="material-icons">request_quote</span>Who will be paying the expense?
-              <span className="asterisk">*</span>
-            </label>
+            <Label text={'Who will be paying the expense?'} required={true}></Label>
             <CheckboxGroup
               dataPhone={currentUser?.coparents.map((x) => x.phone)}
               checkboxLabels={currentUser?.coparents.map((x) => x.name)}
@@ -401,13 +399,14 @@ function NewExpenseForm({ hideCard }) {
         {/* SHARE WITH */}
         {currentUser && (
           <div className="share-with-container">
-            <label>
-              <span className="material-icons-round">visibility</span> Who should see it?<span className="asterisk">*</span>
-            </label>
-            <CheckboxGroup
+            <ShareWithCheckboxes
+              icon={<ImEye />}
+              shareWith={currentUser.coparents.map((x) => x.phone)}
+              onCheck={handleShareWithSelection}
+              labelText={'Who is allowed to see it?'}
+              containerClass={'share-with-coparents'}
               dataPhone={currentUser?.coparents.map((x) => x.phone)}
               checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-              onCheck={handleShareWithSelection}
             />
           </div>
         )}
@@ -475,20 +474,23 @@ function NewExpenseForm({ hideCard }) {
           onClose={hideCard}
           containerClass={`${theme} new-expense-card`}
           actualUploadButtonText={'Upload'}
-          uploadButtonText="Choose Image"
+          uploadButtonText="Choose"
           upload={() => {}}
         />
 
         {/* BUTTONS */}
         <div className="buttons gap">
-          {expenseAmount.length > 0 && expenseName.length > 0 && shareWith.length > 0 && Manager.isValid(payer, false, true) && (
-            <button className="button card-button" onClick={submitNewExpense}>
-              Create Expense <span className="material-icons-round ml-10 fs-22">attach_money</span>
+          <>
+            <div id="blur"></div>
+            {expenseAmount.length > 0 && expenseName.length > 0 && shareWith.length > 0 && Manager.isValid(payer, false, true) && (
+              <button className="button primary card-button" onClick={submitNewExpense}>
+                Create Expense <span className="material-icons-round ml-10 fs-22">attach_money</span>
+              </button>
+            )}
+            <button className="cancel card-button" onClick={hideCard}>
+              Cancel
             </button>
-          )}
-          <button className="cancel card-button" onClick={hideCard}>
-            Cancel
-          </button>
+          </>
         </div>
       </div>
     </div>

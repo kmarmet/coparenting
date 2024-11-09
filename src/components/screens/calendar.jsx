@@ -678,6 +678,7 @@ export default function EventCalendar() {
                             </div>
                           )}
                         </div>
+
                         {event?.notes && event?.notes.length > 0 && (
                           <>
                             {!showNotes && (

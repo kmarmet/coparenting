@@ -3,7 +3,6 @@ import UploadInputs from '@components/shared/uploadInputs'
 import DB from '@db'
 import FirebaseStorage from '@firebaseStorage'
 import AppManager from '@managers/appManager'
-import CheckboxGroup from '@shared/checkboxGroup'
 import MyConfetti from '@shared/myConfetti'
 import globalState from 'context'
 import Manager from 'managers/manager'
@@ -13,6 +12,7 @@ import { DebounceInput } from 'react-debounce-input'
 import DateFormats from '../../constants/dateFormats'
 import moment from 'moment'
 import Memory from '../../models/memory'
+import { ImEye } from 'react-icons/im'
 import {
   contains,
   displayAlert,
@@ -37,6 +37,7 @@ import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import ActivitySet from '../../models/activitySet'
 import DB_UserScoped from '@userScoped'
+import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 
 function NewMemoryForm({ hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -57,9 +58,8 @@ function NewMemoryForm({ hideCard }) {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
-      setShareWith(updated)
-    })
+    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
+    setShareWith(updated)
   }
 
   const submit = async () => {
@@ -163,16 +163,15 @@ function NewMemoryForm({ hideCard }) {
       <div id="new-memory-form-container" className={`${theme} form`}>
         <div className="form">
           {currentUser && (
-            <div className="share-with-container mb-20">
-              <label>
-                <span className="material-icons-round">visibility</span>Who should see it?<span className="asterisk">*</span>
-              </label>
-              <CheckboxGroup
-                dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-                onCheck={handleShareWithSelection}
-              />
-            </div>
+            <ShareWithCheckboxes
+              icon={<ImEye />}
+              shareWith={currentUser.coparents.map((x) => x.phone)}
+              onCheck={handleShareWithSelection}
+              labelText={'Who is allowed to see it?'}
+              containerClass={'share-with-coparents'}
+              dataPhone={currentUser?.coparents.map((x) => x.phone)}
+              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+            />
           )}
           <label>Title</label>
           <DebounceInput
@@ -188,7 +187,7 @@ function NewMemoryForm({ hideCard }) {
           <textarea className="mb-15" onChange={(e) => setMemoryNotes(e.target.value)}></textarea>
           <UploadInputs
             onClose={hideCard}
-            containerClass={theme}
+            containerClass={`${theme} new-memory-card`}
             uploadType={'image'}
             actualUploadButtonText={'Upload'}
             getImages={(files) => {
@@ -197,6 +196,11 @@ function NewMemoryForm({ hideCard }) {
             uploadButtonText={`Choose`}
             upload={submit}
           />
+          <div className="buttons">
+            <button className="cancel card-button" onClick={hideCard}>
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>

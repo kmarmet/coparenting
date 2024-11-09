@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
-import ScreenNames from '@screenNames'
 import globalState from '../../context'
-import { LuImagePlus } from 'react-icons/lu'
+import Label from './label'
 
 function UploadInputs({
   upload,
@@ -16,19 +15,14 @@ function UploadInputs({
   const { state, setState } = useContext(globalState)
   const { currentUser, currentScreen } = state
 
-  const getIcon = () => {
-    if (currentScreen === ScreenNames.memories) {
-      return <LuImagePlus className={'fs-20 pl-5'} />
-    }
-  }
-
   return (
     <div id="upload-inputs" className={containerClass}>
+      <Label text="Upload Image(s)"></Label>
       <div className="flex">
-        <label htmlFor="upload-input" className={` custom-file-upload  ${chooseImageClass}`}>
-          {uploadButtonText} {getIcon()}
+        <label htmlFor="upload-input" className={`card-button primary green custom-file-upload  ${chooseImageClass}`}>
+          {uploadButtonText}
         </label>
-        <button id="file-upload-button">
+        <button className="card-button primary green" id="file-upload-button">
           <label>Upload</label>
           <input
             onChange={() => getImages(document.getElementById('upload-input').files)}
@@ -41,13 +35,13 @@ function UploadInputs({
         </button>
         <button
           id="upload-button"
-          className="button   green"
+          className="button card-button  blue"
           onClick={() => {
             const files = document.getElementById('upload-input').files
             upload()
             getImages(files)
           }}>
-          {actualUploadButtonText} <span className="material-icons-round">upload</span>
+          {actualUploadButtonText}
         </button>
       </div>
     </div>

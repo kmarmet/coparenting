@@ -359,7 +359,6 @@ const Manager = {
       }
       checkbox.classList.add('active')
     }
-    console.log(shareWith)
     return shareWith
   },
   setDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) => {

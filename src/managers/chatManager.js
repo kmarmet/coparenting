@@ -58,12 +58,9 @@ const ChatManager = {
     const scopedChat = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
     const { key } = scopedChat
     let chatMessages = Manager.convertToArray(scopedChat.chats.messages)
-    console.log(chatMessages)
     const messageToToggleBookmarkState = chatMessages.filter((x) => x.id === messageId)[0]
-    console.log(`${DB.tables.chats}/${key}/messages`)
     const messageKey = await DB.getSnapshotKey(`${DB.tables.chats}/${key}/messages`, messageToToggleBookmarkState, 'id')
     // const messageKey = await DB.getFlatTableKey(DB.tables.chat, messageId)
-    console.log(`${DB.tables.chats}/${key}/messages/${messageKey}`)
     const dbRef = ref(database, `${DB.tables.chats}/${key}/messages/${messageKey}`)
     const messageBookmarkState = messageToToggleBookmarkState.bookmarked
     await update(dbRef, { ['bookmarked']: !messageBookmarkState })

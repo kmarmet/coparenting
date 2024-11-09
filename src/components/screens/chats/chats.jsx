@@ -109,42 +109,45 @@ const Chats = () => {
             const coparentMessages = Manager.convertToArray(thread.messages).filter((x) => x.sender === coparent.name)
             const lastMessage = coparentMessages[coparentMessages.length - 1]?.message
             return (
-              <div
-                key={Manager.getUid()}
-                className="flex thread-item"
-                {...handlers}
-                onClick={(e) => {
-                  if (e.target.tagName !== 'SPAN' && e.target.tagName !== 'path') {
-                    openMessageThread(coparent.phone).then((r) => r)
-                  }
-                }}>
-                {/* COPARENT NAME */}
-                <div className="flex">
-                  <PiUserCircleDuotone />
-                  <p data-coparent-phone={coparent.phone} className="coparent-name">
-                    {formatNameFirstNameOnly(coparent.name)}
-                    {/* Last Message */}
-                    <span className="last-message">{lastMessage}</span>
-                  </p>
+              <>
+                <div
+                  key={Manager.getUid()}
+                  className="flex thread-item"
+                  {...handlers}
+                  onClick={(e) => {
+                    if (e.currentTarget.tagName !== 'SPAN' && e.currentTarget.tagName !== 'path') {
+                      openMessageThread(coparent.phone).then((r) => r)
+                    }
+                  }}>
+                  {/* COPARENT NAME */}
+                  <div className="flex">
+                    <PiUserCircleDuotone />
+                    <p data-coparent-phone={coparent.phone} className="coparent-name">
+                      {formatNameFirstNameOnly(coparent.name)}
+                      {/* Last Message */}
+                      <span className="last-message">{lastMessage}</span>
+                    </p>
+                  </div>
+                  <BiSolidMessageRoundedMinus
+                    onClick={(e) =>
+                      confirmAlert(
+                        'Are you sure you would like to delete this conversation? You can recover it later.',
+                        "I'm Sure",
+                        true,
+                        async (e) => {
+                          await archive(coparent)
+                        },
+                        () => {
+                          setShowDeleteButton(false)
+                          setNavbarButton(() => setShowNewThreadForm(), 'green', <BiSolidEdit />)
+                        }
+                      )
+                    }
+                    className={`delete-icon mr-10 ${showDeleteButton ? 'active' : ''}`}
+                  />
                 </div>
-                <BiSolidMessageRoundedMinus
-                  onClick={(e) =>
-                    confirmAlert(
-                      'Are you sure you would like to delete this conversation? You can recover it later.',
-                      "I'm Sure",
-                      true,
-                      async (e) => {
-                        await archive(coparent)
-                      },
-                      () => {
-                        setShowDeleteButton(false)
-                        setNavbarButton(() => setShowNewThreadForm(), 'green', <BiSolidEdit />)
-                      }
-                    )
-                  }
-                  className={`delete-icon mr-10 ${showDeleteButton ? 'active' : ''}`}
-                />
-              </div>
+                <hr id="chats-hr" />
+              </>
             )
           })}
 

@@ -27,7 +27,6 @@ function ShareWithCheckboxes({
   dataPhone,
   defaultPhones,
   labelText = '',
-  required = false,
   shareWith,
   icon = '',
 }) {
@@ -63,7 +62,7 @@ function ShareWithCheckboxes({
 
           return (
             <div key={index}>
-              <Label icon={icon} text={labelText} required={required}></Label>
+              <Label icon={icon} text={labelText} required={true}></Label>
               <div
                 id="share-with-checkbox-container"
                 data-phone={thisPhone ? thisPhone : ''}

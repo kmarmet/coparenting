@@ -125,7 +125,7 @@ const NewChildForm = ({ hideCard }) => {
         <CheckboxGroup boxWidth={20} elClass="mb-20" checkboxLabels={['Male', 'Female']} onCheck={(e) => handleGenderSelect(e)} />
       </div>
       <div className="flex buttons gap">
-        <button className="button card-button" onClick={submit}>
+        <button className="button card-button primary" onClick={submit}>
           Add {name.length > 0 ? name : ''} <span className="material-icons-round ml-10 fs-22">check</span>
         </button>
         <button className="button card-button cancel" onClick={hideCard}>

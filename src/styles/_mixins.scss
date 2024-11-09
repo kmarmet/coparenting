@@ -3,6 +3,34 @@
 @import './variables';
 @import './palette';
 
+// generate random number
+@function randomNum($min, $max) {
+  $rand: random();
+  $randomNum: $min + floor($rand * (($max - $min) + 1));
+
+  @return $randomNum;
+}
+
+// make boxshadow string
+@function makeShadowString($posOn, $shadowColor) {
+  $shadowString: '';
+
+  @if $posOn {
+    @for $i from 1 through 10 {
+      $shadowString: $shadowString + '#{randomNum(-100, 100)}px #{randomNum(-100, 100)}px 0 0 #{$shadowColor}, ';
+    }
+  } @else {
+    @for $i from 1 through 10 {
+      $shadowString: $shadowString + '0px 0px 0px #{randomNum(5, 10)}px #{$shadowColor}, ';
+    }
+  }
+
+  $shadowString: unquote($shadowString);
+  $shadowString: str-slice($shadowString, 0, str-length($shadowString) - 2);
+
+  @return $shadowString;
+}
+
 @function multiple-box-shadow($n) {
   $value: '#{random(2000)}px #{random(2000)}px #FFF';
 
@@ -691,6 +719,19 @@
   background-size: 200% auto;
   box-shadow: 0 0 5px $mainBlue;
 }
+@mixin sparkleOnClickButton {
+  position: relative;
+  transition: all 0.7s linear;
+  &:active {
+    right: 0;
+    box-shadow:
+      0 10px 15px -5px rgba(#000, 0.1),
+      0 0 0 40px rgba(#fff, 0.2) inset;
+    width: calc(100vw - 20px);
+    max-width: 100%;
+    transition: all 0.5s ease-in-out;
+  }
+}
 @mixin sparkleButton() {
   &:focus {
     outline: 0;
@@ -890,6 +931,82 @@
     margin-right: 8px;
   }
 }
+@mixin inputWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  height: 65px;
+
+  .MuiInputBase-root {
+    height: 43px;
+  }
+
+  &.textarea {
+    height: 150px;
+  }
+
+  &.date {
+    .floating-label {
+      opacity: 1;
+      background-color: white;
+      padding-left: 5px;
+      top: 5px;
+
+      span {
+        font-size: 14px;
+        color: $mainBlue;
+
+        &.asterisk {
+          color: $red;
+        }
+      }
+    }
+  }
+
+  &.active {
+    input,
+    textarea {
+      width: 100%;
+      &::placeholder {
+        color: transparent;
+      }
+    }
+    .floating-label {
+      opacity: 1;
+      padding-left: 5px;
+      background-color: white;
+
+      span {
+        font-size: 14px;
+        color: $mainBlue;
+
+        &.asterisk {
+          color: $red;
+        }
+      }
+    }
+  }
+
+  input,
+  textarea {
+    position: relative;
+    top: -10px;
+  }
+
+  .floating-label {
+    position: relative;
+    transition: all 0.4s ease-in-out;
+    opacity: 0;
+    z-index: 10;
+    top: 6px;
+    left: 15px;
+    width: auto;
+    display: inline-block;
+  }
+}
 @mixin titleSuggestionDropdown {
   transition: all 0.3s ease-in-out;
   height: 0;
@@ -1026,7 +1143,7 @@
       opacity: 0.6;
       display: flex;
       align-items: center;
-      transition: all .3s ease-in-out;
+      transition: all 0.3s ease-in-out;
       color: $lightDarkGrey;
     }
 
@@ -1146,15 +1263,11 @@
   }
 }
 @mixin uploadInputs() {
-  display: flex;
-  width: 100%;
-  gap: 5px;
-
-  &.new-expense-card {
+  &.new-expense-card,
+  &.new-memory-card, &.new-document-card {
     margin-top: 10px;
     .flex {
       align-items: stretch;
-      gap: 5px;
       width: 100%;
       button,
       label,
@@ -1180,6 +1293,7 @@
     display: flex;
     justify-content: center;
     border-radius: $borderRadius;
+    margin-right: 10px;
   }
   #file-upload-button {
     display: none !important;
@@ -2062,7 +2176,6 @@
   position: fixed;
   z-index: -1;
   border-radius: 25px 25px 0 0;
-  padding: 0;
   box-shadow:
     0px 50px 25px rgba(0, 0, 0, 0.56),
     00px -25px 15px rgba(0, 0, 0, 0.56);
@@ -2071,13 +2184,13 @@
   opacity: 0;
   max-height: 0;
   overflow: auto;
-  width: 100vw;
   min-height: 0;
   height: 0;
   left: 0;
+  padding: 20px 20px 200px 20px;
+  width: 100vw;
 
   &.active {
-    padding: 20px 20px 200px 20px;
     min-height: 30vh;
     max-height: 70vh;
     height: auto;
@@ -2092,13 +2205,13 @@
     }
   }
 
-  .flex{
+  .flex {
     margin-bottom: 8px;
   }
-  
+
   hr {
     border-color: $lightBorder;
-    
+
     &#title-hr {
       margin-top: 8px;
       margin-bottom: 20px;
@@ -2212,7 +2325,6 @@
       color: white;
       max-height: 45px;
       z-index: 10000;
-      background-color: $green;
       position: relative;
       -ms-transform: none;
       transform: none;
@@ -2221,7 +2333,24 @@
       left: inherit;
       right: inherit;
       bottom: 0;
-      border: 2px solid $green;
+      border: 1px solid $green;
+      font-weight: 100;
+      background-color: white;
+
+      svg {
+        color: white;
+        opacity: 1;
+      }
+
+      &.primary {
+        background-color: $green;
+        border: 1px solid $green;
+      }
+
+      &.blue {
+        color: $mainBlue;
+        border: 1px solid $mainBlue;
+      }
 
       &.delete,
       &.red {
@@ -2231,10 +2360,8 @@
       }
 
       &.cancel {
-        background-color: #ecf0f0;
-        border: 1px solid $mainBlue;
-        color: $mainBlue;
-        opacity: .8;
+        border: 1px solid $lightDarkGrey;
+        color: $lightDarkGrey;
       }
     }
 
@@ -2665,15 +2792,10 @@
   padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
   display: flex;
   align-items: center;
-  border-top: 1px solid $lightBorder;
   bottom: 0;
   opacity: 1;
   z-index: $maxZIndex;
 
-  &.hide {
-    display: none;
-    z-index: -1;
-  }
 
   &.no-add-new-button {
     #svg-wrapper {
@@ -2692,7 +2814,7 @@
   &.child-info {
     #svg-wrapper {
       #add-new-button {
-        font-size: 25px;
+        font-size: 28px;
       }
     }
   }
@@ -2708,12 +2830,13 @@
     background-color: $green;
     border-radius: 100%;
     height: 50px;
-    width: 50px;
+    width: 55px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid $lightBorder;
-
+    margin: 0 10px 0 15px;
+    position: relative;
+    top: -5px;
     #add-new-button {
       font-size: 32px;
       color: white;
@@ -2726,14 +2849,14 @@
     align-items: center;
     overflow: auto;
     width: 100vw;
-    padding: 10px 15px 0 15px;
+    padding: 20px 15px 0 15px;
 
     .menu-item {
       opacity: 0.8;
+      flex-wrap: wrap;
       transition: all 0.3s ease-in-out;
       justify-content: center;
       display: flex;
-      width: 40px;
       color: $lightDarkGrey;
 
       &#chat-menu-item {
@@ -2757,14 +2880,12 @@
         }
       }
 
-      svg {
-        font-size: 32px;
+      span {
+        font-size: 13px;
       }
 
-      &.settings {
-        svg {
-          font-size: 26px;
-        }
+      svg {
+        font-size: 32px;
       }
 
       &.active:not(#add-new-button) {
@@ -2783,7 +2904,7 @@
         width: 45px;
         border: 0;
         opacity: 1;
-
+        
         svg {
           //          font-size: 50px;
         }

@@ -731,7 +731,7 @@ export default function NewCalendarEvent({ hideCard }) {
           </>
         )}
 
-        <hr className="mb-10" />
+        <hr />
 
         {/* URL/WEBSITE */}
         <InputWrapper labelText={'Website'} required={false} inputType={'url'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
@@ -757,7 +757,7 @@ export default function NewCalendarEvent({ hideCard }) {
 
         <div className="buttons gap">
           <div id="blur"></div>
-          <button className="button card-button" onClick={submit}>
+          <button className="button card-button primary " onClick={submit}>
             Create Event{' '}
             <span className="material-icons-round ml-10 fs-22" onClick={submit}>
               event_available

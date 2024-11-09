@@ -6,7 +6,16 @@
     .events {
       padding-bottom: 200px;
       hr {
-        width: 100%;
+        height: 1px;
+        background-color: #E6E6E6;
+        width: 66.0em;
+        margin: 0 auto;
+        background-image: linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
+        background-image: -o-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
+        background-image: -moz-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
+        background-image: -webkit-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
+        background-image: -ms-linear-gradient(left , white 2%, #E6E6E6 50%, white 98%);
+        background-image: -webkit-gradient( linear, left bottom, right bottom, color-stop(0.02, white), color-stop(0.5, $lightDarkGrey), color-stop(0.98, white) );
         &.event-hr {
           margin: 10px auto;
           width: 70%;
@@ -58,7 +67,7 @@
           background: $lightestBlue;
         }
         &.coparent-visitation {
-          background: $bgGreen;
+          background: $bgBlueGreen;
         }
 
         svg {

@@ -18,6 +18,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers'
 import DateFormats from '../../constants/dateFormats'
 import CalendarManager from '../../managers/calendarManager'
 import CalendarMapper from '../../mappers/calMapper'
+import { ImEye } from 'react-icons/im'
 import {
   confirmAlert,
   formatFileName,
@@ -40,10 +41,10 @@ import ScheduleTypes from '../../constants/scheduleTypes'
 import Label from '../shared/label'
 
 // Icons
-import { FaRegEye } from 'react-icons/fa'
 import { GrMapLocation } from 'react-icons/gr'
 import SecurityManager from '../../managers/securityManager'
 import NavBar from '../navBar'
+import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -313,9 +314,7 @@ export default function Visitation() {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, theme, shareWith).then((updated) => {
-      setShareWith(updated)
-    })
+    await Manager.handleShareWithSelection(e, currentUser, shareWith)
   }
 
   const handleHolidaySelection = async (e) => {
@@ -651,14 +650,16 @@ export default function Visitation() {
             )}
 
             {/* SHARE WITH */}
-            <Label icon={<FaRegEye />} text={'Who will be allowed to see this visitation schedule?'} required={true}>
-              <CheckboxGroup
-                elClass={'gap-10'}
-                dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-                onCheck={handleShareWithSelection}
-              />
-            </Label>
+            <ShareWithCheckboxes
+              required={true}
+              shareWith={currentUser?.coparents.map((x) => x.phone)}
+              onCheck={handleShareWithSelection}
+              defaultPhones={currentUser?.coparents.map((x) => x.phone)}
+              icon={<ImEye />}
+              labelText={'Who is allowed to see it?'}
+              containerClass={'share-with-coparents'}
+              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+            />
 
             {/* LOCATION */}
             <Label classes="mt-15" icon={<GrMapLocation />} text={'Preferred Transfer Location (for biological co-parent)'}>

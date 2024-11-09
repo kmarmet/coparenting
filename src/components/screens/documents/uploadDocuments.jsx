@@ -7,6 +7,7 @@ import CheckboxGroup from '@shared/checkboxGroup'
 import Doc from '../../../models/doc'
 import NotificationManager from '@managers/notificationManager'
 import DocumentsManager from '../../../managers/documentsManager'
+import { ImEye } from 'react-icons/im'
 
 import {
   contains,
@@ -28,6 +29,8 @@ import {
 } from '../../../globalFunctions'
 import UploadInputs from '../../shared/uploadInputs'
 import SecurityManager from '../../../managers/securityManager'
+import Label from '../../shared/label'
+import ShareWithCheckboxes from '../../shared/shareWithCheckboxes'
 
 export default function UploadDocuments({ hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -167,32 +170,36 @@ export default function UploadDocuments({ hideCard }) {
         {/* FORM */}
         <div className="form">
           {currentUser && (
-            <div className="share-with-container">
-              <label>
-                <span className="material-icons-round">description</span> Document type <span className="asterisk">*</span>
-              </label>
+            <>
+              <Label text={'Document Type'} required={true}></Label>
               <CheckboxGroup checkboxLabels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
-              <label>
-                <span className="material-icons-round">visibility</span>Who should see it?<span className="asterisk">*</span>
-              </label>
-              <CheckboxGroup
-                dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-                onCheck={handleShareWithSelection}
+              <ShareWithCheckboxes
+                icon={<ImEye />}
+                shareWith={currentUser.coparents.map((x) => x.phone)}
+                onCheck={(e) => handleShareWithSelection(e)}
+                labelText={'Who is allowed to see it?'}
+                containerClass={'share-with-coparents'}
+                checkboxLabels={currentUser.coparents.map((x) => x.phone)}
               />
-            </div>
+            </>
           )}
         </div>
 
         {/* UPLOAD BUTTONS */}
         <UploadInputs
           onClose={hideCard}
-          containerClass={theme}
+          containerClass={`${theme} new-document-card`}
           actualUploadButtonText={'Upload'}
-          uploadButtonText={docType === 'document' ? 'Document' : 'Image'}
+          uploadButtonText={docType === 'document' ? 'Document' : 'Choose'}
           uploadType={docType}
           upload={upload}
         />
+        <div className="buttons">
+          <div id="blur"></div>
+          <button className="cancel card-button" onClick={hideCard}>
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   )

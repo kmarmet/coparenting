@@ -39,6 +39,9 @@
     }
   }
   #chats-container {
+    #chats-hr {
+      margin-top: 0;
+    }
     #close-new-conversation-button {
       position: fixed;
       display: flex;
@@ -69,14 +72,13 @@
     }
 
     .thread-item {
-      color: $blue;
+      color: $mainBlue;
       justify-content: space-between;
       width: 100%;
       align-items: center;
       border-bottom: 0;
       flex-wrap: nowrap;
       min-height: 80px;
-      border-bottom: 1px solid $lightGrey;
 
       &:first-child {
         margin-top: 15px;
@@ -106,8 +108,13 @@
         opacity: 0;
         transition: all 0.3s ease-in-out;
         font-size: 30px;
-
+        z-index: -1;
+        position: relative;
+        right: -100px;
+        
         &.active {
+          right: 0;
+          z-index: 1;
           opacity: 1;
           transition: all 0.3s ease-in-out;
         }
@@ -247,7 +254,7 @@
     z-index: 100000;
     border-bottom: 1px solid $lightBorder;
     width: 100vw;
-    padding: 0 10px;
+    padding: 10px;
     background-color: $lightBg;
 
     #user-info {
@@ -255,13 +262,13 @@
       margin-right: auto;
       #user-icon {
         color: $mainBlue;
-        font-size: 50px;
+        font-size: 45px;
       }
       #user-name {
         margin-left: 8px;
         color: $mainBlue;
-        font-weight: 200;
-        font-size: 18px;
+        font-weight: 600;
+        font-size: 20px;
       }
     }
 
@@ -331,6 +338,19 @@
       &.animation {
         position: relative;
         opacity: 0;
+      }
+      
+      svg {
+        margin-left: auto;
+        justify-self: flex-end;
+        float: right;
+        font-size: 20px;
+        opacity: .8;
+        
+        &.bookmarked {
+          color: $mainBlue;
+          opacity: 1;
+        }
       }
 
       &.from,

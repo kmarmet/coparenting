@@ -13,6 +13,7 @@ export default function BottomCard({ onClose, children, title, subtitle = '', sh
     if (pageContainer) {
       if (showCard) {
         pageContainer.classList.add('disable-scroll')
+        document.getElementById('bottom-card').scrollTop = 0
       } else {
         pageContainer.classList.remove('disable-scroll')
       }

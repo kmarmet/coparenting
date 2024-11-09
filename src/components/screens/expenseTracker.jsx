@@ -94,23 +94,27 @@ export default function ExpenseTracker() {
   }
 
   const deleteExpense = async (eventCount) => {
-    if (Manager.isValid(currentExpense) && Manager.isValid(currentExpense.imageName, null, null, true)) {
-      await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser.id, currentExpense.imageName, currentExpense)
-    }
-    if (eventCount === 1) {
-      const deleteKey = await DB.getSnapshotKey(DB.tables.expenseTracker, currentExpense, 'id')
-      await DB.deleteByPath(`${DB.tables.expenseTracker}/${deleteKey}`)
-      setCurrentExpense(false)
-      setConfirmMessage('')
-    } else {
-      let existingExpenses = expenses.filter((x) => x.name === currentExpense.name && x.repeating === true)
-      if (Manager.isValid(existingExpenses, true)) {
-        for (let expense of existingExpenses) {
-          await DB.delete(DB.tables.expenseTracker, expense.id).finally(async () => {
-            setCurrentExpense(false)
-            setDeleteConfirmTitle('')
-            successAlert(`All ${currentExpense.name} expenses have been deleted`)
-          })
+    if (Manager.isValid(currentExpense)) {
+      if (Manager.isValid(currentExpense) && Manager.isValid(currentExpense.imageName, null, null, true)) {
+        await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser.id, currentExpense.imageName, currentExpense)
+      }
+      if (eventCount === 1) {
+        const deleteKey = await DB.getSnapshotKey(DB.tables.expenseTracker, currentExpense, 'id')
+        await DB.deleteByPath(`${DB.tables.expenseTracker}/${deleteKey}`)
+        await getSecuredExpenses()
+        setCurrentExpense(false)
+        setConfirmMessage('')
+      } else {
+        let existingExpenses = expenses.filter((x) => x.name === currentExpense.name && x.repeating === true)
+        if (Manager.isValid(existingExpenses, true)) {
+          for (let expense of existingExpenses) {
+            await DB.delete(DB.tables.expenseTracker, expense.id).finally(async () => {
+              setCurrentExpense(false)
+              setDeleteConfirmTitle('')
+              successAlert(`All ${currentExpense.name} expenses have been deleted`)
+            })
+          }
+          await getSecuredExpenses()
         }
       }
     }
@@ -380,12 +384,8 @@ export default function ExpenseTracker() {
                           <div
                             className="flex delete"
                             onClick={async () => {
-                              // confirmAlert = (title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm, onDeny)
                               setCurrentExpense(expense)
                               let existing = await DB.getTable(DB.tables.expenseTracker)
-                              if (!Array.isArray(existing)) {
-                                existing = Manager.convertToArray(existing)
-                              }
                               existing = existing.filter((x) => x.name === expense.name)
                               if (existing.length > 1) {
                                 confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, () => {
