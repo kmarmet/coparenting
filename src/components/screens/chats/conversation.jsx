@@ -40,8 +40,6 @@ import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
 import { CgClose } from 'react-icons/cg'
 import { TbMessageCircleSearch } from 'react-icons/tb'
-import ActivitySet from '../../../models/activitySet'
-import DB_UserScoped from '@userScoped'
 import ContentEditable from '../../shared/contentEditable'
 import { useLongPress } from 'use-long-press'
 import useClipboard from 'react-use-clipboard'
@@ -79,7 +77,7 @@ const Conversation = () => {
     }
   }
 
-  const submitMessage = async () => {
+  const sendMessage = async () => {
     // Clear input
     let messageInputValue = document.querySelector('.message-input')
 
@@ -116,15 +114,6 @@ const Conversation = () => {
     conversation.threadOwner = currentUser.phone
     const cleanThread = Manager.cleanObject(conversation, ModelNames.conversationThread)
 
-    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/3307494534`, true)
-    let newActivitySet = new ActivitySet()
-    let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
-    if (Manager.isValid(existingActivitySet, false, true)) {
-      newActivitySet = { ...existingActivitySet }
-    }
-    newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
-    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${messageToUser.phone}`, newActivitySet)
-
     // Existing chat
     if (Manager.isValid(existingChat)) {
       const chatKey = await DB.getSnapshotKey(`${DB.tables.chats}`, existingChat, 'id')
@@ -153,6 +142,11 @@ const Conversation = () => {
     messageInputValue.innerHTML = ''
     setMessageText('')
     setRefreshKey(Manager.getUid())
+
+    // Reset screen height
+    const messageThreadContainer = document.getElementById('message-thread-container')
+    const screenHeight = window.screen.height
+    messageThreadContainer.style.height = `${screenHeight}px`
   }
 
   const viewBookmarks = async (e) => {
@@ -285,7 +279,7 @@ const Conversation = () => {
           <button className="card-button cancel">Close</button>
         </div>
       </BottomCard>
-      <div id="message-thread-container" className={`${theme}  conversation`}>
+      <div key={refreshKey} id="message-thread-container" className={`${theme}  conversation`}>
         {/* TOP BAR */}
         {!showSearchInput && (
           <div className="flex top-buttons">
@@ -370,7 +364,7 @@ const Conversation = () => {
 
         {/* DEFAULT MESSAGES */}
         {!showBookmarks && searchResults.length === 0 && (
-          <>
+          <div key={refreshKey}>
             <div id="default-messages">
               {Manager.isValid(messagesToLoop, true) &&
                 messagesToLoop.map((messageObj, index) => {
@@ -409,7 +403,7 @@ const Conversation = () => {
                     const messageThreadContainer = document.getElementById('message-thread-container')
                     const vh = window.innerHeight
 
-                    await submitMessage()
+                    await sendMessage()
                     setTimeout(() => {
                       messageThreadContainer.style.height = `${vh}px`
                       messageThreadContainer.style.maxHeight = `${vh}px`
@@ -420,7 +414,7 @@ const Conversation = () => {
                 </button>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </>
