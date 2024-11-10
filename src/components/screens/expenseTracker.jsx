@@ -396,7 +396,7 @@ export default function ExpenseTracker() {
                                 })
                               }
                             }}>
-                            <span>Delete</span> <PiTrashDuotone />
+                            <span>DELETE</span> <PiTrashDuotone />
                           </div>
                           {/* EXPENSE NAME */}
                           <p

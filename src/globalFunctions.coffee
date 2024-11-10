@@ -103,12 +103,13 @@ export removeFileExtension = (input) ->
 export uniqueArray = (array) ->
   Array.from(new Set(array))
 
-export successAlert = (message) ->
+export successAlert = (message, allowOutsideClick = true) ->
   Swal.fire
     text: message
     icon: "success"
     timer: 1500
     showConfirmButton: false
+    allowOutsideClick: allowOutsideClick
     showClass:
       popup: """
             animate__animated

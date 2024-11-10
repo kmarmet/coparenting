@@ -144,12 +144,13 @@ export var uniqueArray = function(array) {
   return Array.from(new Set(array));
 };
 
-export var successAlert = function(message) {
+export var successAlert = function(message, allowOutsideClick = true) {
   return Swal.fire({
     text: message,
     icon: "success",
     timer: 1500,
     showConfirmButton: false,
+    allowOutsideClick: allowOutsideClick,
     showClass: {
       popup: `animate__animated
 animate__fadeInUp

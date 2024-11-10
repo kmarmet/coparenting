@@ -216,8 +216,9 @@
   width: 100vw;
   overflow: hidden;
   max-height: 100vh;
-  //  height: calc(100% - 190px);
-  //  margin-top: 70px;
+  height: 100vh;
+  position: fixed;
+  bottom: 0;
   .search-results {
     height: 100vh;
     display: none;
@@ -292,7 +293,7 @@
       gap: 15px;
 
       svg {
-        font-size: 26px;
+        font-size: 28px;
         color: $lightDarkGrey;
       }
 
@@ -312,9 +313,11 @@
     overflow: auto;
     background-color: white;
     overflow-x: hidden;
-    padding: 90px 15px 110px 15px;
+    padding: 90px 15px 140px 15px;
     height: 100%;
     max-height: 100vh;
+    position: fixed;
+    bototm: 0;
 
     @media screen and (min-width: 800px) {
       min-width: 10%;
@@ -358,10 +361,10 @@
         justify-self: flex-end;
         float: right;
         font-size: 20px;
-        opacity: .8;
+        opacity: .6;
         
         &.bookmarked {
-          color: #4c75a3;
+          color: $mainBlue;
           opacity: 1;
         }
       }

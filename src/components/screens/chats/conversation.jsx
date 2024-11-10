@@ -43,6 +43,8 @@ import { TbMessageCircleSearch } from 'react-icons/tb'
 import ActivitySet from '../../../models/activitySet'
 import DB_UserScoped from '@userScoped'
 import ContentEditable from '../../shared/contentEditable'
+import { useLongPress } from 'use-long-press'
+import useClipboard from 'react-use-clipboard'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -57,6 +59,12 @@ const Conversation = () => {
   const [messageText, setMessageText] = useState('')
   const [searchInputQuery, setSearchInputQuery] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [isCopied, setCopied] = useClipboard()
+
+  const bind = useLongPress((element) => {
+    navigator.clipboard.writeText(element.target.textContent)
+    successAlert('Message Copied!', false)
+  })
 
   const bookmarkMessage = async (messageObject, bookmarkButton) => {
     bookmarkButton.classList.add('pressed')
@@ -72,7 +80,6 @@ const Conversation = () => {
   }
 
   const submitMessage = async () => {
-    adjustHeightOnKeyboard()
     // Clear input
     let messageInputValue = document.querySelector('.message-input')
 
@@ -201,31 +208,9 @@ const Conversation = () => {
     })
   }
 
-  function adjustHeightOnKeyboard() {
-    const vh = window.innerHeight
-    const messageThreadContainer = document.getElementById('message-thread-container')
-    // const defaultMessages = document.getElementById('default-messages')
-    // const bookmarkedMessages = document.getElementById('bookmark-messages')
-
-    if (messageThreadContainer) {
-      messageThreadContainer.style.height = `${vh + 288}px`
-      messageThreadContainer.style.maxHeight = `${vh + 288}px`
-    }
-    // if (defaultMessages) {
-    //   defaultMessages.style.height = `${vh}px`
-    //   defaultMessages.style.maxHeight = `${vh}px`
-    // }
-    //
-    // if (bookmarkedMessages) {
-    //   bookmarkedMessages.style.height = `${vh}px`
-    //   bookmarkedMessages.style.maxHeight = `${vh}px`
-    // }
-  }
-
   const handleMessageTyping = (input) => setMessageText(input.target.textContent)
 
   useEffect(() => {
-    window.addEventListener('resize', adjustHeightOnKeyboard)
     onTableChange().then((r) => r)
     scrollToLatestMessage()
     Manager.showPageContainer('show')
@@ -389,14 +374,15 @@ const Conversation = () => {
             <div id="default-messages">
               {Manager.isValid(messagesToLoop, true) &&
                 messagesToLoop.map((messageObj, index) => {
-                  let timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ hh:mm a')
+                  let timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mm a')
                   // Message Sent Today
                   if (moment(messageObj.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
-                    timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('hh:mm a')
+                    timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('h:mm a')
                   }
                   return (
                     <div key={index}>
                       <p
+                        {...bind()}
                         className={
                           messageObj.sender === currentUser.name ? 'from message sparkle-on-click-button' : 'to message sparkle-on-click-button'
                         }>

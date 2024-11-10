@@ -3,8 +3,6 @@ import DB from '@db'
 import AppManager from '@managers/appManager'
 import DateManager from '@managers/dateManager'
 import Manager from '@manager'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
-import flatpickr from 'flatpickr'
 import moment from 'moment'
 import { DebounceInput } from 'react-debounce-input'
 import globalState from '../../context'
@@ -12,11 +10,11 @@ import CalendarMapper from 'mappers/calMapper'
 import CalendarManager from 'managers/calendarManager'
 import BottomCard from 'components/shared/bottomCard'
 import DateFormats from '../../constants/dateFormats'
-import { useSwipeable } from 'react-swipeable'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
 import { FaChildren } from 'react-icons/fa6'
 import { MdOutlineEditOff } from 'react-icons/md'
+import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker'
 
 import { CgClose } from 'react-icons/cg'
 import {
@@ -37,6 +35,8 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
+
 import NewCalendarEvent from '../forms/newCalendarEvent'
 import EditCalEvent from '../forms/editCalEvent'
 import { TbLocation } from 'react-icons/tb'
@@ -58,20 +58,6 @@ export default function EventCalendar() {
   const [showNotes, setShowNotes] = useState(false)
   const [searchResults, setSearchResults] = useState([])
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-
-  // HANDLE SWIPE
-  const handlers = useSwipeable({
-    onSwipedRight: (eventData) => {
-      //console.log("User Swiped!", eventData);
-      // setState({ ...state, showMenuButton: true, currentScreen: ScreenNames.cal })
-      // Manager.showPageContainer('show')
-      document.querySelector('.flatpickr-prev-month').click()
-      console.log('swiped')
-    },
-    onSwipedLeft: () => {
-      document.querySelector('.flatpickr-next-month').click()
-    },
-  })
 
   const formatEvents = (events) => {
     let dateArr = []
@@ -107,7 +93,7 @@ export default function EventCalendar() {
     })
     if (selectedDay) {
       securedEvents = securedEvents.filter((x) => {
-        if (x.startDate === selectedDay.toString()) {
+        if (x.startDate === moment(selectedDay).format('MM/DD/yyyy')) {
           return x
         }
       })
@@ -161,7 +147,7 @@ export default function EventCalendar() {
       }
     })
 
-    addDayIndicators(selectedMonth, eventsToAddDotsTo, eventsWithMultipleDays)
+    await addDayIndicators(eventsToAddDotsTo, eventsWithMultipleDays)
 
     // Filter out dupes by event title
     let formattedDateArr = formatEvents(securedEvents)
@@ -171,35 +157,29 @@ export default function EventCalendar() {
     }, 100)
   }
 
-  const addDayIndicators = (selectedMonth, events, eventsWithMultipleDays) => {
+  const addDayIndicators = async (events) => {
     // Remove existing icons/dots before adding them again
     document.querySelectorAll('.dot-wrapper').forEach((wrapper) => wrapper.remove())
     document.querySelectorAll('.payday-emoji').forEach((emoji) => emoji.remove())
     document.querySelectorAll('.holiday-emoji').forEach((emoji) => emoji.remove())
-    if (selectedMonth) {
-      selectedMonth = moment().add(1, 'M').format('MM')
-    }
+
     // Loop through all calendar UI days
-    document.querySelectorAll('.flatpickr-day').forEach((day, outerIndex) => {
-      let formattedDay = moment(day.getAttribute('aria-label')).format(DateFormats.dateForDb)
-      const dayOfWeek = moment(formattedDay).format('ddd')
-      const weekendDays = ['Sat', 'Sun']
-      if (weekendDays.includes(dayOfWeek)) {
-        day.classList.add('weekend-day')
-      }
-      let holidayDate = moment(day.getAttribute('aria-label')).format('MM/DD')
-      if (selectedMonth) {
-        formattedDay = moment(formattedDay).format(DateFormats.dateForDb)
-      }
-
+    document.querySelectorAll('.MuiPickersDay-root').forEach((day) => {
+      const dayAsMs = day.getAttribute('data-timestamp')
+      const msAsDay = DateManager.msToDate(dayAsMs)
+      // console.log(msAsDay, moment(msAsDay).month(selectedMonth).format('MM/DD/yyyy'))
+      let formattedDay = msAsDay
       const dayHasEvent = events.filter((x) => x?.startDate === formattedDay || x?.endDate === formattedDay).length > 0
+      const paycheckStrings = ['payday', 'paycheck', 'pay', 'salary', 'paid']
 
-      // IF DAY HAS EVENT(S)
       if (dayHasEvent) {
         const dotWrapper = document.createElement('span')
         dotWrapper.classList.add('dot-wrapper')
-        // Add holiday emoji
+
+        // HOLIDAYS
         if (events.filter((x) => x.startDate === formattedDay && x.isHoliday === true).length > 0) {
+          let holidayDate = moment(formattedDay).format('MM/DD')
+
           const hoildayEmoji = document.createElement('span')
           hoildayEmoji.classList.add('holiday-emoji')
           switch (true) {
@@ -241,8 +221,8 @@ export default function EventCalendar() {
           }
           day.append(hoildayEmoji)
         }
-        // Add payday emoji
-        const paycheckStrings = ['payday', 'paycheck', 'pay', 'salary', 'paid']
+
+        // PAYDAY ICON
         const showPaydayEmoji = (title) => {
           let exists = false
           paycheckStrings.forEach((word) => {
@@ -252,14 +232,12 @@ export default function EventCalendar() {
           })
           return exists
         }
-
-        // PAYDAY EMOJI
         if (events.filter((x) => x.startDate === formattedDay && showPaydayEmoji(x.title)).length > 0) {
-          const paydayEmoji = document.createElement('span')
-          paydayEmoji.classList.add('payday-emoji')
+          const payDayIcon = document.createElement('span')
+          payDayIcon.classList.add('payday-emoji')
 
-          paydayEmoji.innerText = '$'
-          day.append(paydayEmoji)
+          payDayIcon.innerText = '$'
+          day.append(payDayIcon)
         }
 
         // VISITATION DOT
@@ -272,7 +250,15 @@ export default function EventCalendar() {
           visitationDot.classList.add('dot')
           dotWrapper.append(visitationDot)
         }
+        // STANDARD EVENT DOT
+        if (events.filter((x) => x.startDate === formattedDay).length > 0) {
+          const standardEventDot = document.createElement('span')
+          standardEventDot.classList.add('standard-event-dot')
+          standardEventDot.classList.add('dot')
+          dotWrapper.append(standardEventDot)
+        }
 
+        // COPARENT EVENT DOT
         if (
           events.filter((x) => x.startDate === formattedDay && x.fromVisitationSchedule === true && !contains(x?.title, currentUserName)).length > 0
         ) {
@@ -281,14 +267,6 @@ export default function EventCalendar() {
           visitationDot.classList.add('dot')
           dotWrapper.append(visitationDot)
         }
-
-        // STANDARD EVENT DOT
-        if (events.filter((x) => x.startDate === formattedDay)) {
-          const standardEventDot = document.createElement('span')
-          standardEventDot.classList.add('standard-event-dot')
-          standardEventDot.classList.add('dot')
-          dotWrapper.append(standardEventDot)
-        }
         day.append(dotWrapper)
       } else {
         // Add margin top spacer
@@ -296,28 +274,6 @@ export default function EventCalendar() {
         invisibleDots.classList.add('invisible-dots')
         day.append(invisibleDots)
       }
-      // Apply colors to multi-day events
-      eventsWithMultipleDays.forEach((eventParentObj, index) => {
-        if (eventParentObj.eventObj.startDate === formattedDay) {
-          for (let i = 0; i <= eventParentObj.daysCount; i++) {
-            document.querySelectorAll('.flatpickr-day').forEach((calDay) => {
-              let formattedDay = moment(day.getAttribute('aria-label')).add(i, 'day').format(DateFormats.dateForDb)
-              const daySquare = calDay.getAttribute('aria-label')
-              if (moment(daySquare).format(DateFormats.dateForDb) === formattedDay) {
-                calDay.classList.add('multi')
-                calDay.classList.add(index.toString())
-                // Style first/last day of multi-range
-                if (i === 0) {
-                  calDay.classList.add('first')
-                }
-                if (i === eventParentObj.daysCount) {
-                  calDay.classList.add('last')
-                }
-              }
-            })
-          }
-        }
-      })
     })
   }
 
@@ -326,47 +282,6 @@ export default function EventCalendar() {
       setTimeout(() => {
         eventRow.classList.add('active')
       }, 200 * i)
-    })
-  }
-
-  // ADD FLATPICKR CALENDAR
-  const addFlatpickrCalendar = async () => {
-    const dbRef = ref(getDatabase())
-    flatpickr('#calendar-ui-container', {
-      inline: true,
-      defaultDate: new Date(),
-      onReady: () => {
-        onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-          await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM'))
-        })
-      },
-      static: true,
-      nextArrow: '<span class="calendar-arrow right material-icons-round">arrow_forward_ios</span>',
-      prevArrow: '<span class="calendar-arrow left material-icons-round">arrow_back_ios</span>',
-      appendTo: document.getElementById('calendar-ui-container'),
-      // On month change
-      onMonthChange: (selectedDates, dateStr, instance) => {
-        onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-          await getSecuredEvents(
-            moment(`${instance.currentMonth + 1}/01/${instance.currentYear}`).format(DateFormats.dateForDb),
-            instance.currentMonth + 1
-          )
-        })
-      },
-      // Firebase onValue change / date selection/click
-      onChange: async (e) => {
-        document.querySelectorAll('.event-row').forEach((eventRow, i) => {
-          eventRow.classList.remove('active')
-        })
-        const date = moment(e[0]).format(DateFormats.dateForDb).toString()
-        onValue(child(dbRef, DB.tables.calendarEvents), async (snapshot) => {
-          await getSecuredEvents(date, moment(e[0]).format('MM'))
-          setState({
-            ...state,
-            selectedNewEventDay: moment(e[0]).format(DateFormats.dateForDb).toString(),
-          })
-        })
-      },
     })
   }
 
@@ -422,6 +337,13 @@ export default function EventCalendar() {
 
   const updateRefreshKey = () => setRefreshKey(Manager.getUid())
 
+  const onTableChange = async () => {
+    const dbRef = ref(getDatabase())
+    onValue(child(dbRef, `${DB.tables.calendarEvents}`), async (snapshot) => {
+      await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM')).then((r) => r)
+    })
+  }
+
   useEffect(() => {
     if (showHolidays) {
       const rows = document.querySelectorAll('.event-row')
@@ -439,9 +361,8 @@ export default function EventCalendar() {
 
   // ON PAGE LOAD
   useEffect(() => {
-    setTimeout(() => {
-      addFlatpickrCalendar().then((r) => r)
-    }, 300)
+    onTableChange().then((r) => r)
+    getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM')).then((r) => r)
     Manager.showPageContainer('show')
   }, [])
 
@@ -542,8 +463,20 @@ export default function EventCalendar() {
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme} `}>
         <p className="screen-title">Calendar</p>
-        {/* CALENDAR UI */}
-        <div id="calendar-ui-container" className={`${theme}`} {...handlers}></div>
+        <StaticDatePicker
+          defaultValue={moment()}
+          onMonthChange={async (month) => {
+            await getSecuredEvents(null, month)
+          }}
+          onChange={async (day) => {
+            await getSecuredEvents(day)
+          }}
+          slotProps={{
+            actionBar: {
+              actions: ['today'],
+            },
+          }}
+        />
         {/* BELOW CALENDAR */}
         {!showHolidays && !showSearchCard && (
           <div id="below-calendar" className={`${theme} mt-10`}>
@@ -716,7 +649,7 @@ export default function EventCalendar() {
           <CgClose
             id={'add-new-button'}
             onClick={async () => {
-              document.querySelector('.flatpickr-calendar').scrollIntoView({ behavior: 'smooth' })
+              document.querySelector('.MuiPickersLayout-root').scrollIntoView({ behavior: 'smooth' })
               await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
               setShowHolidays(false)
             }}

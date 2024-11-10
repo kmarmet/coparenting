@@ -44,7 +44,6 @@ import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import { IoTodayOutline } from 'react-icons/io5'
 import { HiOutlineCalendarDays } from 'react-icons/hi2'
-import { AiOutlineDelete } from 'react-icons/ai'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import DateManager from '../../managers/dateManager'
@@ -393,7 +392,20 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   }, [])
 
   return (
-    <BottomCard submitText={'Done Editing'} onClose={onClose} title={'Edit Event'} showCard={showCard} className="edit-calendar-event">
+    <BottomCard
+      onDelete={() => {
+        confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
+          await deleteEvent()
+          successAlert('Event Deleted')
+        })
+      }}
+      hasDelete={true}
+      onSubmit={submit}
+      submitText={'Done Editing'}
+      onClose={onClose}
+      title={'Edit Event'}
+      showCard={showCard}
+      className="edit-calendar-event">
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
         <div className="content">
           {/* SINGLE DAY / MULTIPLE DAYS */}
@@ -674,26 +686,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           required={false}
           inputType={'textarea'}
           onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
-        <div className="flex buttons gap">
-          <div id="blur"></div>
-          <button className="button card-button" onClick={submit}>
-            Done <span className="material-icons-round ml-10 fs-22">check</span>
-          </button>
-          <button
-            className="button card-button delete"
-            onClick={() => {
-              confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
-                hideCard()
-                await deleteEvent()
-                displayAlert('success', 'Event Deleted', 'Event Deleted')
-              })
-            }}>
-            Delete <AiOutlineDelete className={'fs-22 ml-5'} />
-          </button>
-          <button className="button card-button cancel" onClick={resetForm}>
-            Cancel
-          </button>
-        </div>
       </div>
     </BottomCard>
   )
