@@ -6,7 +6,7 @@ import DB_UserScoped from '@userScoped'
 import '@prototypes'
 import Shortcut from '../../../models/shortcut.js'
 import MenuMapper from '../../../mappers/menuMapper.js'
-import { MobileTimePicker } from '@mui/x-date-pickers'
+import { MobileTimePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../../constants/dateFormats'
 import {
   confirmAlert,

@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import { initializeApp } from 'firebase/app'
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
-
-import ScreenNames from '@screenNames'
 import globalState from './context.js'
-import firebaseConfig from './firebaseConfig.js'
-
 // Screens
 import Activity from './components/screens/activity'
 import EventCalendar from '@screens/calendar.jsx'
@@ -49,6 +43,12 @@ import StateObj from './constants/stateObj'
 // Menus
 import SlideOutMenu from './components/slideOutMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
+
+import { initializeApp } from 'firebase/app'
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
+import { LicenseInfo } from '@mui/x-license'
+import ScreenNames from '@screenNames'
+import firebaseConfig from './firebaseConfig.js'
 import {
   confirmAlert,
   contains,
@@ -163,6 +163,8 @@ export default function App() {
         console.log('signed out or user doesn"t exist')
       }
     })
+
+    LicenseInfo.setLicenseKey('177565103a9fa228eb67b66fc75e9034Tz0xMDE1NTAsRT0xNzYyODU5NjcwMDAwLFM9cHJvLExNPXN1YnNjcmlwdGlvbixQVj1RMy0yMDI0LEtWPTI=')
   }, [])
 
   useEffect(() => {

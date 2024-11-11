@@ -9,10 +9,7 @@ import DB from '@db'
 import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
 import DB_UserScoped from '@userScoped'
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
-import { MobileTimePicker } from '@mui/x-date-pickers'
-import DateFormats from '../../constants/dateFormats'
-import DateManager from '../../managers/dateManager'
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import { FaRegEye } from 'react-icons/fa'
 import { IoPersonCircleOutline } from 'react-icons/io5'
 
@@ -36,6 +33,8 @@ import {
   wordCount,
 } from '../../globalFunctions'
 import Label from '../shared/label'
+import DateFormats from '../../constants/dateFormats'
+import DateManager from '../../managers/dateManager'
 import ActivitySet from '../../models/activitySet'
 
 export default function NewTransferChangeRequest({ hideCard }) {

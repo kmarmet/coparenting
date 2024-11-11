@@ -14,7 +14,7 @@ import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
 import { FaChildren } from 'react-icons/fa6'
 import { MdOutlineEditOff } from 'react-icons/md'
-import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker'
+import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 
 import { CgClose } from 'react-icons/cg'
 import {

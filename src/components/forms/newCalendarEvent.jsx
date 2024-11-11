@@ -3,7 +3,7 @@ import { default as MultiDatePicker } from '@rsuite/multi-date-picker'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
-import { Accordion, DateRangePicker } from 'rsuite'
+import { Accordion } from 'rsuite'
 import EventLengths from 'constants/eventLengths'
 import globalState from '../../context'
 import Manager from '@manager'
@@ -15,8 +15,6 @@ import DatetimePicker from '@shared/datetimePicker.jsx'
 import DateFormats from '../../constants/dateFormats'
 import DatetimePickerViews from '../../constants/datetimePickerViews'
 import DB from '@db'
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
-import { MobileTimePicker } from '@mui/x-date-pickers'
 import DateManager from '../../managers/dateManager'
 import TitleSuggestion from '../../models/titleSuggestion'
 import CalendarManager from '../../managers/calendarManager'
@@ -25,7 +23,15 @@ import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
 import Toggle from 'react-toggle'
 import '../../styles/reactToggle.css'
 import { ImEye } from 'react-icons/im'
+import SecurityManager from '../../managers/securityManager'
+import ModelNames from '../../models/modelNames'
+import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import InputWrapper from '../shared/inputWrapper'
+import NotificationManager from '../../managers/notificationManager'
+import BottomCard from '../shared/bottomCard'
+import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import {
+  confirmAlert,
   contains,
   displayAlert,
   formatFileName,
@@ -33,7 +39,6 @@ import {
   getFileExtension,
   getFirstWord,
   isAllUppercase,
-  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
@@ -44,13 +49,7 @@ import {
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
-} from '../../globalFunctions'
-import SecurityManager from '../../managers/securityManager'
-import ModelNames from '../../models/modelNames'
-import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
-import InputWrapper from '../shared/inputWrapper'
-import NotificationManager from '../../managers/notificationManager'
-import BottomCard from '../shared/bottomCard'
+} from '../../globalFunctions' // COMPONENT
 
 // COMPONENT
 export default function NewCalendarEvent({ showCard, onClose }) {
@@ -488,28 +487,18 @@ export default function NewCalendarEvent({ showCard, onClose }) {
           {/* DATE RANGE */}
           {eventLength === EventLengths.multiple && (
             <>
-              <InputWrapper labelText={'Date Range'} required={true} inputType={'date'}>
-                <DateRangePicker
-                  showOneCalendar
-                  showHeader={false}
-                  editable={false}
-                  id="event-date"
-                  placement="auto"
-                  character=" to "
-                  className={`${theme} mb-15`}
-                  format={'MM/dd/yyyy'}
-                  onChange={(e) => {
-                    let formattedDates = []
-                    if (e && e.length > 0) {
-                      e.forEach((date) => {
-                        formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                      })
-                      setEventFromDate(formattedDates[0])
-                      setEventToDate(formattedDates[1])
-                    }
-                  }}
-                />
-              </InputWrapper>
+              <InputWrapper labelText={'Date Range'} required={true} inputType={'date'}></InputWrapper>
+              <MobileDateRangePicker
+                className={'w-100'}
+                onAccept={(dateArray) => {
+                  if (Manager.isValid(dateArray, true)) {
+                    setEventFromDate(moment(dateArray[0]).format('MM/DD/YYYY'))
+                    setEventToDate(moment(dateArray[1]).format('MM/DD/YYYY'))
+                  }
+                }}
+                slots={{ field: SingleInputDateRangeField }}
+                name="allowedRange"
+              />
             </>
           )}
 

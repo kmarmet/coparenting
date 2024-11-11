@@ -2,7 +2,7 @@ import { child, getDatabase, ref, set } from 'firebase/database'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
-import { Accordion, DateRangePicker } from 'rsuite'
+import { Accordion } from 'rsuite'
 import EventLengths from '@constants/eventLengths'
 import globalState from '../../context'
 import DB from '@db'
@@ -14,8 +14,8 @@ import NotificationManager from '@managers/notificationManager'
 import CalendarMapper from '../../mappers/calMapper'
 import CalMapper from '../../mappers/calMapper'
 import DateFormats from '../../constants/dateFormats'
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
-import { MobileTimePicker } from '@mui/x-date-pickers'
+import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
+
 import CalendarManager from '../../managers/calendarManager'
 import Toggle from 'react-toggle'
 import { ImEye } from 'react-icons/im'
@@ -459,26 +459,16 @@ export default function EditCalEvent({ event, showCard, onClose }) {
               <>
                 <div>
                   <InputWrapper labelText={'Date Range'} required={true} inputType={'date'}>
-                    <DateRangePicker
-                      showOneCalendar
-                      showHeader={false}
-                      editable={false}
-                      id="event-date"
-                      disablePast={true}
-                      placement="auto"
-                      character=" to "
-                      className={`${theme} mb-15`}
-                      format={'MM/dd/yyyy'}
-                      onChange={(e) => {
-                        let formattedDates = []
-                        if (e && e?.length > 0) {
-                          e.forEach((date) => {
-                            formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                          })
-                          setEventFromDate(formattedDates[0])
-                          setEventEndDate(formattedDates[1])
+                    <MobileDateRangePicker
+                      className={'w-100'}
+                      onAccept={(dateArray) => {
+                        if (Manager.isValid(dateArray, true)) {
+                          setEventFromDate(moment(dateArray[0]).format('MM/DD/YYYY'))
+                          setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
                         }
                       }}
+                      slots={{ field: SingleInputDateRangeField }}
+                      name="allowedRange"
                     />
                   </InputWrapper>
                 </div>

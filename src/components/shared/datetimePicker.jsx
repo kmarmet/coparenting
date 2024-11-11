@@ -1,10 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../context'
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers-pro'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import moment from 'moment'
-import Manager from '@manager'
+
 function DatetimePicker({ onAccept, defaultValue, placeholder, label, format, views = ['day', 'month', 'year'], hasAmPm = true, className = '' }) {
   const { state, setState } = useContext(globalState)
   const { currentUser } = state

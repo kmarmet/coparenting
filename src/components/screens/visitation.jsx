@@ -14,7 +14,7 @@ import MyConfetti from '@shared/myConfetti'
 import Note from '@shared/note'
 import DB_UserScoped from '@userScoped'
 import VisitationMapper from 'mappers/visitationMapper'
-import { MobileDatePicker } from '@mui/x-date-pickers'
+import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../constants/dateFormats'
 import CalendarManager from '../../managers/calendarManager'
 import CalendarMapper from '../../mappers/calMapper'
@@ -38,9 +38,7 @@ import {
 } from '../../globalFunctions'
 import BottomCard from '../shared/bottomCard'
 import ScheduleTypes from '../../constants/scheduleTypes'
-import Label from '../shared/label'
-
-// Icons
+import Label from '../shared/label' // Icons
 import { GrMapLocation } from 'react-icons/gr'
 import SecurityManager from '../../managers/securityManager'
 import NavBar from '../navBar'

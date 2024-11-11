@@ -8,7 +8,7 @@ import General from '@models/child/general'
 import Child from '@models/child/child'
 import CheckboxGroup from '@shared/checkboxGroup'
 import DB_UserScoped from '@userScoped'
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
+import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import {
   contains,
   displayAlert,
