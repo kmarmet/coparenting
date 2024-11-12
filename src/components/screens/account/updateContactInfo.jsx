@@ -1,15 +1,121 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '@manager'
 import ScreenNames from '@screenNames'
 import { useSwipeable } from 'react-swipeable'
+import firebaseConfig from '../../../firebaseConfig'
+import DB_UserScoped from '@userScoped'
+import DB from '@db'
+import { EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail } from 'firebase/auth'
+import validator from 'validator'
+import { initializeApp } from 'firebase/app'
+import BottomCard from '../../shared/bottomCard'
+import {
+  confirmAlert,
+  contains,
+  displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFileExtension,
+  getFirstWord,
+  inputAlert,
+  isAllUppercase,
+  oneButtonAlert,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
+} from '../../../globalFunctions'
+import InputWrapper from '../../shared/inputWrapper'
 
-export default function UpdateContactInfo({ updateType, updatePhone, updateEmail, hideCard }) {
+export default function UpdateContactInfo({ updateType, showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
-  const { contactInfoToUpdateType, currentUser, theme } = state
+  const { currentUser, theme } = state
 
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+
+  // Firebase init
+  const app = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
+
+  const logout = () => {
+    localStorage.removeItem('rememberKey')
+
+    signOut(auth)
+      .then(() => {
+        setState({
+          ...state,
+          currentScreen: ScreenNames.login,
+          currentUser: null,
+          userIsLoggedIn: false,
+        })
+        // Sign-out successful.
+        console.log('User signed out')
+      })
+      .catch((error) => {
+        // An error happened.
+      })
+  }
+
+  const updateUserEmail = async () => {
+    successAlert('Email has been updated!')
+    if (!Manager.isValid(email, false, false, true)) {
+      throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'Number' : 'Address'}`)
+      return false
+    }
+    if (!validator.isEmail(email)) {
+      throwError('Email is not valid')
+      return false
+    }
+    inputAlert('Enter Your Password', 'To update your email, we need to re-authenticate your account for security purpose', (e) => {
+      const user = auth.currentUser
+      const credential = EmailAuthProvider.credential(user.email, e.value)
+      reauthenticateWithCredential(auth.currentUser, credential)
+        .then(async () => {
+          // User re-authenticated.
+          await updateEmail(auth.currentUser, email, {
+            email: email,
+          })
+          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser.phone}/email`, email)
+          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser.phone}/emailVerified`, false)
+          localStorage.removeItem('rememberKey')
+          logout()
+          hideCard()
+        })
+        .catch((error) => {
+          // An error ocurred
+          console.log(error.message)
+          // ...
+        })
+    })
+  }
+
+  const updateUserPhone = async () => {
+    if (!Manager.isValid(phone, false, false, true)) {
+      throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} Number`)
+      return false
+    }
+    if (!validator.isMobilePhone(phone)) {
+      throwError('Phone number is not valid')
+      return false
+    }
+
+    // Update Phone
+    if (updateType === 'phone') {
+      await DB_UserScoped.updateUserContactInfo(currentUser, currentUser.phone, phone, 'phone')
+      successAlert('Phone number has been updated')
+      localStorage.removeItem('rememberKey')
+      hideCard()
+      logout()
+    }
+  }
 
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
@@ -18,50 +124,29 @@ export default function UpdateContactInfo({ updateType, updatePhone, updateEmail
     },
   })
 
-  useEffect(() => {
-    Manager.showPageContainer('show')
-  }, [])
-
   return (
-    <>
+    <BottomCard
+      onSubmit={async () => {
+        if (updateType === 'phone') {
+          await updateUserPhone()
+        } else {
+          await updateUserEmail()
+        }
+      }}
+      submitText={`Update`}
+      onClose={hideCard}
+      showCard={showCard}
+      title={`Update your ${uppercaseFirstLetterOfAllWords(updateType)}`}>
       <div {...handlers} id="update-contact-info-container" className={`${theme}  form`}>
         <div className="form">
           {updateType === 'email' && (
-            <>
-              <>
-                <label>
-                  New Email Address <span className="asterisk">*</span>
-                </label>
-                <input className="mb-15" type="email" onChange={(e) => setEmail(e.currentTarget.value)} />
-              </>
-              <div className="flex buttons gap">
-                <button className="button card-button w-80" onClick={() => updateEmail(email)}>
-                  Submit <span className="material-icons-round ml-10 fs-22">check</span>
-                </button>
-                <button className="button card-button cancel" onClick={hideCard}>
-                  Cancel
-                </button>
-              </div>
-            </>
+            <InputWrapper onChange={(e) => setEmail(e.currentTarget.value)} labelText={'New Email Address'} required={true}></InputWrapper>
           )}
           {updateType === 'phone' && (
-            <>
-              <label>
-                New Phone Number <span className="asterisk">*</span>
-              </label>
-              <input className="mb-15" type="phone" onChange={(e) => setPhone(e.currentTarget.value)} />
-              <div className="flex buttons gap">
-                <button className="button card-button" onClick={() => updatePhone(phone)}>
-                  Submit <span className="material-icons-round ml-10 fs-22">check</span>
-                </button>
-                <button className="button card-button cancel" onClick={hideCard}>
-                  Cancel
-                </button>
-              </div>
-            </>
+            <InputWrapper onChange={(e) => setPhone(e.currentTarget.value)} labelText={'New Phone Number'} required={true}></InputWrapper>
           )}
         </div>
       </div>
-    </>
+    </BottomCard>
   )
 }

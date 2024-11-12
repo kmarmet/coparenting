@@ -2199,6 +2199,8 @@
       position: relative;
       color: $lightDarkGrey;
       opacity: 0.8;
+      background: white;
+      border-radius: 100%;
     }
 
     .delete-icon {
@@ -2546,6 +2548,8 @@
         display: block;
         border-radius: $borderRadius;
         max-width: 100%;
+        width: 100%;
+        height: auto;
         @include shadow;
       }
       img {
