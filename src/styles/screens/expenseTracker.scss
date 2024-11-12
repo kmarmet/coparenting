@@ -266,6 +266,12 @@
               width: auto;
               float: right;
               text-align: right;
+              
+              &.paid {
+                display: flex;
+                color: $green;
+                font-size: 18px;
+              }
             }
 
             .name {

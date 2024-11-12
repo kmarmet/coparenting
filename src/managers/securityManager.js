@@ -52,7 +52,7 @@ SecurityManager = {
       for (i = 0, len = allExpenses.length; i < len; i++) {
         expense = allExpenses[i];
         shareWith = expense.shareWith;
-        if (expense.phone === currentUser.phone) {
+        if (expense.ownerPhone === currentUser.phone) {
           returnRecords.push(expense);
         }
         if (Manager.isValid(shareWith, true)) {

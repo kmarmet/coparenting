@@ -21,7 +21,8 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import 'lightgallery/css/lightgallery.css'
-import { MdEventRepeat, MdPriceCheck } from 'react-icons/md'
+import { MdEventRepeat, MdOutlineFilterAltOff, MdPriceCheck } from 'react-icons/md'
+//noinspection JSUnresolvedVariable
 import {
   confirmAlert,
   contains,
@@ -43,7 +44,6 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
-
 // ICONS
 import { ImAppleinc } from 'react-icons/im'
 import { IoLogoVenmo } from 'react-icons/io5'
@@ -54,44 +54,33 @@ import NavBar from '../navBar'
 import Label from '../shared/label'
 import ExpenseCategories from '../../constants/expenseCategories'
 
-// VIEW TYPES
-const ViewTypes = {
-  all: 'All',
-  repeating: 'Repeating',
-  individual: 'Single Date',
+const SortByTypes = {
+  nearestDueDate: 'Nearest Due Date',
+  recentlyAdded: 'Recently Added',
+  amountDesc: 'Amount: High to Low',
+  amountAsc: 'Amount: Low to High',
 }
 
 export default function ExpenseTracker() {
   const { state, setState, theme, navbarButton } = useContext(globalState)
   const { currentUser } = state
   const [expenses, setExpenses] = useState([])
-  const [currentExpense, setCurrentExpense] = useState(null)
-  const [executePaid, setExecutePaid] = useState(false)
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
-  const [viewType, setViewType] = useState(ViewTypes.all)
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
   const [showFullExpenseCard, setShowFullExpenseCard] = useState(false)
   const [showFilterCard, setShowFilterCard] = useState(false)
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [sortByValue, setSortByValue] = useState('')
+  const [filterApplied, setFilterApplied] = useState(false)
+  const [categoriesInUse, setCategoriesInUse] = useState([])
   let contentEditable = useRef()
 
-  const markAsPaid = async () => {
-    let arr = []
-    expenses.forEach((expense) => {
-      let thisExpense = expense
-      if (thisExpense.id === currentExpense.id) {
-        currentExpense.paidStatus = 'paid'
-        expense = currentExpense
-      }
-      arr.push(expense)
-    })
-    setExpenses(arr)
-    await DB.updateRecord(DB.tables.expenseTracker, currentExpense, 'paidStatus', 'paid').then(async () => {
-      const subId = await NotificationManager.getUserSubId(currentExpense.phone)
+  const markAsPaid = async (expense) => {
+    await DB.updateRecord(DB.tables.expenseTracker, expense, 'paidStatus', 'paid').then(async () => {
+      const subId = await NotificationManager.getUserSubId(expense.ownerPhone)
       PushAlertApi.sendMessage(
         `Expense Paid`,
-        `An expense has been PAID by ${currentUser.name} \nExpense Name: ${currentExpense.name} \nYou can delete the expense now`,
+        `An expense has been PAID by ${currentUser.name} \nExpense Name: ${expense.name} \nYou can delete the expense now`,
         subId
       )
 
@@ -99,25 +88,36 @@ export default function ExpenseTracker() {
     })
   }
 
-  const deleteExpense = async (eventCount) => {
-    console.log(eventCount)
-    if (Manager.isValid(currentExpense)) {
-      if (Manager.isValid(currentExpense) && Manager.isValid(currentExpense.imageName, null, null, true)) {
-        await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser.id, currentExpense.imageName, currentExpense)
+  const deleteExpense = async (expense) => {
+    let existing = await getSecuredExpenses()
+
+    if (Manager.isValid(expense)) {
+      existing = existing.filter((x) => x.name === expense.name)
+
+      // Delete in Firebase Storage
+      if (Manager.isValid(expense) && Manager.isValid(expense.imageName, null, null, true)) {
+        await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser.id, expense.imageName, expense)
       }
-      if (eventCount === 1) {
-        const deleteKey = await DB.getSnapshotKey(DB.tables.expenseTracker, currentExpense, 'id')
-        await DB.deleteByPath(`${DB.tables.expenseTracker}/${deleteKey}`)
-        setCurrentExpense(false)
-      } else {
-        console.log(currentExpense)
-        let existingExpenses = expenses.filter((x) => x.name === currentExpense.name && x.repeating === true)
-        console.log(existingExpenses)
-        if (Manager.isValid(existingExpenses, true)) {
-          await DB.deleteMultipleRows(DB.tables.expenseTracker, existingExpenses)
-          setCurrentExpense(false)
-          successAlert(`All ${currentExpense.name} expenses have been deleted`)
-        }
+
+      // Delete Multiple
+      if (existing.length > 1) {
+        confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, async () => {
+          let existingMultipleExpenses = existing.filter((x) => x.name === expense.name && x.repeating === true)
+          if (Manager.isValid(existingMultipleExpenses, true)) {
+            await DB.deleteMultipleRows(DB.tables.expenseTracker, existingMultipleExpenses)
+            successAlert(`All ${expense.name} expenses have been deleted`)
+          }
+        })
+      }
+
+      // Delete Single
+      else {
+        confirmAlert('Are you sure you would like to delete this expense?', "I'm Sure", true, async () => {
+          const deleteKey = await DB.getSnapshotKey(DB.tables.expenseTracker, expense, 'id')
+          if (deleteKey) {
+            await DB.deleteByPath(`${DB.tables.expenseTracker}/${deleteKey}`)
+          }
+        })
       }
     }
   }
@@ -125,17 +125,18 @@ export default function ExpenseTracker() {
   const getSecuredExpenses = async () => {
     let allExpenses = await SecurityManager.getExpenses(currentUser)
     allExpenses = Manager.getUniqueArrayOfObjects(allExpenses, 'id')
-
+    const categories = allExpenses.map((x) => x.category).filter((x) => x !== '')
+    setCategoriesInUse(categories)
+    setFilterApplied(false)
+    setShowFilterCard(false)
     setExpenses(allExpenses)
     return allExpenses
   }
 
   const sendReminder = async (expense) => {
-    const coparents = currentUser.coparents
-    const expenseCoparent = coparents.filter((x) => x.phone === expense.payer.phone)[0]
-    const subId = await NotificationManager.getUserSubId(expenseCoparent.phone)
-    const message = `This is a reminder to pay the ${expense.name} expense. Due date is: ${
-      Manager.isValid(expense.dueDate) ? expense.dueDate : 'N/A'
+    const subId = await NotificationManager.getUserSubId(expense?.payer?.phone)
+    const message = `This is a reminder to pay the ${expense.name} expense.  ${
+      Manager.isValid(expense.dueDate) ? 'Due date is: ' + expense.dueDate : 'N/A'
     }`
     PushAlertApi.sendMessage(`Expense Reminder`, message, subId)
     successAlert('Reminder Sent')
@@ -164,7 +165,7 @@ export default function ExpenseTracker() {
     const dbRef = ref(getDatabase())
 
     onValue(child(dbRef, DB.tables.expenseTracker), async (snapshot) => {
-      await getSecuredExpenses().then((r) => r)
+      await getSecuredExpenses()
     })
   }
 
@@ -180,22 +181,52 @@ export default function ExpenseTracker() {
       setExpenses(allExpenses)
     }
     setShowFilterCard(false)
+    setFilterApplied(true)
   }
 
-  const handleSortBySelection = async () => {}
+  const handlePaidStatusSelection = async (status) => {
+    const allExpenses = await getSecuredExpenses()
+    setExpenses(allExpenses.filter((x) => x.paidStatus === status))
+    setShowFilterCard(false)
+    setFilterApplied(true)
+  }
+
+  const handleSortBySelection = (e) => {
+    const sortByName = e.target.value
+    if (sortByName === SortByTypes.recentlyAdded) {
+      const sortedByDateAsc = Manager.sortArrayOfObjectsByProp(expenses, 'dateAdded', 'asc')
+      setExpenses(sortedByDateAsc)
+      setFilterApplied(true)
+    }
+    if (sortByName === SortByTypes.nearestDueDate) {
+      const sortedByDueDateDesc = Manager.sortArrayOfObjectsByProp(expenses, 'dueDate', 'desc')
+      setExpenses(sortedByDueDateDesc)
+      setFilterApplied(true)
+    }
+    if (sortByName === SortByTypes.amountDesc) {
+      const sortByAmountDesc = Manager.sortArrayOfObjectsByProp(expenses, 'amount', 'desc', 'number')
+      setExpenses(sortByAmountDesc)
+      setFilterApplied(true)
+    }
+    if (sortByName === SortByTypes.amountAsc) {
+      const sortedByAmountAsc = Manager.sortArrayOfObjectsByProp(expenses, 'amount', 'asc', 'number')
+      setExpenses(sortedByAmountAsc)
+      setFilterApplied(true)
+    }
+    setShowFilterCard(false)
+  }
+
+  const handleCategorySelection = async (category) => {
+    const expensesByCategory = expenses.filter((x) => x.category === category)
+    setExpenses(expensesByCategory)
+    setFilterApplied(true)
+    setShowFilterCard(false)
+  }
 
   useEffect(() => {
     onTableChange().then((r) => r)
     Manager.showPageContainer()
   }, [])
-
-  useEffect(() => {
-    if (currentExpense) {
-      if (executePaid) {
-        markAsPaid().then((r) => r)
-      }
-    }
-  }, [currentExpense])
 
   return (
     <div>
@@ -229,13 +260,27 @@ export default function ExpenseTracker() {
             </div>
           </div>
           <hr />
+          <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
+          <div className="pills type">
+            <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
+              Unpaid
+            </div>
+            <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
+              Paid
+            </div>
+          </div>
+          <hr />
           <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>
           <div className="pills category">
             {ExpenseCategories.sort().map((cat, index) => {
               return (
-                <div key={index} className="pill">
-                  {cat}
-                </div>
+                <>
+                  {categoriesInUse.includes(cat) && (
+                    <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
+                      {cat}
+                    </div>
+                  )}
+                </>
               )
             })}
           </div>
@@ -243,9 +288,10 @@ export default function ExpenseTracker() {
           <Label isBold={true} text={'Sort by'} classes="mb-5 sort-by"></Label>
           <FormControl fullWidth>
             <Select className={'w-100'} value={sortByValue} onChange={handleSortBySelection}>
-              <MenuItem value={'Recently Added'}>{'Recently Added'}</MenuItem>
-              <MenuItem value={'Amount: High to Low'}>{'Amount: High to Low'}</MenuItem>
-              <MenuItem value={'Amount: Low to High'}>{'Amount: Low to High'}</MenuItem>
+              <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
+              <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
+              <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
+              <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
             </Select>
           </FormControl>
         </>
@@ -387,9 +433,17 @@ export default function ExpenseTracker() {
         </p>
 
         {/* FILTER BUTTON */}
-        <button onClick={() => setShowFilterCard(true)} id="filter-button">
-          Filter <BsFilter />
-        </button>
+        {!filterApplied && (
+          <button onClick={() => setShowFilterCard(true)} id="filter-button">
+            Filter <BsFilter />
+          </button>
+        )}
+
+        {filterApplied && (
+          <button onClick={async () => await getSecuredExpenses()} id="filter-button">
+            Clear Filter <MdOutlineFilterAltOff />
+          </button>
+        )}
 
         {expenses.length === 0 && (
           <div id="instructions-wrapper">
@@ -422,18 +476,25 @@ export default function ExpenseTracker() {
                                 className="name"></p>
 
                               {/* AMOUNT */}
-                              <span
-                                className="amount"
-                                onBlur={(e) => {
-                                  handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
-                                }}
-                                contentEditable
-                                dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
+                              {expense.paidStatus === 'unpaid' && (
+                                <span
+                                  className="amount"
+                                  onBlur={(e) => {
+                                    handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
+                                  }}
+                                  contentEditable
+                                  dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
+                              )}
+                              {expense.paidStatus === 'paid' && (
+                                <span className="amount paid">
+                                  PAID <MdPriceCheck className={'fs-22'} />
+                                </span>
+                              )}
                             </div>
 
                             {/* CATEGORY */}
                             {expense?.category?.length > 0 && (
-                              <p id="expense-category" className="mt-5">
+                              <p id="expense-category" className="mt-5" onClick={() => handleCategorySelection(expense.category)}>
                                 Category: <span>{expense.category}</span>
                               </p>
                             )}
@@ -531,44 +592,28 @@ export default function ExpenseTracker() {
                             )}
 
                             {/* BUTTONS */}
-                            <div id="button-group" className="flex">
-                              <button
-                                onClick={() => {
-                                  setCurrentExpense(expense)
-                                  setExecutePaid(true)
-                                }}
-                                className="green-text">
-                                Paid <MdPriceCheck className={'fs-22'} />
-                              </button>
-                              {expense.phone === currentUser.phone && (
-                                <button className="send-reminder" onClick={() => sendReminder(expense)}>
-                                  Send Reminder <PiBellSimpleRinging className={'fs-18'} />
+                            {expense.paidStatus === 'unpaid' && (
+                              <div id="button-group" className="flex">
+                                <button onClick={async () => await markAsPaid(expense)} className="green-text">
+                                  Paid <MdPriceCheck className={'fs-22'} />
                                 </button>
-                              )}
-                            </div>
+                                {expense.ownerPhone === currentUser.phone && (
+                                  <button className="send-reminder" onClick={() => sendReminder(expense)}>
+                                    Send Reminder <PiBellSimpleRinging className={'fs-18'} />
+                                  </button>
+                                )}
+                              </div>
+                            )}
 
                             {/* DELETE */}
-                            <PiTrashSimpleDuotone
-                              className="delete-icon"
-                              onClick={async () => {
-                                setCurrentExpense(expense)
-                                let existing = await getSecuredExpenses()
-                                existing = existing.filter((x) => x.name === expense.name)
-                                if (existing.length > 1) {
-                                  confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, () => {
-                                    setTimeout(async () => {
-                                      await deleteExpense(existing.length)
-                                    }, 400)
-                                  })
-                                } else {
-                                  setTimeout(() => {
-                                    confirmAlert('Are you sure you would like to delete this expense?', "I'm Sure", true, async () => {
-                                      await deleteExpense(existing.length)
-                                    })
-                                  }, 400)
-                                }
-                              }}
-                            />
+                            {expense.ownerPhone === currentUser.phone && (
+                              <PiTrashSimpleDuotone
+                                className="delete-icon"
+                                onClick={async () => {
+                                  await deleteExpense(expense)
+                                }}
+                              />
+                            )}
                           </div>
                         </div>
                       </div>

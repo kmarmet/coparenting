@@ -4,18 +4,17 @@ var Expense;
 import Manager from "../managers/manager";
 
 export default Expense = class Expense {
-  constructor(id = '', name = '', imageName = '', shareWith = [], amount = '', createdBy = '', dateAdded = Manager.getCurrentDate(), paidStatus = 'unpaid', children = [], dueDate, phone, notes, recipientName, repeating = false, category = '', payer = '') {
+  constructor(id = '', name = '', imageName = '', shareWith = [], amount = '', dateAdded = Manager.getCurrentDate(), paidStatus = 'unpaid', children = [], dueDate, ownerPhone, notes, recipientName, repeating = false, category = '', payer = '') {
     this.id = id;
     this.name = name;
     this.imageName = imageName;
     this.shareWith = shareWith;
     this.amount = amount;
-    this.createdBy = createdBy;
     this.dateAdded = dateAdded;
     this.paidStatus = paidStatus;
     this.children = children;
     this.dueDate = dueDate;
-    this.phone = phone;
+    this.ownerPhone = ownerPhone;
     this.notes = notes;
     this.recipientName = recipientName;
     this.repeating = repeating;

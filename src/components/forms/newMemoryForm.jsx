@@ -18,6 +18,7 @@ import {
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
+  hasClass,
   isAllUppercase,
   removeFileExtension,
   removeSpacesAndLowerCase,

@@ -10,6 +10,7 @@ import {
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
+  hasClass,
   isAllUppercase,
   removeFileExtension,
   removeSpacesAndLowerCase,
@@ -167,6 +168,12 @@ const Manager = {
   },
   scrollToTopOfPage: () => {
     window.scrollTo(0, 0)
+  },
+  scrollIntoView(selector, position = 'start') {
+    const element = document.querySelector(selector)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: position })
+    }
   },
   getNamesFromPhone: async (phones) => {
     let userObjectsToReturn = []
@@ -420,11 +427,20 @@ const Manager = {
       })
     }
   },
-  sortAlpha: (arr, prop) => {
+  sortArrayOfObjectsByProp: (arr, prop, direction = 'asc', valueType = 'string') => {
     return arr.sort(function (a, b) {
-      var textA = a[prop].toUpperCase()
-      var textB = b[prop].toUpperCase()
-      return textA < textB ? -1 : textA > textB ? 1 : 0
+      let textA = a[prop]
+      let textB = b[prop]
+
+      if (valueType === 'string') {
+        textA = a[prop].toUpperCase()
+        textB = b[prop].toUpperCase()
+      }
+      if (direction === 'asc') {
+        return textA < textB ? -1 : textA > textB ? 1 : 0
+      } else {
+        return textB < textA ? -1 : textB > textA ? 1 : 0
+      }
     })
   },
   validateEmail: (email) => {
@@ -435,7 +451,7 @@ const Manager = {
     return phone.replace(/^(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')
   },
   formatScreenTitle: (word) => {
-    return word.uppercaseFirstLetterOfAllWords(word.replace(/([a-z])([A-Z])/, '$1 $2')).replace(/([a-z])([A-Z])/, '$1 $2')
+    return uppercaseFirstLetterOfAllWords(word.replace(/([a-z])([A-Z])/, '$1 $2')).replace(/([a-z])([A-Z])/, '$1 $2')
   },
   convertObjectToArray: (obj) => {
     return obj[0]

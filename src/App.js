@@ -57,6 +57,7 @@ import {
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
+  hasClass,
   inputAlert,
   isAllUppercase,
   oneButtonAlert,

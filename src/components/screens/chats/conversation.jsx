@@ -23,6 +23,7 @@ import {
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
+  hasClass,
   isAllUppercase,
   oneButtonAlert,
   removeFileExtension,

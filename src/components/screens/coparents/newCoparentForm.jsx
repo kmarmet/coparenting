@@ -13,6 +13,7 @@ import {
   formatPhone,
   getFileExtension,
   getFirstWord,
+  hasClass,
   isAllUppercase,
   removeFileExtension,
   removeSpacesAndLowerCase,

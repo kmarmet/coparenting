@@ -17,6 +17,7 @@ import {
   formatTitleWords,
   getFileExtension,
   getFirstWord,
+  hasClass,
   isAllUppercase,
   lowercaseShouldBeLowercase,
   removeFileExtension,

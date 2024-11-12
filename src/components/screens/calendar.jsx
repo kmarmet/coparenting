@@ -23,6 +23,7 @@ import {
   formatFileName,
   formatNameFirstNameOnly,
   getFirstWord,
+  hasClass,
   isAllUppercase,
   oneButtonAlert,
   removeFileExtension,
@@ -46,7 +47,7 @@ import NavBar from '../navBar'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { theme, menuIsOpen, currentUser, selectedNewEventDay, navbarButton } = state
+  const { theme, menuIsOpen, currentUser, navbarButton } = state
   const [existingEvents, setExistingEvents] = useState([])
   const [showHolidaysCard, setShowHolidaysCard] = useState(false)
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
@@ -58,7 +59,8 @@ export default function EventCalendar() {
   const [showNotes, setShowNotes] = useState(false)
   const [searchResults, setSearchResults] = useState([])
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedNewEventDay, setSelectedNewEventDay] = useState(moment())
   const formatEvents = (events) => {
     let dateArr = []
     events.forEach((event, index) => {
@@ -355,10 +357,7 @@ export default function EventCalendar() {
         rows[0].scrollIntoView({ behavior: 'smooth' })
       }
     } else {
-      const flatpickrCal = document.querySelector('.flatpickr-calendar ')
-      if (flatpickrCal) {
-        document.querySelector('.flatpickr-calendar ').scrollIntoView({ behavior: 'smooth' })
-      }
+      Manager.scrollIntoView('#static-calendar ')
     }
   }, [showHolidays])
 
@@ -397,14 +396,19 @@ export default function EventCalendar() {
           className="form search-card"
           title={'Find Events'}
           onClose={async () => {
-            document.querySelector('.flatpickr-calendar').scrollIntoView({ behavior: 'smooth', block: 'start' })
+            Manager.scrollIntoView('#static-calendar')
             await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
             setShowSearchCard(false)
             updateRefreshKey()
           }}
           onSubmit={() => {
-            if (!Manager.isValid(searchResults, true)) {
+            if (searchQuery.length === 0) {
               throwError('Please enter a search value')
+              return false
+            }
+
+            if (!Manager.isValid(searchResults, true)) {
+              throwError('No results found')
               return false
             } else {
               setExistingEvents(searchResults)
@@ -435,11 +439,13 @@ export default function EventCalendar() {
                   }
                   if (results.length > 0) {
                     setSearchResults(results)
+                  } else {
+                    setSearchQuery(inputValue)
                   }
                 } else {
                   if (inputValue.length === 0) {
                     setShowSearchCard(false)
-                    document.querySelector('.flatpickr-calendar').scrollIntoView({ behavior: 'smooth' })
+                    Manager.scrollIntoView('#static-calendar')
                     await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
                     updateRefreshKey()
                   }
@@ -450,7 +456,7 @@ export default function EventCalendar() {
         </BottomCard>
 
         {/* NEW EVENT */}
-        <NewCalendarEvent showCard={showNewEventCard} onClose={() => setShowNewEventCard(false)} />
+        <NewCalendarEvent selectedNewEventDay={selectedNewEventDay} showCard={showNewEventCard} onClose={() => setShowNewEventCard(false)} />
 
         {/* EDIT EVENT */}
         <EditCalEvent
@@ -465,21 +471,23 @@ export default function EventCalendar() {
 
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme} `}>
-        {/*<p className="screen-title">Calendar</p>*/}
-        <StaticDatePicker
-          defaultValue={moment()}
-          onMonthChange={async (month) => {
-            await getSecuredEvents(null, month)
-          }}
-          onChange={async (day) => {
-            await getSecuredEvents(day)
-          }}
-          slotProps={{
-            actionBar: {
-              actions: ['today'],
-            },
-          }}
-        />
+        <div id="static-calendar">
+          <StaticDatePicker
+            defaultValue={moment()}
+            onMonthChange={async (month) => {
+              await getSecuredEvents(null, month)
+            }}
+            onChange={async (day) => {
+              await getSecuredEvents(day)
+              setSelectedNewEventDay(day)
+            }}
+            slotProps={{
+              actionBar: {
+                actions: ['today'],
+              },
+            }}
+          />
+        </div>
 
         <div className="with-padding">
           {/* BELOW CALENDAR */}
@@ -655,7 +663,7 @@ export default function EventCalendar() {
           <CgClose
             id={'add-new-button'}
             onClick={async () => {
-              document.querySelector('.MuiPickersLayout-root').scrollIntoView({ behavior: 'smooth' })
+              Manager.scrollIntoView('#static-calendar')
               await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
               setShowHolidays(false)
             }}

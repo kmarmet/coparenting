@@ -9,6 +9,7 @@ import {
   getFileExtension,
   getFirstWord,
   getPositionOfWordInText,
+  hasClass,
   isAllUppercase,
   removeFileExtension,
   removeSpacesAndLowerCase,

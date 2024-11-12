@@ -30,6 +30,7 @@ import {
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
+  hasClass,
   isAllUppercase,
   removeFileExtension,
   removeSpacesAndLowerCase,
@@ -117,16 +118,15 @@ function NewExpenseForm({ hideCard, showCard }) {
     newExpense.id = Manager.getUid()
     newExpense.name = expenseName
     newExpense.children = expenseChildren
-    newExpense.amount = expenseAmount
+    newExpense.amount = parseInt(expenseAmount)
     newExpense.category = expenseCategory
-    newExpense.phone = currentUser.phone
     newExpense.dueDate = DateManager.dateIsValid(expenseDueDate) ? moment(expenseDueDate).format(DateFormats.dateForDb) : ''
     newExpense.dateAdded = Manager.getCurrentDate()
     newExpense.notes = expenseNotes
     newExpense.paidStatus = 'unpaid'
     newExpense.imageName = expenseImage.name || ''
     newExpense.payer = payer
-    newExpense.createdBy = currentUser.name
+    newExpense.ownerPhone = currentUser.phone
     newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
     newExpense.repeating = repeating
 

@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react'
-import CheckboxGroup from '@shared/checkboxGroup'
+import React, { useContext, useState } from 'react'
 import globalState from '../context'
 import {
-  toCamelCase,
-  getFirstWord,
-  formatFileName,
-  isAllUppercase,
-  removeSpacesAndLowerCase,
-  stringHasNumbers,
-  wordCount,
-  uppercaseFirstLetterOfAllWords,
-  spaceBetweenWords,
-  formatNameFirstNameOnly,
-  removeFileExtension,
   contains,
   displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
   formatPhone,
-  uniqueArray,
   getFileExtension,
+  getFirstWord,
+  hasClass,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
 } from '../globalFunctions'
 import { phone } from 'phone'
 

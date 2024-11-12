@@ -38,6 +38,7 @@ import {
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
+  hasClass,
   isAllUppercase,
   removeFileExtension,
   removeSpacesAndLowerCase,
@@ -52,10 +53,10 @@ import {
 } from '../../globalFunctions' // COMPONENT
 
 // COMPONENT
-export default function NewCalendarEvent({ showCard, onClose }) {
+export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDay }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, selectedNewEventDay } = state
+  const { currentUser, theme } = state
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)

@@ -37,7 +37,7 @@ SecurityManager =
     if Manager.isValid(allExpenses,true)
       for expense in allExpenses
         shareWith = expense.shareWith
-        if (expense.phone == currentUser.phone)
+        if (expense.ownerPhone == currentUser.phone)
           returnRecords.push(expense)
         if Manager.isValid(shareWith, true)
           if shareWith.includes(currentUser.phone)
