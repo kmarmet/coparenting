@@ -190,10 +190,15 @@
           
           hr {
             width: 100%;
+            display: none;
           }
           
           &.active {
-            display: initial;
+            display: block;
+            
+            hr {
+              display: block;
+            }
           }
         }
 
