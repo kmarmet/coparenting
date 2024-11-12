@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import DB from '@db'
 import tables from '@screenNames'
 import Manager from '@manager'
@@ -71,6 +71,7 @@ function NewExpenseForm({ hideCard, showCard }) {
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
   const [showNumpad, setShowNumpad] = useState(false)
   const [expenseAmount, setExpenseAmount] = useState('')
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const imgRef = useRef()
 
   const resetForm = () => {
@@ -92,6 +93,7 @@ function NewExpenseForm({ hideCard, showCard }) {
     setShowNumpad(false)
     setExpenseAmount('')
     hideCard()
+    setRefreshKey(Manager.getUid())
   }
 
   const submitNewExpense = async () => {
@@ -126,7 +128,7 @@ function NewExpenseForm({ hideCard, showCard }) {
     newExpense.payer = payer
     newExpense.createdBy = currentUser.name
     newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
-    newExpense.repeating = false
+    newExpense.repeating = repeating
 
     if (expenseImage) {
       newExpense.imageName = expenseImage.name
@@ -308,19 +310,19 @@ function NewExpenseForm({ hideCard, showCard }) {
     setExpenseCategory(category.target.value)
   }
 
-  useEffect(() => {
-    Manager.showPageContainer('show')
-  }, [])
-
   return (
     <BottomCard
+      refreshKey={refreshKey}
       hasDelete={false}
       onSubmit={submitNewExpense}
       submitIcon={<PiMoneyWavyDuotone />}
       submitText={'Create Expense'}
       title={'Add Expense'}
       showCard={showCard}
-      onClose={hideCard}>
+      onClose={() => {
+        hideCard()
+        setRefreshKey(Manager.getUid())
+      }}>
       <div className="expenses-wrapper">
         {/* PAGE CONTAINER */}
         <div id="add-expense-form" className={`${theme} form`}>
@@ -412,11 +414,7 @@ function NewExpenseForm({ hideCard, showCard }) {
             />
           </InputWrapper>
 
-          <InputWrapper
-            onChange={(e) => setExpenseNotes(e.target.value)}
-            onChange={(e) => setExpenseName(e.target.value)}
-            inputType={'textarea'}
-            labelText={'Notes'}></InputWrapper>
+          <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'}></InputWrapper>
 
           {currentUser && (
             <div className="share-with-container">

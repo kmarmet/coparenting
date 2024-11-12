@@ -78,7 +78,7 @@ export default function Account() {
           </p>
         </div>
       </div>
-      {!setShowUpdateCard && <NavBar navbarClass={'account no-add-new-button'}></NavBar>}
+      {!showUpdateCard && <NavBar navbarClass={'account no-add-new-button'}></NavBar>}
     </>
   )
 }

@@ -1,12 +1,10 @@
-export default function Label({ classes = '', children, text, required = false, icon = null }) {
+export default function Label({ classes = '', children, text, required = false, icon = null, isBold = false }) {
   return (
     <div id="label-wrapper" className={`share-with-container ${classes}`}>
-      <label>
+      <label className={isBold ? 'bold' : ''}>
         {icon ? icon : ''}
-        <span>
-          {text}
-          {required && <span className="asterisk">*</span>}
-        </span>
+        {text}
+        {required && <span className="asterisk">*</span>}
       </label>
       {children}
     </div>

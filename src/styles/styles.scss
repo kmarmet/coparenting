@@ -847,6 +847,10 @@ aside {
           margin-top: 0;
           text-align: center;
         }
+        
+        svg {
+          color: $mainBlue;
+        }
       }
     }
     .sparkle {
@@ -880,6 +884,10 @@ aside {
     .visible-flex {
       opacity: 1;
       display: flex;
+    }
+    
+    .bold {
+      font-weight: $fwBold;
     }
 
     .accordion-header {

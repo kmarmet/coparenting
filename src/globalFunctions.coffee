@@ -15,6 +15,12 @@ export capitalizeFirstWord = (str) ->
   capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
   return capitalizedFirstWord + str.slice(firstWord.length);
 
+export hasClass = (element, className) ->
+  if element.classList.contains(className)
+    true
+  else
+    false
+
 export formatTitleWords = (str) ->
   str = str.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and");
 
@@ -40,7 +46,7 @@ export stringHasNumbers = (input) ->
   /\d/.test(input)
 
 export contains = (itemToCheck, searchValue) ->
-  if itemToCheck == undefined then return false
+  if !itemToCheck then return false
   itemToCheck.indexOf(searchValue) > -1
 
 export wordCount = (input) ->
@@ -94,7 +100,6 @@ export formatPhone =  (input)->
 
 export lowercaseShouldBeLowercase = (input) ->
   input.replace("Of", "of")
-
 
 export removeFileExtension = (input) ->
   input.replace(/\.[^/.]+$/, '')

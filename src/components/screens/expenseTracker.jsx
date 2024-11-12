@@ -7,19 +7,21 @@ import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
 import MyConfetti from '@shared/myConfetti.js'
 import DateManager from 'managers/dateManager.js'
-import CheckboxGroup from 'components/shared/checkboxGroup.jsx'
 import DateFormats from 'constants/dateFormats.js'
 import moment from 'moment'
 import '../../prototypes.js'
 import BottomCard from '../shared/bottomCard'
-import { PiBellSimpleRinging, PiClockCountdownDuotone, PiConfettiDuotone, PiTrashDuotone } from 'react-icons/pi'
+import { PiBellSimpleRinging, PiClockCountdownDuotone, PiConfettiDuotone, PiTrashSimpleDuotone } from 'react-icons/pi'
 import { AiOutlineFileAdd } from 'react-icons/ai'
 import SecurityManager from '../../managers/securityManager'
 import NewExpenseForm from '../forms/newExpenseForm'
 import FirebaseStorage from '@firebaseStorage'
 import LightGallery from 'lightgallery/react'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import Select from '@mui/material/Select'
 import 'lightgallery/css/lightgallery.css'
-
+import { MdEventRepeat, MdPriceCheck } from 'react-icons/md'
 import {
   confirmAlert,
   contains,
@@ -28,6 +30,7 @@ import {
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
+  hasClass,
   isAllUppercase,
   removeFileExtension,
   removeSpacesAndLowerCase,
@@ -46,10 +49,10 @@ import { ImAppleinc } from 'react-icons/im'
 import { IoLogoVenmo } from 'react-icons/io5'
 import { SiCashapp, SiZelle } from 'react-icons/si'
 import { LiaCcPaypal } from 'react-icons/lia'
-import { BsArrowsAngleExpand } from 'react-icons/bs'
-import { MdPriceCheck } from 'react-icons/md'
+import { BsArrowsAngleExpand, BsFilter } from 'react-icons/bs'
 import NavBar from '../navBar'
 import Label from '../shared/label'
+import ExpenseCategories from '../../constants/expenseCategories'
 
 // VIEW TYPES
 const ViewTypes = {
@@ -59,17 +62,18 @@ const ViewTypes = {
 }
 
 export default function ExpenseTracker() {
-  const [expenses, setExpenses] = useState([])
   const { state, setState, theme, navbarButton } = useContext(globalState)
   const { currentUser } = state
+  const [expenses, setExpenses] = useState([])
   const [currentExpense, setCurrentExpense] = useState(null)
-  const [deleteConfirmTitle, setDeleteConfirmTitle] = useState('')
-  const [confirmMessage, setConfirmMessage] = useState('')
   const [executePaid, setExecutePaid] = useState(false)
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
   const [viewType, setViewType] = useState(ViewTypes.all)
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
   const [showFullExpenseCard, setShowFullExpenseCard] = useState(false)
+  const [showFilterCard, setShowFilterCard] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [sortByValue, setSortByValue] = useState('')
   let contentEditable = useRef()
 
   const markAsPaid = async () => {
@@ -96,6 +100,7 @@ export default function ExpenseTracker() {
   }
 
   const deleteExpense = async (eventCount) => {
+    console.log(eventCount)
     if (Manager.isValid(currentExpense)) {
       if (Manager.isValid(currentExpense) && Manager.isValid(currentExpense.imageName, null, null, true)) {
         await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser.id, currentExpense.imageName, currentExpense)
@@ -103,20 +108,15 @@ export default function ExpenseTracker() {
       if (eventCount === 1) {
         const deleteKey = await DB.getSnapshotKey(DB.tables.expenseTracker, currentExpense, 'id')
         await DB.deleteByPath(`${DB.tables.expenseTracker}/${deleteKey}`)
-        await getSecuredExpenses()
         setCurrentExpense(false)
-        setConfirmMessage('')
       } else {
+        console.log(currentExpense)
         let existingExpenses = expenses.filter((x) => x.name === currentExpense.name && x.repeating === true)
+        console.log(existingExpenses)
         if (Manager.isValid(existingExpenses, true)) {
-          for (let expense of existingExpenses) {
-            await DB.delete(DB.tables.expenseTracker, expense.id).finally(async () => {
-              setCurrentExpense(false)
-              setDeleteConfirmTitle('')
-              successAlert(`All ${currentExpense.name} expenses have been deleted`)
-            })
-          }
-          await getSecuredExpenses()
+          await DB.deleteMultipleRows(DB.tables.expenseTracker, existingExpenses)
+          setCurrentExpense(false)
+          successAlert(`All ${currentExpense.name} expenses have been deleted`)
         }
       }
     }
@@ -125,13 +125,9 @@ export default function ExpenseTracker() {
   const getSecuredExpenses = async () => {
     let allExpenses = await SecurityManager.getExpenses(currentUser)
     allExpenses = Manager.getUniqueArrayOfObjects(allExpenses, 'id')
-    if (viewType === ViewTypes.repeating) {
-      allExpenses = allExpenses.filter((x) => x.repeating === true)
-    } else if (viewType === ViewTypes.individual) {
-      allExpenses = allExpenses.filter((x) => x.repeating === false)
-    }
 
     setExpenses(allExpenses)
+    return allExpenses
   }
 
   const sendReminder = async (expense) => {
@@ -145,19 +141,6 @@ export default function ExpenseTracker() {
     successAlert('Reminder Sent')
   }
 
-  const handleViewTypeSelection = async (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      (e) => {
-        setViewType(e)
-      },
-      (e) => {
-        // setViewType('')
-      },
-      false
-    )
-  }
-
   const handleEditable = async (e, recordToUpdate, propName, value) => {
     if (propName === 'dueDate') {
       let updatedDate = moment(value).format(DateFormats.dateForDb)
@@ -169,25 +152,41 @@ export default function ExpenseTracker() {
   }
 
   const handleFullExpenseToggle = async (e, expenseId) => {
-    console.log(e.target.classList)
-    if (!e.target.classList.contains('name') && !e.target.classList.contains('delete')) {
-      // setShowFullExpenseCard(true)
-      const expenseToShow = document.querySelector(`[data-expense-id='${expenseId}']`)
+    const expenseToShow = document.querySelector(`[data-expense-id='${expenseId}']`)
+
+    if (expenseToShow) {
+      setShowFullExpenseCard(true)
       expenseToShow.classList.add('active')
     }
   }
 
-  useEffect(() => {
-    getSecuredExpenses().then((r) => r)
-  }, [viewType])
-
-  useEffect(() => {
+  const onTableChange = async () => {
     const dbRef = ref(getDatabase())
 
     onValue(child(dbRef, DB.tables.expenseTracker), async (snapshot) => {
       await getSecuredExpenses().then((r) => r)
     })
-    Manager.showPageContainer('show')
+  }
+
+  const handleExpenseTypeSelection = async (type) => {
+    const allExpenses = await getSecuredExpenses()
+    if (type === 'single') {
+      setExpenses(allExpenses.filter((x) => x.repeating === false))
+    }
+    if (type === 'repeating') {
+      setExpenses(allExpenses.filter((x) => x.repeating === true))
+    }
+    if (type === 'all') {
+      setExpenses(allExpenses)
+    }
+    setShowFilterCard(false)
+  }
+
+  const handleSortBySelection = async () => {}
+
+  useEffect(() => {
+    onTableChange().then((r) => r)
+    Manager.showPageContainer()
   }, [])
 
   useEffect(() => {
@@ -201,8 +200,57 @@ export default function ExpenseTracker() {
   return (
     <div>
       {/* NEW EXPENSE FORM */}
-
       <NewExpenseForm showCard={showNewExpenseCard} hideCard={(e) => setShowNewExpenseCard(false)} />
+
+      {/* FILTER CARD */}
+      <BottomCard
+        refreshKey={refreshKey}
+        hasSubmitButton={false}
+        className="filter-card"
+        title={'Filter Expenses'}
+        submitIcon={<BsFilter />}
+        showCard={showFilterCard}
+        onClose={() => {
+          setShowFilterCard(false)
+          setRefreshKey(Manager.getUid())
+        }}
+        submitText={'View Expenses'}>
+        <>
+          <Label isBold={true} text={'Expense Type'} classes="mb-5"></Label>
+          <div className="pills type">
+            <div className="pill" onClick={() => handleExpenseTypeSelection('all')}>
+              All
+            </div>
+            <div className="pill" onClick={() => handleExpenseTypeSelection('single')}>
+              Single Date
+            </div>
+            <div className="pill" onClick={() => handleExpenseTypeSelection('repeating')}>
+              Repeating
+            </div>
+          </div>
+          <hr />
+          <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>
+          <div className="pills category">
+            {ExpenseCategories.sort().map((cat, index) => {
+              return (
+                <div key={index} className="pill">
+                  {cat}
+                </div>
+              )
+            })}
+          </div>
+          <hr />
+          <Label isBold={true} text={'Sort by'} classes="mb-5 sort-by"></Label>
+          <FormControl fullWidth>
+            <Select className={'w-100'} value={sortByValue} onChange={handleSortBySelection}>
+              <MenuItem value={'Recently Added'}>{'Recently Added'}</MenuItem>
+              <MenuItem value={'Amount: High to Low'}>{'Amount: High to Low'}</MenuItem>
+              <MenuItem value={'Amount: Low to High'}>{'Amount: Low to High'}</MenuItem>
+            </Select>
+          </FormControl>
+        </>
+      </BottomCard>
+
       {/* PAYMENT OPTIONS */}
       <>
         {showPaymentOptionsCard && (
@@ -338,24 +386,11 @@ export default function ExpenseTracker() {
           Bill Payment & Money Transfer Options
         </p>
 
-        {/* SET VIEW TYPE */}
-        <>
-          {(expenses.length > 0 || viewType === ViewTypes.repeating) && (
-            <>
-              <Label text={'Which type of expense would you like to view?'}></Label>
-              <CheckboxGroup
-                defaultLabel={'All'}
-                skipNameFormatting={true}
-                checkboxLabels={['All', 'Single Date', 'Repeating']}
-                onCheck={handleViewTypeSelection}
-                elClass={'view-type'}
-                dataPhone={[]}
-              />
-              <p className={`${theme} description`}>tap/click a field to edit (tap outside the field when you are done)</p>
-              <p className={`${theme} description`}>tap/click the expense to view details</p>
-            </>
-          )}
-        </>
+        {/* FILTER BUTTON */}
+        <button onClick={() => setShowFilterCard(true)} id="filter-button">
+          Filter <BsFilter />
+        </button>
+
         {expenses.length === 0 && (
           <div id="instructions-wrapper">
             <p className="instructions center">
@@ -370,80 +405,115 @@ export default function ExpenseTracker() {
             {Manager.isValid(expenses, true) &&
               expenses.map((expense, index) => {
                 return (
-                  <div
-                    onClick={(e) => handleFullExpenseToggle(e, expense.id)}
-                    key={Manager.getUid()}
-                    data-expense-id={expense.id}
-                    className={` expense mb-20`}>
-                    <div className="content">
-                      <div className="lower-details">
-                        {/* LOWER DETAILS TEXT */}
-                        <div className="lower-details-text">
-                          {/* DELETE */}
-                          <div
-                            className="flex delete"
-                            onClick={async () => {
-                              setCurrentExpense(expense)
-                              let existing = await DB.getTable(DB.tables.expenseTracker)
-                              existing = existing.filter((x) => x.name === expense.name)
-                              if (existing.length > 1) {
-                                confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, () => {
-                                  deleteExpense(existing.length)
-                                })
-                              } else {
-                                confirmAlert('Are you sure you would like to delete this expense?', "I'm Sure", true, () => {
-                                  deleteExpense(existing.length)
-                                })
-                              }
-                            }}>
-                            <span>DELETE</span> <PiTrashDuotone />
-                          </div>
-                          {/* EXPENSE NAME */}
-                          <p
-                            onBlur={(e) => {
-                              handleEditable(e, expense, 'name', e.currentTarget.innerHTML).then((r) => r)
-                            }}
-                            contentEditable
-                            dangerouslySetInnerHTML={{ __html: uppercaseFirstLetterOfAllWords(expense.name).toString() }}
-                            className="name"></p>
-
-                          {expense?.category?.length > 0 && <p id="expense-category">Category: {expense.category}</p>}
-                          {(!expense.category || expense?.category?.length === 0) && <p id="expense-category">Category: None</p>}
-                          {/* AMOUNT */}
-                          <span
-                            className="amount mb-10"
-                            onBlur={(e) => {
-                              handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
-                            }}
-                            contentEditable
-                            dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
-
-                          {/* EXPENSE CONTENT TO TOGGLE */}
-                          <div id="content-to-toggle">
-                            {/* PAY TO */}
-                            <div className="flex editable">
-                              <p className="recipient subtext">Pay to:</p>
-                              <span
+                  <div key={index}>
+                    <div onClick={(e) => handleFullExpenseToggle(e, expense.id)} data-expense-id={expense.id} className={` expense`}>
+                      <div className="content">
+                        <div className="lower-details">
+                          {/* LOWER DETAILS TEXT */}
+                          <div className="lower-details-text">
+                            {/* EXPENSE NAME */}
+                            <div className="flex align-center">
+                              <p
                                 onBlur={(e) => {
-                                  handleEditable(e, expense, 'recipientName', e.currentTarget.innerHTML).then((r) => r)
+                                  handleEditable(e, expense, 'name', e.currentTarget.innerHTML).then((r) => r)
                                 }}
                                 contentEditable
-                                dangerouslySetInnerHTML={{ __html: expense.recipientName }}
-                                className="recipient subtext"></span>
+                                dangerouslySetInnerHTML={{ __html: uppercaseFirstLetterOfAllWords(expense.name).toString() }}
+                                className="name"></p>
+
+                              {/* AMOUNT */}
+                              <span
+                                className="amount"
+                                onBlur={(e) => {
+                                  handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
+                                }}
+                                contentEditable
+                                dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
                             </div>
 
-                            {/* CHILDREN */}
-                            {expense && expense.children && expense.children.length > 0 && (
-                              <div className="flex">
-                                <p>Children</p>
-                                <span>{expense.children.join(', ')}</span>
-                              </div>
+                            {/* CATEGORY */}
+                            {expense?.category?.length > 0 && (
+                              <p id="expense-category" className="mt-5">
+                                Category: <span>{expense.category}</span>
+                              </p>
                             )}
 
-                            {/* DATE ADDED */}
-                            <div className="group flex">
-                              <p id="date-added-text">Date Added:</p>
-                              <span>{DateManager.formatDate(expense.dateAdded)}</span>
+                            {(!expense.category || expense?.category?.length === 0) && <p id="expense-category">Category: None</p>}
+                            <span className={showFullExpenseCard ? 'active' : ''} id="hr">
+                              <hr />
+                            </span>
+                            {/* EXPENSE CONTENT TO TOGGLE */}
+                            <div id="content-to-toggle">
+                              {/* PAY TO */}
+                              <div className="flex editable">
+                                <p className="recipient subtext">Pay to:</p>
+                                <span
+                                  onBlur={(e) => {
+                                    handleEditable(e, expense, 'recipientName', e.currentTarget.innerHTML).then((r) => r)
+                                  }}
+                                  contentEditable
+                                  dangerouslySetInnerHTML={{ __html: expense.recipientName }}
+                                  className="recipient subtext"></span>
+                              </div>
+
+                              {/* CHILDREN */}
+                              {expense && expense.children && expense.children.length > 0 && (
+                                <div className="flex">
+                                  <p>Children</p>
+                                  <span>{expense.children.join(', ')}</span>
+                                </div>
+                              )}
+
+                              {/* DATE ADDED */}
+                              <div className="group flex">
+                                <p id="date-added-text">Date Added:</p>
+                                <span>{DateManager.formatDate(expense.dateAdded)}</span>
+                              </div>
+
+                              {/* REPEATING */}
+                              {expense.repeating && (
+                                <p>
+                                  Repeating <MdEventRepeat id={'repeating-icon'} />{' '}
+                                </p>
+                              )}
+
+                              {/* NOTES */}
+                              {expense.notes && expense.notes.length > 0 && (
+                                <div className="flex editable notes">
+                                  <p>Notes:</p>
+                                  <span
+                                    onBlur={(e) => {
+                                      handleEditable(e, expense, 'notes', e.currentTarget.innerHTML).then((r) => r)
+                                    }}
+                                    contentEditable
+                                    dangerouslySetInnerHTML={{ __html: expense.notes }}></span>
+                                </div>
+                              )}
+
+                              {/* DUE DATE */}
+                              {expense.dueDate && expense.dueDate.length > 0 && (
+                                <div className="flex editable">
+                                  <p>Due Date:</p>
+
+                                  <span
+                                    onBlur={(e) => {
+                                      handleEditable(e, expense, 'dueDate', e.currentTarget.innerHTML).then((r) => r)
+                                    }}
+                                    contentEditable
+                                    dangerouslySetInnerHTML={{ __html: DateManager.formatDate(expense.dueDate) }}></span>
+                                </div>
+                              )}
+
+                              {/* DUE IN... */}
+                              {expense.dueDate.length > 0 && (
+                                <div className="flex due-in">
+                                  <p>Countdown:</p>
+                                  <span>
+                                    <PiClockCountdownDuotone className={'fs-24 mr-5'} />
+                                    {moment(moment(expense.dueDate).startOf('day')).fromNow().toString()}
+                                  </span>
+                                </div>
+                              )}
                             </div>
 
                             {/* EXPENSE IMAGE */}
@@ -460,71 +530,57 @@ export default function ExpenseTracker() {
                               </div>
                             )}
 
-                            {/* NOTES */}
-                            {expense.notes && expense.notes.length > 0 && (
-                              <div className="flex editable notes">
-                                <p>Notes:</p>
-                                <span
-                                  onBlur={(e) => {
-                                    handleEditable(e, expense, 'notes', e.currentTarget.innerHTML)
-                                  }}
-                                  contentEditable
-                                  dangerouslySetInnerHTML={{ __html: expense.notes }}></span>
-                              </div>
-                            )}
-
-                            {/* DUE DATE */}
-                            {expense.dueDate && expense.dueDate.length > 0 && (
-                              <div className="flex editable">
-                                <p>Due Date:</p>
-
-                                <span
-                                  onBlur={(e) => {
-                                    handleEditable(e, expense, 'dueDate', e.currentTarget.innerHTML).then((r) => r)
-                                  }}
-                                  contentEditable
-                                  dangerouslySetInnerHTML={{ __html: DateManager.formatDate(expense.dueDate) }}></span>
-                              </div>
-                            )}
-
-                            {/* DUE IN... */}
-                            {expense.dueDate.length > 0 && (
-                              <div className="flex due-in">
-                                <p>Countdown:</p>
-                                <span>
-                                  <PiClockCountdownDuotone className={'fs-24 mr-5'} />
-                                  {moment(moment(expense.dueDate).startOf('day')).fromNow().toString()}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* BUTTONS */}
-                          <div id="button-group" className="flex">
-                            <button
-                              onClick={() => {
-                                setCurrentExpense(expense)
-                                setExecutePaid(true)
-                              }}
-                              className="green-text">
-                              Paid <MdPriceCheck className={'fs-22'} />
-                            </button>
-                            {expense.phone === currentUser.phone && (
-                              <button className="send-reminder" onClick={() => sendReminder(expense)}>
-                                Send Reminder <PiBellSimpleRinging className={'fs-18'} />
+                            {/* BUTTONS */}
+                            <div id="button-group" className="flex">
+                              <button
+                                onClick={() => {
+                                  setCurrentExpense(expense)
+                                  setExecutePaid(true)
+                                }}
+                                className="green-text">
+                                Paid <MdPriceCheck className={'fs-22'} />
                               </button>
-                            )}
+                              {expense.phone === currentUser.phone && (
+                                <button className="send-reminder" onClick={() => sendReminder(expense)}>
+                                  Send Reminder <PiBellSimpleRinging className={'fs-18'} />
+                                </button>
+                              )}
+                            </div>
+
+                            {/* DELETE */}
+                            <PiTrashSimpleDuotone
+                              className="delete-icon"
+                              onClick={async () => {
+                                setCurrentExpense(expense)
+                                let existing = await getSecuredExpenses()
+                                existing = existing.filter((x) => x.name === expense.name)
+                                if (existing.length > 1) {
+                                  confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, () => {
+                                    setTimeout(async () => {
+                                      await deleteExpense(existing.length)
+                                    }, 400)
+                                  })
+                                } else {
+                                  setTimeout(() => {
+                                    confirmAlert('Are you sure you would like to delete this expense?', "I'm Sure", true, async () => {
+                                      await deleteExpense(existing.length)
+                                    })
+                                  }, 400)
+                                }
+                              }}
+                            />
                           </div>
                         </div>
                       </div>
                     </div>
+                    <hr />
                   </div>
                 )
               })}
           </div>
         </div>
       </div>
-      {!showNewExpenseCard && !showPaymentOptionsCard && (
+      {!showNewExpenseCard && !showPaymentOptionsCard && !showFilterCard && (
         <NavBar navbarClass={'child-info'}>
           <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />
         </NavBar>

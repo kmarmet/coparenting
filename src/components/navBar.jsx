@@ -37,8 +37,8 @@ export default function NavBar({ children, navbarClass }) {
 
   return (
     <>
-      <div id="navbar" className={`${theme} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
-        {!menuIsOpen && (
+      {!menuIsOpen && (
+        <div id="navbar" className={`${theme} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
           <div id="menu-items" className="flex">
             {/* FULL MENU  */}
             <div onClick={() => setState({ ...state, menuIsOpen: true })} className={` menu-item`}>
@@ -78,13 +78,6 @@ export default function NavBar({ children, navbarClass }) {
               <PiImagesSquareDuotone />
             </div>
 
-            {/*/!* ACTIVITY *!/*/}
-            {/*<div*/}
-            {/*  onClick={() => changeCurrentScreen(ScreenNames.activity)}*/}
-            {/*  className={`${currentScreen === ScreenNames.activity ? 'active menu-item' : 'menu-item'}`}>*/}
-            {/*  <PiSparkleDuotone />*/}
-            {/*</div>*/}
-
             {/* SETTINGS */}
             <div
               onClick={() => changeCurrentScreen(ScreenNames.settings)}
@@ -92,8 +85,8 @@ export default function NavBar({ children, navbarClass }) {
               <VscSettings />
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </>
   )
 }

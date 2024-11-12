@@ -25,6 +25,14 @@ export var capitalizeFirstWord = function(str) {
   return capitalizedFirstWord + str.slice(firstWord.length);
 };
 
+export var hasClass = function(element, className) {
+  if (element.classList.contains(className)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export var formatTitleWords = function(str) {
   return str = str.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and");
 };
@@ -58,7 +66,7 @@ export var stringHasNumbers = function(input) {
 };
 
 export var contains = function(itemToCheck, searchValue) {
-  if (itemToCheck === void 0) {
+  if (!itemToCheck) {
     return false;
   }
   return itemToCheck.indexOf(searchValue) > -1;

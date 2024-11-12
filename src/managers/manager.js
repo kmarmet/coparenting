@@ -184,7 +184,7 @@ const Manager = {
     return userObjectsToReturn.flat()
   },
   // ON PAGE LOAD
-  showPageContainer: (hideOrShow = 'show') => {
+  showPageContainer: () => {
     const interval = setInterval(() => {
       const pageContainer = document.querySelector('.page-container')
       if (pageContainer) {

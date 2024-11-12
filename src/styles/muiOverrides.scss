@@ -59,8 +59,8 @@
   .MuiDateCalendar-root {
     width: 100% !important;
     margin: 0 !important;
-    height: 390px !important;
-    max-height: 390px !important;
+    height: 420px !important;
+    max-height: 420px !important;
     
     .MuiPickersFadeTransitionGroup-root {
       max-width: 100% !important;
@@ -73,8 +73,8 @@
     }
     
     .MuiDayCalendar-weekDayLabel {
-      width: 50px !important;
-      height: 40px !important;
+      width: 60px !important;
+      height: 50px !important;
       color: $accent !important;
     }
     
@@ -84,7 +84,7 @@
     }
     
     .MuiPickersSlideTransition-root {
-      min-height: 390px !important;
+      min-height: 420px !important;
     }
     
     .MuiDateCalendar-viewTransitionContainer {
@@ -93,9 +93,9 @@
     }
     
     .MuiPickersDay-root {
-      width: 50px !important;
-      height: 40px !important;
-      margin-bottom: 20px;
+      width: 60px !important;
+      height: 50px !important;
+      margin-bottom: 12px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -104,25 +104,31 @@
     }
   }
   .MuiPickersLayout-root {
-    width: calc(100vw - 30px) !important;
+    background: $lightBg !important;
+    width: 100vw !important;
     max-width: 100vw !important;
     margin: 0 auto !important;
-    border-radius: $bigBorderRadius;
-    border: 1px solid $iconGrey;
+    border-radius: 0;
+    border-bottom: 1px solid $iconGrey;
   }
   
   .MuiDialogActions-root {
-    max-width: calc(100vw - 40px) !important;
-    width: calc(100vw - 30px);
+    max-width: 100vw !important;
+    width: 100vw;
   }
   
   .MuiPickersLayout-contentWrapper {
-    width: calc(100vw - 40px) !important;
+    width: 100vw !important;
     max-width: 100vw !important;
     margin: 0 auto !important;
   }
   .MuiDatePickerToolbar-root {
     display: none;
+  }
+  [role='combobox'] {
+    padding: 10px;
+    background: $buttonGrey;
+    border-radius: $borderRadius;
   }
   .MuiList-root {
     li {
@@ -133,12 +139,12 @@
   .MuiFormControl-root {
     &.css-1b5lkxe-MuiFormControl-root {
       .MuiOutlinedInput-root {
-        background: $buttonGrey;
-        border-radius: $borderRadius;
-        padding: 0;
+    
 
         [role='combobox'] {
           padding: 10px;
+          background: $buttonGrey;
+          border-radius: $borderRadius;
         }
       }
     }

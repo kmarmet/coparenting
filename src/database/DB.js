@@ -182,6 +182,16 @@ const DB = {
       }
     }
   },
+  deleteMultipleRows: async function (table, rows, currentUser) {
+    console.log(rows)
+    var dbRef, row, i, idToDelete, len, results
+    dbRef = ref(getDatabase())
+    for (i = 0, len = rows.length; i < len; i++) {
+      row = rows[i]
+      idToDelete = await DB.getSnapshotKey(table, row, 'id')
+      await remove(child(dbRef, `${table}/${idToDelete}/`))
+    }
+  },
   deleteByPath: (path) => {
     const dbRef = ref(getDatabase())
     remove(child(dbRef, path))
