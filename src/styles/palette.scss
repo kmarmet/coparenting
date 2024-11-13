@@ -1,7 +1,7 @@
 /*#region  Generic*/
-$green:  #50C878;
+$green:  #2ecc71;
 $red: #d24d57;
-$bgRed: #ffabc0;
+$bgRed: #f5e0e1;
 $yellow: #fbf5bf;
 $lightPurple: #af90fd;
 $purple: #6447f5 ;
@@ -17,7 +17,7 @@ $mauveDarker: #9E96BC;
 $mauveDarkerStill: #9784AC;
 $mauveDarkest: #8D5D86;
 $black : #232323;
-$lightBlack: #444444;
+$lightBlack: #1c1c1c;
 $labelColor: rgba(2, 2, 2, 0.62);
 $bgGreen: #daffc7;
 $bgBlueGreen : #d6eeff;
@@ -26,9 +26,17 @@ $borderColor: #e8ebec;
 $mainBlue: #557fff;
 $buttonGrey: #efefef;
 $iconGrey: #e3e8ee;
+
+// Non Standard
+$coparentPurple:  #b2a3fa;
+$accentBlue: #99b2ff;
+$lightGreen: #c6ecc8;
 /*#endregion  Generic*/
 
 /*#region  Dark Theme*/
+
+// awesome black
+//12130F
 $darkBlueDarkest: #121735;
 //$darkBg: #1d242f;
 $darkBg: #08051a;
@@ -56,5 +64,5 @@ $lightBlackLight: #1c1c1c;
 $lightBlue: #d4e0fc;
 $lightSmallShadow: '';
 //$lightGrey: #e4e4e4;
-$lightDarkGrey: #8595a8;
+$lightDarkGrey: rgba(0, 0, 0, 0.44);
 /*#endregion  LIGHT THEME*/

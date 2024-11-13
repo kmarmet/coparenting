@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { DebounceInput } from 'react-debounce-input'
-import { Accordion } from 'rsuite'
 import globalState from '../../../context'
 import Manager from '@manager'
 import {
@@ -25,6 +24,10 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
+import Accordion from '@mui/material/Accordion'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import { FaChevronDown } from 'react-icons/fa6'
 
 function Medical({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -63,25 +66,12 @@ function Medical({ activeChild, setActiveChild }) {
   return (
     <div className="info-section section medical">
       <Accordion>
-        <p
-          className={!Manager.isValid(activeChild.medical) ? 'disabled header medical' : 'header medical'}
-          onClick={(e) => {
-            const parent = document.querySelector('.info-section.medical')
-            setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
-
-            if (parent.classList.contains('active')) {
-              parent.classList.remove('active')
-            } else {
-              if (activeChild.medical !== undefined) {
-                parent.classList.add('active')
-              }
-            }
-            setExpandAccordion(!expandAccordion)
-          }}>
+        <AccordionSummary
+          expandIcon={<FaChevronDown />}
+          className={!Manager.isValid(activeChild.medical) ? 'disabled header medical' : 'header medical'}>
           <span className="material-icons-round">medical_information</span> Medical {!Manager.isValid(activeChild.medical) ? '- No Info' : ''}
-          <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
-        </p>
-        <Accordion.Panel expanded={expandAccordion === true ? true : false}>
+        </AccordionSummary>
+        <AccordionDetails expanded={expandAccordion === true ? true : false}>
           {Manager.isValid(medicalValues) &&
             medicalValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
@@ -108,7 +98,7 @@ function Medical({ activeChild, setActiveChild }) {
                 </div>
               )
             })}
-        </Accordion.Panel>
+        </AccordionDetails>
       </Accordion>
     </div>
   )

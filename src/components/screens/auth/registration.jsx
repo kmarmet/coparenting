@@ -397,6 +397,7 @@ export default function Registration() {
       </BottomCard>
       {/* PAGE CONTAINER */}
       <div id="registration-container" className="page-container form">
+        <p className="screen-title">Sign Up</p>
         {accountAlreadyExists && (
           <button className="button default dead-center h-40 w-80" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
             Login

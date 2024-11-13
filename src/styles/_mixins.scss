@@ -81,7 +81,7 @@
 
   &.calendar {
     padding: 0;
-    
+
     .with-padding {
       padding: 0 15px;
     }
@@ -447,12 +447,13 @@
 /*#region  BUTTONS*/
 @mixin defaultButton() {
   border-radius: $borderRadius;
-  padding: 8px 20px;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
   color: white;
+  line-height: 1;
 
   span {
     margin-left: 8px;
@@ -470,10 +471,13 @@
   }
 
   &.default {
-    color: black;
+    color: $mainBlue;
+    border: 1px solid $mainBlue;
+    background: transparent;
     &.green {
       background-color: $green;
       color: white;
+      border: 1px solid $green;
       @include buttonPress(#02a67c);
     }
 
@@ -910,6 +914,10 @@
 @mixin centerHoriz() {
   left: 50%;
   transform: translateX(-50%);
+}
+@mixin centerVert() {
+  top: 50%;
+  transform: translateY(-50%);
 }
 @mixin deadCenter() {
   position: absolute;
@@ -2386,20 +2394,20 @@
       line-height: 1;
       font-size: 18px;
       padding-left: 3px;
-      
+
       &.sort-by {
         padding: 0;
       }
     }
-    
+
     .sort-by {
       .list-item {
-      margin-left: 10px;
+        margin-left: 10px;
         margin-bottom: 10px;
         font-weight: $fwBold;
       }
     }
-    
+
     .pills {
       display: flex;
       align-items: center;
@@ -2641,99 +2649,118 @@
 
 /*#region  MENU*/
 @mixin slideOutMenu {
-  display: block;
-  border-right: 1px solid $lightBorder;
-  transition: all 0.6s ease-in-out;
-  width: 0;
+  background: transparent;
   position: relative;
-  overflow: auto;
-  z-index: -1;
-  padding: env(safe-area-inset-top) 0 0 env(safe-area-inset-left);
-  height: 100%;
-
-  &.active {
-    width: 75vw;
-    z-index: $maxZIndex;
-    padding: 20px 15px 0 15px;
-  }
-
-  .theme-text {
-    color: $mainBlue;
-    display: flex;
-    align-items: center;
-
-    svg {
-      padding-right: 8px;
-      font-size: 40px;
-    }
-  }
-
-  #menu-close-icon {
-    color: $lightAccent;
-    float: right;
+  #blur {
+    height: 100vh;
+    width: 25vw;
     position: fixed;
-    bottom: 10px;
-    right: 10px;
-  }
-
-  #top-bar {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    border-bottom: 1px solid $lightBorder;
-    margin-bottom: 20px;
-
-    .logo {
-      border-radius: 100%;
-      img {
-        display: flex;
-        justify-content: center;
-        width: 70%;
-        text-align: center;
-        height: auto;
-        margin: 0 auto 20px auto;
-        border-radius: 100%;
-      }
-    }
-  }
-
-  .slide-out-menu-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-    opacity: 0;
-    width: 100%;
-    transform: scale(0);
+    right: 0;
+    backdrop-filter: blur(3px);
     transition: all 0.6s ease-in-out;
-
-    &.visible {
-      opacity: 1;
-      margin-top: 0;
-      transition: all 0.6s ease-in-out;
-      transform: scale(1);
-      background-color: transparent;
-    }
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    opacity: 0;
+    left: 100vw;
 
     &.active {
+      left: 75vw;
+      z-index: 1000;
       opacity: 1;
-      background-color: $mainBlue;
-      padding: 6px;
-      border-radius: 8px;
-      position: relative;
-      left: -5px;
-      p,
-      svg {
-        font-weight: bold;
-        color: white;
+    }
+  }
+  #slide-out-menu {
+    display: block;
+    border-right: 1px solid $lightBorder;
+    transition: all 0.6s ease-in-out;
+    width: 0;
+    position: relative;
+    overflow: auto;
+    z-index: -1;
+    padding: env(safe-area-inset-top) 0 0 env(safe-area-inset-left);
+    height: 100%;
+
+    &.active {
+      width: 75vw;
+      z-index: $maxZIndex;
+      padding: 20px 15px 0 15px;
+    }
+
+
+    #menu-close-icon {
+      color: $mainBlue;
+      position: fixed;
+      @include centerVert;
+      transition: all 0.6s ease-in-out;
+      right: -100vw;
+      opacity: 0;
+      &.active {
+        right: 9vw;
+        opacity: 1;
+        transition: all 0.6s ease-in-out;
       }
     }
-    svg {
-      font-size: 28px;
-      margin-right: 10px;
-      color: $mainBlue;
+
+    #top-bar {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      border-bottom: 1px solid $lightBorder;
+      margin-bottom: 20px;
+
+      .logo {
+        border-radius: 100%;
+        img {
+          display: flex;
+          justify-content: center;
+          width: 70%;
+          text-align: center;
+          height: auto;
+          margin: 0 auto 20px auto;
+          border-radius: 100%;
+        }
+      }
     }
-    p {
-      color: $mainBlue;
+
+    .slide-out-menu-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      opacity: 0;
+      width: 100%;
+      transform: scale(0);
+      transition: all 0.6s ease-in-out;
+
+      &.visible {
+        opacity: 1;
+        margin-top: 0;
+        transition: all 0.6s ease-in-out;
+        transform: scale(1);
+        background-color: transparent;
+      }
+
+      &.active {
+        opacity: 1;
+        background-color: $mainBlue;
+        padding: 6px;
+        border-radius: 8px;
+        position: relative;
+        left: -5px;
+        p,
+        svg {
+          font-weight: bold;
+          color: white;
+        }
+      }
+      svg {
+        font-size: 28px;
+        margin-right: 10px;
+        color: $mainBlue;
+      }
+      p {
+        color: $mainBlue;
+      }
     }
   }
 }

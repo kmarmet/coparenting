@@ -9,6 +9,10 @@ div {
 		background-color: $mainBlue !important;
         width: 140px !important;
       }
+      &:where(.swal2-styled):where(.swal2-deny) {
+        background-color: $red !important;
+        width: 140px !important;
+      }
     }
   }
 }

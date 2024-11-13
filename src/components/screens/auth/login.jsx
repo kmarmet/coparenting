@@ -4,10 +4,17 @@ import globalState from '../../../context.js'
 import DB from '@db'
 import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup.jsx'
-import DB_UserScoped from '@userScoped'
 import InstallAppPopup from 'components/installAppPopup.jsx'
 import { child, getDatabase, ref, set } from 'firebase/database'
-import { getAuth, sendEmailVerification, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import {
+  browserLocalPersistence,
+  getAuth,
+  onAuthStateChanged,
+  sendEmailVerification,
+  setPersistence,
+  signInWithEmailAndPassword,
+  signOut,
+} from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import { PiEyeClosedDuotone, PiEyeDuotone } from 'react-icons/pi'
@@ -39,56 +46,20 @@ import {
 export default function Login() {
   const { state, setState } = useContext(globalState)
   const { theme } = state
-  const [email, setEmail] = useState(null)
-  const [password, setPassword] = useState(null)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [viewPassword, setViewPassword] = useState(false)
+  const [isPersistent, setIsPersistent] = useState(false)
 
+  // Init Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
-  const autoLogin = async () => {
-    const foundUser = await tryGetCurrentUser()
-    const rememberMeKey = localStorage.getItem('rememberKey')
-
-    if (foundUser) {
-      subscribeUser(foundUser)
-
-      // SIGN USER IN BASED ON rememberMe KEY
-      if (Manager.isValid(rememberMeKey)) {
-        setState({
-          ...state,
-          userIsLoggedIn: true,
-          currentScreen: ScreenNames.calendar,
-          currentUser: foundUser,
-          firebaseUser: auth.currentUser,
-          isLoading: false,
-          theme: foundUser?.settings?.theme,
-        })
-      }
-    } else {
-      setState({ ...state, isLoading: false })
-    }
+  const tryGetCurrentUser = async (firebaseUser) => {
+    const users = await DB.getTable(DB.tables.users)
+    const relevantUser = users.filter((x) => x.email === firebaseUser.email)[0]
+    return relevantUser
   }
-
-  const tryGetCurrentUser = async () =>
-    new Promise(async (resolve) => {
-      await DB.getTable(DB.tables.users)
-        .then(async (users) => {
-          users = Manager.convertToArray(users)
-          const rememberMeKey = localStorage.getItem('rememberKey')
-          let foundUser
-          foundUser = users.filter((user) => user.id === rememberMeKey)[0]
-          if (foundUser) {
-            resolve(foundUser || null)
-          } else {
-            foundUser = users.filter((user) => user.email === email)[0]
-            resolve(foundUser || null)
-          }
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    })
 
   const subscribeUser = (user) => {
     // eslint-disable-next-line no-undef
@@ -124,34 +95,12 @@ export default function Login() {
     }
   }
 
-  const loginActions = async (foundUser) => {
-    if (foundUser) {
-      // console.log(user)
-      const rememberMeKey = localStorage.getItem('rememberKey')
-
-      if (rememberMeKey) {
-        localStorage.setItem('rememberKey', foundUser.id)
-        DB_UserScoped.updateUserRecord(foundUser.phone, 'rememberMe', true)
-      } else {
-        localStorage.setItem('rememberKey', foundUser.id)
-      }
-      setState({
-        ...state,
-        userIsLoggedIn: true,
-        isLoading: false,
-        currentScreen: ScreenNames.calendar,
-        currentUser: foundUser,
-      })
-    } else {
-      console.log('No Firebase User Found')
-      setState({ ...state, isLoading: false })
-    }
-  }
-
   const signIn = async () => {
-    const foundUser = await tryGetCurrentUser()
+    console.log(isPersistent)
+    // Validation
     if (!validator.isEmail(email)) {
       throwError('Email address is not valid')
+      setState({ ...state, isLoading: false })
       return false
     }
 
@@ -160,10 +109,66 @@ export default function Login() {
       setState({ ...state, isLoading: false })
       return false
     }
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user
 
+    // Is Persistent
+    if (isPersistent) {
+      setPersistence(auth, browserLocalPersistence)
+        .then(async () => {
+          return signInWithEmailAndPassword(auth, email, password)
+            .then(async (userCredential) => {
+              console.log(auth)
+              const user = userCredential.user
+              const _currentUser = await tryGetCurrentUser(user)
+              // USER NEEDS TO VERIFY EMAIL
+              if (!user.emailVerified) {
+                oneButtonAlert(
+                  'Email Address Verification Needed',
+                  `For security purposes, we need to verify ${user.email}. Please click the link sent to your email. Once your email is verified, return here and tap/click 'Okay'`,
+                  'info',
+                  () => {}
+                )
+                sendEmailVerification(user)
+                setState({
+                  ...state,
+                  userIsLoggedIn: true,
+                  isLoading: false,
+                  currentScreen: ScreenNames.calendar,
+                  currentUser: _currentUser,
+                })
+              } else {
+                setState({
+                  ...state,
+                  userIsLoggedIn: true,
+                  isLoading: false,
+                  currentScreen: ScreenNames.calendar,
+                  currentUser: _currentUser,
+                })
+              }
+            })
+            .catch((error) => {
+              setState({ ...state, isLoading: false })
+              console.error('Sign in error:', error.message)
+              throwError('Incorrect phone and/or password')
+            })
+        })
+        .catch((error) => {
+          setState({ ...state, isLoading: false })
+          console.error('Sign in error:', error.message)
+          throwError('Incorrect phone and/or password')
+        })
+    }
+
+    // Not Persistent
+    else {
+      await firebaseSignIn()
+    }
+  }
+
+  const firebaseSignIn = async () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        const user = userCredential.user
+        const _currentUser = await tryGetCurrentUser(user)
         // USER NEEDS TO VERIFY EMAIL
         if (!user.emailVerified) {
           oneButtonAlert(
@@ -173,19 +178,21 @@ export default function Login() {
             () => {}
           )
           sendEmailVerification(user)
-          if (foundUser) {
-            loginActions(foundUser)
-          } else {
-            console.log('No Firebase User Found')
-            setState({ ...state, isLoading: false })
-          }
+          setState({
+            ...state,
+            userIsLoggedIn: true,
+            isLoading: false,
+            currentScreen: ScreenNames.calendar,
+            currentUser: _currentUser,
+          })
         } else {
-          if (foundUser) {
-            loginActions(foundUser)
-          } else {
-            console.log('No Firebase User Found')
-            setState({ ...state, isLoading: false })
-          }
+          setState({
+            ...state,
+            userIsLoggedIn: true,
+            isLoading: false,
+            currentScreen: ScreenNames.calendar,
+            currentUser: _currentUser,
+          })
         }
       })
       .catch((error) => {
@@ -194,19 +201,20 @@ export default function Login() {
         throwError('Incorrect phone and/or password')
       })
   }
-  const toggleRememberMe = (e) => {
+
+  const togglePersistence = (e) => {
     const clickedEl = e.currentTarget
     const checkbox = clickedEl.querySelector('.box')
     if (checkbox.classList.contains('active')) {
       checkbox.classList.remove('active')
+      setIsPersistent(false)
     } else {
       checkbox.classList.add('active')
+      setIsPersistent(true)
     }
   }
 
   const logout = () => {
-    localStorage.removeItem('rememberKey')
-
     signOut(auth)
       .then(() => {
         setState({
@@ -224,10 +232,24 @@ export default function Login() {
   }
 
   useLayoutEffect(() => {
-    // logout()
-    autoLogin().then((r) => r)
-    Manager.showPageContainer('show')
+    Manager.showPageContainer()
     document.querySelector('.App').classList.remove('pushed')
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const _currentUser = await tryGetCurrentUser(user)
+        // User is signed in.
+        setState({
+          ...state,
+          currentScreen: ScreenNames.calendar,
+          currentUser: _currentUser,
+          userIsLoggedIn: true,
+        })
+        console.log('Signed In...redirecting to calendar')
+      } else {
+        // No user is signed in.
+        console.log('Signed out or no user exists')
+      }
+    })
   }, [])
 
   return (
@@ -281,7 +303,7 @@ export default function Login() {
             </div>
 
             {/* REMEMBER ME */}
-            <CheckboxGroup elClass={'light'} boxWidth={50} onCheck={toggleRememberMe} checkboxLabels={['Remember Me']} skipNameFormatting={true} />
+            <CheckboxGroup elClass={'light'} boxWidth={50} onCheck={togglePersistence} checkboxLabels={['Remember Me']} skipNameFormatting={true} />
             <div className="flex w-100 mb-15 gap">
               <button className="button default green w-50" onClick={signIn}>
                 Login <span className="material-icons-round">lock_open</span>

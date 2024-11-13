@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { DebounceInput } from 'react-debounce-input'
-import Autocomplete from 'react-google-autocomplete'
-import { Accordion } from 'rsuite'
+// import { Accordion } from 'rsuite'
 import globalState from '../../../context'
 import Manager from '@manager'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import { DebounceInput } from 'react-debounce-input'
 import {
   camelCaseToString,
   contains,
@@ -26,6 +27,9 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
+import Accordion from '@mui/material/Accordion'
+import Autocomplete from 'react-google-autocomplete'
+import { FaChevronDown } from 'react-icons/fa6'
 
 function General({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -65,24 +69,13 @@ function General({ activeChild, setActiveChild }) {
   return (
     <div className="info-section section general form">
       <Accordion>
-        {/* EXPAND ACCORDION */}
-        <p
-          className={!Manager.isValid(activeChild.general) ? 'disabled header general' : 'header general'}
-          onClick={(e) => {
-            const parent = document.querySelector('.info-section.general')
-            setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
-            if (parent.classList.contains('active')) {
-              parent.classList.remove('active')
-            } else {
-              parent.classList.add('active')
-            }
-            setExpandAccordion(!expandAccordion)
-          }}>
+        <AccordionSummary
+          expandIcon={<FaChevronDown />}
+          className={!Manager.isValid(activeChild.general) ? 'disabled header general' : 'header general'}>
           <span className="material-icons-round">perm_contact_calendar</span>
-          General <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
-        </p>
-        <Accordion.Panel expanded={expandAccordion}>
-          {/* LOOP INFO */}
+          General
+        </AccordionSummary>
+        <AccordionDetails>
           {Manager.isValid(generalValues, true) &&
             generalValues.map((prop, index) => {
               const infoLabel = formatInfoLabel(prop[0])
@@ -126,7 +119,7 @@ function General({ activeChild, setActiveChild }) {
                 </div>
               )
             })}
-        </Accordion.Panel>
+        </AccordionDetails>
       </Accordion>
     </div>
   )

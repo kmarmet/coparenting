@@ -23,7 +23,6 @@ import Visitation from '@screens/visitation.jsx'
 import Settings from '@screens/settings/settings.jsx'
 import SwapRequests from '@screens/swapRequests.jsx'
 import TransferRequests from '@screens/transferRequests.jsx'
-import AppManager from '@managers/appManager.js'
 import ChatRecovery from '@screens/account/chatRecovery'
 import EditCalEvent from '@components/forms/editCalEvent.jsx'
 import NewCalendarEvent from '@components/forms/newCalendarEvent.jsx'
@@ -151,8 +150,8 @@ export default function App() {
     // Error Boundary Test
     // throw new Error('Something went wrong')
 
-    AppManager.deleteExpiredCalendarEvents().then((r) => r)
-    AppManager.deleteExpiredMemories().then((r) => r)
+    // AppManager.deleteExpiredCalendarEvents().then((r) => r)
+    // AppManager.deleteExpiredMemories().then((r) => r)
     document.body.appendChild(myCanvas)
 
     onAuthStateChanged(auth, (user) => {
@@ -169,18 +168,11 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    const navbar = document.getElementById('navbar')
     if (menuIsOpen) {
       document.querySelector('#app-container').classList.add('pushed')
-      if (navbar) {
-        navbar.classList.add('hide')
-      }
       addMenuItemAnimation()
     } else {
       document.querySelector('#app-container').classList.remove('pushed')
-      if (navbar) {
-        navbar.classList.remove('hide')
-      }
       deleteMenuAnimation()
     }
   }, [menuIsOpen])

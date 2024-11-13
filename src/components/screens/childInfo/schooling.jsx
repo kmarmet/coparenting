@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { DebounceInput } from 'react-debounce-input'
-import { Accordion } from 'rsuite'
 import globalState from '../../../context'
 import Manager from '@manager'
 import {
@@ -25,6 +24,10 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
+import { FaChevronDown } from 'react-icons/fa6'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import Accordion from '@mui/material/Accordion'
 
 function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -63,24 +66,13 @@ function Schooling({ activeChild, setActiveChild }) {
   return (
     <div className="info-section section schooling">
       <Accordion>
-        <p
-          className={!Manager.isValid(activeChild.schooling) ? 'disabled header schooling' : 'header schooling'}
-          onClick={(e) => {
-            const parent = document.querySelector('.info-section.schooling')
-            setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
-            if (parent.classList.contains('active')) {
-              parent.classList.remove('active')
-            } else {
-              if (activeChild.schooling !== undefined) {
-                parent.classList.add('active')
-              }
-            }
-            setExpandAccordion(!expandAccordion)
-          }}>
-          <span className="material-icons-round">school</span> Schooling {!Manager.isValid(activeChild.schooling) ? '- No Info' : ''}
-          <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
-        </p>
-        <Accordion.Panel expanded={expandAccordion}>
+        <AccordionSummary
+          expandIcon={<FaChevronDown />}
+          className={!Manager.isValid(activeChild.schooling) ? 'disabled header schooling' : 'header schooling'}>
+          <span className="material-icons-round">school</span>
+          Schooling
+        </AccordionSummary>
+        <AccordionDetails expanded={expandAccordion}>
           {Manager.isValid(schoolingValues, true) &&
             schoolingValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
@@ -107,7 +99,7 @@ function Schooling({ activeChild, setActiveChild }) {
                 </div>
               )
             })}
-        </Accordion.Panel>
+        </AccordionDetails>
       </Accordion>
     </div>
   )

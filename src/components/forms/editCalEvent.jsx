@@ -331,14 +331,16 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     if (Manager.isValid(checkboxClasses, true)) {
       for (let checkboxClass of checkboxClasses) {
         const toggle = document.querySelector(`${checkboxClass} .react-toggle`)
-        toggle.classList.add('react-toggle--checked')
-        toggle.querySelector('input').value = 'on'
+        if (toggle) {
+          toggle.classList.add('react-toggle--checked')
+          toggle.querySelector('input').value = 'on'
+        }
       }
     }
 
     // Repeating
     if (Manager.isValid(event?.repeatInterval) && event?.repeatInterval.length > 0) {
-      Manager.setDefaultCheckboxes('repeating', event, 'repeatInterval', false)
+      Manager.setDefaultCheckboxes('repeating', event, 'repeatInterval', false).then((r) => r)
     }
   }
 

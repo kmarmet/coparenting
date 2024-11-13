@@ -288,6 +288,7 @@
 
         .info-section {
           transition: max-height 0.3s ease-in-out;
+          max-width: calc(100vw - 30px);
 
           &.active {
             .header {

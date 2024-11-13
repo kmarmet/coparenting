@@ -7,6 +7,7 @@
       display: block;
       transition: height 0.3s linear;
       margin-bottom: 10px;
+      display: none;
       #close-search-button {
         color: $red;
         margin-top: 8px;
@@ -44,7 +45,7 @@
         margin: 0;
       }
 
-      #filter-button {
+      #holidays-button {
         border-radius: $borderRadius;
         display: flex;
         align-items: center;
@@ -74,6 +75,7 @@
         display: flex;
         align-items: center;
         color: $lightDarkGrey;
+        opacity: .7;
       }
 
       #cal-info-container {

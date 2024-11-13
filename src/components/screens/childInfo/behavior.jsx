@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { DebounceInput } from 'react-debounce-input'
-import { Accordion } from 'rsuite'
 import globalState from '../../../context'
 import Manager from '@manager'
 import {
@@ -25,6 +24,10 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
+import Accordion from '@mui/material/Accordion'
+import { FaChevronDown } from 'react-icons/fa6'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import AccordionDetails from '@mui/material/AccordionDetails'
 
 function Behavior({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -60,24 +63,13 @@ function Behavior({ activeChild, setActiveChild }) {
   return (
     <div className="info-section section behavior">
       <Accordion>
-        <p
-          className={!Manager.isValid(activeChild.behavior) ? 'disabled header behavior' : 'header behavior'}
-          onClick={(e) => {
-            const parent = document.querySelector('.info-section.behavior')
-            setArrowDirection(arrowDirection === 'up' ? 'down' : 'up')
-            if (parent.classList.contains('active')) {
-              parent.classList.remove('active')
-            } else {
-              if (activeChild.behavior !== undefined) {
-                parent.classList.add('active')
-              }
-            }
-            setExpandAccordion(!expandAccordion)
-          }}>
+        <AccordionSummary
+          expandIcon={<FaChevronDown />}
+          className={!Manager.isValid(activeChild.behavior) ? 'disabled header behavior' : 'header behavior'}>
           <span className="material-icons-round">psychology</span> Behavior {!Manager.isValid(activeChild.behavior) ? '- No Info' : ''}
-          <span className="material-icons-round fs-30">{arrowDirection === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}</span>
-        </p>
-        <Accordion.Panel expanded={expandAccordion === true ? true : false}>
+          Behavior
+        </AccordionSummary>
+        <AccordionDetails expanded={expandAccordion === true ? true : false}>
           {behaviorValues &&
             behaviorValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
@@ -105,7 +97,7 @@ function Behavior({ activeChild, setActiveChild }) {
                 </div>
               )
             })}
-        </Accordion.Panel>
+        </AccordionDetails>
       </Accordion>
     </div>
   )

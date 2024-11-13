@@ -4,7 +4,7 @@ import ScreenNames from '@screenNames'
 import Manager from '@manager'
 import AppManager from '@managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
-
+import { FaChevronLeft } from 'react-icons/fa6'
 import {
   contains,
   displayAlert,
@@ -25,7 +25,6 @@ import {
 } from '../globalFunctions'
 
 import DB_UserScoped from '@userScoped'
-import ScreensToHideCenterNavbarButton from '../constants/screensToHideCenterNavbarButton'
 
 // ICONS
 import {
@@ -47,7 +46,6 @@ import { BsPeople } from 'react-icons/bs'
 import { MdOutlineManageAccounts } from 'react-icons/md'
 import { FiSettings } from 'react-icons/fi'
 import { BiFace } from 'react-icons/bi'
-import { FaSquareCaretLeft } from 'react-icons/fa6'
 
 export default function SlideOutMenu() {
   const { state, setState } = useContext(globalState)
@@ -56,18 +54,7 @@ export default function SlideOutMenu() {
   const auth = getAuth()
 
   const changeCurrentScreen = (screen) => {
-    if (screen === ScreenNames.calendar) {
-      const cal = document.querySelector('.flatpickr-calendar')
-      if (cal) {
-        cal.classList.remove('hide')
-      }
-    }
-
-    if (ScreensToHideCenterNavbarButton.includes(screen)) {
-      setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), menuIsOpen: false, showCenterNavbarButton: false })
-    } else {
-      setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), menuIsOpen: false, showCenterNavbarButton: true })
-    }
+    setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), menuIsOpen: false })
     Manager.showPageContainer('show')
   }
 
@@ -78,8 +65,6 @@ export default function SlideOutMenu() {
   }
 
   const logout = () => {
-    localStorage.removeItem('rememberKey')
-
     signOut(auth)
       .then(() => {
         setState({
@@ -97,7 +82,7 @@ export default function SlideOutMenu() {
   }
 
   return (
-    <>
+    <div id="slide-out-menu-wrapper">
       <div id="slide-out-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
         <>
           <div className="flex" id="top-bar">
@@ -225,27 +210,29 @@ export default function SlideOutMenu() {
         </div>
 
         {/* THEME TOGGLE */}
-        {menuIsOpen && (
-          <div id="bottom-bar" className={theme}>
-            <div className={`slide-out-menu-item`} onClick={logout}>
-              <PiSignOutDuotone />
-              <p>Logout</p>
-            </div>
-            {theme === 'dark' && (
-              <p className="theme-text slide-out-menu-item" onClick={() => changeTheme('light')}>
-                <PiSunDuotone />
-                Switch to Light Mode
-              </p>
-            )}
-            {theme === 'light' && (
-              <p className="theme-text slide-out-menu-item" onClick={() => changeTheme('dark')}>
-                <PiMoonStarsDuotone /> Switch to Dark Mode
-              </p>
-            )}
+        <div className={`slide-out-menu-item visible`} onClick={logout}>
+          <PiSignOutDuotone />
+          <p>Logout</p>
+        </div>
+        {theme === 'dark' && (
+          <div className="slide-out-menu-item visible">
+            <PiSunDuotone />
+            <p onClick={() => changeTheme('light')}>Switch to Light Mode</p>
           </div>
         )}
-        {menuIsOpen && <FaSquareCaretLeft id={'menu-close-icon'} onClick={() => setState({ ...state, menuIsOpen: false })} />}
+        {theme === 'light' && (
+          <div className="slide-out-menu-item visible">
+            <PiMoonStarsDuotone />
+            <p onClick={() => changeTheme('dark')}> Switch to Dark Mode</p>
+          </div>
+        )}
+        <FaChevronLeft
+          className={`${theme} ${menuIsOpen ? 'active' : ''}`}
+          id={'menu-close-icon'}
+          onClick={() => setState({ ...state, menuIsOpen: false })}
+        />
       </div>
-    </>
+      <div id="blur" className={`${theme} ${menuIsOpen ? 'active' : ''}`} onClick={() => setState({ ...state, menuIsOpen: false })}></div>
+    </div>
   )
 }

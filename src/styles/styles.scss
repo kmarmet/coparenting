@@ -133,9 +133,10 @@
 .react-toggle--focus,
 .react-toggle-thumb {
   box-shadow: none !important;
+  background-color: white !important;
 
   &.react-toggle-thumb {
-    border: 1px solid $lightDarkGrey;
+    border: 0;
   }
   &.react-toggle--checked {
     .react-toggle-thumb {
@@ -305,7 +306,7 @@ aside {
       @include navBar;
     }
 
-    #slide-out-menu {
+    #slide-out-menu-wrapper {
       @include slideOutMenu;
     }
 

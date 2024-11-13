@@ -42,7 +42,6 @@ import NewCalendarEvent from '../forms/newCalendarEvent'
 import EditCalEvent from '../forms/editCalEvent'
 import { TbLocation } from 'react-icons/tb'
 import { PiBellSimpleRinging, PiCalendarPlusDuotone, PiGlobeDuotone } from 'react-icons/pi'
-import { GiPartyPopper } from 'react-icons/gi'
 import NavBar from '../navBar'
 
 export default function EventCalendar() {
@@ -168,12 +167,15 @@ export default function EventCalendar() {
     // Loop through all calendar UI days
     document.querySelectorAll('.MuiPickersDay-root').forEach((day) => {
       const dayAsMs = day.getAttribute('data-timestamp')
-      const msAsDay = DateManager.msToDate(dayAsMs)
-      // console.log(msAsDay, moment(msAsDay).month(selectedMonth).format('MM/DD/yyyy'))
-      let formattedDay = msAsDay
+      let formattedDay = DateManager.msToDate(dayAsMs)
       const dayHasEvent = events.filter((x) => x?.startDate === formattedDay || x?.endDate === formattedDay).length > 0
       const paycheckStrings = ['payday', 'paycheck', 'pay', 'salary', 'paid']
 
+      // Apply weekend day class
+      const dayOfWeek = moment(formattedDay).isoWeekday()
+      if (dayOfWeek === 6 || dayOfWeek === 7) {
+        day.classList.add('weekend-day')
+      }
       if (dayHasEvent) {
         const dotWrapper = document.createElement('span')
         dotWrapper.classList.add('dot-wrapper')
@@ -274,7 +276,9 @@ export default function EventCalendar() {
         // Add margin top spacer
         const invisibleDots = document.createElement('span')
         invisibleDots.classList.add('invisible-dots')
-        day.append(invisibleDots)
+        if (day.innerHTML.indexOf('invisible') === -1) {
+          day.append(invisibleDots)
+        }
       }
     })
   }
@@ -363,6 +367,20 @@ export default function EventCalendar() {
 
   // ON PAGE LOAD
   useEffect(() => {
+    const staticCalendar = document.querySelector('.MuiDialogActions-root')
+    const holidaysButton = document.getElementById('holidays-button')
+    const searchButton = document.getElementById('search-button')
+    if (staticCalendar && holidaysButton && searchButton) {
+      staticCalendar.prepend(holidaysButton)
+      staticCalendar.prepend(searchButton)
+
+      holidaysButton.addEventListener('click', () => {
+        setShowHolidaysCard(!showHolidaysCard)
+      })
+      searchButton.addEventListener('click', () => {
+        setShowSearchCard(true)
+      })
+    }
     onTableChange().then((r) => r)
     getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM')).then((r) => r)
     Manager.showPageContainer('show')
@@ -471,6 +489,7 @@ export default function EventCalendar() {
 
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme} `}>
+        {/* STATIC CALENDAR */}
         <div id="static-calendar">
           <StaticDatePicker
             defaultValue={moment()}
@@ -489,27 +508,28 @@ export default function EventCalendar() {
           />
         </div>
 
+        {/* LEGEND */}
+        <div id="legend" className="flex align-center">
+          <span className="text standard">Event</span>
+          <span className="divider">|</span>
+          <span className="text current-user">Your Visitation</span>
+          <span className="divider">|</span>
+          <span className="text coparent">Co-Parent's Visitation</span>
+        </div>
+        {/* CONTENT WITH PADDING */}
         <div className="with-padding">
           {/* BELOW CALENDAR */}
           {!showHolidays && !showSearchCard && (
-            <div id="below-calendar" className={`${theme} mt-10`}>
-              <div className="flex">
-                <p onClick={() => setShowHolidaysCard(!showHolidaysCard)} id="filter-button">
-                  Holidays
-                  <GiPartyPopper id={'filter-icon'} />
-                </p>
+            <div id="below-calendar" className={`${theme} mt-10 flex`}>
+              {/* HOLIDAY BUTTON */}
+              <p id="holidays-button">
+                Holidays <span className="divider">|</span>
+              </p>
 
-                {/* SEARCH ICON */}
-                <LuCalendarSearch
-                  className="search-icon"
-                  onClick={() => {
-                    setShowSearchCard(true)
-                    setTimeout(() => {
-                      document.querySelector('.search-input').focus()
-                    }, 100)
-                  }}
-                />
-              </div>
+              {/* SEARCH BUTTON */}
+              <p id="search-button">
+                Search <span className="divider">|</span>
+              </p>
             </div>
           )}
           {/* MAP/LOOP EVENTS */}
@@ -560,16 +580,14 @@ export default function EventCalendar() {
                               (!Manager.isValid(event?.endDate) || event?.endDate.indexOf('Invalid') > -1) &&
                               event?.endDate !== event?.startDate && <span className="end-date">&nbsp;- ALL DAY</span>}
                             {/* TIMES */}
-                            <span id="times">
-                              {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
-                                <span className="from-time">
-                                  <span className="at-symbol">&nbsp;@</span> {event?.startTime}
-                                </span>
-                              )}
-                              {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
-                                <span className="to-time"> - {event?.endTime}</span>
-                              )}
-                            </span>
+                            {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
+                              <span className="from-time">
+                                <span className="at-symbol">&nbsp;@</span> {event?.startTime}
+                              </span>
+                            )}
+                            {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
+                              <span className="to-time">&nbsp;-&nbsp;{event?.endTime}</span>
+                            )}
                             {/* DIRECTIONS LINK */}
                             {event?.location && event?.location.length > 0 && (
                               <div className="flex" id="nav-website">

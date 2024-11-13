@@ -1,11 +1,39 @@
 @import '../colors';
 @import '../palette';
-@import "../variables";
+@import '../variables';
 
 #external-overrides {
+  #legend {
+    background-color: $buttonGrey;
+    gap: 8px;
+    padding: 10px 15px ;
+    justify-content: space-between;
+    
+    .text {
+      font-size: 14px;
+      opacity: 1;
+      
+      &.standard {
+        color: $green;
+      }
+      
+      &.coparent {
+        color: #8068fa;
+      }
+      
+      &.current-user {
+        color: #547efd;
+      }
+    }
+    .divider {
+      opacity: 0.5;
+    }
+  }
   #calendar-container {
+    
     .events {
       padding-bottom: 200px;
+      margin-top: 10px;
       hr {
         width: 80%;
       }
@@ -15,19 +43,23 @@
         margin-right: 8px;
       }
       .event-row {
-        border-radius: 15px;
         transition: all 0.3s ease-in;
         flex-wrap: wrap;
         border: 1px solid $borderColor;
         opacity: 0;
         margin: 0 auto 10px auto;
         padding: 20px 20px 15px 20px;
+        border-top: 1px solid #e5e5e5;
+        border-right: 1px solid #e5e5e5;
+        border-bottom: 1px solid #e5e5e5;
+        border-radius: $bigBorderRadius;
+        background: white;
 
         &.active {
           transition: all 0.3s ease-in;
           opacity: 1;
         }
-        
+
         .no-edit-access-icon {
           position: relative;
           bottom: 0;
@@ -42,30 +74,33 @@
         }
 
         .divider {
-          opacity: 0.4;
+          opacity: 0.5;
           padding: 0 5px;
         }
 
         // EVENT TYPES FOR BG
         &.standard {
-          background: white;
+          border-left: 4px outset $lightGreen;
         }
         &.current-user-visitation {
-          background: $lightestBlue;
+          border-left: 4px outset $accentBlue;
         }
         &.coparent-visitation {
-          background: $bgBlueGreen;
+          border-left: 4px outset $coparentPurple;
         }
 
         svg {
           font-size: 20px;
           margin-right: 8px;
+          color: black;
+          opacity: 0.4;
         }
 
         a,
-        p,
-        svg {
-          color: $lightDarkGrey;
+        p {
+          //          color: $lightDarkGrey;
+          color: black;
+          opacity: 0.6;
         }
 
         .text {
@@ -73,12 +108,13 @@
 
           // Top Text
           .top {
-
             #nav-website {
               margin-left: auto;
               display: flex;
               align-items: center;
               gap: 10px;
+              position: relative;
+              top: -3px;
 
               * {
                 align-self: stretch;
@@ -87,7 +123,7 @@
               }
 
               svg {
-                margin-right: 5px;
+                margin-right: 2px;
                 font-size: 20px;
               }
 
@@ -96,10 +132,10 @@
               }
             }
           }
-          
+
           #more-children {
             width: 100%;
-            
+
             #more-button {
               font-size: 14px;
               color: $lightDarkGrey;
@@ -107,7 +143,7 @@
               display: flex;
               align-items: center;
               position: relative;
-              
+
               &::after {
                 padding: 30px;
                 content: '';
@@ -118,14 +154,14 @@
                 transform: translate(-50%, -50%);
               }
             }
-            
+
             #children-website {
               .website {
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
               }
-              
+
               .children {
                 display: flex;
                 align-items: center;
