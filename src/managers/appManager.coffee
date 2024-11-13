@@ -32,11 +32,6 @@ export default AppManager =
     formattedUpdateUrl = window.location.href.replaceAll(versionNumber, '')
     formattedUpdateUrlWithOneVersion = formattedUpdateUrl.substring(0, formattedUpdateUrl.indexOf("/") + versionNumber)
     history.replaceState(versionNumber, '', formattedUpdateUrlWithOneVersion)
-  setHolidays:  (currentUser) =>
-      cal = await DB.getTable(DB.tables.calendarEvents)
-      holidays = cal.filter((x) => x.isHoliday is true)
-      if holidays.length is 0
-        await DateManager.setHolidays(currentUser)
   deleteExpiredCalendarEvents: ->
     events = await DB.getTable(DB.tables.calendarEvents)
     events = Manager.convertToArray(events) unless Array.isArray(events)

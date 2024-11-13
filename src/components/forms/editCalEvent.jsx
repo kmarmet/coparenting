@@ -102,7 +102,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setShowReminders(false)
     setAllEvents([])
     setIsVisitation(false)
-    onClose()
+    onClose(moment(event.startDate))
   }
 
   // SUBMIT
@@ -405,7 +405,9 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       hasDelete={true}
       onSubmit={submit}
       submitText={'Done Editing'}
-      onClose={onClose}
+      onClose={() => {
+        onClose(moment(event.startDate))
+      }}
       title={'Edit Event'}
       showCard={showCard}
       className="edit-calendar-event">

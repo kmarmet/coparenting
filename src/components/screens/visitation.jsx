@@ -16,7 +16,6 @@ import DB_UserScoped from '@userScoped'
 import VisitationMapper from 'mappers/visitationMapper'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../constants/dateFormats'
-import CalendarManager from '../../managers/calendarManager'
 import CalendarMapper from '../../mappers/calMapper'
 import { ImEye } from 'react-icons/im'
 import {
@@ -259,7 +258,6 @@ export default function Visitation() {
   const setHolidaysInDatabase = async () => {
     // Delete all user events before adding new
     // Holidays
-
     // console.log(selectedHolidayDates)
     if (Manager.isValid(selectedHolidayDates, true)) {
       let events = []
@@ -277,12 +275,13 @@ export default function Visitation() {
         dateObject.isHoliday = true
         dateObject.id = Manager.getUid()
         dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
-        events = [...events, dateObject]
+        events.push(dateObject)
       })
       // Upload to DB
-      await CalendarManager.addMultipleCalEvents(currentUser, events)
+      await VisitationManager.setVisitationHolidays(currentUser, events)
+      successAlert('Visitation Holidays Updated!')
     } else {
-      await VisitationManager.deleteAllHolidaysForUser(currentUser)
+      // await VisitationManager.deleteAllHolidaysForUser(currentUser)
     }
   }
 

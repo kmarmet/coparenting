@@ -31,6 +31,9 @@ SecurityManager = {
     if (Manager.isValid(allEvents, true)) {
       for (i = 0, len = allEvents.length; i < len; i++) {
         event = allEvents[i];
+        if (event.isHoliday && event.visibleToAll) {
+          returnRecords.push(event);
+        }
         shareWith = event.shareWith;
         if (Manager.dateIsValid(event.startDate) && event.startDate.length > 0) {
           if (event.ownerPhone === currentUser.phone) {

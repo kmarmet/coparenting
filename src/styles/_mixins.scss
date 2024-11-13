@@ -454,6 +454,8 @@
   font-weight: 500;
   color: white;
   line-height: 1;
+  
+  @include buttonPress;
 
   span {
     margin-left: 8px;
@@ -462,7 +464,6 @@
   &.green {
     background-color: $green;
     color: white;
-    @include buttonPress(#02a67c);
   }
 
   &.white {
@@ -475,20 +476,20 @@
     border: 1px solid $mainBlue;
     background: transparent;
     &.green {
-      background-color: $green;
-      color: white;
+      background: transparent;
       border: 1px solid $green;
-      @include buttonPress(#02a67c);
+      color: $green;
+    }
+    
+    &.red {
+      color: $red;
+      border: 1px solid $red;
+      background-color: transparent;
     }
 
     &#upload-button {
       color: white;
     }
-  }
-
-  &.red {
-    color: white;
-    background-color: rgba(232, 62, 113, 0.849);
   }
 
   &.glow {
@@ -682,12 +683,11 @@
 @mixin transBg {
   background-color: rgba(255, 255, 255, 0.2);
 }
-@mixin buttonPress($bgColor: #008061) {
-  transition: all 0.2s linear;
+@mixin buttonPress() {
+  transition: all 0.5s linear;
   &:active {
-    transform: scale(0.8);
+    transform: scale(0.7);
     opacity: 0.5;
-    //    background-color: darken($bgColor, 5%);
     border: 0;
   }
 }
@@ -2109,6 +2109,13 @@
       line-height: 1;
       color: $green;
       width: 50%;
+      
+      @include buttonPress;
+      
+      &#view-visitation-holidays-item {
+        color: $mainBlue;
+        border: 1px solid $mainBlue;
+      }
 
       svg {
         color: $green;

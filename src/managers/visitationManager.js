@@ -221,6 +221,15 @@ const VisitationManager = {
     })
     return Manager.getUniqueArray(visitationHolidays).flat()
   },
+  setVisitationHolidays: async (currentUser, holidays) => {
+    const dbRef = ref(getDatabase())
+    const currentEvents = await DB.getTable(DB.tables.calendarEvents)
+    const userHolidays = currentEvents.filter((x) => x.ownerPhone === currentUser.phone && x.isHoliday === true && x.fromVisitationSchedule === true)
+    if (Manager.isValid(userHolidays, true)) {
+      await DB.deleteMultipleRows(DB.tables.calendarEvents, userHolidays, currentUser)
+    }
+    await set(child(dbRef, `${DB.tables.calendarEvents}`), [...currentEvents, ...holidays])
+  },
   getSchedule: async (currentUser) => {
     return new Promise(async (resolve) => {
       await DB.getTable(DB.tables.calendarEvents).then((events) => {

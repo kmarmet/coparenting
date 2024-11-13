@@ -33,8 +33,14 @@ export default CalendarManager =
   addMultipleCalEvents: (currentUser, newEvents) ->
     dbRef = ref(getDatabase())
     currentEvents = await DB.getTable(DB.tables.calendarEvents)
-    console.log(newEvents)
     eventsToAdd = [currentEvents..., newEvents...].filter((x) -> x?).flat()
+    try
+      await set(child(dbRef, "#{DB.tables.calendarEvents}"), eventsToAdd)
+    catch error
+  setHolidays: (holidays) ->
+    dbRef = ref(getDatabase())
+    currentEvents = await DB.getTable(DB.tables.calendarEvents)
+    eventsToAdd = [currentEvents..., holidays...].filter((x) -> x?).flat()
     try
       await set(child(dbRef, "#{DB.tables.calendarEvents}"), eventsToAdd)
     catch error

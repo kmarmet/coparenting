@@ -129,7 +129,7 @@ CalendarMapper =
       when date == '11/28'
         "Thanksgiving Day"
       else
-        null
+        ''
   eventsToHolidays: (holidayEvents) ->
     userHolidaysList = []
     for holiday in holidayEvents

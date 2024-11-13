@@ -24,6 +24,8 @@ SecurityManager =
     allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents)).flat()
     if Manager.isValid(allEvents,true)
       for event in allEvents
+        if event.isHoliday and event.visibleToAll
+          returnRecords.push(event)
         shareWith = event.shareWith
         if Manager.dateIsValid(event.startDate) and event.startDate.length > 0
           if (event.ownerPhone == currentUser.phone)

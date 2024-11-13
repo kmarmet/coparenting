@@ -57,16 +57,6 @@ export default AppManager = {
     formattedUpdateUrlWithOneVersion = formattedUpdateUrl.substring(0, formattedUpdateUrl.indexOf("/") + versionNumber);
     return history.replaceState(versionNumber, '', formattedUpdateUrlWithOneVersion);
   },
-  setHolidays: async(currentUser) => {
-    var cal, holidays;
-    cal = (await DB.getTable(DB.tables.calendarEvents));
-    holidays = cal.filter((x) => {
-      return x.isHoliday === true;
-    });
-    if (holidays.length === 0) {
-      return (await DateManager.setHolidays(currentUser));
-    }
-  },
   deleteExpiredCalendarEvents: async function() {
     var daysPassed, event, events, i, len;
     events = (await DB.getTable(DB.tables.calendarEvents));

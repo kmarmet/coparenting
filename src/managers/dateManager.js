@@ -203,68 +203,58 @@ const DateManager = {
   addDays: (inputDate, numberOfDays) => {
     return moment(new Date(inputDate.setDate(inputDate.getDate() + numberOfDays))).format(DateFormats.forDb)
   },
-  setHolidays: async (currentUser) => {
-    let users = await DB.getTable(DB.tables.users)
-    let userPhones = Manager.convertToArray(users).map((x) => x.phone)
-    const calEvents = await DB.getTable(DB.tables.calendarEvents)
-    const existingCalendarHolidays = calEvents.filter((x) => x.isHoliday === true).map((x) => x.startDate)
-    DateManager.getHolidays().then(async (holidays) => {
-      let events = []
-      const switchCheck = (title, holidayName) => {
-        return !!contains(title, holidayName)
-      }
+  setHolidays: async () => {
+    await DateManager.deleteAllHolidays()
+    const holidays = await DateManager.getHolidays()
+    let holidayEvents = []
+    const switchCheck = (title, holidayName) => {
+      return !!contains(title, holidayName)
+    }
 
-      // SET EMOJIS
-      for (const holiday of holidays) {
-        const newEvent = new CalendarEvent()
-        // Required
-        switch (true) {
-          case switchCheck(holiday.name, 'Halloween'):
-            newEvent.title = holiday.name += ' 🎃'
-            break
-          case switchCheck(holiday.name, 'Christmas'):
-            newEvent.title = holiday.name += ' 🎄'
-            break
-          case switchCheck(holiday.name, 'Thanksgiving'):
-            newEvent.title = holiday.name += ' 🦃'
-            break
-          case switchCheck(holiday.name, 'Memorial'):
-            newEvent.title = holiday.name += ' 🎖️'
-            break
-          case switchCheck(holiday.name, 'New Year'):
-            newEvent.title = holiday.name += ' 🥳'
-            break
-          case switchCheck(holiday.name, 'Easter'):
-            newEvent.title = holiday.name += ' 🐇'
-            break
-          case switchCheck(holiday.name, 'Mother'):
-            newEvent.title = holiday.name += ' 👩‍👧‍👦'
-            break
-          case switchCheck(holiday.name, 'Father'):
-            newEvent.title = holiday.name += ' 👨‍👧‍👦'
-            break
-          case switchCheck(holiday.name, 'Independence'):
-            newEvent.title = holiday.name += ' 🎇'
-            break
-          default:
-            newEvent.title = holiday.name
-        }
-        newEvent.id = Manager.getUid()
-        newEvent.holidayName = holiday.name
-        const alreadyExistsCount = events.filter((x) => moment(x.startDate).format('MM/DD/yyyy') === moment(holiday.date).format('MM/DD/yyyy')).length
-        if (alreadyExistsCount === 0 && ~existingCalendarHolidays.includes(moment(holiday.date).format('MM/DD/yyyy'))) {
-          newEvent.startDate = moment(holiday.date).format('MM/DD/yyyy')
-          newEvent.isHoliday = true
-          // Not Required
-          newEvent.shareWith = Manager.getUniqueArray(userPhones).flat()
-          events.push(newEvent)
-        }
+    // SET EMOJIS
+    for (const holiday of holidays) {
+      const newEvent = new CalendarEvent()
+      // Required
+      switch (true) {
+        case switchCheck(holiday.name, 'Halloween'):
+          newEvent.title = holiday.name += ' 🎃'
+          break
+        case switchCheck(holiday.name, 'Christmas'):
+          newEvent.title = holiday.name += ' 🎄'
+          break
+        case switchCheck(holiday.name, 'Thanksgiving'):
+          newEvent.title = holiday.name += ' 🦃'
+          break
+        case switchCheck(holiday.name, 'Memorial'):
+          newEvent.title = holiday.name += ' 🎖️'
+          break
+        case switchCheck(holiday.name, 'New Year'):
+          newEvent.title = holiday.name += ' 🥳'
+          break
+        case switchCheck(holiday.name, 'Easter'):
+          newEvent.title = holiday.name += ' 🐇'
+          break
+        case switchCheck(holiday.name, 'Mother'):
+          newEvent.title = holiday.name += ' 👩‍👧‍👦'
+          break
+        case switchCheck(holiday.name, 'Father'):
+          newEvent.title = holiday.name += ' 👨‍👧‍👦'
+          break
+        case switchCheck(holiday.name, 'Independence'):
+          newEvent.title = holiday.name += ' 🎇'
+          break
+        default:
+          newEvent.title = holiday.name
       }
-
-      events = events.filter((value, index, self) => index === self.findIndex((t) => t.startDate === value.startDate))
-      console.log(events)
-      await CalendarManager.addMultipleCalEvents(currentUser, Manager.getUniqueArray(events).flat())
-    })
+      newEvent.id = Manager.getUid()
+      newEvent.holidayName = holiday.name
+      newEvent.startDate = moment(holiday.date).format('MM/DD/yyyy')
+      newEvent.isHoliday = true
+      newEvent.visibleToAll = true
+      holidayEvents.push(newEvent)
+    }
+    holidayEvents = holidayEvents.filter((value, index, self) => index === self.findIndex((t) => t.startDate === value.startDate))
+    await CalendarManager.setHolidays(Manager.getUniqueArray(holidayEvents).flat())
   },
   dateIsValid: (inputDate) => {
     if (!inputDate) {
@@ -291,7 +281,7 @@ const DateManager = {
   },
 
   // DELETE
-  deleteAllHolidays: async (currentUser) => {
+  deleteAllHolidays: async () => {
     const allEvents = await DB.getTable(DB.tables.calendarEvents)
     for (let event of allEvents) {
       if (event?.isHoliday) {

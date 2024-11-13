@@ -152,7 +152,7 @@ CalendarMapper = {
       case date === '11/28':
         return "Thanksgiving Day";
       default:
-        return null;
+        return '';
     }
   },
   eventsToHolidays: function(holidayEvents) {

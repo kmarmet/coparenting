@@ -23,6 +23,7 @@ export default class CalendarEvent
     @sentReminders = []
     @visitationPeriodEndDate = ''
     @isHoliday = false,
+    @visibleToAll = false
     @holidayName = ''
     @visitationSchedule = ''
   ) ->

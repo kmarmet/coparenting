@@ -60,6 +60,7 @@ export default function EventCalendar() {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedNewEventDay, setSelectedNewEventDay] = useState(moment())
+  const [dayFromEdit, setDayFromEdit] = useState(null)
   const formatEvents = (events) => {
     let dateArr = []
     events.forEach((event, index) => {
@@ -401,7 +402,7 @@ export default function EventCalendar() {
             <button className="card-button" id="view-all-holidays-item" onClick={showAllHolidays}>
               All
             </button>
-            <button className="card-button" id="view-visitation-holidays-item" onClick={showVisitationHolidays}>
+            <button className="card-button blue" id="view-visitation-holidays-item" onClick={showVisitationHolidays}>
               Visitation
             </button>
           </div>
@@ -451,14 +452,13 @@ export default function EventCalendar() {
               onChange={async (e) => {
                 const inputValue = e.target.value
                 if (inputValue.length > 3) {
+                  setSearchQuery(inputValue)
                   let results = []
                   if (Manager.isValid(allEventsFromDb, true)) {
                     results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
                   }
                   if (results.length > 0) {
                     setSearchResults(results)
-                  } else {
-                    setSearchQuery(inputValue)
                   }
                 } else {
                   if (inputValue.length === 0) {
@@ -479,8 +479,8 @@ export default function EventCalendar() {
         {/* EDIT EVENT */}
         <EditCalEvent
           showCard={showEditCard}
-          onClose={async (e) => {
-            await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+          onClose={async (editDay) => {
+            await getSecuredEvents(moment(editDay).format(DateFormats.dateForDb).toString())
             setShowEditCard(false)
           }}
           event={eventToEdit}
@@ -492,7 +492,7 @@ export default function EventCalendar() {
         {/* STATIC CALENDAR */}
         <div id="static-calendar">
           <StaticDatePicker
-            defaultValue={moment()}
+            defaultValue={dayFromEdit ? dayFromEdit : moment()}
             onMonthChange={async (month) => {
               await getSecuredEvents(null, month)
             }}
@@ -508,14 +508,6 @@ export default function EventCalendar() {
           />
         </div>
 
-        {/* LEGEND */}
-        <div id="legend" className="flex align-center">
-          <span className="text standard">Event</span>
-          <span className="divider">|</span>
-          <span className="text current-user">Your Visitation</span>
-          <span className="divider">|</span>
-          <span className="text coparent">Co-Parent's Visitation</span>
-        </div>
         {/* CONTENT WITH PADDING */}
         <div className="with-padding">
           {/* BELOW CALENDAR */}

@@ -13,7 +13,6 @@ import {
   sendEmailVerification,
   setPersistence,
   signInWithEmailAndPassword,
-  signOut,
 } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
@@ -96,7 +95,6 @@ export default function Login() {
   }
 
   const signIn = async () => {
-    console.log(isPersistent)
     // Validation
     if (!validator.isEmail(email)) {
       throwError('Email address is not valid')
@@ -112,13 +110,14 @@ export default function Login() {
 
     // Is Persistent
     if (isPersistent) {
+      setState({ ...state, isLoading: true })
       setPersistence(auth, browserLocalPersistence)
         .then(async () => {
           return signInWithEmailAndPassword(auth, email, password)
             .then(async (userCredential) => {
-              console.log(auth)
               const user = userCredential.user
               const _currentUser = await tryGetCurrentUser(user)
+              subscribeUser(_currentUser)
               // USER NEEDS TO VERIFY EMAIL
               if (!user.emailVerified) {
                 oneButtonAlert(
@@ -165,10 +164,12 @@ export default function Login() {
   }
 
   const firebaseSignIn = async () => {
+    setState({ ...state, isLoading: true })
     signInWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const user = userCredential.user
         const _currentUser = await tryGetCurrentUser(user)
+        subscribeUser(_currentUser)
         // USER NEEDS TO VERIFY EMAIL
         if (!user.emailVerified) {
           oneButtonAlert(
@@ -214,24 +215,8 @@ export default function Login() {
     }
   }
 
-  const logout = () => {
-    signOut(auth)
-      .then(() => {
-        setState({
-          ...state,
-          currentScreen: ScreenNames.login,
-          currentUser: null,
-          userIsLoggedIn: false,
-        })
-        // Sign-out successful.
-        console.log('User signed out')
-      })
-      .catch((error) => {
-        // An error happened.
-      })
-  }
-
   useLayoutEffect(() => {
+    setState({ ...state, isLoading: true })
     Manager.showPageContainer()
     document.querySelector('.App').classList.remove('pushed')
     onAuthStateChanged(auth, async (user) => {
@@ -243,6 +228,7 @@ export default function Login() {
           currentScreen: ScreenNames.calendar,
           currentUser: _currentUser,
           userIsLoggedIn: true,
+          isLoading: false,
         })
         console.log('Signed In...redirecting to calendar')
       } else {

@@ -28,6 +28,7 @@ import Manager from '@manager'
 import DateFormats from '../../../constants/dateFormats'
 import CheckboxGroup from '../../shared/checkboxGroup'
 import DateManager from '../../../managers/dateManager'
+import NavBar from '../../navBar'
 
 export default function AdminDashboard() {
   const { state, setState, currentUser } = useContext(globalState)
@@ -47,7 +48,7 @@ export default function AdminDashboard() {
   }
   const deletedExpiredCalEvents = async () => AppManager.deleteExpiredCalendarEvents().then((r) => r)
   const deleteExpiredMemories = async () => AppManager.deleteExpiredMemories().then((r) => r)
-  const setHolidays = async () => AppManager.setHolidays(currentUser)
+  const setHolidays = async () => DateManager.setHolidays()
 
   // CHAT RECOVERY REQUESTS
   const getChatRecoveryRequest = async () => {
@@ -271,6 +272,7 @@ export default function AdminDashboard() {
             })}
         </div>
       </div>
+      <NavBar navbarClass={'visitation no-add-new-button'}></NavBar>
     </div>
   )
 }

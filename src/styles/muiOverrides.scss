@@ -133,8 +133,6 @@
       color: $lightDarkGrey !important;
     }
 
-    
-
     .MuiPickersSlideTransition-root {
       min-height: 420px !important;
     }
@@ -153,18 +151,22 @@
       align-items: center;
       justify-content: center;
       color: black;
+      border-radius: 6px !important;
 
       &.weekend-day {
-        opacity: 0.6;
+        opacity: 0.4;
       }
       &.Mui-selected {
         color: white !important;
-          background-color: $mainBlue;
-          border-radius: 100% !important;
-          width: 50px !important;
-          height: 50px !important;
+        background-color: $mainBlue;
+        height: 40px !important;
+        width: 50px !important;
+        margin-top: 3px !important;
+        
+        .dot-wrapper {
+          top: -3px;
+        }
       }
-      border-radius: 0;
     }
   }
   .MuiPickersLayout-root {
@@ -189,6 +191,7 @@
       color: $mainBlue !important;
       text-transform: uppercase;
       margin: 0;
+      font-size: 14px !important;
     }
 
     .divider {
@@ -200,7 +203,7 @@
     }
 
     #holidays-button {
-      margin: 0;
+      margin: 0 -8px 0 0;
     }
   }
 
