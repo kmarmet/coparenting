@@ -90,7 +90,7 @@ const Manager = {
   },
   resetForm: (parentClass) => {
     const inputWrappers = document.querySelectorAll('.input-container')
-    const inputs = document.querySelector(`.${parentClass}`)?.querySelectorAll('input, textarea')
+    const parentClassInputs = document.querySelector(`.${parentClass}`)?.querySelectorAll('input, textarea')
     const toggles = document.querySelectorAll('.react-toggle')
     const checkboxes = document.querySelector(`.${parentClass}`)?.querySelectorAll('.box')
 
@@ -100,9 +100,10 @@ const Manager = {
     }
 
     // Inputs/Textareas
-    if (Manager.isValid(inputs, true)) {
-      inputs.forEach((input) => {
+    if (Manager.isValid(parentClassInputs, true)) {
+      parentClassInputs.forEach((input) => {
         input.value = ''
+        input.classList.remove('active')
       })
     }
 
@@ -339,14 +340,12 @@ const Manager = {
     else {
       if (currentUser?.accountType === 'parent') {
         currentUser?.coparents.forEach((coparent) => {
-          if (coparent.phone == selectedValue) {
+          if (coparent.phone === selectedValue) {
             if (shareWith?.length === 0) {
               shareWith = [coparent.phone]
             } else {
               if (shareWith?.length > 0) {
                 shareWith = [...shareWith, coparent.phone]
-              } else {
-                shareWith = shareWith
               }
             }
           }
@@ -354,7 +353,7 @@ const Manager = {
       } else {
         if (currentUser.accountType === 'child') {
           currentUser?.parents.forEach((parent) => {
-            if (parent.phone == selectedValue) {
+            if (parent.phone === selectedValue) {
               if (shareWith.length === 0) {
                 shareWith = [parent.phone]
               } else {

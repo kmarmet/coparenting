@@ -32,7 +32,6 @@ import {
 } from '../../globalFunctions'
 import { LuImageMinus, LuImagePlus } from 'react-icons/lu'
 import { saveImageFromUrl } from '../../managers/imageManager'
-import BottomCard from '../shared/bottomCard'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
 
@@ -166,9 +165,7 @@ export default function Memories() {
   return (
     <>
       {/* NEW MEMORY FORM */}
-      <BottomCard title={'New Memory'} onClose={(e) => setShowNewMemoryCard(false)} showCard={showNewMemoryCard}>
-        <NewMemoryForm hideCard={(e) => setShowNewMemoryCard(false)} />
-      </BottomCard>
+      <NewMemoryForm hideCard={(e) => setShowNewMemoryCard(false)} showCard={showNewMemoryCard} />
 
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>

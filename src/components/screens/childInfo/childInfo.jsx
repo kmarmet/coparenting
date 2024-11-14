@@ -120,9 +120,7 @@ export default function ChildInfo() {
       </BottomCard>
 
       {/* NEW CHILD + */}
-      <BottomCard className="new-child-wrapper" title={'Add Child'} showCard={showNewChildForm} onClose={() => setShowNewChildForm(false)}>
-        <NewChildForm hideCard={() => setShowNewChildForm(false)} />
-      </BottomCard>
+      <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>

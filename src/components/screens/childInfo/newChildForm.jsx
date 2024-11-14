@@ -28,8 +28,10 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import ModelNames from '../../../models/modelNames'
+import InputWrapper from '../../shared/inputWrapper'
+import BottomCard from '../../shared/bottomCard'
 
-const NewChildForm = ({ hideCard }) => {
+const NewChildForm = ({ hideCard, showCard }) => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
 
@@ -95,45 +97,45 @@ const NewChildForm = ({ hideCard }) => {
   }, [])
 
   return (
-    <div id="new-child-container" className={`${theme}  form`}>
-      <div className="form new-child-form">
-        {/* NAME */}
-        <label>
-          Name <span className="asterisk">*</span>
-        </label>
-        <input className="mb-10" type="text" onChange={(e) => setName(e.target.value)} />
-        <label>
-          Date of Birth <span className="asterisk">*</span>
-        </label>
-        <MobileDatePicker className="mb-10 mt-0 w-100 event-from-date mui-input" onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
-        <label>Phone Number</label>
-        <input type="tel" className="mb-10" onChange={(e) => setPhoneNumber(e.target.value)} />
-        <label>Home Address</label>
-        <Autocomplete
-          apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-          options={{
-            types: ['geocode', 'establishment'],
-            componentRestrictions: { country: 'usa' },
-          }}
-          className="mb-15"
-          onPlaceSelected={(place) => {
-            setAddress(place.formatted_address)
-          }}
-        />
+    <BottomCard
+      submitText={`Add ${name.length > 0 ? name : 'Child'}`}
+      onSubmit={submit}
+      className="new-child-wrapper"
+      title={'Add Child'}
+      showCard={showCard}
+      onClose={hideCard}>
+      <div id="new-child-container" className={`${theme}  form`}>
+        <div className="form new-child-form">
+          {/* NAME */}
+          <InputWrapper labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
+          <InputWrapper labelText={'Phone Number'} required={true} onChange={(e) => setPhoneNumber(e.target.value)} />
+          <InputWrapper labelText={'Date of Birth'} required={true} inputType={'date'}>
+            <MobileDatePicker className="mt-0 w-100 event-from-date mui-input" onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
+          </InputWrapper>
+          <InputWrapper labelText={'Home Address'} required={true} inputType={'location'}>
+            <Autocomplete
+              apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+              options={{
+                types: ['geocode', 'establishment'],
+                componentRestrictions: { country: 'usa' },
+              }}
+              onPlaceSelected={(place) => {
+                setAddress(place.formatted_address)
+              }}
+            />
+          </InputWrapper>
 
-        {/* GENDER */}
-        <label>Gender</label>
-        <CheckboxGroup boxWidth={20} elClass="mb-20" checkboxLabels={['Male', 'Female']} onCheck={(e) => handleGenderSelect(e)} />
+          {/* GENDER */}
+          <CheckboxGroup
+            parentLabel={'Gender'}
+            boxWidth={20}
+            elClass="mb-20"
+            checkboxLabels={['Male', 'Female']}
+            onCheck={(e) => handleGenderSelect(e)}
+          />
+        </div>
       </div>
-      <div className="flex buttons gap">
-        <button className="button card-button primary" onClick={submit}>
-          Add {name.length > 0 ? name : ''} <span className="material-icons-round ml-10 fs-22">check</span>
-        </button>
-        <button className="button card-button cancel" onClick={hideCard}>
-          Cancel
-        </button>
-      </div>
-    </div>
+    </BottomCard>
   )
 }
 

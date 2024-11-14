@@ -406,7 +406,10 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
       <BottomCard
         submitText={'Create Event'}
         className={`${theme} new-event-form new-calendar-event`}
-        onClose={onClose}
+        onClose={() => {
+          resetForm()
+          onClose()
+        }}
         onSubmit={submit}
         submitIcon={<FaRegCalendarCheck />}
         showCard={showCard}

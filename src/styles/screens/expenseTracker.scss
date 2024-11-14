@@ -129,7 +129,7 @@
     }
 
     .payment-options-link {
-      color: $linkColor;
+      color: $mainBlue;
       text-decoration: underline;
       font-size: 17px;
       font-weight: 500;
@@ -170,6 +170,7 @@
         max-height: 110px;
         overflow: hidden;
         transition: all 0.3s ease-in-out;
+        margin-bottom: 10px;
         
         &.active {
           overflow: auto;

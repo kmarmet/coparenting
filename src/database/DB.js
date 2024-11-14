@@ -235,10 +235,10 @@ const DB = {
     toUpdate[prop] = value
     set(child(dbRef, tableName), tableRecords)
   },
-  updateEntireRecord: async (path, newRecord) => {
+  updateEntireRecord: async (path, updatedRow) => {
     const dbRef = getDatabase()
     // ref(path).update(newRecord)
-    update(ref(dbRef, path), newRecord)
+    update(ref(dbRef, path), updatedRow)
     // update((ref(dbRef, tableName), { newRecord }))
   },
 }

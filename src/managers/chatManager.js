@@ -1,4 +1,4 @@
-import { child, get, getDatabase, ref, set, update } from 'firebase/database'
+import { child, get, getDatabase, ref, set } from 'firebase/database'
 import Manager from '@manager'
 import DB from '@db'
 import SecurityManager from './securityManager'
@@ -21,6 +21,7 @@ import {
   wordCount,
 } from '../globalFunctions'
 import DB_UserScoped from '@userScoped'
+import ConversationMessageBookmark from '../models/conversationMessageBookmark'
 
 const ChatManager = {
   getScopedChat: async (currentUser, messageToUserPhone) =>
@@ -33,7 +34,7 @@ const ChatManager = {
               const memberPhones = shot.val().members.map((x) => x.phone)
               if (memberPhones.includes(currentUser.phone) && memberPhones.includes(messageToUserPhone)) {
                 resolve({
-                  chats: shot.val(),
+                  chat: shot.val(),
                   key: shot.key,
                 })
               }
@@ -44,27 +45,48 @@ const ChatManager = {
           reject(null)
         })
     }),
-  deleteAndArchive: async (currentUser, coparent) => {
+  hideAndArchive: async (currentUser, coparent) => {
     const securedChats = await SecurityManager.getChats(currentUser)
     const securedChat = securedChats.filter(
       (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(coparent.phone)
     )[0]
     const chatKey = await DB.getNestedSnapshotKey(`${DB.tables.chats}`, securedChat, 'id')
+    if (!Manager.isValid(securedChat?.threadVisibilityMembers, true)) {
+      securedChat.threadVisibilityMembers = [currentUser, coparent]
+    }
     const visMembersWithoutCurrentUser = securedChat.threadVisibilityMembers.filter((x) => x.phone !== currentUser.phone)
     await DB_UserScoped.updateByPath(`${DB.tables.chats}/${chatKey}/threadVisibilityMembers`, visMembersWithoutCurrentUser)
     await DB.add(`${DB.tables.archivedChats}/${currentUser.phone}`, securedChat)
   },
-  toggleMessageBookmark: async (currentUser, messageToUser, messageId, bookmarkState) => {
-    const database = getDatabase()
-    const scopedChat = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
-    const { key } = scopedChat
-    let chatMessages = Manager.convertToArray(scopedChat.chats.messages)
-    const messageToToggleBookmarkState = chatMessages.filter((x) => x.id === messageId)[0]
-    const messageKey = await DB.getSnapshotKey(`${DB.tables.chats}/${key}/messages`, messageToToggleBookmarkState, 'id')
-    // const messageKey = await DB.getFlatTableKey(DB.tables.chat, messageId)
-    const dbRef = ref(database, `${DB.tables.chats}/${key}/messages/${messageKey}`)
-    const messageBookmarkState = messageToToggleBookmarkState.bookmarked
-    await update(dbRef, { ['bookmarked']: !messageBookmarkState })
+  toggleMessageBookmark: async (currentUser, messageToUser, messageId) => {
+    const dbRef = ref(getDatabase())
+
+    let scopedChatObject = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
+    const { key, chat } = scopedChatObject
+    const { bookmarks } = chat
+
+    // Check for already existing bookmark
+    const bookmarkAlreadyExists = bookmarks?.filter((x) => x.messageId === messageId).length > 0
+    // Set bookmarks property if it is not defined
+    if (!Manager.isValid(chat.bookmarks)) {
+      chat.bookmarks = []
+    }
+
+    // Add Bookmark
+    if (!bookmarkAlreadyExists) {
+      // Create Bookmark
+      const newBookmark = new ConversationMessageBookmark()
+      newBookmark.ownerPhone = currentUser.phone
+      newBookmark.messageId = messageId
+      chat.bookmarks = [...chat.bookmarks, newBookmark]
+    }
+
+    // Remove Bookmark
+    else {
+      chat.bookmarks = chat.bookmarks.filter((x) => x.messageId !== messageId)
+    }
+
+    await set(child(dbRef, `${DB.tables.chats}/${key}`), chat).catch((error) => {})
   },
   markMessagesRead: async (currentUser, messageToUser, chat) => {
     const dbRef = ref(getDatabase())

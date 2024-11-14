@@ -38,7 +38,6 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
-import SecurityManager from '../../../managers/securityManager'
 import { CgClose } from 'react-icons/cg'
 import { TbMessageCircleSearch } from 'react-icons/tb'
 import ContentEditable from '../../shared/contentEditable'
@@ -66,16 +65,8 @@ const Conversation = () => {
   })
 
   const bookmarkMessage = async (messageObject, bookmarkButton) => {
-    bookmarkButton.classList.add('pressed')
-    setTimeout(function () {
-      bookmarkButton.classList.remove('pressed')
-    }, 350)
-    const { bookmarked, id } = messageObject
-    if (bookmarked) {
-      await ChatManager.toggleMessageBookmark(currentUser, messageToUser, id, false)
-    } else {
-      await ChatManager.toggleMessageBookmark(currentUser, messageToUser, id, true)
-    }
+    const { id } = messageObject
+    await ChatManager.toggleMessageBookmark(currentUser, messageToUser, id)
   }
 
   const sendMessage = async () => {
@@ -156,16 +147,19 @@ const Conversation = () => {
   }
 
   const getExistingMessages = async () => {
-    let securedChats = await SecurityManager.getChats(currentUser)
-    const securedChat = securedChats.filter(
-      (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(messageToUser.phone)
-    )[0]
+    let scopedChatObject = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
+    let { chat } = scopedChatObject
+    const bookmarkObjects = chat?.bookmarks?.filter((x) => x.ownerPhone === currentUser.phone) ?? []
+    const bookmarkedMessageIds = bookmarkObjects?.map((x) => x.messageId) ?? []
+    let bookmarkedMessages = []
 
-    const bookmarkedMessages = securedChat?.messages?.filter((x) => x?.bookmarked)
-    const messages = Manager.convertToArray(securedChat?.messages) || []
+    if (Manager.isValid(bookmarkObjects, true)) {
+      bookmarkedMessages = chat?.messages?.filter((x) => bookmarkedMessageIds?.includes(x.id))
+    }
+    const messages = Manager.convertToArray(chat?.messages) || []
 
     if (messages.length > 0) {
-      if (bookmarkedMessages.length === 0) {
+      if (!bookmarkObjects || bookmarkObjects?.length === 0) {
         setShowBookmarks(false)
         const bookmarkIcon = document.querySelector('.bookmark-icon')
         if (bookmarkIcon) {
@@ -174,8 +168,8 @@ const Conversation = () => {
       }
       setBookmarks(bookmarkedMessages)
       setMessagesToLoop(messages.flat())
-      setExistingChat(securedChat)
-      await ChatManager.markMessagesRead(currentUser, messageToUser, securedChat)
+      setExistingChat(chat)
+      await ChatManager.markMessagesRead(currentUser, messageToUser, chat)
     } else {
       setMessagesToLoop([])
       setExistingChat(null)
@@ -336,28 +330,29 @@ const Conversation = () => {
         {/* BOOKMARKED MESSAGES */}
         {Manager.isValid(bookmarks, true) && showBookmarks && (
           <div id="bookmark-messages" className="bookmark-results">
-            {bookmarks.map((messageObj, index) => {
+            {bookmarks.map((bookmark, index) => {
               let sender
-              if (formatNameFirstNameOnly(messageObj.sender) === formatNameFirstNameOnly(currentUser.name)) {
+              if (formatNameFirstNameOnly(bookmark.sender) === formatNameFirstNameOnly(currentUser.name)) {
                 sender = 'ME'
               } else {
-                sender = formatNameFirstNameOnly(messageObj.sender)
+                sender = formatNameFirstNameOnly(bookmark.sender)
+              }
+              // Determine bookmark class
+              const bookmarks = existingChat.bookmarks
+              let isBookmarked = false
+              if (bookmarks?.filter((x) => x.messageId === bookmark.id).length > 0) {
+                isBookmarked = true
               }
               return (
-                messageObj.bookmarked === true && (
-                  <>
-                    <p key={index} className={messageObj.sender === currentUser.name ? 'message from' : 'to message'}>
-                      {messageObj.message}
-                      <PiBookmarkSimpleDuotone
-                        className={messageObj.bookmarked ? 'bookmarked sparkle' : 'sparkle'}
-                        onClick={(e) => bookmarkMessage(messageObj, e.target)}
-                      />
-                    </p>
-                    <span className={messageObj.sender === currentUser.name ? 'timestamp from' : 'to timestamp'}>
-                      From {sender} on&nbsp; {moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
-                    </span>
-                  </>
-                )
+                <div key={index}>
+                  <p className={bookmark.sender === currentUser.name ? 'message from' : 'to message'}>
+                    {bookmark.message}
+                    <PiBookmarkSimpleDuotone className={isBookmarked ? 'bookmarked' : ''} onClick={(e) => bookmarkMessage(bookmark, e.target)} />
+                  </p>
+                  <span className={bookmark.sender === currentUser.name ? 'timestamp from' : 'to timestamp'}>
+                    From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
+                  </span>
+                </div>
               )
             })}
           </div>
@@ -368,26 +363,28 @@ const Conversation = () => {
           <div key={refreshKey}>
             <div id="default-messages">
               {Manager.isValid(messagesToLoop, true) &&
-                messagesToLoop.map((messageObj, index) => {
-                  let timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mm a')
+                messagesToLoop.map((message, index) => {
+                  // Determine bookmark class
+                  const bookmarks = existingChat.bookmarks
+                  let isBookmarked = false
+                  if (bookmarks?.filter((x) => x.messageId === message.id).length > 0) {
+                    isBookmarked = true
+                  }
+                  let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mm a')
                   // Message Sent Today
-                  if (moment(messageObj.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
-                    timestamp = moment(messageObj.timestamp, DateFormats.fullDatetime).format('h:mm a')
+                  if (moment(message.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
+                    timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mm a')
                   }
                   return (
                     <div key={index}>
-                      <p
-                        {...bind()}
-                        className={
-                          messageObj.sender === currentUser.name ? 'from message sparkle-on-click-button' : 'to message sparkle-on-click-button'
-                        }>
-                        {messageObj.message}
+                      <p {...bind()} className={message.sender === currentUser.name ? 'from message' : 'to message'}>
+                        {message.message}
                         <PiBookmarkSimpleDuotone
-                          className={messageObj.bookmarked ? 'bookmarked pressed' : 'pressed'}
-                          onClick={(e) => bookmarkMessage(messageObj, e.target.parentNode)}
+                          className={isBookmarked ? 'bookmarked' : ''}
+                          onClick={(e) => bookmarkMessage(message, e.target.parentNode)}
                         />
                       </p>
-                      <span className={messageObj.sender === currentUser.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
+                      <span className={message.sender === currentUser.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
                     </div>
                   )
                 })}

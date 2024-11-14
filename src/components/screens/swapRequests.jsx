@@ -95,7 +95,6 @@ export default function SwapRequests() {
 
   return (
     <>
-      {/* TODO//ADD BOTTOM CARD DIRECTLY */}
       <NewSwapRequest showCard={showCard} hideCard={() => setShowCard(false)} />
       <div id="swap-requests" className={`${theme} page-container`}>
         <p className="screen-title">Swap Requests</p>

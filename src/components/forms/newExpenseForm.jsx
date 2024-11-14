@@ -45,8 +45,6 @@ import {
 import UploadInputs from '../shared/uploadInputs'
 import DateManager from '../../managers/dateManager'
 import ModelNames from '../../models/modelNames'
-import ActivitySet from '../../models/activitySet'
-import Label from '../shared/label'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import BottomCard from '../shared/bottomCard'
 import InputWrapper from '../shared/inputWrapper'
@@ -152,16 +150,6 @@ function NewExpenseForm({ hideCard, showCard }) {
     }
 
     const cleanObject = Manager.cleanObject(newExpense, ModelNames.expense)
-
-    // Activity Set
-    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/3307494534`, true)
-    let newActivitySet = new ActivitySet()
-    let expenseCount = existingActivitySet?.expenseCount || 0
-    if (Manager.isValid(existingActivitySet, false, true)) {
-      newActivitySet = { ...existingActivitySet }
-    }
-    newActivitySet.expenseCount = expenseCount === 0 ? 1 : (expenseCount += 1)
-    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${payer.phone}`, newActivitySet)
 
     // Add to DB
     await DB.add(tables.expenseTracker, cleanObject).finally(async () => {
@@ -417,34 +405,31 @@ function NewExpenseForm({ hideCard, showCard }) {
           <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'}></InputWrapper>
 
           {currentUser && (
-            <div className="share-with-container">
-              <Label text={'Who will be paying the expense?'} required={true}></Label>
-              <CheckboxGroup
-                dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-                onCheck={(e) => {
-                  const checkbox = e.target.closest('#checkbox-container')
-                  document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
-                  checkbox.classList.add('active')
-                  handlePayerSelection(e).then((r) => r)
-                }}
-              />
-            </div>
+            <CheckboxGroup
+              required={true}
+              parentLabel={'Who will be paying the expense?'}
+              dataPhone={currentUser?.coparents.map((x) => x.phone)}
+              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+              onCheck={(e) => {
+                const checkbox = e.target.closest('#checkbox-container')
+                document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
+                checkbox.classList.add('active')
+                handlePayerSelection(e).then((r) => r)
+              }}
+            />
           )}
 
           {/* SHARE WITH */}
           {currentUser && (
-            <div className="share-with-container">
-              <ShareWithCheckboxes
-                icon={<ImEye />}
-                shareWith={currentUser.coparents.map((x) => x.phone)}
-                onCheck={handleShareWithSelection}
-                labelText={'Who is allowed to see it?'}
-                containerClass={'share-with-coparents'}
-                dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-              />
-            </div>
+            <ShareWithCheckboxes
+              icon={<ImEye />}
+              shareWith={currentUser.coparents.map((x) => x.phone)}
+              onCheck={handleShareWithSelection}
+              labelText={'Who is allowed to see it?'}
+              containerClass={'share-with-coparents'}
+              dataPhone={currentUser?.coparents.map((x) => x.phone)}
+              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+            />
           )}
 
           {/* INCLUDING WHICH CHILDREN */}
@@ -500,21 +485,23 @@ function NewExpenseForm({ hideCard, showCard }) {
           </div>
 
           {/* UPLOAD INPUTS */}
-          <UploadInputs
-            uploadType="image"
-            getImages={(files) => {
-              if (files.length === 0) {
-                throwError('Please choose an image first')
-              } else {
-                setExpenseImage(files[0])
-              }
-            }}
-            onClose={hideCard}
-            containerClass={`${theme} new-expense-card`}
-            actualUploadButtonText={'Upload'}
-            uploadButtonText="Choose"
-            upload={() => {}}
-          />
+          {shareWith.length > 0 && payer.name.length > 0 && expenseName.length > 0 && expenseAmount.length > 0 && (
+            <UploadInputs
+              uploadType="image"
+              getImages={(files) => {
+                if (files.length === 0) {
+                  throwError('Please choose an image first')
+                } else {
+                  setExpenseImage(files[0])
+                }
+              }}
+              onClose={hideCard}
+              containerClass={`${theme} new-expense-card`}
+              actualUploadButtonText={'Upload'}
+              uploadButtonText="Choose"
+              upload={() => {}}
+            />
+          )}
         </div>
       </div>
     </BottomCard>

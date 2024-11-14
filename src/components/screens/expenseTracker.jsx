@@ -299,126 +299,124 @@ export default function ExpenseTracker() {
 
       {/* PAYMENT OPTIONS */}
       <>
-        {showPaymentOptionsCard && (
-          <BottomCard
-            hasSubmitButton={false}
-            subtitle="There are a multitude of simple and FREE ways to send money to a co-parent for expenses, or for any other reason. Please look below to
+        <BottomCard
+          hasSubmitButton={false}
+          subtitle="There are a multitude of simple and FREE ways to send money to a co-parent for expenses, or for any other reason. Please look below to
               see which option works best for you."
-            title={'Payment/Transfer Options'}
-            className="payment-options-card"
-            onClose={() => setShowPaymentOptionsCard(false)}
-            showCard={showPaymentOptionsCard}>
-            <div id="payment-options-card">
-              <div className="options">
-                {/* ZELLE */}
-                <div className="option zelle">
-                  <div className="flex brand-name-wrapper zelle">
-                    <p className="brand-name accent mr-10">Zelle</p>
-                    <SiZelle className={'zelle-icon'} />
-                  </div>
-                  <div className="flex">
-                    <div className="text">
-                      <p className="description ">Safely send money to co-parent, no matter where they bank.</p>
-                      <a href="https://www.zellepay.com/how-it-works" target="_blank" className="setup-instructions mb-10">
-                        Learn More <span className="material-icons">open_in_new</span>
-                      </a>
-                    </div>
-                  </div>
-                  <iframe
-                    width="560"
-                    height="315"
-                    src="https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO"
-                    title="Zelle® | How it Works"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen></iframe>
+          title={'Payment/Transfer Options'}
+          className="payment-options-card"
+          onClose={() => setShowPaymentOptionsCard(false)}
+          showCard={showPaymentOptionsCard}>
+          <div id="payment-options-card">
+            <div className="options">
+              {/* ZELLE */}
+              <div className="option zelle">
+                <div className="flex brand-name-wrapper zelle">
+                  <p className="brand-name accent mr-10">Zelle</p>
+                  <SiZelle className={'zelle-icon'} />
                 </div>
-
-                <hr />
-
-                {/* VENMO */}
-                <div className="option venmo">
-                  <div className="flex brand-name-wrapper venmo">
-                    <p className="brand-name mr-10">Venmo</p>
-                    <IoLogoVenmo className={'venmo-icon'} />
-                  </div>
-                  <div className="flex">
-                    <div className="text">
-                      <p className="description ">Fast, safe, social payments.</p>
-                      <a
-                        href="https://help.venmo.com/hc/en-us/articles/209690068-How-to-Sign-Up-for-a-Personal-Venmo-Account"
-                        target="_blank"
-                        className="setup-instructions mb-10">
-                        Learn More <span className="material-icons">open_in_new</span>
-                      </a>
-                    </div>
-                  </div>
-                  <iframe
-                    src="https://www.youtube.com/embed/zAqz0Kzootg"
-                    title="Paying or Requesting Payment From Multiple Users in a Single Transaction"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen></iframe>
-                </div>
-
-                <hr />
-
-                {/* APPLE PAY */}
-                <div className="option apple-cash">
-                  <div className="flex brand-name-wrapper apple">
-                    <p className="brand-name mr-10">Apple Cash</p>
-                    <ImAppleinc className={'apple-icon'} />
-                  </div>
-                  <div className="flex ">
-                    <div className="text">
-                      <p className="description ">Use Apple Cash to send and receive money with people you know.</p>
-                      <a href="https://support.apple.com/en-us/105013" target="_blank" className="setup-instructions mb-10">
-                        Learn More <span className="material-icons">open_in_new</span>
-                      </a>
-                    </div>
+                <div className="flex">
+                  <div className="text">
+                    <p className="description payment-options">Safely send money to co-parent, no matter where they bank.</p>
+                    <a href="https://www.zellepay.com/how-it-works" target="_blank" className="setup-instructions mb-10">
+                      Learn More <span className="material-icons">open_in_new</span>
+                    </a>
                   </div>
                 </div>
+                <iframe
+                  width="560"
+                  height="315"
+                  src="https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO"
+                  title="Zelle® | How it Works"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen></iframe>
+              </div>
 
-                <hr />
+              <hr />
 
-                {/* PAYPAL */}
-                <div className="option paypal">
-                  <div className="flex brand-name-wrapper paypal">
-                    <p className="brand-name mr-10">PayPal</p>
-                    <LiaCcPaypal className={'paypal-icon'} />
-                  </div>
-                  <div className="flex">
-                    <div className="text">
-                      <p className="description ">Send and request money, quickly and securely.</p>
-                      <a href="https://www.paypal.com/us/digital-wallet/send-receive-money" target="_blank" className="setup-instructions mb-10">
-                        Learn More <span className="material-icons">open_in_new</span>
-                      </a>
-                    </div>
+              {/* VENMO */}
+              <div className="option venmo">
+                <div className="flex brand-name-wrapper venmo">
+                  <p className="brand-name mr-10">Venmo</p>
+                  <IoLogoVenmo className={'venmo-icon'} />
+                </div>
+                <div className="flex">
+                  <div className="text">
+                    <p className="description payment-options">Fast, safe, social payments.</p>
+                    <a
+                      href="https://help.venmo.com/hc/en-us/articles/209690068-How-to-Sign-Up-for-a-Personal-Venmo-Account"
+                      target="_blank"
+                      className="setup-instructions mb-10">
+                      Learn More <span className="material-icons">open_in_new</span>
+                    </a>
                   </div>
                 </div>
+                <iframe
+                  src="https://www.youtube.com/embed/zAqz0Kzootg"
+                  title="Paying or Requesting Payment From Multiple Users in a Single Transaction"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen></iframe>
+              </div>
 
-                <hr />
+              <hr />
 
-                {/* CASHAPP */}
-                <div className="option cashapp">
-                  <div className="flex brand-name-wrapper cashapp">
-                    <p className="brand-name mr-10">CashApp</p>
-                    <SiCashapp />
+              {/* APPLE PAY */}
+              <div className="option apple-cash">
+                <div className="flex brand-name-wrapper apple">
+                  <p className="brand-name mr-10">Apple Cash</p>
+                  <ImAppleinc className={'apple-icon'} />
+                </div>
+                <div className="flex ">
+                  <div className="text">
+                    <p className="description payment-options">Use Apple Cash to send and receive money with people you know.</p>
+                    <a href="https://support.apple.com/en-us/105013" target="_blank" className="setup-instructions mb-10">
+                      Learn More <span className="material-icons">open_in_new</span>
+                    </a>
                   </div>
-                  <div className="flex">
-                    <div className="text">
-                      <p className="description ">Pay anyone, instantly.</p>
-                      <a href="https://cash.app/help/6485-getting-started-with-cash-app" target="_blank" className="setup-instructions mb-10">
-                        Learn More <span className="material-icons">open_in_new</span>
-                      </a>
-                    </div>
+                </div>
+              </div>
+
+              <hr />
+
+              {/* PAYPAL */}
+              <div className="option paypal">
+                <div className="flex brand-name-wrapper paypal">
+                  <p className="brand-name mr-10">PayPal</p>
+                  <LiaCcPaypal className={'paypal-icon'} />
+                </div>
+                <div className="flex">
+                  <div className="text">
+                    <p className="description payment-options">Send and request money, quickly and securely.</p>
+                    <a href="https://www.paypal.com/us/digital-wallet/send-receive-money" target="_blank" className="setup-instructions mb-10">
+                      Learn More <span className="material-icons">open_in_new</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <hr />
+
+              {/* CASHAPP */}
+              <div className="option cashapp">
+                <div className="flex brand-name-wrapper cashapp">
+                  <p className="brand-name mr-10">CashApp</p>
+                  <SiCashapp />
+                </div>
+                <div className="flex">
+                  <div className="text">
+                    <p className="description payment-options">Pay anyone, instantly.</p>
+                    <a href="https://cash.app/help/6485-getting-started-with-cash-app" target="_blank" className="setup-instructions mb-10">
+                      Learn More <span className="material-icons">open_in_new</span>
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
-          </BottomCard>
-        )}
+          </div>
+        </BottomCard>
       </>
 
       {/* PAGE CONTAINER */}
@@ -618,7 +616,6 @@ export default function ExpenseTracker() {
                         </div>
                       </div>
                     </div>
-                    <hr />
                   </div>
                 )
               })}

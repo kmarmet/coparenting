@@ -3,44 +3,6 @@
 @import './variables';
 @import './palette';
 
-// generate random number
-@function randomNum($min, $max) {
-  $rand: random();
-  $randomNum: $min + floor($rand * (($max - $min) + 1));
-
-  @return $randomNum;
-}
-
-// make boxshadow string
-@function makeShadowString($posOn, $shadowColor) {
-  $shadowString: '';
-
-  @if $posOn {
-    @for $i from 1 through 10 {
-      $shadowString: $shadowString + '#{randomNum(-100, 100)}px #{randomNum(-100, 100)}px 0 0 #{$shadowColor}, ';
-    }
-  } @else {
-    @for $i from 1 through 10 {
-      $shadowString: $shadowString + '0px 0px 0px #{randomNum(5, 10)}px #{$shadowColor}, ';
-    }
-  }
-
-  $shadowString: unquote($shadowString);
-  $shadowString: str-slice($shadowString, 0, str-length($shadowString) - 2);
-
-  @return $shadowString;
-}
-
-@function multiple-box-shadow($n) {
-  $value: '#{random(2000)}px #{random(2000)}px #FFF';
-
-  @for $i from 2 through $n {
-    $value: '#{$value} , #{random(2000)}px #{random(2000)}px #FFF';
-  }
-
-  @return unquote($value);
-}
-
 // PAGE CONTAINER
 @mixin pageContainer {
   max-width: 100vw;
@@ -115,7 +77,7 @@
 
 // SCREEN TITLE
 @mixin screenTitle {
-  font-size: 22px;
+  font-size: 26px;
   width: 100%;
   word-break: break-word;
   transition: all 0.6s linear;
@@ -166,6 +128,27 @@
   }
 }
 
+// PAGE OVERLAY
+@mixin pageOverlay {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  opacity: 0;
+  z-index: -1;
+  transition: all 0.3s ease-in-out;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+
+  &.active {
+    opacity: 1;
+    z-index: 10000000;
+  }
+}
+
 // DEFAULTS
 @mixin lineItem {
   display: flex;
@@ -209,32 +192,13 @@
     display: none;
   }
 }
-@mixin fontType($weight: 300) {
+@mixin fontType() {
   font-weight: $fwRegular;
   font-size: 16px;
   line-height: 1.4;
   font-family: 'Roboto', sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
-  letter-spacing: 1.2px;
-}
-@mixin modalNavArrows {
-  .back-arrow,
-  .forward-arrow {
-    bottom: 20px;
-    font-size: 40px;
-    z-index: 1000;
-    position: fixed;
-    padding: 0;
-
-    &.forward-arrow {
-      right: 20px;
-    }
-
-    &.back-arrow {
-      left: 20px;
-    }
-  }
 }
 @mixin lengthSelection {
   .action-pills {
@@ -347,7 +311,7 @@
   }
 }
 
-// FORM
+/*#region  FORM*/
 @mixin form {
   &.transfer-change {
     input {
@@ -413,27 +377,20 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    color: $lightBlack;
+    color: $darkGrey;
     font-weight: 600;
     font-size: 16px;
     line-height: 1.5;
     margin-bottom: 5px;
 
-    span:not(.asterisk) {
-      font-weight: $fwMedium;
-      font-size: 16px;
-      line-height: 1.5;
-      color: $labelColor;
+    * {
+      display: inline;
     }
 
     svg {
       font-size: 22px;
       margin-right: 8px;
-      opacity: 0.7;
-    }
-
-    * {
-      display: inline;
+      color: $lightDarkGrey;
     }
     @include label;
   }
@@ -443,6 +400,7 @@
     justify-content: center;
   }
 }
+/*#endregion  FORM*/
 
 /*#region  BUTTONS*/
 @mixin defaultButton() {
@@ -454,7 +412,7 @@
   font-weight: 500;
   color: white;
   line-height: 1;
-  
+
   @include buttonPress;
 
   span {
@@ -480,7 +438,7 @@
       border: 1px solid $green;
       color: $green;
     }
-    
+
     &.red {
       color: $red;
       border: 1px solid $red;
@@ -837,6 +795,11 @@
   // box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 100px 54px;
   box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 30px 14px;
 }
+@mixin topShadow {
+  box-shadow:
+    0px 50px 25px rgba(0, 0, 0, 0.56),
+    00px -25px 15px rgba(0, 0, 0, 0.56);
+}
 @mixin blackGlow {
   -webkit-box-shadow: 0px 0px 12px 0px rgb(0, 0, 0);
   -moz-box-shadow: 0px 0px 12px 0px rgb(0, 0, 0);
@@ -936,6 +899,17 @@
   right: 50%;
   transform: translate(-50%, -50%);
 }
+@mixin extraClickableSpace {
+  &::after {
+    padding: 30px;
+    content: '';
+    position: absolute;
+    width: 100px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
 /*#endregion  POSITIONING*/
 
 /*#region  COMPONENTS*/
@@ -954,10 +928,23 @@
   width: 100%;
   margin-bottom: 8px;
 
+  &.location {
+    position: relative;
+    top: -10px;
+  }
+
+  &.textarea {
+    position: relative;
+    top: -5px;
+  }
+
   #label-wrapper {
     margin: 0;
     label {
       margin: 0;
+      color: $lightBlueMedium;
+      font-size: 14px;
+      font-weight: $fwRegular;
     }
   }
 
@@ -1146,9 +1133,17 @@
 @mixin actionPills() {
   display: flex;
   align-items: center;
-  background-color: transparent;
+  background-color: $bestGreyForWhite;
+  border-radius: 20px;
+  margin-bottom: 20px;
 
-  .flex {
+  * {
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+  }
+
+  .duration-option {
     align-items: center;
     justify-content: center;
     color: $lightDarkGrey;
@@ -1156,30 +1151,27 @@
     background-color: transparent;
     text-align: center;
     text-transform: uppercase;
-    transition: 0.5s;
+    transition: all 0.3s ease-in-out;
     border: 0;
-    border-radius: 0;
-    width: 100%;
+    padding: 0 10px;
+    display: flex;
+    align-self: stretch;
+    border-radius: 20px;
+    width: calc(100% / 3);
 
     &.active {
+      background-color: $mainBlue;
+      width: 50%;
       span,
       svg,
       p {
-        color: $mainBlue;
+        color: white;
         line-height: 1;
         opacity: 1;
       }
     }
 
-    svg {
-      font-size: 22px;
-      margin-right: 5px;
-      position: relative;
-      top: -2px;
-    }
-
     p {
-      line-height: 1;
       margin: 0;
       font-size: 14px;
       font-weight: 400;
@@ -1193,9 +1185,10 @@
     span {
       font-size: 18px;
       color: $lightDarkGrey;
-      margin: 0;
-      height: 16px;
+      margin-right: 5px;
       display: flex;
+      position: relative;
+      top: -1px;
       align-items: center;
     }
   }
@@ -1237,15 +1230,25 @@
   }
 }
 @mixin checkboxGroup {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
   margin-bottom: 10px;
   padding: 0;
-  gap: 5px 10px;
+
+  #checkboxes {
+    gap: 5px 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
 
   #label-wrapper {
     width: 100%;
+  }
+
+  #parent-label-wrapper {
+    #parent-label {
+      margin: 0;
+      line-height: 1;
+    }
   }
 
   &.gap-5 {
@@ -1263,7 +1266,6 @@
   #checkbox-container,
   #standalone-checkbox-container,
   #share-with-checkbox-container {
-    min-width: 40%;
     &.flex {
       align-items: center;
       margin-bottom: 0;
@@ -2042,10 +2044,7 @@
   background-color: white;
   position: fixed;
   z-index: -1;
-  border-radius: 25px 25px 0 0;
-  box-shadow:
-    0px 50px 25px rgba(0, 0, 0, 0.56),
-    00px -25px 15px rgba(0, 0, 0, 0.56);
+  border-radius: 30px 30px 0 0;
   bottom: -30vh;
   transition: all 0.3s ease-in-out;
   opacity: 0;
@@ -2109,9 +2108,9 @@
       line-height: 1;
       color: $green;
       width: 50%;
-      
+
       @include buttonPress;
-      
+
       &#view-visitation-holidays-item {
         color: $mainBlue;
         border: 1px solid $mainBlue;
@@ -2197,25 +2196,31 @@
     position: fixed;
     left: inherit;
     right: inherit;
-    bottom: 0;
+    bottom: -5px;
     width: 100vw;
     display: flex;
     justify-content: center;
     z-index: 10000;
     border: 0;
-    background-color: #fcfcfc;
+    background-color: white;
     @include centerHoriz;
     padding: 15px 20px;
+    border-top: 1px solid $borderColor;
+
+    * {
+      line-height: 1;
+      align-self: center;
+    }
 
     &.hide-bg {
       background-color: transparent;
     }
 
     .close-icon {
-      font-size: 35px;
+      font-size: 40px;
       z-index: 1000;
       position: relative;
-      color: $lightDarkGrey;
+      color: $red;
       opacity: 0.8;
       background: white;
       border-radius: 100%;
@@ -2224,7 +2229,8 @@
     .delete-icon {
       color: $red;
       opacity: 0.8;
-      font-size: 28px;
+      font-size: 32px;
+      margin-right: 10px;
     }
 
     .card-button {
@@ -2693,7 +2699,6 @@
       z-index: $maxZIndex;
       padding: 20px 15px 0 15px;
     }
-
 
     #menu-close-icon {
       color: $mainBlue;

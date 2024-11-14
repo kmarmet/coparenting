@@ -233,6 +233,7 @@ export default function Login() {
         console.log('Signed In...redirecting to calendar')
       } else {
         // No user is signed in.
+        setState({ ...state, isLoading: false })
         console.log('Signed out or no user exists')
       }
     })

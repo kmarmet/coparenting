@@ -1,4 +1,4 @@
-/*#region  Generic*/
+/*#region  Misc. */
 $green:  #2ecc71;
 $red: #d24d57;
 $bgRed: #f5e0e1;
@@ -7,36 +7,39 @@ $lightPurple: #af90fd;
 $purple: #6447f5 ;
 $darkPurple: #5b3bdc;
 $linkColor: #6ea8fe;
-$offWhite: #e6e6e6;
 $accent: #4c75a3;
-$translucent: rgba(255, 255, 255, 0.02);
-$translucentLighter: rgba(255, 255, 255, 0.05);
-$translucentLightest: rgba(255, 255, 255, 0.09);
 $mauve: #A6A9CA;
 $mauveDarker: #9E96BC;
 $mauveDarkerStill: #9784AC;
 $mauveDarkest: #8D5D86;
+$mainBlue: #557fff;
+
+/*#region  BLACKS (NOT NEGROES)*/
 $black : #232323;
 $lightBlack: #1c1c1c;
-$labelColor: rgba(2, 2, 2, 0.62);
-$bgGreen: #daffc7;
-$bgBlueGreen : #d6eeff;
-$lightGrey: #f3f7fa;
+$translucent: rgba(255, 255, 255, 0.02);
+$translucentLighter: rgba(255, 255, 255, 0.05);
+$translucentLightest: rgba(255, 255, 255, 0.09);
+$anotherBlack: #12130F;
+/*#endregion  BLACKS (NOT NEGROES)*/
+
+// GREYS
 $borderColor: #e8ebec;
-$mainBlue: #557fff;
+$lightestGrey: #f3f7fa;
+$lightGrey: #e4e4e4;
+$offWhite: #e6e6e6;
 $buttonGrey: #efefef;
 $iconGrey: #e3e8ee;
+$darkGrey: #939393;
+$bestGreyForWhite: #f2f4f5;
 
-// Non Standard
+// VISITATION COLORS
 $coparentPurple:  #b2a3fa;
 $accentBlue: #99b2ff;
 $lightGreen: #c6ecc8;
-/*#endregion  Generic*/
+/*#endregion  Misc. */
 
 /*#region  Dark Theme*/
-
-// awesome black
-//12130F
 $darkBlueDarkest: #121735;
 //$darkBg: #1d242f;
 $darkBg: #08051a;
@@ -59,10 +62,8 @@ $lightAccent: #4c75a3;
 $lightestBlue: #d3eafd;
 $lightMenuBg: white;
 $lightBorder: #e7e9ee;
-$lightBg: #f4f8fb;
+$lightBg: #f4f8ff;
 $lightBlackLight: #1c1c1c;
 $lightBlue: #d4e0fc;
-$lightSmallShadow: '';
-//$lightGrey: #e4e4e4;
 $lightDarkGrey: rgba(0, 0, 0, 0.44);
 /*#endregion  LIGHT THEME*/

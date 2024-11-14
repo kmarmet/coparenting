@@ -7,6 +7,8 @@ import { useSwipeable } from 'react-swipeable'
 import ChatManager from '@managers/chatManager.js'
 import DB_UserScoped from '@userScoped'
 import { BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
+import { IoNotificationsOffCircle } from 'react-icons/io5'
+import { HiMiniBellAlert } from 'react-icons/hi2'
 import {
   confirmAlert,
   contains,
@@ -29,6 +31,7 @@ import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import NavBar from '../../navBar'
+import DB from '@db'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -38,14 +41,19 @@ const Chats = () => {
   const [selectedCoparent, setSelectedCoparent] = useState(null)
   const [activeThreadPhones, setActiveThreadPhones] = useState([])
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
-  const [showDeleteButton, setShowDeleteButton] = useState(false)
+  const [showThreadActions, setShowThreadActions] = useState(false)
 
   const handlers = useSwipeable({
-    onSwipedLeft: () => {
-      setShowDeleteButton(true)
+    onSwipedLeft: (e) => {
+      const threadItem = e.event.target
+
+      // Only allow swipe if message is NOT muted
+      if (!hasClass(threadItem, 'muted')) {
+        setShowThreadActions(true)
+      }
     },
     onSwipedRight: () => {
-      setShowDeleteButton(false)
+      setShowThreadActions(false)
     },
   })
 
@@ -54,7 +62,7 @@ const Chats = () => {
     setState({ ...state, currentScreen: ScreenNames.conversation, messageToUser: userCoparent })
   }
 
-  const getChats = async () => {
+  const getSecuredChats = async () => {
     let securedChats = await SecurityManager.getChats(currentUser)
     let threadPhones = []
     for (let chat of securedChats) {
@@ -67,8 +75,8 @@ const Chats = () => {
 
   const archive = async (coparent) => {
     if (Manager.isValid(coparent)) {
-      await ChatManager.deleteAndArchive(currentUser, coparent)
-      await getChats()
+      await ChatManager.hideAndArchive(currentUser, coparent)
+      await getSecuredChats()
       setSelectedCoparent(null)
     }
   }
@@ -89,95 +97,132 @@ const Chats = () => {
     }, 100)
   }
 
+  const muteChat = async (coparentPhone, muteOrUnmute) => {
+    let scopedChat = await ChatManager.getScopedChat(currentUser, coparentPhone)
+    const { key, chat } = scopedChat
+    const currentMutedMembers = Manager.isValid(scopedChat?.mutedMembers, true) ? scopedChat.mutedMembers : []
+    if (muteOrUnmute === 'mute') {
+      chat.mutedMembers = [
+        ...currentMutedMembers,
+        {
+          target: coparentPhone,
+          ownerPhone: currentUser.phone,
+        },
+      ]
+      await DB.updateEntireRecord(`${DB.tables.chats}/${key}`, chat)
+    } else {
+      chat.mutedMembers = chat.mutedMembers.filter((x) => x.ownerPhone !== currentUser.phone && x.target !== coparentPhone)
+      await DB.updateEntireRecord(`${DB.tables.chats}/${key}`, chat)
+    }
+    await getSecuredChats()
+    setShowThreadActions(false)
+  }
+
   useEffect(() => {
     if (currentUser.accountType === 'parent') {
-      getChats().then((r) => r)
+      getSecuredChats().then((r) => r)
     }
     Manager.showPageContainer('show')
   }, [selectedCoparent])
 
   return (
     <>
+      {/* NEW THREAD FORM */}
+      <BottomCard
+        hasSubmitButton={false}
+        className="new-conversation"
+        onClose={() => setShowNewConvoCard(false)}
+        showCard={showNewConvoCard}
+        title={'New Conversation'}>
+        {Manager.isValid(currentUser?.coparents, true) &&
+          currentUser?.coparents.map((coparent, index) => {
+            return (
+              <div key={index}>
+                {!activeThreadPhones.includes(coparent.phone) && (
+                  <p
+                    className="coparent-name new-thread-coparent-name"
+                    onClick={() => {
+                      openMessageThread(coparent.phone).then((r) => r)
+                    }}>
+                    {coparent.name}
+                  </p>
+                )}
+                {activeThreadPhones.includes(coparent.phone) && <p>All available co-parents aleady have an open conversation with you. </p>}
+              </div>
+            )
+          })}
+      </BottomCard>
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
         <p className="screen-title">Chats</p>
-        {/* THREAD LINE ITEM */}
+        {/* THREAD ITEMS */}
         {!showNewThreadForm &&
           threads.length > 0 &&
           threads.map((thread, index) => {
-            const coparent = thread.members.filter((x) => x.phone !== currentUser.phone)[0]
-            const coparentMessages = Manager.convertToArray(thread.messages).filter((x) => x.sender === coparent.name)
-            const lastMessage = coparentMessages[coparentMessages.length - 1]?.message
+            const coparent = thread?.members?.filter((x) => x.phone !== currentUser.phone)[0]
+            const coparentMessages = Manager.convertToArray(thread.messages)?.filter((x) => x.sender === coparent.name)
+            const lastMessage = coparentMessages[coparentMessages?.length - 1]?.message
+            const threadIsMuted = thread?.mutedMembers?.filter((x) => x.target === coparent.phone).length > 0
             return (
               <div key={index}>
+                {/* THREAD ITEM */}
                 <div
-                  className="flex thread-item"
+                  className={`flex thread-item ${threadIsMuted ? 'muted' : ''}`}
                   {...handlers}
                   onClick={(e) => {
-                    if (e.currentTarget.tagName !== 'SPAN' && e.currentTarget.tagName !== 'path') {
+                    if (hasClass(e.target, 'thread-item')) {
                       openMessageThread(coparent.phone).then((r) => r)
                     }
                   }}>
                   {/* COPARENT NAME */}
                   <div className="flex">
-                    <div className="user-initial">{coparent.name.charAt(0).toUpperCase()}</div>
+                    <div id="user-initial-wrapper">
+                      <span className="user-initial">{coparent.name.charAt(0).toUpperCase()}</span>
+                    </div>
                     <p data-coparent-phone={coparent.phone} className="coparent-name">
                       {formatNameFirstNameOnly(coparent.name)}
                       {/* Last Message */}
                       <span className="last-message">{lastMessage}</span>
                     </p>
                   </div>
-                  <BiSolidMessageRoundedMinus
-                    onClick={(e) =>
-                      confirmAlert(
-                        'Are you sure you would like to delete this conversation? You can recover it later.',
-                        "I'm Sure",
-                        true,
-                        async (e) => {
-                          await archive(coparent)
-                        },
-                        () => {
-                          setShowDeleteButton(false)
-                          setNavbarButton(() => setShowNewThreadForm(), 'green', <BiSolidEdit />)
-                        }
-                      )
-                    }
-                    className={`delete-icon mr-10 ${showDeleteButton ? 'active' : ''}`}
-                  />
+
+                  {/* UNMUTE BUTTON */}
+                  {threadIsMuted && (
+                    <div id="unmute-wrapper">
+                      <HiMiniBellAlert id={'unmute-icon'} onClick={() => muteChat(coparent.phone, 'unmute')} />
+                      <span>UNMUTE</span>
+                    </div>
+                  )}
+
+                  {/* THREAD ACTIONS */}
+                  <div className={showThreadActions ? 'active flex thread-actions' : 'flex thread-actions'}>
+                    {/* DELETE CHAT BUTTON */}
+                    <BiSolidMessageRoundedMinus
+                      onClick={(e) =>
+                        confirmAlert(
+                          'Are you sure you would like to delete this conversation? You can recover it later.',
+                          "I'm Sure",
+                          true,
+                          async (e) => {
+                            await archive(coparent)
+                          },
+                          () => {
+                            setShowThreadActions(false)
+                            setNavbarButton(() => setShowNewThreadForm(), 'green', <BiSolidEdit />)
+                          }
+                        )
+                      }
+                      className={`delete-icon mr-10 ${showThreadActions ? 'active' : ''}`}
+                    />
+
+                    {!threadIsMuted && <IoNotificationsOffCircle onClick={() => muteChat(coparent.phone, 'mute')} className={'mute-icon '} />}
+                  </div>
                 </div>
-                <hr id="chats-hr" />
               </div>
             )
           })}
 
         {!showNewThreadForm && threads.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
-
-        {/* NEW THREAD FORM */}
-        <BottomCard
-          hasSubmitButton={false}
-          className="new-conversation"
-          onClose={() => setShowNewConvoCard(false)}
-          showCard={showNewConvoCard}
-          title={'New Conversation'}>
-          {Manager.isValid(currentUser?.coparents, true) &&
-            currentUser?.coparents.map((coparent, index) => {
-              console.log(activeThreadPhones)
-              return (
-                <div key={index}>
-                  {!activeThreadPhones.includes(coparent.phone) && (
-                    <p
-                      className="coparent-name new-thread-coparent-name"
-                      onClick={() => {
-                        openMessageThread(coparent.phone).then((r) => r)
-                      }}>
-                      {coparent.name}
-                    </p>
-                  )}
-                  {activeThreadPhones.includes(coparent.phone) && <p>All available co-parents aleady have an open conversation with you. </p>}
-                </div>
-              )
-            })}
-        </BottomCard>
       </div>
       {!showNewConvoCard && (
         <NavBar navbarClass={'calendar'}>

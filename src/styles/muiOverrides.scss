@@ -151,10 +151,10 @@
       align-items: center;
       justify-content: center;
       color: black;
-      border-radius: 6px !important;
+      border-radius: $borderRadius !important;
 
       &.weekend-day {
-        opacity: 0.4;
+        opacity: 0.5;
       }
       &.Mui-selected {
         color: white !important;
@@ -162,7 +162,7 @@
         height: 40px !important;
         width: 50px !important;
         margin-top: 3px !important;
-        
+
         .dot-wrapper {
           top: -3px;
         }
@@ -183,15 +183,32 @@
     width: 100vw;
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 7px;
     padding-bottom: 10px;
+    position: relative;
+    z-index: 100000;
 
-    * {
+    button, p {
       color: $mainBlue !important;
       text-transform: uppercase;
       margin: 0;
-      font-size: 14px !important;
+      font-size: 12px !important;
+      border: 1px solid $mainBlue !important;
+      border-radius: 5px !important;
+      padding: 5px 8px;
+      line-height: 1 !important;
+      width: 83px !important;
+      text-align: center;
+      position: relative;
+      
+      &:before {
+        content: '' !important;;
+        left: -20px !important;;
+        right: -20px !important;;
+        bottom: -20px !important;;
+        top: -20px !important;;
+        position: absolute !important;;
+      }
     }
 
     .divider {
@@ -199,11 +216,8 @@
     }
 
     .MuiButtonBase-root {
-      padding: 0;
-    }
-
-    #holidays-button {
-      margin: 0 -8px 0 0;
+      padding: 5px 8px;
+      font-size: 12px !important;
     }
   }
 

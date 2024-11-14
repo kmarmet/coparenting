@@ -31,24 +31,25 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
+import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
-import ActivitySet from '../../models/activitySet'
-import DB_UserScoped from '@userScoped'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
+import BottomCard from '../shared/bottomCard'
+import DateManager from '../../managers/dateManager'
 
-function NewMemoryForm({ hideCard }) {
+function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, navbarButton, updateKey, theme } = state
   const [shareWith, setShareWith] = useState([])
   const [memoryNotes, setMemoryNotes] = useState('')
   const [images, setImages] = useState([])
   const [memoryTitle, setMemoryTitle] = useState('')
-  const inputFile = useRef(null)
+  const [memoryDate, setMemoryDate] = useState('')
   const [resetKey, setResetKey] = useState(Manager.getUid())
-
+  const inputFile = useRef(null)
   const resetForm = () => {
     Manager.resetForm('new-memory-wrapper')
     setShareWith([])
@@ -123,7 +124,8 @@ function NewMemoryForm({ hideCard }) {
             newMemory.notes = memoryNotes
             newMemory.id = Manager.getUid()
             newMemory.url = url
-            newMemory.memoryName = imageName
+            newMemory.memoryCaptureDate = DateManager.dateIsValid(memoryDate) ? moment(memoryDate).format(DateFormats.dateForDb) : ''
+            newMemory.memoryName = Manager.isValid(imageName) && imageName.length > 0 ? imageName : ''
             newMemory.title = memoryTitle
             newMemory.shareWith = shareWith
             newMemory.creationDate = moment().format(DateFormats.dateForDb)
@@ -131,6 +133,7 @@ function NewMemoryForm({ hideCard }) {
 
             const cleanedObject = Manager.cleanObject(newMemory, ModelNames.memory)
 
+            // Add to Database
             await DB.add(`${DB.tables.memories}`, cleanedObject)
           }
 
@@ -142,68 +145,77 @@ function NewMemoryForm({ hideCard }) {
       })
   }
 
-  const setActivitySets = async (userPhone) => {
-    const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
-    let newActivitySet = new ActivitySet()
-    let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
-    if (Manager.isValid(existingActivitySet, false, true)) {
-      newActivitySet = { ...existingActivitySet }
-    }
-    newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
-    await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
-  }
-
   useEffect(() => {
     Manager.showPageContainer()
     setResetKey(Manager.getUid())
   }, [])
 
   return (
-    <div className="new-memory-wrapper">
-      <div id="new-memory-form-container" className={`${theme} form`}>
-        <div className="form">
-          {currentUser && (
-            <ShareWithCheckboxes
-              icon={<ImEye />}
-              shareWith={currentUser.coparents.map((x) => x.phone)}
-              onCheck={handleShareWithSelection}
-              labelText={'Who is allowed to see it?'}
-              containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents.map((x) => x.phone)}
-              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-            />
-          )}
-          <InputWrapper
-            refreshKey={resetKey}
-            inputType={'input'}
-            defaultValue="Title"
-            labelText={'Title'}
-            onChange={(e) => setMemoryTitle(e.target.value)}></InputWrapper>
-          <InputWrapper
-            refreshKey={resetKey}
-            onChange={(e) => setMemoryNotes(e.target.value)}
-            inputType={'textarea'}
-            defaultValue="Image Description/Notes"
-            labelText={'Image Description/Notes'}></InputWrapper>
-          <UploadInputs
-            onClose={hideCard}
-            containerClass={`${theme} new-memory-card`}
-            uploadType={'image'}
-            actualUploadButtonText={'Upload'}
-            getImages={(files) => {
-              setImages(files)
-            }}
-            uploadButtonText={`Choose`}
-            upload={submit}
-          />
-          <div className="buttons">
-            <button className="cancel card-button" onClick={resetForm}>
-              Cancel
-            </button>
+    <BottomCard
+      onSubmit={submit}
+      refreshKey={resetKey}
+      submitText={'Add Memory'}
+      title={'New Memory'}
+      onClose={() => {
+        hideCard()
+        resetForm()
+      }}
+      showCard={showCard}>
+      <div className="new-memory-wrapper">
+        <div id="new-memory-form-container" className={`${theme} form`}>
+          <div className="form">
+            {/* SHARE WITH */}
+            {currentUser && (
+              <ShareWithCheckboxes
+                icon={<ImEye />}
+                shareWith={currentUser.coparents.map((x) => x.phone)}
+                onCheck={handleShareWithSelection}
+                labelText={'Who is allowed to see it?'}
+                containerClass={'share-with-coparents'}
+                dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+              />
+            )}
+
+            {/* TITLE */}
+            <InputWrapper
+              refreshKey={resetKey}
+              inputType={'input'}
+              defaultValue="Title"
+              labelText={'Title'}
+              onChange={(e) => setMemoryTitle(e.target.value)}></InputWrapper>
+
+            {/* DATE */}
+            <InputWrapper labelText={'Memory Capture Date'} inputType={'date'}>
+              <MobileDatePicker value={moment()} className={`${theme} m-0 w-100 mui-input`} onAccept={(e) => setMemoryDate(e)} />
+            </InputWrapper>
+
+            {/* NOTES */}
+            <InputWrapper
+              refreshKey={resetKey}
+              onChange={(e) => setMemoryNotes(e.target.value)}
+              inputType={'textarea'}
+              defaultValue="Image Description/Notes"
+              labelText={'Image Description/Notes'}></InputWrapper>
+
+            {/* UPLOAD BUTTON */}
+            {memoryTitle.length > 0 && (
+              <UploadInputs
+                onClose={hideCard}
+                containerClass={`${theme} new-memory-card`}
+                uploadType={'image'}
+                actualUploadButtonText={'Upload'}
+                getImages={(files) => {
+                  setImages(files)
+                }}
+                uploadButtonText={`Choose`}
+                upload={() => {}}
+              />
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </BottomCard>
   )
 }
 

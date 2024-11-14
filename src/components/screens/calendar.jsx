@@ -514,14 +514,10 @@ export default function EventCalendar() {
           {!showHolidays && !showSearchCard && (
             <div id="below-calendar" className={`${theme} mt-10 flex`}>
               {/* HOLIDAY BUTTON */}
-              <p id="holidays-button">
-                Holidays <span className="divider">|</span>
-              </p>
+              <p id="holidays-button">Holidays</p>
 
               {/* SEARCH BUTTON */}
-              <p id="search-button">
-                Search <span className="divider">|</span>
-              </p>
+              <p id="search-button">Search</p>
             </div>
           )}
           {/* MAP/LOOP EVENTS */}
@@ -656,7 +652,6 @@ export default function EventCalendar() {
                         </div>
                       </div>
                     </div>
-                    <hr className="event-hr" />
                   </div>
                 )
               })}

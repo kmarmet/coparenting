@@ -1,6 +1,5 @@
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
-import { DateRangePicker } from 'rsuite'
 import PushAlertApi from '@api/pushAlert'
 import SwapDurations from '@constants/swapDurations'
 import globalState from '../../context'
@@ -9,8 +8,9 @@ import SwapRequest from '../../models/swapRequest'
 import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import NotificationManager from '@managers/notificationManager.js'
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import BottomCard from '../shared/bottomCard'
+import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
+
 import Toggle from 'react-toggle'
 import {
   contains,
@@ -25,14 +25,17 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
+  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
-
-import Swal from 'sweetalert2'
+import { ImEye } from 'react-icons/im'
 import ModelNames from '../../models/modelNames'
+import InputWrapper from '../shared/inputWrapper'
+import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import DateFormats from '../../constants/dateFormats'
 
 export default function NewSwapRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -46,6 +49,9 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   const [requestToHour, setRequestToHour] = useState('')
   const [swapDuration, setSwapDuration] = useState('single')
   const [includeChildren, setIncludeChildren] = useState(false)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
   const resetForm = () => {
     Manager.resetForm('swap-request-wrapper')
@@ -59,27 +65,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     setSwapDuration('single')
     setIncludeChildren(false)
     hideCard()
-  }
-
-  const throwError = (title) => {
-    Swal.fire({
-      title: title,
-      icon: 'error',
-      showClass: {
-        popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-      },
-      hideClass: {
-        popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-      },
-    })
+    setRefreshKey(Manager.getUid())
   }
 
   const submit = async () => {
@@ -88,23 +74,18 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       return false
     } else {
       let newRequest = new SwapRequest()
-      if (swapDuration === SwapDurations.multiple || swapDuration === SwapDurations.single) {
-        newRequest.startDate = requestRange[0]
-        newRequest.endDate = requestRange.length > 1 ? requestRange[1] : requestRange[0]
-      } else {
-        newRequest.startDate = requestRange[0]
-        newRequest.endDate = requestRange[0]
-      }
       newRequest.id = Manager.getUid()
-      newRequest.children = requestChildren || ''
-      newRequest.reason = requestReason || ''
-      newRequest.duration = swapDuration || ''
-      newRequest.fromHour = requestFromHour || ''
-      newRequest.toHour = requestToHour || ''
-      newRequest.ownerPhone = currentUser.phone || ''
-      newRequest.createdBy = currentUser.name || ''
+      newRequest.children = requestChildren
+      newRequest.startDate = startDate
+      newRequest.endDate = endDate
+      newRequest.reason = requestReason
+      newRequest.duration = swapDuration
+      newRequest.fromHour = requestFromHour
+      newRequest.toHour = requestToHour
+      newRequest.ownerPhone = currentUser.phone
+      newRequest.createdBy = currentUser.name
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
-      newRequest.recipientPhone = currentUser?.coparents.filter((x) => x.name.contains(recipientName))[0].phone || ''
+      newRequest.recipientPhone = currentUser?.coparents?.filter((x) => contains(x?.name, recipientName))[0]?.phone || ''
 
       const cleanObject = Manager.cleanObject(newRequest, ModelNames.swapRequest)
 
@@ -137,9 +118,8 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   }
 
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
-      setShareWith(updated)
-    })
+    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
+    setShareWith(updated)
   }
 
   const handleRecipientSelection = (e) => {
@@ -163,113 +143,95 @@ export default function NewSwapRequest({ showCard, hideCard }) {
 
   return (
     <div className="swap-request-wrapper">
-      <BottomCard title={'Add Swap Request'} showCard={showCard} onClose={() => hideCard()}>
+      <BottomCard
+        submitText={'Add Request'}
+        refreshKey={refreshKey}
+        onSubmit={submit}
+        title={'Add Swap Request'}
+        showCard={showCard}
+        onClose={resetForm}>
         <div id="new-swap-request-container" className={`${theme} form`}>
+          {/* DURATION OPTIONS */}
           <div id="duration-options" className="swap-request action-pills">
-            <div className={`flex ${swapDuration === 'single' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.single)}>
-              <span className="material-icons-round">event</span>
+            <div className={`duration-option ${swapDuration === 'single' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.single)}>
+              {swapDuration === 'single' && <span className="material-icons-round">event</span>}
               <p>Day</p>
             </div>
-            <div className={`flex ${swapDuration === 'multiple' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.multiple)}>
-              <span className="material-icons-round">date_range</span>
+            <div
+              className={`duration-option ${swapDuration === 'multiple' ? 'active' : ''}`}
+              onClick={() => changeSwapDuration(SwapDurations.multiple)}>
+              {swapDuration === 'multiple' && <span className="material-icons-round">date_range</span>}
               <p>Days</p>
             </div>
-            <div className={`flex ${swapDuration === 'intraday' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.intra)}>
-              <span className="material-icons-round ">schedule</span>
+            <div className={`duration-option ${swapDuration === 'intraday' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.intra)}>
+              {swapDuration === 'intraday' && <span className="material-icons-round ">schedule</span>}
               <p>Hours</p>
             </div>
           </div>
-
+          {/* FORM */}
           <div id="request-form" className="form single">
+            {/* SINGLE DATE */}
             {swapDuration === SwapDurations.single && (
-              <>
-                <label>
-                  Date <span className="asterisk">*</span>
-                </label>
-                <MobileDatePicker
-                  className={`${theme} mb-15 mt-0 w-100`}
-                  onChange={(e) => {
-                    setRequestRange([moment(e).format('MM/DD/YYYY')])
-                  }}
-                />
-              </>
+              <InputWrapper inputType={'date'} labelText={'Date'} required={true}>
+                <MobileDatePicker className={`${theme}  w-100`} onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))} />
+              </InputWrapper>
             )}
 
+            {/* INTRADAY - HOURS */}
             {swapDuration === SwapDurations.intra && (
               <>
-                <label>
-                  Day <span className="asterisk">*</span>
-                </label>
-                <MobileDatePicker
-                  className={`${theme} mb-15 mt-0 w-100`}
-                  onAccept={(e) => setRequestRange([moment(e).format('MM/DD/YYYY').toString()])}
-                />
+                <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
+                  <MobileDatePicker className={`${theme}  w-100`} onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))} />
+                </InputWrapper>
                 <div className="flex gap ">
-                  <div>
-                    <label>
-                      Start time <span className="asterisk">*</span>
-                    </label>
-                    <MobileTimePicker className={`${theme} mb-15 mt-5 from-hour`} onChange={(e) => setRequestFromHour(moment(e).format('h a'))} />
-                  </div>
-                  <div>
-                    <label>
-                      End time <span className="asterisk">*</span>
-                    </label>
-                    <MobileTimePicker className={`${theme} mb-15 mt-5 to-hour`} onChange={(e) => setRequestToHour(moment(e).format('h a'))} />
-                  </div>
+                  <InputWrapper inputType={'date'} labelText={'Start Time'} required={true}>
+                    <MobileTimePicker className={`${theme}  from-hour`} onChange={(e) => setRequestFromHour(moment(e).format('h a'))} />
+                  </InputWrapper>
+                  <InputWrapper inputType={'date'} labelText={'End Time'} required={true}>
+                    <MobileTimePicker className={`${theme}  to-hour`} onChange={(e) => setRequestToHour(moment(e).format('h a'))} />
+                  </InputWrapper>
                 </div>
               </>
             )}
 
+            {/* MULTIPLE DAYS */}
             {swapDuration === SwapDurations.multiple && (
-              <>
-                <label>
-                  Date Range <span className="asterisk">*</span>
-                </label>
-                <DateRangePicker
-                  showOneCalendar
-                  className="mb-15 mt-0"
-                  showHeader={false}
-                  editable={false}
-                  placement="auto"
-                  character=" to "
-                  format={'MM/dd/yyyy'}
-                  onChange={(e) => {
-                    let formattedDates = []
-
-                    e.forEach((date) => {
-                      formattedDates.push(moment(date).format('MM/DD/YYYY').toString())
-                    })
-                    setRequestRange(formattedDates)
+              <InputWrapper labelText={'Date Range'} required={true} inputType={'date'}>
+                <MobileDateRangePicker
+                  className={'w-100'}
+                  onAccept={(dateArray) => {
+                    if (Manager.isValid(dateArray, true)) {
+                      setStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
+                      setEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
+                    }
                   }}
+                  slots={{ field: SingleInputDateRangeField }}
+                  name="allowedRange"
                 />
-              </>
+              </InputWrapper>
             )}
 
             {currentUser && (
               <>
                 {/* SEND REQUEST TO */}
-                <label>
-                  <span className="material-icons-round notifications">person</span>Who are you sending the request to?
-                  <span className="asterisk">*</span>
-                </label>
                 <CheckboxGroup
+                  required={true}
+                  parentLabel={'Who are you sending the request to?'}
                   dataPhone={currentUser?.coparents.map((x) => x.phone)}
                   checkboxLabels={currentUser?.coparents.map((x) => x.name)}
                   onCheck={handleRecipientSelection}
                 />
 
                 {/* WHO SHOULD SEE IT? */}
-                <div className="share-with-container">
-                  <label>
-                    <span className="material-icons-round">visibility</span> Who should see it?<span className="asterisk">*</span>
-                  </label>
-                  <CheckboxGroup
-                    dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                    checkboxLabels={currentUser?.coparents.map((x) => x.name)}
-                    onCheck={handleShareWithSelection}
-                  />
-                </div>
+                <ShareWithCheckboxes
+                  icon={<ImEye />}
+                  required={true}
+                  shareWith={currentUser.coparents.map((x) => x.phone)}
+                  onCheck={handleShareWithSelection}
+                  labelText={'Who is allowed to see it?'}
+                  containerClass={'share-with-coparents'}
+                  checkboxLabels={currentUser.coparents.map((x) => x.phone)}
+                />
               </>
             )}
 
@@ -293,8 +255,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
               </div>
             )}
 
-            <label>Reason</label>
-            <textarea id="rejection-reason-textarea" onChange={(e) => setRequestReason(e.target.value)}></textarea>
+            <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
             {/* BUTTONS */}
             <div className="buttons gap">
               {requestRange.length > 0 && shareWith.length > 0 && recipientName.length > 0 && (

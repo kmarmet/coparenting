@@ -10,9 +10,17 @@ function InputWrapper({ wrapperClasses = '', children, labelText, inputType, req
     element.parentNode.classList.add('active')
   }
 
-  const hideLabel = (element) => {
-    element.parentNode.classList.remove('active')
-    document.getElementById('blur').classList.remove('active')
+  const getPlaceholder = () => {
+    let text = defaultValue
+
+    if (defaultValue.length === 0) {
+      text = labelText
+    }
+    if (required) {
+      text += '*'
+    }
+
+    return text
   }
 
   return (
@@ -29,9 +37,8 @@ function InputWrapper({ wrapperClasses = '', children, labelText, inputType, req
           element={inputType}
           minLength={2}
           className={inputClasses}
-          placeholder={defaultValue.length > 0 ? defaultValue : labelText}
+          placeholder={getPlaceholder()}
           onChange={onChange}
-          // onBlur={(e) => hideLabel(e.currentTarget)}
           debounceTimeout={500}
           onClick={(e) => showLabel(e.currentTarget)}
         />
@@ -46,7 +53,7 @@ function InputWrapper({ wrapperClasses = '', children, labelText, inputType, req
           onChange={onChange}
           className={inputClasses}
           onClick={(e) => showLabel(e.currentTarget)}
-          placeholder={defaultValue.length > 0 ? defaultValue : labelText}
+          placeholder={getPlaceholder()}
           cols="30"
           rows="10"></textarea>
       )}

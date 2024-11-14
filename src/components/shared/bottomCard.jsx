@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import '../../prototypes'
-import { IoCloseOutline } from 'react-icons/io5'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
+import { IoIosCloseCircle } from 'react-icons/io'
 
 export default function BottomCard({
   submitText,
@@ -25,12 +25,14 @@ export default function BottomCard({
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
+    if (showCard) {
+      document.getElementById('page-overlay').classList.add('active')
+    } else {
+      document.getElementById('page-overlay').classList.remove('active')
+    }
     if (pageContainer) {
       if (showCard) {
-        pageContainer.classList.add('disable-scroll')
         document.getElementById('bottom-card').scrollTop = 0
-      } else {
-        pageContainer.classList.remove('disable-scroll')
       }
     }
   }, [showCard])
@@ -53,14 +55,14 @@ export default function BottomCard({
         {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
         {children}
       </div>
-      <div className={`${!hasDelete && !hasSubmitButton ? 'hide-bg' : ''} flex buttons`}>
+      <div className={` flex buttons`}>
         {hasSubmitButton && (
           <button className="button card-button submit" onClick={onSubmit}>
             {submitText} {submitIcon}
           </button>
         )}
         {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
-        <IoCloseOutline className="close-icon" onClick={onClose} />
+        <IoIosCloseCircle className="close-icon" onClick={onClose} />
       </div>
     </div>
   )

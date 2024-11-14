@@ -19,7 +19,6 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
-import Label from './label'
 
 export default function CheckboxGroup({
   checkboxLabels,
@@ -32,47 +31,53 @@ export default function CheckboxGroup({
   defaultLabels,
   labelText = '',
   required = false,
+  parentLabel = '',
 }) {
   const { state, setState } = useContext(globalState)
   const { theme } = state
   return (
     <div id="checkbox-group" className={`${theme} ${elClass}`}>
-      {Manager.isValid(checkboxLabels, true) &&
-        checkboxLabels.map((label, index) => {
-          let thisPhone = checkboxLabels[index]
-          let thisDate = null
-          if (Manager.isValid(dataPhone)) {
-            if (Manager.isValid(dataPhone[index])) {
-              thisPhone = dataPhone[index]
+      <div className="flex" id="parent-label-wrapper">
+        <label id="parent-label">{parentLabel}</label>
+        {required && <span className="asterisk">*</span>}
+      </div>
+      <div id="checkboxes">
+        {Manager.isValid(checkboxLabels, true) &&
+          checkboxLabels.map((label, index) => {
+            let thisPhone = checkboxLabels[index]
+            let thisDate = null
+            if (Manager.isValid(dataPhone)) {
+              if (Manager.isValid(dataPhone[index])) {
+                thisPhone = dataPhone[index]
+              }
             }
-          }
-          if (Manager.isValid(dataDate)) {
-            thisDate = dataDate[index]
-            if (thisDate !== undefined) {
+            if (Manager.isValid(dataDate)) {
               thisDate = dataDate[index]
+              if (thisDate !== undefined) {
+                thisDate = dataDate[index]
+              }
             }
-          }
-          if (Manager.isValid(label) && !stringHasNumbers(label) && !skipNameFormatting) {
-            label = formatNameFirstNameOnly(label.toString())
-          }
-          return (
-            <div key={index}>
-              <Label text={labelText} required={required}></Label>
-              <div
-                id="checkbox-container"
-                data-phone={thisPhone ? thisPhone : ''}
-                data-label={label ? label : ''}
-                data-date={thisDate ? thisDate : ''}
-                className={`flex ${containerClass}`}
-                onClick={(e) => onCheck(e)}>
-                <div className={`box ${Manager.isValid(defaultLabels, true) && defaultLabels.includes(label) ? 'active' : ''}`}>
-                  <div id="inner-circle"></div>
+            if (Manager.isValid(label) && !stringHasNumbers(label) && !skipNameFormatting) {
+              label = formatNameFirstNameOnly(label.toString())
+            }
+            return (
+              <div key={index}>
+                <div
+                  id="checkbox-container"
+                  data-phone={thisPhone ? thisPhone : ''}
+                  data-label={label ? label : ''}
+                  data-date={thisDate ? thisDate : ''}
+                  className={`flex ${containerClass}`}
+                  onClick={(e) => onCheck(e)}>
+                  <div className={`box ${Manager.isValid(defaultLabels, true) && defaultLabels.includes(label) ? 'active' : ''}`}>
+                    <div id="inner-circle"></div>
+                  </div>
+                  <span>{label}</span>
                 </div>
-                <span>{label}</span>
               </div>
-            </div>
-          )
-        })}
+            )
+          })}
+      </div>
     </div>
   )
 }
