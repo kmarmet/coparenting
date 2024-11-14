@@ -732,7 +732,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
             </>
           )}
 
-          <hr className="mb-0" />
+          <hr />
 
           {/* URL/WEBSITE */}
           <InputWrapper labelText={'Website'} required={false} inputType={'input'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
@@ -746,7 +746,6 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                 types: ['geocode', 'establishment'],
                 componentRestrictions: { country: 'usa' },
               }}
-              className="mb-10"
               onPlaceSelected={(place) => {
                 setEventLocation(place.formatted_address)
               }}

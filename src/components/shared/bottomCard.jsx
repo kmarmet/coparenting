@@ -49,8 +49,6 @@ export default function BottomCard({
   return (
     <div key={refreshKey} id="bottom-card" className={`${cardClasses()} ${alertType} `}>
       <div id="title" dangerouslySetInnerHTML={{ __html: title }}></div>
-      <hr id="title-hr" />
-
       <div id="content" className="mt-15">
         {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
         {children}

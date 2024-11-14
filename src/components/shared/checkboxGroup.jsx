@@ -37,7 +37,7 @@ export default function CheckboxGroup({
   const { theme } = state
   return (
     <div id="checkbox-group" className={`${theme} ${elClass}`}>
-      <div className="flex" id="parent-label-wrapper">
+      <div id="parent-label-wrapper">
         <label id="parent-label">{parentLabel}</label>
         {required && <span className="asterisk">*</span>}
       </div>

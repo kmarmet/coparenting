@@ -9,7 +9,7 @@ import Behavior from '../childInfo/behavior'
 import General from '../childInfo/general'
 import Medical from '../childInfo/medical'
 import Schooling from '../childInfo/schooling'
-import BottomCard from '../../shared/bottomCard'
+import { FaWandMagicSparkles } from 'react-icons/fa6'
 import {
   displayAlert,
   formatFileName,
@@ -95,29 +95,23 @@ export default function ChildInfo() {
   return (
     <div>
       {/* CHILD SELECTOR */}
-      <BottomCard
-        onClose={() => setShowSelectorCard(false)}
-        title={'Choose Child'}
-        subtitle="Select which child you would like to view & edit"
+      <ChildSelector
+        activeInfoChild={activeInfoChild}
         showCard={showSelectorCard}
-        className={`success`}>
-        <ChildSelector
-          setActiveChild={async (child) => {
-            await updateActiveChild(child)
-            setShowSelectorCard(false)
-          }}
-        />
-        <div className="buttons">
-          <button className="card-button cancel" onClick={() => setShowSelectorCard(false)}>
-            Close
-          </button>
-        </div>
-      </BottomCard>
+        hideCard={() => setShowSelectorCard(false)}
+        setActiveChild={async (child) => {
+          await updateActiveChild(child)
+          setShowSelectorCard(false)
+        }}
+      />
 
       {/* CUSTOM INFO FORM */}
-      <BottomCard className="custom-child-info-wrapper" onClose={() => setShowInfoCard(false)} title={'Add Custom Info'} showCard={showInfoCard}>
-        <CustomChildInfo setActiveChild={(child) => setActiveInfoChild(child)} activeChild={activeInfoChild} onClose={() => setShowInfoCard(false)} />
-      </BottomCard>
+      <CustomChildInfo
+        showCard={showInfoCard}
+        setActiveChild={(child) => setActiveInfoChild(child)}
+        activeChild={activeInfoChild}
+        hideCard={() => setShowInfoCard(false)}
+      />
 
       {/* NEW CHILD + */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
@@ -170,7 +164,7 @@ export default function ChildInfo() {
             onClick={() => {
               setShowInfoCard(true)
             }}>
-            Add Your Own Info <span className="material-icons">auto_fix_high</span>
+            Add Your Own Info <FaWandMagicSparkles />
           </button>
           <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center w-60">
             Different Child

@@ -11,6 +11,7 @@ import ModelNames from '../../models/modelNames'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import { HiOutlineSave } from 'react-icons/hi'
+import moment from 'moment'
 import {
   capitalizeFirstWord,
   contains,
@@ -30,10 +31,13 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
-import { LuImageMinus, LuImagePlus } from 'react-icons/lu'
+import { LuImagePlus } from 'react-icons/lu'
 import { saveImageFromUrl } from '../../managers/imageManager'
+import { IoIosCloseCircle } from 'react-icons/io'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
+import DateFormats from '../../constants/dateFormats'
+import DateManager from '../../managers/dateManager'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -139,14 +143,11 @@ export default function Memories() {
   }
 
   const saveMemoryImage = (e) => {
-    const thisIconParent = e.target.parentNode
-    if (Manager.isValid(thisIconParent)) {
-      const memoryImage = thisIconParent.closest('.below-image').previousSibling
-      if (Manager.isValid(memoryImage)) {
-        const src = memoryImage.getAttribute('data-src')
-        if (Manager.isValid(src)) {
-          saveImageFromUrl(null, src)
-        }
+    const memoryImage = e.target.parentNode.previousSibling
+    if (Manager.isValid(memoryImage)) {
+      const src = memoryImage.getAttribute('data-src')
+      if (Manager.isValid(src)) {
+        saveImageFromUrl(null, src)
       }
     }
   }
@@ -181,24 +182,34 @@ export default function Memories() {
             {Manager.isValid(memories, true) &&
               memories.map((imgObj, index) => {
                 return (
-                  <>
-                    <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}></div>
-                    <div className="below-image">
-                      <div className="top flex">
+                  <div className="memory">
+                    {/* TITLE AND DATE */}
+                    {imgObj?.title.length > 0 && (
+                      <div id="title-and-date">
+                        {/* TITLE */}
                         <p className="title">{uppercaseFirstLetterOfAllWords(imgObj.title)}</p>
-                        <div className="buttons flex">
-                          <HiOutlineSave
-                            onClick={(e) => {
-                              saveMemoryImage(e)
-                            }}
-                            className={'fs-30'}
-                          />
-                          <LuImageMinus className={'fs-26'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
-                        </div>
+
+                        {/* DATE */}
+                        {DateManager.dateIsValid(imgObj.memoryCaptureDate) && (
+                          <p id="date">{moment(imgObj.memoryCaptureDate).format(DateFormats.readableMonthAndDay)}</p>
+                        )}
                       </div>
-                      <div className="text">{capitalizeFirstWord(imgObj?.notes)}</div>
+                    )}
+
+                    {/* IMAGE */}
+                    <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}>
+                      {/* DELETE ICON */}
+                      <IoIosCloseCircle className={'delete-icon'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
                     </div>
-                  </>
+
+                    {/* NOTES */}
+                    <div id="below-image" className="flex">
+                      <p className="text">{capitalizeFirstWord(imgObj?.notes)}</p>
+
+                      {/* SAVE ICON */}
+                      <HiOutlineSave id={'save-icon'} onClick={(e) => saveMemoryImage(e)} />
+                    </div>
+                  </div>
                 )
               })}
           </>

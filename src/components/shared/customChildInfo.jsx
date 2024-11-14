@@ -15,6 +15,8 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
+  successAlert,
+  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -22,17 +24,26 @@ import {
 } from '.././../globalFunctions'
 import CheckboxGroup from './checkboxGroup'
 import Autocomplete from 'react-google-autocomplete'
+import InputWrapper from './inputWrapper'
+import Label from './label'
+import BottomCard from './bottomCard'
 
-export default function CustomChildInfo({ onClose, setActiveChild, activeChild }) {
+export default function CustomChildInfo({ hideCard, showCard, setActiveChild, activeChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser } = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
   const [infoSection, setInfoSection] = useState('general')
   const [infoType, setInfoType] = useState('text')
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
   const add = async () => {
+    if (title.length === 0 || value.length === 0) {
+      throwError('Please fill/select required fields')
+      return false
+    }
     const updatedChild = await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, Manager.toCamelCase(title), value)
+    successAlert(`${uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`)
     resetForm()
     setActiveChild(updatedChild)
   }
@@ -43,7 +54,10 @@ export default function CustomChildInfo({ onClose, setActiveChild, activeChild }
       (e) => {
         setInfoType(e.toLowerCase())
       },
-      () => {},
+      (e) => {
+        if (e === 'Text') setInfoType('location')
+        else setInfoType('text')
+      },
       false
     )
   }
@@ -53,74 +67,74 @@ export default function CustomChildInfo({ onClose, setActiveChild, activeChild }
     setTitle('')
     setValue('')
     setInfoSection('')
-    onClose()
+    hideCard()
+    setRefreshKey(Manager.getUid())
   }
 
   return (
-    <div className="form">
-      {/* INFO SECTIONS */}
-      <label>
-        Info Section <span className="asterisk">*</span>
-      </label>
-      <div className="flex">
-        <p onClick={() => setInfoSection('general')} className={infoSection === 'general' ? 'active item' : 'item'}>
-          General
-        </p>
-        <p onClick={() => setInfoSection('medical')} className={infoSection === 'medical' ? 'active item' : 'item'}>
-          Medical
-        </p>
-        <p onClick={() => setInfoSection('schooling')} className={infoSection === 'schooling' ? 'active item' : 'item'}>
-          Schooling
-        </p>
-        <p onClick={() => setInfoSection('behavior')} className={infoSection === 'behavior' ? 'active item' : 'item'}>
-          Behavior
-        </p>
-      </div>
-
-      {/* INFO TYPE */}
-      <label>
-        Info Type <span className="asterisk">*</span>
-      </label>
-      <CheckboxGroup defaultLabel={'text'} checkboxLabels={['Text', 'Location']} onCheck={handleInfoTypeSelection} />
-
-      {/* INPUTS */}
-      {infoType === 'text' && (
-        <div className="flex">
-          <input className="mb-15" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
-          <input className="mb-15" type="text" placeholder="Value*" onChange={(e) => setValue(e.target.value)} />
+    <BottomCard
+      refreshKey={refreshKey}
+      onSubmit={add}
+      submitText={'Add'}
+      className="custom-child-info-wrapper"
+      onClose={resetForm}
+      title={'Add Custom Info'}
+      showCard={showCard}>
+      <div className="form">
+        {/* INFO SECTIONS */}
+        <Label text={'Section'} required={true} />
+        <div className="flex" id="info-type">
+          <p onClick={() => setInfoSection('general')} className={infoSection === 'general' ? 'active item' : 'item'}>
+            General
+          </p>
+          <p onClick={() => setInfoSection('medical')} className={infoSection === 'medical' ? 'active item' : 'item'}>
+            Medical
+          </p>
+          <p onClick={() => setInfoSection('schooling')} className={infoSection === 'schooling' ? 'active item' : 'item'}>
+            Schooling
+          </p>
+          <p onClick={() => setInfoSection('behavior')} className={infoSection === 'behavior' ? 'active item' : 'item'}>
+            Behavior
+          </p>
         </div>
-      )}
 
-      {infoType === 'location' && (
-        <>
-          <input className="mb-15" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
-          <Autocomplete
-            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-            options={{
-              types: ['geocode', 'establishment'],
-              componentRestrictions: { country: 'usa' },
-            }}
-            className="mb-10"
-            onPlaceSelected={async (place) => {
-              setTitle('address')
-              setValue(place.formatted_address)
-            }}
-            placeholder={Manager.isValid(activeChild.general.address) ? activeChild.general.address : 'Location'}
-          />
-        </>
-      )}
+        {/* INFO TYPE */}
+        <CheckboxGroup
+          parentLabel="Type"
+          required={true}
+          defaultLabels={'Text'}
+          checkboxLabels={['Text', 'Location']}
+          onCheck={handleInfoTypeSelection}
+        />
 
-      {/* BUTTONS */}
-      <div className="buttons">
-        {Manager.isValid(value) && Manager.isValid(title) && (
-          <button className="button card-button" onClick={add}>
-            Add<span className="ml-10 material-icons-outlined">auto_fix_high</span>
-          </button>
+        {/* INPUTS */}
+        {infoType === 'text' && (
+          <>
+            <InputWrapper inputType={'input'} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
+            <InputWrapper inputType={'input'} labelText={'Value'} required={true} onChange={(e) => setValue(e.target.value)} />
+          </>
         )}
-        <button className="button card-button cancel" onClick={resetForm}>
-          Cancel
-        </button>
+
+        {infoType === 'location' && (
+          <>
+            <InputWrapper inputType={'input'} labelText={'Title/Label'} required={true} />
+            <InputWrapper inputType={'location'} labelText={'Location'}>
+              <Autocomplete
+                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                options={{
+                  types: ['geocode', 'establishment'],
+                  componentRestrictions: { country: 'usa' },
+                }}
+                onPlaceSelected={async (place) => {
+                  setTitle('address')
+                  setValue(place.formatted_address)
+                }}
+                placeholder={Manager.isValid(activeChild?.general?.address) ? activeChild?.general?.address : 'Location'}
+              />
+            </InputWrapper>
+          </>
+        )}
       </div>
-    </div>
+    </BottomCard>
   )
 }

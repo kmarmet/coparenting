@@ -17,32 +17,45 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import DB from '@db'
+import BottomCard from '../../shared/bottomCard'
 
-function ChildSelector({ setActiveChild }) {
+function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, activeInfoChild } = state
+  const { currentUser } = state
   const [children, setChildren] = useState(currentUser?.children)
 
   const setUserChildren = async () => {
-    const childs = await DB.getTable(`users/${currentUser.phone}/children`)
-    setChildren(childs)
+    const currentUserChildren = await DB.getTable(`users/${currentUser.phone}/children`)
+    setChildren(currentUserChildren)
   }
 
   useEffect(() => {
     setUserChildren().then((r) => r)
+    console.log(activeInfoChild)
   }, [activeInfoChild])
 
   return (
-    <div className="flex gap wrap mt-15">
-      {Manager.isValid(children, true) &&
-        children.map((child, index) => {
-          return (
-            <p className="child-name mt-0 w-30" key={index} onClick={(e) => setActiveChild(child)}>
-              {formatNameFirstNameOnly(child?.general?.name)}
-            </p>
-          )
-        })}
-    </div>
+    <BottomCard
+      hasSubmitButton={false}
+      onClose={hideCard}
+      title={'Choose Child'}
+      subtitle="Select which child you would like to view & edit"
+      showCard={showCard}
+      className={`child-selector`}>
+      <div className="flex gap wrap mt-15">
+        {Manager.isValid(children, true) &&
+          children.map((child, index) => {
+            return (
+              <p
+                className={`child-name ${child?.general?.name === activeInfoChild?.general?.name ? 'active' : ''}`}
+                key={index}
+                onClick={(e) => setActiveChild(child)}>
+                {formatNameFirstNameOnly(child?.general?.name)}
+              </p>
+            )
+          })}
+      </div>
+    </BottomCard>
   )
 }
 

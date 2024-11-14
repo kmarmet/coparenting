@@ -377,7 +377,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    color: $darkGrey;
+    color: black;
     font-weight: 600;
     font-size: 16px;
     line-height: 1.5;
@@ -403,6 +403,19 @@
 /*#endregion  FORM*/
 
 /*#region  BUTTONS*/
+@mixin pillButton {
+  font-size: 14px;
+  border: 1px solid $lightAccent;
+  color: $lightAccent;
+  padding: 2px 10px;
+  border-radius: 20px;
+  transition: all 0.3s ease-in-out;
+
+  &.active {
+    background-color: $lightAccent;
+    color: white;
+  }
+}
 @mixin defaultButton() {
   border-radius: $borderRadius;
   padding: 10px 20px;
@@ -412,11 +425,16 @@
   font-weight: 500;
   color: white;
   line-height: 1;
-
+  min-height: 40px;
   @include buttonPress;
 
-  span {
-    margin-left: 8px;
+  * {
+    line-height: 1;
+  }
+
+  svg {
+    font-size: 18px;
+    margin-left: 5px;
   }
 
   &.green {
@@ -928,23 +946,13 @@
   width: 100%;
   margin-bottom: 8px;
 
-  &.location {
-    position: relative;
-    top: -10px;
-  }
-
-  &.textarea {
-    position: relative;
-    top: -5px;
-  }
-
   #label-wrapper {
     margin: 0;
     label {
       margin: 0;
       color: $lightBlueMedium;
       font-size: 14px;
-      font-weight: $fwRegular;
+      font-weight: $fwMedium;
     }
   }
 
@@ -959,13 +967,15 @@
     left: -200px;
     transition: all 0.4s ease-in-out;
     opacity: 0;
+    height: 0;
+    width: 0;
+    
     &::before {
       content: '';
       position: absolute;
       top: -8px;
       left: -8px;
       background-position: 50%;
-
       filter: blur(8px);
       z-index: -1;
     }
@@ -983,6 +993,8 @@
     margin-bottom: 15px;
 
     #blur {
+      height: auto;
+      width: auto;
       left: 20px;
       opacity: 1;
     }
@@ -1013,6 +1025,8 @@
     #blur {
       left: 20px;
       opacity: 1;
+      height: auto;
+      width: auto;
     }
     .floating-label {
       opacity: 1;
@@ -1230,8 +1244,9 @@
   }
 }
 @mixin checkboxGroup {
-  margin-bottom: 10px;
+  margin: 15px 0;
   padding: 0;
+  display: block;
 
   #checkboxes {
     gap: 5px 10px;
@@ -1245,8 +1260,10 @@
   }
 
   #parent-label-wrapper {
+    display: flex;
+    align-items: center;
     #parent-label {
-      margin: 0;
+      margin: 0 0 3px 0;
       line-height: 1;
     }
   }
@@ -2204,7 +2221,7 @@
     border: 0;
     background-color: white;
     @include centerHoriz;
-    padding: 15px 20px;
+    padding: 15px 20px 25px 15px;
     border-top: 1px solid $borderColor;
 
     * {
@@ -2300,11 +2317,6 @@
     }
   }
 
-  &.success {
-    #title {
-      color: $green;
-    }
-  }
   &.error {
     #title {
       color: $red;
@@ -2382,12 +2394,6 @@
     }
   }
 
-  &.success {
-    #title {
-      color: $green;
-    }
-  }
-
   &.error {
     p,
     #title {
@@ -2429,17 +2435,56 @@
       flex-wrap: wrap;
 
       .pill {
-        font-size: 14px;
-        border: 1px solid $accent;
-        color: $accent;
-        padding: 2px 10px;
-        border-radius: 20px;
+        @include pillButton;
+      }
+    }
+  }
+
+  // CHILD SELECTOR
+  &.child-selector {
+    .child-name {
+      @include pillButton;
+      margin: 0;
+    }
+  }
+
+  // CUSTOM CHILD INFO
+  &.custom-child-info-wrapper {
+    #info-type {
+      display: flex;
+      align-items: center;
+      background-color: $bestGreyForWhite;
+      border-radius: 20px;
+      margin-bottom: 20px;
+
+      * {
+        line-height: 1;
+        margin: 0;
+        padding: 0;
+      }
+
+      .item {
+        align-items: center;
+        justify-content: center;
+        color: $lightDarkGrey;
+        background-color: transparent;
+        text-align: center;
+        text-transform: uppercase;
         transition: all 0.3s ease-in-out;
+        border: 0;
+        padding: 10px;
+        display: flex;
+        font-size: 14px;
+        align-self: stretch;
+        border-radius: 20px;
+        width: calc(100% / 4);
 
         &.active {
           background-color: $mainBlue;
+          width: 50%;
           color: white;
-          border: 0;
+          line-height: 1;
+          opacity: 1;
         }
       }
     }
@@ -2449,36 +2494,6 @@
   &.conversation-search-card {
     min-height: 200px;
     max-height: 200px;
-  }
-
-  // CUSTOM INFO
-  &.custom-child-info-wrapper {
-    p:not(#title) {
-      &.item {
-        &.active {
-          background: transparent;
-        }
-      }
-    }
-    .form {
-      input {
-        border: 1px solid $lightBorder;
-      }
-      .flex {
-        align-items: center;
-        gap: 8px;
-
-        .item {
-          width: calc(100% / 4);
-          margin: 0;
-          opacity: 0.7;
-          &.active {
-            font-weight: bold;
-            opacity: 1;
-          }
-        }
-      }
-    }
   }
 
   // DOC VIEWER SEARCH

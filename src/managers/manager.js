@@ -308,16 +308,17 @@ const Manager = {
   handleCheckboxSelection: (element, onCheck, onCheckRemoval, canSelectAll = false) => {
     const clickedEl = element.currentTarget
     const checkbox = clickedEl.querySelector('.box')
+    const labels = clickedEl.closest('#checkbox-group').querySelectorAll(`[data-label]`)
 
-    if (checkbox.classList.contains('active')) {
+    if (hasClass(checkbox, 'active')) {
       const label = clickedEl.dataset['label']
       checkbox.classList.remove('active')
       if (onCheckRemoval) onCheckRemoval(label)
     } else {
       const label = clickedEl.dataset['label']
-      const notActiveLabels = clickedEl.parentNode.querySelectorAll(`[data-label]:not([data-label="${label}"])`)
-      if (!canSelectAll) {
-        notActiveLabels.forEach((labelEl) => {
+      if (canSelectAll === false) {
+        labels.forEach((labelEl) => {
+          console.log(labelEl.querySelector('.box'))
           labelEl.querySelector('.box').classList.remove('active')
         })
       }

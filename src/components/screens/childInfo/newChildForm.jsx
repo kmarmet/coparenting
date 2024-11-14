@@ -42,6 +42,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
   const [existingChildren, setExistingChildren] = useState([])
   const [gender, setGender] = useState('male')
   const [dateOfBirth, setDateOfBirth] = useState('')
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
   const resetForm = () => {
     Manager.resetForm('new-child-wrapper')
@@ -52,6 +53,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
     setGender('male')
     setDateOfBirth('')
     hideCard()
+    setRefreshKey(Manager.getUid())
   }
 
   const submit = async () => {
@@ -98,12 +100,13 @@ const NewChildForm = ({ hideCard, showCard }) => {
 
   return (
     <BottomCard
+      refreshKey={refreshKey}
       submitText={`Add ${name.length > 0 ? name : 'Child'}`}
       onSubmit={submit}
       className="new-child-wrapper"
       title={'Add Child'}
       showCard={showCard}
-      onClose={hideCard}>
+      onClose={resetForm}>
       <div id="new-child-container" className={`${theme}  form`}>
         <div className="form new-child-form">
           {/* NAME */}
@@ -126,13 +129,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
           </InputWrapper>
 
           {/* GENDER */}
-          <CheckboxGroup
-            parentLabel={'Gender'}
-            boxWidth={20}
-            elClass="mb-20"
-            checkboxLabels={['Male', 'Female']}
-            onCheck={(e) => handleGenderSelect(e)}
-          />
+          <CheckboxGroup parentLabel={'Gender'} checkboxLabels={['Male', 'Female']} onCheck={(e) => handleGenderSelect(e)} />
         </div>
       </div>
     </BottomCard>

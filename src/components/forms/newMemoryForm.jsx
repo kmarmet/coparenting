@@ -67,12 +67,12 @@ function NewMemoryForm({ hideCard, showCard }) {
   }
 
   const submit = async () => {
-    if (images !== undefined && images.length === 0) {
-      throwError('Please choose an image')
-      return false
-    }
     if (!Manager.isValid(shareWith, true)) {
       throwError('Please select who can see this memory')
+      return false
+    }
+    if (images !== undefined && images.length === 0) {
+      throwError('Please choose an image')
       return false
     }
 
@@ -199,7 +199,7 @@ function NewMemoryForm({ hideCard, showCard }) {
               labelText={'Image Description/Notes'}></InputWrapper>
 
             {/* UPLOAD BUTTON */}
-            {memoryTitle.length > 0 && (
+            {shareWith.length > 0 && (
               <UploadInputs
                 onClose={hideCard}
                 containerClass={`${theme} new-memory-card`}
