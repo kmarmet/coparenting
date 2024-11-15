@@ -4,7 +4,6 @@ import globalState from '../../../context'
 import Manager from '@manager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
-import { DebounceInput } from 'react-debounce-input'
 import {
   camelCaseToString,
   contains,
@@ -26,10 +25,12 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
+import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import DB_UserScoped from '@userScoped'
 import Accordion from '@mui/material/Accordion'
 import Autocomplete from 'react-google-autocomplete'
 import { FaChevronDown } from 'react-icons/fa6'
+import InputWrapper from '../../shared/inputWrapper'
 
 function General({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -82,39 +83,35 @@ function General({ activeChild, setActiveChild }) {
               const value = prop[1]
               return (
                 <div key={index}>
-                  <label className="w-100">{infoLabel}</label>
                   <div className="flex input">
                     {contains(infoLabel.toLowerCase(), 'address') && (
-                      <Autocomplete
-                        apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                        options={{
-                          types: ['geocode', 'establishment'],
-                          componentRestrictions: { country: 'usa' },
-                        }}
-                        className="mb-10"
-                        onPlaceSelected={async (place) => {
-                          await update('general', 'address', place.formatted_address, false)
-                        }}
-                        placeholder={Manager.isValid(activeChild?.general?.address) ? activeChild?.general?.address : 'Location'}
-                      />
+                      <InputWrapper inputType={'location'} defaultValue={value} labelText={infoLabel}>
+                        <Autocomplete
+                          apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                          options={{
+                            types: ['geocode', 'establishment'],
+                            componentRestrictions: { country: 'usa' },
+                          }}
+                          className="mb-10"
+                          onPlaceSelected={async (place) => {
+                            await update('general', 'address', place.formatted_address, false)
+                          }}
+                          placeholder={Manager.isValid(activeChild?.general?.address) ? activeChild?.general?.address : 'Location'}
+                        />
+                      </InputWrapper>
                     )}
                     {!contains(infoLabel.toLowerCase(), 'address') && (
-                      <DebounceInput
-                        className="mb-15"
-                        value={value}
-                        minLength={2}
-                        debounceTimeout={1000}
+                      <InputWrapper
+                        inputType={'input'}
+                        labelText={infoLabel}
+                        defaultValue={value}
                         onChange={async (e) => {
                           const inputValue = e.target.value
                           await update('general', infoLabel, `${inputValue}`)
                         }}
                       />
                     )}
-                    {infoLabel.toLowerCase() !== 'name' && (
-                      <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
-                        delete
-                      </span>
-                    )}
+                    {infoLabel.toLowerCase() !== 'name' && <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />}
                   </div>
                 </div>
               )

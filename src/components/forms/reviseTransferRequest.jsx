@@ -9,14 +9,31 @@ import PushAlertApi from '@api/pushAlert'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
-
-import { displayAlert, formatNameFirstNameOnly, successAlert } from '../../globalFunctions'
 import ModelNames from '../../models/modelNames'
 import BottomCard from '../shared/bottomCard'
+import InputWrapper from '../shared/inputWrapper'
+import {
+  contains,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  successAlert,
+  throwError,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
+} from 'globalFunctions'
 
-export default function ReviseChildTransferChangeRequest({ hideCard, showCard }) {
+export default function ReviseChildTransferChangeRequest({ hideCard, showCard, revisionRequest }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, transferRequestToRevise } = state
+  const { currentUser, theme } = state
   const [requestTime, setRequestTime] = useState('')
   const [requestLocation, setRequestLocation] = useState('')
   const [requestDate, setRequestDate] = useState('')
@@ -35,15 +52,14 @@ export default function ReviseChildTransferChangeRequest({ hideCard, showCard })
 
   const submit = async () => {
     if (requestLocation.length === 0 && requestTime.length === 0) {
-      displayAlert('error', 'Please choose a new location or time')
+      throwError('Please choose a new location or time')
       return false
     }
     if (requestDate.length === 0) {
-      displayAlert('error', 'Please choose the day of the requested transfer change')
+      throwError('Please choose the day of the requested transfer change')
       return false
     }
-    let revisedRequest
-    revisedRequest = transferRequestToRevise
+    let revisedRequest = { ...revisionRequest }
     if (DateManager.dateIsValid(requestTime)) {
       revisedRequest.time = moment(requestTime).format(DateFormats.timeForDb)
     }
@@ -60,81 +76,84 @@ export default function ReviseChildTransferChangeRequest({ hideCard, showCard })
     const cleanRequest = Manager.cleanObject(revisedRequest, ModelNames.transferChangeRequest)
 
     // Notify
-    if (transferRequestToRevise.recipientPhone) {
-      const subId = await NotificationManager.getUserSubId(transferRequestToRevise.requestRecipientPhone)
+    if (revisionRequest?.recipientPhone) {
+      const subId = await NotificationManager.getUserSubId(revisionRequest?.requestRecipientPhone)
       PushAlertApi.sendMessage(`Transfer Change Request`, `${formatNameFirstNameOnly(currentUser.name)} has created a Transfer Change request`, subId)
     }
     // Revise
-    const updateKey = await DB.getSnapshotKey(DB.tables.transferChangeRequests, transferRequestToRevise, 'id')
+    const updateKey = await DB.getSnapshotKey(DB.tables.transferChangeRequests, revisionRequest, 'id')
     await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${updateKey}`, cleanRequest)
     successAlert('Updated')
     resetForm()
   }
 
   const setDefaults = () => {
-    setRequestTime(transferRequestToRevise?.time)
-    setRequestDate(transferRequestToRevise?.date)
-    const dayInputWrapper = document.querySelector('.day-input-wrapper')
-    if (dayInputWrapper) {
-      dayInputWrapper.querySelector('input').value = moment(transferRequestToRevise?.date)
-    }
+    setRequestTime(revisionRequest?.time)
+    setRequestDate(revisionRequest?.date)
+    setDirectionsLink(revisionRequest?.directionsLink)
+    setRequestLocation(revisionRequest?.preferredTransferLocation)
   }
 
   useEffect(() => {
-    setDefaults()
-  }, [transferRequestToRevise])
+    console.log(revisionRequest)
+    // setDefaults()
+  }, [revisionRequest])
 
   useEffect(() => {
-    Manager.showPageContainer('show')
-  }, [])
+    setDefaults()
+    Manager.showPageContainer()
+  })
 
   return (
-    <BottomCard refreshKey={refreshKey} title={'Revise Request'} showCard={showCard} onClose={resetForm}>
+    <BottomCard
+      onSubmit={submit}
+      submitText={'Send Revision'}
+      refreshKey={refreshKey}
+      title={'Revise Request'}
+      showCard={showCard}
+      onClose={resetForm}>
       <div className="revise-transfer-wrapper">
         <div id="transfer-change-container" className={`${theme} form`}>
           <div className="form transfer-change">
             <div className="flex gap">
               <div>
                 {/* DAY */}
-                <label>
-                  Day<span className="asterisk">*</span>
-                </label>
-                <MobileDatePicker
-                  format={DateFormats.dateForDb}
-                  defaultValue={moment(transferRequestToRevise?.date, DateFormats.dateForDb)}
-                  className="mb-15 mt-0 w-100 day-input-wrapper"
-                  onChange={(e) => setRequestDate(e)}
-                />
+                <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
+                  <MobileDatePicker
+                    value={moment(requestDate, DateFormats.dateForDb)}
+                    className="mb-15 mt-0 w-100 day-input-wrapper"
+                    onChange={(e) => setRequestDate(e)}
+                  />
+                </InputWrapper>
               </div>
 
               {/* TIME */}
-              <div>
-                <label className="mt-0">
-                  New Time <span>&nbsp;</span>
-                </label>
+              <InputWrapper inputType={'date'} labelText={'New Time'}>
                 <MobileTimePicker
-                  defaultValue={moment(transferRequestToRevise?.time, DateFormats.timeForDb)}
+                  value={moment(revisionRequest?.time, DateFormats.timeForDb)}
                   className="mb-15 mt-0 w-100"
                   onAccept={(e) => setRequestTime(e)}
                 />
-              </div>
+              </InputWrapper>
             </div>
 
             {/*  NEW LOCATION*/}
-            <Autocomplete
-              defaultValue={transferRequestToRevise?.location}
-              placeholder="New Location"
-              apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-              options={{
-                types: ['geocode', 'establishment'],
-                componentRestrictions: { country: 'usa' },
-              }}
-              className="mb-15"
-              onPlaceSelected={(place) => {
-                setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
-                setRequestLocation(place.formatted_address)
-              }}
-            />
+            <InputWrapper inputType={'location'} labelText={'New Location'}>
+              <Autocomplete
+                defaultValue={revisionRequest?.location}
+                placeholder="New Location"
+                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                options={{
+                  types: ['geocode', 'establishment'],
+                  componentRestrictions: { country: 'usa' },
+                }}
+                className="mb-15"
+                onPlaceSelected={(place) => {
+                  setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
+                  setRequestLocation(place.formatted_address)
+                }}
+              />
+            </InputWrapper>
 
             <div className="buttons gap">
               <button className="button card-button" onClick={submit}>

@@ -12,7 +12,6 @@ function InputWrapper({ wrapperClasses = '', children, labelText, inputType, req
 
   const getPlaceholder = () => {
     let text = defaultValue
-
     if (defaultValue.length === 0) {
       text = labelText
     }

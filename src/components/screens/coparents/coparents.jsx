@@ -1,6 +1,5 @@
 import { getDatabase, onValue, ref } from 'firebase/database'
 import React, { useContext, useEffect, useState } from 'react'
-import { DebounceInput } from 'react-debounce-input'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../../context'
 import DB from '@db'
@@ -8,6 +7,8 @@ import Manager from '@manager'
 import DB_UserScoped from '@userScoped'
 import CustomCoparentInfo from './customCoparentInfo'
 import NewCoparentForm from './newCoparentForm'
+import { FaWandMagicSparkles } from 'react-icons/fa6'
+import { IoPersonRemove } from 'react-icons/io5'
 import {
   confirmAlert,
   contains,
@@ -36,6 +37,7 @@ import BottomCard from '../../shared/bottomCard'
 import NavBar from '../../navBar'
 import { BsPersonAdd } from 'react-icons/bs'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
+import InputWrapper from '../../shared/inputWrapper'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -178,35 +180,39 @@ export default function Coparents() {
                   let infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(propArray[0])))
                   infoLabel = formatTitleWords(infoLabel)
                   const value = propArray[1]
+                  console.log(value)
                   return (
                     <div key={index}>
                       {infoLabel !== 'Id' && (
                         <div className="row">
-                          <label className="w-100">{infoLabel}</label>
                           <div className="flex input">
+                            {/* LOCATION */}
                             {contains(infoLabel.toLowerCase(), 'address') && (
-                              <Autocomplete
-                                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                                options={{
-                                  types: ['geocode', 'establishment'],
-                                  componentRestrictions: { country: 'usa' },
-                                }}
-                                onPlaceSelected={async (place) => {
-                                  await update('address', place.formatted_address)
-                                }}
-                                placeholder={Manager.isValid(selectedCoparent.address) ? selectedCoparent.address : 'Location'}
-                              />
+                              <InputWrapper inputType={'date'} labelText={infoLabel}>
+                                <Autocomplete
+                                  apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                                  options={{
+                                    types: ['geocode', 'establishment'],
+                                    componentRestrictions: { country: 'usa' },
+                                  }}
+                                  onPlaceSelected={async (place) => {
+                                    await update('address', place.formatted_address)
+                                  }}
+                                  placeholder={Manager.isValid(selectedCoparent.address) ? selectedCoparent.address : 'Location'}
+                                />
+                              </InputWrapper>
                             )}
+
+                            {/* TEXT INPUT */}
                             {!contains(infoLabel.toLowerCase(), 'address') && (
-                              <DebounceInput
-                                value={value}
-                                minLength={2}
-                                debounceTimeout={1000}
+                              <InputWrapper
+                                defaultValue={value}
                                 onChange={async (e) => {
                                   const inputValue = e.target.value
                                   await update(infoLabel, `${inputValue}`)
                                 }}
-                              />
+                                inputType={'input'}
+                                labelText={infoLabel}></InputWrapper>
                             )}
                             <IoMdRemoveCircle className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
                           </div>
@@ -218,14 +224,14 @@ export default function Coparents() {
 
               {/* BUTTONS */}
               <button
-                className="button w-60 default center white-text mb-10 green"
+                className="button w-60 default center white-text mb-10 mt-20 green"
                 onClick={() => {
                   setShowCustomInfoCard(true)
                 }}>
-                Add Your Own Info <span className="material-icons">auto_fix_high</span>
+                Add Your Own Info <FaWandMagicSparkles />
               </button>
               <button
-                className="button w-60 no-border default red center"
+                className="button w-60  default red center"
                 onClick={(e) => {
                   setConfirmTitle(`Deleting ${selectedCoparent.name}`)
                   confirmAlert(`Are you sure you would like to remove ${selectedCoparent.name}`, "I'm Sure", true, async () => {
@@ -234,7 +240,7 @@ export default function Coparents() {
                     setSelectedCoparent(null)
                   })
                 }}>
-                Remove Co-parent <span className="material-icons">person_remove</span>
+                Remove Co-parent <IoPersonRemove />
               </button>
             </div>
           )}

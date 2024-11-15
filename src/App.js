@@ -40,7 +40,7 @@ import emailjs from '@emailjs/browser'
 import './globalFunctions'
 import StateObj from './constants/stateObj'
 // Menus
-import SlideOutMenu from './components/slideOutMenu'
+import FullMenu from './components/fullMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
 
 import { initializeApp } from 'firebase/app'
@@ -151,7 +151,7 @@ export default function App() {
           {userIsLoggedIn && (
             <>
               {/* SLIDE OUT MENU */}
-              <SlideOutMenu />
+              <FullMenu />
             </>
           )}
 

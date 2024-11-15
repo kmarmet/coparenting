@@ -29,7 +29,7 @@ import { FiSettings } from 'react-icons/fi'
 import { BiFace } from 'react-icons/bi'
 import BottomCard from './shared/bottomCard'
 
-export default function SlideOutMenu() {
+export default function FullMenu() {
   const { state, setState } = useContext(globalState)
   const { currentScreen, menuIsOpen, theme, currentUser, showCenterNavbarButton } = state
 
@@ -72,7 +72,7 @@ export default function SlideOutMenu() {
       hasDelete={false}
       hasSubmitButton={false}>
       <div id="full-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
-        <>
+        <div className="column left">
           {/* ADMIN DASHBOARD */}
           {currentUser.email === 'kmarmet1@gmail.com' && (
             <div
@@ -89,6 +89,8 @@ export default function SlideOutMenu() {
             <PiCalendarDotsDuotone />
             <p>Calendar</p>
           </div>
+
+          {/* PARENTS ONLY */}
           {AppManager.getAccountType(currentUser) === 'parent' && (
             <>
               <div
@@ -103,11 +105,7 @@ export default function SlideOutMenu() {
                 <PiChatsCircleDuotone />
                 <p className="text">Chat</p>
               </div>
-            </>
-          )}
 
-          {AppManager.getAccountType(currentUser) === 'parent' && (
-            <>
               {/* EXPENSES */}
               <div
                 className={`menu-item ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
@@ -139,7 +137,14 @@ export default function SlideOutMenu() {
                 <HiOutlineDocumentText />
                 <p>Documents</p>
               </div>
+            </>
+          )}
+        </div>
 
+        {/* RIGHT COLUMN */}
+        <div className="column right">
+          {AppManager.getAccountType(currentUser) === 'parent' && (
+            <>
               {/* MEMORIES */}
               <div
                 className={`menu-item ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
@@ -158,52 +163,51 @@ export default function SlideOutMenu() {
 
               {/* COPARENTS */}
               <div
-                className={`menu-item ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
+                className={`menu-item coparents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.coparents)}>
                 <BsPeople />
                 <p>Coparents</p>
               </div>
             </>
           )}
-        </>
-
-        {/* ACCOUNT */}
-        <div
-          className={`menu-item ${currentScreen === ScreenNames.account ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.account)}>
-          <MdOutlineManageAccounts />
-          <p>Account</p>
-        </div>
-
-        {/* SETTINGS */}
-        <div
-          className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.settings)}>
-          {/*<span className="material-icons-round">settings</span>*/}
-          <FiSettings /> <p>Settings</p>
-        </div>
-
-        {/* CONTACT US */}
-        <div
-          className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.contactUs)}>
-          <RiMailSendLine />
-          <p>Contact Us</p>
-        </div>
-
-        {/* THEME TOGGLE */}
-        {theme === 'dark' && (
-          <div className="menu-item theme">
-            <PiSunDuotone />
-            <p onClick={() => changeTheme('light')}>Light Mode</p>
+          {/* ACCOUNT */}
+          <div
+            className={`menu-item account ${currentScreen === ScreenNames.account ? 'active' : ''}`}
+            onClick={() => changeCurrentScreen(ScreenNames.account)}>
+            <MdOutlineManageAccounts />
+            <p>Account</p>
           </div>
-        )}
-        {theme === 'light' && (
-          <div className="menu-item theme">
-            <PiMoonStarsDuotone />
-            <p onClick={() => changeTheme('dark')}> Dark Mode</p>
+
+          {/* SETTINGS */}
+          <div
+            className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
+            onClick={() => changeCurrentScreen(ScreenNames.settings)}>
+            {/*<span className="material-icons-round">settings</span>*/}
+            <FiSettings /> <p>Settings</p>
           </div>
-        )}
+
+          {/* CONTACT US */}
+          <div
+            className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
+            onClick={() => changeCurrentScreen(ScreenNames.contactUs)}>
+            <RiMailSendLine />
+            <p>Contact Us</p>
+          </div>
+
+          {/* THEME TOGGLE */}
+          {theme === 'dark' && (
+            <div className="menu-item theme">
+              <PiSunDuotone />
+              <p onClick={() => changeTheme('light')}>Light Mode</p>
+            </div>
+          )}
+          {theme === 'light' && (
+            <div className="menu-item theme">
+              <PiMoonStarsDuotone />
+              <p onClick={() => changeTheme('dark')}> Dark Mode</p>
+            </div>
+          )}
+        </div>
 
         {/* LOGOUT BUTTON */}
         <div className={`menu-item logout`} onClick={logout}>

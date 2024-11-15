@@ -67,7 +67,6 @@ function Behavior({ activeChild, setActiveChild }) {
           expandIcon={<FaChevronDown />}
           className={!Manager.isValid(activeChild.behavior) ? 'disabled header behavior' : 'header behavior'}>
           <span className="material-icons-round">psychology</span> Behavior {!Manager.isValid(activeChild.behavior) ? '- No Info' : ''}
-          Behavior
         </AccordionSummary>
         <AccordionDetails expanded={expandAccordion === true ? true : false}>
           {behaviorValues &&

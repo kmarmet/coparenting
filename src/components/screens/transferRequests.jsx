@@ -14,6 +14,7 @@ import ReviseChildTransferChangeRequest from '../forms/reviseTransferRequest'
 import NavBar from '../navBar'
 import { IoAdd } from 'react-icons/io5'
 import SecurityManager from '../../managers/securityManager'
+import { BiNavigation } from 'react-icons/bi'
 import {
   contains,
   displayAlert,
@@ -35,20 +36,19 @@ import {
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
+  const { currentUser, theme, navbarButton } = state
   const [existingRequests, setExistingRequests] = useState([])
-  const { viewTransferRequestForm, currentUser, theme, navbarButton } = state
   const [rejectionReason, setRejectionReason] = useState('')
   const [recipients, setRecipients] = useState([])
   const [showNewRequestCard, setShowNewRequestCard] = useState(false)
   const [showRevisionCard, setShowRevisionCard] = useState(false)
+  const [requestToRevise, setRequestToRevise] = useState(null)
 
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
-    console.log(allRequests)
     let allUsers = Manager.convertToArray(await DB.getTable(DB.tables.users))
     const found = allUsers.filter((y) => allRequests.filter((x) => x.recipientPhone === y.phone).length > 0)
     setRecipients(found)
-
     setExistingRequests(allRequests)
   }
 
@@ -103,12 +103,12 @@ export default function TransferRequests() {
   useEffect(() => {
     onTableChange().then((r) => r)
     Manager.showPageContainer()
-  }, [])
+  })
 
   return (
     <>
       <NewTransferChangeRequest showCard={showNewRequestCard} hideCard={() => setShowNewRequestCard(false)} />
-      <ReviseChildTransferChangeRequest showCard={showRevisionCard} hideCard={() => setShowRevisionCard(false)} />
+      <ReviseChildTransferChangeRequest revisionRequest={requestToRevise} showCard={showRevisionCard} hideCard={() => setShowRevisionCard(false)} />
 
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         <p className="screen-title">Transfer Change Requests</p>
@@ -119,7 +119,7 @@ export default function TransferRequests() {
           </div>
         )}
 
-        {!viewTransferRequestForm && (
+        {!showNewRequestCard && (
           <div id="all-transfer-requests-container" className="mt-15">
             {Manager.isValid(existingRequests, true) &&
               existingRequests.map((request, index) => {
@@ -147,7 +147,7 @@ export default function TransferRequests() {
                               href={
                                 Manager.isIos() ? `http://maps.apple.com/?daddr=${encodeURIComponent(request.location)}` : request.directionsLink
                               }>
-                              <span className="material-icons-round">directions</span>
+                              <BiNavigation className={'fs-24'} />
                               {request.location}
                             </a>
                           </div>
@@ -182,8 +182,8 @@ export default function TransferRequests() {
                       </button>
                       <button
                         onClick={(e) => {
+                          setRequestToRevise(request)
                           setShowRevisionCard(true)
-                          setState({ ...state, transferRequestToRevise: request })
                         }}
                         className="blue">
                         Revise

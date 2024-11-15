@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { DebounceInput } from 'react-debounce-input'
 import globalState from '../../../context'
 import Manager from '@manager'
 import {
@@ -28,6 +27,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import { FaChevronDown } from 'react-icons/fa6'
+import InputWrapper from '../../shared/inputWrapper'
 
 function Medical({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -78,13 +78,12 @@ function Medical({ activeChild, setActiveChild }) {
               const value = prop[1]
               return (
                 <div key={index}>
-                  <label className="w-100">{infoLabel}</label>
                   <div className="flex input mt-10">
-                    <DebounceInput
-                      className="mb-10"
+                    <InputWrapper
+                      inputType={'input'}
+                      labelText={infoLabel}
+                      defaultValue={value}
                       value={value}
-                      placeholder={camelCaseToString(infoLabel)}
-                      minLength={2}
                       debounceTimeout={1000}
                       onChange={(e) => {
                         const inputValue = e.target.value

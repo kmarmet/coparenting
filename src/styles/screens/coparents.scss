@@ -70,7 +70,6 @@
         
         .row {
             overflow: hidden;
-            margin-bottom:15px;
             transition: max-height .3s ease-in-out;
 
             &.active {
@@ -93,7 +92,7 @@
                     align-items: center;
                     .delete-icon {
                         position: relative;
-                        transform: scale(1.5);
+                        transform: scale(1.2);
                         margin-left: 10px;
                         color: $red;
                     }

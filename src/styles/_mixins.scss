@@ -380,8 +380,8 @@
     color: black;
     font-weight: 600;
     font-size: 16px;
-    line-height: 1.5;
-    margin-bottom: 5px;
+    line-height: 1;
+    margin-bottom: 3px;
 
     * {
       display: inline;
@@ -1049,7 +1049,6 @@
     width: auto;
     display: inline-block;
     position: relative;
-    top: 2px;
     background-color: transparent;
   }
 }
@@ -1281,7 +1280,7 @@
   &.gap-15 {
     //    gap: 15px;
   }
-  
+
   &.holiday-checkboxes {
     #checkboxes {
       gap: 10px 0;
@@ -2466,19 +2465,20 @@
 
   // FULL MENU
   &.full-menu {
+    padding: 20px 10px 100px 10px;
     background: $mainBlue;
-    
+
     #title {
       color: white;
     }
-    
+
     .buttons {
       background: $mainBlue;
       border: 0;
-      
+
       .close-icon {
         background: transparent;
-        color:white;
+        color: white;
       }
     }
   }
@@ -2714,77 +2714,102 @@
 @mixin slideOutMenu {
   #full-menu {
     background: $mainBlue;
-    margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
     position: relative;
     overflow: auto;
-    width: 100%;
     height: 100%;
     transition: all 0.6s ease-in-out;
+    justify-content: space-between;
+    padding: 0 10px;
+    width: 90%;
+    margin: 20px auto 0 auto;
+    position: relative;
+    left: -8px;
 
-    .menu-item {
+    .logout {
+      width: 100%;
+      text-align: center;
+      justify-content: center;
+      opacity: 1;
       display: flex;
       align-items: center;
-      opacity: 0;
-      width: 45%;
-      transform: scale(0);
-      transition: all 0.6s ease-in-out;
-      margin: 0 auto 15px auto;
-      
-      &:nth-last-child(2) {
-        margin-left: 10px;
-        margin-right: auto;
-      }
-      
-      &.logout {
-        width: 100%;
-        text-align: center;
-        justify-content: center;
-      }
-      
-      &.theme {
-        svg {
-          font-size: 30px;
-        }
-      }
-      
-      &.settings, &.contact-us {
-        svg {
-          font-size: 26px;
-        }
-      }
-
+      p,
       svg {
-        font-size: 28px;
-        margin-right: 10px;
         color: white;
+        margin: 0;
+        padding: 0;
       }
-      p {
-        color: white;
+      svg {
+        margin-right: 5px;
       }
+    }
 
-      &.visible {
-        opacity: 0.8;
-        margin-top: 0;
+    .column {
+      .menu-item {
+        display: flex;
+        align-items: center;
+        opacity: 0;
+        transform: scale(0);
         transition: all 0.6s ease-in-out;
-        transform: scale(1);
-        background-color: transparent;
-        
-        p {
-          font-weight: $fwLight;
-          transform: scale(1.05);
-        }
-      }
+        margin: 0 auto 15px auto;
 
-      &.active {
-        opacity: 1;
-        border-radius: 8px;
-        position: relative;
-        p,
+        &.theme {
+          svg {
+            font-size: 30px;
+          }
+        }
+
+        &.settings,
+        &.contact-us, &.coparents {
+          svg {
+            font-size: 25px;
+          }
+        }
+
+        &.account {
+          svg {
+            font-size: 32px;
+          }
+        }
+
         svg {
-          font-weight: bold;
+          font-size: 28px;
+          margin-right: 10px;
           color: white;
+          width: 35px;
+        }
+        p {
+          color: white;
+        }
+
+        &.visible {
+          margin-top: 0;
+          transition: all 0.6s ease-in-out;
+          transform: scale(1);
+          background-color: transparent;
+          opacity: 0.8;
+          
+          p {
+        
+            font-weight: $fwLight;
+            transform: scale(1.05);
+          }
+
+          svg {
+            opacity: 0.5;
+          }
+        }
+
+        &.active {
+          opacity: 1;
+          position: relative;
+          p,
+          svg {
+            font-weight: bold;
+            color: white;
+            opacity: 1;
+          }
         }
       }
     }
