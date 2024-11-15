@@ -51,7 +51,7 @@ SecurityManager =
     if Manager.isValid(allRequests,true)
       for request in allRequests
         shareWith = request.shareWith
-        if (request.phone == currentUser.phone)
+        if (request.ownerPhone == currentUser.phone)
           returnRecords.push(request)
         if Manager.isValid(shareWith, true)
           if shareWith.includes(currentUser.phone)

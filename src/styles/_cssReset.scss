@@ -46,12 +46,16 @@ html {
   background-color: $lightBg !important;
   overflow: hidden;
 }
+
+// BODY
 body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow: hidden !important;
   background-color: $lightBg !important;
   height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
+  min-height: calc(100% + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   
   &.dark {
 //      background-color: $darkBg;

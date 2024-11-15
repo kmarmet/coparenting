@@ -4,10 +4,10 @@
   "start_url": "https://peaceful-coparenting.app/",
   "scope": "https://peaceful-coparenting.app/",
   "id": "https://peaceful-coparenting.app/",
-  "display": "fullscreen",
+  "display": "standalone",
   "background_color": "#f4f8ff",
   "theme_color": "#f4f8ff",
-  "orientation": "landscape",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "192.png",

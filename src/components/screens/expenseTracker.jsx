@@ -11,7 +11,7 @@ import DateFormats from 'constants/dateFormats.js'
 import moment from 'moment'
 import '../../prototypes.js'
 import BottomCard from '../shared/bottomCard'
-import { PiBellSimpleRinging, PiClockCountdownDuotone, PiConfettiDuotone, PiTrashSimpleDuotone } from 'react-icons/pi'
+import { PiBellSimpleRinging, PiClockCountdownDuotone, PiConfettiDuotone } from 'react-icons/pi'
 import { AiOutlineFileAdd } from 'react-icons/ai'
 import SecurityManager from '../../managers/securityManager'
 import NewExpenseForm from '../forms/newExpenseForm'
@@ -605,12 +605,13 @@ export default function ExpenseTracker() {
 
                             {/* DELETE */}
                             {expense.ownerPhone === currentUser.phone && (
-                              <PiTrashSimpleDuotone
-                                className="delete-icon"
+                              <p
                                 onClick={async () => {
                                   await deleteExpense(expense)
                                 }}
-                              />
+                                id="delete-button">
+                                DELETE
+                              </p>
                             )}
                           </div>
                         </div>

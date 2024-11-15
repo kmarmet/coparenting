@@ -620,6 +620,8 @@ export default function EventCalendar() {
                           )}
                         </div>
                         {event.ownerPhone !== currentUser.phone && <MdOutlineEditOff className={'no-edit-access-icon'} />}
+
+                        {/* CHILDREN */}
                         <div className={`flex ${event?.notes?.length > 0 || event?.children?.length > 0 ? 'pt-5' : ''}`} id="more-children">
                           <div id="children">
                             {/* CHILDREN */}

@@ -25,14 +25,20 @@ export default function BottomCard({
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
+    const body = document.body
     if (showCard) {
+      body.style.position = 'fixed'
       document.getElementById('page-overlay').classList.add('active')
     } else {
+      body.style.position = 'inherit'
       document.getElementById('page-overlay').classList.remove('active')
     }
     if (pageContainer) {
       if (showCard) {
+        pageContainer.classList.add('disable-scroll')
         document.getElementById('bottom-card').scrollTop = 0
+      } else {
+        pageContainer.classList.remove('disable-scroll')
       }
     }
   }, [showCard])

@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- META TAGS -->
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0; viewport-fit=cover" />
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1 viewport-fit=cover" />
     <meta name="theme-color" content="#f4f8ff" />
     <title>Peaceful coParenting</title>
 
@@ -23,25 +24,20 @@
     <meta name="apple-mobile-web-app-title" content="Peaceful coParenting" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 
-    <!-- FLATPICKR -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
     <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">    <!-- Animate.css --->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css">
 
-    <!-- Styles -->
+    <!-- STYLES -->
     <link rel="stylesheet" href="../src/styles/reactToggle.css" />
 
-    <!-- Firebase -->
+    <!-- FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"></script>
 
-    <!-- Clipboard JS -->
+    <!-- CLIPBOARD JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
 
     <!-- ICONS -->
@@ -119,6 +115,34 @@
         g.src = 'https://cdn.pushalert.co/integrate_092ed7df5292c3d2996254de57f703de.js'
         s.parentNode.insertBefore(g, s)
       })(document, 'script')
+    </script>
+
+    <!-- FIX FOR FULLSCREEN -->
+    <script type="text/javascript">
+      (function(document,navigator,standalone) {
+        // prevents links from apps from oppening in mobile safari
+        // this javascript must be the first script in your <head>
+        if ((standalone in navigator) && navigator[standalone]) {
+          var curnode, location=document.location, stop=/^(a|html)$/i;
+          document.addEventListener('click', function(e) {
+            curnode=e.target;
+            while (!(stop).test(curnode.nodeName)) {
+              curnode=curnode.parentNode;
+            }
+            // Condidions to do this only on links to your own app
+            // if you want all links, use if('href' in curnode) instead.
+            if(
+              'href' in curnode && // is a link
+              (chref=curnode.href).replace(location.href,'').indexOf('#') && // is not an anchor
+              (	!(/^[a-z\+\.\-]+:/i).test(chref) ||                       // either does not have a proper scheme (relative links)
+                chref.indexOf(location.protocol+'//'+location.host)===0 ) // or is in the same protocol and domain
+            ) {
+              e.preventDefault();
+              location.href = curnode.href;
+            }
+          },false);
+        }
+      })(document,window.navigator,'standalone');
     </script>
   </head>
   <body id="external-overrides">

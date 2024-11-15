@@ -172,6 +172,7 @@
         transition: all 0.3s ease-in-out;
         margin-bottom: 10px;
         
+        
         &.active {
           overflow: auto;
           max-height: 10000px;
@@ -254,13 +255,15 @@
               align-items: center;
             }
 
-            .delete-icon {
-              width: 25px;
-              font-size: 28px;
+            #delete-button {
+              font-size: 14px;
               margin-left: auto;
               display: block;
               color: $red;
               margin-top: 15px;
+              width: 100%;
+              text-align: right;
+              font-weight: $fwMedium;
             }
 
             .amount {

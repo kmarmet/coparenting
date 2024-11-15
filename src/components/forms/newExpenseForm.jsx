@@ -376,7 +376,7 @@ function NewExpenseForm({ hideCard, showCard }) {
           </>
 
           {/* EXPENSE TYPE */}
-          <FormControl fullWidth className={'mt-10'}>
+          <FormControl fullWidth className={'mt-10 mb-15'}>
             <InputLabel className={'w-100'}>Expense Type</InputLabel>
             <Select value={expenseCategory} label="Expense Type" onChange={handleCategorySelection}>
               {ExpenseCategories.map((type, index) => {

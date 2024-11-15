@@ -181,12 +181,12 @@ export oneButtonAlert = (title, subtitle = "", icon ="", onConfirm) ->
     if result.isConfirmed
       if onConfirm then onConfirm(result)
 
-export inputAlert = (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true) ->
+export inputAlert = (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "input") ->
   Swal.fire
     title: title
     text: text
     icon: ''
-    input: 'text'
+    input: inputType
     showCancelButton: showCancelButton
     confirmButtonText: "Confirm"
     allowOutsideClick: allowOutsideClick

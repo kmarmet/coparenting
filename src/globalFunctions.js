@@ -234,12 +234,12 @@ animate__faster`
   });
 };
 
-export var inputAlert = function(title, text, onConfirm, allowOutsideClick = true, showCancelButton = true) {
+export var inputAlert = function(title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "input") {
   return Swal.fire({
     title: title,
     text: text,
     icon: '',
-    input: 'text',
+    input: inputType,
     showCancelButton: showCancelButton,
     confirmButtonText: "Confirm",
     allowOutsideClick: allowOutsideClick,

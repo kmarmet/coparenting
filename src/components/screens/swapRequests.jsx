@@ -9,10 +9,11 @@ import SwapDurations from '@constants/swapDurations.js'
 import PushAlertApi from '@api/pushAlert'
 import NotificationManager from '@managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
-import DateManager from 'managers/dateManager.js'
 import SecurityManager from '../../managers/securityManager'
 import NewSwapRequest from '../forms/newSwapRequest'
 import { IoAdd } from 'react-icons/io5'
+import { FaChildren } from 'react-icons/fa6'
+import { AiTwotoneNotification } from 'react-icons/ai'
 import {
   contains,
   displayAlert,
@@ -21,6 +22,7 @@ import {
   getFileExtension,
   getFirstWord,
   hasClass,
+  inputAlert,
   isAllUppercase,
   removeFileExtension,
   removeSpacesAndLowerCase,
@@ -85,10 +87,21 @@ export default function SwapRequests() {
     })
   }
 
+  const addEventRowAnimation = () => {
+    document.querySelectorAll('.request').forEach((request, i) => {
+      setTimeout(() => {
+        request.classList.add('active')
+      }, 200 * i)
+    })
+  }
+
   useEffect(() => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
       await getSecuredRequests().then((r) => r)
+      setTimeout(() => {
+        addEventRowAnimation()
+      }, 600)
     })
     Manager.showPageContainer('show')
   }, [])
@@ -96,47 +109,42 @@ export default function SwapRequests() {
   return (
     <>
       <NewSwapRequest showCard={showCard} hideCard={() => setShowCard(false)} />
-      <div id="swap-requests" className={`${theme} page-container`}>
+      <div id="swap-requests" className={`${theme} page-container form`}>
         <p className="screen-title">Swap Requests</p>
         <>
-          <p className="text-screen-intro mb-15">
-            A Swap Request is a request for your child(ren) to stay with you during your co-parent's scheduled time to have them.
-          </p>
+          <p className="text-screen-intro mb-15">A request for your child(ren) to stay with you during your co-parent's scheduled visitation time.</p>
           {existingRequests.length === 0 && <p className="instructions center">There are currently no requests</p>}
         </>
         <div id="swap-requests-container">
           {Manager.isValid(existingRequests) &&
             existingRequests.map((request, index) => {
               return (
-                <div key={index} className="request w-100 mb-15">
-                  <div className="request-date-container">
-                    <span className="material-icons-round" id="calendar-icon">
-                      calendar_month
-                    </span>
-                    {/* REQUEST DATE */}
-                    <p id="request-date">
-                      {request.duration === SwapDurations.single && DateManager.formatDate(request.startDate)}
-                      {request.duration === SwapDurations.intra && (
-                        <>
-                          <span>{DateManager.formatDate(request.startDate)}</span>
-                          <span>
-                            {request.fromHour.replace(' ', '')} - {request.toHour.replace(' ', '')}
-                          </span>
-                        </>
-                      )}
-                      {request.duration === SwapDurations.multiple &&
-                        `${DateManager.formatDate(request.startDate)} - ${DateManager.formatDate(request.endDate)}`}
-                    </p>
-                  </div>
+                <div key={index} className="request w-100 mb-10">
+                  {/* REQUEST DATE */}
+                  <p id="request-date">
+                    {request.duration === SwapDurations.single && moment(request.startDate).format('dddd, MMM Do')}
+                    {request.duration === SwapDurations.intra && (
+                      <>
+                        <span>{moment(request.startDate).format('dddd, MMM Do')}</span>
+                        <span>
+                          {request.fromHour.replace(' ', '')} - {request.toHour.replace(' ', '')}
+                        </span>
+                      </>
+                    )}
+                    {request.duration === SwapDurations.multiple &&
+                      `${moment(request.startDate).format('dddd, MMM Do')} - ${moment(request.endDate).format('dddd, MMM Do')}`}
+                  </p>
                   <div className={`content ${request?.reason?.length > 20 ? 'long-text' : ''}`}>
                     <div className="flex top-details">
                       {/* SENT TO */}
-                      <div className="flex row">
-                        <p>
-                          <b>Request Sent to:&nbsp;</b>
-                        </p>
-                        <p>{currentUser?.coparents.filter((x) => x.phone === request.recipientPhone)[0]?.name}</p>
-                      </div>
+                      {request?.recipientPhone !== currentUser.phone && (
+                        <div className="flex row">
+                          <p>
+                            <b>Request Sent to:&nbsp;</b>
+                          </p>
+                          <p>{currentUser?.coparents.filter((x) => x.phone === request.recipientPhone)[0]?.name}</p>
+                        </div>
+                      )}
 
                       {/* REASON */}
                       {request?.reason && request?.reason.length > 0 && (
@@ -147,44 +155,67 @@ export default function SwapRequests() {
                           <p className={request?.reason.length > 50 ? 'wrap reason-text' : 'reason-text'}>{request?.reason}</p>
                         </div>
                       )}
+
+                      {/* CHILDREN */}
+                      <div id="children">
+                        {/* CHILDREN */}
+                        {request?.children && request?.children.length > 0 && (
+                          <div className="children flex">
+                            <FaChildren />
+                            <p
+                              className="fs-14 "
+                              dangerouslySetInnerHTML={{
+                                __html: `${request?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                              }}></p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {request?.recipientPhone === currentUser.phone && (
-                    <>
-                      <textarea
-                        id="rejection-reason-input"
-                        placeholder="Rejection reason (if needed)"
-                        onChange={(e) => setRejectionReason(e.target.value)}></textarea>
-                      <div id="button-group" className="flex">
-                        <button onClick={(e) => selectDecision(request, Decisions.approved)} className=" button default no-border green-text">
+                  {/* REQUEST BUTTONS */}
+                  <div className="flex" id="request-buttons">
+                    {/* REQUEST RECIPIENT IS VIEWING */}
+                    {request?.recipientPhone === currentUser.phone && (
+                      <>
+                        <button className="green" onClick={(e) => selectDecision(request, Decisions.approved)}>
                           Approve
                         </button>
                         <button
+                          className="red"
                           data-request-id={request.id}
-                          onClick={(e) => selectDecision(request, Decisions.rejected)}
-                          className=" no-border button default  red-text">
+                          onClick={async (e) => {
+                            inputAlert(
+                              'Rejection Reason',
+                              'Please enter a rejection reason',
+                              async () => {
+                                await selectDecision(request, Decisions.rejected)
+                              },
+                              true,
+                              true,
+                              'textarea'
+                            )
+                          }}>
                           Reject
                         </button>
-                      </div>
-                    </>
-                  )}
-                  {request.recipientPhone !== currentUser.phone && (
-                    <div className="flex">
-                      {/* REASON BUTTON */}
-                      {request.phone === currentUser.phone && (
-                        <button id="reminder-button" className="button default reminder w-50 no-border-radius" onClick={() => sendReminder(request)}>
-                          Send Reminder <span className="material-icons-round">notification_important</span>
+                      </>
+                    )}
+                    {/* REQUEST OWNER IS VIEWING */}
+                    {request?.recipientPhone !== currentUser.phone && (
+                      <>
+                        {/* SEND REMINDER BUTTON */}
+                        {request.ownerPhone === currentUser.phone && (
+                          <button className="green" id="reminder-button" onClick={() => sendReminder(request)}>
+                            Send Reminder <AiTwotoneNotification />
+                          </button>
+                        )}
+                        {/* DELETE BUTTON */}
+                        <button className="red" data-request-id={request.id} onClick={(e) => selectDecision(request, Decisions.delete)}>
+                          Delete
                         </button>
-                      )}
-                      <button
-                        data-request-id={request.id}
-                        onClick={(e) => selectDecision(request, Decisions.delete)}
-                        className="button default delete red no-border no-border-radius w-50">
-                        Delete
-                      </button>
-                    </div>
-                  )}
+                      </>
+                    )}
+                  </div>
                 </div>
               )
             })}

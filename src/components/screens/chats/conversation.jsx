@@ -43,6 +43,7 @@ import { TbMessageCircleSearch } from 'react-icons/tb'
 import ContentEditable from '../../shared/contentEditable'
 import { useLongPress } from 'use-long-press'
 import useClipboard from 'react-use-clipboard'
+import PushAlertApi from '../../../api/pushAlert'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -126,19 +127,22 @@ const Conversation = () => {
     } else {
       setMessagesToLoop([])
     }
-    const subId = await NotificationManager.getUserSubId(messageToUser.phone)
-    // PushAlertApi.sendMessage('New Message', `You have an unread conversation message 💬`, subId)
+
+    // Only send notification if coparent has chat UNmuted
+    if (Manager.isValid(existingChat?.mutedMembers, true)) {
+      const coparentHasChatMuted = existingChat.mutedMembers.filter((x) => x.ownerPhone === messageToUser.phone).length > 0
+      if (!coparentHasChatMuted) {
+        const subId = await NotificationManager.getUserSubId(messageToUser.phone)
+        PushAlertApi.sendMessage('New Message', `You have an unread conversation message 💬`, subId)
+      }
+    }
+
     await getExistingMessages()
     AppManager.setAppBadge(1)
     scrollToLatestMessage()
     messageInputValue.innerHTML = ''
     setMessageText('')
     setRefreshKey(Manager.getUid())
-
-    // Reset screen height
-    const messageThreadContainer = document.getElementById('message-thread-container')
-    const screenHeight = window.screen.height
-    messageThreadContainer.style.height = `${screenHeight}px`
   }
 
   const viewBookmarks = async (e) => {
