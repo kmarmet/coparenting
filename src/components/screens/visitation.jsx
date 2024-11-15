@@ -18,31 +18,14 @@ import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../constants/dateFormats'
 import CalendarMapper from '../../mappers/calMapper'
 import { ImEye } from 'react-icons/im'
-import {
-  confirmAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  successAlert,
-  throwError,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
+import { confirmAlert, formatNameFirstNameOnly, successAlert, throwError, uniqueArray } from '../../globalFunctions'
 import BottomCard from '../shared/bottomCard'
 import ScheduleTypes from '../../constants/scheduleTypes'
 import Label from '../shared/label' // Icons
-import { GrMapLocation } from 'react-icons/gr'
 import SecurityManager from '../../managers/securityManager'
 import NavBar from '../navBar'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import InputWrapper from '../shared/inputWrapper'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -660,9 +643,9 @@ export default function Visitation() {
             />
 
             {/* LOCATION */}
-            <Label classes="mt-15" icon={<GrMapLocation />} text={'Preferred Transfer Location (for biological co-parent)'}>
+            <InputWrapper inputType={'location'} labelText={'Preferred Transfer Location (for biological co-parent)'}>
               <Autocomplete
-                placeholder={currentUser.defaultTransferLocation}
+                placeholder={currentUser?.defaultTransferLocation || 'Preferred Transfer Location'}
                 apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
                 options={{
                   types: ['geocode', 'establishment'],
@@ -676,7 +659,7 @@ export default function Visitation() {
                   ).then((r) => successAlert('Preferred Transfer Location Set'))
                 }}
               />
-            </Label>
+            </InputWrapper>
           </div>
         )}
         {/* HOLIDAY SELECTION */}

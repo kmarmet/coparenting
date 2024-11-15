@@ -2,27 +2,9 @@ import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
 import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone } from 'react-icons/pi'
-import { CgMenu } from 'react-icons/cg'
 import { VscSettings } from 'react-icons/vsc'
 import { FaChild } from 'react-icons/fa'
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../globalFunctions'
+import { FiMenu } from 'react-icons/fi'
 
 export default function NavBar({ children, navbarClass }) {
   const { state, setState } = useContext(globalState)
@@ -41,9 +23,9 @@ export default function NavBar({ children, navbarClass }) {
       {!menuIsOpen && (
         <div id="navbar" className={`${theme} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
           <div id="menu-items" className="flex">
-            {/* FULL MENU  */}
-            <div onClick={() => setState({ ...state, menuIsOpen: true })} className={` menu-item`}>
-              <CgMenu />
+            {/* FULL MENU ICON  */}
+            <div onClick={() => setState({ ...state, menuIsOpen: true })} className={`full-menu-icon menu-item`}>
+              <FiMenu />
             </div>
 
             {/* CALENDAR */}

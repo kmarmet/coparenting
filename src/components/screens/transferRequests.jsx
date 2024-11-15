@@ -3,7 +3,6 @@ import DB from '@db'
 import Manager from '@manager'
 import globalState from '../../context.js'
 import 'rsuite/dist/rsuite.min.css'
-import ScreenNames from '@screenNames'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import SmsManager from '@managers/smsManager.js'
 import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
@@ -11,11 +10,28 @@ import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
 import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
-import SecurityManager from '../../managers/securityManager'
 import ReviseChildTransferChangeRequest from '../forms/reviseTransferRequest'
 import NavBar from '../navBar'
 import { IoAdd } from 'react-icons/io5'
-import BottomCard from '../shared/bottomCard'
+import SecurityManager from '../../managers/securityManager'
+import {
+  contains,
+  displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFileExtension,
+  getFirstWord,
+  inputAlert,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
+} from 'globalFunctions'
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
@@ -25,18 +41,15 @@ export default function TransferRequests() {
   const [recipients, setRecipients] = useState([])
   const [showNewRequestCard, setShowNewRequestCard] = useState(false)
   const [showRevisionCard, setShowRevisionCard] = useState(false)
+
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
+    console.log(allRequests)
     let allUsers = Manager.convertToArray(await DB.getTable(DB.tables.users))
     const found = allUsers.filter((y) => allRequests.filter((x) => x.recipientPhone === y.phone).length > 0)
     setRecipients(found)
 
     setExistingRequests(allRequests)
-    setState({
-      ...state,
-      currentScreen: ScreenNames.transferRequests,
-      menuIsOpen: false,
-    })
   }
 
   const reject = async (request) => {
@@ -69,46 +82,50 @@ export default function TransferRequests() {
     })
   }
 
-  useEffect(() => {
+  const addEventRowAnimation = () => {
+    document.querySelectorAll('.request').forEach((request, i) => {
+      setTimeout(() => {
+        request.classList.add('active')
+      }, 200 * i)
+    })
+  }
+
+  const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.transferChangeRequests), async (snapshot) => {
-      getSecuredRequests().then((r) => r)
+      await getSecuredRequests().then((r) => r)
+      setTimeout(() => {
+        addEventRowAnimation()
+      }, 600)
     })
+  }
 
-    Manager.showPageContainer('show')
+  useEffect(() => {
+    onTableChange().then((r) => r)
+    Manager.showPageContainer()
   }, [])
 
   return (
     <>
-      <BottomCard title={'New Request'} showCard={showNewRequestCard} onClose={() => setShowNewRequestCard(false)}>
-        <NewTransferChangeRequest hideCard={() => setShowNewRequestCard(false)} />
-      </BottomCard>
-      <BottomCard title={'Revise Request'} showCard={showRevisionCard} onClose={() => setShowRevisionCard(false)}>
-        <ReviseChildTransferChangeRequest hideCard={() => setShowRevisionCard(false)} />
-      </BottomCard>
+      <NewTransferChangeRequest showCard={showNewRequestCard} hideCard={() => setShowNewRequestCard(false)} />
+      <ReviseChildTransferChangeRequest showCard={showRevisionCard} hideCard={() => setShowRevisionCard(false)} />
+
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         <p className="screen-title">Transfer Change Requests</p>
-        {!viewTransferRequestForm && (
-          <>
-            <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>
-            {existingRequests.length > 0 && <p className="instructions mb-15">Click request to view details/take action</p>}
-            {existingRequests.length === 0 && <p className="instructions center">There are currently no requests</p>}
-          </>
+        <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>
+        {existingRequests.length === 0 && (
+          <div id="instructions-wrapper">
+            <p className="instructions center">There are currently no requests</p>
+          </div>
         )}
 
         {!viewTransferRequestForm && (
-          <div id="all-transfer-requests-container">
-            {existingRequests &&
-              existingRequests.length > 0 &&
+          <div id="all-transfer-requests-container" className="mt-15">
+            {Manager.isValid(existingRequests, true) &&
               existingRequests.map((request, index) => {
                 return (
                   <div key={index} data-request-id={request.id} className="request open mb-15">
-                    <div className="request-date-container">
-                      <span className="material-icons-outlined" id="calendar-icon">
-                        calendar_month
-                      </span>
-                      <p id="request-date">{DateManager.formatDate(request.date)}</p>
-                    </div>
+                    <p id="request-date">{DateManager.formatDate(request.date)}</p>
                     <div className={`content ${request.reason.length > 20 ? 'long-text' : ''}`}>
                       <div className="flex top-details">
                         {/* TIME */}
@@ -157,13 +174,10 @@ export default function TransferRequests() {
                         )}
                       </div>
                     </div>
-                    {/* REJECTION REASON WRAPPER */}
-                    <div id="rejection-reason-wrapper">
-                      <label className="mt-10">Rejection Reason</label>
-                      <textarea id="rejection-reason-textarea" onChange={(e) => setRejectionReason(e.target.value)}></textarea>
-                    </div>
-                    <div id="button-group" className="flex">
-                      <button onClick={(e) => approve(request)} className="w-100 button default approve green-text no-border">
+
+                    {/* BUTTONS */}
+                    <div id="request-buttons">
+                      <button onClick={(e) => approve(request)} className="green">
                         Approve
                       </button>
                       <button
@@ -171,13 +185,24 @@ export default function TransferRequests() {
                           setShowRevisionCard(true)
                           setState({ ...state, transferRequestToRevise: request })
                         }}
-                        className="revise w-100  button default  no-border">
+                        className="blue">
                         Revise
                       </button>
                       <button
+                        className="red"
                         data-request-id={request.id}
-                        onClick={(e) => reject(request)}
-                        className="w-100 reject button default red-text no-border">
+                        onClick={async (e) => {
+                          inputAlert(
+                            'Rejection Reason',
+                            'Please enter a rejection reason',
+                            async () => {
+                              await reject(request)
+                            },
+                            true,
+                            true,
+                            'textarea'
+                          )
+                        }}>
                         Reject
                       </button>
                     </div>

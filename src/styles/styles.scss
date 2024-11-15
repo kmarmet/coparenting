@@ -172,6 +172,10 @@ aside {
 }
 
 #external-overrides {
+  // MENU
+  .full-menu {
+    @include slideOutMenu;
+  }
   #app-container {
     position: relative;
     max-height: 100vh;
@@ -304,10 +308,6 @@ aside {
 
     #navbar {
       @include navBar;
-    }
-
-    #slide-out-menu-wrapper {
-      @include slideOutMenu;
     }
 
     #page-overlay {

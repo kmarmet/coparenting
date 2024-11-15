@@ -14,26 +14,7 @@ import NewSwapRequest from '../forms/newSwapRequest'
 import { IoAdd } from 'react-icons/io5'
 import { FaChildren } from 'react-icons/fa6'
 import { AiTwotoneNotification } from 'react-icons/ai'
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  inputAlert,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  successAlert,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
+import { inputAlert, successAlert } from '../../globalFunctions'
 import NavBar from '../navBar'
 
 const Decisions = {
@@ -49,6 +30,7 @@ export default function SwapRequests() {
   const [rejectionReason, setRejectionReason] = useState('')
   const [showCard, setShowCard] = useState(false)
   const [showReviseCard, setShowReviseCard] = useState(false)
+
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getSwapRequests(currentUser).then((r) => r)
     setExistingRequests(allRequests)
@@ -66,9 +48,6 @@ export default function SwapRequests() {
       await DB.updateRecord(DB.tables.swapRequests, request, 'rejectionReason', rejectionReason, 'id')
       const notifMessage = PushAlertApi.templates.swapRequestDecision(request, decision)
       PushAlertApi.sendMessage('Swap Request Decision', notifMessage, subId)
-
-      // Clear rejection reason textarea
-      document.getElementById('rejection-reason-input').value = ''
     }
 
     // Approved
@@ -95,7 +74,7 @@ export default function SwapRequests() {
     })
   }
 
-  useEffect(() => {
+  const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
       await getSecuredRequests().then((r) => r)
@@ -103,6 +82,10 @@ export default function SwapRequests() {
         addEventRowAnimation()
       }, 600)
     })
+  }
+
+  useEffect(() => {
+    onTableChange().then((r) => r)
     Manager.showPageContainer('show')
   }, [])
 

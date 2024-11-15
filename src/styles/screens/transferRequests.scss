@@ -1,85 +1,6 @@
 @import '../mixins';
 
 #transfer-requests-container {
-  /*#region LIGHT THEME*/
-  &.light {
-    #all-transfer-requests-container {
-      .request {
-        background-color: white;
-      }
-    }
-    #rejection-reason-wrapper,
-    #rejection-reason-textarea {
-      background-color: transparent;
-      width: calc(100% - 5px);
-      border-radius: $borderRadius;
-      margin: 0 auto;
-      &#rejection-reason-textarea {
-        background-color: $lightGrey;
-      }
-    }
-    #button-group {
-      //      border: 1px solid $;
-      button {
-        &.approve {
-          background-color: $green;
-          &.green-text {
-            color:white;
-          }
-        }
-        &.revise {
-          background-color: $lightGrey;
-          color:$lightBlackLight;
-        }
-        &.reject {
-          background-color: $red;
-          &.red-text {
-            color:white;
-          }
-        }
-      }
-    }
-    .content {
-      background-color: white;
-      .row {
-        background-color: $lightGrey;
-      }
-      button {
-        &.button {
-          &.default {
-            &#reminder-button {
-              background-color: $yellow;
-              color: black;
-              font-weight: 600;
-            }
-          }
-        }
-      }
-    }
-  }
-  /*#endregion LIGHT THEME*/
-
-  /*#region  DARK THEME*/
-  &.dark {
-    .content {
-      .row {
-        background-color: $darkBlue;
-      }
-      button {
-        &.button {
-          &.default {
-            &#reminder-button {
-              background-color: $yellow;
-              color: black;
-              font-weight: 600;
-            }
-          }
-        }
-      }
-    }
-  }
-  /*#endregion  DARK THEME*/
-
   @include lengthSelection;
 
   @media only screen and (min-width: 800px) {
@@ -89,52 +10,66 @@
   }
 
   #all-transfer-requests-container {
+
     .request {
-      margin: 0;
-      border: 0;
-      background-color: $darkBlue;
-      border-radius: $borderRadius;
+      background-color: white;
+      border-radius: $bigBorderRadius;
       width: 100%;
       overflow: hidden;
       transition: all 0.3s ease-in-out;
-
-      button {
-        &.delete {
-          border-radius: 0;
-          padding: 8px 0;
-        }
-      }
-
-      button {
-        width: 100%;
-        border-radius: 0;
-        padding: 10px 5px;
+      padding: 20px;
+      border: 1px solid $borderColor;
+      opacity: 0;
+      margin: 100px 0 0 0;
+      
+      &.active {
+        margin-top: 0;
+        transition: all 0.3s ease-in;
         opacity: 1;
-        text-align: center;
-        font-weight: 600;
-
-        &.default {
-          border-radius: 0;
-        }
-
-        &.button {
-          &.default {
-            border-radius: 0;
+      }
+      
+      .row, #children {
+        margin-bottom: 5px;
+      }
+      
+      #request-buttons {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 20px;
+        
+        button {
+          background:transparent;
+          text-transform: uppercase;
+          font-weight: $fwMedium;
+          color: $lightDarkGrey;
+          font-size: 14px;
+          line-height: 1;
+          margin: 0;
+          padding: 0;
+          
+          &.red {
+            color: $red;
+          }
+          &.blue {
+            color: $mainBlue;
+          }
+          &.green {
+            color: $green;
+            display: flex;
+            align-items: center;
+            
+            svg {
+              font-size: 18px;
+              margin-left: 5px;
+              position: relative;
+              top:-2px;
+            }
           }
         }
-
-        span {
-          font-size: 25px;
-        }
-
-        &.approve {
-          border-radius: 0 0 0 8px;
-        }
-
-        &.reject {
-          border-radius: 0 0 8px 0;
-        }
       }
+
       a {
         align-items: center;
         margin-top: 5px;
@@ -145,110 +80,88 @@
           margin-right: 5px;
         }
       }
-
-      .request-date-container {
-        display: flex;
-        align-items: center;
-        background-color: $purple;
-        border-radius: $borderRadius $borderRadius 0 0;
-        padding: 5px;
-
-        #calendar-icon {
-          font-size: 25px;
-          color: $offWhite;
-        }
-
-        #request-date {
-          text-align: center;
-          color: white;
-          font-weight: bold;
-          width: 100%;
-          line-height: 1;
-          padding-right: 15px;
-          margin: 0;
-
-          span {
-            font-size: 16px;
-            display: block;
-            line-height: 1.2;
-            font-weight: 400;
-
-            &:nth-child(2),
-            &.time {
-              font-size: 12px;
-              opacity: 0.7;
-            }
+      
+      #request-date {
+        line-height: 1;
+        font-weight: $fwMediumBold;
+        width: auto;
+        color: $mainBlue;
+        display: inline;
+        font-size: 22px;
+        
+        span {
+          font-size: 16px;
+          display: block;
+          line-height: 1.2;
+          font-weight: 400;
+          
+          &:nth-child(2),
+          &.time {
+            font-size: 12px;
+            opacity: 0.7;
           }
         }
       }
-
+      
       .content {
-        padding-left: 10px;
         position: relative;
         align-items: center;
         overflow: hidden;
-
+        padding: 10px 0;
+        
         .top-details {
-          .reason {
-            font-weight: 300;
-            font-size: 14px;
-          }
-
-          .reason-text {
-            -ms-word-break: break-all;
-            word-break: break-all;
-
-            &.wrap {
-              width: 100%;
-            }
-          }
+          width: 100%;
           .row {
-            margin-top: 10px;
-            padding: 10px;
-            width: calc(100% - 10px);
+            width: 100%;
             border-radius: $borderRadius;
             justify-content: flex-start;
             flex-wrap: wrap;
-            display: flex;
-            align-items: center;
-
-            &.time {
-              span {
-                top: inherit;
-              }
-            }
           }
         }
-
+        
+        .reason {
+          font-weight: 300;
+          font-size: 14px;
+        }
+        
+        .reason-text {
+          -ms-word-break: break-all;
+          word-break: break-all;
+          
+          &.wrap {
+            width: 100%;
+          }
+        }
+        
         .flex {
           display: flex;
           justify-content: space-between;
           flex-wrap: wrap;
-
+          
           p {
             font-weight: 400;
             line-height: 1.2;
             opacity: 0.9;
             margin: 0;
-
+            
             &.label {
               opacity: 0.87;
             }
-
+            
             &.subtext {
               opacity: 0.6;
             }
-
+            
             &.unpaid {
               color: $red;
               opacity: 1;
             }
-
+            
             &.request-date,
             &.amount {
               font-weight: 500;
             }
-
+            
             &.time {
               span {
                 position: relative;
@@ -256,42 +169,18 @@
               }
             }
           }
-
+          
           b {
             font-weight: 500;
             display: block;
           }
         }
-
+        
         #reminder-button {
           margin: 10px 0;
           span {
             color: black;
           }
-        }
-      }
-    }
-
-    #rejection-reason-wrapper {
-      label {
-        padding-left: 10px;
-      }
-      #rejection-reason-textarea {
-        height: 100px;
-        border: 0;
-        margin: 0 10px 10px 10px;
-        width: calc(100% - 20px);
-        display: block;
-        padding: 10px;
-        font-weight: 300;
-        outline: 0;
-        border-radius: 8px;
-
-        &::placeholder {
-          font-style: italic;
-          font-weight: 400;
-          font-size: 16px;
-          opacity: 0.7;
         }
       }
     }

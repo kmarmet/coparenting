@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import '../../prototypes'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
-import { IoIosCloseCircle } from 'react-icons/io'
+import { BsChevronCompactDown } from 'react-icons/bs'
 
 export default function BottomCard({
   submitText,
@@ -55,7 +55,7 @@ export default function BottomCard({
   return (
     <div key={refreshKey} id="bottom-card" className={`${cardClasses()} ${alertType} `}>
       <div id="title" dangerouslySetInnerHTML={{ __html: title }}></div>
-      <div id="content" className="mt-15">
+      <div id="content">
         {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
         {children}
       </div>
@@ -66,7 +66,7 @@ export default function BottomCard({
           </button>
         )}
         {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
-        <IoIosCloseCircle className="close-icon" onClick={onClose} />
+        <BsChevronCompactDown className="close-icon" onClick={onClose} />
       </div>
     </div>
   )

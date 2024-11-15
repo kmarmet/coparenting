@@ -44,33 +44,10 @@ import SlideOutMenu from './components/slideOutMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
 
 import { initializeApp } from 'firebase/app'
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { LicenseInfo } from '@mui/x-license'
 import ScreenNames from '@screenNames'
 import firebaseConfig from './firebaseConfig.js'
-import {
-  confirmAlert,
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  inputAlert,
-  isAllUppercase,
-  oneButtonAlert,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  successAlert,
-  throwError,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from './globalFunctions'
 import ContactUs from './components/screens/contactUs'
 
 export default function App() {
@@ -102,42 +79,23 @@ export default function App() {
   })
 
   // State to include in App.js
-  const { isLoading, theme, currentScreen, menuIsOpen, currentUser } = state
+  const { isLoading, currentScreen, menuIsOpen, currentUser } = state
 
   const deleteMenuAnimation = () => {
-    document.querySelectorAll('.slide-out-menu-item').forEach((menuItem, i) => {
+    document.querySelectorAll('#full-menu .menu-item').forEach((menuItem, i) => {
       menuItem.classList.remove('visible')
     })
   }
 
   const addMenuItemAnimation = () => {
-    document.querySelectorAll('.slide-out-menu-item').forEach((menuItem, i) => {
+    document.querySelectorAll('#full-menu .menu-item').forEach((menuItem, i) => {
       setTimeout(() => {
         menuItem.classList.add('visible')
       }, 55 * i)
     })
   }
 
-  const logout = () => {
-    localStorage.removeItem('rememberKey')
-
-    signOut(auth)
-      .then(() => {
-        setState({
-          ...state,
-          currentScreen: ScreenNames.login,
-          currentUser: null,
-          userIsLoggedIn: false,
-        })
-        // Sign-out successful.
-        console.log('User signed out')
-      })
-      .catch((error) => {
-        // An error happened.
-      })
-  }
-
-  // Clear app badge
+  // CLEAR APP BADGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
@@ -167,6 +125,7 @@ export default function App() {
     LicenseInfo.setLicenseKey('177565103a9fa228eb67b66fc75e9034Tz0xMDE1NTAsRT0xNzYyODU5NjcwMDAwLFM9cHJvLExNPXN1YnNjcmlwdGlvbixQVj1RMy0yMDI0LEtWPTI=')
   }, [])
 
+  // MENU OPEN/CLOSE
   useEffect(() => {
     if (menuIsOpen) {
       document.querySelector('#app-container').classList.add('pushed')

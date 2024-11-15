@@ -1,24 +1,7 @@
 import Manager from '@manager'
 import React, { useContext } from 'react'
 import globalState from '../../context'
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
+import { formatNameFirstNameOnly, stringHasNumbers } from '../../globalFunctions'
 
 export default function CheckboxGroup({
   checkboxLabels,
@@ -61,19 +44,18 @@ export default function CheckboxGroup({
               label = formatNameFirstNameOnly(label.toString())
             }
             return (
-              <div key={index}>
-                <div
-                  id="checkbox-container"
-                  data-phone={thisPhone ? thisPhone : ''}
-                  data-label={label ? label : ''}
-                  data-date={thisDate ? thisDate : ''}
-                  className={`flex ${containerClass}`}
-                  onClick={(e) => onCheck(e)}>
-                  <div className={`box ${Manager.isValid(defaultLabels, true) && defaultLabels.includes(label) ? 'active' : ''}`}>
-                    <div id="inner-circle"></div>
-                  </div>
-                  <span>{label}</span>
+              <div
+                key={index}
+                id="checkbox-container"
+                data-phone={thisPhone ? thisPhone : ''}
+                data-label={label ? label : ''}
+                data-date={thisDate ? thisDate : ''}
+                className={`flex ${containerClass}`}
+                onClick={(e) => onCheck(e)}>
+                <div className={`box ${Manager.isValid(defaultLabels, true) && defaultLabels.includes(label) ? 'active' : ''}`}>
+                  <div id="inner-circle"></div>
                 </div>
+                <span>{label}</span>
               </div>
             )
           })}

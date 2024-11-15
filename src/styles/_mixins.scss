@@ -969,7 +969,7 @@
     opacity: 0;
     height: 0;
     width: 0;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -1048,6 +1048,8 @@
     z-index: 10000;
     width: auto;
     display: inline-block;
+    position: relative;
+    top: 2px;
     background-color: transparent;
   }
 }
@@ -1278,6 +1280,15 @@
 
   &.gap-15 {
     //    gap: 15px;
+  }
+  
+  &.holiday-checkboxes {
+    #checkboxes {
+      gap: 10px 0;
+    }
+    #checkbox-container {
+      width: 45%;
+    }
   }
 
   #checkbox-container,
@@ -2088,6 +2099,10 @@
     }
   }
 
+  #content {
+    margin-top: 15px;
+  }
+
   .flex {
     margin-bottom: 8px;
   }
@@ -2234,10 +2249,11 @@
     }
 
     .close-icon {
-      font-size: 40px;
+      font-size: 45px;
       z-index: 1000;
       position: relative;
       color: $red;
+      font-weight: bold;
       opacity: 0.8;
       background: white;
       border-radius: 100%;
@@ -2445,6 +2461,25 @@
     .child-name {
       @include pillButton;
       margin: 0;
+    }
+  }
+
+  // FULL MENU
+  &.full-menu {
+    background: $mainBlue;
+    
+    #title {
+      color: white;
+    }
+    
+    .buttons {
+      background: $mainBlue;
+      border: 0;
+      
+      .close-icon {
+        background: transparent;
+        color:white;
+      }
     }
   }
 
@@ -2677,116 +2712,80 @@
 
 /*#region  MENU*/
 @mixin slideOutMenu {
-  background: transparent;
-  position: relative;
-  #blur {
-    height: 100vh;
-    width: 25vw;
-    position: fixed;
-    right: 0;
-    backdrop-filter: blur(3px);
-    transition: all 0.6s ease-in-out;
-    top: 0;
-    bottom: 0;
-    z-index: -1;
-    opacity: 0;
-    left: 100vw;
-
-    &.active {
-      left: 75vw;
-      z-index: 1000;
-      opacity: 1;
-    }
-  }
-  #slide-out-menu {
-    display: block;
-    border-right: 1px solid $lightBorder;
-    transition: all 0.6s ease-in-out;
-    width: 0;
+  #full-menu {
+    background: $mainBlue;
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
     position: relative;
     overflow: auto;
-    z-index: -1;
-    padding: env(safe-area-inset-top) 0 0 env(safe-area-inset-left);
+    width: 100%;
     height: 100%;
+    transition: all 0.6s ease-in-out;
 
-    &.active {
-      width: 75vw;
-      z-index: $maxZIndex;
-      padding: 20px 15px 0 15px;
-    }
-
-    #menu-close-icon {
-      color: $mainBlue;
-      position: fixed;
-      @include centerVert;
-      transition: all 0.6s ease-in-out;
-      right: -100vw;
-      opacity: 0;
-      &.active {
-        right: 9vw;
-        opacity: 1;
-        transition: all 0.6s ease-in-out;
-      }
-    }
-
-    #top-bar {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      border-bottom: 1px solid $lightBorder;
-      margin-bottom: 20px;
-
-      .logo {
-        border-radius: 100%;
-        img {
-          display: flex;
-          justify-content: center;
-          width: 70%;
-          text-align: center;
-          height: auto;
-          margin: 0 auto 20px auto;
-          border-radius: 100%;
-        }
-      }
-    }
-
-    .slide-out-menu-item {
+    .menu-item {
       display: flex;
       align-items: center;
-      margin-bottom: 12px;
       opacity: 0;
-      width: 100%;
+      width: 45%;
       transform: scale(0);
       transition: all 0.6s ease-in-out;
+      margin: 0 auto 15px auto;
+      
+      &:nth-last-child(2) {
+        margin-left: 10px;
+        margin-right: auto;
+      }
+      
+      &.logout {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+      }
+      
+      &.theme {
+        svg {
+          font-size: 30px;
+        }
+      }
+      
+      &.settings, &.contact-us {
+        svg {
+          font-size: 26px;
+        }
+      }
+
+      svg {
+        font-size: 28px;
+        margin-right: 10px;
+        color: white;
+      }
+      p {
+        color: white;
+      }
 
       &.visible {
-        opacity: 1;
+        opacity: 0.8;
         margin-top: 0;
         transition: all 0.6s ease-in-out;
         transform: scale(1);
         background-color: transparent;
+        
+        p {
+          font-weight: $fwLight;
+          transform: scale(1.05);
+        }
       }
 
       &.active {
         opacity: 1;
-        background-color: $mainBlue;
-        padding: 6px;
         border-radius: 8px;
         position: relative;
-        left: -5px;
         p,
         svg {
           font-weight: bold;
           color: white;
         }
-      }
-      svg {
-        font-size: 28px;
-        margin-right: 10px;
-        color: $mainBlue;
-      }
-      p {
-        color: $mainBlue;
       }
     }
   }
@@ -2910,10 +2909,6 @@
         width: 45px;
         border: 0;
         opacity: 1;
-
-        svg {
-          //          font-size: 50px;
-        }
 
         .material-icons-round {
           background-color: $green;

@@ -10,34 +10,18 @@ import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  successAlert,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
+import { displayAlert, formatNameFirstNameOnly, successAlert } from '../../globalFunctions'
 import ModelNames from '../../models/modelNames'
+import BottomCard from '../shared/bottomCard'
 
-export default function ReviseChildTransferChangeRequest({ hideCard }) {
+export default function ReviseChildTransferChangeRequest({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, transferRequestToRevise } = state
   const [requestTime, setRequestTime] = useState('')
   const [requestLocation, setRequestLocation] = useState('')
   const [requestDate, setRequestDate] = useState('')
   const [directionsLink, setDirectionsLink] = useState('')
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
   const resetForm = () => {
     Manager.resetForm('revise-transfer-wrapper')
@@ -46,6 +30,7 @@ export default function ReviseChildTransferChangeRequest({ hideCard }) {
     setRequestDate('')
     setDirectionsLink('')
     hideCard()
+    setRefreshKey(Manager.getUid())
   }
 
   const submit = async () => {
@@ -104,62 +89,64 @@ export default function ReviseChildTransferChangeRequest({ hideCard }) {
   }, [])
 
   return (
-    <div className="revise-transfer-wrapper">
-      <div id="transfer-change-container" className={`${theme} form`}>
-        <div className="form transfer-change">
-          <div className="flex gap">
-            <div>
-              {/* DAY */}
-              <label>
-                Day<span className="asterisk">*</span>
-              </label>
-              <MobileDatePicker
-                format={DateFormats.dateForDb}
-                defaultValue={moment(transferRequestToRevise?.date, DateFormats.dateForDb)}
-                className="mb-15 mt-0 w-100 day-input-wrapper"
-                onChange={(e) => setRequestDate(e)}
-              />
+    <BottomCard refreshKey={refreshKey} title={'Revise Request'} showCard={showCard} onClose={resetForm}>
+      <div className="revise-transfer-wrapper">
+        <div id="transfer-change-container" className={`${theme} form`}>
+          <div className="form transfer-change">
+            <div className="flex gap">
+              <div>
+                {/* DAY */}
+                <label>
+                  Day<span className="asterisk">*</span>
+                </label>
+                <MobileDatePicker
+                  format={DateFormats.dateForDb}
+                  defaultValue={moment(transferRequestToRevise?.date, DateFormats.dateForDb)}
+                  className="mb-15 mt-0 w-100 day-input-wrapper"
+                  onChange={(e) => setRequestDate(e)}
+                />
+              </div>
+
+              {/* TIME */}
+              <div>
+                <label className="mt-0">
+                  New Time <span>&nbsp;</span>
+                </label>
+                <MobileTimePicker
+                  defaultValue={moment(transferRequestToRevise?.time, DateFormats.timeForDb)}
+                  className="mb-15 mt-0 w-100"
+                  onAccept={(e) => setRequestTime(e)}
+                />
+              </div>
             </div>
 
-            {/* TIME */}
-            <div>
-              <label className="mt-0">
-                New Time <span>&nbsp;</span>
-              </label>
-              <MobileTimePicker
-                defaultValue={moment(transferRequestToRevise?.time, DateFormats.timeForDb)}
-                className="mb-15 mt-0 w-100"
-                onAccept={(e) => setRequestTime(e)}
-              />
+            {/*  NEW LOCATION*/}
+            <Autocomplete
+              defaultValue={transferRequestToRevise?.location}
+              placeholder="New Location"
+              apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+              options={{
+                types: ['geocode', 'establishment'],
+                componentRestrictions: { country: 'usa' },
+              }}
+              className="mb-15"
+              onPlaceSelected={(place) => {
+                setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
+                setRequestLocation(place.formatted_address)
+              }}
+            />
+
+            <div className="buttons gap">
+              <button className="button card-button" onClick={submit}>
+                Send Revision <span className="material-icons-round ml-10 fs-22">send</span>
+              </button>
+              <button className="button card-button cancel" onClick={resetForm}>
+                Cancel
+              </button>
             </div>
-          </div>
-
-          {/*  NEW LOCATION*/}
-          <Autocomplete
-            defaultValue={transferRequestToRevise?.location}
-            placeholder="New Location"
-            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-            options={{
-              types: ['geocode', 'establishment'],
-              componentRestrictions: { country: 'usa' },
-            }}
-            className="mb-15"
-            onPlaceSelected={(place) => {
-              setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
-              setRequestLocation(place.formatted_address)
-            }}
-          />
-
-          <div className="buttons gap">
-            <button className="button card-button" onClick={submit}>
-              Send Revision <span className="material-icons-round ml-10 fs-22">send</span>
-            </button>
-            <button className="button card-button cancel" onClick={resetForm}>
-              Cancel
-            </button>
           </div>
         </div>
       </div>
-    </div>
+    </BottomCard>
   )
 }

@@ -4,25 +4,6 @@ import ScreenNames from '@screenNames'
 import Manager from '@manager'
 import AppManager from '@managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
-import { FaChevronLeft } from 'react-icons/fa6'
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../globalFunctions'
 
 import DB_UserScoped from '@userScoped'
 
@@ -46,6 +27,7 @@ import { BsPeople } from 'react-icons/bs'
 import { MdOutlineManageAccounts } from 'react-icons/md'
 import { FiSettings } from 'react-icons/fi'
 import { BiFace } from 'react-icons/bi'
+import BottomCard from './shared/bottomCard'
 
 export default function SlideOutMenu() {
   const { state, setState } = useContext(globalState)
@@ -82,19 +64,19 @@ export default function SlideOutMenu() {
   }
 
   return (
-    <div id="slide-out-menu-wrapper">
-      <div id="slide-out-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
+    <BottomCard
+      title={'Menu'}
+      className="full-menu"
+      onClose={() => setState({ ...state, menuIsOpen: false })}
+      showCard={menuIsOpen}
+      hasDelete={false}
+      hasSubmitButton={false}>
+      <div id="full-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
         <>
-          <div className="flex" id="top-bar">
-            <div className="flex logo">
-              <img src={require('../img/logo.png')} alt="" />
-            </div>
-          </div>
-
           {/* ADMIN DASHBOARD */}
           {currentUser.email === 'kmarmet1@gmail.com' && (
             <div
-              className={`slide-out-menu-item ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
+              className={`menu-item ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>
               <PiToolboxDuotone />
               <p>Admin Dashboard</p>
@@ -102,7 +84,7 @@ export default function SlideOutMenu() {
           )}
           {/* CALENDAR */}
           <div
-            className={`slide-out-menu-item ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
+            className={`menu-item ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
             onClick={() => changeCurrentScreen(ScreenNames.calendar)}>
             <PiCalendarDotsDuotone />
             <p>Calendar</p>
@@ -110,13 +92,13 @@ export default function SlideOutMenu() {
           {AppManager.getAccountType(currentUser) === 'parent' && (
             <>
               <div
-                className={`slide-out-menu-item ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
+                className={`menu-item ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.visitation)}>
                 <PiHouseLineDuotone />
                 <p>Visitation</p>
               </div>
               <div
-                className={`slide-out-menu-item ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
+                className={`menu-item ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.chats)}>
                 <PiChatsCircleDuotone />
                 <p className="text">Chat</p>
@@ -128,7 +110,7 @@ export default function SlideOutMenu() {
             <>
               {/* EXPENSES */}
               <div
-                className={`slide-out-menu-item ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
+                className={`menu-item ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.expenseTracker)}>
                 <PiMoneyWavyDuotone />
                 <p>Expense Tracker</p>
@@ -136,7 +118,7 @@ export default function SlideOutMenu() {
 
               {/* SWAP REQUESTS */}
               <div
-                className={`slide-out-menu-item ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
+                className={`menu-item ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.swapRequests)}>
                 <PiSwapDuotone />
                 <p>Swap Requests</p>
@@ -144,7 +126,7 @@ export default function SlideOutMenu() {
 
               {/* TRANSFER CHANGE */}
               <div
-                className={`slide-out-menu-item ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
+                className={`menu-item ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.transferRequests)}>
                 <PiCarProfileDuotone />
                 <p>Transfer Change</p>
@@ -152,7 +134,7 @@ export default function SlideOutMenu() {
 
               {/* DOCUMENTS */}
               <div
-                className={`slide-out-menu-item ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
+                className={`menu-item ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.docsList)}>
                 <HiOutlineDocumentText />
                 <p>Documents</p>
@@ -160,7 +142,7 @@ export default function SlideOutMenu() {
 
               {/* MEMORIES */}
               <div
-                className={`slide-out-menu-item ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
+                className={`menu-item ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.memories)}>
                 <PiImagesSquareDuotone />
                 <p>Memories</p>
@@ -168,7 +150,7 @@ export default function SlideOutMenu() {
 
               {/* CHILD INFO */}
               <div
-                className={`slide-out-menu-item ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
+                className={`menu-item ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.childInfo)}>
                 <BiFace />
                 <p>Child Info</p>
@@ -176,7 +158,7 @@ export default function SlideOutMenu() {
 
               {/* COPARENTS */}
               <div
-                className={`slide-out-menu-item ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
+                className={`menu-item ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.coparents)}>
                 <BsPeople />
                 <p>Coparents</p>
@@ -187,7 +169,7 @@ export default function SlideOutMenu() {
 
         {/* ACCOUNT */}
         <div
-          className={`slide-out-menu-item ${currentScreen === ScreenNames.account ? 'active' : ''}`}
+          className={`menu-item ${currentScreen === ScreenNames.account ? 'active' : ''}`}
           onClick={() => changeCurrentScreen(ScreenNames.account)}>
           <MdOutlineManageAccounts />
           <p>Account</p>
@@ -195,7 +177,7 @@ export default function SlideOutMenu() {
 
         {/* SETTINGS */}
         <div
-          className={`slide-out-menu-item ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
+          className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
           onClick={() => changeCurrentScreen(ScreenNames.settings)}>
           {/*<span className="material-icons-round">settings</span>*/}
           <FiSettings /> <p>Settings</p>
@@ -203,36 +185,32 @@ export default function SlideOutMenu() {
 
         {/* CONTACT US */}
         <div
-          className={`slide-out-menu-item ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
+          className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
           onClick={() => changeCurrentScreen(ScreenNames.contactUs)}>
           <RiMailSendLine />
           <p>Contact Us</p>
         </div>
 
         {/* THEME TOGGLE */}
-        <div className={`slide-out-menu-item visible`} onClick={logout}>
-          <PiSignOutDuotone />
-          <p>Logout</p>
-        </div>
         {theme === 'dark' && (
-          <div className="slide-out-menu-item visible">
+          <div className="menu-item theme">
             <PiSunDuotone />
-            <p onClick={() => changeTheme('light')}>Switch to Light Mode</p>
+            <p onClick={() => changeTheme('light')}>Light Mode</p>
           </div>
         )}
         {theme === 'light' && (
-          <div className="slide-out-menu-item visible">
+          <div className="menu-item theme">
             <PiMoonStarsDuotone />
-            <p onClick={() => changeTheme('dark')}> Switch to Dark Mode</p>
+            <p onClick={() => changeTheme('dark')}> Dark Mode</p>
           </div>
         )}
-        <FaChevronLeft
-          className={`${theme} ${menuIsOpen ? 'active' : ''}`}
-          id={'menu-close-icon'}
-          onClick={() => setState({ ...state, menuIsOpen: false })}
-        />
+
+        {/* LOGOUT BUTTON */}
+        <div className={`menu-item logout`} onClick={logout}>
+          <PiSignOutDuotone />
+          <p>Logout</p>
+        </div>
       </div>
-      <div id="blur" className={`${theme} ${menuIsOpen ? 'active' : ''}`} onClick={() => setState({ ...state, menuIsOpen: false })}></div>
-    </div>
+    </BottomCard>
   )
 }

@@ -95,7 +95,7 @@ SecurityManager = {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
         shareWith = request.shareWith;
-        if (request.phone === currentUser.phone) {
+        if (request.ownerPhone === currentUser.phone) {
           returnRecords.push(request);
         }
         if (Manager.isValid(shareWith, true)) {
