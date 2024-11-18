@@ -33,7 +33,6 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import { IoMdRemoveCircle } from 'react-icons/io'
-import BottomCard from '../../shared/bottomCard'
 import NavBar from '../../navBar'
 import { BsPersonAdd } from 'react-icons/bs'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
@@ -133,20 +132,17 @@ export default function Coparents() {
   return (
     <>
       {/* CUSTOM INFO FORM */}
-      <BottomCard title={'Add Custom Info'} showCard={showCustomInfoCard} onClose={() => setShowCustomInfoCard(false)}>
-        <CustomCoparentInfo
-          hideCard={() => setShowCustomInfoCard(false)}
-          activeCoparent={selectedCoparent}
-          setActiveCoparent={(coparent) => setActiveCoparentInfo(coparent)}
-        />
-      </BottomCard>
+      <CustomCoparentInfo
+        hideCard={() => setShowCustomInfoCard(false)}
+        activeCoparent={selectedCoparent}
+        setActiveCoparent={(coparent) => setActiveCoparentInfo(coparent)}
+        showCard={showCustomInfoCard}
+      />
 
       {!selectedCoparent && <NoDataFallbackText text={'No Co-Parents Added'} />}
 
       {/* NEW COPARENT FORM */}
-      <BottomCard title={'Add Co-Parent'} showCard={showNewCoparentFormCard} onClose={() => setShowNewCoparentFormCard(false)}>
-        <NewCoparentForm hideCard={() => setShowNewCoparentFormCard(false)} />
-      </BottomCard>
+      <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container coparents-wrapper form`}>
@@ -246,7 +242,7 @@ export default function Coparents() {
           )}
         </div>
       </div>
-      {!showNewCoparentFormCard && (
+      {!showNewCoparentFormCard && !showCustomInfoCard && (
         <NavBar navbarClass={'calendar'}>
           <BsPersonAdd id={'add-new-button'} onClick={() => setShowNewCoparentFormCard(true)} />
         </NavBar>

@@ -23,23 +23,27 @@ import Manager from '@manager';
 
 import DB from "../database/DB";
 
+import DateManager from "./dateManager";
+
+import _ from "lodash";
+
 SecurityManager = {
   getCalendarEvents: async function(currentUser) {
     var allEvents, event, i, len, returnRecords, shareWith;
     returnRecords = [];
     allEvents = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents))).flat();
-    if (Manager.isValid(allEvents, true)) {
+    if (!_.isEmpty(allEvents)) {
       for (i = 0, len = allEvents.length; i < len; i++) {
         event = allEvents[i];
         if (event.isHoliday && event.visibleToAll) {
           returnRecords.push(event);
         }
         shareWith = event.shareWith;
-        if (Manager.dateIsValid(event.startDate) && event.startDate.length > 0) {
+        if (DateManager.dateIsValid(event.startDate)) {
           if (event.ownerPhone === currentUser.phone) {
             returnRecords.push(event);
           }
-          if (Manager.isValid(shareWith, true) && shareWith.includes(currentUser.phone)) {
+          if (!_.isEmpty(shareWith) && shareWith.includes(currentUser.phone)) {
             returnRecords.push(event);
           }
         }

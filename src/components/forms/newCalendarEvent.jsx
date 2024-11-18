@@ -50,7 +50,8 @@ import {
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
-} from '../../globalFunctions' // COMPONENT
+} from '../../globalFunctions'
+import ObjectManager from '../../managers/objectManager' // COMPONENT
 
 // COMPONENT
 export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDay }) {
@@ -180,7 +181,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
         return false
       }
 
-      const cleanedObject = Manager.cleanObject(newEvent, ModelNames.calendarEvent)
+      const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
       MyConfetti.fire()
       onClose()
 

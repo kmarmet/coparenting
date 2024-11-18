@@ -30,6 +30,7 @@ import {
 import ModelNames from '../../../models/modelNames'
 import InputWrapper from '../../shared/inputWrapper'
 import BottomCard from '../../shared/bottomCard'
+import ObjectManager from '../../../managers/objectManager'
 
 const NewChildForm = ({ hideCard, showCard }) => {
   const { state, setState } = useContext(globalState)
@@ -70,7 +71,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
       general.dateOfBirth = dateOfBirth
       newChild.general = general || ''
 
-      const cleanChild = Manager.cleanObject(newChild, ModelNames.childUser)
+      const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.childUser)
       await DB_UserScoped.addUserChild(currentUser, cleanChild)
 
       resetForm()

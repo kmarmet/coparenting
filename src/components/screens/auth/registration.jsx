@@ -49,6 +49,7 @@ import BottomCard from '../../shared/bottomCard'
 import { PiInfoDuotone } from 'react-icons/pi'
 import validator from 'validator'
 import Label from '../../shared/label'
+import ObjectManager from '../../../managers/objectManager'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -150,7 +151,7 @@ export default function Registration() {
           // Signed up successfully
           const user = userCredential.user
           console.log('Signed up as:', user.email)
-          const cleanUser = Manager.cleanObject(newUser, ModelNames.user)
+          const cleanUser = ObjectManager.cleanObject(newUser, ModelNames.user)
           await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
           successAlert(`Welcome aboard ${newUser.name}!`)
           setState({ ...state, currentScreen: ScreenNames.login })
@@ -189,7 +190,7 @@ export default function Registration() {
         childUser.general.phone = userPhone
         childUser.emailVerified = false
         childUser.updatedApp = true
-        const cleanChild = Manager.cleanObject(childUser, ModelNames.childUser)
+        const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
         const dbRef = ref(getDatabase())
         await set(child(dbRef, `users/${userPhone}`), cleanChild)
         console.log('Email', email)

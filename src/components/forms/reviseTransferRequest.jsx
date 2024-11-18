@@ -30,6 +30,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from 'globalFunctions'
+import ObjectManager from '../../managers/objectManager'
 
 export default function ReviseChildTransferChangeRequest({ hideCard, showCard, revisionRequest }) {
   const { state, setState } = useContext(globalState)
@@ -73,7 +74,7 @@ export default function ReviseChildTransferChangeRequest({ hideCard, showCard, r
       revisedRequest.date = moment(requestDate).format(DateFormats.dateForDb)
     }
 
-    const cleanRequest = Manager.cleanObject(revisedRequest, ModelNames.transferChangeRequest)
+    const cleanRequest = ObjectManager.cleanObject(revisedRequest, ModelNames.transferChangeRequest)
 
     // Notify
     if (revisionRequest?.recipientPhone) {

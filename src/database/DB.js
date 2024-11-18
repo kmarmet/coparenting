@@ -1,6 +1,7 @@
 import Manager from '@manager'
 import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
 import DB_UserScoped from '@userScoped'
+import DatasetManager from '../managers/datasetManager'
 
 const DB = {
   tables: {
@@ -181,7 +182,7 @@ const DB = {
     }
   },
   deleteMultipleRows: async function (table, rows, currentUser) {
-    rows = Manager.getUniqueArrayOfObjects(rows)
+    rows = DatasetManager.getUniqueArray(rows, true)
     console.log(rows)
     let dbRef, row, i, idToDelete, len
     dbRef = ref(getDatabase())

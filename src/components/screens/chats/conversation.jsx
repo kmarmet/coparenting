@@ -44,6 +44,7 @@ import ContentEditable from '../../shared/contentEditable'
 import { useLongPress } from 'use-long-press'
 import useClipboard from 'react-use-clipboard'
 import PushAlertApi from '../../../api/pushAlert'
+import ObjectManager from '../../../managers/objectManager'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -92,7 +93,7 @@ const Conversation = () => {
     conversationMessage.readState = 'delivered'
     conversationMessage.notificationSent = false
     conversationMessage.bookmarked = false
-    const cleanMessage = Manager.cleanObject(conversationMessage, ModelNames.conversationMessage)
+    const cleanMessage = ObjectManager.cleanObject(conversationMessage, ModelNames.conversationMessage)
 
     //Thread
     const { name, id, phone } = messageToUser
@@ -105,7 +106,7 @@ const Conversation = () => {
     conversation.threadVisibilityMembers = [memberOne, memberTwo]
     conversation.messages = [cleanMessage]
     conversation.threadOwner = currentUser.phone
-    const cleanThread = Manager.cleanObject(conversation, ModelNames.conversationThread)
+    const cleanThread = ObjectManager.cleanObject(conversation, ModelNames.conversationThread)
 
     // Existing chat
     if (Manager.isValid(existingChat)) {

@@ -88,7 +88,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
       newRequest.recipientPhone = currentUser?.coparents?.filter((x) => contains(x?.name, recipientName))[0]?.phone || ''
 
-      const cleanObject = Manager.cleanObject(newRequest, ModelNames.swapRequest)
+      const cleanObject = ObjectManager.cleanObject(newRequest, ModelNames.swapRequest)
 
       // Send Notification
       await DB.add(DB.tables.swapRequests, cleanObject).finally(() => {

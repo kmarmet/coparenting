@@ -49,6 +49,7 @@ import { LicenseInfo } from '@mui/x-license'
 import ScreenNames from '@screenNames'
 import firebaseConfig from './firebaseConfig.js'
 import ContactUs from './components/screens/contactUs'
+import Manager from '@manager'
 
 export default function App() {
   // Initialize Firebase
@@ -105,6 +106,9 @@ export default function App() {
 
   // ON PAGE LOAD
   useEffect(() => {
+    const test = [234]
+    console.log(Manager.isValid(test))
+
     // Error Boundary Test
     // throw new Error('Something went wrong')
 
@@ -122,8 +126,8 @@ export default function App() {
       }
     })
 
-    LicenseInfo.setLicenseKey('177565103a9fa228eb67b66fc75e9034Tz0xMDE1NTAsRT0xNzYyODU5NjcwMDAwLFM9cHJvLExNPXN1YnNjcmlwdGlvbixQVj1RMy0yMDI0LEtWPTI=')
-  }, [])
+    LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
+  })
 
   // MENU OPEN/CLOSE
   useEffect(() => {

@@ -2,6 +2,7 @@ import Manager from '@manager'
 import React, { useContext } from 'react'
 import globalState from '../../context'
 import { formatNameFirstNameOnly, stringHasNumbers } from '../../globalFunctions'
+import _ from 'lodash'
 
 export default function CheckboxGroup({
   checkboxLabels,
@@ -29,6 +30,7 @@ export default function CheckboxGroup({
           checkboxLabels.map((label, index) => {
             let thisPhone = checkboxLabels[index]
             let thisDate = null
+            console.log(_.isEmpty(dataPhone))
             if (Manager.isValid(dataPhone)) {
               if (Manager.isValid(dataPhone[index])) {
                 thisPhone = dataPhone[index]

@@ -49,6 +49,7 @@ import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import BottomCard from '../shared/bottomCard'
 import InputWrapper from '../shared/inputWrapper'
 import ExpenseCategories from '../../constants/expenseCategories'
+import ObjectManager from '../../managers/objectManager'
 
 function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -149,7 +150,7 @@ function NewExpenseForm({ hideCard, showCard }) {
       })
     }
 
-    const cleanObject = Manager.cleanObject(newExpense, ModelNames.expense)
+    const cleanObject = ObjectManager.cleanObject(newExpense, ModelNames.expense)
 
     // Add to DB
     await DB.add(tables.expenseTracker, cleanObject).finally(async () => {

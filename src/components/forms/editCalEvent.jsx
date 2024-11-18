@@ -15,7 +15,6 @@ import CalendarMapper from '../../mappers/calMapper'
 import CalMapper from '../../mappers/calMapper'
 import DateFormats from '../../constants/dateFormats'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
-
 import CalendarManager from '../../managers/calendarManager'
 import Toggle from 'react-toggle'
 import { ImEye } from 'react-icons/im'
@@ -49,6 +48,8 @@ import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import DateManager from '../../managers/dateManager'
 import BottomCard from '../shared/bottomCard'
+import ObjectManager from '../../managers/objectManager'
+import DatasetManager from '../../managers/datasetManager'
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
@@ -116,10 +117,10 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     eventToEdit.id = event?.id
     eventToEdit.title = eventTitle
     eventToEdit.reminderTimes = eventReminderTimes
-    eventToEdit.shareWith = Manager.getUniqueArray(eventShareWith).flat() || []
+    eventToEdit.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat() || []
     eventToEdit.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
     eventToEdit.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
-
+    console.log(eventToEdit.shareWith)
     if (!isAllDay) {
       eventToEdit.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
       eventToEdit.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
@@ -160,7 +161,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         return false
       }
 
-      const cleanedObject = Manager.cleanObject(eventToEdit, ModelNames.calendarEvent)
+      const cleanedObject = ObjectManager.cleanObject(eventToEdit, ModelNames.calendarEvent)
       const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
       const eventCount = allEvents.filter((x) => x.title === eventTitle).length
 
@@ -176,7 +177,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
         // Add cloned dates
         if (Manager.isValid(clonedDatesToSubmit, true)) {
-          await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(clonedDatesToSubmit).flat())
+          await CalendarManager.addMultipleCalEvents(DatasetManager.getUniqueArray(clonedDatesToSubmit, true))
         }
 
         // Add repeating dates
@@ -194,7 +195,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
         // Add cloned dates
         if (Manager.isValid(clonedDatesToSubmit, true)) {
-          await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(clonedDatesToSubmit).flat())
+          await CalendarManager.addMultipleCalEvents(DatasetManager.getUniqueArray(clonedDatesToSubmit, true))
         }
 
         // Add repeating dates
@@ -518,13 +519,15 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           {Manager.isValid(currentUser?.coparents, true) && currentUser.accountType === 'parent' && (
             <ShareWithCheckboxes
               required={true}
-              shareWith={event?.shareWith}
+              shareWith={DatasetManager.getUniqueArrayFromMultiple(
+                currentUser?.coparents?.map((x) => x.phone),
+                event?.shareWith
+              )}
               onCheck={(e) => handleShareWithSelection(e)}
-              defaultPhones={event?.shareWith}
               icon={<ImEye />}
               labelText={'Who is allowed to see it?'}
               containerClass={'share-with-coparents'}
-              checkboxLabels={event?.shareWith}
+              checkboxLabels={currentUser?.coparents?.map((x) => x.phone)}
             />
           )}
           <hr />

@@ -17,9 +17,12 @@
         <item url="file://$PROJECT_DIR$/src/globalFunctions.js" />
         <item url="file://$PROJECT_DIR$/src/managers/appManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/calendarManager.js" />
+        <item url="file://$PROJECT_DIR$/src/managers/datasetManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
+        <item url="file://$PROJECT_DIR$/src/managers/domManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/emailManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
+        <item url="file://$PROJECT_DIR$/src/managers/objectManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/smsManager.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
@@ -62,9 +65,12 @@
       <root url="file://$PROJECT_DIR$/src/globalFunctions.js" />
       <root url="file://$PROJECT_DIR$/src/managers/appManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/calendarManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/datasetManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/domManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/emailManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/objectManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/smsManager.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />

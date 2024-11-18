@@ -53,6 +53,7 @@ import { BsArrowsAngleExpand, BsFilter } from 'react-icons/bs'
 import NavBar from '../navBar'
 import Label from '../shared/label'
 import ExpenseCategories from '../../constants/expenseCategories'
+import DatasetManager from '../../managers/datasetManager'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -124,7 +125,7 @@ export default function ExpenseTracker() {
 
   const getSecuredExpenses = async () => {
     let allExpenses = await SecurityManager.getExpenses(currentUser)
-    allExpenses = Manager.getUniqueArrayOfObjects(allExpenses, 'id')
+    allExpenses = DatasetManager.getUniqueArray(allExpenses, 'id')
     const categories = allExpenses.map((x) => x.category).filter((x) => x !== '')
     setCategoriesInUse(categories)
     setFilterApplied(false)
@@ -194,22 +195,22 @@ export default function ExpenseTracker() {
   const handleSortBySelection = (e) => {
     const sortByName = e.target.value
     if (sortByName === SortByTypes.recentlyAdded) {
-      const sortedByDateAsc = Manager.sortArrayOfObjectsByProp(expenses, 'dateAdded', 'asc')
+      const sortedByDateAsc = DatasetManager.sortByProperty(expenses, 'dateAdded', 'asc', true)
       setExpenses(sortedByDateAsc)
       setFilterApplied(true)
     }
     if (sortByName === SortByTypes.nearestDueDate) {
-      const sortedByDueDateDesc = Manager.sortArrayOfObjectsByProp(expenses, 'dueDate', 'desc')
+      const sortedByDueDateDesc = DatasetManager.sortByProperty(expenses, 'dueDate', 'desc', true)
       setExpenses(sortedByDueDateDesc)
       setFilterApplied(true)
     }
     if (sortByName === SortByTypes.amountDesc) {
-      const sortByAmountDesc = Manager.sortArrayOfObjectsByProp(expenses, 'amount', 'desc', 'number')
+      const sortByAmountDesc = DatasetManager.sortByProperty(expenses, 'amount', 'desc')
       setExpenses(sortByAmountDesc)
       setFilterApplied(true)
     }
     if (sortByName === SortByTypes.amountAsc) {
-      const sortedByAmountAsc = Manager.sortArrayOfObjectsByProp(expenses, 'amount', 'asc', 'number')
+      const sortedByAmountAsc = DatasetManager.sortByProperty(expenses, 'amount', 'asc')
       setExpenses(sortedByAmountAsc)
       setFilterApplied(true)
     }

@@ -83,7 +83,6 @@ export default function Settings() {
       const shortcut = new Shortcut()
       shortcut.iconName = MenuMapper.stringToIconName(item)
       shortcut.accessType = 'parent'
-      shortcut.screenName = item.toCamelCase()
       returnArray.push(shortcut)
     })
 

@@ -39,6 +39,7 @@ import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import BottomCard from '../shared/bottomCard'
 import DateManager from '../../managers/dateManager'
+import ObjectManager from '../../managers/objectManager'
 
 function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -131,7 +132,7 @@ function NewMemoryForm({ hideCard, showCard }) {
             newMemory.creationDate = moment().format(DateFormats.dateForDb)
             newMemory.ownerPhone = currentUser.phone
 
-            const cleanedObject = Manager.cleanObject(newMemory, ModelNames.memory)
+            const cleanedObject = ObjectManager.cleanObject(newMemory, ModelNames.memory)
 
             // Add to Database
             await DB.add(`${DB.tables.memories}`, cleanedObject)

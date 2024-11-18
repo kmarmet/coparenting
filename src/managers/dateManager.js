@@ -35,7 +35,7 @@ const DateManager = {
     if (!Manager.isValid(shareWith, true)) {
       return 'Please select who you would like to share this event with'
     }
-    if (!Manager.dateIsValid(startDate)) {
+    if (!DateManager.dateIsValid(startDate)) {
       return 'Please select an event date'
     }
     return null
@@ -257,13 +257,7 @@ const DateManager = {
     await CalendarManager.setHolidays(Manager.getUniqueArray(holidayEvents).flat())
   },
   dateIsValid: (inputDate) => {
-    if (!inputDate) {
-      return false
-    }
-    if (typeof inputDate === 'string') {
-      return inputDate.length > 0 && inputDate.toLowerCase() !== 'invalid date'
-    }
-    return true
+    return moment(inputDate).isValid()
   },
   returnValidDate: (inputDate, type, outputFormat) => {
     const inputFormats = [DateFormats.dateForDb, DateFormats.timeForDb, DateFormats.dateForDb, DateFormats.fullDatetime]

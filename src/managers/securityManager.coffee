@@ -17,20 +17,22 @@ import {
 
 import Manager from '@manager'
 import DB from "../database/DB"
+import DateManager from "./dateManager"
+import _ from "lodash"
 
 SecurityManager =
   getCalendarEvents: (currentUser) ->
     returnRecords = []
     allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents)).flat()
-    if Manager.isValid(allEvents,true)
+    if !_.isEmpty(allEvents)
       for event in allEvents
         if event.isHoliday and event.visibleToAll
           returnRecords.push(event)
         shareWith = event.shareWith
-        if Manager.dateIsValid(event.startDate) and event.startDate.length > 0
+        if DateManager.dateIsValid(event.startDate)
           if (event.ownerPhone == currentUser.phone)
             returnRecords.push(event)
-          if Manager.isValid(shareWith, true) and shareWith.includes(currentUser.phone)
+          if !_.isEmpty(shareWith) and shareWith.includes(currentUser.phone)
               returnRecords.push(event)
     return returnRecords
   getExpenses: (currentUser) ->

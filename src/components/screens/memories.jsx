@@ -38,6 +38,7 @@ import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
+import ObjectManager from '../../managers/objectManager'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -89,7 +90,7 @@ export default function Memories() {
               newMemory.createdBy = currentUser.phone
               newMemory.memoryName = imageName
 
-              const cleanedObject = Manager.cleanObject(newMemory, ModelNames.memory)
+              const cleanedObject = ObjectManager.cleanObject(newMemory, ModelNames.memory)
               arr.push(cleanedObject)
             }
           })

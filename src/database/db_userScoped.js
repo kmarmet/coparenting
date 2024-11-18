@@ -212,10 +212,6 @@ const DB_UserScoped = {
     const returnChild = await DB.getTable(`users/${currentUser.phone}/children/${key}`, true)
     return returnChild
   },
-  addActivitySet: async (path, activitySet) => {
-    const dbRef = ref(getDatabase())
-    await set(child(dbRef, path), activitySet)
-  },
 
   // UPDATE
   updateUserProp: async (currentUser, parentObjectName, prop, value) => {
