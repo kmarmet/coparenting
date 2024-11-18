@@ -3,34 +3,7 @@
 @import '../variables';
 
 #external-overrides {
-  #legend {
-    background-color: $buttonGrey;
-    gap: 8px;
-    padding: 10px 15px ;
-    justify-content: space-between;
-    
-    .text {
-      font-size: 14px;
-      opacity: 1;
-      
-      &.standard {
-        color: $green;
-      }
-      
-      &.coparent {
-        color: #8068fa;
-      }
-      
-      &.current-user {
-        color: #547efd;
-      }
-    }
-    .divider {
-      opacity: 0.5;
-    }
-  }
   #calendar-container {
-    
     .events {
       padding-bottom: 200px;
       margin-top: 10px;
@@ -75,7 +48,7 @@
         }
 
         .divider {
-          opacity: 0.5;
+          opacity: 0.7;
           padding: 0 5px;
         }
 
@@ -94,14 +67,13 @@
           font-size: 20px;
           margin-right: 8px;
           color: black;
-          opacity: 0.6;
+          opacity: 0.5;
         }
 
         a,
         p {
-          //          color: $lightDarkGrey;
           color: black;
-          opacity: 0.8;
+          opacity: 0.7;
         }
 
         .text {
@@ -217,6 +189,8 @@
             padding: 0 8px;
             border-radius: 5px;
             margin-bottom: 5px;
+            position: relative;
+            left: -1px;
             
             * {
               line-height: 1;
@@ -225,6 +199,7 @@
             span {
               font-size: 13px;
               font-weight: $fwMedium;
+              opacity: .85;
             }
 
             .color-coded-event-dot {

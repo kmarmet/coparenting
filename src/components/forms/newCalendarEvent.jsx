@@ -150,55 +150,56 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     newEvent.sentReminders = []
     newEvent.fromVisitationSchedule = isVisitation ? true : false
 
-    // Insert Suggestion
-    const alreadyExists =
-      titleSuggestions.filter((x) => x.ownerPhone === currentUser.phone && x.suggestion.toLowerCase() === newEvent.title.toLowerCase()).length > 0
+    if (Manager.isValid(newEvent)) {
+      // Insert Suggestion
+      const alreadyExists =
+        titleSuggestions.filter((x) => x.ownerPhone === currentUser.phone && x.suggestion.toLowerCase() === newEvent.title.toLowerCase()).length > 0
 
-    if (!alreadyExists) {
-      const newSuggestion = new TitleSuggestion()
-      newSuggestion.ownerPhone = currentUser.phone
-      newSuggestion.formName = 'calendar'
-      newSuggestion.suggestion = newEvent.title
-      await DB.addSuggestion(newSuggestion)
-    }
-
-    // Repeating Events Validation
-    if (repeatingEndDate.length === 0 && repeatInterval.length > 0) {
-      throwError('If you have chose to repeat this event, please select an end month')
-      return false
-    }
-
-    const validation = DateManager.formValidation(eventTitle, eventShareWith, eventFromDate)
-    if (validation) {
-      throwError(validation)
-      return false
-    }
-
-    if (eventReminderTimes.length > 0 && eventStartTime.length === 0) {
-      throwError('If you set reminder times, please also uncheck All Day and add a start time')
-      return false
-    }
-
-    const cleanedObject = Manager.cleanObject(newEvent, ModelNames.calendarEvent)
-    MyConfetti.fire()
-    onClose()
-
-    // Add first/initial date before adding repeating/cloned
-    await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
-      NotificationManager.sendToShareWith(eventShareWith, 'New Calendar Event', `${eventTitle} on ${moment(eventFromDate).format('ddd DD')}`)
-
-      // Add cloned dates
-      if (Manager.isValid(clonedDatesToSubmit, true)) {
-        await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(clonedDatesToSubmit).flat())
+      if (!alreadyExists) {
+        const newSuggestion = new TitleSuggestion()
+        newSuggestion.ownerPhone = currentUser.phone
+        newSuggestion.formName = 'calendar'
+        newSuggestion.suggestion = newEvent.title
+        await DB.addSuggestion(newSuggestion)
       }
 
-      // Repeating Events
-      await addRepeatingEventsToDb()
-      if (navigator.setAppBadge) {
-        await navigator.setAppBadge(1)
+      // Repeating Events Validation
+      if (repeatingEndDate.length === 0 && repeatInterval.length > 0) {
+        throwError('If you have chose to repeat this event, please select an end month')
+        return false
       }
-    })
 
+      const validation = DateManager.formValidation(eventTitle, eventShareWith, eventFromDate)
+      if (validation) {
+        throwError(validation)
+        return false
+      }
+
+      if (eventReminderTimes.length > 0 && eventStartTime.length === 0) {
+        throwError('If you set reminder times, please also uncheck All Day and add a start time')
+        return false
+      }
+
+      const cleanedObject = Manager.cleanObject(newEvent, ModelNames.calendarEvent)
+      MyConfetti.fire()
+      onClose()
+
+      // Add first/initial date before adding repeating/cloned
+      await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
+        NotificationManager.sendToShareWith(eventShareWith, 'New Calendar Event', `${eventTitle} on ${moment(eventFromDate).format('ddd DD')}`)
+
+        // Add cloned dates
+        if (Manager.isValid(clonedDatesToSubmit, true)) {
+          await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(clonedDatesToSubmit).flat())
+        }
+
+        // Repeating Events
+        await addRepeatingEventsToDb()
+        if (navigator.setAppBadge) {
+          await navigator.setAppBadge(1)
+        }
+      })
+    }
     resetForm()
   }
 

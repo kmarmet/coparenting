@@ -112,7 +112,7 @@ export default function Visitation() {
       dateObject.fromVisitationSchedule = true
       dateObject.id = Manager.getUid()
       dateObject.visitationSchedule = ScheduleTypes.customWeekends
-      dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
+      dateObject.shareWith = Manager.getUniqueArray(shareWith, 'phone').flat()
 
       if (events.length === 0) {
         events = [dateObject]
@@ -120,6 +120,8 @@ export default function Visitation() {
         events = [...events, dateObject]
       }
     })
+
+    events = Manager.getUniqueArray(events, 'startDate')
 
     // Upload to DB
     VisitationManager.addVisitationSchedule(events).then((r) => r)
@@ -307,9 +309,10 @@ export default function Visitation() {
         setSelectedHolidayDates([...selectedHolidayDates, dateAsString])
       },
       (e) => {
-        const dataDate = CalendarMapper.holidayNameToDate(e)
+        const dataDate = moment(CalendarMapper.holidayNameToDate(e), 'MM/DD/yyyy').format(DateFormats.dateForDb)
         const dateAsString = moment(`${dataDate}/${moment().year()}`, 'MM/DD/yyyy').format(DateFormats.dateForDb)
         let filtered = selectedHolidayDates.filter((x) => x !== dateAsString)
+        console.log(filtered)
         setSelectedHolidayDates(filtered)
       },
       true

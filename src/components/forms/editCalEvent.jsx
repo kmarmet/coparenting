@@ -145,60 +145,62 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     eventToEdit.eveningSummaryReminderSent = false
     eventToEdit.sentReminders = []
 
-    if (!eventTitle || eventTitle.length === 0) {
-      throwError('Event title is required')
-      return false
-    }
-
-    if (!Manager.isValid(eventShareWith, true)) {
-      throwError('Please select who you would like to share with event with')
-      return false
-    }
-    if (!eventFromDate || eventFromDate.length === 0) {
-      throwError('Please select a date for this event')
-      return false
-    }
-
-    const cleanedObject = Manager.cleanObject(eventToEdit, ModelNames.calendarEvent)
-    const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
-    const eventCount = allEvents.filter((x) => x.title === eventTitle).length
-
-    // Cloned Events
-    if (eventCount > 1) {
-      // Get record key
-      const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
-
-      // Update DB
-      await set(child(dbRef, `${DB.tables.calendarEvents}/${key}`), cleanedObject).finally(async () => {
-        await afterUpdateCallback()
-      })
-
-      // Add cloned dates
-      if (Manager.isValid(clonedDatesToSubmit, true)) {
-        await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(clonedDatesToSubmit).flat())
+    if (Manager.isValid(eventToEdit)) {
+      if (!eventTitle || eventTitle.length === 0) {
+        throwError('Event title is required')
+        return false
       }
 
-      // Add repeating dates
-      if (Manager.isValid(repeatingDatesToSubmit, true)) {
-        await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
+      if (!Manager.isValid(eventShareWith, true)) {
+        throwError('Please select who you would like to share with event with')
+        return false
       }
-    }
-
-    // Update Single Event
-    else {
-      const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
-      await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, cleanedObject).then(async (result) => {
-        await afterUpdateCallback()
-      })
-
-      // Add cloned dates
-      if (Manager.isValid(clonedDatesToSubmit, true)) {
-        await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(clonedDatesToSubmit).flat())
+      if (!eventFromDate || eventFromDate.length === 0) {
+        throwError('Please select a date for this event')
+        return false
       }
 
-      // Add repeating dates
-      if (Manager.isValid(repeatingDatesToSubmit, true)) {
-        await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
+      const cleanedObject = Manager.cleanObject(eventToEdit, ModelNames.calendarEvent)
+      const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
+      const eventCount = allEvents.filter((x) => x.title === eventTitle).length
+
+      // Cloned Events
+      if (eventCount > 1) {
+        // Get record key
+        const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
+
+        // Update DB
+        await set(child(dbRef, `${DB.tables.calendarEvents}/${key}`), cleanedObject).finally(async () => {
+          await afterUpdateCallback()
+        })
+
+        // Add cloned dates
+        if (Manager.isValid(clonedDatesToSubmit, true)) {
+          await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(clonedDatesToSubmit).flat())
+        }
+
+        // Add repeating dates
+        if (Manager.isValid(repeatingDatesToSubmit, true)) {
+          await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
+        }
+      }
+
+      // Update Single Event
+      else {
+        const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
+        await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, cleanedObject).then(async (result) => {
+          await afterUpdateCallback()
+        })
+
+        // Add cloned dates
+        if (Manager.isValid(clonedDatesToSubmit, true)) {
+          await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(clonedDatesToSubmit).flat())
+        }
+
+        // Add repeating dates
+        if (Manager.isValid(repeatingDatesToSubmit, true)) {
+          await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
+        }
       }
     }
 

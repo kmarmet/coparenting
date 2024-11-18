@@ -224,7 +224,8 @@ const VisitationManager = {
   setVisitationHolidays: async (currentUser, holidays) => {
     const dbRef = ref(getDatabase())
     const currentEvents = await DB.getTable(DB.tables.calendarEvents)
-    const userHolidays = currentEvents.filter((x) => x.ownerPhone === currentUser.phone && x.isHoliday === true && x.fromVisitationSchedule === true)
+    let userHolidays = currentEvents.filter((x) => x.ownerPhone === currentUser.phone && x.isHoliday === true && x.fromVisitationSchedule === true)
+    userHolidays = userHolidays.filter((x) => x !== null && x !== undefined)
     if (Manager.isValid(userHolidays, true)) {
       await DB.deleteMultipleRows(DB.tables.calendarEvents, userHolidays, currentUser)
     }

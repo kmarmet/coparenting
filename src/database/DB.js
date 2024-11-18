@@ -9,7 +9,6 @@ const DB = {
     users: 'users',
     calendarEvents: 'calendarEvents',
     transferChangeRequests: 'transferChangeRequests',
-    inbox: 'inbox',
     pushAlertSubscribers: 'pushAlertSubscribers',
     profilePics: 'profilePics',
     chats: 'chats',
@@ -19,7 +18,6 @@ const DB = {
     suggestions: 'suggestions',
     memories: 'memories',
     parentPermissionCodes: 'parentPermissionCodes',
-    activitySets: 'activitySets',
   },
   runQuery: async (table, query) => {
     const records = await DB.getTable(table)
@@ -183,15 +181,21 @@ const DB = {
     }
   },
   deleteMultipleRows: async function (table, rows, currentUser) {
+    rows = Manager.getUniqueArrayOfObjects(rows)
     console.log(rows)
-    var dbRef, row, i, idToDelete, len, results
+    let dbRef, row, i, idToDelete, len
     dbRef = ref(getDatabase())
     for (i = 0, len = rows.length; i < len; i++) {
-      row = rows[i]
-      idToDelete = await DB.getSnapshotKey(table, row, 'id')
-      await remove(child(dbRef, `${table}/${idToDelete}/`))
+      if (Manager.isValid(rows[i])) {
+        row = rows[i]
+        idToDelete = await DB.getSnapshotKey(table, row, 'id')
+        if (Manager.isValid(idToDelete)) {
+          await remove(child(dbRef, `${table}/${idToDelete}/`))
+        }
+      }
     }
   },
+
   deleteByPath: (path) => {
     const dbRef = ref(getDatabase())
     remove(child(dbRef, path))

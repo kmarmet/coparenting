@@ -4,6 +4,34 @@
 
 #external-overrides {
   #admin-dashboard-wrapper {
+	.buttons {
+	  display: flex;
+	  align-items: center;
+	  gap: 10px;
+	 
+	  button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: $mainBlue;
+		color: white;
+		padding: 8px 15px;
+		border-radius: $borderRadius;
+		font-size: 16px;
+		min-width: 50%;
+		text-align: center;
+		
+		&.red {
+		  background: $red;
+		  color:white;
+		}
+	  }
+	  
+	  .chat-recovery-clipboard-button {
+		background-color: $green;
+		color:white;
+	  }
+	}
 	p {
 	  margin: 0 0 5px 0;
 	}
@@ -13,14 +41,6 @@
 	}
 	a {
 	  display: block;
-	}
-	
-	button {
-	  background-color: $mainBlue;
-	  color: white;
-	  padding: 5px 15px;
-	  border-radius: 20px;
-	  font-size: 16px;
 	}
 	
 	.grid {
@@ -103,31 +123,6 @@
 			
 			.subset-prop {
 			color: #7dc8da;
-			}
-		  }
-		  
-		  .buttons {
-			display: flex;
-			justify-content: flex-end;
-			align-items: center;
-			gap: 10px;
-			
-			button {
-			  border-radius: $borderRadius;
-			  padding: 5px 10px;
-			  display: flex;
-			  align-items: center;
-			  @include shadow;
-			  
-			  &.red {
-				background: $red;
-				color:white;
-			  }
-			}
-			
-			.chat-recovery-clipboard-button {
-			  background-color: $green;
-			  color:white;
 			}
 		  }
 		}

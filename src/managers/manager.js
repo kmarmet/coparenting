@@ -33,6 +33,7 @@ import ConversationMessage from '../models/conversationMessage'
 import ConversationThread from '../models/conversationThread'
 import ChildUser from '../models/child/childUser'
 import CalMapper from '../mappers/calMapper'
+import _ from 'lodash'
 
 const Manager = {
   cleanObject: (object, modelName) => {
@@ -274,9 +275,17 @@ const Manager = {
       (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
     )
   },
-  getUniqueArray: (arr) => {
+  getUniqueArray: (arr, propertyNameForUid) => {
     let outputArray = Array.from(new Set(arr))
+
+    if (Manager.isValid(propertyNameForUid)) {
+      return _.uniqueBy(arr, propertyNameForUid.toString())
+    }
     return outputArray
+  },
+  getUniqueArrayByMultipleProps: (arr, propOne, propTwo) => {
+    const uniqueData = _.values(_.keyBy(arr, (item) => `${item[propOne]}-${item[propTwo]}`))
+    return uniqueData
   },
   convertToArray: (object) => {
     if (!Array.isArray(object)) {
@@ -299,9 +308,11 @@ const Manager = {
 
     return directionsLink
   },
-  getUniqueArrayOfObjects: (arr, key) => {
+  getUniqueArrayOfObjects: (arr) => {
     let setObj = new Set(arr.map(JSON.stringify))
-    let output = Array.from(setObj).map(JSON.parse)
+    // let output = Array.from(setObj).map(JSON.parse)
+    let output = Array.from(new Set(arr.map(JSON.stringify))).map(JSON.parse)
+
     // [...new Map(arr.map((item) => [item[key], item])).values()];
     return output
   },

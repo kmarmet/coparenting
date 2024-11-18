@@ -76,7 +76,6 @@ export default function EventCalendar() {
 
   const getSecuredEvents = async (selectedDay, selectedMonth) => {
     let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
-
     securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
     const eventsToAddDotsTo = securedEvents.sort((a, b) => {
       return a.startTime + b.startTime
@@ -308,7 +307,6 @@ export default function EventCalendar() {
     let userVisitationHolidays = allEvents.filter(
       (x) => x.isHoliday === true && x.ownerPhone === currentUser.phone && contains(x.title.toLowerCase(), 'holiday')
     )
-    console.log(userVisitationHolidays)
     userVisitationHolidays.forEach((holiday) => {
       holiday.title += ` (${holiday.holidayName})`
     })
@@ -344,8 +342,6 @@ export default function EventCalendar() {
       }
     }
   }
-
-  const updateRefreshKey = () => setRefreshKey(Manager.getUid())
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
@@ -418,7 +414,7 @@ export default function EventCalendar() {
             Manager.scrollIntoView('#static-calendar')
             await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
             setShowSearchCard(false)
-            updateRefreshKey()
+            setRefreshKey(Manager.getUid())
           }}
           onSubmit={() => {
             if (searchQuery.length === 0) {
@@ -465,7 +461,7 @@ export default function EventCalendar() {
                     setShowSearchCard(false)
                     Manager.scrollIntoView('#static-calendar')
                     await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-                    updateRefreshKey()
+                    setRefreshKey(Manager.getUid())
                   }
                 }
               }}

@@ -92,7 +92,6 @@ function General({ activeChild, setActiveChild }) {
                             types: ['geocode', 'establishment'],
                             componentRestrictions: { country: 'usa' },
                           }}
-                          className="mb-10"
                           onPlaceSelected={async (place) => {
                             await update('general', 'address', place.formatted_address, false)
                           }}

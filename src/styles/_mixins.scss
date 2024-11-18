@@ -359,7 +359,8 @@
       font-style: italic;
       font-weight: 400;
       font-size: 16px;
-      opacity: 0.5;
+      opacity: 0.9;
+      color: $lightDarkGrey;
     }
 
     &:focus {
@@ -2248,10 +2249,10 @@
     }
 
     .close-icon {
-      font-size: 45px;
+      font-size: 30px;
       z-index: 1000;
       position: relative;
-      color: $red;
+      color: $lightDarkGrey;
       font-weight: bold;
       opacity: 0.8;
       background: white;

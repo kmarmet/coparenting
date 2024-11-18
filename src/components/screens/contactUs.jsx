@@ -28,8 +28,8 @@ import {
 
 import { MdOutlineAppShortcut, MdOutlineEmail } from 'react-icons/md'
 import { VscFeedback } from 'react-icons/vsc'
-import Label from '../shared/label'
 import NavBar from '../navBar'
+import InputWrapper from '../shared/inputWrapper'
 
 export default function ContactUs() {
   const { state, setState } = useContext(globalState)
@@ -62,7 +62,7 @@ export default function ContactUs() {
 
   const submitFeatureRequest = () => {
     if (featureDescription.length === 0) {
-      displayAlert('error', 'Please enter a description of the feature you would like to add')
+      throwError('Please enter a description of the feature you would like to add')
       return false
     }
 
@@ -74,11 +74,11 @@ export default function ContactUs() {
 
   const submitSupportRequest = () => {
     if (supportNotes.length === 0) {
-      displayAlert('error', 'Please a description of the problem you are facing')
+      throwError('Please a description of the problem you are facing')
       return false
     }
 
-    successAlert('Thank you for reporting this issue. We will reply soon!')
+    successAlert('Thank you for reporting this issue. We will be in touch soon!')
     EmailManager.SendSupportEmail(currentUser.email, supportNotes)
     setShowSupportCard(false)
     resetSupportForm()
@@ -86,7 +86,7 @@ export default function ContactUs() {
 
   const submitFeedback = () => {
     if (feedback.length === 0) {
-      displayAlert('error', 'Please enter your feedback')
+      throwError('Please enter your feedback')
       return false
     }
 
@@ -103,54 +103,74 @@ export default function ContactUs() {
   return (
     <>
       {/* FEATURE REQUEST */}
-      <BottomCard showCard={showFeatureRequestCard} onClose={() => setShowFeatureRequestCard(false)} title={'Request New Feature'}>
+      <BottomCard
+        onSubmit={submitFeatureRequest}
+        submitText={'Send Request'}
+        showCard={showFeatureRequestCard}
+        onClose={() => setShowFeatureRequestCard(false)}
+        title={'Request New Feature'}>
         <div className="feature-request-wrapper">
           <div id="feature-request-container" className={`${theme} form`}>
             <div className="form">
-              <Label text={'Feature Name'} required={true}></Label>
-              <input onChange={(e) => setFeatureName(e.target.value)} type="text" className="mb-15" />
-              <Label text={'Request Details'} required={true}></Label>
-              <textarea onChange={(e) => setFeatureDescription(e.target.value)} className="mb-20"></textarea>
+              <InputWrapper
+                inputType={'input'}
+                labelText={'Feature Name'}
+                required={true}
+                onChange={(e) => setFeatureName(e.target.value)}
+                type="text"
+              />
+              <InputWrapper
+                inputType={'textarea'}
+                labelText={'Request Details'}
+                required={true}
+                onChange={(e) => setFeatureDescription(e.target.value)}
+              />
             </div>
           </div>
-        </div>
-        <div className="buttons">
-          <button className="green card-button" onClick={submitFeatureRequest}>
-            Request Feature
-          </button>
-          <button className="card-button cancel" onClick={() => setShowFeatureRequestCard(false)}>
-            Cancel
-          </button>
         </div>
       </BottomCard>
 
       {/* FEEDBACK */}
-      <BottomCard className="feedback-wrapper" title={'Give us your Feedback'} showCard={showFeedbackCard} onClose={() => setShowFeedbackCard(false)}>
+      <BottomCard
+        submitText={'Send Feedback'}
+        className="feedback-wrapper"
+        title={'Give us your Feedback'}
+        onSubmit={submitFeedback}
+        showCard={showFeedbackCard}
+        onClose={() => setShowFeedbackCard(false)}>
         <div className="feedback-wrapper">
           <div id="feedback-container" className={`${theme} form`}>
             <div className="form">
-              <Label text={'Your Feedback'} required={true}></Label>
-              <textarea onChange={(e) => setFeedback(e.target.value)} className="mb-20"></textarea>
+              <InputWrapper
+                inputType={'textarea'}
+                labelText={'App Feedback'}
+                required={true}
+                onChange={(e) => setFeedback(e.target.value)}
+                type="text"
+              />
             </div>
           </div>
-        </div>
-        <div className="buttons">
-          <button className="card-button" onClick={submitFeedback}>
-            Send Feedback
-          </button>
-          <button className="card-button cancel" onClick={() => setShowFeedbackCard(false)}>
-            Cancel
-          </button>
         </div>
       </BottomCard>
 
       {/* CONTACT SUPPORT */}
-      <BottomCard className="support-wrapper" title={'How can we Help?'} showCard={showSupportCard} onClose={() => setShowSupportCard(false)}>
+      <BottomCard
+        submitText={'Send Support Request'}
+        onSubmit={submitSupportRequest}
+        className="support-wrapper"
+        title={'How can we Help?'}
+        showCard={showSupportCard}
+        onClose={() => setShowSupportCard(false)}>
         <div className="support-wrapper">
           <div id="support-container" className={`${theme} form`}>
             <div className="form">
-              <Label text={'Problem Description or Question'} required={true}></Label>
-              <textarea onChange={(e) => setSupportNotes(e.target.value)} className="mb-20"></textarea>
+              <InputWrapper
+                inputType={'textarea'}
+                labelText={'Problem Description or Question'}
+                required={true}
+                onChange={(e) => setSupportNotes(e.target.value)}
+                type="text"
+              />
             </div>
           </div>
         </div>

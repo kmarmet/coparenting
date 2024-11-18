@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { DebounceInput } from 'react-debounce-input'
 import globalState from '../../../context'
 import Manager from '@manager'
 import {
@@ -23,11 +22,14 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
+import { PiTrashSimpleDuotone } from 'react-icons/pi'
+
 import DB_UserScoped from '@userScoped'
 import Accordion from '@mui/material/Accordion'
 import { FaChevronDown } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
+import InputWrapper from '../../shared/inputWrapper'
 
 function Behavior({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -42,7 +44,6 @@ function Behavior({ activeChild, setActiveChild }) {
     setArrowDirection('down')
     setActiveChild(updatedChild)
   }
-
   const update = async (section, prop, value, isArray) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'behavior', Manager.toCamelCase(prop), value)
     setActiveChild(updatedChild)
@@ -75,23 +76,17 @@ function Behavior({ activeChild, setActiveChild }) {
               const value = prop[1]
               return (
                 <div key={index}>
-                  <label className="w-100">{infoLabel}</label>
                   <div className="flex input">
-                    <DebounceInput
-                      className="mb-10"
-                      value={value}
-                      element={'input'}
-                      placeholder={camelCaseToString(infoLabel)}
-                      minLength={2}
-                      debounceTimeout={1000}
+                    <InputWrapper
+                      inputType={'input'}
+                      defaultValue={value}
+                      labelText={infoLabel}
                       onChange={async (e) => {
                         const inputValue = e.target.value
                         await update('behavior', infoLabel, `${inputValue}`)
                       }}
                     />
-                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
-                      delete
-                    </span>
+                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                   </div>
                 </div>
               )

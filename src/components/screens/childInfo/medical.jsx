@@ -28,6 +28,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import { FaChevronDown } from 'react-icons/fa6'
 import InputWrapper from '../../shared/inputWrapper'
+import { PiTrashSimpleDuotone } from 'react-icons/pi'
 
 function Medical({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -78,7 +79,7 @@ function Medical({ activeChild, setActiveChild }) {
               const value = prop[1]
               return (
                 <div key={index}>
-                  <div className="flex input mt-10">
+                  <div className="flex input">
                     <InputWrapper
                       inputType={'input'}
                       labelText={infoLabel}
@@ -90,9 +91,7 @@ function Medical({ activeChild, setActiveChild }) {
                         update('medical', infoLabel, `${inputValue}`).then((r) => r)
                       }}
                     />
-                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
-                      delete
-                    </span>
+                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                   </div>
                 </div>
               )

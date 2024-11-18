@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { DebounceInput } from 'react-debounce-input'
 import globalState from '../../../context'
 import Manager from '@manager'
 import {
@@ -24,10 +23,12 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
+import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { FaChevronDown } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
+import InputWrapper from '../../shared/inputWrapper'
 
 function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -78,24 +79,9 @@ function Schooling({ activeChild, setActiveChild }) {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
               const value = prop.flat()[1]
               return (
-                <div key={index}>
-                  <label className="w-100">{infoLabel}</label>
-                  <div className="flex input">
-                    <DebounceInput
-                      className="mb-10"
-                      value={value}
-                      placeholder={camelCaseToString(infoLabel)}
-                      minLength={2}
-                      debounceTimeout={1000}
-                      onChange={(e) => {
-                        const inputValue = e.target.value
-                        update('schooling', infoLabel, `${inputValue}`).then((r) => r)
-                      }}
-                    />
-                    <span className="material-icons-outlined delete-icon" onClick={() => deleteProp(infoLabel)}>
-                      delete
-                    </span>
-                  </div>
+                <div key={index} className="flex input">
+                  <InputWrapper inputType={'input'} labelText={infoLabel} defaultValue={value} />
+                  <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                 </div>
               )
             })}

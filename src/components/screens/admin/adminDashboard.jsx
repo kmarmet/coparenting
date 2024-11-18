@@ -22,6 +22,10 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import InputLabel from '@mui/material/InputLabel'
+import FormControl from '@mui/material/FormControl'
 import AppManager from '../../../managers/appManager'
 import DB from '@db'
 import Manager from '@manager'
@@ -39,6 +43,8 @@ export default function AdminDashboard() {
   const [getRecordsEvents, setGetRecordsEvents] = useState([])
   const [getRecordsTable, setGetRecordsTable] = useState('')
   const [getRecordsSearchValue, setGetRecordsSearchValue] = useState('')
+  const [tableName, setTableName] = useState(DB.tables.calendarEvents)
+  const [dbTables, setDbTables] = useState(Object.values(DB.tables).sort())
   // eslint-disable-next-line no-undef
   new ClipboardJS('.chat-recovery-clipboard-button')
 
@@ -139,7 +145,7 @@ export default function AdminDashboard() {
     })
   }
 
-  function flattenObject(obj, prefix = '') {
+  const flattenObject = (obj, prefix = '') => {
     const result = {}
 
     for (const key in obj) {
@@ -162,6 +168,12 @@ export default function AdminDashboard() {
       () => {},
       false
     )
+  }
+
+  const clearNullRows = async () => {
+    const rows = await DB.getTable(DB.tables[tableName])
+    const nullRows = rows.filter((x) => !x)
+    console.log(nullRows)
   }
 
   return (
@@ -187,9 +199,11 @@ export default function AdminDashboard() {
         {/* SET UPDATE AVAILABLE */}
         <div className="tool-box">
           <p className="box-title">Set Update Available</p>
-          <button className="button center" onClick={setNewUpdate}>
-            Update
-          </button>
+          <div className="buttons">
+            <button className="button center" onClick={setNewUpdate}>
+              Update
+            </button>
+          </div>
         </div>
 
         {/* DELETE EXPIRED STUFF */}
@@ -213,6 +227,29 @@ export default function AdminDashboard() {
               Add to Cal
             </button>
             <button onClick={() => DateManager.deleteAllHolidays()}>Delete All</button>
+          </div>
+        </div>
+
+        {/* DELETE NULL ROWS */}
+        <div className="tool-box">
+          <p className="box-title">Remove NULL Rows</p>
+          <div className="buttons flex wrap">
+            {/* EXPENSE TYPE */}
+            <FormControl fullWidth className={'mt-10 mb-15'}>
+              <InputLabel className={'w-100'}>Table</InputLabel>
+              <Select value={tableName} label="Expense Type" onChange={(e) => setTableName(e.target.value)}>
+                {dbTables.map((table, index) => {
+                  return (
+                    <MenuItem key={index} value={table}>
+                      {table}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+            </FormControl>
+            <button className="button center w-100" onClick={clearNullRows}>
+              Remove
+            </button>
           </div>
         </div>
 
