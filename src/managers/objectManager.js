@@ -67,6 +67,9 @@ ObjectManager = {
       returnObject[prop] = object[prop];
     }
     return returnObject;
+  },
+  merge: function(objectWithValuesToKeep, objectWithValuesToAdd) {
+    return _.assign(objectWithValuesToKeep, objectWithValuesToAdd);
   }
 };
 

@@ -37,6 +37,7 @@ import InputWrapper from '../shared/inputWrapper'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
+import ObjectManager from '../../managers/objectManager'
 
 export default function NewSwapRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)

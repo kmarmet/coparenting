@@ -20,7 +20,7 @@ DatasetManager = {
     return _.uniqBy(arr);
   },
   mergeMultiple: function(arrays) {
-    return _.flatten(_.merge(arrays)).filter(function(x) {
+    return _.flatten(arrays[0].concat(arrays[1])).filter(function(x) {
       return x != null;
     });
   },

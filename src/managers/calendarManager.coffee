@@ -15,27 +15,23 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from "../globalFunctions"
+import DatasetManager from "./datasetManager"
 
 export default CalendarManager =
-  getUniqueArrayOfObjects: (arr, key) =>
-    output = Object.entries(Object.assign({}, ...arr))
-    for obj in output
-      obj[1]
   formatEventTitle: (title) =>
     if title and title.length > 0
       title = uppercaseFirstLetterOfAllWords(title)
       title = title.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At","at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and")
       return title
-  hideCalendar: () =>
-    allCals = document.querySelectorAll(".flatpickr-calendar")
-    if allCals && allCals.length > 0
-      allCals.forEach((cal) => cal.remove())
   addMultipleCalEvents: (currentUser, newEvents) ->
     dbRef = ref(getDatabase())
     currentEvents = await DB.getTable(DB.tables.calendarEvents)
-    eventsToAdd = [currentEvents..., newEvents...].filter((x) -> x?).flat()
+    if !Array.isArray(newEvents)
+      newEvents = [newEvents]
+    newEvents = DatasetManager.getUniqueArrayByProp(newEvents, "startDate", "startDate")
+    merged = DatasetManager.mergeMultiple([currentEvents,newEvents])
     try
-      await set(child(dbRef, "#{DB.tables.calendarEvents}"), eventsToAdd)
+      await set(child(dbRef, "#{DB.tables.calendarEvents}"), merged)
     catch error
   setHolidays: (holidays) ->
     dbRef = ref(getDatabase())
@@ -68,5 +64,3 @@ export default CalendarManager =
 
 
 # Error handling can be added here if needed
-
-

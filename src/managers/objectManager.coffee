@@ -32,6 +32,8 @@ ObjectManager = {
         object[prop] = '' if object[prop] in [undefined, null] or object[prop].toString().toLowerCase().includes('invalid')
       returnObject[prop] = object[prop]
     returnObject
+  merge: (objectWithValuesToKeep, objectWithValuesToAdd) ->
+    _.assign(objectWithValuesToKeep, objectWithValuesToAdd)
 }
 
 export default ObjectManager

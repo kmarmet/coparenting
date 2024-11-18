@@ -92,7 +92,7 @@ PushAlertApi =
         .catch (error) -> console.error error
     else
       fetch(urlToUse, requestOptions)
-        .then (result) -> console.log "Sent to: #{subIdToUse}"
+        .then (result) -> console.log "Sent to: #{await subIdToUse}"
         .catch (error) -> console.error error
 
 # Get subscriber ID for a user
@@ -101,4 +101,3 @@ PushAlertApi =
 
 # Export PushAlertApi object
 export default PushAlertApi
-

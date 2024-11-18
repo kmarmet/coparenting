@@ -95,6 +95,11 @@ export default function App() {
     })
   }
 
+  const handleRefresh = (e) => {
+    console.log(e)
+    window.location.reload()
+  }
+
   // CLEAR APP BADGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
@@ -138,7 +143,7 @@ export default function App() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
-      <div className={`${currentUser?.settings?.theme} App`} id="app-container">
+      <div onRefresh={handleRefresh} className={`${currentUser?.settings?.theme} App`} id="app-container">
         {/* LOADING */}
         <Loading isLoading={isLoading} />
 

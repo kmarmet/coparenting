@@ -54,16 +54,16 @@
     padding-left: 25px !important;
   }
   .rs-picker-popup {
-    background-color: $darkBlueDarkest !important;
+    background-color: $lightBg !important;
     .rs-calendar-header-month-toolbar {
       * {
-        color: white !important;
+        color: $mainBlue !important;
       }
     }
     .rs-calendar {
       .rs-calendar-table-cell-content {
         span {
-          color: white !important;
+          color: $mainBlue !important;
         }
       }
     }
@@ -637,11 +637,11 @@
   /*#region RS OVERRIDES*/
   .rs-picker-popup {
     width: 90vw;
-    border-radius: 10px;
     -webkit-box-shadow: 0 0 105px 45px rgba(0, 0, 0, 0.9);
     -moz-box-shadow: 0 0 105px 45px rgba(0, 0, 0, 0.9);
     box-shadow: 0 0 105px 45px rgba(0, 0, 0, 0.9);
     height: 50vh;
+    border-radius: $bigBorderRadius;
 
     // Set date picker height
     &.rs-anim-fade {
@@ -660,7 +660,8 @@
 
     // Time selector
     .rs-stack-item {
-      height: 50vh;
+      height: auto;
+
 
       .rs-calendar {
         height: 50vh;
@@ -714,9 +715,12 @@
         .rs-calendar-table-cell-content {
           display: flex;
           align-items: center;
-          background-color: $accent;
+          background-color: $mainBlue;
           justify-content: center;
           padding: 20px;
+         span {
+           color: white !important;
+         }
         }
       }
     }

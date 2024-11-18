@@ -2,7 +2,18 @@ import Label from './label'
 import React from 'react'
 import { DebounceInput } from 'react-debounce-input'
 
-function InputWrapper({ wrapperClasses = '', children, labelText, inputType, required, onChange, defaultValue = '', inputClasses = '', refreshKey }) {
+function InputWrapper({
+  wrapperClasses = '',
+  children,
+  labelText,
+  inputType,
+  required,
+  onChange,
+  defaultValue = '',
+  inputClasses = '',
+  refreshKey,
+  inputValueType = 'text',
+}) {
   const noInputTypes = ['location', 'textarea', 'date']
 
   const showLabel = (element) => {
@@ -39,6 +50,7 @@ function InputWrapper({ wrapperClasses = '', children, labelText, inputType, req
           placeholder={getPlaceholder()}
           onChange={onChange}
           debounceTimeout={500}
+          type={inputValueType}
           onClick={(e) => showLabel(e.currentTarget)}
         />
       )}

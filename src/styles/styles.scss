@@ -208,86 +208,85 @@ aside {
     * {
       @include fontType;
     }
-    
+
     .roboto-thin {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 100;
       font-style: normal;
     }
-    
+
     .roboto-light {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 300;
       font-style: normal;
     }
-    
+
     .roboto-regular {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 400;
       font-style: normal;
     }
-    
+
     .roboto-medium {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 500;
       font-style: normal;
     }
-    
+
     .roboto-bold {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 700;
       font-style: normal;
     }
-    
+
     .roboto-black {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 900;
       font-style: normal;
     }
-    
+
     .roboto-thin-italic {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 100;
       font-style: italic;
     }
-    
+
     .roboto-light-italic {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 300;
       font-style: italic;
     }
-    
+
     .roboto-regular-italic {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 400;
       font-style: italic;
     }
-    
+
     .roboto-medium-italic {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 500;
       font-style: italic;
     }
-    
+
     .roboto-bold-italic {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 700;
       font-style: italic;
     }
-    
+
     .roboto-black-italic {
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: 900;
       font-style: italic;
     }
-    
-    
+
     hr {
       height: 1px;
       background-color: #fbfeff;
       width: 100%;
       margin: 20px auto;
-//      background-image: -webkit-gradient( linear, left bottom, right bottom, color-stop(0.04, #f4f8fb), color-stop(0.5, #9b9b9b), color-stop(0.98, white) );
+      //      background-image: -webkit-gradient( linear, left bottom, right bottom, color-stop(0.04, #f4f8fb), color-stop(0.5, #9b9b9b), color-stop(0.98, white) );
       &.event-hr {
         margin: 10px auto;
         width: 70%;
@@ -383,7 +382,6 @@ aside {
     }
 
     #alert-container,
-
     .page-container {
       @include pageContainer;
     }
@@ -431,11 +429,11 @@ aside {
     .material-icons {
       font-family: 'Material Icons';
     }
-    
+
     #popup-card-container {
       @include popupCardContainer;
     }
-    
+
     #confirm-container {
       @include popupContainers;
     }
@@ -560,9 +558,9 @@ aside {
     }
 
     .rs-tag {
-      background-color: $purple;
+      background-color: $mainBlue;
       color: white;
-      padding: 0 15px;
+      padding: 5px 15px;
       line-height: 1;
       margin-left: 0;
       margin-right: 5px;
@@ -572,9 +570,22 @@ aside {
       align-items: center;
       border-radius: 20px;
 
+      span {
+        font-size: 14px;
+        line-height: 1;
+      }
+
       .rs-tag-icon-close {
         align-items: center;
         display: flex;
+        padding: 0;
+        overflow: hidden;
+        position: relative;
+        top: -3px;
+        svg {
+          font-size: 16px !important;
+          margin-left: 8px;
+        }
       }
     }
 
@@ -832,7 +843,7 @@ aside {
           margin-top: 0;
           text-align: center;
         }
-        
+
         svg {
           color: $mainBlue;
         }
@@ -841,9 +852,9 @@ aside {
     .sparkle {
       @include sparkleButton;
     }
-    
+
     .sparkle-on-click-button {
-      @include  sparkleOnClickButton;
+      @include sparkleOnClickButton;
     }
 
     .caption {
@@ -870,7 +881,7 @@ aside {
       opacity: 1;
       display: flex;
     }
-    
+
     .bold {
       font-weight: $fwBold;
     }

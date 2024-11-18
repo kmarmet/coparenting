@@ -36,6 +36,7 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import NavBar from '../../navBar'
+import InputWrapper from '../../shared/inputWrapper'
 
 function ChatRecovery() {
   const { state, setState } = useContext(globalState)
@@ -49,6 +50,7 @@ function ChatRecovery() {
   const [titleSuggestions, setTitleSuggestions] = useState([])
   const [signatureUrl, setSignatureUrl] = useState('')
   const [convoImageUrl, setConvoImageUrl] = useState('')
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const submit = async () => {
     if (reason.length === 0) {
       throwError('Please provide a reason for recovering this deleted conversation')
@@ -170,7 +172,7 @@ function ChatRecovery() {
     const signaturePadElement = document.querySelector('.signature-pad')
     if (signaturePadElement) {
       const sigPad = new SignaturePad(signaturePadElement, {
-        backgroundColor: '#e4e4e4',
+        backgroundColor: 'white',
       })
       setSignaturePad(sigPad)
     }
@@ -182,16 +184,15 @@ function ChatRecovery() {
       {!viewConvo && (
         <>
           <div id="chat-request-container" className={`${theme} page-container form`}>
+            <p className="screen-title">Chat Recovery</p>
             <div className="form">
               {/* PHONE */}
-              <label>
-                Phone Number of Conversation Co-parent <span className="asterisk">*</span>
-              </label>
               <div className="title-suggestion-wrapper">
-                <input
-                  minLength={5}
-                  type={'number'}
-                  className={'mb-15 coparent-phone'}
+                <InputWrapper
+                  inputType={'input'}
+                  inputValueType="number"
+                  required={true}
+                  labelText={'Phone Number of Conversation Co-parent'}
                   onChange={async (e) => {
                     const inputValue = e.target.value
                     if (inputValue.length > 1) {
@@ -205,8 +206,7 @@ function ChatRecovery() {
                       setTitleSuggestions([])
                     }
                     setCoparentPhone(inputValue)
-                  }}
-                />
+                  }}></InputWrapper>
                 <TitleSuggestionWrapper
                   suggestions={titleSuggestions}
                   setSuggestions={() => setTitleSuggestions([])}
@@ -218,16 +218,18 @@ function ChatRecovery() {
                   }}></TitleSuggestionWrapper>
               </div>
               {/* REASON */}
-              <label>
-                Reason for recovering conversation<span className="asterisk">*</span>
-              </label>
-              <textarea onChange={(e) => setReason(e.target.value)} className="mb-20"></textarea>
+              <InputWrapper
+                inputType={'textarea'}
+                refreshKey={refreshKey}
+                required={true}
+                labelText={'Reason for Recovery'}
+                onChange={(e) => setReason(e.target.value)}
+              />
 
               {/* CONVERSATION TYPE */}
-              <label>Which types of messages would you like to see and/or download?</label>
               <CheckboxGroup
+                parentLabel="Which types of messages would you like to see and/or download?"
                 defaultLabel={'All'}
-                boxWidth={50}
                 onCheck={handleMessageTypeSelection}
                 checkboxLabels={['All', 'Bookmarked Only']}
                 skipNameFormatting={true}

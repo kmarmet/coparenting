@@ -29,17 +29,9 @@ import {
   wordCount
 } from "../globalFunctions";
 
+import DatasetManager from "./datasetManager";
+
 export default CalendarManager = {
-  getUniqueArrayOfObjects: (arr, key) => {
-    var i, len, obj, output, results;
-    output = Object.entries(Object.assign({}, ...arr));
-    results = [];
-    for (i = 0, len = output.length; i < len; i++) {
-      obj = output[i];
-      results.push(obj[1]);
-    }
-    return results;
-  },
   formatEventTitle: (title) => {
     if (title && title.length > 0) {
       title = uppercaseFirstLetterOfAllWords(title);
@@ -47,24 +39,17 @@ export default CalendarManager = {
       return title;
     }
   },
-  hideCalendar: () => {
-    var allCals;
-    allCals = document.querySelectorAll(".flatpickr-calendar");
-    if (allCals && allCals.length > 0) {
-      return allCals.forEach((cal) => {
-        return cal.remove();
-      });
-    }
-  },
   addMultipleCalEvents: async function(currentUser, newEvents) {
-    var currentEvents, dbRef, error, eventsToAdd;
+    var currentEvents, dbRef, error, merged;
     dbRef = ref(getDatabase());
     currentEvents = (await DB.getTable(DB.tables.calendarEvents));
-    eventsToAdd = [...currentEvents, ...newEvents].filter(function(x) {
-      return x != null;
-    }).flat();
+    if (!Array.isArray(newEvents)) {
+      newEvents = [newEvents];
+    }
+    newEvents = DatasetManager.getUniqueArrayByProp(newEvents, "startDate", "startDate");
+    merged = DatasetManager.mergeMultiple([currentEvents, newEvents]);
     try {
-      return (await set(child(dbRef, `${DB.tables.calendarEvents}`), eventsToAdd));
+      return (await set(child(dbRef, `${DB.tables.calendarEvents}`), merged));
     } catch (error1) {
       error = error1;
     }

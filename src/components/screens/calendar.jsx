@@ -416,6 +416,7 @@ export default function EventCalendar() {
             setShowSearchCard(false)
             setRefreshKey(Manager.getUid())
           }}
+          showOverlay={false}
           onSubmit={() => {
             if (searchQuery.length === 0) {
               throwError('Please enter a search value')
@@ -427,6 +428,7 @@ export default function EventCalendar() {
               return false
             } else {
               setExistingEvents(searchResults)
+              setShowSearchCard(false)
               setTimeout(() => {
                 addEventRowAnimation()
                 const rows = document.querySelectorAll('.event-row')

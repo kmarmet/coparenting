@@ -51,7 +51,8 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
-import ObjectManager from '../../managers/objectManager' // COMPONENT
+import ObjectManager from '../../managers/objectManager'
+import DatasetManager from '../../managers/datasetManager' // COMPONENT
 
 // COMPONENT
 export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDay }) {
@@ -191,7 +192,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
 
         // Add cloned dates
         if (Manager.isValid(clonedDatesToSubmit, true)) {
-          await CalendarManager.addMultipleCalEvents(Manager.getUniqueArray(clonedDatesToSubmit).flat())
+          await CalendarManager.addMultipleCalEvents(currentUser, DatasetManager.getUniqueArray(clonedDatesToSubmit).flat())
         }
 
         // Repeating Events
@@ -230,7 +231,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
         repeatingDateObject.id = Manager.getUid()
         repeatingDateObject.title = eventTitle
         repeatingDateObject.startDate = moment(date).format(DateFormats.monthDayYear)
-        repeatingDateObject.shareWith = Manager.getUniqueArray(eventShareWith).flat()
+        repeatingDateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat()
 
         // Not Required
         repeatingDateObject.directionsLink = eventLocation || ''
@@ -341,45 +342,43 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
 
   // Add cloned events
   useEffect(() => {
+    let datesToPush = []
     clonedDates.forEach((date) => {
-      const clonedDateObject = new CalendarEvent()
+      let clonedDateObject = new CalendarEvent()
       // Required
       clonedDateObject.title = eventTitle
       clonedDateObject.id = Manager.getUid()
       clonedDateObject.startDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
       clonedDateObject.endDate = DateManager.dateIsValid(eventToDate) ? moment(eventToDate).format(DateFormats.dateForDb) : ''
-      clonedDateObject.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
-      clonedDateObject.endTime = DateManager.dateIsValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
       // Not Required
-      clonedDateObject.directionsLink = eventLocation || ''
-      clonedDateObject.location = eventLocation || ''
-      clonedDateObject.children = eventChildren || []
+      clonedDateObject.directionsLink = eventLocation
+      clonedDateObject.location = eventLocation
+      clonedDateObject.children = eventChildren
       clonedDateObject.ownerPhone = currentUser.phone
       clonedDateObject.createdBy = currentUser.name
-      clonedDateObject.shareWith = Manager.getUniqueArray(eventShareWith).flat()
-      clonedDateObject.notes = eventNotes || ''
-      clonedDateObject.websiteUrl = eventWebsite || ''
+      clonedDateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat()
+      clonedDateObject.notes = eventNotes
+      clonedDateObject.websiteUrl = eventWebsite
       clonedDateObject.startTime = ''
       clonedDateObject.endTime = ''
-      clonedDateObject.reminderTimes = eventReminderTimes || []
-      clonedDateObject.sentReminders = []
+      clonedDateObject.reminderTimes = eventReminderTimes
       clonedDateObject.endDate = ''
-      clonedDateObject.morningSummaryReminderSent = false
       clonedDateObject.repeatInterval = ''
-      clonedDateObject.fromVisitationSchedule = false
-      clonedDateObject.eveningSummaryReminderSent = false
+      clonedDateObject = ObjectManager.cleanObject(clonedDateObject, ModelNames.calendarEvent)
 
       if (!isAllDay) {
-        clonedDateObject.startTime = moment(eventStartTime, DateFormats.fullDatetime).format(DateFormats.timeForDb)
-        clonedDateObject.endTime = moment(eventEndTime, DateFormats.fullDatetime).format(DateFormats.timeForDb)
+        clonedDateObject.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
+        clonedDateObject.endTime = DateManager.dateIsValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
       }
 
-      if (clonedDatesToSubmit.length === 0) {
-        setClonedDatesToSubmit([clonedDateObject])
-      } else {
-        setClonedDatesToSubmit([...clonedDatesToSubmit, clonedDateObject])
-      }
+      datesToPush.push(clonedDateObject)
+
+      setTimeout(() => {
+        console.log(clonedDatesToSubmit)
+      }, 500)
     })
+    setClonedDatesToSubmit(DatasetManager.mergeMultiple([clonedDatesToSubmit, datesToPush]))
+    // Reset Multidate Picker
     if (clonedDates.length === 0) {
       const multidatePicker = document.querySelector('.multidate-picker')
       if (multidatePicker) {
@@ -399,6 +398,13 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
   }, [selectedNewEventDay])
 
   useEffect(() => {
+    const multiDatePicker = document.querySelector('.rs-picker-popup.rs-picker-popup-date')
+    const multiDateInput = document.querySelector('.rs-input')
+    if (multiDatePicker && multiDateInput) {
+      multiDateInput.onBlur()
+      const screenHeight = window.screen.height
+      multiDatePicker.style.top = `${screenHeight / 4}px`
+    }
     Manager.showPageContainer('show')
   }, [])
 
@@ -418,12 +424,12 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
         title={'Add New Event'}>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           {/* Event Length */}
-          <div className="action-pills calendar-event">
-            <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
+          <div id="duration-options" className="action-pills calendar">
+            <div className={`duration-option  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
               <span className="material-icons-round">event</span>
               <p>Single Day</p>
             </div>
-            <div className={`flex right ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
+            <div className={`duration-option  ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
               <span className="material-icons-round">date_range</span>
               <p>Multiple Days</p>
             </div>
@@ -697,6 +703,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                 </Accordion>
               </div>
 
+              {/* CLONE */}
               <div className="flex">
                 <p>Copy Event to Other Dates</p>
                 <Toggle
@@ -704,7 +711,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                     checked: <FaClone />,
                     unchecked: null,
                   }}
-                  className={'ml-auto reminder-toggle'}
+                  className={'ml-auto clone-toggle'}
                   onChange={(e) => setShowCloneInput(!showCloneInput)}
                 />
               </div>
@@ -712,9 +719,9 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
               {/* CLONED */}
               {showCloneInput && (
                 <div>
-                  <InputWrapper labelText={'Select Dates'} required={false} inputType={'date'}>
+                  <InputWrapper wrapperClasses="cloned-date-wrapper" labelText={''} required={false} inputType={'date'}>
                     <MultiDatePicker
-                      className={`${theme} multidate-picker mb-15`}
+                      className={`${theme} multidate-picker`}
                       placement="auto"
                       placeholder={null}
                       label=""
