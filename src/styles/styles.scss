@@ -174,7 +174,7 @@ aside {
 #external-overrides {
   // MENU
   .full-menu {
-    @include slideOutMenu;
+    @include fullMenu;
   }
   #app-container {
     position: relative;

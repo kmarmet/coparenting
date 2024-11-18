@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import '../../prototypes'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
-import { FaChevronDown } from 'react-icons/fa'
+import { GoChevronDown } from 'react-icons/go'
 
 export default function BottomCard({
   submitText,
@@ -66,7 +66,7 @@ export default function BottomCard({
           </button>
         )}
         {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
-        <FaChevronDown className="close-icon" onClick={onClose} />
+        <GoChevronDown className="close-icon" onClick={onClose} />
       </div>
     </div>
   )

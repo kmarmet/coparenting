@@ -19,7 +19,6 @@ import {
   PiSignOutDuotone,
   PiSunDuotone,
   PiSwapDuotone,
-  PiToolboxDuotone,
 } from 'react-icons/pi'
 import { RiMailSendLine } from 'react-icons/ri'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
@@ -72,143 +71,139 @@ export default function FullMenu() {
       hasDelete={false}
       hasSubmitButton={false}>
       <div id="full-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
-        <div className="column left">
-          {/* ADMIN DASHBOARD */}
-          {currentUser.email === 'kmarmet1@gmail.com' && (
+        {/* ADMIN DASHBOARD */}
+        {/*{currentUser.email === 'kmarmet1@gmail.com' && (*/}
+        {/*  <div*/}
+        {/*    className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}*/}
+        {/*    onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>*/}
+        {/*    <PiToolboxDuotone />*/}
+        {/*    <p>Admin Dashboard</p>*/}
+        {/*  </div>*/}
+        {/*)}*/}
+        {/* CALENDAR */}
+        <div
+          className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
+          onClick={() => changeCurrentScreen(ScreenNames.calendar)}>
+          <PiCalendarDotsDuotone />
+          <p>Calendar</p>
+        </div>
+
+        {/* PARENTS ONLY */}
+        {AppManager.getAccountType(currentUser) === 'parent' && (
+          <>
+            {/* VISITATION */}
             <div
-              className={`menu-item ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>
-              <PiToolboxDuotone />
-              <p>Admin Dashboard</p>
+              className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.visitation)}>
+              <PiHouseLineDuotone />
+              <p>Visitation</p>
             </div>
-          )}
-          {/* CALENDAR */}
-          <div
-            className={`menu-item ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
-            onClick={() => changeCurrentScreen(ScreenNames.calendar)}>
-            <PiCalendarDotsDuotone />
-            <p>Calendar</p>
-          </div>
 
-          {/* PARENTS ONLY */}
-          {AppManager.getAccountType(currentUser) === 'parent' && (
-            <>
-              <div
-                className={`menu-item ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.visitation)}>
-                <PiHouseLineDuotone />
-                <p>Visitation</p>
-              </div>
-              <div
-                className={`menu-item ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.chats)}>
-                <PiChatsCircleDuotone />
-                <p className="text">Chat</p>
-              </div>
+            {/* CHATS */}
+            <div
+              className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.chats)}>
+              <PiChatsCircleDuotone />
+              <p className="text">Chats</p>
+            </div>
 
-              {/* EXPENSES */}
-              <div
-                className={`menu-item ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.expenseTracker)}>
-                <PiMoneyWavyDuotone />
-                <p>Expense Tracker</p>
-              </div>
+            {/* EXPENSES */}
+            <div
+              className={`menu-item expenses ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.expenseTracker)}>
+              <PiMoneyWavyDuotone />
+              <p>Expense Tracker</p>
+            </div>
 
-              {/* SWAP REQUESTS */}
-              <div
-                className={`menu-item ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.swapRequests)}>
-                <PiSwapDuotone />
-                <p>Swap Requests</p>
-              </div>
+            {/* SWAP REQUESTS */}
+            <div
+              className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.swapRequests)}>
+              <PiSwapDuotone />
+              <p>Swap Requests</p>
+            </div>
 
-              {/* TRANSFER CHANGE */}
-              <div
-                className={`menu-item ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.transferRequests)}>
-                <PiCarProfileDuotone />
-                <p>Transfer Change</p>
-              </div>
+            {/* TRANSFER CHANGE */}
+            <div
+              className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.transferRequests)}>
+              <PiCarProfileDuotone />
+              <p>Transfer Change</p>
+            </div>
 
-              {/* DOCUMENTS */}
-              <div
-                className={`menu-item ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.docsList)}>
-                <HiOutlineDocumentText />
-                <p>Documents</p>
-              </div>
-            </>
-          )}
+            {/* DOCUMENTS */}
+            <div
+              className={`menu-item documents ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.docsList)}>
+              <HiOutlineDocumentText />
+              <p>Documents</p>
+            </div>
+          </>
+        )}
+        {AppManager.getAccountType(currentUser) === 'parent' && (
+          <>
+            {/* MEMORIES */}
+            <div
+              className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.memories)}>
+              <PiImagesSquareDuotone />
+              <p>Memories</p>
+            </div>
+
+            {/* CHILD INFO */}
+            <div
+              className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.childInfo)}>
+              <BiFace />
+              <p>Child Info</p>
+            </div>
+
+            {/* COPARENTS */}
+            <div
+              className={`menu-item coparents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.coparents)}>
+              <BsPeople />
+              <p>Coparents</p>
+            </div>
+          </>
+        )}
+        {/* ACCOUNT */}
+        <div
+          className={`menu-item account ${currentScreen === ScreenNames.account ? 'active' : ''}`}
+          onClick={() => changeCurrentScreen(ScreenNames.account)}>
+          <MdOutlineManageAccounts />
+          <p>Account</p>
         </div>
 
-        {/* RIGHT COLUMN */}
-        <div className="column right">
-          {AppManager.getAccountType(currentUser) === 'parent' && (
-            <>
-              {/* MEMORIES */}
-              <div
-                className={`menu-item ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.memories)}>
-                <PiImagesSquareDuotone />
-                <p>Memories</p>
-              </div>
-
-              {/* CHILD INFO */}
-              <div
-                className={`menu-item ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.childInfo)}>
-                <BiFace />
-                <p>Child Info</p>
-              </div>
-
-              {/* COPARENTS */}
-              <div
-                className={`menu-item coparents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.coparents)}>
-                <BsPeople />
-                <p>Coparents</p>
-              </div>
-            </>
-          )}
-          {/* ACCOUNT */}
-          <div
-            className={`menu-item account ${currentScreen === ScreenNames.account ? 'active' : ''}`}
-            onClick={() => changeCurrentScreen(ScreenNames.account)}>
-            <MdOutlineManageAccounts />
-            <p>Account</p>
-          </div>
-
-          {/* SETTINGS */}
-          <div
-            className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
-            onClick={() => changeCurrentScreen(ScreenNames.settings)}>
-            {/*<span className="material-icons-round">settings</span>*/}
-            <FiSettings /> <p>Settings</p>
-          </div>
-
-          {/* CONTACT US */}
-          <div
-            className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
-            onClick={() => changeCurrentScreen(ScreenNames.contactUs)}>
-            <RiMailSendLine />
-            <p>Contact Us</p>
-          </div>
-
-          {/* THEME TOGGLE */}
-          {theme === 'dark' && (
-            <div className="menu-item theme">
-              <PiSunDuotone />
-              <p onClick={() => changeTheme('light')}>Light Mode</p>
-            </div>
-          )}
-          {theme === 'light' && (
-            <div className="menu-item theme">
-              <PiMoonStarsDuotone />
-              <p onClick={() => changeTheme('dark')}> Dark Mode</p>
-            </div>
-          )}
+        {/* SETTINGS */}
+        <div
+          className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
+          onClick={() => changeCurrentScreen(ScreenNames.settings)}>
+          {/*<span className="material-icons-round">settings</span>*/}
+          <FiSettings /> <p>Settings</p>
         </div>
 
+        {/* CONTACT US */}
+        <div
+          className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
+          onClick={() => changeCurrentScreen(ScreenNames.contactUs)}>
+          <RiMailSendLine />
+          <p>Contact Us</p>
+        </div>
+
+        {/* THEME TOGGLE */}
+        {theme === 'dark' && (
+          <div className="menu-item theme">
+            <PiSunDuotone />
+            <p onClick={() => changeTheme('light')}>Light Mode</p>
+          </div>
+        )}
+        {theme === 'light' && (
+          <div className="menu-item theme">
+            <PiMoonStarsDuotone />
+            <p onClick={() => changeTheme('dark')}> Dark Mode</p>
+          </div>
+        )}
         {/* LOGOUT BUTTON */}
         <div className={`menu-item logout`} onClick={logout}>
           <PiSignOutDuotone />

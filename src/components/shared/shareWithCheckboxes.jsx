@@ -44,7 +44,6 @@ function ShareWithCheckboxes({
 
   useEffect(() => {
     if (Manager.isValid(shareWith, true)) {
-      console.log(shareWith)
       setUserNames().then((r) => r)
     }
   }, [shareWith])

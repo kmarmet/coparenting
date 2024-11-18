@@ -29,6 +29,7 @@ import ModelNames from '../../../models/modelNames'
 import ObjectManager from '../../../managers/objectManager'
 import InputWrapper from '../../shared/inputWrapper'
 import BottomCard from '../../shared/bottomCard'
+import DatasetManager from '../../../managers/datasetManager'
 
 const NewCoparentForm = ({ showCard, hideCard }) => {
   const { state, setState } = useContext(globalState)
@@ -70,7 +71,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       const cleanCoparent = ObjectManager.cleanObject(newCoparent, ModelNames.coparent)
 
       // Has coparents already
-      await set(child(dbRef, `users/${currentUser.phone}/coparents`), [...existingCoparents, cleanCoparent])
+      await set(child(dbRef, `users/${currentUser.phone}/coparents`), DatasetManager.mergeMultiple(currentUser.coparents, [cleanCoparent]))
 
       resetForm()
     }

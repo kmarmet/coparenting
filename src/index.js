@@ -67,7 +67,7 @@ root.render(
     fallback={
       <div className="active error-boundary" id="error-screen">
         <p id="screen-title" className="mb-15">
-          Oops! It looks like the app ran into an issue. But we can help!
+          Oops! It looks like we ran into an issue. But we can help!
         </p>
         <div id="text-container" className="mb-20">
           <div className="flex support-email">

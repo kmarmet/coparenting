@@ -49,7 +49,6 @@ import { LicenseInfo } from '@mui/x-license'
 import ScreenNames from '@screenNames'
 import firebaseConfig from './firebaseConfig.js'
 import ContactUs from './components/screens/contactUs'
-import Manager from '@manager'
 
 export default function App() {
   // Initialize Firebase
@@ -106,9 +105,6 @@ export default function App() {
 
   // ON PAGE LOAD
   useEffect(() => {
-    const test = [234]
-    console.log(Manager.isValid(test))
-
     // Error Boundary Test
     // throw new Error('Something went wrong')
 

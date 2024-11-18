@@ -40,16 +40,15 @@ import InputWrapper from '../../shared/inputWrapper'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, navbarButton } = state
+  const { currentUser, theme } = state
 
   // State
   const [userCoparents, setUserCoparents] = useState([])
   const [selectedCoparent, setSelectedCoparent] = useState(null)
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
   const [coparentData, setCoparentData] = useState([])
-  const [confirmTitle, setConfirmTitle] = useState('')
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
-  const [activeCoparentInfo, setActiveCoparentInfo] = useState(null)
+
   const deleteProp = async (prop) => {
     await DB_UserScoped.deleteCoparentInfoProp(currentUser, Manager.toCamelCase(prop), selectedCoparent)
   }
@@ -63,17 +62,10 @@ export default function Coparents() {
 
   const deleteCoparent = async () => await DB_UserScoped.deleteCoparent(currentUser, selectedCoparent)
 
-  const getCoparents = async () => {
-    let all = []
-    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'coparents').then((coparent) => {
-      all.push(coparent)
-    })
-    console.log(all)
-    if (Manager.isValid(all, true)) {
-      all = all[0]
-      setSelectedCoparent(all[0])
-      all = all.filter((x) => x !== 'address')
-      setUserCoparents(all)
+  const getCoparents = async (coparents) => {
+    if (Manager.isValid(coparents, true)) {
+      // setSelectedCoparent(coparents[0])
+      setUserCoparents(coparents)
     } else {
       setSelectedCoparent(null)
     }
@@ -84,12 +76,7 @@ export default function Coparents() {
       const dbRef = getDatabase()
       const userRef = ref(dbRef, `${DB.tables.users}/${currentUser.phone}/coparents`)
       onValue(userRef, async (snapshot) => {
-        console.log(snapshot.val())
-        if (!snapshot.val()) {
-          setSelectedCoparent(null)
-        } else {
-          await getCoparents()
-        }
+        await getCoparents(snapshot.val())
       })
     }
   }
@@ -106,38 +93,19 @@ export default function Coparents() {
   }
 
   useEffect(() => {
-    if (selectedCoparent) {
-      setCoparentData(Object.entries(selectedCoparent))
-    } else {
-      if (Manager.isValid(currentUser?.coparents, true)) {
-        setCoparentData(Object.entries(currentUser?.coparents[0]))
-        console.log(currentUser?.coparents)
-        setSelectedCoparent(currentUser?.coparents[0])
-      }
-    }
-  }, [selectedCoparent])
-
-  useEffect(() => {
     if (currentUser) {
       onValueChange().then((r) => r)
     }
     Manager.showPageContainer()
 
-    const autocompleteInput = document.querySelector('.pac-target-input')
-    if (autocompleteInput) {
-      document.querySelector('.pac-target-input').setAttribute('placeholder', 'Enter updated address')
-    }
+    setCoparentData(Object.entries(currentUser?.coparents[0]))
+    setSelectedCoparent(currentUser?.coparents[0])
   }, [])
 
   return (
     <>
       {/* CUSTOM INFO FORM */}
-      <CustomCoparentInfo
-        hideCard={() => setShowCustomInfoCard(false)}
-        activeCoparent={selectedCoparent}
-        setActiveCoparent={(coparent) => setActiveCoparentInfo(coparent)}
-        showCard={showCustomInfoCard}
-      />
+      <CustomCoparentInfo hideCard={() => setShowCustomInfoCard(false)} activeCoparent={selectedCoparent} showCard={showCustomInfoCard} />
 
       {!selectedCoparent && <NoDataFallbackText text={'No Co-Parents Added'} />}
 
@@ -154,7 +122,10 @@ export default function Coparents() {
             userCoparents.map((coparent, index) => {
               return (
                 <div
-                  onClick={() => setSelectedCoparent(coparent)}
+                  onClick={() => {
+                    setSelectedCoparent(coparent)
+                    setCoparentData(Object.entries(coparent))
+                  }}
                   className={selectedCoparent && selectedCoparent.phone === coparent.phone ? 'active coparent' : 'coparent'}
                   data-phone={coparent.phone}
                   data-name={coparent.name}
@@ -176,7 +147,6 @@ export default function Coparents() {
                   let infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(propArray[0])))
                   infoLabel = formatTitleWords(infoLabel)
                   const value = propArray[1]
-                  console.log(value)
                   return (
                     <div key={index}>
                       {infoLabel !== 'Id' && (
@@ -229,7 +199,6 @@ export default function Coparents() {
               <button
                 className="button w-60  default red center"
                 onClick={(e) => {
-                  setConfirmTitle(`Deleting ${selectedCoparent.name}`)
                   confirmAlert(`Are you sure you would like to remove ${selectedCoparent.name}`, "I'm Sure", true, async () => {
                     await deleteCoparent()
                     successAlert('Co-Parent Removed')

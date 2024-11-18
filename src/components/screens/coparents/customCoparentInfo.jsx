@@ -32,8 +32,8 @@ export default function CustomCoparentInfo({ hideCard, setActiveCoparent, active
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+
   const resetForm = () => {
-    successAlert(`${title} Added!`)
     Manager.resetForm('custom-coparent-info-wrapper')
     setTitle('')
     setValue('')
@@ -47,6 +47,7 @@ export default function CustomCoparentInfo({ hideCard, setActiveCoparent, active
       return false
     }
     const updatedCoparent = await DB_UserScoped.addCoparentProp(currentUser, activeCoparent, toCamelCase(title), value)
+    successAlert(`${title} Added!`)
     resetForm()
     setActiveCoparent(updatedCoparent)
   }
@@ -62,10 +63,8 @@ export default function CustomCoparentInfo({ hideCard, setActiveCoparent, active
       onClose={resetForm}>
       <div className="custom-coparent-info-wrapper">
         <div className={`${theme} form`}>
-          <>
-            <input className="mb-5" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
-            <input className="mb-5" type="text" placeholder="Value*" onChange={(e) => setValue(e.target.value)} />
-          </>
+          <input className="mb-5" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
+          <input className="mb-5" type="text" placeholder="Value*" onChange={(e) => setValue(e.target.value)} />
         </div>
       </div>
     </BottomCard>
