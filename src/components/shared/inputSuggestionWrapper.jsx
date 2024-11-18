@@ -1,7 +1,8 @@
 import Manager from '@manager'
 import globalState from '../../context'
 import { useContext } from 'react'
-export default function TitleSuggestionWrapper({ suggestions = [], onClick, setSuggestions, className }) {
+
+export default function InputSuggestionWrapper({ suggestions = [], onClick, setSuggestions, className }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, setTheme } = state
   return (

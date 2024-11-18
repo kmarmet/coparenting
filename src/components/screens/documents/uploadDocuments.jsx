@@ -30,26 +30,30 @@ import {
 } from '../../../globalFunctions'
 import UploadInputs from '../../shared/uploadInputs'
 import SecurityManager from '../../../managers/securityManager'
-import Label from '../../shared/label'
 import ShareWithCheckboxes from '../../shared/shareWithCheckboxes'
+import BottomCard from '../../shared/bottomCard'
+import DatasetManager from '../../../managers/datasetManager'
 
-export default function UploadDocuments({ hideCard }) {
+export default function UploadDocuments({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, formToShow } = state
   const [shareWith, setShareWith] = useState([])
   const [docType, setDocType] = useState(null)
-  const [image, setImage] = useState('')
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
-  const resetForm = async () => {
+  const resetForm = () => {
     Manager.resetForm('upload-doc-wrapper')
     setShareWith([])
     setDocType(null)
     hideCard()
+    setRefreshKey(Manager.getUid())
+    successAlert('Document Uploaded!')
   }
 
   const upload = async () => {
     setState({ ...state, isLoading: true })
     const files = document.querySelector('#upload-input').files
+    const image = files[0]
 
     // Validation
     if (files.length === 0) {
@@ -73,18 +77,13 @@ export default function UploadDocuments({ hideCard }) {
     const existingDocument = securedDocuments.filter((x) => x.memoryName === image.name)[0]
     if (existingDocument) {
       // error
+      throwError('Document has already been uploaded')
       setState({ ...state, isLoading: false })
       return false
     }
-
     // Upload to Firebase Storage
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.documents}/`, currentUser.id, files)
-      .then(() => {
-        const checkedCheckbox = document.querySelector('.share-with-container .box.active')
-        if (checkedCheckbox) {
-          checkedCheckbox.classList.remove('active')
-        }
-      })
+      .then(() => {})
       .finally(async () => {
         // Add documents to 'documents' property for currentUser
         await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.documents, currentUser.id, files).then(async (urls) => {
@@ -94,11 +93,11 @@ export default function UploadDocuments({ hideCard }) {
             newDocument.url = url
             newDocument.uploadedBy = currentUser.phone
             newDocument.id = Manager.getUid()
-            newDocument.shareWith = Manager.getUniqueArray(shareWith).flat()
+            newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
             newDocument.type = docType
             newDocument.name = FirebaseStorage.getImageNameFromUrl(url)
             await DocumentsManager.addDocumentToDocumentsTable(newDocument).finally(() => {
-              setState({ ...state, currentScreen: ScreenNames.documents })
+              setState({ ...state, currentScreen: ScreenNames.docsList })
             })
           }
 
@@ -108,24 +107,12 @@ export default function UploadDocuments({ hideCard }) {
           NotificationManager.sendToShareWith(shareWith, 'New Document', `${currentUser} has uploaded a new document`)
         })
       })
-    await resetForm()
+    resetForm()
   }
 
-  // const setActivitySets = async (userPhone) => {
-  //   const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
-  //   let newActivitySet = new ActivitySet()
-  //   let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
-  //   if (Manager.isValid(existingActivitySet, false, true)) {
-  //     newActivitySet = { ...existingActivitySet }
-  //   }
-  //   newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
-  //   await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
-  // }
-
   const handleShareWithSelection = async (e) => {
-    await Manager.handleShareWithSelection(e, currentUser, shareWith).then((updated) => {
-      setShareWith(updated)
-    })
+    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
+    setShareWith(updated)
   }
 
   const handleCheckboxSelection = (e) => {
@@ -144,60 +131,52 @@ export default function UploadDocuments({ hideCard }) {
   }, [])
 
   return (
-    <div className="upload-doc-wrapper">
-      {/* PAGE CONTAINER */}
-      <div id="upload-documents-container" className={`${theme} form`}>
-        <p className={`${theme} text-screen-intro`}>
-          Upload documents (.doc or .docx) , or images of documents you would like to save or share with a co-parent.
-        </p>
-        <p className={`${theme} text-screen-intro`}>
-          The uploaded document. If the document you are uploading is a different type is not .docx (.doc, .pdf, .txt, .etc) please click the link
-          below to convert it to .docx for free.
-        </p>
-        <p>
-          <span className="accent pr-5">
-            <b>MUST</b>
-          </span>
-          be of type <b className="pl-5">.docx</b>
-        </p>
-        <a href="https://convertio.co/" target="_blank" className="mb-10">
-          Convert to .docx
-        </a>
+    <BottomCard onSubmit={upload} refreshKey={refreshKey} submitText={'Upload'} showCard={showCard} title={'Upload Document'} onClose={resetForm}>
+      <div className="upload-doc-wrapper">
+        {/* PAGE CONTAINER */}
+        <div id="upload-documents-container" className={`${theme} form `}>
+          <p className={`${theme} text-screen-intro`}>
+            Upload documents (.doc or .docx) , or images of documents you would like to save or share with a co-parent.
+          </p>
+          <p className={`${theme} text-screen-intro`}>
+            The uploaded document. If the document you are uploading is a different type is not .docx (.doc, .pdf, .txt, .etc) please click the link
+            below to convert it to .docx for free.
+          </p>
+          <p>
+            <span className="accent pr-5">
+              <b>MUST</b>
+            </span>
+            be of type <b className="pl-5">.docx</b>
+          </p>
+          <a href="https://convertio.co/" target="_blank" className="mb-10">
+            Convert to .docx
+          </a>
 
-        {/* FORM */}
-        <div className="form">
-          {currentUser && (
+          {/* FORM */}
+          <div className="form">
             <>
-              <Label text={'Document Type'} required={true}></Label>
-              <CheckboxGroup checkboxLabels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
+              <CheckboxGroup parentLabel={'Document Type'} required={true} checkboxLabels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
               <ShareWithCheckboxes
                 icon={<ImEye />}
                 shareWith={currentUser.coparents.map((x) => x.phone)}
-                onCheck={(e) => handleShareWithSelection(e)}
+                onCheck={handleShareWithSelection}
                 labelText={'Who is allowed to see it?'}
                 containerClass={'share-with-coparents'}
                 checkboxLabels={currentUser.coparents.map((x) => x.phone)}
               />
             </>
-          )}
-        </div>
-
-        {/* UPLOAD BUTTONS */}
-        <UploadInputs
-          onClose={hideCard}
-          containerClass={`${theme} new-document-card`}
-          actualUploadButtonText={'Upload'}
-          uploadButtonText={docType === 'document' ? 'Document' : 'Choose'}
-          uploadType={docType}
-          upload={upload}
-        />
-        <div className="buttons">
-          <div id="blur"></div>
-          <button className="cancel card-button" onClick={hideCard}>
-            Cancel
-          </button>
+          </div>
+          {/* UPLOAD BUTTONS */}
+          <UploadInputs
+            onClose={hideCard}
+            containerClass={`${theme} new-document-card`}
+            actualUploadButtonText={'Upload'}
+            uploadButtonText={docType === 'document' ? 'Document' : 'Choose'}
+            uploadType={docType}
+            upload={upload}
+          />
         </div>
       </div>
-    </div>
+    </BottomCard>
   )
 }

@@ -16,9 +16,8 @@ import DateFormats from '../../constants/dateFormats'
 import DatetimePickerViews from '../../constants/datetimePickerViews'
 import DB from '@db'
 import DateManager from '../../managers/dateManager'
-import TitleSuggestion from '../../models/titleSuggestion'
 import CalendarManager from '../../managers/calendarManager'
-import TitleSuggestionWrapper from '../shared/titleSuggestionWrapper'
+import InputSuggestionWrapper from '../shared/inputSuggestionWrapper'
 import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
 import Toggle from 'react-toggle'
 import '../../styles/reactToggle.css'
@@ -52,7 +51,10 @@ import {
   wordCount,
 } from '../../globalFunctions'
 import ObjectManager from '../../managers/objectManager'
-import DatasetManager from '../../managers/datasetManager' // COMPONENT
+import DatasetManager from '../../managers/datasetManager'
+import InputSuggestion from '../../models/inputSuggestion' // COMPONENT
+import _ from 'lodash'
+import FormNames from '../../models/formNames'
 
 // COMPONENT
 export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDay }) {
@@ -75,7 +77,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
   const [eventShareWith, setEventShareWith] = useState([])
   const [clonedDates, setClonedDates] = useState([])
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
-  const [titleSuggestions, setTitleSuggestions] = useState([])
+  const [inputSuggestions, setInputSuggestions] = useState([])
   const [eventChildren, setEventChildren] = useState([])
   const [eventReminderTimes, setEventReminderTimes] = useState([])
   const [coparentsToRemind, setCoparentsToRemind] = useState([])
@@ -105,7 +107,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     setEventShareWith([])
     setClonedDates([])
     setClonedDatesToSubmit([])
-    setTitleSuggestions([])
+    setInputSuggestions([])
     setEventChildren([])
     setEventReminderTimes([])
     setCoparentsToRemind([])
@@ -137,37 +139,37 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     newEvent.endTime = DateManager.dateIsValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
     // Not Required
     newEvent.id = Manager.getUid()
-    newEvent.directionsLink = Manager.isValid(eventLocation) ? Manager.getDirectionsLink(eventLocation) : ''
-    newEvent.location = eventLocation || ''
-    newEvent.children = eventChildren || []
+    newEvent.directionsLink = !_.isEmpty(eventLocation) ? Manager.getDirectionsLink(eventLocation) : ''
+    newEvent.location = eventLocation
+    newEvent.children = eventChildren
     newEvent.ownerPhone = currentUser.phone
     newEvent.createdBy = currentUser.name
-    newEvent.shareWith = Manager.getUniqueArray(eventShareWith).flat()
+    newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
     newEvent.notes = eventNotes
     newEvent.websiteUrl = eventWebsite
-    newEvent.reminderTimes = eventReminderTimes || []
+    newEvent.reminderTimes = eventReminderTimes
     newEvent.repeatInterval = repeatInterval
-    newEvent.morningSummaryReminderSent = false
-    newEvent.eveningSummaryReminderSent = false
-    newEvent.sentReminders = []
     newEvent.fromVisitationSchedule = isVisitation ? true : false
 
     if (Manager.isValid(newEvent)) {
       // Insert Suggestion
       const alreadyExists =
-        titleSuggestions.filter((x) => x.ownerPhone === currentUser.phone && x.suggestion.toLowerCase() === newEvent.title.toLowerCase()).length > 0
+        _.filter(inputSuggestions, (row) => {
+          return row.suggestion === newEvent.title && row.ownerPhone === currentUser.phone
+        }).length > 0
 
       if (!alreadyExists) {
-        const newSuggestion = new TitleSuggestion()
+        const newSuggestion = new InputSuggestion()
         newSuggestion.ownerPhone = currentUser.phone
-        newSuggestion.formName = 'calendar'
+        newSuggestion.formName = FormNames.calendar
         newSuggestion.suggestion = newEvent.title
+        newSuggestion.id = Manager.getUid()
         await DB.addSuggestion(newSuggestion)
       }
 
       // Repeating Events Validation
       if (repeatingEndDate.length === 0 && repeatInterval.length > 0) {
-        throwError('If you have chose to repeat this event, please select an end month')
+        throwError('If you have chosen to repeat this event, please select an end month')
         return false
       }
 
@@ -447,7 +449,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
               onChange={async (e) => {
                 const inputValue = e.target.value
                 if (inputValue.length > 1) {
-                  const dbSuggestions = await SecurityManager.getTitleSuggestions(currentUser)
+                  const dbSuggestions = await SecurityManager.getInputSuggestions(currentUser)
 
                   if (Manager.isValid(dbSuggestions, true)) {
                     const matching = dbSuggestions.filter(
@@ -456,23 +458,23 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                         x.ownerPhone === currentUser.phone &&
                         contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
                     )
-                    setTitleSuggestions(Manager.getUniqueArray(matching).flat())
+                    setInputSuggestions(Manager.getUniqueArray(matching).flat())
                   }
                 } else {
-                  setTitleSuggestions([])
+                  setInputSuggestions([])
                 }
                 setEventTitle(inputValue)
               }}
             />
-            <TitleSuggestionWrapper
-              suggestions={titleSuggestions}
-              setSuggestions={() => setTitleSuggestions([])}
+            <InputSuggestionWrapper
+              suggestions={inputSuggestions}
+              setSuggestions={() => setInputSuggestions([])}
               onClick={(e) => {
                 const suggestion = e.target.textContent
                 setEventTitle(suggestion)
-                setTitleSuggestions([])
+                setInputSuggestions([])
                 document.querySelector('.event-title-input').value = suggestion
-              }}></TitleSuggestionWrapper>
+              }}></InputSuggestionWrapper>
           </div>
 
           {/* FROM DATE */}

@@ -29,7 +29,6 @@ import SecurityManager from '../../../managers/securityManager'
 import UploadDocuments from './uploadDocuments'
 import NavBar from '../../navBar'
 import { GrDocumentUpload } from 'react-icons/gr'
-import BottomCard from '../../shared/bottomCard'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
@@ -61,31 +60,20 @@ export default function DocsList() {
       setDocs(docs.filter((x) => x.id !== docId))
     })
   }
-
-  useEffect(() => {
+  const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.documents), async (snapshot) => {
       await getSecuredDocs()
     })
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            setShowCard(true)
-          },
-        },
-      })
-    }, 500)
+  }
+  useEffect(() => {
+    onTableChange()
     Manager.showPageContainer()
   }, [])
 
   return (
-    <div>
-      <BottomCard showCard={showCard} title={'Upload Document'} onClose={() => setShowCard(false)}>
-        <UploadDocuments hideCard={() => setShowCard(false)} />
-      </BottomCard>
+    <>
+      <UploadDocuments showCard={showCard} hideCard={() => setShowCard(false)} />
       <div id="doc-selection-container" className={`${theme} page-container`}>
         <p className="screen-title ">Documents</p>
 
@@ -142,6 +130,6 @@ export default function DocsList() {
           <GrDocumentUpload id={'add-new-button'} onClick={() => setShowCard(true)} />
         </NavBar>
       )}
-    </div>
+    </>
   )
 }

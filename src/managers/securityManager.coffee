@@ -105,7 +105,7 @@ SecurityManager =
           if (chat.threadOwner == currentUser.phone)
             returnRecords.push(chat)
     return returnRecords.flat()
-  getTitleSuggestions: (currentUser) ->
+  getInputSuggestions: (currentUser) ->
     returnRecords = []
     suggestions = Manager.convertToArray(await DB.getTable(DB.tables.suggestions)).flat()
     if Manager.isValid(suggestions,true)

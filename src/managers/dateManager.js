@@ -22,6 +22,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../globalFunctions'
+import _ from 'lodash'
 
 const DateManager = {
   reminderTimes: {
@@ -29,10 +30,10 @@ const DateManager = {
     halfHour: 'halfHour',
   },
   formValidation: (title, shareWith, startDate) => {
-    if (!Manager.isValid(title)) {
+    if (_.isEmpty(title)) {
       return 'Please enter an event title'
     }
-    if (!Manager.isValid(shareWith, true)) {
+    if (_.isEmpty(shareWith)) {
       return 'Please select who you would like to share this event with'
     }
     if (!DateManager.dateIsValid(startDate)) {

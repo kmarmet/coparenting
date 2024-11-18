@@ -169,7 +169,7 @@ SecurityManager = {
     }
     return returnRecords.flat();
   },
-  getTitleSuggestions: async function(currentUser) {
+  getInputSuggestions: async function(currentUser) {
     var i, len, returnRecords, suggestion, suggestions;
     returnRecords = [];
     suggestions = Manager.convertToArray((await DB.getTable(DB.tables.suggestions))).flat();

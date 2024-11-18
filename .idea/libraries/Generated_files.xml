@@ -21,6 +21,7 @@
         <item url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/domManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/emailManager.js" />
+        <item url="file://$PROJECT_DIR$/src/managers/imageManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/objectManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
@@ -38,12 +39,13 @@
         <item url="file://$PROJECT_DIR$/src/models/conversationThread.js" />
         <item url="file://$PROJECT_DIR$/src/models/coparent.js" />
         <item url="file://$PROJECT_DIR$/src/models/expense.js" />
+        <item url="file://$PROJECT_DIR$/src/models/formNames.js" />
+        <item url="file://$PROJECT_DIR$/src/models/inputSuggestion.js" />
         <item url="file://$PROJECT_DIR$/src/models/memory.js" />
         <item url="file://$PROJECT_DIR$/src/models/modelNames.js" />
         <item url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
         <item url="file://$PROJECT_DIR$/src/models/shortcut.js" />
         <item url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
-        <item url="file://$PROJECT_DIR$/src/models/titleSuggestion.js" />
         <item url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/user.js" />
         <item url="file://$PROJECT_DIR$/src/prototypes.js" />
@@ -69,6 +71,7 @@
       <root url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/domManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/emailManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/imageManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/objectManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
@@ -86,12 +89,13 @@
       <root url="file://$PROJECT_DIR$/src/models/conversationThread.js" />
       <root url="file://$PROJECT_DIR$/src/models/coparent.js" />
       <root url="file://$PROJECT_DIR$/src/models/expense.js" />
+      <root url="file://$PROJECT_DIR$/src/models/formNames.js" />
+      <root url="file://$PROJECT_DIR$/src/models/inputSuggestion.js" />
       <root url="file://$PROJECT_DIR$/src/models/memory.js" />
       <root url="file://$PROJECT_DIR$/src/models/modelNames.js" />
       <root url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
       <root url="file://$PROJECT_DIR$/src/models/shortcut.js" />
       <root url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
-      <root url="file://$PROJECT_DIR$/src/models/titleSuggestion.js" />
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
       <root url="file://$PROJECT_DIR$/src/prototypes.js" />

@@ -32,7 +32,7 @@ import {
   wordCount,
 } from '../../globalFunctions'
 import { LuImagePlus } from 'react-icons/lu'
-import { saveImageFromUrl } from '../../managers/imageManager'
+import ImageManager from '../../managers/imageManager'
 import { IoIosCloseCircle } from 'react-icons/io'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
@@ -148,7 +148,7 @@ export default function Memories() {
     if (Manager.isValid(memoryImage)) {
       const src = memoryImage.getAttribute('data-src')
       if (Manager.isValid(src)) {
-        saveImageFromUrl(null, src)
+        ImageManager.saveImageFromUrl(null, src)
       }
     }
   }

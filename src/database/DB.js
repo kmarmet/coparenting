@@ -186,12 +186,14 @@ const DB = {
     console.log(rows)
     let dbRef, row, i, idToDelete, len
     dbRef = ref(getDatabase())
-    for (i = 0, len = rows.length; i < len; i++) {
-      if (Manager.isValid(rows[i])) {
-        row = rows[i]
-        idToDelete = await DB.getSnapshotKey(table, row, 'id')
-        if (Manager.isValid(idToDelete)) {
-          await remove(child(dbRef, `${table}/${idToDelete}/`))
+    if (Manager.isValid(rows, true)) {
+      for (i = 0, len = rows.length; i < len; i++) {
+        if (Manager.isValid(rows[i])) {
+          row = rows[i]
+          idToDelete = await DB.getSnapshotKey(table, row, 'id')
+          if (Manager.isValid(idToDelete)) {
+            await remove(child(dbRef, `${table}/${idToDelete}/`))
+          }
         }
       }
     }

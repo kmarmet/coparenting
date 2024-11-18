@@ -40,6 +40,7 @@ import InputWrapper from '../shared/inputWrapper'
 import BottomCard from '../shared/bottomCard'
 import DateManager from '../../managers/dateManager'
 import ObjectManager from '../../managers/objectManager'
+import ImageManager from '../../managers/imageManager'
 
 function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -72,6 +73,7 @@ function NewMemoryForm({ hideCard, showCard }) {
       throwError('Please select who can see this memory')
       return false
     }
+
     if (images !== undefined && images.length === 0) {
       throwError('Please choose an image')
       return false
@@ -86,12 +88,16 @@ function NewMemoryForm({ hideCard, showCard }) {
       return false
     }
 
+    let localImages = []
+    for (let img of images) {
+      localImages.push(await ImageManager.compressImage(img))
+    }
     setState({ ...state, isLoading: true })
 
     // Check for existing memory
     const securedMemories = await SecurityManager.getMemories(currentUser)
     let existingMemoriesFound = false
-    Manager.convertToArray(images).forEach((img, index) => {
+    Manager.convertToArray(localImages).forEach((img, index) => {
       const existingMemory = securedMemories.filter((x) => x.memoryName === img.name)[0]
       if (existingMemory) {
         existingMemoriesFound = true
@@ -107,7 +113,7 @@ function NewMemoryForm({ hideCard, showCard }) {
     hideCard()
 
     // Upload Image
-    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser.id, images)
+    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser.id, localImages)
       .then(() => {
         const checkedCheckbox = document.querySelector('.share-with-container .box.active')
         if (checkedCheckbox) {
@@ -116,7 +122,7 @@ function NewMemoryForm({ hideCard, showCard }) {
       })
       .finally(async () => {
         // Add memories to 'memories' property for currentUser
-        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.memories, currentUser.id, images).then(async (urls) => {
+        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.memories, currentUser.id, localImages).then(async (urls) => {
           // Add to user memories object
           for (const url of urls) {
             const imageName = FirebaseStorage.getImageNameFromUrl(url)

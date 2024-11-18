@@ -6,7 +6,7 @@ ModelNames =
   expense: 'expense'
   memory: 'memory'
   swapRequest: 'swapRequest'
-  titleSuggestion: 'titleSuggestion'
+  inputSuggestion: 'inputSuggestion'
   user: "user"
   conversationMessage: 'conversationMessage'
   transferChangeRequest: 'transferChangeRequest'

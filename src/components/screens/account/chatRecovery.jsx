@@ -10,10 +10,8 @@ import CheckboxGroup from 'components/shared/checkboxGroup'
 import '../../../prototypes'
 import DateFormats from '../../../constants/dateFormats'
 import domtoimage from 'dom-to-image'
-import TitleSuggestion from '../../../models/titleSuggestion'
-import TitleSuggestionWrapper from '../../shared/titleSuggestionWrapper'
 import ChatRecoveryRequest from '../../../models/chatRecoveryRequest'
-import { saveImageFromUrl } from '../../../managers/imageManager'
+import ImageManager from '../../../managers/imageManager'
 import {
   confirmAlert,
   contains,
@@ -37,6 +35,8 @@ import {
 } from '../../../globalFunctions'
 import NavBar from '../../navBar'
 import InputWrapper from '../../shared/inputWrapper'
+import InputSuggestion from '../../../models/inputSuggestion'
+import InputSuggestionWrapper from '../../shared/inputSuggestionWrapper'
 
 function ChatRecovery() {
   const { state, setState } = useContext(globalState)
@@ -47,7 +47,7 @@ function ChatRecovery() {
   const [viewConvo, setViewConvo] = useState(false)
   const [messageType, setMessageType] = useState('all')
   const [convoMessages, setConvoMessages] = useState([])
-  const [titleSuggestions, setTitleSuggestions] = useState([])
+  const [inputSuggestions, setInputSuggestions] = useState([])
   const [signatureUrl, setSignatureUrl] = useState('')
   const [convoImageUrl, setConvoImageUrl] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
@@ -66,7 +66,7 @@ function ChatRecovery() {
     }
     setViewConvo(true)
 
-    const newSuggestion = new TitleSuggestion()
+    const newSuggestion = new InputSuggestion()
     newSuggestion.ownerPhone = currentUser.phone
     newSuggestion.formName = 'archived-chat'
     newSuggestion.suggestion = coparentPhone
@@ -137,7 +137,7 @@ function ChatRecovery() {
     }
   }
 
-  const saveImageLocal = () => saveImageFromUrl('#image-wrapper', convoImageUrl, 'Chat Recovery Conversation')
+  const saveImageLocal = () => ImageManager.saveImageFromUrl('#image-wrapper', convoImageUrl, 'Chat Recovery Conversation')
 
   const handleMessageTypeSelection = async (e) => {
     Manager.handleCheckboxSelection(
@@ -201,21 +201,21 @@ function ChatRecovery() {
                         (x) =>
                           x.formName === 'archived-chat' && x.ownerPhone === currentUser.phone && contains(x.suggestion.toLowerCase(), inputValue)
                       )
-                      setTitleSuggestions(Manager.getUniqueArray(matching).flat())
+                      setInputSuggestions(Manager.getUniqueArray(matching).flat())
                     } else {
-                      setTitleSuggestions([])
+                      setInputSuggestions([])
                     }
                     setCoparentPhone(inputValue)
                   }}></InputWrapper>
-                <TitleSuggestionWrapper
-                  suggestions={titleSuggestions}
-                  setSuggestions={() => setTitleSuggestions([])}
+                <InputSuggestionWrapper
+                  suggestions={inputSuggestions}
+                  setSuggestions={() => setInputSuggestions([])}
                   onClick={(e) => {
                     const suggestion = e.target.textContent
                     setCoparentPhone(suggestion)
-                    setTitleSuggestions([])
+                    setInputSuggestions([])
                     document.querySelector('.coparent-phone').value = suggestion
-                  }}></TitleSuggestionWrapper>
+                  }}></InputSuggestionWrapper>
               </div>
               {/* REASON */}
               <InputWrapper

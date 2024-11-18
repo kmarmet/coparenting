@@ -424,7 +424,7 @@ aside {
     }
 
     .title-suggestion-dropdown-wrapper {
-      @include titleSuggestionDropdown;
+      @include inputSugguestionDropdown;
     }
     .material-icons {
       font-family: 'Material Icons';
