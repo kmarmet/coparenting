@@ -24,11 +24,16 @@ DatasetManager = {
       return x != null;
     });
   },
-  getUniqueArrayByProp: function(arr, propOne, propTwo) {
+  getUniqueArrayByProp: function(arr, propOne, propTwo, propThree) {
     var uniqueData;
     uniqueData = _.values(_.keyBy(arr, function(item) {
       return `${item[propOne]}-${item[propTwo]}`;
     }));
+    if (propThree) {
+      uniqueData = _.values(_.keyBy(arr, function(item) {
+        return `${item[propOne]}-${item[propTwo]}-${item[propThree]}`;
+      }));
+    }
     return uniqueData;
   },
   getUniqueArrayFromMultiple: function(arrOne, arrTwo) {

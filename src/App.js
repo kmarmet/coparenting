@@ -42,13 +42,14 @@ import StateObj from './constants/stateObj'
 // Menus
 import FullMenu from './components/fullMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
-
 import { initializeApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { LicenseInfo } from '@mui/x-license'
 import ScreenNames from '@screenNames'
 import firebaseConfig from './firebaseConfig.js'
 import ContactUs from './components/screens/contactUs'
+import PullToRefresh from 'react-simple-pull-to-refresh'
+import PullToRefreshLoading from './components/shared/pullToRefreshLoading'
 
 export default function App() {
   // Initialize Firebase
@@ -96,7 +97,7 @@ export default function App() {
   }
 
   const handleRefresh = (e) => {
-    console.log(e)
+    console.log('pulled')
     window.location.reload()
   }
 
@@ -121,7 +122,6 @@ export default function App() {
       if (user) {
         const user = auth.currentUser
         // console.log(user)
-        console.log('signed in')
       } else {
         console.log('signed out or user doesn"t exist')
       }
@@ -143,74 +143,75 @@ export default function App() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
-      <div onRefresh={handleRefresh} className={`${currentUser?.settings?.theme} App`} id="app-container">
-        {/* LOADING */}
-        <Loading isLoading={isLoading} />
+      <PullToRefresh
+        // pullDownThreshold={100}
+        pullingContent={<PullToRefreshLoading />}
+        onRefresh={handleRefresh}>
+        <div className={`${currentUser?.settings?.theme} App`} id="app-container">
+          {/* LOADING */}
+          <Loading isLoading={isLoading} />
 
-        <div id="page-overlay"></div>
+          <div id="page-overlay"></div>
 
-        {/* INSTALL APP MODAL */}
-        <InstallAppPopup />
+          {/* INSTALL APP MODAL */}
+          <InstallAppPopup />
 
-        <globalState.Provider value={stateToUpdate}>
-          {userIsLoggedIn && (
+          <globalState.Provider value={stateToUpdate}>
+            {/* SLIDE OUT MENU */}
+            {userIsLoggedIn && <FullMenu />}
+
+            {/* SCREENS */}
             <>
-              {/* SLIDE OUT MENU */}
-              <FullMenu />
+              {/* ADMIN */}
+              {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
+
+              {/* AUTHENTICATION */}
+              {currentScreen === ScreenNames.login && <Login />}
+              {currentScreen === ScreenNames.registration && <Registration />}
+
+              {/* UPDATE/EDIT */}
+              {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}
+              {currentScreen === ScreenNames.updateContactInfo && <UpdateContactInfo />}
+              {currentScreen === ScreenNames.reviseTransferRequest && <ReviseChildTransferChangeRequest />}
+
+              {/* DOCUMENTS */}
+              {currentScreen === ScreenNames.docsList && <DocsList />}
+              {currentScreen === ScreenNames.docViewer && <DocViewer />}
+
+              {/* UPLOAD */}
+              {currentScreen === ScreenNames.uploadDocuments && <UploadDocuments />}
+
+              {/* NEW */}
+              {currentScreen === ScreenNames.newCalendarEvent && <NewCalendarEvent />}
+              {currentScreen === ScreenNames.newMemory && <NewMemoryForm />}
+              {currentScreen === ScreenNames.newChild && <NewChildForm />}
+              {currentScreen === ScreenNames.newExpense && <NewExpenseForm />}
+              {currentScreen === ScreenNames.newSwapRequest && <NewSwapRequest />}
+              {currentScreen === ScreenNames.newTransferRequest && <NewTransferChangeRequest />}
+              {currentScreen === ScreenNames.newCoparent && <NewCoparentForm />}
+
+              {/* STANDARD */}
+              {currentScreen === ScreenNames.activity && <Activity />}
+              {currentScreen === ScreenNames.calendar && <EventCalendar />}
+              {currentScreen === ScreenNames.settings && <Settings />}
+              {currentScreen === ScreenNames.account && <Account />}
+              {currentScreen === ScreenNames.expenseTracker && <ExpenseTracker />}
+              {currentScreen === ScreenNames.swapRequests && <SwapRequests />}
+              {currentScreen === ScreenNames.forgotPassword && <ForgotPassword />}
+              {currentScreen === ScreenNames.transferRequests && <TransferRequests />}
+              {currentScreen === ScreenNames.memories && <Memories />}
+              {currentScreen === ScreenNames.childInfo && <ChildInfo />}
+              {currentScreen === ScreenNames.coparents && <Coparents />}
+              {currentScreen === ScreenNames.conversation && <Conversation />}
+              {currentScreen === ScreenNames.chats && <Chat />}
+              {currentScreen === ScreenNames.visitation && <Visitation />}
+              {currentScreen === ScreenNames.childSelector && <ChildSelector />}
+              {currentScreen === ScreenNames.chatRecovery && <ChatRecovery />}
+              {currentScreen === ScreenNames.contactUs && <ContactUs />}
             </>
-          )}
-
-          {/* SCREENS */}
-          <>
-            {/* ADMIN */}
-            {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
-
-            {/* AUTHENTICATION */}
-            {currentScreen === ScreenNames.login && <Login />}
-            {currentScreen === ScreenNames.registration && <Registration />}
-
-            {/* UPDATE/EDIT */}
-            {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}
-            {currentScreen === ScreenNames.updateContactInfo && <UpdateContactInfo />}
-            {currentScreen === ScreenNames.reviseTransferRequest && <ReviseChildTransferChangeRequest />}
-
-            {/* DOCUMENTS */}
-            {currentScreen === ScreenNames.docsList && <DocsList />}
-            {currentScreen === ScreenNames.docViewer && <DocViewer />}
-
-            {/* UPLOAD */}
-            {currentScreen === ScreenNames.uploadDocuments && <UploadDocuments />}
-
-            {/* NEW */}
-            {currentScreen === ScreenNames.newCalendarEvent && <NewCalendarEvent />}
-            {currentScreen === ScreenNames.newMemory && <NewMemoryForm />}
-            {currentScreen === ScreenNames.newChild && <NewChildForm />}
-            {currentScreen === ScreenNames.newExpense && <NewExpenseForm />}
-            {currentScreen === ScreenNames.newSwapRequest && <NewSwapRequest />}
-            {currentScreen === ScreenNames.newTransferRequest && <NewTransferChangeRequest />}
-            {currentScreen === ScreenNames.newCoparent && <NewCoparentForm />}
-
-            {/* STANDARD */}
-            {currentScreen === ScreenNames.activity && <Activity />}
-            {currentScreen === ScreenNames.calendar && <EventCalendar />}
-            {currentScreen === ScreenNames.settings && <Settings />}
-            {currentScreen === ScreenNames.account && <Account />}
-            {currentScreen === ScreenNames.expenseTracker && <ExpenseTracker />}
-            {currentScreen === ScreenNames.swapRequests && <SwapRequests />}
-            {currentScreen === ScreenNames.forgotPassword && <ForgotPassword />}
-            {currentScreen === ScreenNames.transferRequests && <TransferRequests />}
-            {currentScreen === ScreenNames.memories && <Memories />}
-            {currentScreen === ScreenNames.childInfo && <ChildInfo />}
-            {currentScreen === ScreenNames.coparents && <Coparents />}
-            {currentScreen === ScreenNames.conversation && <Conversation />}
-            {currentScreen === ScreenNames.chats && <Chat />}
-            {currentScreen === ScreenNames.visitation && <Visitation />}
-            {currentScreen === ScreenNames.childSelector && <ChildSelector />}
-            {currentScreen === ScreenNames.chatRecovery && <ChatRecovery />}
-            {currentScreen === ScreenNames.contactUs && <ContactUs />}
-          </>
-        </globalState.Provider>
-      </div>
+          </globalState.Provider>
+        </div>
+      </PullToRefresh>
     </LocalizationProvider>
   )
 }

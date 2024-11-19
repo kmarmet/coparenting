@@ -4,9 +4,6 @@ import ScreenNames from '@screenNames'
 import Manager from '@manager'
 import AppManager from '@managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
-
-import DB_UserScoped from '@userScoped'
-
 // ICONS
 import {
   PiCalendarDotsDuotone,
@@ -19,7 +16,9 @@ import {
   PiSignOutDuotone,
   PiSunDuotone,
   PiSwapDuotone,
+  PiToolboxDuotone,
 } from 'react-icons/pi'
+import DB_UserScoped from '@userScoped'
 import { RiMailSendLine } from 'react-icons/ri'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
 import { BsPeople } from 'react-icons/bs'
@@ -72,14 +71,14 @@ export default function FullMenu() {
       hasSubmitButton={false}>
       <div id="full-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
         {/* ADMIN DASHBOARD */}
-        {/*{currentUser.email === 'kmarmet1@gmail.com' && (*/}
-        {/*  <div*/}
-        {/*    className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}*/}
-        {/*    onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>*/}
-        {/*    <PiToolboxDuotone />*/}
-        {/*    <p>Admin Dashboard</p>*/}
-        {/*  </div>*/}
-        {/*)}*/}
+        {currentUser.email === 'kmarmet1@gmail.com' && (
+          <div
+            className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
+            onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>
+            <PiToolboxDuotone />
+            <p>Admin Dashboard</p>
+          </div>
+        )}
         {/* CALENDAR */}
         <div
           className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}

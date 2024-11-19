@@ -176,6 +176,7 @@ const DB = {
     let tableRecords = await DB.getTable(path)
     if (Manager.isValid(tableRecords, true)) {
       const deleteKey = await DB.getFlatTableKey(path, id)
+      console.log(deleteKey)
       if (Manager.isValid(deleteKey)) {
         await remove(child(dbRef, `${path}/${deleteKey}/`))
       }
@@ -183,17 +184,13 @@ const DB = {
   },
   deleteMultipleRows: async function (table, rows, currentUser) {
     rows = DatasetManager.getUniqueArray(rows, true)
-    console.log(rows)
     let dbRef, row, i, idToDelete, len
     dbRef = ref(getDatabase())
     if (Manager.isValid(rows, true)) {
-      for (i = 0, len = rows.length; i < len; i++) {
-        if (Manager.isValid(rows[i])) {
-          row = rows[i]
-          idToDelete = await DB.getSnapshotKey(table, row, 'id')
-          if (Manager.isValid(idToDelete)) {
-            await remove(child(dbRef, `${table}/${idToDelete}/`))
-          }
+      for (let row in rows) {
+        idToDelete = await DB.getSnapshotKey(table, row, 'id')
+        if (Manager.isValid(idToDelete)) {
+          await remove(child(dbRef, `${table}/${idToDelete}/`))
         }
       }
     }

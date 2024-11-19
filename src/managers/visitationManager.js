@@ -4,6 +4,7 @@ import Manager from '@manager'
 import DB from '@db'
 import DateFormats from '../constants/dateFormats'
 import { child, getDatabase, ref, set } from 'firebase/database'
+import DatasetManager from './datasetManager'
 
 const VisitationManager = {
   weekendMapper: (input) => {
@@ -223,12 +224,10 @@ const VisitationManager = {
   },
   setVisitationHolidays: async (currentUser, holidays) => {
     const dbRef = ref(getDatabase())
+    await VisitationManager.deleteAllHolidaysForUser(currentUser)
+    holidays = DatasetManager.getUniqueArrayByProp(holidays, 'startDate', 'holidayName')
     const currentEvents = await DB.getTable(DB.tables.calendarEvents)
-    let userHolidays = currentEvents.filter((x) => x.ownerPhone === currentUser.phone && x.isHoliday === true && x.fromVisitationSchedule === true)
-    userHolidays = userHolidays.filter((x) => x !== null && x !== undefined)
-    if (Manager.isValid(userHolidays, true)) {
-      await DB.deleteMultipleRows(DB.tables.calendarEvents, userHolidays, currentUser)
-    }
+
     await set(child(dbRef, `${DB.tables.calendarEvents}`), [...currentEvents, ...holidays])
   },
   getSchedule: async (currentUser) => {

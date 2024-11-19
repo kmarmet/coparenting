@@ -26,6 +26,7 @@ import SecurityManager from '../../managers/securityManager'
 import NavBar from '../navBar'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
+import DatasetManager from '../../managers/datasetManager'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -241,9 +242,8 @@ export default function Visitation() {
 
   // SET HOLIDAYS IN DATABASE
   const setHolidaysInDatabase = async () => {
-    // Delete all user events before adding new
     // Holidays
-    // console.log(selectedHolidayDates)
+    console.log(selectedHolidayDates)
     if (Manager.isValid(selectedHolidayDates, true)) {
       let events = []
       selectedHolidayDates.forEach((holidayDateString) => {
@@ -259,15 +259,15 @@ export default function Visitation() {
         dateObject.fromVisitationSchedule = true
         dateObject.isHoliday = true
         dateObject.id = Manager.getUid()
-        dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
+        dateObject.shareWith = DatasetManager.getUniqueArray(shareWith, true)
         events.push(dateObject)
       })
       // Upload to DB
       await VisitationManager.setVisitationHolidays(currentUser, events)
-      successAlert('Visitation Holidays Updated!')
     } else {
-      // await VisitationManager.deleteAllHolidaysForUser(currentUser)
+      await VisitationManager.deleteAllHolidaysForUser(currentUser)
     }
+    successAlert('Visitation Holidays Updated!')
   }
 
   const handleSpecificWeekendSelection = (e) => {
@@ -305,14 +305,19 @@ export default function Visitation() {
       e,
       (e) => {
         const dataDate = CalendarMapper.holidayNameToDate(e)
-        const dateAsString = moment(`${dataDate}/${moment().year()}`, 'MM/DD/yyyy').format(DateFormats.dateForDb)
+        const holidayMonth = moment(dataDate).month() + 1
+        const currentMonth = moment().month() + 1
+        const holidayYear = holidayMonth < currentMonth ? moment().year() + 1 : moment().year()
+        const dateAsString = moment(`${dataDate}/${holidayYear}`, 'MM/DD/yyyy').format(DateFormats.dateForDb)
         setSelectedHolidayDates([...selectedHolidayDates, dateAsString])
       },
       (e) => {
-        const dataDate = moment(CalendarMapper.holidayNameToDate(e), 'MM/DD/yyyy').format(DateFormats.dateForDb)
-        const dateAsString = moment(`${dataDate}/${moment().year()}`, 'MM/DD/yyyy').format(DateFormats.dateForDb)
+        const dataDate = CalendarMapper.holidayNameToDate(e)
+        const holidayMonth = moment(dataDate).month() + 1
+        const currentMonth = moment().month() + 1
+        const holidayYear = holidayMonth < currentMonth ? moment().year() + 1 : moment().year()
+        const dateAsString = moment(`${dataDate}/${holidayYear}`, 'MM/DD/yyyy').format(DateFormats.dateForDb)
         let filtered = selectedHolidayDates.filter((x) => x !== dateAsString)
-        console.log(filtered)
         setSelectedHolidayDates(filtered)
       },
       true

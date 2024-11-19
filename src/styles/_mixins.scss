@@ -2620,7 +2620,7 @@
       /*#region  ROWS*/
       &.visitation,
       &.chats,
-      &.calendar {
+      &.calendar, &.admin {
         border: 1px solid #557fff;
 
         * {

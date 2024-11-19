@@ -23,6 +23,8 @@ import {
   wordCount,
 } from '../globalFunctions'
 import _ from 'lodash'
+import ObjectManager from './objectManager'
+import ModelNames from '../models/modelNames'
 
 const DateManager = {
   reminderTimes: {
@@ -212,9 +214,11 @@ const DateManager = {
       return !!contains(title, holidayName)
     }
 
+    console.log(holidays)
+
     // SET EMOJIS
     for (const holiday of holidays) {
-      const newEvent = new CalendarEvent()
+      let newEvent = new CalendarEvent()
       // Required
       switch (true) {
         case switchCheck(holiday.name, 'Halloween'):
@@ -252,10 +256,11 @@ const DateManager = {
       newEvent.startDate = moment(holiday.date).format('MM/DD/yyyy')
       newEvent.isHoliday = true
       newEvent.visibleToAll = true
+      newEvent = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
       holidayEvents.push(newEvent)
     }
-    holidayEvents = holidayEvents.filter((value, index, self) => index === self.findIndex((t) => t.startDate === value.startDate))
-    await CalendarManager.setHolidays(Manager.getUniqueArray(holidayEvents).flat())
+    // holidayEvents = holidayEvents.filter((value, index, self) => index === self.findIndex((t) => t.startDate === value.startDate))
+    await CalendarManager.setHolidays(holidayEvents)
   },
   dateIsValid: (inputDate) => {
     return moment(inputDate).isValid()

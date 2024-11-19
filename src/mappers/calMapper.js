@@ -74,8 +74,6 @@ CalendarMapper = {
     switch (true) {
       case name === "New Year's Day":
         return '01/01';
-      case name === "New Year's":
-        return '01/01';
       case name === "Martin Luther King Day":
         return '01/15';
       case name === "Good Friday":
@@ -98,8 +96,6 @@ CalendarMapper = {
         return '10/14';
       case name === 'Halloween':
         return '10/31';
-      case name === 'Christmas':
-        return '12/25';
       case name === 'Christmas Day':
         return '12/25';
       case name === 'Christmas Eve':

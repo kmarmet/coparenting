@@ -53,8 +53,6 @@ CalendarMapper =
     switch true
       when name == "New Year's Day"
         '01/01'
-      when name == "New Year's"
-        '01/01'
       when name == "Martin Luther King Day"
         '01/15'
       when name == "Good Friday"
@@ -77,8 +75,6 @@ CalendarMapper =
         '10/14'
       when name == 'Halloween'
         '10/31'
-      when name == 'Christmas'
-        '12/25'
       when name == 'Christmas Day'
         '12/25'
       when name == 'Christmas Eve'
@@ -145,4 +141,3 @@ CalendarMapper =
 
 
 export default CalendarMapper
-
