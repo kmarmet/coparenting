@@ -5,3 +5,4 @@ FormNames = {
   expense: 'expense'
   memories: "memories"
 }
+export default FormNames

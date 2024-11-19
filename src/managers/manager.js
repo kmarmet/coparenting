@@ -31,7 +31,17 @@ const Manager = {
 
     // Input Wrappers
     if (Manager.isValid(inputWrappers, true)) {
-      inputWrappers.forEach((wrapper) => wrapper.classList.remove('active'))
+      inputWrappers.forEach((wrapper) => {
+        wrapper.classList.remove('active')
+        const input = wrapper.querySelector('input')
+        const textarea = wrapper.querySelector('textarea')
+        if (input) {
+          input.value = ''
+        }
+        if (textarea) {
+          textarea.value = ''
+        }
+      })
     }
 
     // Inputs/Textareas
@@ -220,7 +230,6 @@ const Manager = {
       const label = clickedEl.dataset['label']
       if (canSelectAll === false) {
         labels.forEach((labelEl) => {
-          console.log(labelEl.querySelector('.box'))
           labelEl.querySelector('.box').classList.remove('active')
         })
       }

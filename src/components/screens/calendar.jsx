@@ -490,12 +490,15 @@ export default function EventCalendar() {
         {/* STATIC CALENDAR */}
         <div id="static-calendar">
           <StaticDatePicker
+            showDaysOutsideCurrentMonth={true}
             defaultValue={dayFromEdit ? dayFromEdit : moment()}
             onMonthChange={async (month) => {
               await getSecuredEvents(null, month)
             }}
             onChange={async (day) => {
-              await getSecuredEvents(day)
+              setTimeout(async () => {
+                await getSecuredEvents(day)
+              }, 500)
               setSelectedNewEventDay(day)
             }}
             slotProps={{

@@ -136,7 +136,8 @@
   background-color: white !important;
 
   &.react-toggle-thumb {
-    border: 0;
+//    border: 0;
+    border-color: rgba(0, 0, 0, 0.21);
   }
   &.react-toggle--checked {
     .react-toggle-thumb {
@@ -148,7 +149,7 @@
   }
 }
 .react-toggle-track {
-  background: $borderColor !important;
+  background: $bestGreyForWhite !important;
 }
 .react-toggle-track-check {
   margin: 0 !important;
@@ -161,6 +162,15 @@
     margin: auto 0;
     align-self: stretch;
     color: white !important;
+  }
+}
+
+.react-toggle {
+  &.clone-toggle {
+    svg {
+      position: relative;
+      bottom: 3px;
+    }
   }
 }
 

@@ -4,7 +4,7 @@ import Expense from "../models/expense"
 import Memory from "../models/memory"
 import TransferChangeRequest from "../models/transferChangeRequest"
 import SwapRequest from "../models/swapRequest"
-import TitleSuggestion from "../models/inputSuggestion"
+import InputSuggestion from "../models/inputSuggestion"
 import User from "../models/user"
 import Coparent from "../models/coparent"
 import ConversationThread from "../models/conversationThread"
@@ -19,7 +19,7 @@ ObjectManager = {
       when ModelNames.memory then new Memory()
       when ModelNames.transferChangeRequest then new TransferChangeRequest()
       when ModelNames.swapRequest then new SwapRequest()
-      when ModelNames.titleSuggestion then new TitleSuggestion()
+      when ModelNames.inputSuggestion then new InputSuggestion()
       when ModelNames.user then new User()
       when ModelNames.coparent then new Coparent()
       when ModelNames.conversationThread then new ConversationThread()

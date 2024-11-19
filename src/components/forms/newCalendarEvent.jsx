@@ -90,35 +90,11 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
   const [includeChildren, setIncludeChildren] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
   const [showCoparentReminderToggle, setShowCoparentReminderToggle] = useState(false)
-  const [resetKey, setResetKey] = useState(Manager.getUid())
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [suggestionRefreshKey, setSuggestionRefreshKey] = useState(Manager.getUid())
   const resetForm = () => {
     Manager.resetForm('new-event-form')
-    setEventLength(EventLengths.single)
-    setEventFromDate('')
-    setEventLocation('')
-    setEventTitle('')
-    setEventWebsite('')
-    setEventNotes('')
-    setRepeatingEndDate('')
-    setRepeatInterval('')
-    setEventToDate('')
-    setEventStartTime('')
-    setEventEndTime('')
-    setEventShareWith([])
-    setClonedDates([])
-    setClonedDatesToSubmit([])
-    setInputSuggestions([])
-    setEventChildren([])
-    setEventReminderTimes([])
-    setCoparentsToRemind([])
-    setIsAllDay(false)
-    setEventIsRepeating(false)
-    setShowCloneInput(false)
-    setShowReminders(false)
-    setIncludeChildren(false)
-    setIsVisitation(false)
-    setShowCoparentReminderToggle(false)
-    setResetKey(Manager.getUid())
+    setRefreshKey(Manager.getUid())
     onClose()
   }
 
@@ -152,21 +128,6 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     newEvent.fromVisitationSchedule = isVisitation ? true : false
 
     if (Manager.isValid(newEvent)) {
-      // Insert Suggestion
-      const alreadyExists =
-        _.filter(inputSuggestions, (row) => {
-          return row.suggestion === newEvent.title && row.ownerPhone === currentUser.phone
-        }).length > 0
-
-      if (!alreadyExists) {
-        const newSuggestion = new InputSuggestion()
-        newSuggestion.ownerPhone = currentUser.phone
-        newSuggestion.formName = FormNames.calendar
-        newSuggestion.suggestion = newEvent.title
-        newSuggestion.id = Manager.getUid()
-        await DB.addSuggestion(newSuggestion)
-      }
-
       // Repeating Events Validation
       if (repeatingEndDate.length === 0 && repeatInterval.length > 0) {
         throwError('If you have chosen to repeat this event, please select an end month')
@@ -182,6 +143,21 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
       if (eventReminderTimes.length > 0 && eventStartTime.length === 0) {
         throwError('If you set reminder times, please also uncheck All Day and add a start time')
         return false
+      }
+
+      // Insert Suggestion
+      const alreadyExists =
+        _.filter(inputSuggestions, (row) => {
+          return row.suggestion === newEvent.title && row.ownerPhone === currentUser.phone
+        }).length > 0
+
+      if (!alreadyExists) {
+        const newSuggestion = new InputSuggestion()
+        newSuggestion.ownerPhone = currentUser.phone
+        newSuggestion.formName = FormNames.calendar
+        newSuggestion.suggestion = newEvent.title
+        newSuggestion.id = Manager.getUid()
+        await DB.addSuggestion(newSuggestion)
       }
 
       const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
@@ -207,17 +183,6 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     resetForm()
   }
 
-  // const setActivitySets = async (userPhone) => {
-  //   const existingActivitySet = await DB.getTable(`${DB.tables.activitySets}/${userPhone}`, true)
-  //   let newActivitySet = new ActivitySet()
-  //   let unreadMessageCount = existingActivitySet?.unreadMessageCount || 0
-  //   if (Manager.isValid(existingActivitySet, false, true)) {
-  //     newActivitySet = { ...existingActivitySet }
-  //   }
-  //   newActivitySet.unreadMessageCount = unreadMessageCount === 0 ? 1 : (unreadMessageCount += 1)
-  //   await DB_UserScoped.addActivitySet(`${DB.tables.activitySets}/${userPhone}`, newActivitySet)
-  // }
-
   const addRepeatingEventsToDb = async () => {
     let repeatingEvents = []
     let datesToRepeat = CalendarMapper.repeatingEvents(
@@ -227,7 +192,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     )
     if (Manager.isValid(datesToRepeat)) {
       datesToRepeat.forEach((date) => {
-        const repeatingDateObject = new CalendarEvent()
+        let repeatingDateObject = new CalendarEvent()
 
         // Required
         repeatingDateObject.id = Manager.getUid()
@@ -236,27 +201,25 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
         repeatingDateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat()
 
         // Not Required
-        repeatingDateObject.directionsLink = eventLocation || ''
-        repeatingDateObject.location = eventLocation || ''
-        repeatingDateObject.children = eventChildren || []
-        repeatingDateObject.ownerPhone = currentUser.phone
+        repeatingDateObject.directionsLink = eventLocation
+        repeatingDateObject.location = eventLocation
+        repeatingDateObject.children = eventChildren
         repeatingDateObject.createdBy = currentUser.name
-        repeatingDateObject.notes = eventNotes || ''
-        repeatingDateObject.websiteUrl = eventWebsite || ''
-        repeatingDateObject.startTime = eventStartTime || ''
-        repeatingDateObject.endTime = eventEndTime || ''
-        repeatingDateObject.reminderTimes = eventReminderTimes || []
-        repeatingDateObject.sentReminders = []
-        repeatingDateObject.endDate = eventToDate || ''
+        repeatingDateObject.notes = eventNotes
+        repeatingDateObject.ownerPhone = currentUser.phone
+        repeatingDateObject.websiteUrl = eventWebsite
+        repeatingDateObject.startTime = eventStartTime
+        repeatingDateObject.endTime = eventEndTime
+        repeatingDateObject.reminderTimes = eventReminderTimes
+        repeatingDateObject.endDate = eventToDate
         repeatingDateObject.repeatInterval = repeatInterval
-        repeatingDateObject.fromVisitationSchedule = false
-        repeatingDateObject.morningSummaryReminderSent = false
-        repeatingDateObject.eveningSummaryReminderSent = false
 
         if (!isAllDay) {
           repeatingDateObject.startTime = moment(eventStartTime, DateFormats.fullDatetime).format(DateFormats.timeForDb)
           repeatingDateObject.endTime = moment(eventEndTime, DateFormats.fullDatetime).format(DateFormats.timeForDb)
         }
+        console.log(repeatingDateObject)
+        // repeatingDateObject = ObjectManager.cleanObject(repeatingDateObject)
         repeatingEvents.push(repeatingDateObject)
       })
       // Upload to DB
@@ -441,10 +404,11 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
           {/* TITLE */}
           <div className="title-suggestion-wrapper">
             <InputWrapper
-              refreshKey={resetKey}
+              refreshKey={suggestionRefreshKey}
               inputClasses="event-title-input"
               inputType={'input'}
               labelText={'Title'}
+              defaultValue={eventTitle}
               required={true}
               onChange={async (e) => {
                 const inputValue = e.target.value
@@ -458,7 +422,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                         x.ownerPhone === currentUser.phone &&
                         contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
                     )
-                    setInputSuggestions(Manager.getUniqueArray(matching).flat())
+                    setInputSuggestions(DatasetManager.getUniqueArray(matching, true))
                   }
                 } else {
                   setInputSuggestions([])
@@ -473,8 +437,8 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                 const suggestion = e.target.textContent
                 setEventTitle(suggestion)
                 setInputSuggestions([])
-                document.querySelector('.event-title-input').value = suggestion
-              }}></InputSuggestionWrapper>
+              }}
+            />
           </div>
 
           {/* FROM DATE */}
@@ -518,16 +482,28 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
 
           {/* EVENT WITH TIME */}
           {!isAllDay && (
-            <div className={'flex gap event-times-wrapper mb-15'}>
+            <div className={'flex gap event-times-wrapper'}>
               <div>
                 <InputWrapper wrapperClasses="higher-label" labelText={'Start Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker defaultValue={null} minutesStep={5} className={`${theme}`} onAccept={(e) => setEventStartTime(e)} />
+                  <MobileTimePicker
+                    disablePast={true}
+                    defaultValue={null}
+                    minutesStep={5}
+                    className={`${theme}`}
+                    onAccept={(e) => setEventStartTime(e)}
+                  />
                 </InputWrapper>
               </div>
               <span>&nbsp;to&nbsp;</span>
               <div>
                 <InputWrapper wrapperClasses="higher-label" labelText={'End Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker defaultValue={null} minutesStep={5} className={`${theme} `} onAccept={(e) => setEventEndTime(e)} />
+                  <MobileTimePicker
+                    disablePast={true}
+                    defaultValue={null}
+                    minutesStep={5}
+                    className={`${theme} `}
+                    onAccept={(e) => setEventEndTime(e)}
+                  />
                 </InputWrapper>
               </div>
             </div>
@@ -746,7 +722,12 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
           <hr />
 
           {/* URL/WEBSITE */}
-          <InputWrapper labelText={'Website'} required={false} inputType={'input'} onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
+          <InputWrapper
+            labelText={'Website'}
+            required={false}
+            inputType={'input'}
+            inputValueType="url"
+            onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
 
           {/* LOCATION/ADDRESS */}
           <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
