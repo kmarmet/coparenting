@@ -50,12 +50,9 @@ function NewMemoryForm({ hideCard, showCard }) {
   const [memoryDate, setMemoryDate] = useState('')
   const [resetKey, setResetKey] = useState(Manager.getUid())
   const inputFile = useRef(null)
+
   const resetForm = () => {
     Manager.resetForm('new-memory-wrapper')
-    setShareWith([])
-    setMemoryNotes('')
-    setImages([])
-    setMemoryTitle('')
     setState({ ...state, isLoading: false })
     hideCard()
     setResetKey(Manager.getUid())
@@ -156,16 +153,7 @@ function NewMemoryForm({ hideCard, showCard }) {
   }, [])
 
   return (
-    <BottomCard
-      onSubmit={submit}
-      refreshKey={resetKey}
-      submitText={'Add Memory'}
-      title={'New Memory'}
-      onClose={() => {
-        hideCard()
-        resetForm()
-      }}
-      showCard={showCard}>
+    <BottomCard onSubmit={submit} refreshKey={resetKey} submitText={'Add Memory'} title={'New Memory'} onClose={resetForm} showCard={showCard}>
       <div className="new-memory-wrapper">
         <div id="new-memory-form-container" className={`${theme} form`}>
           <div className="form">

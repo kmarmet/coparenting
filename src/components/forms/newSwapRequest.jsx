@@ -56,15 +56,6 @@ export default function NewSwapRequest({ showCard, hideCard }) {
 
   const resetForm = () => {
     Manager.resetForm('swap-request-wrapper')
-    setRequestRange([])
-    setRequestReason('')
-    setRequestChildren([])
-    setShareWith([])
-    setRecipientName('')
-    setRequestFromHour('')
-    setRequestToHour('')
-    setSwapDuration('single')
-    setIncludeChildren(false)
     hideCard()
     setRefreshKey(Manager.getUid())
     AlertManager.successAlert('Swap Request Sent')

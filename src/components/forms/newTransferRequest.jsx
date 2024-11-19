@@ -34,14 +34,6 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
   const resetForm = () => {
     Manager.resetForm('transfer-request-wrapper')
-    setRequestReason('')
-    setShareWith([])
-    setRequestTime('')
-    setRequestLocation('')
-    setRequestDate('')
-    setDirectionsLink('')
-    setRequestRecipientPhone('')
-    setPreferredLocation('')
     hideCard()
     setRefreshKey(Manager.getUid())
     AlertManager.successAlert('Transfer Change Request Sent')

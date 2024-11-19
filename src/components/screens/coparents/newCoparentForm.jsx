@@ -40,12 +40,9 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [parentType, setParentType] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+
   const resetForm = () => {
     Manager.resetForm('new-coparent-wrapper')
-    setName('')
-    setAddress('')
-    setPhoneNumber('')
-    setParentType('')
     hideCard()
     setRefreshKey(Manager.getUid())
     AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)

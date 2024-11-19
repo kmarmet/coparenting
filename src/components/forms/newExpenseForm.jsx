@@ -75,22 +75,6 @@ function NewExpenseForm({ hideCard, showCard }) {
 
   const resetForm = () => {
     Manager.resetForm('expenses-wrapper')
-    setExpenseName('')
-    setExpenseChildren([])
-    setExpenseDueDate('')
-    setExpenseNotes('')
-    setExpenseImage('')
-    setIncludeChildren(false)
-    setRepeating(false)
-    setPayer({
-      phone: '',
-      name: '',
-    })
-    setShareWith([])
-    setRepeatInterval('')
-    setRepeatingEndDate('')
-    setShowNumpad(false)
-    setExpenseAmount('')
     hideCard()
     setRefreshKey(Manager.getUid())
     AlertManager.successAlert(`${expenseName} Added`)
@@ -308,10 +292,7 @@ function NewExpenseForm({ hideCard, showCard }) {
       submitText={'Create Expense'}
       title={'Add Expense'}
       showCard={showCard}
-      onClose={() => {
-        hideCard()
-        setRefreshKey(Manager.getUid())
-      }}>
+      onClose={() => resetForm}>
       <div className="expenses-wrapper">
         {/* PAGE CONTAINER */}
         <div id="add-expense-form" className={`${theme} form`}>

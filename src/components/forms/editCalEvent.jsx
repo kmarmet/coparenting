@@ -77,30 +77,12 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const [showCoparentsToRemind, setShowCoparentsToRemind] = useState(false)
   const [defaultStartTime, setDefaultStartTime] = useState(moment())
   const [defaultEndTime, setDefaultEndTime] = useState(moment())
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
   const resetForm = () => {
     Manager.resetForm('edit-event-form')
-    setEventFromDate('')
-    setEventLocation('')
-    setEventTitle('')
-    setEventWebsiteUrl('')
-    setEventStartTime('')
-    setEventNotes('')
-    setEventEndDate('')
-    setEventEndTime('')
-    setEventChildren(event?.children || [])
-    setEventReminderTimes([])
-    setEventShareWith(event?.shareWith || [])
-    setClonedDatesToSubmit([])
-    setRepeatingDatesToSubmit([])
-    setEventLength(EventLengths.single)
-    setIsAllDay(false)
-    setCoparentsToRemind(false)
-    setIncludeChildren(false)
-    setShowReminders(false)
-    setAllEvents([])
-    setIsVisitation(false)
     onClose(moment(event.startDate))
+    setRefreshKey(Manager.getUid())
   }
 
   // SUBMIT
@@ -395,8 +377,9 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
   return (
     <BottomCard
+      refreshKey={refreshKey}
       onDelete={() => {
-        confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
+        AlertManager.confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
           await deleteEvent()
           AlertManager.successAlert('Event Deleted')
         })
@@ -406,6 +389,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       submitText={'Done Editing'}
       onClose={() => {
         onClose(moment(event.startDate))
+        resetForm()
       }}
       title={'Edit Event'}
       showCard={showCard}

@@ -47,12 +47,6 @@ const NewChildForm = ({ hideCard, showCard }) => {
 
   const resetForm = () => {
     Manager.resetForm('new-child-wrapper')
-    setName('')
-    setAddress('')
-    setPhoneNumber('')
-    setExistingChildren([])
-    setGender('male')
-    setDateOfBirth('')
     hideCard()
     setRefreshKey(Manager.getUid())
     AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
