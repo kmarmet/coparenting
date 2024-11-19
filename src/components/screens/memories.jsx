@@ -44,7 +44,6 @@ export default function Memories() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, navbarButton } = state
   const [memories, setMemories] = useState([])
-  const [imgArray, setImgArray] = useState([])
   const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
   const dbRef = ref(getDatabase())
   const inputFile = useRef(null)
@@ -94,7 +93,6 @@ export default function Memories() {
               arr.push(cleanedObject)
             }
           })
-          setImgArray(arr)
           setMemories(validImages)
           setTimeout(() => {
             setState({ ...state, isLoading: false })
@@ -183,7 +181,7 @@ export default function Memories() {
             {Manager.isValid(memories, true) &&
               memories.map((imgObj, index) => {
                 return (
-                  <div className="memory">
+                  <div key={index} className="memory">
                     {/* TITLE AND DATE */}
                     {imgObj?.title.length > 0 && (
                       <div id="title-and-date">
@@ -215,7 +213,7 @@ export default function Memories() {
               })}
           </>
         </LightGallery>
-        {imgArray.length > 0 && (
+        {memories.length > 0 && (
           <div id="disclaimer">
             <p className="blue">
               All images will be automatically (and permanently) deleted after 30 days from their creation date. Feel free to download them at any

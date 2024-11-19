@@ -173,7 +173,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
             actualUploadButtonText={'Upload'}
             uploadButtonText={docType === 'document' ? 'Document' : 'Choose'}
             uploadType={docType}
-            upload={upload}
+            upload={() => {}}
           />
         </div>
       </div>

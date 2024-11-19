@@ -29,6 +29,7 @@ import SecurityManager from '../../../managers/securityManager'
 import UploadDocuments from './uploadDocuments'
 import NavBar from '../../navBar'
 import { GrDocumentUpload } from 'react-icons/gr'
+import NoDataFallbackText from '../../shared/noDataFallbackText'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
@@ -37,9 +38,9 @@ export default function DocsList() {
   const [selectedDoc, setSelectedDoc] = useState(null)
   const [toDelete, setToDelete] = useState([])
   const [showCard, setShowCard] = useState(false)
+
   const getSecuredDocs = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)
-    console.log(allDocs)
     setDocs(allDocs)
   }
 
@@ -60,6 +61,7 @@ export default function DocsList() {
       setDocs(docs.filter((x) => x.id !== docId))
     })
   }
+
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.documents), async (snapshot) => {
@@ -67,7 +69,7 @@ export default function DocsList() {
     })
   }
   useEffect(() => {
-    onTableChange()
+    onTableChange().then((r) => r)
     Manager.showPageContainer()
   }, [])
 
@@ -76,8 +78,7 @@ export default function DocsList() {
       <UploadDocuments showCard={showCard} hideCard={() => setShowCard(false)} />
       <div id="doc-selection-container" className={`${theme} page-container`}>
         <p className="screen-title ">Documents</p>
-
-        {docs.length === 0 && <p className={`${theme} caption`}>there are currently no documents</p>}
+        {docs.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
         <p className="mb-10">Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise.</p>
         <p className="mb-10">If the document type you tap is an Image, the loading time may be a bit longer.</p>
         {!Manager.isValid(selectedDoc, false, true) && (

@@ -31,13 +31,14 @@ import NavBar from '../../navBar'
 
 export default function DocViewer() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow, docToView, navbarButton } = state
+  const { currentUser, theme, docToView } = state
   const [tocHeaders, setTocHeaders] = useState([])
   const [showCard, setShowCard] = useState(false)
   const [searchResults, setSearchResults] = useState([])
   const [searchResultsIndex, setSearchResultsIndex] = useState(1)
   const [showSearch, setShowSearch] = useState(false)
   const [searchResultsCount, setSearchResultsCount] = useState(0)
+
   const scrollToHeader = (header) => {
     closeSearch()
     const firstChar = header.slice(0, 1)
@@ -156,15 +157,18 @@ export default function DocViewer() {
 
     const coparentDocsObjects = await SecurityManager.getDocuments(currentUser)
     if (!Manager.isValid(coparentDocsObjects, true)) {
+      setState({ ...state, isLoading: false })
       return false
     }
 
     const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
     if (!Manager.isValid(coparentsFromObject, true)) {
+      setState({ ...state, isLoading: false })
       return false
     }
     const relevantDoc = coparentDocsObjects.filter((x) => x?.name === docToView?.name)[0]
     if (!Manager.isValid(relevantDoc)) {
+      setState({ ...state, isLoading: false })
       return false
     }
 
@@ -261,23 +265,27 @@ export default function DocViewer() {
     const coparentDocsObjects = await SecurityManager.getDocuments(currentUser)
 
     if (!Manager.isValid(coparentDocsObjects, true)) {
+      setState({ ...state, isLoading: false })
       return false
     }
 
     const docsFromObject = coparentDocsObjects.map((x) => x.docs)
 
     if (!Manager.isValid(docsFromObject, true)) {
+      setState({ ...state, isLoading: false })
       return false
     }
     const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
 
     if (!Manager.isValid(coparentsFromObject, true)) {
+      setState({ ...state, isLoading: false })
       return false
     }
     const relevantDoc = docsFromObject.filter((x) => x.name === docToView.name)[0]
     let userIdToUse = currentUser.id
 
     if (!Manager.isValid(relevantDoc)) {
+      setState({ ...state, isLoading: false })
       return false
     }
 

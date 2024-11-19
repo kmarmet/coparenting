@@ -218,7 +218,6 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
           repeatingDateObject.startTime = moment(eventStartTime, DateFormats.fullDatetime).format(DateFormats.timeForDb)
           repeatingDateObject.endTime = moment(eventEndTime, DateFormats.fullDatetime).format(DateFormats.timeForDb)
         }
-        console.log(repeatingDateObject)
         // repeatingDateObject = ObjectManager.cleanObject(repeatingDateObject)
         repeatingEvents.push(repeatingDateObject)
       })

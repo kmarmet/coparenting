@@ -432,7 +432,7 @@ export default function ExpenseTracker() {
         </p>
 
         {/* FILTER BUTTON */}
-        {!filterApplied && (
+        {!filterApplied && expenses.length > 0 && (
           <button onClick={() => setShowFilterCard(true)} id="filter-button">
             Filter <BsFilter />
           </button>

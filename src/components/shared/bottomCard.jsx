@@ -30,7 +30,7 @@ export default function BottomCard({
       onClose()
     },
     preventScrollOnSwipe: true,
-    delta: { down: 200 },
+    delta: { down: 300 },
   })
 
   useEffect(() => {

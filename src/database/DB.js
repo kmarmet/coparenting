@@ -2,6 +2,7 @@ import Manager from '@manager'
 import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
 import DB_UserScoped from '@userScoped'
 import DatasetManager from '../managers/datasetManager'
+import _ from 'lodash'
 
 const DB = {
   tables: {
@@ -174,9 +175,9 @@ const DB = {
   delete: async (path, id) => {
     const dbRef = ref(getDatabase())
     let tableRecords = await DB.getTable(path)
+    let docToDelete = _.find(tableRecords, ['id', id])
     if (Manager.isValid(tableRecords, true)) {
-      const deleteKey = await DB.getFlatTableKey(path, id)
-      console.log(deleteKey)
+      const deleteKey = await DB.getSnapshotKey(path, docToDelete, id)
       if (Manager.isValid(deleteKey)) {
         await remove(child(dbRef, `${path}/${deleteKey}/`))
       }
@@ -209,6 +210,7 @@ const DB = {
   deleteMemory: async (phoneUid, memory) => {
     const dbRef = ref(getDatabase())
     const key = await DB.getSnapshotKey(`${DB.tables.memories}`, memory, 'id')
+    console.log(key)
     remove(child(dbRef, `${DB.tables.memories}/${key}`))
   },
   removeShareWithAccess: async (path, currentUser, record) => {
