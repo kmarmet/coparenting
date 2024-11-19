@@ -11,7 +11,6 @@ import { ImEye } from 'react-icons/im'
 
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFirstWord,
@@ -21,8 +20,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -33,6 +30,7 @@ import SecurityManager from '../../../managers/securityManager'
 import ShareWithCheckboxes from '../../shared/shareWithCheckboxes'
 import BottomCard from '../../shared/bottomCard'
 import DatasetManager from '../../../managers/datasetManager'
+import AlertManager from '../../../managers/alertManager'
 
 export default function UploadDocuments({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -47,7 +45,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     setDocType(null)
     hideCard()
     setRefreshKey(Manager.getUid())
-    successAlert('Document Uploaded!')
+    AlertManager.successAlert('Document Uploaded!')
   }
 
   const upload = async () => {
@@ -57,17 +55,17 @@ export default function UploadDocuments({ hideCard, showCard }) {
 
     // Validation
     if (files.length === 0) {
-      throwError('Please choose a file to upload')
+      AlertManager.throwError('Please choose a file to upload')
       setState({ ...state, isLoading: false })
       return false
     }
     if (!Manager.isValid(shareWith, true) || !Manager.isValid(docType)) {
-      throwError('Document Type and Who should see it? are required')
+      AlertManager.throwError('Document Type and Who should see it? are required')
       setState({ ...state, isLoading: false })
       return false
     }
     if (docType === 'document' && Object.entries(files).map((x) => !contains(x[1].name, '.docx'))[0]) {
-      throwError('Uploaded file MUST be of type .docx')
+      AlertManager.throwError('Uploaded file MUST be of type .docx')
       setState({ ...state, isLoading: false })
       return false
     }
@@ -77,7 +75,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     const existingDocument = securedDocuments.filter((x) => x.memoryName === image.name)[0]
     if (existingDocument) {
       // error
-      throwError('Document has already been uploaded')
+      AlertManager.throwError('Document has already been uploaded')
       setState({ ...state, isLoading: false })
       return false
     }

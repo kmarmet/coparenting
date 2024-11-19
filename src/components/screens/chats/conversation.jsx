@@ -18,20 +18,16 @@ import { PiBookmarkSimpleDuotone, PiBookmarksSimpleDuotone } from 'react-icons/p
 import ModelNames from '../../../models/modelNames'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
   hasClass,
   isAllUppercase,
-  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -45,6 +41,7 @@ import { useLongPress } from 'use-long-press'
 import useClipboard from 'react-use-clipboard'
 import PushAlertApi from '../../../api/pushAlert'
 import ObjectManager from '../../../managers/objectManager'
+import AlertManager from '../../../managers/alertManager'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -63,7 +60,7 @@ const Conversation = () => {
 
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
-    successAlert('Message Copied!', false)
+    AlertManager.successAlert('Message Copied!', false)
   })
 
   const bookmarkMessage = async (messageObject, bookmarkButton) => {
@@ -76,7 +73,7 @@ const Conversation = () => {
     let messageInputValue = document.querySelector('.message-input')
 
     if (messageInputValue.textContent.length === 0) {
-      throwError('Please enter a message')
+      AlertManager.throwError('Please enter a message')
       return false
     }
 
@@ -241,7 +238,7 @@ const Conversation = () => {
         showCard={showSearchCard}
         onSubmit={() => {
           if (searchInputQuery.length === 0) {
-            throwError('Please enter a search value')
+            AlertManager.throwError('Please enter a search value')
             return false
           }
           const results = messagesToLoop.filter((x) => x.message.toLowerCase().indexOf(searchInputQuery.toLowerCase()) > -1)

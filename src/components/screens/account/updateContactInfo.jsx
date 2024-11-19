@@ -11,29 +11,24 @@ import validator from 'validator'
 import { initializeApp } from 'firebase/app'
 import BottomCard from '../../shared/bottomCard'
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
   hasClass,
-  inputAlert,
   isAllUppercase,
-  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
 import InputWrapper from '../../shared/inputWrapper'
+import AlertManager from '../../../managers/alertManager'
 
 export default function UpdateContactInfo({ updateType, showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -66,16 +61,16 @@ export default function UpdateContactInfo({ updateType, showCard, hideCard }) {
   }
 
   const updateUserEmail = async () => {
-    successAlert('Email has been updated!')
+    AlertManager.successAlert('Email has been updated!')
     if (!Manager.isValid(email, false, false, true)) {
-      throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'Number' : 'Address'}`)
+      AlertManager.throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'Number' : 'Address'}`)
       return false
     }
     if (!validator.isEmail(email)) {
-      throwError('Email is not valid')
+      AlertManager.throwError('Email is not valid')
       return false
     }
-    inputAlert('Enter Your Password', 'To update your email, we need to re-authenticate your account for security purpose', (e) => {
+    AlertManager.inputAlert('Enter Your Password', 'To update your email, we need to re-authenticate your account for security purpose', (e) => {
       const user = auth.currentUser
       const credential = EmailAuthProvider.credential(user.email, e.value)
       reauthenticateWithCredential(auth.currentUser, credential)
@@ -100,18 +95,18 @@ export default function UpdateContactInfo({ updateType, showCard, hideCard }) {
 
   const updateUserPhone = async () => {
     if (!Manager.isValid(phone, false, false, true)) {
-      throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} Number`)
+      AlertManager.throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} Number`)
       return false
     }
     if (!validator.isMobilePhone(phone)) {
-      throwError('Phone number is not valid')
+      AlertManager.throwError('Phone number is not valid')
       return false
     }
 
     // Update Phone
     if (updateType === 'phone') {
       await DB_UserScoped.updateUserContactInfo(currentUser, currentUser.phone, phone, 'phone')
-      successAlert('Phone number has been updated')
+      AlertManager.successAlert('Phone number has been updated')
       localStorage.removeItem('rememberKey')
       hideCard()
       logout()

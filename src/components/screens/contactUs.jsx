@@ -5,9 +5,7 @@ import '@prototypes'
 import BottomCard from '../shared/bottomCard'
 import EmailManager from '../../managers/emailManager'
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -18,8 +16,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -30,6 +26,7 @@ import { MdOutlineAppShortcut, MdOutlineEmail } from 'react-icons/md'
 import { VscFeedback } from 'react-icons/vsc'
 import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
+import AlertManager from '../../managers/alertManager'
 
 export default function ContactUs() {
   const { state, setState } = useContext(globalState)
@@ -62,11 +59,11 @@ export default function ContactUs() {
 
   const submitFeatureRequest = () => {
     if (featureDescription.length === 0) {
-      throwError('Please enter a description of the feature you would like to add')
+      AlertManager.throwError('Please enter a description of the feature you would like to add')
       return false
     }
 
-    successAlert('We have received your feature request!')
+    AlertManager.successAlert('We have received your feature request!')
     EmailManager.SendFeatureRequest(currentUser.email, `Feature Name: ${featureName} \n Description: ${featureDescription}`)
     setShowFeatureRequestCard(false)
     resetFormFeatureRequestForm()
@@ -74,11 +71,11 @@ export default function ContactUs() {
 
   const submitSupportRequest = () => {
     if (supportNotes.length === 0) {
-      throwError('Please a description of the problem you are facing')
+      AlertManager.throwError('Please a description of the problem you are facing')
       return false
     }
 
-    successAlert('Thank you for reporting this issue. We will be in touch soon!')
+    AlertManager.successAlert('Thank you for reporting this issue. We will be in touch soon!')
     EmailManager.SendSupportEmail(currentUser.email, supportNotes)
     setShowSupportCard(false)
     resetSupportForm()
@@ -86,11 +83,11 @@ export default function ContactUs() {
 
   const submitFeedback = () => {
     if (feedback.length === 0) {
-      throwError('Please enter your feedback')
+      AlertManager.throwError('Please enter your feedback')
       return false
     }
 
-    successAlert('Thank you! We have received your app feedback!')
+    AlertManager.successAlert('Thank you! We have received your app feedback!')
     EmailManager.SendAppFeedback(currentUser.email, feedback)
     setShowFeedbackCard(false)
     resetFeedbackForm()

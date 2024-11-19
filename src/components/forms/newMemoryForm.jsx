@@ -13,7 +13,6 @@ import Memory from '../../models/memory'
 import { ImEye } from 'react-icons/im'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -24,8 +23,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -41,6 +38,7 @@ import BottomCard from '../shared/bottomCard'
 import DateManager from '../../managers/dateManager'
 import ObjectManager from '../../managers/objectManager'
 import ImageManager from '../../managers/imageManager'
+import AlertManager from '../../managers/alertManager'
 
 function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -70,12 +68,12 @@ function NewMemoryForm({ hideCard, showCard }) {
 
   const submit = async () => {
     if (!Manager.isValid(shareWith, true)) {
-      throwError('Please select who can see this memory')
+      AlertManager.throwError('Please select who can see this memory')
       return false
     }
 
     if (images !== undefined && images.length === 0) {
-      throwError('Please choose an image')
+      AlertManager.throwError('Please choose an image')
       return false
     }
 
@@ -84,7 +82,7 @@ function NewMemoryForm({ hideCard, showCard }) {
     })
 
     if (notAnImage) {
-      throwError('Files uploaded MUST be images (.png, .jpg, .jpeg, etc.).')
+      AlertManager.throwError('Files uploaded MUST be images (.png, .jpg, .jpeg, etc.).')
       return false
     }
 
@@ -105,7 +103,7 @@ function NewMemoryForm({ hideCard, showCard }) {
     })
 
     if (existingMemoriesFound) {
-      throwError('This memory already exists')
+      AlertManager.throwError('This memory already exists')
       return false
     }
 

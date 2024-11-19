@@ -7,9 +7,6 @@ export toCamelCase = (str) ->
   str =  str.replace(/\s+/g, '').replaceAll(" ",  "")
   return str
 
-export throwError = (title) ->
-  displayAlert("error", title)
-
 export capitalizeFirstWord = (str) ->
   firstWord = str.split(' ')[0];
   capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
@@ -108,104 +105,6 @@ export removeFileExtension = (input) ->
 export uniqueArray = (array) ->
   Array.from(new Set(array))
 
-export successAlert = (message, allowOutsideClick = true) ->
-  Swal.fire
-    text: message
-    icon: "success"
-    timer: 1500
-    showConfirmButton: false
-    allowOutsideClick: allowOutsideClick
-    showClass:
-      popup: """
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          """
-    hideClass:
-      popup: """
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          """
-
-export confirmAlert = (title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm, onDeny) ->
-  Swal.fire
-    showClass:
-      popup: """
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          """
-    hideClass:
-      popup: """
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          """
-    title: title
-    showDenyButton: showNevermindButton
-    showCancelButton: false
-    confirmButtonText: confirmButtonText
-    denyButtonText: "Nevermind"
-    confirmButtonColor: '#00b389 !important'
-  .then (result) ->
-    if result.isConfirmed
-      if onConfirm then onConfirm(result)
-    if result.isDenied
-      if onDeny then onDeny(result)
-    return result
-
-export oneButtonAlert = (title, subtitle = "", icon ="", onConfirm) ->
-  Swal.fire
-    showClass:
-      popup: """
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          """
-    hideClass:
-      popup: """
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          """
-    title: title
-    text: subtitle
-    icon: icon
-    showDenyButton: false
-    showCancelButton: false
-    confirmButtonText: "Okay"
-    confirmButtonColor: '#00b389 !important'
-    allowOutsideClick: false
-  .then (result) ->
-    if result.isConfirmed
-      if onConfirm then onConfirm(result)
-
-export inputAlert = (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "input") ->
-  Swal.fire
-    title: title
-    text: text
-    icon: ''
-    input: inputType
-    showCancelButton: showCancelButton
-    confirmButtonText: "Confirm"
-    allowOutsideClick: allowOutsideClick
-    showClass:
-      popup: """
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          """
-    hideClass:
-      popup: """
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          """
-  .then (result) ->
-    if result.isConfirmed
-      if onConfirm then onConfirm(result)
-
 
 export displayAlert = (type, title, text = '', onConfirm) ->
   switch (true)
@@ -249,9 +148,3 @@ export displayAlert = (type, title, text = '', onConfirm) ->
             animate__fadeOutDown
             animate__faster
           """
-
-
-
-
-
-

@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,

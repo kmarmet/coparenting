@@ -11,7 +11,6 @@ import Medical from '../childInfo/medical'
 import Schooling from '../childInfo/schooling'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import {
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFirstWord,
@@ -21,7 +20,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -33,6 +31,7 @@ import { BiImageAdd } from 'react-icons/bi'
 import DB_UserScoped from '@userScoped'
 import { IoPersonAddOutline } from 'react-icons/io5'
 import NavBar from '../../navBar'
+import AlertManager from '../../../managers/alertManager'
 
 export default function ChildInfo() {
   // @ts-ignore
@@ -49,7 +48,7 @@ export default function ChildInfo() {
     // @ts-ignore
     const imgFiles = document.getElementById('upload-input').files
     if (imgFiles.length === 0) {
-      throwError('Please choose an image')
+      AlertManager.throwError('Please choose an image')
       return false
     }
 

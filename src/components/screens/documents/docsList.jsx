@@ -9,7 +9,6 @@ import { child, getDatabase, onValue, ref } from 'firebase/database'
 
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,

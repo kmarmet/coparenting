@@ -17,12 +17,10 @@ import SecurityManager from '../../managers/securityManager'
 import { BiNavigation } from 'react-icons/bi'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
-  inputAlert,
   isAllUppercase,
   removeFileExtension,
   removeSpacesAndLowerCase,
@@ -33,6 +31,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from 'globalFunctions'
+import AlertManager from '../../managers/alertManager'
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
@@ -192,7 +191,7 @@ export default function TransferRequests() {
                         className="red"
                         data-request-id={request.id}
                         onClick={async (e) => {
-                          inputAlert(
+                          AlertManager.inputAlert(
                             'Rejection Reason',
                             'Please enter a rejection reason',
                             async () => {

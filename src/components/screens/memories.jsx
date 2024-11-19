@@ -15,7 +15,6 @@ import moment from 'moment'
 import {
   capitalizeFirstWord,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,

@@ -3,9 +3,7 @@ import globalState from '../../context'
 import Manager from '@manager'
 import '@prototypes'
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -15,8 +13,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,

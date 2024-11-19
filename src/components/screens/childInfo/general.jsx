@@ -7,7 +7,6 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import {
   camelCaseToString,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -19,7 +18,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -31,6 +29,7 @@ import Accordion from '@mui/material/Accordion'
 import Autocomplete from 'react-google-autocomplete'
 import { FaChevronDown } from 'react-icons/fa6'
 import InputWrapper from '../../shared/inputWrapper'
+import AlertManager from '../../../managers/alertManager'
 
 function General({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -56,7 +55,7 @@ function General({ activeChild, setActiveChild }) {
 
   const update = async (section, prop, value, isArray) => {
     // Update DB
-    successAlert('Updated!')
+    AlertManager.successAlert('Updated!')
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', Manager.toCamelCase(prop), value)
     setActiveChild(updatedChild)
   }

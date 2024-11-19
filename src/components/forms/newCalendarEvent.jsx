@@ -28,11 +28,12 @@ import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import NotificationManager from '../../managers/notificationManager'
 import BottomCard from '../shared/bottomCard'
+import { IoTodayOutline } from 'react-icons/io5'
+import { HiOutlineCalendarDays } from 'react-icons/hi2'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
+import AlertManager from '../../managers/alertManager'
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -43,8 +44,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -130,18 +129,18 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     if (Manager.isValid(newEvent)) {
       // Repeating Events Validation
       if (repeatingEndDate.length === 0 && repeatInterval.length > 0) {
-        throwError('If you have chosen to repeat this event, please select an end month')
+        AlertManager.throwError('If you have chosen to repeat this event, please select an end month')
         return false
       }
 
       const validation = DateManager.formValidation(eventTitle, eventShareWith, eventFromDate)
       if (validation) {
-        throwError(validation)
+        AlertManager.throwError(validation)
         return false
       }
 
       if (eventReminderTimes.length > 0 && eventStartTime.length === 0) {
-        throwError('If you set reminder times, please also uncheck All Day and add a start time')
+        AlertManager.throwError('If you set reminder times, please also uncheck All Day and add a start time')
         return false
       }
 
@@ -390,11 +389,11 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
           {/* Event Length */}
           <div id="duration-options" className="action-pills calendar">
             <div className={`duration-option  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
-              <span className="material-icons-round">event</span>
+              <IoTodayOutline className={'single-day-icon'} />
               <p>Single Day</p>
             </div>
             <div className={`duration-option  ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
-              <span className="material-icons-round">date_range</span>
+              <HiOutlineCalendarDays className={'multiple-day-icon'} />
               <p>Multiple Days</p>
             </div>
           </div>

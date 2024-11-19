@@ -18,7 +18,6 @@ import ChildUser from 'models/child/childUser.js'
 import ParentInput from '../../parentInput'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   formatPhone,
@@ -30,8 +29,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -50,6 +47,7 @@ import { PiInfoDuotone } from 'react-icons/pi'
 import validator from 'validator'
 import Label from '../../shared/label'
 import ObjectManager from '../../../managers/objectManager'
+import AlertManager from '../../../managers/alertManager'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -93,7 +91,7 @@ export default function Registration() {
       await DB.add(DB.tables.parentPermissionCodes, parentPermissionCode)
       const expirationMessage = ` The code will expire at ${moment().add(5, 'minutes').format('hh:mma')}.`
       // Enter code alert
-      displayAlert(
+      AlertManager.displayAlert(
         'input',
         'Enter the Code Provided by your Parent',
         `If the code has expired, please register again to send another code. ${expirationMessage}`,
@@ -111,7 +109,7 @@ export default function Registration() {
 
               // Expired
               if (duration >= 5) {
-                throwError('The code has expired, please send another code')
+                AlertManager.throwError('The code has expired, please send another code')
                 const deleteKey = await DB.getFlatTableKey(DB.tables.parentPermissionCodes)
                 await DB.deleteByPath(`${DB.tables.parentPermissionCodes}/${deleteKey}`)
               } else {
@@ -153,13 +151,13 @@ export default function Registration() {
           console.log('Signed up as:', user.email)
           const cleanUser = ObjectManager.cleanObject(newUser, ModelNames.user)
           await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
-          successAlert(`Welcome aboard ${newUser.name}!`)
+          AlertManager.successAlert(`Welcome aboard ${newUser.name}!`)
           setState({ ...state, currentScreen: ScreenNames.login })
         })
         .catch((error) => {
           console.error('Sign up error:', error.message)
           if (contains(error.message, 'email-already-in-use')) {
-            throwError('Account already exists. If this is you, please login')
+            AlertManager.throwError('Account already exists. If this is you, please login')
             setShowVerificationCard(false)
           }
         })
@@ -215,11 +213,11 @@ export default function Registration() {
         // Send to me
         const mySubId = await NotificationManager.getUserSubId('3307494534')
         PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone}`, mySubId)
-        successAlert(`Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
+        AlertManager.successAlert(`Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
         setState({ ...state, currentScreen: ScreenNames.login })
       } else {
         // Parent account does not exist
-        throwError(`There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`)
+        AlertManager.throwError(`There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`)
         return false
       }
     }
@@ -231,39 +229,39 @@ export default function Registration() {
       users = Manager.convertToArray(users)
       let foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
       if (foundUser) {
-        throwError('Account already exists, please login')
+        AlertManager.throwError('Account already exists, please login')
         isValid = false
         setAccountAlreadyExists(true)
       } else {
         if (userPhone === parentPhone) {
-          throwError("Your phone number cannot be the same as your parent's phone number")
+          AlertManager.throwError("Your phone number cannot be the same as your parent's phone number")
           isValid = false
         }
       }
     })
     if (!validator.isMobilePhone(userPhone)) {
-      throwError('Phone number is not valid')
+      AlertManager.throwError('Phone number is not valid')
       isValid = false
       return false
     }
     return isValid
     if (userName.length === 0) {
-      throwError('Your name is required')
+      AlertManager.throwError('Your name is required')
       isValid = false
     }
     return isValid
     if (password.length === 0) {
-      throwError('Your password is required')
+      AlertManager.throwError('Your password is required')
       isValid = false
     }
     return isValid
     if (confirmedPassword.length === 0) {
-      throwError('Confirmed password is required')
+      AlertManager.throwError('Confirmed password is required')
       isValid = false
     }
     return isValid
     if (confirmedPassword !== password) {
-      throwError('Password and confirmed password do not match')
+      AlertManager.throwError('Password and confirmed password do not match')
       isValid = false
     }
     return isValid
@@ -275,41 +273,41 @@ export default function Registration() {
       users = Manager.convertToArray(users)
       const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
       if (foundUser) {
-        throwError('Account already exists, please login')
+        AlertManager.throwError('Account already exists, please login')
         setAccountAlreadyExists(true)
         isValid = false
       }
     })
 
     if (!validator.isMobilePhone(userPhone)) {
-      throwError('Phone number is not valid')
+      AlertManager.throwError('Phone number is not valid')
       isValid = false
       return false
     }
 
     if (parentType.length === 0) {
-      throwError('Please select your parent type')
+      AlertManager.throwError('Please select your parent type')
       isValid = false
     }
 
     if (!validator.isEmail(email)) {
-      throwError('Email address is not valid')
+      AlertManager.throwError('Email address is not valid')
       isValid = false
       return false
     }
 
     if (Manager.validation([userName, parentType]) > 0) {
-      throwError('Please fill out all fields')
+      AlertManager.throwError('Please fill out all fields')
       isValid = false
     }
 
     if (children.length === 0) {
-      throwError('Please enter at least one child')
+      AlertManager.throwError('Please enter at least one child')
       isValid = false
     }
 
     if (coparents?.length === 0) {
-      throwError('Please enter at least one co-parent')
+      AlertManager.throwError('Please enter at least one co-parent')
       isValid = false
     }
 
@@ -339,7 +337,7 @@ export default function Registration() {
   // SEND VERIFICATION CODE
   const sendPhoneVerificationCode = async () => {
     if (!validator.isMobilePhone(userPhone)) {
-      throwError('Phone number is not valid')
+      AlertManager.throwError('Phone number is not valid')
       return false
     } else {
       const phoneCode = Manager.getUid().slice(0, 6)
@@ -355,7 +353,7 @@ export default function Registration() {
       setPhoneIsVerified(true)
       await submit()
     } else {
-      throwError('Verification code is incorrect, please try again')
+      AlertManager.throwError('Verification code is incorrect, please try again')
     }
   }
 

@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react'
 import globalState from '../context'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   formatPhone,

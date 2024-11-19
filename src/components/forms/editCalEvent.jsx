@@ -20,9 +20,7 @@ import Toggle from 'react-toggle'
 import { ImEye } from 'react-icons/im'
 
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -33,8 +31,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -50,6 +46,7 @@ import DateManager from '../../managers/dateManager'
 import BottomCard from '../shared/bottomCard'
 import ObjectManager from '../../managers/objectManager'
 import DatasetManager from '../../managers/datasetManager'
+import AlertManager from '../../managers/alertManager'
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
@@ -120,7 +117,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     eventToEdit.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat() || []
     eventToEdit.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
     eventToEdit.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
-    console.log(eventToEdit.shareWith)
     if (!isAllDay) {
       eventToEdit.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
       eventToEdit.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
@@ -148,16 +144,16 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
     if (Manager.isValid(eventToEdit)) {
       if (!eventTitle || eventTitle.length === 0) {
-        throwError('Event title is required')
+        AlertManager.throwError('Event title is required')
         return false
       }
 
       if (!Manager.isValid(eventShareWith, true)) {
-        throwError('Please select who you would like to share with event with')
+        AlertManager.throwError('Please select who you would like to share with event with')
         return false
       }
       if (!eventFromDate || eventFromDate.length === 0) {
-        throwError('Please select a date for this event')
+        AlertManager.throwError('Please select a date for this event')
         return false
       }
 
@@ -205,7 +201,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       }
     }
 
-    successAlert('Event Updated')
+    AlertManager.successAlert('Event Updated')
     resetForm()
   }
 
@@ -402,7 +398,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       onDelete={() => {
         confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
           await deleteEvent()
-          successAlert('Event Deleted')
+          AlertManager.successAlert('Event Deleted')
         })
       }}
       hasDelete={true}
@@ -417,12 +413,12 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
         <div className="content">
           {/* SINGLE DAY / MULTIPLE DAYS */}
-          <div className="action-pills calendar-event">
-            <div className={`flex left ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
+          <div id="duration-options" className="action-pills calendar">
+            <div className={`duration-option  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
               <IoTodayOutline className={'single-day-icon'} />
               <p>Single Day</p>
             </div>
-            <div className={`flex right ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
+            <div className={`duration-option  ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
               <HiOutlineCalendarDays className={'multiple-day-icon'} />
               <p>Multiple Days</p>
             </div>

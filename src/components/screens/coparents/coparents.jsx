@@ -10,9 +10,7 @@ import NewCoparentForm from './newCoparentForm'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import { IoPersonRemove } from 'react-icons/io5'
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   formatTitleWords,
@@ -25,8 +23,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -37,6 +33,7 @@ import NavBar from '../../navBar'
 import { BsPersonAdd } from 'react-icons/bs'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import InputWrapper from '../../shared/inputWrapper'
+import AlertManager from '../../../managers/alertManager'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -55,7 +52,7 @@ export default function Coparents() {
 
   const update = async (prop, value) => {
     // Update DB
-    successAlert('Updated!')
+    AlertManager.successAlert('Updated!')
     const updatedChild = await DB_UserScoped.updateCoparent(currentUser, selectedCoparent, Manager.toCamelCase(prop), value)
     setSelectedCoparent(updatedChild)
   }
@@ -199,9 +196,9 @@ export default function Coparents() {
               <button
                 className="button w-60  default red center"
                 onClick={(e) => {
-                  confirmAlert(`Are you sure you would like to remove ${selectedCoparent.name}`, "I'm Sure", true, async () => {
+                  AlertManager.confirmAlert(`Are you sure you would like to remove ${selectedCoparent.name}`, "I'm Sure", true, async () => {
                     await deleteCoparent()
-                    successAlert('Co-Parent Removed')
+                    AlertManager.successAlert('Co-Parent Removed')
                     setSelectedCoparent(null)
                   })
                 }}>

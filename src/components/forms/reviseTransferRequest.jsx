@@ -23,14 +23,13 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from 'globalFunctions'
 import ObjectManager from '../../managers/objectManager'
+import AlertManager from '../../managers/alertManager'
 
 export default function ReviseChildTransferChangeRequest({ hideCard, showCard, revisionRequest }) {
   const { state, setState } = useContext(globalState)
@@ -53,11 +52,11 @@ export default function ReviseChildTransferChangeRequest({ hideCard, showCard, r
 
   const submit = async () => {
     if (requestLocation.length === 0 && requestTime.length === 0) {
-      throwError('Please choose a new location or time')
+      AlertManager.throwError('Please choose a new location or time')
       return false
     }
     if (requestDate.length === 0) {
-      throwError('Please choose the day of the requested transfer change')
+      AlertManager.throwError('Please choose the day of the requested transfer change')
       return false
     }
     let revisedRequest = { ...revisionRequest }
@@ -84,7 +83,7 @@ export default function ReviseChildTransferChangeRequest({ hideCard, showCard, r
     // Revise
     const updateKey = await DB.getSnapshotKey(DB.tables.transferChangeRequests, revisionRequest, 'id')
     await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${updateKey}`, cleanRequest)
-    successAlert('Updated')
+    AlertManager.successAlert('Updated')
     resetForm()
   }
 

@@ -21,26 +21,22 @@ import validator from 'validator'
 
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
   hasClass,
-  inputAlert,
   isAllUppercase,
-  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
+import AlertManager from '../../../managers/alertManager'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
@@ -97,13 +93,13 @@ export default function Login() {
   const signIn = async () => {
     // Validation
     if (!validator.isEmail(email)) {
-      throwError('Email address is not valid')
+      AlertManager.throwError('Email address is not valid')
       setState({ ...state, isLoading: false })
       return false
     }
 
     if (Manager.validation([email, password]) > 0) {
-      throwError('Please fill out all fields')
+      AlertManager.throwError('Please fill out all fields')
       setState({ ...state, isLoading: false })
       return false
     }
@@ -120,7 +116,7 @@ export default function Login() {
               subscribeUser(_currentUser)
               // USER NEEDS TO VERIFY EMAIL
               if (!user.emailVerified) {
-                oneButtonAlert(
+                AlertManager.oneButtonAlert(
                   'Email Address Verification Needed',
                   `For security purposes, we need to verify ${user.email}. Please click the link sent to your email. Once your email is verified, return here and tap/click 'Okay'`,
                   'info',
@@ -147,13 +143,13 @@ export default function Login() {
             .catch((error) => {
               setState({ ...state, isLoading: false })
               console.error('Sign in error:', error.message)
-              throwError('Incorrect phone and/or password')
+              AlertManager.throwError('Incorrect phone and/or password')
             })
         })
         .catch((error) => {
           setState({ ...state, isLoading: false })
           console.error('Sign in error:', error.message)
-          throwError('Incorrect phone and/or password')
+          AlertManager.throwError('Incorrect phone and/or password')
         })
     }
 
@@ -172,7 +168,7 @@ export default function Login() {
         subscribeUser(_currentUser)
         // USER NEEDS TO VERIFY EMAIL
         if (!user.emailVerified) {
-          oneButtonAlert(
+          AlertManager.oneButtonAlert(
             'Email Address Verification Needed',
             `For security purposes, we need to verify ${user.email}. Please click the link sent to your email. Once your email is verified, come back here and tap/click 'Okay'`,
             'info',
@@ -199,7 +195,7 @@ export default function Login() {
       .catch((error) => {
         setState({ ...state, isLoading: false })
         console.error('Sign in error:', error.message)
-        throwError('Incorrect phone and/or password')
+        AlertManager.throwError('Incorrect phone and/or password')
       })
   }
 

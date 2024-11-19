@@ -3,7 +3,6 @@ import globalState from '../../../context'
 import Manager from '@manager'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -14,8 +13,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -25,6 +22,7 @@ import DB_UserScoped from '@userScoped'
 import BottomCard from '../../shared/bottomCard'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import _ from 'lodash'
+import AlertManager from '../../../managers/alertManager'
 
 export default function CustomCoparentInfo({ hideCard, setActiveCoparent, activeCoparent, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -43,11 +41,11 @@ export default function CustomCoparentInfo({ hideCard, setActiveCoparent, active
 
   const add = async () => {
     if (_.isEmpty(title) || _.isEmpty(value)) {
-      throwError('Both fields are required')
+      AlertManager.throwError('Both fields are required')
       return false
     }
     const updatedCoparent = await DB_UserScoped.addCoparentProp(currentUser, activeCoparent, toCamelCase(title), value)
-    successAlert(`${title} Added!`)
+    AlertManager.successAlert(`${title} Added!`)
     resetForm()
     setActiveCoparent(updatedCoparent)
   }

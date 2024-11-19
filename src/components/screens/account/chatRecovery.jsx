@@ -13,9 +13,7 @@ import domtoimage from 'dom-to-image'
 import ChatRecoveryRequest from '../../../models/chatRecoveryRequest'
 import ImageManager from '../../../managers/imageManager'
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -26,8 +24,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -37,6 +33,7 @@ import NavBar from '../../navBar'
 import InputWrapper from '../../shared/inputWrapper'
 import InputSuggestion from '../../../models/inputSuggestion'
 import InputSuggestionWrapper from '../../shared/inputSuggestionWrapper'
+import AlertManager from '../../../managers/alertManager'
 
 function ChatRecovery() {
   const { state, setState } = useContext(globalState)
@@ -53,15 +50,15 @@ function ChatRecovery() {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const submit = async () => {
     if (reason.length === 0) {
-      throwError('Please provide a reason for recovering this deleted conversation')
+      AlertManager.throwError('Please provide a reason for recovering this deleted conversation')
       return false
     }
     if (signaturePad && signaturePad.isEmpty()) {
-      throwError('Please draw your signature')
+      AlertManager.throwError('Please draw your signature')
       return false
     }
     if (coparentPhone.length === 0) {
-      throwError('Please enter the phone number of the co-parent you were chatting with')
+      AlertManager.throwError('Please enter the phone number of the co-parent you were chatting with')
       return false
     }
     setViewConvo(true)
@@ -95,7 +92,7 @@ function ChatRecovery() {
 
     // Error if no scoped chat
     if (!Manager.isValid(scopedChat) || scopedChat[0]?.messages?.length === 0) {
-      throwError('We could not find an archived chat with the details provided.')
+      AlertManager.throwError('We could not find an archived chat with the details provided.')
       setViewConvo(false)
       setState({ ...state, isLoading: false })
       return false

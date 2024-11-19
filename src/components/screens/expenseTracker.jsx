@@ -24,9 +24,7 @@ import 'lightgallery/css/lightgallery.css'
 import { MdEventRepeat, MdOutlineFilterAltOff, MdPriceCheck } from 'react-icons/md'
 //noinspection JSUnresolvedVariable
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -37,8 +35,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -54,6 +50,7 @@ import NavBar from '../navBar'
 import Label from '../shared/label'
 import ExpenseCategories from '../../constants/expenseCategories'
 import DatasetManager from '../../managers/datasetManager'
+import AlertManager from '../../managers/alertManager'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -102,18 +99,18 @@ export default function ExpenseTracker() {
 
       // Delete Multiple
       if (existing.length > 1) {
-        confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, async () => {
+        AlertManager.confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, async () => {
           let existingMultipleExpenses = existing.filter((x) => x.name === expense.name && x.repeating === true)
           if (Manager.isValid(existingMultipleExpenses, true)) {
             await DB.deleteMultipleRows(DB.tables.expenseTracker, existingMultipleExpenses)
-            successAlert(`All ${expense.name} expenses have been deleted`)
+            AlertManager.successAlert(`All ${expense.name} expenses have been deleted`)
           }
         })
       }
 
       // Delete Single
       else {
-        confirmAlert('Are you sure you would like to delete this expense?', "I'm Sure", true, async () => {
+        AlertManager.confirmAlert('Are you sure you would like to delete this expense?', "I'm Sure", true, async () => {
           const deleteKey = await DB.getSnapshotKey(DB.tables.expenseTracker, expense, 'id')
           if (deleteKey) {
             await DB.deleteByPath(`${DB.tables.expenseTracker}/${deleteKey}`)
@@ -140,7 +137,7 @@ export default function ExpenseTracker() {
       Manager.isValid(expense.dueDate) ? 'Due date is: ' + expense.dueDate : 'N/A'
     }`
     PushAlertApi.sendMessage(`Expense Reminder`, message, subId)
-    successAlert('Reminder Sent')
+    AlertManager.successAlert('Reminder Sent')
   }
 
   const handleEditable = async (e, recordToUpdate, propName, value) => {

@@ -5,19 +5,16 @@ import Manager from '@manager'
 import ScreenNames from '@screenNames'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
   hasClass,
-  inputAlert,
   isAllUppercase,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -26,6 +23,7 @@ import {
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
+import AlertManager from '../../../managers/alertManager'
 
 export default function ForgotPassword() {
   const { state, setState } = useContext(globalState)
@@ -36,7 +34,7 @@ export default function ForgotPassword() {
 
   const sendResetLink = async () => {
     if (email.length === 0) {
-      displayAlert('error', 'Email is required to reset password')
+      AlertManager.displayAlert('error', 'Email is required to reset password')
     }
     await sendPasswordResetEmail(auth, email)
       .then(async (link) => {
@@ -44,7 +42,7 @@ export default function ForgotPassword() {
         const foundUser = users.filter((x) => x.email === email)[0]
 
         if (Manager.isValid(foundUser)) {
-          successAlert('A reset link has been sent to your email')
+          AlertManager.successAlert('A reset link has been sent to your email')
           setState({
             ...state,
             currentScreen: ScreenNames.login,
@@ -53,7 +51,7 @@ export default function ForgotPassword() {
           })
         } else {
           console.log('no user')
-          displayAlert('error', 'We could not find an account with the email provided')
+          AlertManager.displayAlert('error', 'We could not find an account with the email provided')
         }
       })
 

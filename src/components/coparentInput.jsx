@@ -4,7 +4,6 @@ import Manager from '@manager'
 import globalState from '../context'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   formatPhone,
@@ -16,8 +15,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -25,6 +22,7 @@ import {
 } from '../globalFunctions'
 import Label from './shared/label'
 import validator from 'validator'
+import AlertManager from '../managers/alertManager'
 
 export default function CoparentInputs({ add, coparentsLength = 1 }) {
   const { state, setState } = useContext(globalState)
@@ -64,15 +62,15 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
           className="button default green"
           onClick={() => {
             if (parentType.length === 0) {
-              throwError('Please select a Parent Type')
+              AlertManager.throwError('Please select a Parent Type')
               return false
             }
             if (name.length == 0 || userPhone.length === 0) {
-              throwError('Parent name and phone are required')
+              AlertManager.throwError('Parent name and phone are required')
               return false
             }
             if (!validator.isMobilePhone(userPhone)) {
-              throwError('Phone number is not valid')
+              AlertManager.throwError('Phone number is not valid')
               return false
             }
             setShowAddButton(false)

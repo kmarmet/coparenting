@@ -25,7 +25,6 @@ import FormControl from '@mui/material/FormControl'
 
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -36,7 +35,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -50,6 +48,7 @@ import BottomCard from '../shared/bottomCard'
 import InputWrapper from '../shared/inputWrapper'
 import ExpenseCategories from '../../constants/expenseCategories'
 import ObjectManager from '../../managers/objectManager'
+import AlertManager from '../../managers/alertManager'
 
 function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -94,23 +93,24 @@ function NewExpenseForm({ hideCard, showCard }) {
     setExpenseAmount('')
     hideCard()
     setRefreshKey(Manager.getUid())
+    AlertManager.successAlert(`${expenseName} Added`)
   }
 
   const submitNewExpense = async () => {
     if (payer.name.length === 0) {
-      throwError('Please select will be paying the expense')
+      AlertManager.throwError('Please select will be paying the expense')
       return false
     }
     if (expenseName.length === 0) {
-      throwError('Please add an expense name')
+      AlertManager.throwError('Please add an expense name')
       return false
     }
     if (expenseAmount.length === 0) {
-      throwError('Please add an expense expenseAmount')
+      AlertManager.throwError('Please add an expense expenseAmount')
       return false
     }
     if (shareWith.length === 0) {
-      throwError('Please select who can view this expense')
+      AlertManager.throwError('Please select who can view this expense')
       return false
     }
     const newExpense = new Expense()
@@ -139,7 +139,7 @@ function NewExpenseForm({ hideCard, showCard }) {
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
     if (activeRepeatIntervals.length > 0 && !expenseDueDate) {
-      throwError('If you have chosen a repeat interval, you must also set a due date')
+      AlertManager.throwError('If you have chosen a repeat interval, you must also set a due date')
       return false
     }
 
@@ -491,7 +491,7 @@ function NewExpenseForm({ hideCard, showCard }) {
               uploadType="image"
               getImages={(files) => {
                 if (files.length === 0) {
-                  throwError('Please choose an image first')
+                  AlertManager.throwError('Please choose an image first')
                 } else {
                   setExpenseImage(files[0])
                 }

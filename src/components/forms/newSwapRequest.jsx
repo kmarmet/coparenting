@@ -14,7 +14,6 @@ import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputD
 import Toggle from 'react-toggle'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -25,7 +24,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -38,6 +36,7 @@ import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import ObjectManager from '../../managers/objectManager'
+import AlertManager from '../../managers/alertManager'
 
 export default function NewSwapRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -68,11 +67,12 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     setIncludeChildren(false)
     hideCard()
     setRefreshKey(Manager.getUid())
+    AlertManager.successAlert('Swap Request Sent')
   }
 
   const submit = async () => {
     if (!DateManager.dateIsValid(startDate) || shareWith.length === 0 || recipientName.length === 0) {
-      throwError('Please fill out required fields')
+      AlertManager.throwError('Please fill out required fields')
       return false
     } else {
       let newRequest = new SwapRequest()

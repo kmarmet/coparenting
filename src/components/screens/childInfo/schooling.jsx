@@ -4,7 +4,6 @@ import Manager from '@manager'
 import {
   camelCaseToString,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -16,7 +15,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -29,6 +27,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
 import InputWrapper from '../../shared/inputWrapper'
+import AlertManager from '../../../managers/alertManager'
 
 function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -46,7 +45,7 @@ function Schooling({ activeChild, setActiveChild }) {
 
   const update = async (section, prop, value) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', Manager.toCamelCase(prop), value)
-    successAlert('Updated!')
+    AlertManager.successAlert('Updated!')
     setActiveChild(updatedChild)
   }
 

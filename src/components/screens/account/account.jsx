@@ -3,23 +3,17 @@ import ScreenNames from '@screenNames'
 import globalState from '../../../context.js'
 import Manager from '@manager'
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
   getFirstWord,
   hasClass,
-  inputAlert,
   isAllUppercase,
-  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,

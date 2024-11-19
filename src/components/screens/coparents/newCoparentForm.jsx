@@ -7,7 +7,6 @@ import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   formatPhone,
@@ -19,7 +18,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -30,6 +28,7 @@ import ObjectManager from '../../../managers/objectManager'
 import InputWrapper from '../../shared/inputWrapper'
 import BottomCard from '../../shared/bottomCard'
 import DatasetManager from '../../../managers/datasetManager'
+import AlertManager from '../../../managers/alertManager'
 
 const NewCoparentForm = ({ showCard, hideCard }) => {
   const { state, setState } = useContext(globalState)
@@ -49,16 +48,17 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
     setParentType('')
     hideCard()
     setRefreshKey(Manager.getUid())
+    AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
   }
 
   const submit = async () => {
     const dbRef = ref(getDatabase())
     if (!Manager.phoneNumberIsValid(phoneNumber)) {
-      throwError('Phone number is not valid')
+      AlertManager.throwError('Phone number is not valid')
       return false
     }
     if (Manager.validation([phoneNumber, address, name, parentType]) > 0) {
-      throwError('All fields are required')
+      AlertManager.throwError('All fields are required')
     } else {
       const existingCoparents = currentUser?.coparents || []
       const newCoparent = new Coparent()

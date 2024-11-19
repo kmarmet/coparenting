@@ -15,23 +15,19 @@ import SecurityManager from '../../managers/securityManager'
 import { FaChildren } from 'react-icons/fa6'
 import { MdOutlineEditOff } from 'react-icons/md'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
-
+import AlertManager from '../../managers/alertManager'
 import { CgClose } from 'react-icons/cg'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFirstWord,
   hasClass,
   isAllUppercase,
-  oneButtonAlert,
   removeFileExtension,
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uppercaseFirstLetterOfAllWords,
   wordCount,
@@ -46,7 +42,7 @@ import NavBar from '../navBar'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { theme, menuIsOpen, currentUser, navbarButton } = state
+  const { theme, currentUser } = state
   const [existingEvents, setExistingEvents] = useState([])
   const [showHolidaysCard, setShowHolidaysCard] = useState(false)
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
@@ -338,7 +334,7 @@ export default function EventCalendar() {
     } else {
       if (!hasEditAccess) {
         const owner = await Manager.getNamesFromPhone([event.ownerPhone])
-        oneButtonAlert('Cannot Edit', `${owner[0].name} is the creator of this event, please ask them to edit it.`, 'warning')
+        AlertManager.oneButtonAlert('Cannot Edit', `${owner[0].name} is the creator of this event, please ask them to edit it.`, 'warning')
       }
     }
   }
@@ -419,12 +415,12 @@ export default function EventCalendar() {
           showOverlay={false}
           onSubmit={() => {
             if (searchQuery.length === 0) {
-              throwError('Please enter a search value')
+              AlertManager.throwError('Please enter a search value')
               return false
             }
 
             if (!Manager.isValid(searchResults, true)) {
-              throwError('No results found')
+              AlertManager.throwError('No results found')
               return false
             } else {
               setExistingEvents(searchResults)

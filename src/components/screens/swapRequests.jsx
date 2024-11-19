@@ -14,8 +14,8 @@ import NewSwapRequest from '../forms/newSwapRequest'
 import { IoAdd } from 'react-icons/io5'
 import { FaChildren } from 'react-icons/fa6'
 import { AiTwotoneNotification } from 'react-icons/ai'
-import { inputAlert, successAlert } from '../../globalFunctions'
 import NavBar from '../navBar'
+import AlertManager from '../../managers/alertManager'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -59,7 +59,7 @@ export default function SwapRequests() {
   }
 
   const sendReminder = async (request) => {
-    successAlert('Reminder Sent')
+    AlertManager.successAlert('Reminder Sent')
     await DB_UserScoped.getCoparentByPhone(request.recipientPhone, currentUser).then(async (coparent) => {
       const subId = await PushAlertApi.getSubId(coparent.phone)
       PushAlertApi.sendMessage(`Pending Swap Decision`, ` ${moment(request.startDate).format('dddd, MMMM Do')}`, subId)

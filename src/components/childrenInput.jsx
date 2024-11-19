@@ -5,7 +5,6 @@ import phone from 'phone'
 
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   formatPhone,

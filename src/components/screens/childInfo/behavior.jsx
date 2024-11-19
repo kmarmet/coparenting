@@ -4,7 +4,6 @@ import Manager from '@manager'
 import {
   camelCaseToString,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -16,7 +15,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -30,6 +28,7 @@ import { FaChevronDown } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import InputWrapper from '../../shared/inputWrapper'
+import AlertManager from '../../../managers/alertManager'
 
 function Behavior({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -47,7 +46,7 @@ function Behavior({ activeChild, setActiveChild }) {
   const update = async (section, prop, value, isArray) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'behavior', Manager.toCamelCase(prop), value)
     setActiveChild(updatedChild)
-    successAlert('Updated!')
+    AlertManager.successAlert('Updated!')
   }
   const setSelectedChild = () => {
     if (Manager.isValid(activeChild.behavior)) {

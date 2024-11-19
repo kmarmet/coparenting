@@ -10,9 +10,7 @@ import { BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
 import { IoNotificationsOffCircle } from 'react-icons/io5'
 import { HiMiniBellAlert } from 'react-icons/hi2'
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFirstWord,

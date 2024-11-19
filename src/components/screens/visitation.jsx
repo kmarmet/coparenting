@@ -18,7 +18,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../constants/dateFormats'
 import CalendarMapper from '../../mappers/calMapper'
 import { ImEye } from 'react-icons/im'
-import { confirmAlert, formatNameFirstNameOnly, successAlert, throwError, uniqueArray } from '../../globalFunctions'
+import { formatNameFirstNameOnly, uniqueArray } from '../../globalFunctions'
 import BottomCard from '../shared/bottomCard'
 import ScheduleTypes from '../../constants/scheduleTypes'
 import Label from '../shared/label' // Icons
@@ -27,6 +27,7 @@ import NavBar from '../navBar'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import DatasetManager from '../../managers/datasetManager'
+import AlertManager from '../../managers/alertManager'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -88,12 +89,12 @@ export default function Visitation() {
   // Specific Weekends
   const addSpecificWeekendsToCalendar = async () => {
     if (!Manager.isValid(defaultSelectedWeekends, true) || !Manager.isValid(fifthWeekendSelection)) {
-      throwError('Please choose default weekends and a five-month weekend')
+      AlertManager.throwError('Please choose default weekends and a five-month weekend')
       return false
     }
 
     if (!Manager.isValid(shareWith, true)) {
-      throwError('Please set who can see the schedule')
+      AlertManager.throwError('Please set who can see the schedule')
       return false
     }
     // Set end date to the end of the year
@@ -132,11 +133,11 @@ export default function Visitation() {
   // Every Other Weekend
   const addEveryOtherWeekendToCalendar = async () => {
     if (firstEveryOtherWeekend.length === 0) {
-      throwError('Please choose the Friday of the next weekend YOU have the child(ren)')
+      AlertManager.throwError('Please choose the Friday of the next weekend YOU have the child(ren)')
       return false
     }
     if (!Manager.isValid(shareWith, true)) {
-      throwError('Please set who can see the schedule')
+      AlertManager.throwError('Please set who can see the schedule')
       return false
     }
     // Set end date to the end of the year
@@ -166,7 +167,7 @@ export default function Visitation() {
   // Every Weekend
   const addEveryWeekendToCalendar = async () => {
     if (!Manager.isValid(shareWith, true)) {
-      throwError('Please set who can see the schedule')
+      AlertManager.throwError('Please set who can see the schedule')
       return false
     }
     // Set end date to the end of the year
@@ -196,12 +197,12 @@ export default function Visitation() {
   // 50/50
   const addFiftyFiftyToCal = async () => {
     if (firstFFPeriodEnd.length === 0 || firstFFPeriodStart.length === 0 || secondFFPeriodEnd.length === 0 || secondFFPeriodStart.length === 0) {
-      throwError('Both schedule ranges are required')
+      AlertManager.throwError('Both schedule ranges are required')
       return false
     }
 
     if (shareWith.length === 0) {
-      throwError('Please choose who can see this visitation schedule')
+      AlertManager.throwError('Please choose who can see this visitation schedule')
       return false
     }
 
@@ -267,7 +268,7 @@ export default function Visitation() {
     } else {
       await VisitationManager.deleteAllHolidaysForUser(currentUser)
     }
-    successAlert('Visitation Holidays Updated!')
+    AlertManager.successAlert('Visitation Holidays Updated!')
   }
 
   const handleSpecificWeekendSelection = (e) => {
@@ -413,7 +414,7 @@ export default function Visitation() {
       setShowEveryOtherWeekendCard(false)
       setShowFiftyFiftyCard(false)
       setShowCustomWeekendsCard(false)
-      confirmAlert('Are you sure you would like to add an Every Weekend visitation schedule?', "I'm Sure", true, async () => {
+      AlertManager.confirmAlert('Are you sure you would like to add an Every Weekend visitation schedule?', "I'm Sure", true, async () => {
         await addEveryWeekendToCalendar()
       })
     }
@@ -605,10 +606,15 @@ export default function Visitation() {
               <button
                 className="button red default center"
                 onClick={() => {
-                  confirmAlert('Are you sure you would like to permanently delete your current visitation schedule?', "I'm Sure", true, async () => {
-                    await deleteSchedule()
-                    successAlert('Event Deleted')
-                  })
+                  AlertManager.confirmAlert(
+                    'Are you sure you would like to permanently delete your current visitation schedule?',
+                    "I'm Sure",
+                    true,
+                    async () => {
+                      await deleteSchedule()
+                      AlertManager.successAlert('Event Deleted')
+                    }
+                  )
                 }}>
                 Delete Current Schedule
               </button>
@@ -664,7 +670,7 @@ export default function Visitation() {
                   updateDefaultTransferLocation(
                     place.formatted_address,
                     `https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`
-                  ).then((r) => successAlert('Preferred Transfer Location Set'))
+                  ).then((r) => AlertManager.successAlert('Preferred Transfer Location Set'))
                 }}
               />
             </InputWrapper>

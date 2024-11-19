@@ -4,7 +4,6 @@ import Manager from '@manager'
 import DB_UserScoped from '@userScoped'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -15,8 +14,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -27,6 +24,7 @@ import Autocomplete from 'react-google-autocomplete'
 import InputWrapper from './inputWrapper'
 import Label from './label'
 import BottomCard from './bottomCard'
+import AlertManager from '../../managers/alertManager'
 
 export default function CustomChildInfo({ hideCard, showCard, setActiveChild, activeChild }) {
   const { state, setState } = useContext(globalState)
@@ -39,11 +37,11 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
 
   const add = async () => {
     if (title.length === 0 || value.length === 0) {
-      throwError('Please fill/select required fields')
+      AlertManager.throwError('Please fill/select required fields')
       return false
     }
     const updatedChild = await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, Manager.toCamelCase(title), value)
-    successAlert(`${uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`)
+    AlertManager.successAlert(`${uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`)
     resetForm()
     setActiveChild(updatedChild)
   }

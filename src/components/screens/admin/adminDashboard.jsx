@@ -3,7 +3,6 @@ import globalState from '../../../context'
 import moment from 'moment'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   formatPhone,
@@ -15,8 +14,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -33,6 +30,7 @@ import DateFormats from '../../../constants/dateFormats'
 import CheckboxGroup from '../../shared/checkboxGroup'
 import DateManager from '../../../managers/dateManager'
 import NavBar from '../../navBar'
+import AlertManager from '../../../managers/alertManager'
 
 export default function AdminDashboard() {
   const { state, setState, currentUser } = useContext(globalState)
@@ -50,7 +48,7 @@ export default function AdminDashboard() {
 
   const setNewUpdate = async () => {
     AppManager.setUpdateAvailable()
-    successAlert('Updated')
+    AlertManager.successAlert('Updated')
   }
   const deletedExpiredCalEvents = async () => AppManager.deleteExpiredCalendarEvents().then((r) => r)
   const deleteExpiredMemories = async () => AppManager.deleteExpiredMemories().then((r) => r)
@@ -59,12 +57,12 @@ export default function AdminDashboard() {
   // CHAT RECOVERY REQUESTS
   const getChatRecoveryRequest = async () => {
     if (chatRecoveryRequestEmail.length === 0) {
-      throwError("Enter the user's email")
+      AlertManager.throwError("Enter the user's email")
     }
     const allRequests = Manager.convertToArray(await DB.getTable(DB.tables.chatRecoveryRequests))
 
     if (allRequests.length == 0) {
-      throwError('No requests for that email currently')
+      AlertManager.throwError('No requests for that email currently')
       return false
     }
     const userRequests = allRequests.filter((x) => x.createdBy === chatRecoveryRequestEmail)
@@ -73,18 +71,18 @@ export default function AdminDashboard() {
   const deleteChatRecoveryRequest = async (request) => {
     await DB.delete(DB.tables.chatRecoveryRequests, request.id)
     await getChatRecoveryRequest()
-    successAlert('Request Deleted')
+    AlertManager.successAlert('Request Deleted')
   }
 
   const getUser = async () => {
     if (getUserEmail.length === 0) {
-      throwError('Enter email')
+      AlertManager.throwError('Enter email')
       return false
     }
     const users = Manager.convertToArray(await DB.getTable(DB.tables.users))
     const user = users.filter((x) => x.email === getUserEmail)[0]
     if (!user) {
-      throwError('No user found')
+      AlertManager.throwError('No user found')
     }
     if (user) {
       setUserToDisplayPhone(user.phone)

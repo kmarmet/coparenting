@@ -4,7 +4,6 @@ import Manager from '@manager'
 import {
   camelCaseToString,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -16,7 +15,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -29,6 +27,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import { FaChevronDown } from 'react-icons/fa6'
 import InputWrapper from '../../shared/inputWrapper'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
+import AlertManager from '../../../managers/alertManager'
 
 function Medical({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -47,7 +46,7 @@ function Medical({ activeChild, setActiveChild }) {
   const update = async (section, prop, value) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'medical', Manager.toCamelCase(prop), value)
     setActiveChild(updatedChild)
-    successAlert('Updated!')
+    AlertManager.successAlert('Updated!')
   }
 
   const setSelectedChild = () => {

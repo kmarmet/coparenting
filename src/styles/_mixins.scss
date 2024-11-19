@@ -1158,10 +1158,27 @@
   }
 
   &.calendar {
+    display: flex;
+    align-items: center;
     .duration-option {
       width: calc(100% / 2);
-      padding: 10px;
+      padding: 5px 10px;
       margin: 0;
+     
+
+      p {
+        position: relative;
+        top: 1.5px;
+      }
+
+      svg {
+        margin-right: 5px;
+        font-size: 22px;
+
+        &.single-day-icon {
+          font-size: 20px;
+        }
+      }
     }
   }
 
@@ -2619,7 +2636,8 @@
       /*#region  ROWS*/
       &.visitation,
       &.chats,
-      &.calendar, &.admin {
+      &.calendar,
+      &.admin {
         border: 1px solid #557fff;
 
         * {

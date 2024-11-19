@@ -9,9 +9,7 @@ import MenuMapper from '../../../mappers/menuMapper.js'
 import { MobileTimePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../../constants/dateFormats'
 import {
-  confirmAlert,
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -22,8 +20,6 @@ import {
   removeSpacesAndLowerCase,
   spaceBetweenWords,
   stringHasNumbers,
-  successAlert,
-  throwError,
   toCamelCase,
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
@@ -31,6 +27,7 @@ import {
 } from '../../../globalFunctions'
 import DateManager from '../../../managers/dateManager'
 import NavBar from '../../navBar'
+import AlertManager from '../../../managers/alertManager'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
@@ -45,13 +42,13 @@ export default function Settings() {
 
   const submitShortcuts = async () => {
     if (shortcutsToSendToDb.length < 4 || shortcutsToSendToDb.length > 4) {
-      throwError('Please choose at least four (only four) shortcuts')
+      AlertManager.throwError('Please choose at least four (only four) shortcuts')
       return false
     }
     const toSendToDb = createShortcutArray(shortcutsToSendToDb)
     await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/shortcuts', toSendToDb)
 
-    throwError('Shortcuts have been updated!')
+    AlertManager.throwError('Shortcuts have been updated!')
     setShortcutAccIsOpen(false)
   }
 
@@ -73,7 +70,7 @@ export default function Settings() {
       )
     }
     await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/defaultReminderTimes', defaultReminderTimes)
-    successAlert('Calendar settings have been updated!')
+    AlertManager.successAlert('Calendar settings have been updated!')
     setCalendarAccIsOpen(false)
   }
 

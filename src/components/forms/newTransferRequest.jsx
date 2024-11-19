@@ -11,12 +11,13 @@ import PushAlertApi from '@api/pushAlert'
 import DB_UserScoped from '@userScoped'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import { ImEye } from 'react-icons/im'
-import { formatNameFirstNameOnly, throwError } from '../../globalFunctions'
+import { formatNameFirstNameOnly } from '../../globalFunctions'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import BottomCard from '../shared/bottomCard'
 import InputWrapper from '../shared/inputWrapper'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import AlertManager from '../../managers/alertManager'
 
 export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -43,17 +44,18 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     setPreferredLocation('')
     hideCard()
     setRefreshKey(Manager.getUid())
+    AlertManager.successAlert('Transfer Change Request Sent')
   }
 
   const submit = async () => {
     if (requestRecipientPhone.length === 0) {
-      throwError('Please choose who to send the request to')
+      AlertManager.throwError('Please choose who to send the request to')
       return false
     } else if (requestLocation.length === 0 && requestTime.length === 0) {
-      throwError('Please choose a new location or time')
+      AlertManager.throwError('Please choose a new location or time')
       return false
     } else if (requestDate.length === 0) {
-      throwError('Please choose the day of the requested transfer change')
+      AlertManager.throwError('Please choose the day of the requested transfer change')
       return false
     } else {
       let newRequest = new TransferChangeRequest()

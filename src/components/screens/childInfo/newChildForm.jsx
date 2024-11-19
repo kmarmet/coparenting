@@ -11,7 +11,6 @@ import DB_UserScoped from '@userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -31,6 +30,7 @@ import ModelNames from '../../../models/modelNames'
 import InputWrapper from '../../shared/inputWrapper'
 import BottomCard from '../../shared/bottomCard'
 import ObjectManager from '../../../managers/objectManager'
+import AlertManager from '../../../managers/alertManager'
 
 const NewChildForm = ({ hideCard, showCard }) => {
   const { state, setState } = useContext(globalState)
@@ -55,11 +55,12 @@ const NewChildForm = ({ hideCard, showCard }) => {
     setDateOfBirth('')
     hideCard()
     setRefreshKey(Manager.getUid())
+    AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
   }
 
   const submit = async () => {
     if (Manager.validation([name, dateOfBirth]) > 0) {
-      displayAlert('error', 'Please fill out required fields')
+      AlertManager.throwError('Please fill out required fields')
       return false
     } else {
       const newChild = new Child()

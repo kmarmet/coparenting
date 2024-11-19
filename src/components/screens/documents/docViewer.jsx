@@ -8,7 +8,6 @@ import BottomCard from '../../shared/bottomCard'
 import { DebounceInput } from 'react-debounce-input'
 import {
   contains,
-  displayAlert,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
