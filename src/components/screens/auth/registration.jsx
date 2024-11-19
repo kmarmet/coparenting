@@ -6,7 +6,6 @@ import globalState from '../../../context.js'
 import User from '../../../models/user.js'
 import Manager from '@manager'
 import ChildrenInput from '../../childrenInput.jsx'
-import { Accordion } from 'rsuite'
 import CoparentInputs from '../../coparentInput.jsx'
 import CheckboxGroup from '@shared/checkboxGroup.jsx'
 import DB from '@db'
@@ -16,6 +15,10 @@ import PushAlertApi from '@api/pushAlert'
 import DB_UserScoped from '@userScoped'
 import ChildUser from 'models/child/childUser.js'
 import ParentInput from '../../parentInput'
+
+import AccordionSummary from '@mui/material/AccordionSummary'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
 import {
   contains,
   formatFileName,
@@ -48,6 +51,7 @@ import validator from 'validator'
 import Label from '../../shared/label'
 import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
+import InputWrapper from '../../shared/inputWrapper'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -424,9 +428,7 @@ export default function Registration() {
               Install App <span className="material-icons">install_mobile</span>
             </p>
             <InstallAppPopup />
-            <label className="account-type-label mb-10 mt-15">
-              Choose your Account Type <span className="asterisk">*</span>
-            </label>
+            <Label text={'Choose your Account Type'} required={true} />
             <div className="button-group flex">
               <button className="button default w-50 mr-10" onClick={() => setAccountType('parent')}>
                 Parent
@@ -442,30 +444,42 @@ export default function Registration() {
         {!accountAlreadyExists && accountType && accountType === 'child' && (
           <div className="form mb-20">
             <p className="mb-20">A parent is required to have Peaceful coParenting installed before you can register, to provide you with access.</p>
-            <label>
-              Name <span className="asterisk">*</span>
-            </label>
-            <input className="mb-10" type="text" onChange={(e) => setUserName(e.target.value)} />
-            <label>
-              Email <span className="asterisk">*</span>
-            </label>
-            <input type="email" className="mb-10" />
-            <label>
-              Your Phone Number <span className="asterisk">*</span>
-            </label>
-            <input className="mb-10" type="phone" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
-            <label>
-              Phone Number of Parent that has the App <span className="asterisk">*</span>
-            </label>
-            <input className="mb-10" type="phone" inputMode="numeric" onChange={(e) => setParentPhone(e.target.value)} />
-            <label>
-              Password<span className="asterisk">*</span>
-            </label>
-            <input className="mb-10" type="password" onChange={(e) => setPassword(e.target.value)} />
-            <label>
-              Confirm Password <span className="asterisk">*</span>
-            </label>
-            <input className="mb-20" type="password" onChange={(e) => setConfirmedPassword(e.target.value)} />
+            <InputWrapper inputType={'input'} required={true} labelText={'Name'} onChange={(e) => setUserName(e.target.value)} />
+            <InputWrapper
+              inputType={'input'}
+              inputValueType="email"
+              required={true}
+              labelText={'Email Address'}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <InputWrapper
+              inputType={'input'}
+              inputValueType="number"
+              required={true}
+              labelText={'Phone Number'}
+              onChange={(e) => setUserPhone(e.target.value)}
+            />
+            <InputWrapper
+              inputType={'input'}
+              inputValueType="number"
+              required={true}
+              labelText={'Phone Number of Parent that has the App'}
+              onChange={(e) => setParentPhone(e.target.value)}
+            />
+            <InputWrapper
+              inputType={'input'}
+              inputValueType="password"
+              required={true}
+              labelText={'Password'}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <InputWrapper
+              inputType={'input'}
+              inputValueType="password"
+              required={true}
+              labelText={'Confirm Password'}
+              onChange={(e) => setConfirmedPassword(e.target.value)}
+            />
             <PasswordChecklist
               rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'notEmpty']}
               minLength={5}
@@ -507,12 +521,13 @@ export default function Registration() {
         {/* PARENT FORM */}
         {!accountAlreadyExists && accountType && accountType === 'parent' && (
           <div className="form mb-20">
-            <Accordion>
-              <Label classes="flex" text={'Which type of parent are you?'} required={true}>
-                <PiInfoDuotone className={'ml-auto fs-24'} onClick={() => setParentTypeAccExpanded(!parentTypeAccExpanded)} />
-              </Label>
-
-              <Accordion.Panel expanded={parentTypeAccExpanded}>
+            <Accordion id={'checkboxes'} expanded={parentTypeAccExpanded}>
+              <AccordionSummary>
+                <Label classes="flex" text={'Which type of parent are you?'} required={true}>
+                  <PiInfoDuotone className={'ml-auto fs-24'} onClick={() => setParentTypeAccExpanded(!parentTypeAccExpanded)} />
+                </Label>
+              </AccordionSummary>
+              <AccordionDetails>
                 <p className="caption">
                   <i>
                     If you are primarily using the app for your biological children, select Biological. Otherwise, select Step-Parent, if it is
@@ -522,34 +537,43 @@ export default function Registration() {
                 <p className="caption">
                   <i>If you will be using the app as both Step-Parent and Biological, select Biological and we will handle the rest. </i>
                 </p>
-              </Accordion.Panel>
+              </AccordionDetails>
             </Accordion>
             <CheckboxGroup
               skipNameFormatting={true}
-              elClass={'mt-15 parent-type'}
+              elClass={'parent-type '}
               checkboxLabels={['Biological Parent', 'Step-Parent']}
               onCheck={handleParentType}
             />
-            <label>
-              Name <span className="asterisk">*</span>
-            </label>
-            <input className="mb-10" type="text" onChange={(e) => setUserName(e.target.value)} />
-            <label>
-              Email Address <span className="asterisk">*</span>
-            </label>
-            <input className="mb-10" type="email" onChange={(e) => setEmail(e.target.value)} />
-            <label>
-              Phone Number <span className="asterisk">*</span>
-            </label>
-            <input className="mb-10" type="phone" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
-            <label>
-              Password <span className="asterisk">*</span>
-            </label>
-            <input className="mb-10" type="password" onChange={(e) => setPassword(e.target.value)} />
-            <label>
-              Confirm Password <span className="asterisk">*</span>
-            </label>
-            <input className="mb-10" type="password" onChange={(e) => setConfirmedPassword(e.target.value)} />
+            <InputWrapper inputType={'input'} required={true} labelText={'Name'} onChange={(e) => setUserName(e.target.value)} />
+            <InputWrapper
+              inputType={'input'}
+              inputValueType="email"
+              required={true}
+              labelText={'Email Address'}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <InputWrapper
+              inputType={'input'}
+              inputValueType="number"
+              required={true}
+              labelText={'Phone Number'}
+              onChange={(e) => setUserPhone(e.target.value)}
+            />
+            <InputWrapper
+              inputType={'input'}
+              inputValueType="password"
+              required={true}
+              labelText={'Password'}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <InputWrapper
+              inputType={'input'}
+              inputValueType="password"
+              required={true}
+              labelText={'Confirm Password'}
+              onChange={(e) => setConfirmedPassword(e.target.value)}
+            />
             <PasswordChecklist
               rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'notEmpty']}
               minLength={5}

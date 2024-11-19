@@ -1,7 +1,7 @@
 import Swal from "sweetalert2"
 
 AlertManager = {
-  throwError: (title text) ->
+  throwError: (title ,text) ->
     Swal.fire
       title: title
       text: text

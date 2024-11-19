@@ -3,7 +3,6 @@ import { default as MultiDatePicker } from '@rsuite/multi-date-picker'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
-import { Accordion } from 'rsuite'
 import EventLengths from 'constants/eventLengths'
 import globalState from '../../context'
 import Manager from '@manager'
@@ -32,6 +31,10 @@ import { IoTodayOutline } from 'react-icons/io5'
 import { HiOutlineCalendarDays } from 'react-icons/hi2'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
+
+import AccordionSummary from '@mui/material/AccordionSummary'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
 import {
   contains,
   formatFileName,
@@ -551,20 +554,22 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
           {/* REMINDER */}
           {!isAllDay && (
             <>
-              <div className="flex">
-                <p>Remind Me</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">notifications</span>,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setShowReminders(!showReminders)}
-                />
-              </div>
               <div className="share-with-container">
-                <Accordion>
-                  <Accordion.Panel expanded={showReminders}>
+                <Accordion id={'checkboxes'} expanded={showReminders}>
+                  <AccordionSummary>
+                    <div className="flex">
+                      <p>Remind Me</p>
+                      <Toggle
+                        icons={{
+                          checked: <span className="material-icons-round">notifications</span>,
+                          unchecked: null,
+                        }}
+                        className={'ml-auto reminder-toggle'}
+                        onChange={(e) => setShowReminders(!showReminders)}
+                      />
+                    </div>
+                  </AccordionSummary>
+                  <AccordionDetails>
                     <CheckboxGroup
                       containerClass={'reminder-times'}
                       elClass={`${theme}`}
@@ -572,7 +577,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                       checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                       onCheck={handleReminderSelection}
                     />
-                  </Accordion.Panel>
+                  </AccordionDetails>
                 </Accordion>
               </div>
             </>
@@ -581,19 +586,21 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
           {/* REMIND COPARENTS*/}
           {Manager.isValid(currentUser?.coparents, true) && (
             <div className="share-with-container">
-              <div className="flex">
-                <p>Remind Co-parent(s)</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">person</span>,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setShowCoparentReminderToggle(showCoparentReminderToggle === true ? false : true)}
-                />
-              </div>
-              <Accordion>
-                <Accordion.Panel expanded={showCoparentReminderToggle}>
+              <Accordion id={'checkboxes'} expanded={showCoparentReminderToggle}>
+                <AccordionSummary>
+                  <div className="flex">
+                    <p>Remind Co-parent(s)</p>
+                    <Toggle
+                      icons={{
+                        checked: <span className="material-icons-round">person</span>,
+                        unchecked: null,
+                      }}
+                      className={'ml-auto reminder-toggle'}
+                      onChange={(e) => setShowCoparentReminderToggle(showCoparentReminderToggle === true ? false : true)}
+                    />
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
                   {currentUser.accountType === 'parent' && (
                     <CheckboxGroup
                       elClass={`${theme} `}
@@ -610,7 +617,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                       onCheck={handleCoparentsToRemindSelection}
                     />
                   )}
-                </Accordion.Panel>
+                </AccordionDetails>
               </Accordion>
             </div>
           )}
@@ -618,25 +625,27 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.isValid(currentUser.children !== undefined, true) && (
             <div className="share-with-container">
-              <div className="flex">
-                <p>Include Children</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">face</span>,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setIncludeChildren(!includeChildren)}
-                />
-              </div>
-              <Accordion>
-                <Accordion.Panel expanded={includeChildren}>
+              <Accordion id={'checkboxes'} expanded={includeChildren}>
+                <AccordionSummary>
+                  <div className="flex">
+                    <p>Include Children</p>
+                    <Toggle
+                      icons={{
+                        checked: <span className="material-icons-round">face</span>,
+                        unchecked: null,
+                      }}
+                      className={'ml-auto reminder-toggle'}
+                      onChange={(e) => setIncludeChildren(!includeChildren)}
+                    />
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
                   <CheckboxGroup
                     elClass={`${theme} `}
                     checkboxLabels={currentUser?.children.map((x) => x['general'].name)}
                     onCheck={handleChildSelection}
                   />
-                </Accordion.Panel>
+                </AccordionDetails>
               </Accordion>
             </div>
           )}
@@ -646,19 +655,21 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
             <>
               {/* REPEATING */}
               <div className="share-with-container" id="repeating-container">
-                <div className="flex">
-                  <p>Repeating</p>
-                  <Toggle
-                    icons={{
-                      checked: <span className="material-icons-round">event_repeat</span>,
-                      unchecked: null,
-                    }}
-                    className={'ml-auto reminder-toggle'}
-                    onChange={(e) => setEventIsRepeating(!eventIsRepeating)}
-                  />
-                </div>
-                <Accordion>
-                  <Accordion.Panel expanded={eventIsRepeating}>
+                <Accordion id={'checkboxes'} expanded={eventIsRepeating}>
+                  <AccordionSummary>
+                    <div className="flex">
+                      <p>Repeating</p>
+                      <Toggle
+                        icons={{
+                          checked: <span className="material-icons-round">event_repeat</span>,
+                          unchecked: null,
+                        }}
+                        className={'ml-auto reminder-toggle'}
+                        onChange={(e) => setEventIsRepeating(!eventIsRepeating)}
+                      />
+                    </div>
+                  </AccordionSummary>
+                  <AccordionDetails>
                     <CheckboxGroup
                       elClass={`${theme} `}
                       boxWidth={35}
@@ -675,7 +686,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                         onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
                       />
                     )}
-                  </Accordion.Panel>
+                  </AccordionDetails>
                 </Accordion>
               </div>
 

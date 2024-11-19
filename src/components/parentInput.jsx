@@ -19,6 +19,7 @@ import {
   wordCount,
 } from '../globalFunctions'
 import { phone } from 'phone'
+import AlertManager from '../managers/alertManager'
 
 export default function ParentInput({ add, parentsLength = 1, labels }) {
   const { state, setState } = useContext(globalState)
@@ -50,11 +51,11 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
           className="button center default green"
           onClick={() => {
             if (name.length == 0 || userPhone.length === 0) {
-              displayAlert('error', 'Parent name and phone are required')
+              AlertManager.throwError('Parent name and phone are required')
               return false
             }
             if (!validatePhone()) {
-              displayAlert('error', 'Please enter a valid phone number')
+              AlertManager.throwError('Please enter a valid phone number')
               return false
             }
 

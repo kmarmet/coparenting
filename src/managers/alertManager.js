@@ -4,7 +4,7 @@ var AlertManager;
 import Swal from "sweetalert2";
 
 AlertManager = {
-  throwError: function(title) {
+  throwError: function(title, text) {
     return Swal.fire({
       title: title,
       text: text,

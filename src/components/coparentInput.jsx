@@ -20,9 +20,9 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../globalFunctions'
-import Label from './shared/label'
 import validator from 'validator'
 import AlertManager from '../managers/alertManager'
+import InputWrapper from './shared/inputWrapper'
 
 export default function CoparentInputs({ add, coparentsLength = 1 }) {
   const { state, setState } = useContext(globalState)
@@ -47,11 +47,16 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
       <p id="coparent-label">
         Co-Parent #{coparentsLength} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
       </p>
-      <Label text={'Name'} required={true}></Label>
-      <input type="text" className="coparent-name" onChange={(e) => setName(e.target.value)} />
-      <Label text={'Phone Number'} required={true}></Label>
-      <input className="coparent-phone" type="phone" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
+      <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
+      <InputWrapper
+        inputType={'input'}
+        inputValueType="number"
+        labelText={'Phone Number'}
+        required={true}
+        onChange={(e) => setUserPhone(e.target.value)}
+      />
       <CheckboxGroup
+        parentLabel={'Parent Type'}
         className="coparent-type"
         skipNameFormatting={true}
         checkboxLabels={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}

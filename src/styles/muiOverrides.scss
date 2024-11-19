@@ -8,6 +8,54 @@
   }
   // ACCORDION
   .MuiAccordion-gutters {
+    &#checkboxes {
+//      margin-bottom: 10px !important;
+      background-color: transparent;
+
+      &::before {
+        display: none;
+      }
+      .MuiButtonBase-root {
+        max-height: 30px !important;
+        min-height: 0 !important;
+      }
+      .MuiAccordionSummary-root {
+        width: calc(100% - 10px);
+        .MuiAccordionSummary-content {
+          .flex {
+            width: 100%;
+          }
+        }
+      }
+      .MuiAccordionDetails-root {
+        padding: 0 !important;
+      }
+    }
+    &#ios,
+    &#android,
+    &#pc {
+      background-color: transparent;
+      width: 100% !important;
+      margin-bottom: 10px !important;
+      .MuiAccordion-region {
+        padding: 10px 0;
+      }
+      .MuiButtonBase-root {
+        width: 100%;
+
+        .accordion-header {
+          width: 100%;
+        }
+      }
+    }
+
+    .MuiAccordion-heading {
+      background: transparent !important;
+      .MuiAccordionDetails-root {
+        padding: 0 !important;
+      }
+    }
+
     &.MuiPaper-root {
       width: calc(100vw - 30px) !important;
 
@@ -199,7 +247,7 @@
       font-weight: $fwMedium !important;
     }
     .MuiPickersCalendarHeader-switchViewIcon {
-      opacity: .6 !important;
+      opacity: 0.6 !important;
     }
   }
 

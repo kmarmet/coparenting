@@ -45,6 +45,10 @@ export default function FullMenu() {
   }
 
   const logout = () => {
+    const pageOverlay = document.getElementById('page-overlay')
+    if (pageOverlay) {
+      pageOverlay.classList.remove('active')
+    }
     signOut(auth)
       .then(() => {
         setState({

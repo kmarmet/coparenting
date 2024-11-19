@@ -1271,6 +1271,14 @@
 @mixin checkboxGroup {
   padding: 0;
   display: block;
+  &.parent-type {
+    #checkboxes {
+      width: 100%;
+      #checkbox-container {
+        width: 45%;
+      }
+    }
+  }
 
   #checkboxes {
     gap: 5px 10px;

@@ -37,6 +37,7 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import AlertManager from '../../../managers/alertManager'
+import InputWrapper from '../../shared/inputWrapper'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
@@ -270,23 +271,27 @@ export default function Login() {
         <div className="flex form-container">
           <div className="form w-80">
             {/* EMAIL */}
-            <label>
-              Email Address <span className="asterisk">*</span>
-            </label>
-            <input required={true} className="mb-15" type="email" onChange={(e) => setEmail(e.target.value)} />
-
+            <InputWrapper inputValueType="email" required={true} labelText={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
             {/* PASSWORD */}
-            <label>
-              Password <span className="asterisk">*</span>
-            </label>
             <div className="flex inputs mb-20">
-              <input required={true} type={viewPassword ? 'text' : 'password'} onChange={(e) => setPassword(e.target.value)} />
+              <InputWrapper
+                inputValueType={viewPassword ? 'text' : 'password'}
+                required={true}
+                labelText={'Password'}
+                onChange={(e) => setPassword(e.target.value)}
+              />
               {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue ml-10'} />}
               {viewPassword && <PiEyeClosedDuotone onClick={() => setViewPassword(false)} className={'blue ml-10'} />}
             </div>
 
             {/* REMEMBER ME */}
-            <CheckboxGroup elClass={'light'} boxWidth={50} onCheck={togglePersistence} checkboxLabels={['Remember Me']} skipNameFormatting={true} />
+            <CheckboxGroup
+              elClass={'light mb-15'}
+              boxWidth={50}
+              onCheck={togglePersistence}
+              checkboxLabels={['Remember Me']}
+              skipNameFormatting={true}
+            />
             <div className="flex w-100 mb-15 gap">
               <button className="button default green w-50" onClick={signIn}>
                 Login <span className="material-icons-round">lock_open</span>

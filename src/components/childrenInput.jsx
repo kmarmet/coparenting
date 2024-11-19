@@ -21,7 +21,9 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../globalFunctions'
+import AlertManager from '../managers/alertManager'
 import ChildUser from '../models/child/childUser'
+import InputWrapper from './shared/inputWrapper'
 
 export default function ChildrenInput({ add, childrenCount }) {
   const { state, setState } = useContext(globalState)
@@ -40,23 +42,26 @@ export default function ChildrenInput({ add, childrenCount }) {
       <p id="child-label">
         Child #{childrenCount} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
       </p>
-      <label>
-        Name <span className="asterisk">*</span>
-      </label>
-      <input type="text" autoComplete="off" onChange={(e) => setName(e.target.value)} />
-      <label>Phone Number</label>
       <input type="phone" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
+      <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
+      <InputWrapper
+        inputType={'input'}
+        inputValueType="number"
+        labelText={'Phone Number'}
+        required={true}
+        onChange={(e) => setUserPhone(e.target.value)}
+      />
       {showAddButton && (
         <button
           className="button default green"
           onClick={() => {
             if (name.length == 0) {
-              displayAlert('error', 'Please enter required fields')
+              AlertManager.throwError('Please enter required fields')
               return false
             }
             if (userPhone.length > 0) {
               if (!validatePhone(userPhone)) {
-                displayAlert('error', 'Phone number is not valid')
+                AlertManager.throwError('Phone number is not valid')
                 return false
               }
             }

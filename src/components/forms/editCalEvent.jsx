@@ -2,7 +2,6 @@ import { child, getDatabase, ref, set } from 'firebase/database'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
-import { Accordion } from 'rsuite'
 import EventLengths from '@constants/eventLengths'
 import globalState from '../../context'
 import DB from '@db'
@@ -18,6 +17,9 @@ import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputD
 import CalendarManager from '../../managers/calendarManager'
 import Toggle from 'react-toggle'
 import { ImEye } from 'react-icons/im'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
 
 import {
   contains,
@@ -472,7 +474,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                 <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
                   <MobileTimePicker
                     format={'h:mma'}
-                    value={defaultStartTime}
+                    value={moment(eventStartTime, 'hh:mma')}
                     minutesStep={5}
                     className={`${theme} m-0`}
                     onAccept={(e) => setEventStartTime(e)}
@@ -485,7 +487,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                 <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
                   <MobileTimePicker
                     format={'h:mma'}
-                    value={defaultEndTime}
+                    value={moment(defaultEndTime, 'hh:mma')}
                     minutesStep={5}
                     className={`${theme} m-0`}
                     onAccept={(e) => setEventEndTime(e)}
@@ -538,53 +540,55 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           {/* REMINDER */}
           {!isAllDay && (
             <>
-              <div className="flex reminder-times-toggle">
-                <p>Remind Me</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">notifications</span>,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setShowReminders(!showReminders)}
-                />
-              </div>
-              <div className="share-with-container">
-                <Accordion>
-                  <Accordion.Panel expanded={showReminders}>
-                    <CheckboxGroup
-                      elClass={`${theme} `}
-                      containerClass={'reminder-times'}
-                      defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
-                      skipNameFormatting={true}
-                      dataPhone={
-                        currentUser.accountType === 'parent' ? currentUser?.coparents?.map((x) => x.phone) : currentUser?.parents?.map((x) => x.phone)
-                      }
-                      checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
-                      onCheck={handleReminderSelection}
+              <Accordion expanded={showReminders} id={'checkboxes'}>
+                <AccordionSummary>
+                  <div className="flex reminder-times-toggle">
+                    <p>Remind Me</p>
+                    <Toggle
+                      icons={{
+                        checked: <span className="material-icons-round">notifications</span>,
+                        unchecked: null,
+                      }}
+                      className={'ml-auto reminder-toggle'}
+                      onChange={(e) => setShowReminders(!showReminders)}
                     />
-                  </Accordion.Panel>
-                </Accordion>
-              </div>
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <CheckboxGroup
+                    elClass={`${theme} `}
+                    containerClass={'reminder-times'}
+                    defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
+                    skipNameFormatting={true}
+                    dataPhone={
+                      currentUser.accountType === 'parent' ? currentUser?.coparents?.map((x) => x.phone) : currentUser?.parents?.map((x) => x.phone)
+                    }
+                    checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                    onCheck={handleReminderSelection}
+                  />
+                </AccordionDetails>
+              </Accordion>
             </>
           )}
 
           {/* REMIND COPARENTS */}
           {Manager.isValid(currentUser?.coparents, true) && currentUser.accountType === 'parent' && (
             <div className="share-with-container">
-              <div className="flex">
-                <p>Remind Co-parent(s)</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">person</span>,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setShowCoparentsToRemind(!showCoparentsToRemind)}
-                />
-              </div>
-              <Accordion>
-                <Accordion.Panel expanded={showCoparentsToRemind}>
+              <Accordion expanded={showCoparentsToRemind} id={'checkboxes'}>
+                <AccordionSummary>
+                  <div className="flex">
+                    <p>Remind Co-parent(s)</p>
+                    <Toggle
+                      icons={{
+                        checked: <span className="material-icons-round">person</span>,
+                        unchecked: null,
+                      }}
+                      className={'ml-auto reminder-toggle'}
+                      onChange={(e) => setShowCoparentsToRemind(!showCoparentsToRemind)}
+                    />
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
                   {currentUser.accountType === 'parent' && (
                     <CheckboxGroup
                       elClass={`${theme} `}
@@ -601,7 +605,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                       onCheck={handleRemindOthersSelection}
                     />
                   )}
-                </Accordion.Panel>
+                </AccordionDetails>
               </Accordion>
             </div>
           )}
@@ -609,25 +613,27 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.isValid(currentUser.children, true) && currentUser.accountType === 'parent' && (
             <div className="share-with-container children-toggle">
-              <div className="flex">
-                <p>Include Children</p>
-                <Toggle
-                  icons={{
-                    checked: <span className="material-icons-round">face</span>,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto'}
-                  onChange={(e) => setIncludeChildren(!includeChildren)}
-                />
-              </div>
-              <Accordion>
-                <Accordion.Panel expanded={includeChildren}>
+              <Accordion expanded={includeChildren} id={'checkboxes'}>
+                <AccordionSummary>
+                  <div className="flex">
+                    <p>Include Children</p>
+                    <Toggle
+                      icons={{
+                        checked: <span className="material-icons-round">face</span>,
+                        unchecked: null,
+                      }}
+                      className={'ml-auto'}
+                      onChange={(e) => setIncludeChildren(!includeChildren)}
+                    />
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
                   <CheckboxGroup
                     containerClass={'include-children-checkbox-container'}
                     checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
                     onCheck={handleChildSelection}
                   />
-                </Accordion.Panel>
+                </AccordionDetails>
               </Accordion>
             </div>
           )}
