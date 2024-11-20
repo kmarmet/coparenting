@@ -412,7 +412,6 @@ export default function EventCalendar() {
             setShowSearchCard(false)
             setRefreshKey(Manager.getUid())
           }}
-          showOverlay={false}
           onSubmit={() => {
             if (searchQuery.length === 0) {
               AlertManager.throwError('Please enter a search value')

@@ -57,19 +57,19 @@ animate__faster`
       showCancelButton: false,
       confirmButtonText: confirmButtonText,
       denyButtonText: "Nevermind",
-      confirmButtonColor: '#00b389 !important'.then(function(result) {
-        if (result.isConfirmed) {
-          if (onConfirm) {
-            onConfirm(result);
-          }
+      confirmButtonColor: '#00b389 !important'
+    }).then(function(result) {
+      if (result.isConfirmed) {
+        if (onConfirm) {
+          onConfirm(result);
         }
-        if (result.isDenied) {
-          if (onDeny) {
-            onDeny(result);
-          }
+      }
+      if (result.isDenied) {
+        if (onDeny) {
+          onDeny(result);
         }
-        return result;
-      })
+      }
+      return result;
     });
   },
   oneButtonAlert: function(title, subtitle = "", icon = "", onConfirm) {
@@ -91,8 +91,14 @@ animate__faster`
       showCancelButton: false,
       confirmButtonText: "Okay",
       confirmButtonColor: '#00b389 !important',
-      allowOutsideClick: false.then(function(result) {})
-    }, result.isConfirmed ? onConfirm ? onConfirm(result) : void 0 : void 0);
+      allowOutsideClick: false
+    }).then(function(result) {
+      if (result.isConfirmed) {
+        if (onConfirm) {
+          return onConfirm(result);
+        }
+      }
+    });
   },
   inputAlert: function(title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "input") {
     return Swal.fire({

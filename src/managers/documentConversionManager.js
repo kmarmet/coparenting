@@ -190,6 +190,7 @@ const DocumentConversionManager = {
         textContainer.appendChild(parEl)
       })
     })
+    await worker.terminate()
   },
   addHeaderClass: (el) => {
     let strong = el.querySelector('strong')

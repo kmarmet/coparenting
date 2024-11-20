@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '@manager'
-import ScreenNames from '@screenNames'
 import FirebaseStorage from '@firebaseStorage'
 import CheckboxGroup from '@shared/checkboxGroup'
 import Doc from '../../../models/doc'
 import NotificationManager from '@managers/notificationManager'
-import DocumentsManager from '../../../managers/documentsManager'
 import { ImEye } from 'react-icons/im'
 
 import {
@@ -31,6 +29,10 @@ import ShareWithCheckboxes from '../../shared/shareWithCheckboxes'
 import BottomCard from '../../shared/bottomCard'
 import DatasetManager from '../../../managers/datasetManager'
 import AlertManager from '../../../managers/alertManager'
+import ImageManager from '../../../managers/imageManager'
+import ModelNames from '../../../models/modelNames'
+import ObjectManager from '../../../managers/objectManager'
+import DocumentsManager from '../../../managers/documentsManager'
 
 export default function UploadDocuments({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -50,7 +52,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
 
   const upload = async () => {
     setState({ ...state, isLoading: true })
-    const files = document.querySelector('#upload-input').files
+    let files = document.querySelector('#upload-input').files
     const image = files[0]
 
     // Validation
@@ -79,6 +81,15 @@ export default function UploadDocuments({ hideCard, showCard }) {
       setState({ ...state, isLoading: false })
       return false
     }
+    let localImages = []
+
+    if (docType === 'image') {
+      for (let img of files) {
+        localImages.push(await ImageManager.compressImage(img))
+      }
+      files = localImages
+    }
+
     // Upload to Firebase Storage
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.documents}/`, currentUser.id, files)
       .then(() => {})
@@ -94,18 +105,17 @@ export default function UploadDocuments({ hideCard, showCard }) {
             newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
             newDocument.type = docType
             newDocument.name = FirebaseStorage.getImageNameFromUrl(url)
-            await DocumentsManager.addDocumentToDocumentsTable(newDocument).finally(() => {
-              setState({ ...state, currentScreen: ScreenNames.docsList })
-            })
+            const cleanedDoc = ObjectManager.cleanObject(newDocument, ModelNames.doc)
+            await DocumentsManager.addDocumentToDocumentsTable(cleanedDoc)
           }
 
           setState({ ...state, isLoading: false })
+          resetForm()
 
           // Send Notification
           NotificationManager.sendToShareWith(shareWith, 'New Document', `${currentUser} has uploaded a new document`)
         })
       })
-    resetForm()
   }
 
   const handleShareWithSelection = async (e) => {

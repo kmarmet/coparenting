@@ -27,6 +27,8 @@ import SecurityManager from '../../../managers/securityManager'
 
 import { AiOutlineFileSearch } from 'react-icons/ai'
 import NavBar from '../../navBar'
+import DB from '@db'
+import AlertManager from '../../../managers/alertManager'
 
 export default function DocViewer() {
   const { state, setState } = useContext(globalState)
@@ -261,53 +263,43 @@ export default function DocViewer() {
 
   // Get/Append Image
   const getImage = async () => {
-    const coparentDocsObjects = await SecurityManager.getDocuments(currentUser)
-
-    if (!Manager.isValid(coparentDocsObjects, true)) {
+    const allDocs = await SecurityManager.getDocuments(currentUser)
+    if (!Manager.isValid(allDocs, true)) {
       setState({ ...state, isLoading: false })
       return false
     }
 
-    const docsFromObject = coparentDocsObjects.map((x) => x.docs)
-
-    if (!Manager.isValid(docsFromObject, true)) {
-      setState({ ...state, isLoading: false })
-      return false
-    }
-    const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
+    const coparentsFromObject = allDocs.map((x) => x.coparent)
 
     if (!Manager.isValid(coparentsFromObject, true)) {
       setState({ ...state, isLoading: false })
       return false
     }
-    const relevantDoc = docsFromObject.filter((x) => x.name === docToView.name)[0]
-    let userIdToUse = currentUser.id
+    const relevantDoc = await DB.find(DB.tables.documents, ['name', docToView.name], true)
+    let docOwner = await DB.find(DB.tables.users, ['phone', relevantDoc.uploadedBy])
+    const firebasePathId = docOwner.id
 
     if (!Manager.isValid(relevantDoc)) {
       setState({ ...state, isLoading: false })
+      AlertManager.throwError('No Document Found')
       return false
     }
-
-    if (Manager.isValid(relevantDoc)) {
-      const uploadedByPhone = relevantDoc?.uploadedBy
-      const relevantCoparent = coparentsFromObject.filter((x) => x?.phone === uploadedByPhone)[0]
-      userIdToUse = relevantCoparent.id
+    const imageResult = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, firebasePathId, docToView.name)
+    if (imageResult.status === 'success') {
+      await DocumentConversionManager.imageToTextAndAppend(imageResult.imageUrl, document.querySelector('#text-container')).finally(() => {
+        Manager.showPageContainer('show')
+      })
+      // Filter TOC
+      const spanHeaders = document.querySelectorAll('.header')
+      let newHeaderArray = []
+      spanHeaders.forEach((header) => {
+        const text = header.textContent.replaceAll(' ', '-')
+        if (newHeaderArray.indexOf(text) === -1) {
+          newHeaderArray.push(text)
+        }
+      })
+      setTocHeaders(newHeaderArray)
     }
-
-    const imagePath = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, userIdToUse, docToView.name)
-    await DocumentConversionManager.imageToTextAndAppend(imagePath.imageUrl, document.querySelector('#text-container')).finally(() => {
-      Manager.showPageContainer('show')
-    })
-    // Filter TOC
-    const spanHeaders = document.querySelectorAll('.header')
-    let newHeaderArray = []
-    spanHeaders.forEach((header) => {
-      const text = header.textContent.replaceAll(' ', '-')
-      if (newHeaderArray.indexOf(text) === -1) {
-        newHeaderArray.push(text)
-      }
-    })
-    setTocHeaders(newHeaderArray)
   }
 
   // Show search icon when text is loaded
@@ -320,7 +312,7 @@ export default function DocViewer() {
   useEffect(() => {
     setState({ ...state, isLoading: true })
     document.getElementById('text-container').innerText = ''
-    Manager.showPageContainer('show')
+    Manager.showPageContainer()
     convertAndAppendDocOrImage().then((r) => r)
   }, [])
 

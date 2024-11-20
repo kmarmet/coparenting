@@ -34,7 +34,7 @@ export default function InstallAppPopup() {
             </p>
           </AccordionSummary>
 
-          <AccordionDetails expanded={expandAppleAccordion}>
+          <AccordionDetails expanded={expandAppleAccordion.toString()}>
             <div className="os-container apple">
               <p className="while-viewing">While viewing the website...</p>
               <div className="flex steps">
@@ -74,7 +74,7 @@ export default function InstallAppPopup() {
               {expandAndroidAccordion ? <FaChevronDown /> : <FaChevronUp />}
             </p>
           </AccordionSummary>
-          <AccordionDetails expanded={expandAndroidAccordion}>
+          <AccordionDetails expanded={expandAndroidAccordion.toString()}>
             <div className="os-container android">
               <p className="while-viewing">While viewing the website...</p>
               <div className="flex steps">
@@ -110,7 +110,7 @@ export default function InstallAppPopup() {
               Desktop/Laptop <TbDeviceDesktopDown /> {expandDesktopAccordion ? <FaChevronDown /> : <FaChevronUp />}
             </p>
           </AccordionSummary>
-          <AccordionDetails expanded={expandDesktopAccordion}>
+          <AccordionDetails expanded={expandDesktopAccordion.toString()}>
             <div className="os-container apple">
               <p className="while-viewing">While viewing the website...</p>
               <div className="flex steps">

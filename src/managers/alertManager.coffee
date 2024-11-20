@@ -58,12 +58,12 @@ AlertManager = {
       confirmButtonText: confirmButtonText
       denyButtonText: "Nevermind"
       confirmButtonColor: '#00b389 !important'
-      .then (result) ->
-        if result.isConfirmed
-          if onConfirm then onConfirm(result)
-        if result.isDenied
-          if onDeny then onDeny(result)
-        return result
+    .then (result) ->
+      if result.isConfirmed
+        if onConfirm then onConfirm(result)
+      if result.isDenied
+        if onDeny then onDeny(result)
+      return result
 
    oneButtonAlert : (title, subtitle = "", icon ="", onConfirm) ->
     Swal.fire
@@ -87,7 +87,7 @@ AlertManager = {
       confirmButtonText: "Okay"
       confirmButtonColor: '#00b389 !important'
       allowOutsideClick: false
-      .then (result) ->
+    .then (result) ->
       if result.isConfirmed
         if onConfirm then onConfirm(result)
 

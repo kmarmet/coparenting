@@ -49,6 +49,7 @@ import InputWrapper from '../shared/inputWrapper'
 import ExpenseCategories from '../../constants/expenseCategories'
 import ObjectManager from '../../managers/objectManager'
 import AlertManager from '../../managers/alertManager'
+import ImageManager from '../../managers/imageManager'
 
 function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -113,8 +114,10 @@ function NewExpenseForm({ hideCard, showCard }) {
     newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
     newExpense.repeating = repeating
 
+    // If expense has image
     if (expenseImage) {
       newExpense.imageName = expenseImage.name
+      setExpenseImage(await ImageManager.compressImage(expenseImage))
     }
 
     // Get coparent name

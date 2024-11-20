@@ -66,14 +66,14 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
-  const [eventFromDate, setEventFromDate] = useState('')
+  const [eventStartDate, setEventStartDate] = useState('')
+  const [eventEndDate, setEventEndDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
   const [eventTitle, setEventTitle] = useState('')
   const [eventWebsite, setEventWebsite] = useState('')
   const [eventNotes, setEventNotes] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
   const [repeatInterval, setRepeatInterval] = useState('')
-  const [eventToDate, setEventToDate] = useState('')
   const [eventStartTime, setEventStartTime] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
   const [eventShareWith, setEventShareWith] = useState([])
@@ -94,6 +94,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
   const [showCoparentReminderToggle, setShowCoparentReminderToggle] = useState(false)
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [suggestionRefreshKey, setSuggestionRefreshKey] = useState(Manager.getUid())
+
   const resetForm = () => {
     Manager.resetForm('new-event-form')
     setRefreshKey(Manager.getUid())
@@ -102,7 +103,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
 
   const submit = async () => {
     const newEvent = new CalendarEvent()
-
+    console.log(eventStartDate, eventEndDate)
     // Required
     newEvent.title = eventTitle
     if (Manager.isValid(newEvent.title) && newEvent.title.toLowerCase().indexOf('birthday') > -1) {
@@ -111,8 +112,8 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     if (isVisitation) {
       newEvent.title = `${formatNameFirstNameOnly(currentUser.name)}'s Visitation`
     }
-    newEvent.startDate = DateManager.dateIsValid(eventFromDate) ? moment(eventFromDate).format(DateFormats.dateForDb) : ''
-    newEvent.endDate = DateManager.dateIsValid(eventToDate) ? moment(eventToDate).format(DateFormats.dateForDb) : ''
+    newEvent.startDate = DateManager.dateIsValid(eventStartDate) ? moment(eventStartDate).format(DateFormats.dateForDb) : ''
+    newEvent.endDate = DateManager.dateIsValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
     newEvent.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
     newEvent.endTime = DateManager.dateIsValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
     // Not Required
@@ -136,7 +137,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
         return false
       }
 
-      const validation = DateManager.formValidation(eventTitle, eventShareWith, eventFromDate)
+      const validation = DateManager.formValidation(eventTitle, eventShareWith, eventStartDate)
       if (validation) {
         AlertManager.throwError(validation)
         return false
@@ -168,7 +169,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
 
       // Add first/initial date before adding repeating/cloned
       await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
-        NotificationManager.sendToShareWith(eventShareWith, 'New Calendar Event', `${eventTitle} on ${moment(eventFromDate).format('ddd DD')}`)
+        NotificationManager.sendToShareWith(eventShareWith, 'New Calendar Event', `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`)
 
         // Add cloned dates
         if (Manager.isValid(clonedDatesToSubmit, true)) {
@@ -189,7 +190,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     let repeatingEvents = []
     let datesToRepeat = CalendarMapper.repeatingEvents(
       repeatInterval,
-      moment(eventFromDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
+      moment(eventStartDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
       repeatingEndDate
     )
     if (Manager.isValid(datesToRepeat)) {
@@ -213,7 +214,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
         repeatingDateObject.startTime = eventStartTime
         repeatingDateObject.endTime = eventEndTime
         repeatingDateObject.reminderTimes = eventReminderTimes
-        repeatingDateObject.endDate = eventToDate
+        repeatingDateObject.endDate = eventEndDate
         repeatingDateObject.repeatInterval = repeatInterval
 
         if (!isAllDay) {
@@ -315,7 +316,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
       clonedDateObject.title = eventTitle
       clonedDateObject.id = Manager.getUid()
       clonedDateObject.startDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
-      clonedDateObject.endDate = DateManager.dateIsValid(eventToDate) ? moment(eventToDate).format(DateFormats.dateForDb) : ''
+      clonedDateObject.endDate = DateManager.dateIsValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
       // Not Required
       clonedDateObject.directionsLink = eventLocation
       clonedDateObject.location = eventLocation
@@ -359,7 +360,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
 
   useEffect(() => {
     if (selectedNewEventDay) {
-      setEventFromDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
+      setEventStartDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
     }
   }, [selectedNewEventDay])
 
@@ -378,6 +379,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     <div>
       {/* FORM WRAPPER */}
       <BottomCard
+        refreshKey={refreshKey}
         submitText={'Create Event'}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={() => {
@@ -454,7 +456,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                       value={moment(selectedNewEventDay)}
                       className={`${theme} m-0 w-100 event-from-date mui-input`}
                       onAccept={(e) => {
-                        setEventFromDate(e)
+                        setEventStartDate(e)
                       }}
                     />
                   </InputWrapper>
@@ -465,20 +467,20 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
 
           {/* DATE RANGE */}
           {eventLength === EventLengths.multiple && (
-            <>
-              <InputWrapper labelText={'Date Range'} required={true} inputType={'date'}></InputWrapper>
+            <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
               <MobileDateRangePicker
                 className={'w-100'}
+                onOpen={() => Manager.hideKeyboard('date-range-input')}
                 onAccept={(dateArray) => {
                   if (Manager.isValid(dateArray, true)) {
-                    setEventFromDate(moment(dateArray[0]).format('MM/DD/YYYY'))
-                    setEventToDate(moment(dateArray[1]).format('MM/DD/YYYY'))
+                    setEventStartDate(moment(dateArray[0]).format('MM/DD/YYYY'))
+                    setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
                   }
                 }}
                 slots={{ field: SingleInputDateRangeField }}
                 name="allowedRange"
               />
-            </>
+            </InputWrapper>
           )}
 
           {/* EVENT WITH TIME */}

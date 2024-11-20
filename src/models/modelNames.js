@@ -14,7 +14,8 @@ ModelNames = {
   transferChangeRequest: 'transferChangeRequest',
   conversationMessage: "conversationMessage",
   conversationThread: "conversationThread",
-  childUser: 'childUser'
+  childUser: 'childUser',
+  doc: 'doc'
 };
 
 export default ModelNames;

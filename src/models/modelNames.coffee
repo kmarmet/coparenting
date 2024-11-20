@@ -13,6 +13,7 @@ ModelNames =
   conversationMessage: "conversationMessage"
   conversationThread: "conversationThread"
   childUser: 'childUser'
+  doc:'doc'
 
 
 export default ModelNames

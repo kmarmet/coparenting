@@ -1,15 +1,66 @@
 @import './palette';
 @import './variables';
 #external-overrides {
+  #static-calendar {
+    .MuiPickersLayout-contentWrapper {
+      max-width: 100% !important;
+      
+      * {
+        max-width: 100% !important;
+      }
+    }
+  }
+  // PARENT/ROOT CALENDAR WRAPPER
+  .MuiPickersLayout-contentWrapper {
+    max-width: 408px !important;
+    
+    * {
+      max-width: 408px !important;
+    }
+  }
   // CALENDAR ARROWS
   .MuiPickersArrowSwitcher-rightArrowIcon,
   .MuiPickersArrowSwitcher-leftArrowIcon {
     opacity: 0.6 !important;
+    font-size: 30px !important;
   }
+
+  // DATE RANGE
+  .MuiDateRangeCalendar-root {
+    width: calc(100% - 22px);
+    
+    .MuiDateRangePickerDay-rangeIntervalPreview {
+      button {
+        &.Mui-selected {
+          width: 45px !important;
+        }
+      }
+    }
+
+    .MuiDateRangeCalendar-monthContainer {
+      width: 100%;
+    }
+
+    .MuiDayCalendar-header {
+      max-height: 30px;
+      margin-bottom: 5px;
+    }
+
+    .MuiPickersCalendarHeader-root {
+      margin: 0;
+    }
+
+    .MuiPickersDay-today {
+      border: 0 !important;
+      font-weight: $fwBold;
+      transform: scale(1.5) !important;
+    }
+  }
+
   // ACCORDION
   .MuiAccordion-gutters {
     &#checkboxes {
-//      margin-bottom: 10px !important;
+      //      margin-bottom: 10px !important;
       background-color: transparent;
 
       &::before {
@@ -329,8 +380,9 @@
   // Primary calendar picker container
   .MuiPaper-root {
     background-color: $lightBg;
-    border-radius: 15px;
+    border-radius: 25px;
     width: 95vw !important;
+    @include bestShadow;
 
     .MuiButtonBase-root {
       &.Mui-selected {
@@ -348,9 +400,12 @@
 
     .MuiDialogActions-root {
       button {
-        background-color: $lightDarkGrey;
+        color: $mainBlue !important;
+        background-color: transparent;
         &:nth-child(2) {
+          border: 0 !important;
           background-color: $green;
+          color: white !important;
         }
       }
     }
@@ -531,7 +586,7 @@
       font-size: 16px;
       color: $mainBlue;
       &.Mui-selected {
-        background-color: $accent;
+        background-color: $mainBlue;
         width: 100%;
         height: 45px;
         position: relative;
@@ -542,8 +597,8 @@
       &.MuiButton-root {
         color: white;
         font-weight: bold;
-        border-radius: 15px;
-        font-size: 18px;
+        border-radius: $borderRadius;
+        font-size: 16px !important;
         display: flex;
         align-items: center;
         line-height: 1;
@@ -554,6 +609,28 @@
         &:nth-child(3) {
           margin-right: 8px;
         }
+      }
+    }
+
+    // DATE RANGE
+    .MuiDateRangePickerToolbar-container {
+      max-height: 40px;
+
+      .MuiButtonBase-root {
+        &.MuiButton-root {
+          margin: 0 !important;
+
+          span {
+            font-size: 18px;
+          }
+        }
+      }
+      .MuiTypography-h5 {
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        align-self: stretch;
+        max-height: 40px;
       }
     }
 

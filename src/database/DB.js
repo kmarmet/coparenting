@@ -21,6 +21,16 @@ const DB = {
     memories: 'memories',
     parentPermissionCodes: 'parentPermissionCodes',
   },
+  find: async (arrayOrTable, matchArray, isFromDb = true) => {
+    let result
+    if (isFromDb) {
+      const records = await DB.getTable(arrayOrTable)
+      result = _.find(records, matchArray)
+    } else {
+      return _.find(arrayOrTable, matchArray)
+    }
+    return result
+  },
   runQuery: async (table, query) => {
     const records = await DB.getTable(table)
     return records.filter(query)
@@ -97,11 +107,14 @@ const DB = {
       const dbRef = ref(getDatabase())
       await get(child(dbRef, path)).then((snapshot) => {
         if (snapshot.exists()) {
-          snapshot.forEach((event) => {
-            if (event.val()[propertyToCompare] == objectToCheck[propertyToCompare]) {
-              resolve(event.key)
-            }
-          })
+          let row = _.findKey(snapshot.val(), [propertyToCompare, objectToCheck[propertyToCompare]])
+          // console.log(row)
+          resolve(row)
+          // snapshot.forEach((event) => {
+          //   if (event.val()[propertyToCompare] == objectToCheck[propertyToCompare]) {
+          //     resolve(event.key)
+          //   }
+          // })
         }
       })
     }),
@@ -175,9 +188,9 @@ const DB = {
   delete: async (path, id) => {
     const dbRef = ref(getDatabase())
     let tableRecords = await DB.getTable(path)
-    let docToDelete = _.find(tableRecords, ['id', id])
+    let rowToDelete = _.find(tableRecords, ['id', id])
     if (Manager.isValid(tableRecords, true)) {
-      const deleteKey = await DB.getSnapshotKey(path, docToDelete, id)
+      const deleteKey = await DB.getSnapshotKey(path, rowToDelete, 'id')
       if (Manager.isValid(deleteKey)) {
         await remove(child(dbRef, `${path}/${deleteKey}/`))
       }

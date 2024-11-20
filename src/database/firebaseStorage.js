@@ -43,6 +43,7 @@ const FirebaseStorage = {
     const storage = getStorage()
     let imgLoadStatus = 'success'
     let imageUrl = ''
+    console.log(`${imageDir}/${id}/${imageName}`)
     await getDownloadURL(ref(storage, `${imageDir}/${id}/${imageName}`))
       .then((url) => {
         var image = new Image()

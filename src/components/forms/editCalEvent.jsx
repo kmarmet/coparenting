@@ -331,6 +331,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
     if (eventCount === 1) {
+      console.log(event?.id)
       await DB.delete(DB.tables.calendarEvents, event?.id)
       resetForm()
     } else {
@@ -448,9 +449,10 @@ export default function EditCalEvent({ event, showCard, onClose }) {
             {eventLength === EventLengths.multiple && (
               <>
                 <div>
-                  <InputWrapper labelText={'Date Range'} required={true} inputType={'date'}>
+                  <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
                     <MobileDateRangePicker
                       className={'w-100'}
+                      onOpen={() => Manager.hideKeyboard('date-range-input')}
                       onAccept={(dateArray) => {
                         if (Manager.isValid(dateArray, true)) {
                           setEventFromDate(moment(dateArray[0]).format('MM/DD/YYYY'))

@@ -25,6 +25,8 @@ import ConversationMessage from "../models/conversationMessage";
 
 import ChildUser from "../models/child/childUser";
 
+import Doc from "../models/doc";
+
 ObjectManager = {
   cleanObject: function(object, modelName) {
     var prop, ref, ref1, returnObject;
@@ -52,6 +54,8 @@ ObjectManager = {
           return new ConversationMessage();
         case ModelNames.childUser:
           return new ChildUser();
+        case ModelNames.doc:
+          return new Doc();
       }
     })();
     for (prop in object) {
