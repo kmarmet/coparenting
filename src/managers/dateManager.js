@@ -70,6 +70,11 @@ const DateManager = {
     const combined = Manager.getUniqueArray(sortedByDate.concat(sortedByDateAndTime))
     return combined
   },
+  sortByTime: (events) => {
+    const sorted = events.sort((a, b) => moment(a.startTime).diff(moment(b.startTime)))
+    console.log(sorted)
+    return []
+  },
   getWeeksUntilEndOfYear: () => {
     const endOfYear = moment([moment().format('yyyy')])
       .endOf('year')
@@ -140,13 +145,15 @@ const DateManager = {
     }
     return biweeklyEvents
   },
-  getWeeklyDates: (startDate, endDate) => {
-    const daysLeft = DateManager.getDaysUntilEndOfYear(endDate)
+  getWeeklyDates: (startDate, endMonth) => {
+    const daysLeft = DateManager.getDaysUntilEndOfYear(endMonth)
     let weeklyEvents = []
-    for (let i = 1; i <= daysLeft / 7; i++) {
+    const weeksLeft = daysLeft / 7
+
+    for (let i = 1; i <= weeksLeft; i++) {
       let newWeek = moment(startDate).add(i, 'week')
-      let weekMonth = moment(newWeek).format('MM')
-      const hasReachedEndDate = moment(weekMonth).isSameOrAfter(moment(endDate).format('MM'))
+      const endDate = `${moment(startDate).format('MM/DD')}/${moment(endMonth)}${moment(startDate).format('yyyy')}`
+      const hasReachedEndDate = moment(newWeek).isSameOrAfter(moment(endDate))
       if (hasReachedEndDate) {
         break
       }

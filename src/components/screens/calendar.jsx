@@ -57,6 +57,7 @@ export default function EventCalendar() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedNewEventDay, setSelectedNewEventDay] = useState(moment())
   const [dayFromEdit, setDayFromEdit] = useState(null)
+
   const formatEvents = (events) => {
     let dateArr = []
     events.forEach((event, index) => {
@@ -70,85 +71,28 @@ export default function EventCalendar() {
     return dateArr
   }
 
+  // GET EVENTS
   const getSecuredEvents = async (selectedDay, selectedMonth) => {
     let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
-    securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
     const eventsToAddDotsTo = securedEvents.sort((a, b) => {
       return a.startTime + b.startTime
     })
 
     setAllEventsFromDb(securedEvents)
-    // Sort desc
-    securedEvents = securedEvents.sort((a, b) => {
-      if (a.startTime < b.startTime) {
-        return -1
-      }
-      if (a.startTime > b.startTime) {
-        return 1
-      }
-      return 0
-    })
     if (selectedDay) {
-      securedEvents = securedEvents.filter((x) => {
-        if (x.startDate === moment(selectedDay).format('MM/DD/yyyy')) {
-          return x
-        }
-      })
-      let datesWithTime = []
-      let datesWithoutTime = []
-
-      // Sort dates with time
-      securedEvents.forEach((event) => {
-        if (Manager.isValid(event?.startTime, false, false, true)) {
-          datesWithTime.push(event)
-        } else {
-          datesWithoutTime.push(event)
-        }
-      })
-
-      // Sort
-      datesWithTime = datesWithTime.sort((a, b) => moment(a.startTime, DateFormats.timeForDb).diff(moment(b.startTime, DateFormats.timeForDb)))
-      securedEvents = datesWithoutTime.concat(datesWithTime)
+      securedEvents = securedEvents.filter((x) => x.startDate === moment(selectedDay).format(DateFormats.dateForDb))
+    } else {
+      securedEvents = securedEvents.filter((x) => x.startDate === moment().format(DateFormats.dateForDb))
     }
-    let eventsWithMultipleDays = []
-    eventsToAddDotsTo.forEach((event, index) => {
-      if (event?.startDate && event?.endDate && event?.startDate !== event?.endDate) {
-        if (eventsWithMultipleDays.filter((x) => x.startDate === event?.startDate).length === 0) {
-          const eventDaysCount = moment(event?.endDate).diff(event?.startDate, 'days')
-          const randomColor = Math.floor(Math.random() * 16777215).toString(16)
-          eventsWithMultipleDays.push({ eventObj: event, daysCount: eventDaysCount, color: randomColor })
-        }
-      }
-    })
 
-    // Support showing each event for multi-day events
-    eventsWithMultipleDays.forEach((event) => {
-      let dateRange = []
-      for (let i = 1; i <= event?.daysCount; i++) {
-        let formattedDay = moment(event?.eventObj.startDate).add(i, 'day').format(DateFormats.dateForDb)
-        dateRange.push(formattedDay)
-      }
-      if (dateRange.includes(selectedDay)) {
-        const eventToAdd = {
-          id: event?.eventObj.id,
-          title: event?.eventObj.title,
-          startDate: event?.eventObj.startDate,
-          endDate: event?.eventObj.endDate,
-          startTime: event?.eventObj.startTime,
-          endTime: event?.eventObj.endTime,
-          children: event?.eventObj.children,
-        }
-        if (!securedEvents.includes(eventToAdd)) {
-          securedEvents.push(eventToAdd)
-        }
-      }
-    })
+    // Sort
+    securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
 
-    await addDayIndicators(eventsToAddDotsTo, eventsWithMultipleDays)
+    // ADD DAY INDICATORS
+    await addDayIndicators(eventsToAddDotsTo)
 
     // Filter out dupes by event title
-    let formattedDateArr = formatEvents(securedEvents)
-    setExistingEvents(formattedDateArr.flat())
+    setExistingEvents(securedEvents)
     setTimeout(() => {
       addEventRowAnimation()
     }, 100)
@@ -342,7 +286,7 @@ export default function EventCalendar() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, `${DB.tables.calendarEvents}`), async (snapshot) => {
-      await getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM')).then((r) => r)
+      await getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
     })
   }
 
@@ -375,7 +319,6 @@ export default function EventCalendar() {
       })
     }
     onTableChange().then((r) => r)
-    getSecuredEvents(moment().format(DateFormats.dateForDb).toString(), moment().format('MM')).then((r) => r)
     Manager.showPageContainer('show')
   }, [])
 
@@ -467,7 +410,7 @@ export default function EventCalendar() {
         </BottomCard>
 
         {/* NEW EVENT */}
-        <NewCalendarEvent selectedNewEventDay={selectedNewEventDay} showCard={showNewEventCard} onClose={() => setShowNewEventCard(false)} />
+        <NewCalendarEvent selectedNewEventDay={selectedNewEventDay} showCard={showNewEventCard} hideCard={() => setShowNewEventCard(false)} />
 
         {/* EDIT EVENT */}
         <EditCalEvent
@@ -486,7 +429,7 @@ export default function EventCalendar() {
         <div id="static-calendar">
           <StaticDatePicker
             showDaysOutsideCurrentMonth={true}
-            defaultValue={dayFromEdit ? dayFromEdit : moment()}
+            defaultValue={moment(selectedNewEventDay)}
             onMonthChange={async (month) => {
               await getSecuredEvents(null, month)
             }}
@@ -656,6 +599,7 @@ export default function EventCalendar() {
           </div>
         </div>
       </div>
+
       {!showNewEventCard && !showSearchCard && !showEditCard && !showHolidaysCard && !showHolidays && (
         <NavBar navbarClass={'calendar'}>
           <PiCalendarPlusDuotone className={'new-event'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />

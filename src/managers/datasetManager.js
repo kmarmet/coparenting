@@ -40,9 +40,7 @@ DatasetManager = {
     return _.uniqBy(_.flattenDeep(arrOne, arrTwo));
   },
   sortByProperty: function(arr, prop, direction) {
-    arr = arr.filter(function(x) {
-      return x[prop] !== "";
-    });
+    //    arr = arr.filter (x) -> x[prop] isnt ""
     if (direction === "asc") {
       return _.sortBy(arr, prop);
     } else {

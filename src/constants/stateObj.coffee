@@ -13,7 +13,7 @@ StateObj =
   menuIsOpen: false
   messageToUser: null
   modalIsOpen: false
-  navbarButton:{}
+  refreshKey: 0,
   selectedChild: null
   selectedNewEventDay: null
   swapRequestToRevise: null
@@ -42,7 +42,7 @@ StateObj =
   setMenuIsOpen: (isOpen) ->
   setMessageToUser: (user) ->
   setModalIsOpen: (bool) ->
-  setNavbarButton: (button) ->
+  setRefreshKey: (num) ->
   setSelectedChild: (child) ->
   setSelectedNewEventDay: (day) ->
   setSwapRequestToRevise: (request) ->

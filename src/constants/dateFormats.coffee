@@ -11,8 +11,6 @@ DateFormats =
   readableDay: 'dddd Do'
   monthOnly: "MM"
   readableMonth: "MMMM"
-  flatpickr: "MMMM DD, yyyy"
   summaryHour: "ha"
-
 
 export default DateFormats

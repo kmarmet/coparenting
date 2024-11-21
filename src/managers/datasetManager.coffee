@@ -20,7 +20,7 @@ DatasetManager = {
   getUniqueArrayFromMultiple: (arrOne, arrTwo) ->
     _.uniqBy(_.flattenDeep(arrOne, arrTwo))
   sortByProperty: (arr, prop, direction) ->
-    arr = arr.filter (x) -> x[prop] isnt ""
+#    arr = arr.filter (x) -> x[prop] isnt ""
     if direction is "asc"
       _.sortBy arr, prop
     else

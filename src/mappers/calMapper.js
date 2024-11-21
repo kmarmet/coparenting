@@ -53,20 +53,20 @@ CalendarMapper = {
     }
     return interval;
   },
-  repeatingEvents: function(repeatInterval, eventFromDate, repeatingEndDate) {
+  repeatingEvents: function(repeatInterval, eventStartDate, repeatingEndDate) {
     var datesToRepeat;
     datesToRepeat = null;
     if (repeatInterval === 'daily') {
-      datesToRepeat = DateManager.getDailyDates(eventFromDate, repeatingEndDate);
+      datesToRepeat = DateManager.getDailyDates(eventStartDate, repeatingEndDate);
     }
     if (repeatInterval === 'weekly') {
-      datesToRepeat = DateManager.getWeeklyDates(eventFromDate, repeatingEndDate);
+      datesToRepeat = DateManager.getWeeklyDates(eventStartDate, repeatingEndDate);
     }
     if (repeatInterval === 'biweekly') {
-      datesToRepeat = DateManager.getBiweeklyDates(eventFromDate, repeatingEndDate);
+      datesToRepeat = DateManager.getBiweeklyDates(eventStartDate, repeatingEndDate);
     }
     if (repeatInterval === 'monthly') {
-      datesToRepeat = DateManager.getMonthlyDates(eventFromDate, repeatingEndDate);
+      datesToRepeat = DateManager.getMonthlyDates(eventStartDate, repeatingEndDate);
     }
     return datesToRepeat;
   },

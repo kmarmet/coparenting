@@ -15,7 +15,6 @@ import DateFormats from '../../constants/dateFormats'
 import DatetimePickerViews from '../../constants/datetimePickerViews'
 import DB from '@db'
 import DateManager from '../../managers/dateManager'
-import CalendarManager from '../../managers/calendarManager'
 import InputSuggestionWrapper from '../shared/inputSuggestionWrapper'
 import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
 import Toggle from 'react-toggle'
@@ -25,7 +24,6 @@ import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
-import NotificationManager from '../../managers/notificationManager'
 import BottomCard from '../shared/bottomCard'
 import { IoTodayOutline } from 'react-icons/io5'
 import { HiOutlineCalendarDays } from 'react-icons/hi2'
@@ -57,9 +55,11 @@ import DatasetManager from '../../managers/datasetManager'
 import InputSuggestion from '../../models/inputSuggestion' // COMPONENT
 import _ from 'lodash'
 import FormNames from '../../models/formNames'
+import CalendarManager from '../../managers/calendarManager'
+import NotificationManager from '../../managers/notificationManager'
 
 // COMPONENT
-export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDay }) {
+export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
@@ -97,13 +97,38 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
 
   const resetForm = () => {
     Manager.resetForm('new-event-form')
+    setEventLength(EventLengths.single)
+    setEventStartDate('')
+    setEventEndDate('')
+    setEventLocation('')
+    setEventTitle('')
+    setEventWebsite('')
+    setEventNotes('')
+    setRepeatingEndDate('')
+    setRepeatInterval('')
+    setEventStartTime('')
+    setEventEndTime('')
+    setEventShareWith([])
+    setClonedDates([])
+    setClonedDatesToSubmit([])
+    setInputSuggestions([])
+    setEventChildren([])
+    setEventReminderTimes([])
+    setCoparentsToRemind([])
+    setEventIsRepeating(false)
+    setIsAllDay(false)
+    setShowCloneInput(false)
+    setShowReminders(false)
+    setIncludeChildren(false)
+    setIsVisitation(false)
+    setShowCoparentReminderToggle(false)
     setRefreshKey(Manager.getUid())
-    onClose()
+    setSuggestionRefreshKey(Manager.getUid())
+    hideCard()
   }
 
   const submit = async () => {
     const newEvent = new CalendarEvent()
-    console.log(eventStartDate, eventEndDate)
     // Required
     newEvent.title = eventTitle
     if (Manager.isValid(newEvent.title) && newEvent.title.toLowerCase().indexOf('birthday') > -1) {
@@ -165,70 +190,33 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
 
       const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
       MyConfetti.fire()
-      onClose()
 
       // Add first/initial date before adding repeating/cloned
       await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
         NotificationManager.sendToShareWith(eventShareWith, 'New Calendar Event', `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`)
 
         // Add cloned dates
-        if (Manager.isValid(clonedDatesToSubmit, true)) {
-          await CalendarManager.addMultipleCalEvents(currentUser, DatasetManager.getUniqueArray(clonedDatesToSubmit).flat())
+        if (Manager.isValid(clonedDates, true)) {
+          const clonedDatesList = createEventList()
+          console.log(clonedDatesList)
+          await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesList)
+        }
+
+        if (eventIsRepeating) {
+          const repeatingDates = createEventList('repeating')
+          await CalendarManager.addMultipleCalEvents(currentUser, repeatingDates)
         }
 
         // Repeating Events
-        await addRepeatingEventsToDb()
         if (navigator.setAppBadge) {
           await navigator.setAppBadge(1)
         }
       })
-    }
-    resetForm()
-  }
-
-  const addRepeatingEventsToDb = async () => {
-    let repeatingEvents = []
-    let datesToRepeat = CalendarMapper.repeatingEvents(
-      repeatInterval,
-      moment(eventStartDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
-      repeatingEndDate
-    )
-    if (Manager.isValid(datesToRepeat)) {
-      datesToRepeat.forEach((date) => {
-        let repeatingDateObject = new CalendarEvent()
-
-        // Required
-        repeatingDateObject.id = Manager.getUid()
-        repeatingDateObject.title = eventTitle
-        repeatingDateObject.startDate = moment(date).format(DateFormats.monthDayYear)
-        repeatingDateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat()
-
-        // Not Required
-        repeatingDateObject.directionsLink = eventLocation
-        repeatingDateObject.location = eventLocation
-        repeatingDateObject.children = eventChildren
-        repeatingDateObject.createdBy = currentUser.name
-        repeatingDateObject.notes = eventNotes
-        repeatingDateObject.ownerPhone = currentUser.phone
-        repeatingDateObject.websiteUrl = eventWebsite
-        repeatingDateObject.startTime = eventStartTime
-        repeatingDateObject.endTime = eventEndTime
-        repeatingDateObject.reminderTimes = eventReminderTimes
-        repeatingDateObject.endDate = eventEndDate
-        repeatingDateObject.repeatInterval = repeatInterval
-
-        if (!isAllDay) {
-          repeatingDateObject.startTime = moment(eventStartTime, DateFormats.fullDatetime).format(DateFormats.timeForDb)
-          repeatingDateObject.endTime = moment(eventEndTime, DateFormats.fullDatetime).format(DateFormats.timeForDb)
-        }
-        // repeatingDateObject = ObjectManager.cleanObject(repeatingDateObject)
-        repeatingEvents.push(repeatingDateObject)
-      })
-      // Upload to DB
-      await CalendarManager.addMultipleCalEvents(currentUser, repeatingEvents)
+      resetForm()
     }
   }
 
+  // await CalendarManager.addMultipleCalEvents(currentUser, repeatingEvents)
   const handleChildSelection = (e) => {
     let childrenArr = []
     Manager.handleCheckboxSelection(
@@ -307,46 +295,49 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
     )
   }
 
-  // Add cloned events
-  useEffect(() => {
+  const createEventList = () => {
     let datesToPush = []
-    clonedDates.forEach((date) => {
-      let clonedDateObject = new CalendarEvent()
+    let datesToIterate = []
+
+    if (eventIsRepeating) {
+      datesToIterate = CalendarMapper.repeatingEvents(
+        repeatInterval,
+        moment(eventStartDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
+        repeatingEndDate
+      )
+    }
+    if (clonedDates.length > 0) {
+      datesToIterate = clonedDates
+    }
+    datesToIterate.forEach((date) => {
+      let dateObject = new CalendarEvent()
       // Required
-      clonedDateObject.title = eventTitle
-      clonedDateObject.id = Manager.getUid()
-      clonedDateObject.startDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
-      clonedDateObject.endDate = DateManager.dateIsValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
+      dateObject.title = eventTitle
+      dateObject.id = Manager.getUid()
+      dateObject.startDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
+      dateObject.endDate = DateManager.dateIsValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
       // Not Required
-      clonedDateObject.directionsLink = eventLocation
-      clonedDateObject.location = eventLocation
-      clonedDateObject.children = eventChildren
-      clonedDateObject.ownerPhone = currentUser.phone
-      clonedDateObject.createdBy = currentUser.name
-      clonedDateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat()
-      clonedDateObject.notes = eventNotes
-      clonedDateObject.websiteUrl = eventWebsite
-      clonedDateObject.startTime = ''
-      clonedDateObject.endTime = ''
-      clonedDateObject.reminderTimes = eventReminderTimes
-      clonedDateObject.endDate = ''
-      clonedDateObject.repeatInterval = ''
-      clonedDateObject = ObjectManager.cleanObject(clonedDateObject, ModelNames.calendarEvent)
-
-      if (!isAllDay) {
-        clonedDateObject.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
-        clonedDateObject.endTime = DateManager.dateIsValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
-      }
-
-      datesToPush.push(clonedDateObject)
-
-      setTimeout(() => {
-        console.log(clonedDatesToSubmit)
-      }, 500)
+      dateObject.directionsLink = eventLocation
+      dateObject.location = eventLocation
+      dateObject.children = eventChildren
+      dateObject.ownerPhone = currentUser.phone
+      dateObject.createdBy = currentUser.name
+      dateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat()
+      dateObject.notes = eventNotes
+      dateObject.websiteUrl = eventWebsite
+      dateObject.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
+      dateObject.endTime = DateManager.dateIsValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
+      dateObject.reminderTimes = eventReminderTimes
+      dateObject.endDate = ''
+      dateObject.repeatInterval = ''
+      dateObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
+      datesToPush.push(dateObject)
     })
-    setClonedDatesToSubmit(DatasetManager.mergeMultiple([clonedDatesToSubmit, datesToPush]))
-    // Reset Multidate Picker
-    if (clonedDates.length === 0) {
+
+    console.log(datesToPush)
+
+    if (clonedDates.length > 0) {
+      // Reset Multidate Picker
       const multidatePicker = document.querySelector('.multidate-picker')
       if (multidatePicker) {
         multidatePicker.classList.remove('active')
@@ -356,7 +347,9 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
         }
       }
     }
-  }, [clonedDates.length])
+
+    return datesToPush
+  }
 
   useEffect(() => {
     if (selectedNewEventDay) {
@@ -382,10 +375,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
         refreshKey={refreshKey}
         submitText={'Create Event'}
         className={`${theme} new-event-form new-calendar-event`}
-        onClose={() => {
-          resetForm()
-          onClose()
-        }}
+        onClose={resetForm}
         onSubmit={submit}
         submitIcon={<FaRegCalendarCheck />}
         showCard={showCard}
@@ -715,14 +705,7 @@ export default function NewCalendarEvent({ showCard, onClose, selectedNewEventDa
                       placeholder={null}
                       label=""
                       onOpen={() => Manager.hideKeyboard()}
-                      onChange={(e) => {
-                        if (!Array.isArray(clonedDates)) {
-                          e = [e]
-                          setClonedDates(e)
-                        } else {
-                          setClonedDates(e)
-                        }
-                      }}
+                      onChange={(e) => setClonedDates(e)}
                     />
                   </InputWrapper>
                 </div>

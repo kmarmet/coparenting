@@ -36,16 +36,16 @@ CalendarMapper =
 
     return interval
 
-  repeatingEvents: (repeatInterval, eventFromDate, repeatingEndDate) ->
+  repeatingEvents: (repeatInterval, eventStartDate, repeatingEndDate) ->
     datesToRepeat = null
     if repeatInterval is 'daily'
-      datesToRepeat = DateManager.getDailyDates(eventFromDate, repeatingEndDate)
+      datesToRepeat = DateManager.getDailyDates(eventStartDate, repeatingEndDate)
     if repeatInterval is 'weekly'
-      datesToRepeat = DateManager.getWeeklyDates(eventFromDate, repeatingEndDate)
+      datesToRepeat = DateManager.getWeeklyDates(eventStartDate, repeatingEndDate)
     if repeatInterval is 'biweekly'
-      datesToRepeat = DateManager.getBiweeklyDates(eventFromDate, repeatingEndDate)
+      datesToRepeat = DateManager.getBiweeklyDates(eventStartDate, repeatingEndDate)
     if repeatInterval is 'monthly'
-      datesToRepeat = DateManager.getMonthlyDates(eventFromDate, repeatingEndDate)
+      datesToRepeat = DateManager.getMonthlyDates(eventStartDate, repeatingEndDate)
 
     return datesToRepeat
 

@@ -21,7 +21,7 @@ const DB = {
     memories: 'memories',
     parentPermissionCodes: 'parentPermissionCodes',
   },
-  find: async (arrayOrTable, matchArray, isFromDb = true) => {
+  find: async (arrayOrTable, matchArray, isFromDb) => {
     let result
     if (isFromDb) {
       const records = await DB.getTable(arrayOrTable)
