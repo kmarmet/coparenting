@@ -209,7 +209,6 @@ const DB = {
       }
     }
   },
-
   deleteByPath: (path) => {
     const dbRef = ref(getDatabase())
     remove(child(dbRef, path))

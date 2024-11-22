@@ -6,7 +6,7 @@ import { VscSettings } from 'react-icons/vsc'
 import { FaChild } from 'react-icons/fa'
 import { FiMenu } from 'react-icons/fi'
 
-export default function NavBar({ children, navbarClass }) {
+export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
   const { currentScreen, currentUser, menuIsOpen, showCenterNavbarButton, theme, showNavbar, navbarButton, unreadMessageCount } = state
 
@@ -45,7 +45,9 @@ export default function NavBar({ children, navbarClass }) {
             </div>
 
             {/* ADD NEW BUTTON */}
-            <div id="svg-wrapper">{children}</div>
+            <div id="svg-wrapper" className={addOrClose}>
+              {children}
+            </div>
 
             {/* CHILD INFO */}
             <div

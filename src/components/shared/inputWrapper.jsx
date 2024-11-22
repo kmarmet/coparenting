@@ -13,6 +13,7 @@ function InputWrapper({
   inputClasses = '',
   refreshKey,
   inputValueType = 'text',
+  inputValue = '',
 }) {
   const noInputTypes = ['location', 'textarea', 'date']
 
@@ -44,6 +45,7 @@ function InputWrapper({
       </div>
       {!noInputTypes.includes(inputType) && (
         <DebounceInput
+          value={inputValue}
           element={inputType}
           minLength={2}
           className={inputClasses}

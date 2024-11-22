@@ -227,6 +227,7 @@ const VisitationManager = {
     await VisitationManager.deleteAllHolidaysForUser(currentUser)
     holidays = DatasetManager.getUniqueArrayByProp(holidays, 'startDate', 'holidayName')
     const currentEvents = await DB.getTable(DB.tables.calendarEvents)
+    console.log([...currentEvents, ...holidays])
 
     await set(child(dbRef, `${DB.tables.calendarEvents}`), [...currentEvents, ...holidays])
   },

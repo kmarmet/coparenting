@@ -4,7 +4,6 @@ import AppManager from '@managers/appManager'
 import DateManager from '@managers/dateManager'
 import Manager from '@manager'
 import moment from 'moment'
-import { DebounceInput } from 'react-debounce-input'
 import globalState from '../../context'
 import CalendarMapper from 'mappers/calMapper'
 import CalendarManager from 'managers/calendarManager'
@@ -39,6 +38,7 @@ import EditCalEvent from '../forms/editCalEvent'
 import { TbLocation } from 'react-icons/tb'
 import { PiBellSimpleRinging, PiCalendarPlusDuotone, PiGlobeDuotone } from 'react-icons/pi'
 import NavBar from '../navBar'
+import InputWrapper from '../shared/inputWrapper'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -354,6 +354,7 @@ export default function EventCalendar() {
             await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
             setShowSearchCard(false)
             setRefreshKey(Manager.getUid())
+            setSearchQuery('')
           }}
           onSubmit={() => {
             if (searchQuery.length === 0) {
@@ -379,12 +380,11 @@ export default function EventCalendar() {
           }}
           showCard={showSearchCard}>
           <div className={'mb-5 flex form search-card'} id="search-container">
-            <DebounceInput
-              key={refreshKey}
-              placeholder="Enter an event name..."
-              minLength={2}
-              className={'search-input'}
-              debounceTimeout={500}
+            <InputWrapper
+              defaultValue="Enter event name..."
+              refreshKey={refreshKey}
+              inputType={'input'}
+              inputValue={searchQuery}
               onChange={async (e) => {
                 const inputValue = e.target.value
                 if (inputValue.length > 3) {
@@ -601,14 +601,27 @@ export default function EventCalendar() {
       </div>
 
       {!showNewEventCard && !showSearchCard && !showEditCard && !showHolidaysCard && !showHolidays && (
-        <NavBar navbarClass={'calendar'}>
-          <PiCalendarPlusDuotone className={'new-event'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
+        <NavBar navbarClass={'calendar search-results'} addOrClose={searchResults.length === 0 ? 'add' : 'close'}>
+          {searchResults.length === 0 && (
+            <PiCalendarPlusDuotone className={'new-event'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
+          )}
+          {searchResults.length > 0 && (
+            <CgClose
+              id={'close-button'}
+              onClick={async () => {
+                Manager.scrollIntoView('#static-calendar')
+                await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+                setSearchResults([])
+                setSearchQuery('')
+              }}
+            />
+          )}
         </NavBar>
       )}
       {showHolidays && (
-        <NavBar navbarClass={'calendar close-holiday'}>
+        <NavBar navbarClass={'calendar'} addOrClose={showHolidays ? 'close' : 'add'}>
           <CgClose
-            id={'add-new-button'}
+            id={'close-button'}
             onClick={async () => {
               Manager.scrollIntoView('#static-calendar')
               await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())

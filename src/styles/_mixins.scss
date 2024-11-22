@@ -2800,11 +2800,6 @@
 
   // Custom Colors
   &.calendar {
-    &.close-holiday {
-      #svg-wrapper {
-        background: $red;
-      }
-    }
   }
   &.child-info {
     #svg-wrapper {
@@ -2832,6 +2827,14 @@
     #add-new-button {
       font-size: 32px;
       color: white;
+    }
+    
+    &.close {
+      background-color: $red;
+      
+      svg {
+        color:white;
+      }
     }
   }
 

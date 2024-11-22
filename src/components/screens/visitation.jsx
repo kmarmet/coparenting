@@ -28,6 +28,8 @@ import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import DatasetManager from '../../managers/datasetManager'
 import AlertManager from '../../managers/alertManager'
+import ObjectManager from '../../managers/objectManager'
+import ModelNames from '../../models/modelNames'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -249,7 +251,9 @@ export default function Visitation() {
       let events = []
       selectedHolidayDates.forEach((holidayDateString) => {
         const dateObject = new CalendarEvent()
+        console.log(holidayDateString)
         const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format('MM/DD'))
+        console.log(holidayName)
         // Required
         dateObject.title = `${formatNameFirstNameOnly(currentUser.name)}'s Holiday Visitation`
         dateObject.startDate = moment(holidayDateString).format('MM/DD/yyyy')
@@ -261,7 +265,8 @@ export default function Visitation() {
         dateObject.isHoliday = true
         dateObject.id = Manager.getUid()
         dateObject.shareWith = DatasetManager.getUniqueArray(shareWith, true)
-        events.push(dateObject)
+        const cleanedObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
+        events.push(cleanedObject)
       })
       // Upload to DB
       await VisitationManager.setVisitationHolidays(currentUser, events)
@@ -604,7 +609,7 @@ export default function Visitation() {
             </p>
             <div className="buttons flex mt-15">
               <button
-                className="button red default center"
+                className="button red default center mb-20"
                 onClick={() => {
                   AlertManager.confirmAlert(
                     'Are you sure you would like to permanently delete your current visitation schedule?',
@@ -677,7 +682,7 @@ export default function Visitation() {
           </div>
         )}
         {/* HOLIDAY SELECTION */}
-        <Label text={'Select the holidays YOU have the child(ren) this year'}>
+        <Label text={'Select the holidays YOU have the child(ren) this year'} classes="mb-15">
           <CheckboxGroup
             elClass={'holiday-checkboxes gap-10'}
             boxWidth={50}

@@ -426,6 +426,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               labelText={'Title'}
               defaultValue={eventTitle}
               required={true}
+              inputValue={eventTitle}
               onChange={async (e) => {
                 const inputValue = e.target.value
                 if (inputValue.length > 1) {
@@ -694,7 +695,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     />
                     {repeatInterval && (
                       <DatetimePicker
-                        className={`mt-0 w-100`}
+                        className={`mt-0 w-100 mb-15`}
                         label={'Month to end repeating events'}
                         format={DateFormats.readableMonth}
                         views={DatetimePickerViews.monthAndYear}

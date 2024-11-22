@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import moment from 'moment'
+import { child, getDatabase, ref, set } from 'firebase/database'
+
 import {
   contains,
   formatFileName,
@@ -168,10 +170,12 @@ export default function AdminDashboard() {
     )
   }
 
-  const clearNullRows = async () => {
+  const removeNullAndUndefined = async () => {
+    const dbRef = ref(getDatabase())
     const rows = await DB.getTable(DB.tables[tableName])
-    const nullRows = rows.filter((x) => !x)
-    console.log(nullRows)
+    const validRows = rows.filter((x) => x)
+    console.log(DB.tables[tableName])
+    set(child(dbRef, DB.tables[tableName]), validRows)
   }
 
   return (
@@ -245,7 +249,7 @@ export default function AdminDashboard() {
                 })}
               </Select>
             </FormControl>
-            <button className="button center w-100" onClick={clearNullRows}>
+            <button className="button center w-100" onClick={removeNullAndUndefined}>
               Remove
             </button>
           </div>
