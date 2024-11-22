@@ -324,11 +324,14 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         moment(eventStartDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
         repeatingEndDate
       )
+      datesToIterate.push(eventStartDate)
     }
 
     // CLONED DATES
     if (clonedDates.length > 0) {
       datesToIterate = clonedDates
+      // Add initial start date
+      datesToIterate.push(new Date(eventStartDate))
     }
 
     datesToIterate.forEach((date) => {
@@ -355,8 +358,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       dateObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
       datesToPush.push(dateObject)
     })
-
-    console.log(datesToPush)
 
     if (clonedDates.length > 0) {
       // Reset Multidate Picker
