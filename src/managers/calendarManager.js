@@ -31,6 +31,16 @@ import {
 
 import DatasetManager from "./datasetManager";
 
+import CalendarEvent from "../models/calendarEvent";
+
+import DateManager from "./dateManager";
+
+import DateFormats from "../constants/dateFormats";
+
+import ObjectManager from "./objectManager";
+
+import ModelNames from "../models/modelNames";
+
 export default CalendarManager = {
   formatEventTitle: (title) => {
     if (title && title.length > 0) {

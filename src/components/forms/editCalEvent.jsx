@@ -66,6 +66,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const [eventChildren, setEventChildren] = useState(event?.children || [])
   const [eventReminderTimes, setEventReminderTimes] = useState([])
   const [eventShareWith, setEventShareWith] = useState(event?.shareWith || [])
+  const [eventIsRepeating, setEventIsRepeating] = useState(false)
+  const [eventIsDateRange, setEventIsDateRange] = useState(false)
   // State
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
   const [repeatingDatesToSubmit, setRepeatingDatesToSubmit] = useState([])
@@ -157,12 +159,17 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
         // Add cloned dates
         if (Manager.isValid(clonedDatesToSubmit, true)) {
-          await CalendarManager.addMultipleCalEvents(DatasetManager.getUniqueArray(clonedDatesToSubmit, true))
+          await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+        }
+
+        if (eventIsDateRange) {
+          const dates = DateManager.getDateRangeDates(eventToEdit.startDate, eventEndDate)
+          await CalendarManager.addMultipleCalEvents(currentUser, dates)
         }
 
         // Add repeating dates
         if (Manager.isValid(repeatingDatesToSubmit, true)) {
-          await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
+          await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
         }
       }
 
@@ -172,6 +179,11 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, cleanedObject).then(async (result) => {
           await afterUpdateCallback()
         })
+
+        if (eventIsDateRange) {
+          const dates = DateManager.getDateRangeDates(eventToEdit.startDate, eventEndDate)
+          await CalendarManager.addMultipleCalEvents(currentUser, dates)
+        }
 
         // Add cloned dates
         if (Manager.isValid(clonedDatesToSubmit, true)) {
@@ -457,6 +469,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                         if (Manager.isValid(dateArray, true)) {
                           setEventFromDate(moment(dateArray[0]).format('MM/DD/YYYY'))
                           setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
+                          setEventIsDateRange(true)
                         }
                       }}
                       slots={{ field: SingleInputDateRangeField }}

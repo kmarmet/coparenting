@@ -88,6 +88,11 @@ const DateManager = {
   msToDate: (ms) => {
     return moment(ms, 'x').format('MM/DD/yyyy')
   },
+  getDaysInRange: (startDate, endDate) => {
+    let a = moment(startDate)
+    let b = moment(endDate)
+    return b.diff(a, 'days')
+  },
   getMonthsUntilEndOfYear: () => {
     const currentMonth = Number(moment().month()) + 1
     return 12 - currentMonth
@@ -97,9 +102,22 @@ const DateManager = {
       .endOf('year')
       .format('MM/DD/yyyy')
     const daysLeftMs = moment(endOfYear, 'MM-DD-YYYY', 'days').diff(moment())
-    var duration = moment.duration(daysLeftMs, 'milliseconds')
-    var daysLeft = duration.asDays()
+    let duration = moment.duration(daysLeftMs, 'milliseconds')
+    let daysLeft = duration.asDays()
     return Math.ceil(daysLeft)
+  },
+  getDateRangeDates: (startDate, endDate) => {
+    const daysInRange = DateManager.getDaysInRange(startDate, endDate)
+    let dailyEvents = []
+    for (let i = 0; i <= daysInRange; i++) {
+      let nextDay = moment(startDate).add(i * 1, 'days')
+      const hasReachedEndDate = moment(nextDay).isSameOrAfter(moment(endDate).add(1, 'day'))
+      if (hasReachedEndDate) {
+        break
+      }
+      dailyEvents.push(moment(nextDay).format('MM/DD/yyyy'))
+    }
+    return dailyEvents
   },
   getDailyDates: (startDate, endDate) => {
     const daysLeft = DateManager.getDaysUntilEndOfYear()

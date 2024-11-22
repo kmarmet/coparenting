@@ -2,7 +2,7 @@
 var CalendarEvent;
 
 export default CalendarEvent = class CalendarEvent {
-  constructor(id = '', websiteUrl = '', notes = '', shareWith = [], endDate = '', startDate = '', startTime = '', ownerPhone = '', children = [], location = '', title = '', createdBy = '', reminderTimes = [], coparentsToRemindPhones = [], directionsLink = '', endTime = '', morningSummaryReminderSent = false, eveningSummaryReminderSent = false, fromVisitationSchedule = false, repeatInterval = '', sentReminders = [], visitationPeriodEndDate = '', isHoliday = false, visibleToAll = false, holidayName = '', visitationSchedule = '') {
+  constructor(id = '', websiteUrl = '', notes = '', shareWith = [], endDate = '', startDate = '', startTime = '', ownerPhone = '', children = [], location = '', title = '', createdBy = '', reminderTimes = [], coparentsToRemindPhones = [], directionsLink = '', endTime = '', morningSummaryReminderSent = false, eveningSummaryReminderSent = false, fromVisitationSchedule = false, repeatInterval = '', sentReminders = [], visitationPeriodEndDate = '', isHoliday = false, visibleToAll = false, holidayName = '', visitationSchedule = '', isRepeating = '', isCloned = '', isDateRange = '') {
     this.id = id;
     this.websiteUrl = websiteUrl;
     this.notes = notes;
@@ -29,6 +29,9 @@ export default CalendarEvent = class CalendarEvent {
     this.visibleToAll = visibleToAll;
     this.holidayName = holidayName;
     this.visitationSchedule = visitationSchedule;
+    this.isRepeating = isRepeating;
+    this.isCloned = isCloned;
+    this.isDateRange = isDateRange;
   }
 
 };

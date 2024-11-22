@@ -78,13 +78,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [eventEndTime, setEventEndTime] = useState('')
   const [eventShareWith, setEventShareWith] = useState([])
   const [clonedDates, setClonedDates] = useState([])
-  const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
   const [inputSuggestions, setInputSuggestions] = useState([])
   const [eventChildren, setEventChildren] = useState([])
   const [eventReminderTimes, setEventReminderTimes] = useState([])
   const [coparentsToRemind, setCoparentsToRemind] = useState([])
   const [eventIsRepeating, setEventIsRepeating] = useState(false)
-
+  const [eventIsDateRange, setEventIsDateRange] = useState(false)
   // COMPONENT STATE
   const [isAllDay, setIsAllDay] = useState(false)
   const [showCloneInput, setShowCloneInput] = useState(false)
@@ -110,11 +109,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     setEventEndTime('')
     setEventShareWith([])
     setClonedDates([])
-    setClonedDatesToSubmit([])
     setInputSuggestions([])
     setEventChildren([])
     setEventReminderTimes([])
     setCoparentsToRemind([])
+    setEventIsDateRange(false)
     setEventIsRepeating(false)
     setIsAllDay(false)
     setShowCloneInput(false)
@@ -191,27 +190,41 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
       MyConfetti.fire()
 
-      // Add first/initial date before adding repeating/cloned
-      await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
-        NotificationManager.sendToShareWith(eventShareWith, 'New Calendar Event', `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`)
+      // Determine if you add 1 or more events
+      let addSingleEvent = true
 
-        // Add cloned dates
-        if (Manager.isValid(clonedDates, true)) {
-          const clonedDatesList = createEventList()
-          console.log(clonedDatesList)
-          await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesList)
-        }
+      // Date Range
+      if (eventIsDateRange) {
+        addSingleEvent = false
+        const dateObjects = createEventList()
+        await CalendarManager.addMultipleCalEvents(currentUser, dateObjects)
+      }
 
-        if (eventIsRepeating) {
-          const repeatingDates = createEventList('repeating')
-          await CalendarManager.addMultipleCalEvents(currentUser, repeatingDates)
-        }
+      // Add cloned dates
+      if (Manager.isValid(clonedDates, true)) {
+        addSingleEvent = false
+        const clonedDatesList = createEventList()
+        await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesList)
+      }
 
-        // Repeating Events
-        if (navigator.setAppBadge) {
-          await navigator.setAppBadge(1)
-        }
-      })
+      // Repeating
+      if (eventIsRepeating) {
+        addSingleEvent = false
+        const repeatingDates = createEventList('repeating')
+        await CalendarManager.addMultipleCalEvents(currentUser, repeatingDates)
+      }
+
+      // Add single date
+      if (addSingleEvent) {
+        await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
+          NotificationManager.sendToShareWith(eventShareWith, 'New Calendar Event', `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`)
+
+          // Repeating Events
+          if (navigator.setAppBadge) {
+            await navigator.setAppBadge(1)
+          }
+        })
+      }
       resetForm()
     }
   }
@@ -299,6 +312,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     let datesToPush = []
     let datesToIterate = []
 
+    // DATE RANGE
+    if (eventLength === 'multiple') {
+      datesToIterate = DateManager.getDateRangeDates(eventStartDate, eventEndDate)
+    }
+
+    // REPEATING
     if (eventIsRepeating) {
       datesToIterate = CalendarMapper.repeatingEvents(
         repeatInterval,
@@ -306,9 +325,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         repeatingEndDate
       )
     }
+
+    // CLONED DATES
     if (clonedDates.length > 0) {
       datesToIterate = clonedDates
     }
+
     datesToIterate.forEach((date) => {
       let dateObject = new CalendarEvent()
       // Required
@@ -465,6 +487,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   if (Manager.isValid(dateArray, true)) {
                     setEventStartDate(moment(dateArray[0]).format('MM/DD/YYYY'))
                     setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
+                    setEventIsDateRange(true)
                   }
                 }}
                 slots={{ field: SingleInputDateRangeField }}
@@ -643,7 +666,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           )}
 
           {/* REPEATING/CLONED */}
-          {(!currentUser.accountType || currentUser.accountType === 'parent') && (
+          {(!currentUser.accountType || currentUser.accountType === 'parent') && eventLength === 'single' && (
             <>
               {/* REPEATING */}
               <div className="share-with-container" id="repeating-container">
