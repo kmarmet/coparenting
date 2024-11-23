@@ -5,6 +5,7 @@ import DB from '@db'
 import DateFormats from '../constants/dateFormats'
 import { child, getDatabase, ref, set } from 'firebase/database'
 import DatasetManager from './datasetManager'
+import LogManager from './logManager'
 
 const VisitationManager = {
   weekendMapper: (input) => {
@@ -227,9 +228,11 @@ const VisitationManager = {
     await VisitationManager.deleteAllHolidaysForUser(currentUser)
     holidays = DatasetManager.getUniqueArrayByProp(holidays, 'startDate', 'holidayName')
     const currentEvents = await DB.getTable(DB.tables.calendarEvents)
-    console.log([...currentEvents, ...holidays])
-
-    await set(child(dbRef, `${DB.tables.calendarEvents}`), [...currentEvents, ...holidays])
+    try {
+      await set(child(dbRef, `${DB.tables.calendarEvents}`), [...currentEvents, ...holidays])
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+    }
   },
   getSchedule: async (currentUser) => {
     return new Promise(async (resolve) => {
@@ -316,7 +319,11 @@ const VisitationManager = {
   },
   deleteSchedule: async (scheduleEvents) => {
     for (const event of scheduleEvents) {
-      await DB.delete(DB.tables.calendarEvents, event.id)
+      try {
+        await DB.delete(DB.tables.calendarEvents, event.id)
+      } catch (error) {
+        LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      }
     }
   },
   deleteAllHolidaysForUser: async (currentUser) => {
@@ -342,7 +349,11 @@ const VisitationManager = {
       })
     })
     const eventsToAdd = [...currentEvents, [...vScheduleEvents]].filter((x) => x !== undefined).flat()
-    set(child(dbRef, `${DB.tables.calendarEvents}`), eventsToAdd)
+    try {
+      set(child(dbRef, `${DB.tables.calendarEvents}`), eventsToAdd)
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+    }
   },
 }
 

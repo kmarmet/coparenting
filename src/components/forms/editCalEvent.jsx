@@ -445,7 +445,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                 <div className="w-100">
                   <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
                     <MobileDatePicker
-                      disablePast={true}
                       value={moment(event?.startDate)}
                       className={`${theme} m-0 w-100 event-from-date mui-input`}
                       onAccept={(e) => {

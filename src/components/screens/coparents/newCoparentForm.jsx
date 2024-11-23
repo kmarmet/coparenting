@@ -29,6 +29,7 @@ import InputWrapper from '../../shared/inputWrapper'
 import BottomCard from '../../shared/bottomCard'
 import DatasetManager from '../../../managers/datasetManager'
 import AlertManager from '../../../managers/alertManager'
+import LogManager from '../../../managers/logManager'
 
 const NewCoparentForm = ({ showCard, hideCard }) => {
   const { state, setState } = useContext(globalState)
@@ -43,8 +44,12 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
 
   const resetForm = () => {
     Manager.resetForm('new-coparent-wrapper')
-    hideCard()
+    setName('')
+    setAddress('')
+    setPhoneNumber('')
+    setParentType('')
     setRefreshKey(Manager.getUid())
+    hideCard()
     AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
   }
 
@@ -57,7 +62,6 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
     if (Manager.validation([phoneNumber, address, name, parentType]) > 0) {
       AlertManager.throwError('All fields are required')
     } else {
-      const existingCoparents = currentUser?.coparents || []
       const newCoparent = new Coparent()
       newCoparent.id = Manager.getUid()
       newCoparent.address = address !== null ? address : ''
@@ -68,7 +72,11 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       const cleanCoparent = ObjectManager.cleanObject(newCoparent, ModelNames.coparent)
 
       // Has coparents already
-      await set(child(dbRef, `users/${currentUser.phone}/coparents`), DatasetManager.mergeMultiple(currentUser.coparents, [cleanCoparent]))
+      try {
+        await set(child(dbRef, `users/${currentUser.phone}/coparents`), DatasetManager.mergeMultiple([currentUser.coparents, cleanCoparent]))
+      } catch (error) {
+        LogManager.log(error.message, LogManager.logTypes.error)
+      }
 
       resetForm()
     }

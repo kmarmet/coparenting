@@ -10,8 +10,8 @@ DatasetManager = {
     if flatten
       return _.flattenDeep(_.uniqBy(arr))
     return _.uniqBy(arr)
-  mergeMultiple: (arrays) ->
-    _.flatten(arrays[0].concat(arrays[1])).filter (x) -> x?
+  mergeMultiple: (arrayOfArrays) ->
+    _.flatten(arrayOfArrays[0].concat(arrayOfArrays[1])).filter (x) -> x?
   getUniqueArrayByProp: (arr, propOne, propTwo, propThree) ->
     uniqueData = _.values(_.keyBy(arr, (item) -> "#{item[propOne]}-#{item[propTwo]}"))
     if propThree

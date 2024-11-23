@@ -19,7 +19,6 @@ function DatetimePicker({ onAccept, defaultValue, placeholder, label, format, vi
         ampm={hasAmPm}
         format={format}
         views={views}
-        disablePast={true}
         onAccept={onAccept}
       />
     </LocalizationProvider>

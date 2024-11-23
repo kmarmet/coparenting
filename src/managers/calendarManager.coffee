@@ -21,6 +21,7 @@ import DateManager from "./dateManager"
 import DateFormats from "../constants/dateFormats"
 import ObjectManager from "./objectManager"
 import ModelNames from "../models/modelNames"
+import LogManager from "./logManager"
 
 export default CalendarManager =
   formatEventTitle: (title) =>
@@ -38,6 +39,7 @@ export default CalendarManager =
     try
       await set(child(dbRef, "#{DB.tables.calendarEvents}"), merged)
     catch error
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
   setHolidays: (holidays) ->
     dbRef = ref(getDatabase())
     currentEvents = await DB.getTable(DB.tables.calendarEvents)
@@ -45,11 +47,15 @@ export default CalendarManager =
     try
       await set(child(dbRef, "#{DB.tables.calendarEvents}"), eventsToAdd)
     catch error
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
   addCalendarEvent: (data) ->
     dbRef = ref(getDatabase())
     currentEvents =  Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
     currentEvents = currentEvents.filter (n) -> n
-    set(child(dbRef, "#{DB.tables.calendarEvents}"), [currentEvents..., data])
+    try
+      set(child(dbRef, "#{DB.tables.calendarEvents}"), [currentEvents..., data])
+    catch error
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
   deleteMultipleEvents: (events, currentUser) ->
     dbRef = ref(getDatabase())
     tableRecords = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
@@ -64,8 +70,7 @@ export default CalendarManager =
     for record in tableRecords
       if record?.id is id
         idToDelete = await DB.getSnapshotKey(tableName, record, 'id')
-        remove(child(dbRef, "#{tableName}/#{idToDelete}/"))
-
-
-
-# Error handling can be added here if needed
+        try
+          remove(child(dbRef, "#{tableName}/#{idToDelete}/"))
+        catch error
+          LogManager.log(error.message, LogManager.logTypes.error, error.stack)

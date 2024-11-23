@@ -395,7 +395,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     <div>
       {/* FORM WRAPPER */}
       <BottomCard
-        refreshKey={refreshKey}
         submitText={'Create Event'}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={resetForm}
@@ -417,10 +416,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           </div>
 
           {/* CALENDAR FORM */}
-          {/* TITLE */}
           <div className="title-suggestion-wrapper">
+            {/* TITLE */}
             <InputWrapper
-              refreshKey={suggestionRefreshKey}
+              refreshKey={refreshKey}
               inputClasses="event-title-input"
               inputType={'input'}
               labelText={'Title'}
@@ -466,7 +465,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 <div className="w-100">
                   <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
                     <MobileDatePicker
-                      disablePast={true}
                       value={moment(selectedNewEventDay)}
                       className={`${theme} m-0 w-100 event-from-date mui-input`}
                       onAccept={(e) => {
@@ -503,25 +501,13 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             <div className={'flex gap event-times-wrapper'}>
               <div>
                 <InputWrapper wrapperClasses="higher-label" labelText={'Start Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker
-                    disablePast={true}
-                    defaultValue={null}
-                    minutesStep={5}
-                    className={`${theme}`}
-                    onAccept={(e) => setEventStartTime(e)}
-                  />
+                  <MobileTimePicker minutesStep={5} className={`${theme}`} onAccept={(e) => setEventStartTime(e)} />
                 </InputWrapper>
               </div>
               <span>&nbsp;to&nbsp;</span>
               <div>
                 <InputWrapper wrapperClasses="higher-label" labelText={'End Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker
-                    disablePast={true}
-                    defaultValue={null}
-                    minutesStep={5}
-                    className={`${theme} `}
-                    onAccept={(e) => setEventEndTime(e)}
-                  />
+                  <MobileTimePicker defaultValue={null} minutesStep={5} className={`${theme} `} onAccept={(e) => setEventEndTime(e)} />
                 </InputWrapper>
               </div>
             </div>
@@ -742,6 +728,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
           {/* URL/WEBSITE */}
           <InputWrapper
+            refreshKey={refreshKey}
             labelText={'Website'}
             required={false}
             inputType={'input'}
@@ -749,7 +736,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
 
           {/* LOCATION/ADDRESS */}
-          <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
+          <InputWrapper refreshKey={refreshKey} labelText={'Location'} required={false} inputType={'location'}>
             <Autocomplete
               placeholder={'Location'}
               apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
@@ -764,7 +751,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           </InputWrapper>
 
           {/* NOTES */}
-          <InputWrapper labelText={'Notes'} required={false} inputType={'textarea'} onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
+          <InputWrapper
+            refreshKey={refreshKey}
+            labelText={'Notes'}
+            required={false}
+            inputType={'textarea'}
+            onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
         </div>
       </BottomCard>
     </div>

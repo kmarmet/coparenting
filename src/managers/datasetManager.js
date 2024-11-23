@@ -19,8 +19,8 @@ DatasetManager = {
     }
     return _.uniqBy(arr);
   },
-  mergeMultiple: function(arrays) {
-    return _.flatten(arrays[0].concat(arrays[1])).filter(function(x) {
+  mergeMultiple: function(arrayOfArrays) {
+    return _.flatten(arrayOfArrays[0].concat(arrayOfArrays[1])).filter(function(x) {
       return x != null;
     });
   },

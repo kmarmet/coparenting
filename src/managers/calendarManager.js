@@ -41,6 +41,8 @@ import ObjectManager from "./objectManager";
 
 import ModelNames from "../models/modelNames";
 
+import LogManager from "./logManager";
+
 export default CalendarManager = {
   formatEventTitle: (title) => {
     if (title && title.length > 0) {
@@ -62,6 +64,7 @@ export default CalendarManager = {
       return (await set(child(dbRef, `${DB.tables.calendarEvents}`), merged));
     } catch (error1) {
       error = error1;
+      return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
     }
   },
   setHolidays: async function(holidays) {
@@ -75,16 +78,22 @@ export default CalendarManager = {
       return (await set(child(dbRef, `${DB.tables.calendarEvents}`), eventsToAdd));
     } catch (error1) {
       error = error1;
+      return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
     }
   },
   addCalendarEvent: async function(data) {
-    var currentEvents, dbRef;
+    var currentEvents, dbRef, error;
     dbRef = ref(getDatabase());
     currentEvents = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents)));
     currentEvents = currentEvents.filter(function(n) {
       return n;
     });
-    return set(child(dbRef, `${DB.tables.calendarEvents}`), [...currentEvents, data]);
+    try {
+      return set(child(dbRef, `${DB.tables.calendarEvents}`), [...currentEvents, data]);
+    } catch (error1) {
+      error = error1;
+      return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
+    }
   },
   deleteMultipleEvents: async function(events, currentUser) {
     var dbRef, holiday, i, idToDelete, len, results, tableRecords, userHolidays;
@@ -102,7 +111,7 @@ export default CalendarManager = {
     return results;
   },
   deleteEvent: async function(tableName, id) {
-    var dbRef, i, idToDelete, len, record, results, tableRecords;
+    var dbRef, error, i, idToDelete, len, record, results, tableRecords;
     dbRef = ref(getDatabase());
     idToDelete = null;
     tableRecords = Manager.convertToArray((await DB.getTable(tableName)));
@@ -111,7 +120,12 @@ export default CalendarManager = {
       record = tableRecords[i];
       if ((record != null ? record.id : void 0) === id) {
         idToDelete = (await DB.getSnapshotKey(tableName, record, 'id'));
-        results.push(remove(child(dbRef, `${tableName}/${idToDelete}/`)));
+        try {
+          results.push(remove(child(dbRef, `${tableName}/${idToDelete}/`)));
+        } catch (error1) {
+          error = error1;
+          results.push(LogManager.log(error.message, LogManager.logTypes.error, error.stack));
+        }
       } else {
         results.push(void 0);
       }
@@ -119,7 +133,5 @@ export default CalendarManager = {
     return results;
   }
 };
-
-// Error handling can be added here if needed
 
 //# sourceMappingURL=calendarManager.js.map

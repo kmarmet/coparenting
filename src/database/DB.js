@@ -1,8 +1,8 @@
 import Manager from '@manager'
 import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
-import DB_UserScoped from '@userScoped'
 import DatasetManager from '../managers/datasetManager'
 import _ from 'lodash'
+import LogManager from '../managers/logManager'
 
 const DB = {
   tables: {
@@ -53,70 +53,25 @@ const DB = {
     })
     return key
   },
-  getAllFilteredRecords: async (path, currentUser, objectName, type = 'by-phone') => {
-    const getRecords = new Promise(async (resolve, reject) => {
-      const coparentPhones = currentUser?.coparents.map((x) => x.phone)
-
-      // Records based on phone
-      if (type === 'by-phone') {
-        // Coparent Data
-        let coparentRecords = []
-        // let currentUserRecords = []
-
-        const coparentsPromise = new Promise(async (resolve) => {
-          let toReturn = []
-          for (const coparentPhone of coparentPhones) {
-            await DB_UserScoped.getCoparentByPhone(coparentPhone).then(async (coparentObj) => {
-              let records = await DB_UserScoped.getRecordsByUser(path, coparentObj, objectName)
-              records = Manager.convertToArray(records)
-              if (records && records.length > 0) {
-                records = records.filter((x) => x.shareWith.includes(coparentObj.phone) || x.shareWith.includes(currentUser.phone))
-                toReturn.push(records)
-              }
-            })
-          }
-          resolve(toReturn)
-        })
-
-        coparentRecords = await coparentsPromise
-
-        // Current user Records
-        const currentUserRecords = Manager.convertToArray(await DB_UserScoped.getRecordsByUser(path, currentUser, objectName))
-        const allRecords = currentUserRecords.concat(coparentRecords).flat()
-        resolve(allRecords)
-      }
-      // Get root table (not dependent on user phone)
-      else {
-        if (path === DB.tables.documents) {
-          await DB.getTable(DB.tables.documents).then((docs) => {
-            if (docs && docs.length > 0) {
-              docs.forEach((doc) => {
-                if (doc.uploadedBy === currentUser.phone || coparentPhones.includes(doc.uploadedBy) || doc.shareWith.includes(doc.phone)) {
-                  resolve(docs)
-                }
-              })
-            }
-          })
-        }
-      }
-    })
-    return await getRecords
-  },
   getSnapshotKey: async (path, objectToCheck, propertyToCompare) =>
     await new Promise(async (resolve) => {
-      const dbRef = ref(getDatabase())
-      await get(child(dbRef, path)).then((snapshot) => {
-        if (snapshot.exists()) {
-          let row = _.findKey(snapshot.val(), [propertyToCompare, objectToCheck[propertyToCompare]])
-          // console.log(row)
-          resolve(row)
-          // snapshot.forEach((event) => {
-          //   if (event.val()[propertyToCompare] == objectToCheck[propertyToCompare]) {
-          //     resolve(event.key)
-          //   }
-          // })
-        }
-      })
+      try {
+        const dbRef = ref(getDatabase())
+        await get(child(dbRef, path)).then((snapshot) => {
+          if (snapshot.exists()) {
+            let row = _.findKey(snapshot.val(), [propertyToCompare, objectToCheck[propertyToCompare]])
+            // console.log(row)
+            resolve(row)
+            // snapshot.forEach((event) => {
+            //   if (event.val()[propertyToCompare] == objectToCheck[propertyToCompare]) {
+            //     resolve(event.key)
+            //   }
+            // })
+          }
+        })
+      } catch (error) {
+        LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      }
     }),
   getNestedSnapshotKey: async (recordPath, objectToCheck, propertyToCompare) =>
     await new Promise(async (resolve) => {
@@ -169,7 +124,11 @@ const DB = {
       }
       console.log(tableData)
       resolve('')
-      await set(child(dbRef, path), tableData)
+      try {
+        await set(child(dbRef, path), tableData)
+      } catch (error) {
+        LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      }
     }),
   addSuggestion: async (newSuggestion) => {
     const dbRef = ref(getDatabase())
@@ -192,7 +151,11 @@ const DB = {
     if (Manager.isValid(tableRecords, true)) {
       const deleteKey = await DB.getSnapshotKey(path, rowToDelete, 'id')
       if (Manager.isValid(deleteKey)) {
-        await remove(child(dbRef, `${path}/${deleteKey}/`))
+        try {
+          await remove(child(dbRef, `${path}/${deleteKey}/`))
+        } catch (error) {
+          LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+        }
       }
     }
   },
@@ -204,14 +167,22 @@ const DB = {
       for (let row in rows) {
         idToDelete = await DB.getSnapshotKey(table, row, 'id')
         if (Manager.isValid(idToDelete)) {
-          await remove(child(dbRef, `${table}/${idToDelete}/`))
+          try {
+            await remove(child(dbRef, `${table}/${idToDelete}/`))
+          } catch (error) {
+            LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+          }
         }
       }
     }
   },
   deleteByPath: (path) => {
     const dbRef = ref(getDatabase())
-    remove(child(dbRef, path))
+    try {
+      remove(child(dbRef, path))
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+    }
   },
   deleteImage: async (tableName, memory) => {
     const dbRef = ref(getDatabase())
@@ -222,8 +193,11 @@ const DB = {
   deleteMemory: async (phoneUid, memory) => {
     const dbRef = ref(getDatabase())
     const key = await DB.getSnapshotKey(`${DB.tables.memories}`, memory, 'id')
-    console.log(key)
-    remove(child(dbRef, `${DB.tables.memories}/${key}`))
+    try {
+      remove(child(dbRef, `${DB.tables.memories}/${key}`))
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+    }
   },
   removeShareWithAccess: async (path, currentUser, record) => {
     const shareWith = record.shareWith
@@ -239,7 +213,11 @@ const DB = {
   },
   updateByPath: (path, newValue) => {
     const dbRef = ref(getDatabase())
-    set(child(dbRef, path), newValue)
+    try {
+      set(child(dbRef, path), newValue)
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+    }
   },
   updateRecord: async (tableName, recordToUpdate, prop, value, identifier) => {
     const dbRef = ref(getDatabase())
@@ -251,13 +229,19 @@ const DB = {
       toUpdate = tableRecords.filter((x) => x.id === recordToUpdate.id)[0]
     }
     toUpdate[prop] = value
-    set(child(dbRef, tableName), tableRecords)
+    try {
+      set(child(dbRef, tableName), tableRecords)
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+    }
   },
   updateEntireRecord: async (path, updatedRow) => {
     const dbRef = getDatabase()
-    // ref(path).update(newRecord)
-    update(ref(dbRef, path), updatedRow)
-    // update((ref(dbRef, tableName), { newRecord }))
+    try {
+      update(ref(dbRef, path), updatedRow)
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+    }
   },
 }
 

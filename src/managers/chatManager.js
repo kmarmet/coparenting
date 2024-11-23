@@ -1,4 +1,4 @@
-import { child, get, getDatabase, ref, set } from 'firebase/database'
+import { child, getDatabase, ref, set } from 'firebase/database'
 import Manager from '@manager'
 import DB from '@db'
 import SecurityManager from './securityManager'
@@ -22,28 +22,24 @@ import {
 } from '../globalFunctions'
 import DB_UserScoped from '@userScoped'
 import ConversationMessageBookmark from '../models/conversationMessageBookmark'
+import LogManager from './logManager'
 
 const ChatManager = {
   getScopedChat: async (currentUser, messageToUserPhone) =>
     await new Promise(async (resolve, reject) => {
-      const dbRef = ref(getDatabase())
-      await get(child(dbRef, `${DB.tables.chats}`))
-        .then(async (snapshot) => {
-          if (snapshot.exists()) {
-            snapshot.forEach((shot) => {
-              const memberPhones = shot.val().members.map((x) => x.phone)
-              if (memberPhones.includes(currentUser.phone) && memberPhones.includes(messageToUserPhone)) {
-                resolve({
-                  chat: shot.val(),
-                  key: shot.key,
-                })
-              }
-            })
-          }
+      try {
+        const securedChats = await SecurityManager.getChats(currentUser)
+        const returnChat = securedChats.filter(
+          (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(messageToUserPhone)
+        )[0]
+        const key = await DB.getSnapshotKey(DB.tables.chats, returnChat, 'id')
+        resolve({
+          chat: returnChat,
+          key: key,
         })
-        .catch(() => {
-          reject(null)
-        })
+      } catch (error) {
+        LogManager.log(error.message, LogManager.logTypes.error)
+      }
     }),
   hideAndArchive: async (currentUser, coparent) => {
     const securedChats = await SecurityManager.getChats(currentUser)
@@ -55,8 +51,12 @@ const ChatManager = {
       securedChat.threadVisibilityMembers = [currentUser, coparent]
     }
     const visMembersWithoutCurrentUser = securedChat.threadVisibilityMembers.filter((x) => x.phone !== currentUser.phone)
-    await DB_UserScoped.updateByPath(`${DB.tables.chats}/${chatKey}/threadVisibilityMembers`, visMembersWithoutCurrentUser)
-    await DB.add(`${DB.tables.archivedChats}/${currentUser.phone}`, securedChat)
+    try {
+      await DB_UserScoped.updateByPath(`${DB.tables.chats}/${chatKey}/threadVisibilityMembers`, visMembersWithoutCurrentUser)
+      await DB.add(`${DB.tables.archivedChats}/${currentUser.phone}`, securedChat)
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error)
+    }
   },
   toggleMessageBookmark: async (currentUser, messageToUser, messageId) => {
     const dbRef = ref(getDatabase())
@@ -86,7 +86,11 @@ const ChatManager = {
       chat.bookmarks = chat.bookmarks.filter((x) => x.messageId !== messageId)
     }
 
-    await set(child(dbRef, `${DB.tables.chats}/${key}`), chat).catch((error) => {})
+    try {
+      await set(child(dbRef, `${DB.tables.chats}/${key}`), chat).catch((error) => {})
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error)
+    }
   },
   markMessagesRead: async (currentUser, messageToUser, chat) => {
     const dbRef = ref(getDatabase())
@@ -116,7 +120,11 @@ const ChatManager = {
     }
     const currentConversations = await DB.getTable(path)
     const toAdd = [...currentConversations, [...data]].filter((x) => x !== undefined).flat()
-    set(child(dbRef, path), toAdd).catch((error) => {})
+    try {
+      set(child(dbRef, path), toAdd).catch((error) => {})
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error)
+    }
   },
 }
 
