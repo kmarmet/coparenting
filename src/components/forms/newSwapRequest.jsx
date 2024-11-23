@@ -58,7 +58,6 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     Manager.resetForm('swap-request-wrapper')
     hideCard()
     setRefreshKey(Manager.getUid())
-    AlertManager.successAlert('Swap Request Sent')
   }
 
   const submit = async () => {
@@ -90,6 +89,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
         })
         setSwapDuration(SwapDurations.single)
       })
+      AlertManager.successAlert('Swap Request Sent')
 
       resetForm()
     }

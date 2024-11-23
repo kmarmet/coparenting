@@ -76,9 +76,8 @@ function NewExpenseForm({ hideCard, showCard }) {
 
   const resetForm = () => {
     Manager.resetForm('expenses-wrapper')
-    hideCard()
     setRefreshKey(Manager.getUid())
-    AlertManager.successAlert(`${expenseName} Added`)
+    hideCard()
   }
 
   const submitNewExpense = async () => {
@@ -155,6 +154,7 @@ function NewExpenseForm({ hideCard, showCard }) {
       // Go back to expense screen
       resetForm()
     })
+    AlertManager.successAlert(`${expenseName} Added`)
   }
 
   const addRepeatingExpensesToDb = async () => {
@@ -295,7 +295,7 @@ function NewExpenseForm({ hideCard, showCard }) {
       submitText={'Create Expense'}
       title={'Add Expense'}
       showCard={showCard}
-      onClose={() => resetForm}>
+      onClose={resetForm}>
       <div className="expenses-wrapper">
         {/* PAGE CONTAINER */}
         <div id="add-expense-form" className={`${theme} form`}>

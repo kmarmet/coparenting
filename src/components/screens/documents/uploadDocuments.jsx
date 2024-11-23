@@ -47,7 +47,6 @@ export default function UploadDocuments({ hideCard, showCard }) {
     setDocType(null)
     hideCard()
     setRefreshKey(Manager.getUid())
-    AlertManager.successAlert('Document Uploaded!')
   }
 
   const upload = async () => {
@@ -110,6 +109,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
           }
 
           setState({ ...state, isLoading: false })
+          AlertManager.successAlert('Document Uploaded!')
           resetForm()
 
           // Send Notification

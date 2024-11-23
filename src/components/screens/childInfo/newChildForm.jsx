@@ -49,7 +49,6 @@ const NewChildForm = ({ hideCard, showCard }) => {
     Manager.resetForm('new-child-wrapper')
     hideCard()
     setRefreshKey(Manager.getUid())
-    AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
   }
 
   const submit = async () => {
@@ -68,6 +67,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
 
       const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.childUser)
       await DB_UserScoped.addUserChild(currentUser, cleanChild)
+      AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
 
       resetForm()
     }

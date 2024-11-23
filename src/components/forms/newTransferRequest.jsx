@@ -36,7 +36,6 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     Manager.resetForm('transfer-request-wrapper')
     hideCard()
     setRefreshKey(Manager.getUid())
-    AlertManager.successAlert('Transfer Change Request Sent')
   }
 
   const submit = async () => {
@@ -75,6 +74,8 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
       // // Add record
       await DB.add(DB.tables.transferChangeRequests, newRequest)
+      AlertManager.successAlert('Transfer Change Request Sent')
+
       resetForm()
     }
   }

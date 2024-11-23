@@ -50,7 +50,6 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
     setParentType('')
     setRefreshKey(Manager.getUid())
     hideCard()
-    AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
   }
 
   const submit = async () => {
@@ -77,6 +76,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       } catch (error) {
         LogManager.log(error.message, LogManager.logTypes.error)
       }
+      AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
 
       resetForm()
     }
