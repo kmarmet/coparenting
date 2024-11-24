@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 
 AlertManager = {
   throwError: function(title, text) {
-    return Swal.fire({
+    Swal.fire({
       title: title,
       text: text,
       icon: 'error',
@@ -20,6 +20,7 @@ animate__fadeOutDown
 animate__faster`
       }
     });
+    return false;
   },
   successAlert: function(message, allowOutsideClick = true) {
     return Swal.fire({

@@ -53,7 +53,6 @@ export default SmsManager =
         method: 'post'
         headers: 'Content-Type': 'application/json'
         body: JSON.stringify
-          phone: '3307494534'
+          phone: phoneNumber
           message: message
           key: apiKey
-

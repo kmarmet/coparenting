@@ -15,7 +15,7 @@ import PushAlertApi from '@api/pushAlert'
 import DB_UserScoped from '@userScoped'
 import ChildUser from 'models/child/childUser.js'
 import ParentInput from '../../parentInput'
-
+import { MdOutlineSecurity, MdOutlineSystemSecurityUpdateGood } from 'react-icons/md'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -195,7 +195,6 @@ export default function Registration() {
         const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
         const dbRef = ref(getDatabase())
         await set(child(dbRef, `users/${userPhone}`), cleanChild)
-        console.log('Email', email)
         createUserWithEmailAndPassword(auth, email, password)
           .then(async (userCredential) => {
             // Signed up successfully
@@ -273,15 +272,15 @@ export default function Registration() {
 
   const formIsValid = async () => {
     let isValid = true
-    await DB.getTable(DB.tables.users).then((users) => {
-      users = Manager.convertToArray(users)
-      const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
-      if (foundUser) {
-        AlertManager.throwError('Account already exists, please login')
-        setAccountAlreadyExists(true)
-        isValid = false
-      }
-    })
+    // await DB.getTable(DB.tables.users).then((users) => {
+    //   users = Manager.convertToArray(users)
+    //   const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
+    //   if (foundUser) {
+    //     AlertManager.throwError('Account already exists, please login')
+    //     setAccountAlreadyExists(true)
+    //     isValid = false
+    //   }
+    // })
 
     if (!validator.isMobilePhone(userPhone)) {
       AlertManager.throwError('Phone number is not valid')
@@ -340,6 +339,9 @@ export default function Registration() {
 
   // SEND VERIFICATION CODE
   const sendPhoneVerificationCode = async () => {
+    if (userPhone.length === 0) {
+      AlertManager.throwError('Phone number is required')
+    }
     if (!validator.isMobilePhone(userPhone)) {
       AlertManager.throwError('Phone number is not valid')
       return false
@@ -352,7 +354,10 @@ export default function Registration() {
   }
 
   const verifyPhoneCode = async (e) => {
-    console.log(phoneVerificationCode === enteredPhoneCode)
+    if (enteredPhoneCode.length === 0) {
+      AlertManager.throwError('Verification code is required')
+      return false
+    }
     if (phoneVerificationCode === enteredPhoneCode) {
       setPhoneIsVerified(true)
       await submit()
@@ -374,24 +379,35 @@ export default function Registration() {
 
   return (
     <>
-      <BottomCard showCard={showVerificationCard} title={'Verify Your Phone'} onClose={() => setShowVerificationCard(false)}>
+      <BottomCard hasSubmitButton={false} showCard={showVerificationCard} title={'Verify Your Phone'} onClose={() => setShowVerificationCard(false)}>
         <div id="phone-verification-container" className=" form">
           <div className="form" autoComplete="off">
             {!phoneIsVerified && !phoneVerificationSent && (
               <>
-                <Label text={'Phone Number'} required={true}></Label>
-                <input defaultValue={userPhone} type="phone" onChange={(e) => setUserPhone(e.target.value)} />
+                <InputWrapper
+                  inputValue={userPhone}
+                  inputType={'input'}
+                  inputValueType="phone"
+                  labelText={'Phone Number'}
+                  required={true}
+                  onChange={(e) => setUserPhone(e.target.value)}
+                />
                 <button className="button default green w-100 mt-15" onClick={sendPhoneVerificationCode}>
-                  Send Phone Verification Code <span className="material-icons-round fs-22">phone_iphone</span>
+                  Send Phone Verification Code <MdOutlineSystemSecurityUpdateGood />
                 </button>
               </>
             )}
             {phoneVerificationSent && (
               <>
-                <Label text={'Verification Code'} required={true}></Label>
-                <input type="phone" onChange={(e) => setEnteredPhoneCode(e.target.value)} />
+                <InputWrapper
+                  inputType={'input'}
+                  inputValueType="phone"
+                  labelText={'Verification Code'}
+                  required={true}
+                  onChange={(e) => setEnteredPhoneCode(e.target.value)}
+                />
                 <button className="button default green w-100 mt-15" onClick={verifyPhoneCode}>
-                  Verify <span className="material-icons-round fs-22">phone_iphone</span>
+                  Verify <MdOutlineSystemSecurityUpdateGood />
                 </button>
               </>
             )}
@@ -419,7 +435,7 @@ export default function Registration() {
             {/* INSTALL BUTTON */}
             <p
               id="install-button"
-              className="mb-10 button mt-20"
+              className="mb-20 button mt-20"
               onClick={() => {
                 setState({ ...state, menuIsOpen: false })
                 document.querySelector('.install-app').classList.add('active')
@@ -429,7 +445,7 @@ export default function Registration() {
             </p>
             <InstallAppPopup />
             <Label text={'Choose your Account Type'} required={true} />
-            <div className="button-group flex">
+            <div className="button-group flex mt-10">
               <button className="button default w-50 mr-10" onClick={() => setAccountType('parent')}>
                 Parent
               </button>
@@ -616,7 +632,7 @@ export default function Registration() {
                   setShowVerificationCard(true)
                 }
               }}>
-              Verify Phone<span className="material-icons-round fs-20">admin_panel_settings</span>
+              Verify Phone <MdOutlineSecurity />
             </button>
             <button className="button default w-60" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
               Back to Login

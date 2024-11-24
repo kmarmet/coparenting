@@ -42,7 +42,6 @@ export default function ChildrenInput({ add, childrenCount }) {
       <p id="child-label">
         Child #{childrenCount} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
       </p>
-      <input type="phone" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
       <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
       <InputWrapper
         inputType={'input'}

@@ -18,6 +18,7 @@ AlertManager = {
             animate__fadeOutDown
             animate__faster
           """
+    return false
   successAlert : (message, allowOutsideClick = true) ->
     Swal.fire
       text: message
