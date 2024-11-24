@@ -273,7 +273,7 @@ export default function Login() {
             {/* EMAIL */}
             <InputWrapper inputValueType="email" required={true} labelText={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
             {/* PASSWORD */}
-            <div className="flex inputs mb-20">
+            <div className="flex inputs mb-10">
               <InputWrapper
                 inputValueType={viewPassword ? 'text' : 'password'}
                 required={true}

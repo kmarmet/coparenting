@@ -24,6 +24,7 @@ import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import AlertManager from '../../../managers/alertManager'
+import InputWrapper from '../../shared/inputWrapper'
 
 export default function ForgotPassword() {
   const { state, setState } = useContext(globalState)
@@ -70,10 +71,7 @@ export default function ForgotPassword() {
       {/*<p className="screen-title ">Forgot Password</p>*/}
       <div id="forgot-password-container" className="page-container light form">
         <div className="form" autoComplete="off">
-          <label>
-            Email<span className="asterisk">*</span>
-          </label>
-          <input autoComplete="off" className="mb-15" value={email} type="email" onChange={(e) => setEmail(e.target.value)} />
+          <InputWrapper labelText={'Email Address'} required={true} inputValueType="email" onChange={(e) => setEmail(e.target.value)} />
           <div className="flex gap">
             <button className="button default green" onClick={sendResetLink}>
               Reset

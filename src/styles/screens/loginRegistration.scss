@@ -112,11 +112,6 @@
       margin: 0;
 
       .children {
-        input {
-          &:last-child {
-            margin-bottom: 10px;
-          }
-        }
       }
 
       #coparent-code-instructions {
@@ -133,9 +128,14 @@
       #parent-input-container,
       #child-input-container {
         padding: 15px;
-        background-color: $lightBorder;
-        margin: 15px auto 0 auto;
+        background-color: white;
+        margin: 15px  auto;
+        border: 1px solid $borderColor;
         border-radius: $borderRadius;
+        
+        button {
+          margin-top: 15px;
+        }
 
         #coparent-label,
         #parent-label,
@@ -155,10 +155,6 @@
             &.active {
             }
           }
-        }
-
-        input {
-          margin-bottom: 10px;
         }
       }
 
@@ -189,8 +185,8 @@
       }
 
       button {
-        margin: 20px auto 0 auto;
         display: block;
+        margin: 0 auto 10px auto;
         font-size: 16px;
 
         &#add-child-button {
@@ -247,6 +243,8 @@
     
     img {
       border-radius: 100%;
+      width: 120px;
+      height: auto;
     }
 
     /*#region  LIGHT THEME*/
@@ -314,7 +312,7 @@
     #quote-container {
       width: 95%;
       position: relative;
-      margin: 40px auto 0;
+      margin: 15px auto 0;
 
       b {
         font-weight: 500;

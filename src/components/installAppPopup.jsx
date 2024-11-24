@@ -24,7 +24,7 @@ export default function InstallAppPopup() {
       onClose={() => document.querySelector('.install-app').classList.remove('active')}
       subtitle="LESS steps than App Store or Google Play!"
       className={`install-app`}
-      title={'Install App <span class="material-icons-outlined">install_mobile</span>'}>
+      title={'App Installation Instructions <span class="material-icons-outlined">install_mobile</span>'}>
       <div className="content">
         {/* IOS */}
         <Accordion id={'ios'}>

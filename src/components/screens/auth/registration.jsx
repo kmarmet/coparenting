@@ -392,7 +392,7 @@ export default function Registration() {
                   required={true}
                   onChange={(e) => setUserPhone(e.target.value)}
                 />
-                <button className="button default green w-100 mt-15" onClick={sendPhoneVerificationCode}>
+                <button className="button default green center mt-15" onClick={sendPhoneVerificationCode}>
                   Send Phone Verification Code <MdOutlineSystemSecurityUpdateGood />
                 </button>
               </>
@@ -406,7 +406,7 @@ export default function Registration() {
                   required={true}
                   onChange={(e) => setEnteredPhoneCode(e.target.value)}
                 />
-                <button className="button default green w-100 mt-15" onClick={verifyPhoneCode}>
+                <button className="button default green center mt-15" onClick={verifyPhoneCode}>
                   Verify <MdOutlineSystemSecurityUpdateGood />
                 </button>
               </>
@@ -608,7 +608,7 @@ export default function Registration() {
 
             {/* COPARENTS */}
             {coparents?.length > 0 && (
-              <button id="add-coparent-button" className="button default w-60" onClick={addCoparentInput}>
+              <button id="add-coparent-button" className="button default " onClick={addCoparentInput}>
                 Add Another Co-Parent
               </button>
             )}
@@ -620,12 +620,12 @@ export default function Registration() {
               })}
             </div>
             {children.length > 0 && (
-              <button id="add-child-button" className="button default w-60" onClick={addChildInput}>
+              <button id="add-child-button" className="button default " onClick={addChildInput}>
                 Add Another Child
               </button>
             )}
             <button
-              className="button default w-60 green"
+              className="button default  green"
               onClick={async () => {
                 const isValidForm = await formIsValid()
                 if (isValidForm) {
@@ -634,7 +634,7 @@ export default function Registration() {
               }}>
               Verify Phone <MdOutlineSecurity />
             </button>
-            <button className="button default w-60" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+            <button className="button default " onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
               Back to Login
             </button>
           </div>
