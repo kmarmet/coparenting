@@ -43,10 +43,6 @@
 
   &.calendar {
     padding: 0;
-
-    .with-padding {
-      padding: 0 15px;
-    }
   }
 
   &.login {
@@ -2785,6 +2781,7 @@
   transition: all 0.5s ease-in-out;
   border-radius: 0 0 30px 30px;
   height: calc(90px + env(safe-area-inset-bottom));
+  padding-top: 15px;
   padding-bottom: calc(env(safe-area-inset-bottom) + 50px);
   display: flex;
   align-items: center;

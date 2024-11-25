@@ -53,7 +53,7 @@ function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass 
                 id="share-with-checkbox-container"
                 data-phone={thisPhone ? thisPhone : ''}
                 className={`flex ${containerClass}`}
-                onClick={(e) => onCheck(e)}>
+                onClick={onCheck}>
                 <div className={`box ${Manager.isValid(defaultPhones, true) && defaultPhones.includes(user) ? 'active' : ''}`}>
                   <div id="inner-circle"></div>
                 </div>

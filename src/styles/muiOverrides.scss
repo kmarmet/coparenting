@@ -1,13 +1,45 @@
 @import './palette';
 @import './variables';
 #external-overrides {
+  .event-row {
+    .text {
+      .MuiPaper-root {
+        background: transparent;
+        height: auto;
+        border-bottom: 1px solid $borderColor;
+        border-radius: 0;
+        &:before {
+          display: none;
+        }
+
+        .MuiAccordion-heading {
+          max-height: 20px !important;
+          overflow: hidden;
+        }
+
+        .MuiButtonBase-root {
+          width: 100%;
+          max-width: 95%;
+          height: auto !important;
+          .MuiAccordionSummary-content {
+            font-size: 14px !important;
+            color: $lightDarkGrey;
+            font-weight: $fwMedium !important;
+            padding: 0;
+            margin: 0;
+            height: auto;
+          }
+        }
+      }
+    }
+  }
   #static-calendar {
     .MuiPickersLayout-root {
       max-width: calc(100vw - 3px) !important;
     }
     .MuiPickersLayout-contentWrapper {
       max-width: 100% !important;
-      
+
       * {
         max-width: 100% !important;
       }
@@ -19,7 +51,7 @@
   // PARENT/ROOT CALENDAR WRAPPER
   .MuiPickersLayout-contentWrapper {
     max-width: 408px !important;
-    
+
     * {
       max-width: 408px !important;
     }
@@ -34,7 +66,7 @@
   // DATE RANGE
   .MuiDateRangeCalendar-root {
     width: calc(100% - 22px);
-    
+
     .MuiDateRangePickerDay-rangeIntervalPreview {
       button {
         &.Mui-selected {
@@ -54,7 +86,6 @@
 
     .MuiPickersCalendarHeader-root {
       margin: 0;
-
     }
 
     .MuiPickersDay-today {
@@ -161,7 +192,7 @@
         svg {
           font-size: 24px !important;
           margin-right: 10px;
-          
+
           &.visitation-card {
             font-size: 20px !important;
             color: $lightDarkGrey;
@@ -262,7 +293,7 @@
     .MuiPickersSlideTransition-root {
       min-height: 425px !important;
       max-width: calc(100vw - 100px) !important;
-      
+
       .MuiDayCalendar-monthContainer {
         [role='row'] {
           max-width: calc(100vw - 30px) !important;
@@ -312,9 +343,9 @@
   }
   .MuiPickersLayout-root {
     background: $lightBg !important;
-    margin: 0  !important;
+    margin: 0 !important;
     border-radius: 0;
-    border-bottom: 1px solid $iconGrey;
+    //    border-bottom: 1px solid $iconGrey;
 
     .MuiPickersCalendarHeader-label {
       font-weight: $fwMedium !important;
@@ -684,7 +715,6 @@
   .MuiClockPointer-root {
     background-color: $accent;
   }
-
 
   // Clock Wheel
   .MuiClock-pin,

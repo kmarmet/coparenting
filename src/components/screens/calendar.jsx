@@ -11,8 +11,7 @@ import BottomCard from 'components/shared/bottomCard'
 import DateFormats from '../../constants/dateFormats'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
-import { FaChildren } from 'react-icons/fa6'
-import { MdOutlineEditOff } from 'react-icons/md'
+import { FaAngleDown, FaAngleUp, FaChildren } from 'react-icons/fa6'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
 import { CgClose } from 'react-icons/cg'
@@ -39,6 +38,7 @@ import { TbLocation } from 'react-icons/tb'
 import { PiBellSimpleRinging, PiCalendarPlusDuotone, PiGlobeDuotone } from 'react-icons/pi'
 import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
+import DB_UserScoped from '@userScoped'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -302,6 +302,37 @@ export default function EventCalendar() {
     }
   }, [showHolidays])
 
+  const toggleDetailsArrow = (arrow) => {
+    const scopedArrow = arrow.target
+    if (scopedArrow.classList.contains('active')) {
+      // return <FaAngleDown className={'details-toggle-arrow'} />
+    } else {
+      // return <FaAngleUp className={'details-toggle-arrow'} />
+    }
+  }
+
+  const toggleDetails = (element) => {
+    const textWrapper = element.target.parentNode.closest('.text')
+    const details = textWrapper.querySelector('#details')
+    const svgDown = textWrapper.querySelector('svg.down')
+    const svgUp = textWrapper.querySelector('svg.up')
+
+    if (details.classList.contains('active')) {
+      textWrapper.querySelector('#details').classList.remove('active')
+      svgDown.classList.add('active')
+      svgUp.classList.remove('active')
+    } else {
+      textWrapper.querySelector('#details').classList.add('active')
+      svgDown.classList.remove('active')
+      svgUp.classList.add('active')
+    }
+  }
+
+  const getCoparentName = async (coparentPhone) => {
+    const coparent = await DB_UserScoped.getCoparentByPhone(coparentPhone, currentUser)
+    return coparent.name
+  }
+
   // ON PAGE LOAD
   useEffect(() => {
     const staticCalendar = document.querySelector('.MuiDialogActions-root')
@@ -480,12 +511,26 @@ export default function EventCalendar() {
                 return (
                   <div key={index}>
                     <div
-                      onClick={(e) => handleEventRowClick(e, event)}
                       data-from-date={event?.startDate}
                       className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
-                      <div className="text">
-                        <div className="top">
-                          {/* DATE CONTAINER */}
+                      <div className="text flex space-between">
+                        {/* LEFT COLUMN */}
+                        {/* TITLE */}
+                        <div className="flex space-between" id="title-wrapper" onClick={toggleDetails}>
+                          <p className="title flex" data-event-id={event?.id}>
+                            {contains(eventType, 'coparent') && <span className="event-type-square coparent"></span>}
+                            {contains(eventType, 'standard') && <span className="event-type-square standard"></span>}
+                            {contains(eventType, 'current') && <span className="event-type-square current-user-visitation"></span>}
+                            {!contains(eventType, 'current') && !contains(eventType, 'standard') && !contains(eventType, 'coparent') && (
+                              <span className="event-type-square blank"></span>
+                            )}
+                            {CalendarManager.formatEventTitle(event?.title)}
+                          </p>
+                          <FaAngleUp className={'details-toggle-arrow up'} />
+                          <FaAngleDown className={'details-toggle-arrow down active'} />
+                        </div>
+                        {/* DATE CONTAINER */}
+                        <div id="date-container-and-edit-button" className="flex space-between">
                           <div id="date-container">
                             {/* FROM DATE */}
                             {!contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
@@ -515,56 +560,27 @@ export default function EventCalendar() {
                             {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
                               <span className="to-time">&nbsp;-&nbsp;{event?.endTime}</span>
                             )}
-                            {/* DIRECTIONS LINK */}
-                            {event?.location && event?.location.length > 0 && (
-                              <div className="flex" id="nav-website">
-                                {event?.websiteUrl && true && event?.websiteUrl.length > 0 && (
-                                  <div className="website flex">
-                                    <PiGlobeDuotone />
-                                    <a target="_blank" href={event?.websiteUrl} className="website-url fs-14" rel="noreferrer">
-                                      Website
-                                    </a>
-                                  </div>
-                                )}
-                                <div className="directions">
-                                  <TbLocation />
-                                  <a href={Manager.getDirectionsLink(event?.location)} target="_blank">
-                                    Nav
-                                  </a>
-                                </div>
-                              </div>
-                            )}
                           </div>
-                          {/* TITLE */}
-                          <p className="title" data-event-id={event?.id}>
-                            <b className={`event-title ${eventType}`}>{CalendarManager.formatEventTitle(event?.title)}</b>
-                          </p>
                         </div>
 
-                        {/* NOTES */}
-                        {Manager.isValid(event?.notes) && event?.notes.length > 0 && (
-                          <p className={showNotes ? 'active notes pb-10' : 'notes 0'}>{event?.notes}</p>
-                        )}
-                        <div className="flex reminders">
-                          {/* REMINDERS */}
+                        {/* EVENT DETAILS */}
+                        <div id="details">
                           {Manager.isValid(readableReminderTimes, true) && (
-                            <>
-                              <PiBellSimpleRinging className={'event-icon'} />
-                              <p
-                                className="flex reminder-times"
-                                dangerouslySetInnerHTML={{
-                                  __html: `${readableReminderTimes.join('|').replaceAll('|', '<span class="divider">|</span>').replaceAll(' minutes before', 'mins').replaceAll('At time of event', 'Event Time').replaceAll(' hour before', 'hr')}`,
-                                }}></p>
-                            </>
+                            <div className="flex reminders">
+                              <>
+                                <PiBellSimpleRinging className={'event-icon'} />
+                                <p
+                                  className="flex reminder-times"
+                                  dangerouslySetInnerHTML={{
+                                    __html: `${readableReminderTimes.join('|').replaceAll('|', '<span class="divider">|</span>').replaceAll(' minutes before', 'mins').replaceAll('At time of event', 'Event Time').replaceAll(' hour before', 'hr')}`,
+                                  }}></p>
+                              </>
+                            </div>
                           )}
-                        </div>
-                        {event.ownerPhone !== currentUser?.phone && <MdOutlineEditOff className={'no-edit-access-icon'} />}
-
-                        {/* CHILDREN */}
-                        <div className={`flex ${event?.notes?.length > 0 || event?.children?.length > 0 ? 'pt-5' : ''}`} id="more-children">
-                          <div id="children">
-                            {/* CHILDREN */}
-                            {event?.children && event?.children.length > 0 && (
+                          {/* CHILDREN */}
+                          {event?.children && event?.children.length > 0 && (
+                            <div id="children">
+                              {/* CHILDREN */}
                               <div className="children flex">
                                 <FaChildren />
                                 <p
@@ -573,25 +589,41 @@ export default function EventCalendar() {
                                     __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
                                   }}></p>
                               </div>
-                            )}
-                          </div>
+                            </div>
+                          )}
+                          {/* DIRECTIONS LINK */}
+                          {event?.location && event?.location.length > 0 && (
+                            <div className="flex" id="nav-website">
+                              {event?.websiteUrl && true && event?.websiteUrl.length > 0 && (
+                                <div className="website flex">
+                                  <PiGlobeDuotone />
+                                  <a target="_blank" href={event?.websiteUrl} className="website-url fs-14" rel="noreferrer">
+                                    Website
+                                  </a>
+                                </div>
+                              )}
+                              <div className="directions">
+                                <TbLocation />
+                                <a href={Manager.getDirectionsLink(event?.location)} target="_blank">
+                                  Nav
+                                </a>
+                              </div>
+                            </div>
+                          )}
 
-                          {event?.notes && event?.notes.length > 0 && (
-                            <>
-                              {!showNotes && (
-                                <p onClick={() => setShowNotes(true)} id="more-button">
-                                  SHOW MORE
-                                </p>
-                              )}
-                              {showNotes && (
-                                <p onClick={() => setShowNotes(false)} id="more-button">
-                                  SHOW LESS
-                                </p>
-                              )}
-                            </>
+                          {/* NOTES */}
+                          {Manager.isValid(event?.notes) && event?.notes.length > 0 && (
+                            <p className={showNotes ? 'active notes pb-10' : 'notes 0'}>{event?.notes}</p>
+                          )}
+                          {/* EDIT BUTTON */}
+                          {event.ownerPhone === currentUser?.phone && (
+                            <button onClick={(e) => handleEventRowClick(e, event)} id="edit-button">
+                              EDIT
+                            </button>
                           )}
                         </div>
                       </div>
+                      <div id="bottom-border"></div>
                     </div>
                   </div>
                 )

@@ -244,6 +244,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
   const handleShareWithSelection = (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
+    console.log(e)
+    console.log(shareWithNumbers)
     setEventShareWith(shareWithNumbers)
   }
 
@@ -520,10 +522,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               icon={<ImEye />}
               required={true}
               shareWith={currentUser?.coparents.map((x) => x.phone)}
-              onCheck={(e) => handleShareWithSelection(e)}
+              onCheck={handleShareWithSelection}
               labelText={'Who is allowed to see it?'}
               containerClass={'share-with-coparents'}
-              checkboxLabels={currentUser?.coparents.map((x) => x.phone)}
+              dataPhone={currentUser?.coparents.map((x) => x.phone)}
             />
           )}
 
