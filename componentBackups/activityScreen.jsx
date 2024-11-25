@@ -8,7 +8,7 @@ const getMessageCount = async () => {
     for (let chat of activeChats) {
       const messages = Manager.convertToArray(chat.messages).flat()
       const unreadMessages = messages.filter(
-        (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser.name) && x.readState === 'delivered'
+        (x) => formatNameFirstNameOnly(x.recipient) === formatNameFirstNameOnly(currentUser?.name) && x.readState === 'delivered'
       )
       unreadMessageCount = unreadMessages?.length
     }
@@ -19,25 +19,25 @@ const getMessageCount = async () => {
 
 const getExpenseCount = async () => {
   const expenses = await SecurityManager.getExpenses(currentUser)
-  const unpaidExpenses = expenses.filter((x) => formatNameFirstNameOnly(x.payer.name) === formatNameFirstNameOnly(currentUser.name))
+  const unpaidExpenses = expenses.filter((x) => formatNameFirstNameOnly(x.payer.name) === formatNameFirstNameOnly(currentUser?.name))
   return unpaidExpenses.length
 }
 
 const getEventCount = async () => {
   const allEvents = await SecurityManager.getCalendarEvents(currentUser)
-  const events = allEvents.filter((x) => x.ownerPhone === currentUser.phone)
+  const events = allEvents.filter((x) => x.ownerPhone === currentUser?.phone)
   return events.length
 }
 
 const getSwapCount = async () => {
   const allRequests = await SecurityManager.getSwapRequests(currentUser)
-  const requestsToReturn = allRequests.filter((x) => x.recipientPhone === currentUser.phone)
+  const requestsToReturn = allRequests.filter((x) => x.recipientPhone === currentUser?.phone)
   return requestsToReturn.length
 }
 
 const getTransferCount = async () => {
   const allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
-  const requestsToReturn = allRequests.filter((x) => x.recipientPhone === currentUser.phone)
+  const requestsToReturn = allRequests.filter((x) => x.recipientPhone === currentUser?.phone)
   return requestsToReturn.length
 }
 

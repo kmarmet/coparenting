@@ -20,64 +20,47 @@ import {
 } from '../../globalFunctions'
 import Label from './label'
 
-function ShareWithCheckboxes({
-  onCheck,
-  containerClass = '',
-  checkboxGroupClass = '',
-  dataPhone,
-  defaultPhones,
-  labelText = '',
-  shareWith,
-  icon = '',
-}) {
+function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', dataPhone, defaultPhones, labelText = '', icon = '' }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
-  const [names, setNames] = useState([])
-
-  const setUserNames = async () => {
-    const userNames = await Manager.getNamesFromPhone(shareWith)
-    if (Manager.isValid(userNames)) {
-      setNames(userNames)
-    }
-  }
+  const [shareWith, setShareWith] = useState([])
 
   useEffect(() => {
-    if (Manager.isValid(shareWith, true)) {
-      setUserNames().then((r) => r)
+    if (Manager.isValid(currentUser)) {
+      const coparents = currentUser.coparents
+      //TODO ADD CHILD ACCOUNTS TO SHARE WITH
+      setShareWith(coparents)
     }
-  }, [shareWith])
+  }, [])
 
   return (
-    <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass}`}>
-      <div>
-        <Label icon={icon} text={labelText} required={true}></Label>
-        <div className="flex" id="checkboxes">
-          {Manager.isValid(shareWith, true) &&
-            Manager.isValid(names, true) &&
-            shareWith.map((phone, index) => {
-              let thisPhone = shareWith[index]
-              if (Manager.isValid(dataPhone)) {
-                if (Manager.isValid(dataPhone[index])) {
-                  thisPhone = dataPhone[index]
-                }
+    <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass} mt-15 mb-15`}>
+      <Label text={labelText} required={true}></Label>
+      <div className="flex" id="checkboxes">
+        {Manager.isValid(shareWith, true) &&
+          shareWith.map((user, index) => {
+            let thisPhone = shareWith[index]
+            if (Manager.isValid(dataPhone)) {
+              if (Manager.isValid(dataPhone[index])) {
+                thisPhone = dataPhone[index]
               }
-              const userName = names?.filter((x) => x?.phone === phone)[0]?.name
+            }
+            const userName = user?.name
 
-              return (
-                <div
-                  key={index}
-                  id="share-with-checkbox-container"
-                  data-phone={thisPhone ? thisPhone : ''}
-                  className={`flex ${containerClass}`}
-                  onClick={(e) => onCheck(e)}>
-                  <div className={`box ${Manager.isValid(defaultPhones, true) && defaultPhones.includes(phone) ? 'active' : ''}`}>
-                    <div id="inner-circle"></div>
-                  </div>
-                  <span>{formatNameFirstNameOnly(userName)}</span>
+            return (
+              <div
+                key={index}
+                id="share-with-checkbox-container"
+                data-phone={thisPhone ? thisPhone : ''}
+                className={`flex ${containerClass}`}
+                onClick={(e) => onCheck(e)}>
+                <div className={`box ${Manager.isValid(defaultPhones, true) && defaultPhones.includes(user) ? 'active' : ''}`}>
+                  <div id="inner-circle"></div>
                 </div>
-              )
-            })}
-        </div>
+                <span>{formatNameFirstNameOnly(userName)}</span>
+              </div>
+            )
+          })}
       </div>
     </div>
   )

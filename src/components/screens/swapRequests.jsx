@@ -120,7 +120,7 @@ export default function SwapRequests() {
                   <div className={`content ${request?.reason?.length > 20 ? 'long-text' : ''}`}>
                     <div className="flex top-details">
                       {/* SENT TO */}
-                      {request?.recipientPhone !== currentUser.phone && (
+                      {request?.recipientPhone !== currentUser?.phone && (
                         <div className="flex row">
                           <p>
                             <b>Request Sent to:&nbsp;</b>
@@ -159,7 +159,7 @@ export default function SwapRequests() {
                   {/* REQUEST BUTTONS */}
                   <div className="flex" id="request-buttons">
                     {/* REQUEST RECIPIENT IS VIEWING */}
-                    {request?.recipientPhone === currentUser.phone && (
+                    {request?.recipientPhone === currentUser?.phone && (
                       <>
                         <button className="green" onClick={(e) => selectDecision(request, Decisions.approved)}>
                           Approve
@@ -184,10 +184,10 @@ export default function SwapRequests() {
                       </>
                     )}
                     {/* REQUEST OWNER IS VIEWING */}
-                    {request?.recipientPhone !== currentUser.phone && (
+                    {request?.recipientPhone !== currentUser?.phone && (
                       <>
                         {/* SEND REMINDER BUTTON */}
-                        {request.ownerPhone === currentUser.phone && (
+                        {request.ownerPhone === currentUser?.phone && (
                           <button className="green" id="reminder-button" onClick={() => sendReminder(request)}>
                             Send Reminder <AiTwotoneNotification />
                           </button>

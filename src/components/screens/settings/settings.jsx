@@ -46,7 +46,7 @@ export default function Settings() {
       return false
     }
     const toSendToDb = createShortcutArray(shortcutsToSendToDb)
-    await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/shortcuts', toSendToDb)
+    await DB_UserScoped.updateUserRecord(currentUser?.phone, 'settings/shortcuts', toSendToDb)
 
     AlertManager.throwError('Shortcuts have been updated!')
     setShortcutAccIsOpen(false)
@@ -57,19 +57,19 @@ export default function Settings() {
     console.log(moment(eveningSummaryTime).format(DateFormats.summaryHour))
     if (DateManager.dateIsValid(morningSummaryTime)) {
       await DB_UserScoped.updateUserRecord(
-        currentUser.phone,
+        currentUser?.phone,
         'settings/morningReminderSummaryHour',
         moment(morningSummaryTime).format(DateFormats.summaryHour)
       )
     }
     if (DateManager.dateIsValid(eveningSummaryTime)) {
       await DB_UserScoped.updateUserRecord(
-        currentUser.phone,
+        currentUser?.phone,
         'settings/eveningReminderSummaryHour',
         moment(eveningSummaryTime).format(DateFormats.summaryHour)
       )
     }
-    await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/defaultReminderTimes', defaultReminderTimes)
+    await DB_UserScoped.updateUserRecord(currentUser?.phone, 'settings/defaultReminderTimes', defaultReminderTimes)
     AlertManager.successAlert('Calendar settings have been updated!')
     setCalendarAccIsOpen(false)
   }

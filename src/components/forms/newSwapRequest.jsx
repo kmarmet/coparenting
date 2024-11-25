@@ -74,8 +74,8 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       newRequest.duration = swapDuration
       newRequest.fromHour = requestFromHour
       newRequest.toHour = requestToHour
-      newRequest.ownerPhone = currentUser.phone
-      newRequest.createdBy = currentUser.name
+      newRequest.ownerPhone = currentUser?.phone
+      newRequest.createdBy = currentUser?.name
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
       newRequest.recipientPhone = currentUser?.coparents?.filter((x) => contains(x?.name, recipientName))[0]?.phone || ''
 
@@ -85,7 +85,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       await DB.add(DB.tables.swapRequests, cleanObject).finally(() => {
         shareWith.forEach(async (coparentPhone) => {
           const subId = await NotificationManager.getUserSubId(coparentPhone)
-          PushAlertApi.sendMessage(`New Swap Request`, `${formatNameFirstNameOnly(currentUser.name)} has created a new Swap Request`, subId)
+          PushAlertApi.sendMessage(`New Swap Request`, `${formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`, subId)
         })
         setSwapDuration(SwapDurations.single)
       })
@@ -219,17 +219,17 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                 <ShareWithCheckboxes
                   icon={<ImEye />}
                   required={true}
-                  shareWith={currentUser.coparents.map((x) => x.phone)}
+                  shareWith={currentUser?.coparents.map((x) => x.phone)}
                   onCheck={handleShareWithSelection}
                   labelText={'Who is allowed to see it?'}
                   containerClass={'share-with-coparents'}
-                  checkboxLabels={currentUser.coparents.map((x) => x.phone)}
+                  checkboxLabels={currentUser?.coparents.map((x) => x.phone)}
                 />
               </>
             )}
 
             {/* INCLUDE CHILDREN */}
-            {Manager.isValid(currentUser.children, true) && (
+            {Manager.isValid(currentUser?.children, true) && (
               <div className="share-with-container ">
                 <div className="flex">
                   <p>Include Child(ren)</p>
@@ -243,7 +243,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                   />
                 </div>
                 {includeChildren && (
-                  <CheckboxGroup checkboxLabels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+                  <CheckboxGroup checkboxLabels={currentUser?.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
                 )}
               </div>
             )}

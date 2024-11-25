@@ -108,7 +108,7 @@ function NewMemoryForm({ hideCard, showCard }) {
     hideCard()
 
     // Upload Image
-    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser.id, localImages)
+    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.id, localImages)
       .then(() => {
         const checkedCheckbox = document.querySelector('.share-with-container .box.active')
         if (checkedCheckbox) {
@@ -117,7 +117,7 @@ function NewMemoryForm({ hideCard, showCard }) {
       })
       .finally(async () => {
         // Add memories to 'memories' property for currentUser
-        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.memories, currentUser.id, localImages).then(async (urls) => {
+        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.memories, currentUser?.id, localImages).then(async (urls) => {
           // Add to user memories object
           for (const url of urls) {
             const imageName = FirebaseStorage.getImageNameFromUrl(url)
@@ -131,7 +131,7 @@ function NewMemoryForm({ hideCard, showCard }) {
             newMemory.title = memoryTitle
             newMemory.shareWith = shareWith
             newMemory.creationDate = moment().format(DateFormats.dateForDb)
-            newMemory.ownerPhone = currentUser.phone
+            newMemory.ownerPhone = currentUser?.phone
 
             const cleanedObject = ObjectManager.cleanObject(newMemory, ModelNames.memory)
 
@@ -140,7 +140,11 @@ function NewMemoryForm({ hideCard, showCard }) {
           }
 
           // Send Notification
-          NotificationManager.sendToShareWith(shareWith, 'Memories Await!', `${formatNameFirstNameOnly(currentUser.name)} has uploaded a new memory!`)
+          NotificationManager.sendToShareWith(
+            shareWith,
+            'Memories Await!',
+            `${formatNameFirstNameOnly(currentUser?.name)} has uploaded a new memory!`
+          )
         })
         AppManager.setAppBadge(1)
         resetForm()
@@ -161,7 +165,7 @@ function NewMemoryForm({ hideCard, showCard }) {
             {currentUser && (
               <ShareWithCheckboxes
                 icon={<ImEye />}
-                shareWith={currentUser.coparents.map((x) => x.phone)}
+                shareWith={currentUser?.coparents.map((x) => x.phone)}
                 onCheck={handleShareWithSelection}
                 labelText={'Who is allowed to see it?'}
                 containerClass={'share-with-coparents'}

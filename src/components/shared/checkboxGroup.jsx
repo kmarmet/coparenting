@@ -19,7 +19,7 @@ export default function CheckboxGroup({
   const { state, setState } = useContext(globalState)
   const { theme } = state
   return (
-    <div id="checkbox-group" className={`${theme} ${elClass}`}>
+    <div id="checkbox-group" className={`${theme} ${elClass} mt-15 mb-15`}>
       <div id="parent-label-wrapper">
         <label id="parent-label">{parentLabel}</label>
         {required && <span className="asterisk">*</span>}

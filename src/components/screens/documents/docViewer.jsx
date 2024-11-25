@@ -174,7 +174,7 @@ export default function DocViewer() {
     }
 
     // Insert HTML
-    const docHtml = await DocumentConversionManager.docToHtml(fileName, currentUser.id)
+    const docHtml = await DocumentConversionManager.docToHtml(fileName, currentUser?.id)
     textContainer.innerHTML = docHtml
 
     // Format HTML
@@ -276,7 +276,17 @@ export default function DocViewer() {
       return false
     }
     const relevantDoc = await DB.find(DB.tables.documents, ['name', docToView.name], true)
-    let docOwner = await DB.find(DB.tables.users, ['phone', relevantDoc.uploadedBy])
+    if (!Manager.isValid(relevantDoc)) {
+      setState({ ...state, isLoading: false })
+      console.log('rel')
+      return false
+    }
+    let docOwner = await DB.find(DB.tables.users, ['phone', relevantDoc.uploadedBy], true)
+    if (!Manager.isValid(docOwner)) {
+      console.log('doc owner')
+      setState({ ...state, isLoading: false })
+      return false
+    }
     const firebasePathId = docOwner.id
 
     if (!Manager.isValid(relevantDoc)) {
@@ -299,7 +309,10 @@ export default function DocViewer() {
         }
       })
       setTocHeaders(newHeaderArray)
+    } else {
+      AlertManager.throwError('No Document Found')
     }
+    setState({ ...state, isLoading: false })
   }
 
   // Show search icon when text is loaded

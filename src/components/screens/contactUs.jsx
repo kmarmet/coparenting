@@ -64,7 +64,7 @@ export default function ContactUs() {
     }
 
     AlertManager.successAlert('We have received your feature request!')
-    EmailManager.SendFeatureRequest(currentUser.email, `Feature Name: ${featureName} \n Description: ${featureDescription}`)
+    EmailManager.SendFeatureRequest(currentUser?.email, `Feature Name: ${featureName} \n Description: ${featureDescription}`)
     setShowFeatureRequestCard(false)
     resetFormFeatureRequestForm()
   }
@@ -76,7 +76,7 @@ export default function ContactUs() {
     }
 
     AlertManager.successAlert('Thank you for reporting this issue. We will be in touch soon!')
-    EmailManager.SendSupportEmail(currentUser.email, supportNotes)
+    EmailManager.SendSupportEmail(currentUser?.email, supportNotes)
     setShowSupportCard(false)
     resetSupportForm()
   }
@@ -88,7 +88,7 @@ export default function ContactUs() {
     }
 
     AlertManager.successAlert('Thank you! We have received your app feedback!')
-    EmailManager.SendAppFeedback(currentUser.email, feedback)
+    EmailManager.SendAppFeedback(currentUser?.email, feedback)
     setShowFeedbackCard(false)
     resetFeedbackForm()
   }

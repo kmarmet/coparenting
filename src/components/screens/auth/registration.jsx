@@ -52,6 +52,7 @@ import Label from '../../shared/label'
 import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
+import LogManager from '../../../managers/logManager'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -150,13 +151,18 @@ export default function Registration() {
 
       createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
-          // Signed up successfully
-          const user = userCredential.user
-          console.log('Signed up as:', user.email)
-          const cleanUser = ObjectManager.cleanObject(newUser, ModelNames.user)
-          await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
-          AlertManager.successAlert(`Welcome aboard ${newUser.name}!`)
-          setState({ ...state, currentScreen: ScreenNames.login })
+          try {
+            const dbRef = ref(getDatabase())
+            // Signed up successfully
+            const user = userCredential.user
+            console.log('Signed up as:', user.email)
+            const cleanUser = ObjectManager.cleanObject(newUser, ModelNames.user)
+            await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
+            AlertManager.successAlert(`Welcome aboard ${newUser.name}!`)
+            setState({ ...state, currentScreen: ScreenNames.login })
+          } catch (error) {
+            LogManager.log(error.message, LogManager.logTypes.error)
+          }
         })
         .catch((error) => {
           console.error('Sign up error:', error.message)
@@ -166,9 +172,9 @@ export default function Registration() {
           }
         })
 
-      const dbRef = ref(getDatabase())
-      const subId = await NotificationManager.getUserSubId('3307494534')
-      PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone} \n Name: ${userName}`, subId)
+      // const dbRef = ref(getDatabase())
+      // const subId = await NotificationManager.getUserSubId('3307494534')
+      // PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone} \n Name: ${userName}`, subId)
     }
   }
 

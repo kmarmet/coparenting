@@ -84,7 +84,7 @@ const Conversation = () => {
     // Messages
     conversationMessage.id = Manager.getUid()
     conversationMessage.timestamp = moment().format('MM/DD/yyyy hh:mma')
-    conversationMessage.sender = currentUser.name
+    conversationMessage.sender = currentUser?.name
     conversationMessage.recipient = messageToUser.name
     conversationMessage.message = messageText
     conversationMessage.readState = 'delivered'
@@ -102,7 +102,7 @@ const Conversation = () => {
     conversation.timestamp = moment().format('MM/DD/yyyy hh:mma')
     conversation.threadVisibilityMembers = [memberOne, memberTwo]
     conversation.messages = [cleanMessage]
-    conversation.threadOwner = currentUser.phone
+    conversation.threadOwner = currentUser?.phone
     const cleanThread = ObjectManager.cleanObject(conversation, ModelNames.conversationThread)
 
     // Existing chat
@@ -151,7 +151,7 @@ const Conversation = () => {
   const getExistingMessages = async () => {
     let scopedChatObject = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
     let { chat } = scopedChatObject
-    const bookmarkObjects = chat?.bookmarks?.filter((x) => x.ownerPhone === currentUser.phone) ?? []
+    const bookmarkObjects = chat?.bookmarks?.filter((x) => x.ownerPhone === currentUser?.phone) ?? []
     const bookmarkedMessageIds = bookmarkObjects?.map((x) => x.messageId) ?? []
     let bookmarkedMessages = []
 
@@ -310,17 +310,17 @@ const Conversation = () => {
             {Manager.isValid(searchResults, true) &&
               searchResults.map((messageObj, index) => {
                 let sender
-                if (formatNameFirstNameOnly(messageObj.sender) === currentUser.name.formatNameFirstNameOnly()) {
+                if (formatNameFirstNameOnly(messageObj.sender) === currentUser?.name.formatNameFirstNameOnly()) {
                   sender = 'ME'
                 } else {
                   sender = formatNameFirstNameOnly(messageObj.sender)
                 }
                 return (
                   <>
-                    <p key={index} className={messageObj.sender === currentUser.name ? 'message from' : 'to message'}>
+                    <p key={index} className={messageObj.sender === currentUser?.name ? 'message from' : 'to message'}>
                       {messageObj.message}
                     </p>
-                    <span className={messageObj.sender === currentUser.name ? 'timestamp from' : 'to timestamp'}>
+                    <span className={messageObj.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                       From {sender} on&nbsp;{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
                     </span>
                   </>
@@ -334,7 +334,7 @@ const Conversation = () => {
           <div id="bookmark-messages" className="bookmark-results">
             {bookmarks.map((bookmark, index) => {
               let sender
-              if (formatNameFirstNameOnly(bookmark.sender) === formatNameFirstNameOnly(currentUser.name)) {
+              if (formatNameFirstNameOnly(bookmark.sender) === formatNameFirstNameOnly(currentUser?.name)) {
                 sender = 'ME'
               } else {
                 sender = formatNameFirstNameOnly(bookmark.sender)
@@ -347,11 +347,11 @@ const Conversation = () => {
               }
               return (
                 <div key={index}>
-                  <p className={bookmark.sender === currentUser.name ? 'message from' : 'to message'}>
+                  <p className={bookmark.sender === currentUser?.name ? 'message from' : 'to message'}>
                     {bookmark.message}
                     <PiBookmarkSimpleDuotone className={isBookmarked ? 'bookmarked' : ''} onClick={(e) => bookmarkMessage(bookmark, e.target)} />
                   </p>
-                  <span className={bookmark.sender === currentUser.name ? 'timestamp from' : 'to timestamp'}>
+                  <span className={bookmark.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                     From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
                   </span>
                 </div>
@@ -379,14 +379,14 @@ const Conversation = () => {
                   }
                   return (
                     <div key={index}>
-                      <p {...bind()} className={message.sender === currentUser.name ? 'from message' : 'to message'}>
+                      <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
                         {message.message}
                         <PiBookmarkSimpleDuotone
                           className={isBookmarked ? 'bookmarked' : ''}
                           onClick={(e) => bookmarkMessage(message, e.target.parentNode)}
                         />
                       </p>
-                      <span className={message.sender === currentUser.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
+                      <span className={message.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
                     </div>
                   )
                 })}

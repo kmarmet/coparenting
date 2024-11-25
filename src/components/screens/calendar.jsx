@@ -185,7 +185,7 @@ export default function EventCalendar() {
         }
 
         // VISITATION DOT
-        const currentUserName = formatNameFirstNameOnly(currentUser.name)
+        const currentUserName = formatNameFirstNameOnly(currentUser?.name)
         if (
           events.filter((x) => x.startDate === formattedDay && x.fromVisitationSchedule === true && contains(x?.title, currentUserName)).length > 0
         ) {
@@ -245,7 +245,7 @@ export default function EventCalendar() {
   const showVisitationHolidays = async () => {
     const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
     let userVisitationHolidays = allEvents.filter(
-      (x) => x.isHoliday === true && x.ownerPhone === currentUser.phone && contains(x.title.toLowerCase(), 'holiday')
+      (x) => x.isHoliday === true && x.ownerPhone === currentUser?.phone && contains(x.title.toLowerCase(), 'holiday')
     )
     userVisitationHolidays.forEach((holiday) => {
       holiday.title += ` (${holiday.holidayName})`
@@ -271,7 +271,7 @@ export default function EventCalendar() {
       return false
     }
     const shouldShowEditCard = !event?.isHoliday && e.target.tagName !== 'A' && e.target.id !== 'more-button'
-    const hasEditAccess = AppManager.getAccountType(currentUser) === 'parent' && event.ownerPhone === currentUser.phone
+    const hasEditAccess = AppManager.getAccountType(currentUser) === 'parent' && event.ownerPhone === currentUser?.phone
     if (shouldShowEditCard && hasEditAccess) {
       setEventToEdit(event)
       setShowEditCard(true)
@@ -471,7 +471,7 @@ export default function EventCalendar() {
                 })
                 let eventType = 'standard'
                 if (event?.fromVisitationSchedule) {
-                  if (contains(event?.createdBy?.toLowerCase(), currentUser.name.toLowerCase())) {
+                  if (contains(event?.createdBy?.toLowerCase(), currentUser?.name.toLowerCase())) {
                     eventType = 'current-user-visitation'
                   } else {
                     eventType = 'coparent-visitation'
@@ -558,7 +558,7 @@ export default function EventCalendar() {
                             </>
                           )}
                         </div>
-                        {event.ownerPhone !== currentUser.phone && <MdOutlineEditOff className={'no-edit-access-icon'} />}
+                        {event.ownerPhone !== currentUser?.phone && <MdOutlineEditOff className={'no-edit-access-icon'} />}
 
                         {/* CHILDREN */}
                         <div className={`flex ${event?.notes?.length > 0 || event?.children?.length > 0 ? 'pt-5' : ''}`} id="more-children">

@@ -48,7 +48,6 @@ import { LicenseInfo } from '@mui/x-license'
 import ScreenNames from '@screenNames'
 import firebaseConfig from './firebaseConfig.js'
 import ContactUs from './components/screens/contactUs'
-import LogManager from './managers/logManager'
 
 export default function App() {
   // Initialize Firebase
@@ -127,8 +126,6 @@ export default function App() {
     })
 
     LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
-
-    LogManager.log('test', LogManager.logTypes.error)
   }, [])
 
   // MENU OPEN/CLOSE

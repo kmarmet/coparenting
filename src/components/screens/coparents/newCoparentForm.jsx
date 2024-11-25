@@ -72,7 +72,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
 
       // Has coparents already
       try {
-        await set(child(dbRef, `users/${currentUser.phone}/coparents`), DatasetManager.mergeMultiple([currentUser.coparents, cleanCoparent]))
+        await set(child(dbRef, `users/${currentUser?.phone}/coparents`), DatasetManager.mergeMultiple([currentUser?.coparents, cleanCoparent]))
       } catch (error) {
         LogManager.log(error.message, LogManager.logTypes.error)
       }

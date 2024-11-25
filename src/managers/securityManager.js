@@ -40,10 +40,10 @@ SecurityManager = {
         }
         shareWith = event.shareWith;
         if (DateManager.dateIsValid(event.startDate)) {
-          if (event.ownerPhone === currentUser.phone) {
+          if (event.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(event);
           }
-          if (!_.isEmpty(shareWith) && shareWith.includes(currentUser.phone)) {
+          if (!_.isEmpty(shareWith) && shareWith.includes(currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(event);
           }
         }
@@ -59,11 +59,11 @@ SecurityManager = {
       for (i = 0, len = allExpenses.length; i < len; i++) {
         expense = allExpenses[i];
         shareWith = expense.shareWith;
-        if (expense.ownerPhone === currentUser.phone) {
+        if (expense.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(expense);
         }
         if (Manager.isValid(shareWith, true)) {
-          if (shareWith.includes(currentUser.phone)) {
+          if (shareWith.includes(currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(expense);
           }
         }
@@ -79,11 +79,11 @@ SecurityManager = {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
         shareWith = request.shareWith;
-        if (request.ownerPhone === currentUser.phone) {
+        if (request.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(request);
         }
         if (Manager.isValid(shareWith, true)) {
-          if (shareWith.includes(currentUser.phone)) {
+          if (shareWith.includes(currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(request);
           }
         }
@@ -99,11 +99,11 @@ SecurityManager = {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
         shareWith = request.shareWith;
-        if (request.ownerPhone === currentUser.phone) {
+        if (request.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(request);
         }
         if (Manager.isValid(shareWith, true)) {
-          if (shareWith.includes(currentUser.phone)) {
+          if (shareWith.includes(currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(request);
           }
         }
@@ -119,10 +119,10 @@ SecurityManager = {
       for (i = 0, len = allDocs.length; i < len; i++) {
         doc = allDocs[i];
         shareWith = doc.shareWith;
-        if (doc.phone === currentUser.phone) {
+        if (doc.phone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(doc);
         }
-        if (doc.phone === currentUser.phone) {
+        if (doc.phone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(doc);
         }
         if (Manager.isValid(shareWith, true)) {
@@ -140,11 +140,11 @@ SecurityManager = {
       for (i = 0, len = allMemories.length; i < len; i++) {
         memory = allMemories[i];
         shareWith = memory.shareWith;
-        if (memory.ownerPhone === currentUser.phone) {
+        if (memory.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(memory);
         }
         if (Manager.isValid(shareWith, true)) {
-          if (shareWith.includes(currentUser.phone)) {
+          if (shareWith.includes(currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(memory);
           }
         }
@@ -161,7 +161,7 @@ SecurityManager = {
         chatArray = allArchivedChats[i];
         for (j = 0, len1 = chatArray.length; j < len1; j++) {
           chat = chatArray[j];
-          if (chat.threadOwner === currentUser.phone) {
+          if (chat.threadOwner === (currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(chat);
           }
         }
@@ -176,7 +176,7 @@ SecurityManager = {
     if (Manager.isValid(suggestions, true)) {
       for (i = 0, len = suggestions.length; i < len; i++) {
         suggestion = suggestions[i];
-        if (suggestion.ownerPhone === currentUser.phone) {
+        if (suggestion.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(suggestion);
         }
       }
@@ -196,11 +196,11 @@ SecurityManager = {
           visibilityMemberPhones = chat.threadVisibilityMembers.map(function(x) {
             return x.phone;
           });
-          if (visibilityMemberPhones.includes(currentUser.phone)) {
+          if (visibilityMemberPhones.includes((currentUser != null ? currentUser.phone : void 0))) {
             members = chat.members.map(function(x) {
               return x.phone;
             });
-            if (ref1 = currentUser.phone, indexOf.call(members, ref1) >= 0) {
+            if (ref1 = currentUser != null ? currentUser.phone : void 0, indexOf.call(members, ref1) >= 0) {
               securedChats.push(chat);
             }
           }
@@ -208,7 +208,7 @@ SecurityManager = {
           members = chat.members.map(function(x) {
             return x.phone;
           });
-          if (ref2 = currentUser.phone, indexOf.call(members, ref2) >= 0) {
+          if (ref2 = currentUser != null ? currentUser.phone : void 0, indexOf.call(members, ref2) >= 0) {
             securedChats.push(chat);
           }
         }
@@ -227,7 +227,7 @@ SecurityManager = {
         members = chat.members.map(function(x) {
           return x.phone;
         });
-        if (ref = currentUser.phone, indexOf.call(members, ref) >= 0) {
+        if (ref = currentUser != null ? currentUser.phone : void 0, indexOf.call(members, ref) >= 0) {
           activeChats.push(chat);
         }
       }

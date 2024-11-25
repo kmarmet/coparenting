@@ -52,8 +52,8 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
       let newRequest = new TransferChangeRequest()
       newRequest.id = Manager.getUid()
       newRequest.reason = requestReason
-      newRequest.ownerPhone = currentUser.phone
-      newRequest.createdBy = currentUser.name
+      newRequest.ownerPhone = currentUser?.phone
+      newRequest.createdBy = currentUser?.name
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
       newRequest.time = DateManager.dateIsValid(moment(requestTime).format(DateFormats.timeForDb)) || ''
       newRequest.location = requestLocation
@@ -64,13 +64,17 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
       if (preferredLocation.length > 0) {
         const coparent = currentUser?.coparents.filter((x) => x.phone === requestRecipientPhone)[0]
-        const key = await DB.getNestedSnapshotKey(`users/${currentUser.phone}/coparents`, coparent, 'id')
-        await DB_UserScoped.updateUserRecord(currentUser.phone, `coparents/${key}/preferredTransferLocation`, requestLocation)
+        const key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/coparents`, coparent, 'id')
+        await DB_UserScoped.updateUserRecord(currentUser?.phone, `coparents/${key}/preferredTransferLocation`, requestLocation)
       }
 
       // Notify
       const subId = await NotificationManager.getUserSubId(requestRecipientPhone)
-      PushAlertApi.sendMessage(`Transfer Change Request`, `${formatNameFirstNameOnly(currentUser.name)} has created a Transfer Change request`, subId)
+      PushAlertApi.sendMessage(
+        `Transfer Change Request`,
+        `${formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
+        subId
+      )
 
       // // Add record
       await DB.add(DB.tables.transferChangeRequests, newRequest)
@@ -168,7 +172,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
             />
             <ShareWithCheckboxes
               icon={<ImEye />}
-              shareWith={currentUser.coparents.map((x) => x.phone)}
+              shareWith={currentUser?.coparents.map((x) => x.phone)}
               onCheck={handleShareWithSelection}
               labelText={'Who is allowed to see it?'}
               containerClass={'share-with-coparents'}

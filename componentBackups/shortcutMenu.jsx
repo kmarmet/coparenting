@@ -99,7 +99,7 @@ function ShortcutMenu() {
     // }, 200)
     setShortcuts().then((r) => r)
     setTimeout(() => {
-      const accountType = currentUser.accountType
+      const accountType = currentUser?.accountType
       if (accountType === 'child') {
         const parentElements = document.querySelectorAll('.parent')
         parentElements.forEach((el) => el.remove())

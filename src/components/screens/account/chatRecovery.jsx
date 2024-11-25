@@ -64,7 +64,7 @@ function ChatRecovery() {
     setViewConvo(true)
 
     const newSuggestion = new InputSuggestion()
-    newSuggestion.ownerPhone = currentUser.phone
+    newSuggestion.ownerPhone = currentUser?.phone
     newSuggestion.formName = 'archived-chat'
     newSuggestion.suggestion = coparentPhone
     await DB.addSuggestion(newSuggestion)
@@ -77,13 +77,13 @@ function ChatRecovery() {
     const signatureImage = new Image()
     signatureImage.id = 'pic'
     let scopedChat
-    let archivedChats = await DB.getTable(`${DB.tables.archivedChats}/${currentUser.phone}`)
+    let archivedChats = await DB.getTable(`${DB.tables.archivedChats}/${currentUser?.phone}`)
     archivedChats = archivedChats.filter((r) => r)
 
     if (Manager.isValid(archivedChats, true)) {
       for (let chat of archivedChats) {
         const memberPhones = chat?.members?.map((x) => x.phone)
-        if (memberPhones?.includes(currentUser.phone) && memberPhones?.includes(coparentPhone)) {
+        if (memberPhones?.includes(currentUser?.phone) && memberPhones?.includes(coparentPhone)) {
           scopedChat = chat
           break
         }
@@ -122,7 +122,7 @@ function ChatRecovery() {
           chatRecoveryRequest.members = scopedChat.members
           chatRecoveryRequest.signatureImageUrl = url
           chatRecoveryRequest.timestamp = moment().format(DateFormats.fullDatetime)
-          chatRecoveryRequest.createdBy = currentUser.email
+          chatRecoveryRequest.createdBy = currentUser?.email
           chatRecoveryRequest.reason = reason
 
           setSignatureUrl(url)
@@ -196,7 +196,7 @@ function ChatRecovery() {
                       const dbSuggestions = await DB.getTable(DB.tables.suggestions)
                       const matching = dbSuggestions.filter(
                         (x) =>
-                          x.formName === 'archived-chat' && x.ownerPhone === currentUser.phone && contains(x.suggestion.toLowerCase(), inputValue)
+                          x.formName === 'archived-chat' && x.ownerPhone === currentUser?.phone && contains(x.suggestion.toLowerCase(), inputValue)
                       )
                       setInputSuggestions(Manager.getUniqueArray(matching).flat())
                     } else {
@@ -238,7 +238,7 @@ function ChatRecovery() {
               </p>
               <p className="mb-20">
                 <i>
-                  I, {currentUser.name}, agree and understand that by signing the Electronic Signature Acknowledgment and Consent Form, that all
+                  I, {currentUser?.name}, agree and understand that by signing the Electronic Signature Acknowledgment and Consent Form, that all
                   electronic signatures are the legal equivalent of my manual/handwritten signature and I consent to be legally bound to this
                   agreement.
                 </i>
@@ -285,7 +285,7 @@ function ChatRecovery() {
                 return (
                   <div className="convo-message" key={index}>
                     <p id="message">{message.message}</p>
-                    <p id="sender">From: {message.sender.contains(currentUser.name) ? 'Me' : message.sender}</p>
+                    <p id="sender">From: {message.sender.contains(currentUser?.name) ? 'Me' : message.sender}</p>
                     <p id="timestamp">{moment(message.timestamp, 'MM/DD/yyyy hh:mma').format(DateFormats.readableDatetime)}</p>
                   </div>
                 )

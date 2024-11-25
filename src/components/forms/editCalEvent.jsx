@@ -109,8 +109,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     }
 
     // Not Required
-    eventToEdit.ownerPhone = currentUser.phone
-    eventToEdit.createdBy = currentUser.name
+    eventToEdit.ownerPhone = currentUser?.phone
+    eventToEdit.createdBy = currentUser?.name
     eventToEdit.notes = eventNotes
     eventToEdit.reminderTimes = eventReminderTimes || []
     eventToEdit.children = eventChildren
@@ -512,7 +512,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           )}
           <hr />
           {/* WHO IS ALLOWED TO SEE IT? */}
-          {Manager.isValid(currentUser?.coparents, true) && currentUser.accountType === 'parent' && (
+          {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
             <ShareWithCheckboxes
               required={true}
               shareWith={DatasetManager.getUniqueArrayFromMultiple(
@@ -575,7 +575,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                     defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
                     skipNameFormatting={true}
                     dataPhone={
-                      currentUser.accountType === 'parent' ? currentUser?.coparents?.map((x) => x.phone) : currentUser?.parents?.map((x) => x.phone)
+                      currentUser?.accountType === 'parent' ? currentUser?.coparents?.map((x) => x.phone) : currentUser?.parents?.map((x) => x.phone)
                     }
                     checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                     onCheck={handleReminderSelection}
@@ -586,7 +586,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           )}
 
           {/* REMIND COPARENTS */}
-          {Manager.isValid(currentUser?.coparents, true) && currentUser.accountType === 'parent' && (
+          {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
             <div className="share-with-container">
               <Accordion expanded={showCoparentsToRemind} id={'checkboxes'}>
                 <AccordionSummary>
@@ -603,7 +603,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
-                  {currentUser.accountType === 'parent' && (
+                  {currentUser?.accountType === 'parent' && (
                     <CheckboxGroup
                       elClass={`${theme} `}
                       dataPhone={currentUser?.coparents.map((x) => x.phone)}
@@ -611,11 +611,11 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                       onCheck={handleRemindOthersSelection}
                     />
                   )}
-                  {currentUser.accountType === 'child' && (
+                  {currentUser?.accountType === 'child' && (
                     <CheckboxGroup
                       elClass={`${theme} `}
-                      dataPhone={currentUser.parents.map((x) => x.phone)}
-                      checkboxLabels={currentUser.parents.map((x) => x.name)}
+                      dataPhone={currentUser?.parents.map((x) => x.phone)}
+                      checkboxLabels={currentUser?.parents.map((x) => x.name)}
                       onCheck={handleRemindOthersSelection}
                     />
                   )}
@@ -625,7 +625,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           )}
 
           {/* INCLUDING WHICH CHILDREN */}
-          {Manager.isValid(currentUser.children, true) && currentUser.accountType === 'parent' && (
+          {Manager.isValid(currentUser?.children, true) && currentUser?.accountType === 'parent' && (
             <div className="share-with-container children-toggle">
               <Accordion expanded={includeChildren} id={'checkboxes'}>
                 <AccordionSummary>

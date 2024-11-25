@@ -30,9 +30,9 @@ SecurityManager =
           returnRecords.push(event)
         shareWith = event.shareWith
         if DateManager.dateIsValid(event.startDate)
-          if (event.ownerPhone == currentUser.phone)
+          if (event.ownerPhone == currentUser?.phone)
             returnRecords.push(event)
-          if !_.isEmpty(shareWith) and shareWith.includes(currentUser.phone)
+          if !_.isEmpty(shareWith) and shareWith.includes(currentUser?.phone)
               returnRecords.push(event)
     return returnRecords
   getExpenses: (currentUser) ->
@@ -41,10 +41,10 @@ SecurityManager =
     if Manager.isValid(allExpenses,true)
       for expense in allExpenses
         shareWith = expense.shareWith
-        if (expense.ownerPhone == currentUser.phone)
+        if (expense.ownerPhone == currentUser?.phone)
           returnRecords.push(expense)
         if Manager.isValid(shareWith, true)
-          if shareWith.includes(currentUser.phone)
+          if shareWith.includes(currentUser?.phone)
             returnRecords.push(expense)
     return returnRecords
   getSwapRequests: (currentUser) ->
@@ -53,10 +53,10 @@ SecurityManager =
     if Manager.isValid(allRequests,true)
       for request in allRequests
         shareWith = request.shareWith
-        if (request.ownerPhone == currentUser.phone)
+        if (request.ownerPhone == currentUser?.phone)
           returnRecords.push(request)
         if Manager.isValid(shareWith, true)
-          if shareWith.includes(currentUser.phone)
+          if shareWith.includes(currentUser?.phone)
             returnRecords.push(request)
     return returnRecords
   getTransferChangeRequests: (currentUser) ->
@@ -65,10 +65,10 @@ SecurityManager =
     if Manager.isValid(allRequests,true)
       for request in allRequests
         shareWith = request.shareWith
-        if (request.ownerPhone == currentUser.phone)
+        if (request.ownerPhone == currentUser?.phone)
           returnRecords.push(request)
         if Manager.isValid(shareWith, true)
-          if shareWith.includes(currentUser.phone)
+          if shareWith.includes(currentUser?.phone)
             returnRecords.push(request)
     return returnRecords.flat()
   getDocuments: (currentUser) ->
@@ -77,9 +77,9 @@ SecurityManager =
     if Manager.isValid(allDocs,true)
       for doc in allDocs
         shareWith = doc.shareWith
-        if (doc.phone == currentUser.phone)
+        if (doc.phone == currentUser?.phone)
           returnRecords.push(doc)
-        if (doc.phone == currentUser.phone)
+        if (doc.phone == currentUser?.phone)
           returnRecords.push(doc)
         if Manager.isValid(shareWith, true)
             returnRecords.push(doc)
@@ -90,10 +90,10 @@ SecurityManager =
     if Manager.isValid(allMemories,true)
       for memory in allMemories
         shareWith = memory.shareWith
-        if (memory.ownerPhone == currentUser.phone)
+        if (memory.ownerPhone == currentUser?.phone)
           returnRecords.push(memory)
         if Manager.isValid(shareWith, true)
-          if shareWith.includes(currentUser.phone)
+          if shareWith.includes(currentUser?.phone)
             returnRecords.push(memory)
     return returnRecords.flat()
   getArchivedChats: (currentUser) ->
@@ -102,7 +102,7 @@ SecurityManager =
     if Manager.isValid(allArchivedChats,true)
       for chatArray in allArchivedChats
         for chat in chatArray
-          if (chat.threadOwner == currentUser.phone)
+          if (chat.threadOwner == currentUser?.phone)
             returnRecords.push(chat)
     return returnRecords.flat()
   getInputSuggestions: (currentUser) ->
@@ -110,7 +110,7 @@ SecurityManager =
     suggestions = Manager.convertToArray(await DB.getTable(DB.tables.suggestions)).flat()
     if Manager.isValid(suggestions,true)
       for suggestion in suggestions
-        if suggestion.ownerPhone == currentUser.phone
+        if suggestion.ownerPhone == currentUser?.phone
           returnRecords.push(suggestion)
     return returnRecords.flat()
   getChats: (currentUser) ->
@@ -121,13 +121,13 @@ SecurityManager =
       for chat in chats.flat()
         if Manager.isValid(chat.threadVisibilityMembers, true)
           visibilityMemberPhones = chat.threadVisibilityMembers.map (x) -> x.phone
-          if visibilityMemberPhones.includes (currentUser.phone)
+          if visibilityMemberPhones.includes (currentUser?.phone)
             members = chat.members.map (x) -> x.phone
-            if currentUser.phone in members
+            if currentUser?.phone in members
               securedChats.push(chat)
         else
           members = chat.members.map (x) -> x.phone
-          if currentUser.phone in members
+          if currentUser?.phone in members
             securedChats.push(chat)
     return securedChats.flat()
   getCoparentChats: (currentUser) ->
@@ -137,7 +137,7 @@ SecurityManager =
     if Manager.isValid(allChatsFlattened, true)
       for chat in allChatsFlattened
         members = chat.members.map (x) -> x.phone
-        if currentUser.phone in members
+        if currentUser?.phone in members
           activeChats.push chat
     return activeChats
 

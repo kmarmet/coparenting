@@ -109,7 +109,7 @@ function NewExpenseForm({ hideCard, showCard }) {
     newExpense.paidStatus = 'unpaid'
     newExpense.imageName = expenseImage.name || ''
     newExpense.payer = payer
-    newExpense.ownerPhone = currentUser.phone
+    newExpense.ownerPhone = currentUser?.phone
     newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
     newExpense.repeating = repeating
 
@@ -120,7 +120,7 @@ function NewExpenseForm({ hideCard, showCard }) {
     }
 
     // Get coparent name
-    newExpense.recipientName = formatNameFirstNameOnly(currentUser.name)
+    newExpense.recipientName = formatNameFirstNameOnly(currentUser?.name)
 
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
@@ -131,7 +131,7 @@ function NewExpenseForm({ hideCard, showCard }) {
 
     // IMAGE UPLOAD
     if (Manager.isValid(expenseImage?.name)) {
-      await FirebaseStorage.upload(FirebaseStorage.directories.expenseImages, currentUser.id, expenseImage, expenseImage.name).then((url) => {
+      await FirebaseStorage.upload(FirebaseStorage.directories.expenseImages, currentUser?.id, expenseImage, expenseImage.name).then((url) => {
         newExpense.imageUrl = url
       })
     }
@@ -148,7 +148,7 @@ function NewExpenseForm({ hideCard, showCard }) {
       // Send notification
       const subId = await NotificationManager.getUserSubId(payer.phone)
       if (subId) {
-        PushAlertApi.sendMessage(`New Expense`, `${formatNameFirstNameOnly(currentUser.name)} has created a new expense`, subId)
+        PushAlertApi.sendMessage(`New Expense`, `${formatNameFirstNameOnly(currentUser?.name)} has created a new expense`, subId)
       }
 
       // Go back to expense screen
@@ -169,14 +169,14 @@ function NewExpenseForm({ hideCard, showCard }) {
         newExpense.children = expenseChildren
         newExpense.amount = expenseAmount
         newExpense.imageName = ''
-        newExpense.phone = currentUser.phone
+        newExpense.phone = currentUser?.phone
         newExpense.dueDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
         newExpense.dateAdded = Manager.getCurrentDate()
         newExpense.notes = expenseNotes
         newExpense.paidStatus = 'unpaid'
-        newExpense.createdBy = currentUser.name
+        newExpense.createdBy = currentUser?.name
         newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
-        newExpense.recipientName = formatNameFirstNameOnly(currentUser.name)
+        newExpense.recipientName = formatNameFirstNameOnly(currentUser?.name)
         newExpense.repeating = true
         expensesToPush.push(newExpense)
       })
@@ -408,7 +408,7 @@ function NewExpenseForm({ hideCard, showCard }) {
           {currentUser && (
             <ShareWithCheckboxes
               icon={<ImEye />}
-              shareWith={currentUser.coparents.map((x) => x.phone)}
+              shareWith={currentUser?.coparents.map((x) => x.phone)}
               onCheck={handleShareWithSelection}
               labelText={'Who is allowed to see it?'}
               containerClass={'share-with-coparents'}
@@ -418,7 +418,7 @@ function NewExpenseForm({ hideCard, showCard }) {
           )}
 
           {/* INCLUDING WHICH CHILDREN */}
-          {currentUser && currentUser.children !== undefined && (
+          {currentUser && currentUser?.children !== undefined && (
             <div className="share-with-container ">
               <div className="flex">
                 <p>Applicable Child(ren)</p>
@@ -432,7 +432,7 @@ function NewExpenseForm({ hideCard, showCard }) {
                 />
               </div>
               {includeChildren && (
-                <CheckboxGroup checkboxLabels={currentUser.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+                <CheckboxGroup checkboxLabels={currentUser?.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
               )}
             </div>
           )}

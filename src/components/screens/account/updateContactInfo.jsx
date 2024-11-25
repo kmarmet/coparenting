@@ -79,8 +79,8 @@ export default function UpdateContactInfo({ updateType, showCard, hideCard }) {
           await updateEmail(auth.currentUser, email, {
             email: email,
           })
-          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser.phone}/email`, email)
-          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser.phone}/emailVerified`, false)
+          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/email`, email)
+          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/emailVerified`, false)
           localStorage.removeItem('rememberKey')
           logout()
           hideCard()
@@ -105,7 +105,7 @@ export default function UpdateContactInfo({ updateType, showCard, hideCard }) {
 
     // Update Phone
     if (updateType === 'phone') {
-      await DB_UserScoped.updateUserContactInfo(currentUser, currentUser.phone, phone, 'phone')
+      await DB_UserScoped.updateUserContactInfo(currentUser, currentUser?.phone, phone, 'phone')
       AlertManager.successAlert('Phone number has been updated')
       localStorage.removeItem('rememberKey')
       hideCard()

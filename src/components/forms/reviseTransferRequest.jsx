@@ -78,7 +78,11 @@ export default function ReviseChildTransferChangeRequest({ hideCard, showCard, r
     // Notify
     if (revisionRequest?.recipientPhone) {
       const subId = await NotificationManager.getUserSubId(revisionRequest?.requestRecipientPhone)
-      PushAlertApi.sendMessage(`Transfer Change Request`, `${formatNameFirstNameOnly(currentUser.name)} has created a Transfer Change request`, subId)
+      PushAlertApi.sendMessage(
+        `Transfer Change Request`,
+        `${formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
+        subId
+      )
     }
     // Revise
     const updateKey = await DB.getSnapshotKey(DB.tables.transferChangeRequests, revisionRequest, 'id')

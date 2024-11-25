@@ -104,12 +104,12 @@ const Chats = () => {
         ...currentMutedMembers,
         {
           target: coparentPhone,
-          ownerPhone: currentUser.phone,
+          ownerPhone: currentUser?.phone,
         },
       ]
       await DB.updateEntireRecord(`${DB.tables.chats}/${key}`, chat)
     } else {
-      chat.mutedMembers = chat.mutedMembers.filter((x) => x.ownerPhone !== currentUser.phone && x.target !== coparentPhone)
+      chat.mutedMembers = chat.mutedMembers.filter((x) => x.ownerPhone !== currentUser?.phone && x.target !== coparentPhone)
       await DB.updateEntireRecord(`${DB.tables.chats}/${key}`, chat)
     }
     await getSecuredChats()
@@ -117,7 +117,7 @@ const Chats = () => {
   }
 
   useEffect(() => {
-    if (currentUser.accountType === 'parent') {
+    if (currentUser?.accountType === 'parent') {
       getSecuredChats().then((r) => r)
     }
     Manager.showPageContainer('show')
@@ -157,7 +157,7 @@ const Chats = () => {
         {!showNewThreadForm &&
           threads.length > 0 &&
           threads.map((thread, index) => {
-            const coparent = thread?.members?.filter((x) => x.phone !== currentUser.phone)[0]
+            const coparent = thread?.members?.filter((x) => x.phone !== currentUser?.phone)[0]
             const coparentMessages = Manager.convertToArray(thread.messages)?.filter((x) => x.sender === coparent.name)
             const lastMessage = coparentMessages[coparentMessages?.length - 1]?.message
             const threadIsMuted = thread?.mutedMembers?.filter((x) => x.target === coparent.phone).length > 0

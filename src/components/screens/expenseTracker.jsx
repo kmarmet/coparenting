@@ -78,7 +78,7 @@ export default function ExpenseTracker() {
       const subId = await NotificationManager.getUserSubId(expense.ownerPhone)
       PushAlertApi.sendMessage(
         `Expense Paid`,
-        `An expense has been PAID by ${currentUser.name} \nExpense Name: ${expense.name} \nYou can delete the expense now`,
+        `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${expense.name} \nYou can delete the expense now`,
         subId
       )
 
@@ -94,7 +94,7 @@ export default function ExpenseTracker() {
 
       // Delete in Firebase Storage
       if (Manager.isValid(expense) && Manager.isValid(expense.imageName, null, null, true)) {
-        await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser.id, expense.imageName, expense)
+        await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser?.id, expense.imageName, expense)
       }
 
       // Delete Multiple
@@ -593,7 +593,7 @@ export default function ExpenseTracker() {
                                 <button onClick={async () => await markAsPaid(expense)} className="green-text">
                                   Paid <MdPriceCheck className={'fs-22'} />
                                 </button>
-                                {expense.ownerPhone === currentUser.phone && (
+                                {expense.ownerPhone === currentUser?.phone && (
                                   <button className="send-reminder" onClick={() => sendReminder(expense)}>
                                     Send Reminder <PiBellSimpleRinging className={'fs-18'} />
                                   </button>
@@ -602,7 +602,7 @@ export default function ExpenseTracker() {
                             )}
 
                             {/* DELETE */}
-                            {expense.ownerPhone === currentUser.phone && (
+                            {expense.ownerPhone === currentUser?.phone && (
                               <p
                                 onClick={async () => {
                                   await deleteExpense(expense)

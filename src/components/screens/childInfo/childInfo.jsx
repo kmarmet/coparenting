@@ -43,6 +43,7 @@ export default function ChildInfo() {
   const [showSelectorCard, setShowSelectorCard] = useState(false)
   const [activeInfoChild, setActiveInfoChild] = useState(null)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
+
   const uploadProfilePic = async (img) => {
     setState({ ...state, isLoading: true })
     // @ts-ignore
@@ -68,19 +69,21 @@ export default function ChildInfo() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
 
-    onValue(child(dbRef, `${DB.tables.users}/${currentUser.phone}/children`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.users}/${currentUser?.phone}/children`), async (snapshot) => {
       const kiddos = snapshot.val()
-      if (!activeInfoChild) {
-        setActiveInfoChild(kiddos[0])
-      } else {
-        const newActiveChild = kiddos.filter((x) => x.id === activeInfoChild.id)[0]
-        setActiveInfoChild(newActiveChild)
+      if (Manager.isValid(kiddos, true)) {
+        if (!activeInfoChild) {
+          setActiveInfoChild(kiddos[0])
+        } else {
+          const newActiveChild = kiddos.filter((x) => x.id === activeInfoChild.id)[0]
+          setActiveInfoChild(newActiveChild)
+        }
       }
     })
   }
 
   const updateActiveChild = async (child) => {
-    const children = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/children`)
+    const children = await DB.getTable(`${DB.tables.users}/${currentUser?.phone}/children`)
     const thisChild = children.filter((x) => x.id === child.id)[0]
     setActiveInfoChild(thisChild)
   }
@@ -158,16 +161,20 @@ export default function ChildInfo() {
               </div>
             )}
           </div>
-          <button
-            className="button default center green white-text mt-20 w-60"
-            onClick={() => {
-              setShowInfoCard(true)
-            }}>
-            Add Your Own Info <FaWandMagicSparkles />
-          </button>
-          <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center w-60">
-            Different Child
-          </button>
+          {currentUser?.children?.length > 0 && (
+            <>
+              <button
+                className="button default center green white-text mt-20 w-60"
+                onClick={() => {
+                  setShowInfoCard(true)
+                }}>
+                Add Your Own Info <FaWandMagicSparkles />
+              </button>
+              <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center w-60">
+                Different Child
+              </button>
+            </>
+          )}
         </>
       </div>
       {!showNewChildForm && !showSelectorCard && !showInfoCard && (

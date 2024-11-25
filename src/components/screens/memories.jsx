@@ -85,7 +85,7 @@ export default function Memories() {
               newMemory.notes = img.notes
               newMemory.url = img.url
               newMemory.title = img.title
-              newMemory.createdBy = currentUser.phone
+              newMemory.createdBy = currentUser?.phone
               newMemory.memoryName = imageName
 
               const cleanedObject = ObjectManager.cleanObject(newMemory, ModelNames.memory)
@@ -115,17 +115,17 @@ export default function Memories() {
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
 
     // Current user is record owner
-    if (record.ownerPhone === currentUser.phone) {
+    if (record.ownerPhone === currentUser?.phone) {
       // Delete from Firebase Realtime DB
-      await DB.deleteMemory(currentUser.phone, record).then(async () => {
+      await DB.deleteMemory(currentUser?.phone, record).then(async () => {
         // Delete from Firebase Storage
-        await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser.id, imageName)
+        await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.id, imageName)
       })
     }
     // Memory was shared with current user -> hide it
     else {
       const memoryKey = await DB.getSnapshotKey(`${DB.tables.memories}`, record, 'id')
-      const updatedShareWith = record.shareWith.filter((x) => x !== currentUser.phone)
+      const updatedShareWith = record.shareWith.filter((x) => x !== currentUser?.phone)
       await DB.updateByPath(`${DB.tables.memories}/${memoryKey}/shareWith`, updatedShareWith)
     }
   }

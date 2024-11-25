@@ -29,7 +29,6 @@ import { IoTodayOutline } from 'react-icons/io5'
 import { HiOutlineCalendarDays } from 'react-icons/hi2'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
-
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -134,7 +133,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       newEvent.title += ' 🎂'
     }
     if (isVisitation) {
-      newEvent.title = `${formatNameFirstNameOnly(currentUser.name)}'s Visitation`
+      newEvent.title = `${formatNameFirstNameOnly(currentUser?.name)}'s Visitation`
     }
     newEvent.startDate = DateManager.dateIsValid(eventStartDate) ? moment(eventStartDate).format(DateFormats.dateForDb) : ''
     newEvent.endDate = DateManager.dateIsValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
@@ -145,8 +144,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     newEvent.directionsLink = !_.isEmpty(eventLocation) ? Manager.getDirectionsLink(eventLocation) : ''
     newEvent.location = eventLocation
     newEvent.children = eventChildren
-    newEvent.ownerPhone = currentUser.phone
-    newEvent.createdBy = currentUser.name
+    newEvent.ownerPhone = currentUser?.phone
+    newEvent.createdBy = currentUser?.name
     newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
     newEvent.notes = eventNotes
     newEvent.websiteUrl = eventWebsite
@@ -175,12 +174,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       // Insert Suggestion
       const alreadyExists =
         _.filter(inputSuggestions, (row) => {
-          return row.suggestion === newEvent.title && row.ownerPhone === currentUser.phone
+          return row.suggestion === newEvent.title && row.ownerPhone === currentUser?.phone
         }).length > 0
 
       if (!alreadyExists) {
         const newSuggestion = new InputSuggestion()
-        newSuggestion.ownerPhone = currentUser.phone
+        newSuggestion.ownerPhone = currentUser?.phone
         newSuggestion.formName = FormNames.calendar
         newSuggestion.suggestion = newEvent.title
         newSuggestion.id = Manager.getUid()
@@ -345,8 +344,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       dateObject.directionsLink = eventLocation
       dateObject.location = eventLocation
       dateObject.children = eventChildren
-      dateObject.ownerPhone = currentUser.phone
-      dateObject.createdBy = currentUser.name
+      dateObject.ownerPhone = currentUser?.phone
+      dateObject.createdBy = currentUser?.name
       dateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat()
       dateObject.notes = eventNotes
       dateObject.websiteUrl = eventWebsite
@@ -435,7 +434,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     const matching = dbSuggestions.filter(
                       (x) =>
                         x.formName === 'calendar' &&
-                        x.ownerPhone === currentUser.phone &&
+                        x.ownerPhone === currentUser?.phone &&
                         contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
                     )
                     setInputSuggestions(DatasetManager.getUniqueArray(matching, true))
@@ -520,11 +519,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             <ShareWithCheckboxes
               icon={<ImEye />}
               required={true}
-              shareWith={currentUser.coparents.map((x) => x.phone)}
+              shareWith={currentUser?.coparents.map((x) => x.phone)}
               onCheck={(e) => handleShareWithSelection(e)}
               labelText={'Who is allowed to see it?'}
               containerClass={'share-with-coparents'}
-              checkboxLabels={currentUser.coparents.map((x) => x.phone)}
+              checkboxLabels={currentUser?.coparents.map((x) => x.phone)}
             />
           )}
 
@@ -604,7 +603,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
-                  {currentUser.accountType === 'parent' && (
+                  {currentUser?.accountType === 'parent' && (
                     <CheckboxGroup
                       elClass={`${theme} `}
                       dataPhone={currentUser?.coparents.map((x) => x.phone)}
@@ -612,11 +611,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       onCheck={handleCoparentsToRemindSelection}
                     />
                   )}
-                  {currentUser.accountType === 'child' && (
+                  {currentUser?.accountType === 'child' && (
                     <CheckboxGroup
                       elClass={`${theme} `}
-                      dataPhone={currentUser.parents.map((x) => x.phone)}
-                      checkboxLabels={currentUser.parents.map((x) => x.name)}
+                      dataPhone={currentUser?.parents.map((x) => x.phone)}
+                      checkboxLabels={currentUser?.parents.map((x) => x.name)}
                       onCheck={handleCoparentsToRemindSelection}
                     />
                   )}
@@ -626,7 +625,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           )}
 
           {/* INCLUDING WHICH CHILDREN */}
-          {Manager.isValid(currentUser.children !== undefined, true) && (
+          {Manager.isValid(currentUser?.children !== undefined, true) && (
             <div className="share-with-container">
               <Accordion id={'checkboxes'} expanded={includeChildren}>
                 <AccordionSummary>
@@ -654,7 +653,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           )}
 
           {/* REPEATING/CLONED */}
-          {(!currentUser.accountType || currentUser.accountType === 'parent') && eventLength === 'single' && (
+          {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
             <>
               {/* REPEATING */}
               <div className="share-with-container" id="repeating-container">

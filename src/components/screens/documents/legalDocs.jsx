@@ -51,7 +51,7 @@ export default function ImageDocs() {
 
   const getImages = async () => {
     // Get Firebase images
-    FirebaseStorage.getImages(FirebaseStorage.directories.documents, currentUser.id)
+    FirebaseStorage.getImages(FirebaseStorage.directories.documents, currentUser?.id)
       .then(async (imgs) => {
         if (imgs.length === 0) {
           setState({ ...state, currentScreenTitle: 'Upload Agreement', currentScreen: ScreenNames.uploadAgreement })

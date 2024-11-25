@@ -732,6 +732,10 @@
       animation-name: fadeInUp;
       -webkit-animation-name: fadeInUp;
     }
+    
+    .space-between {
+      justify-content: space-between;
+    }
 
     .update-popup {
       @include deadCenter;
@@ -823,11 +827,6 @@
 
     i {
       font-style: italic;
-      font-size: inherit;
-    }
-
-    u {
-      font-size: inherit;
     }
 
     #instructions-wrapper {

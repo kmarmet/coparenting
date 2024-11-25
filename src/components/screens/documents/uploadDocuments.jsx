@@ -90,16 +90,16 @@ export default function UploadDocuments({ hideCard, showCard }) {
     }
 
     // Upload to Firebase Storage
-    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.documents}/`, currentUser.id, files)
+    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.documents}/`, currentUser?.id, files)
       .then(() => {})
       .finally(async () => {
         // Add documents to 'documents' property for currentUser
-        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.documents, currentUser.id, files).then(async (urls) => {
+        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.documents, currentUser?.id, files).then(async (urls) => {
           // Add to user documents object
           for (const url of urls) {
             const newDocument = new Doc()
             newDocument.url = url
-            newDocument.uploadedBy = currentUser.phone
+            newDocument.uploadedBy = currentUser?.phone
             newDocument.id = Manager.getUid()
             newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
             newDocument.type = docType
@@ -166,11 +166,11 @@ export default function UploadDocuments({ hideCard, showCard }) {
               <CheckboxGroup parentLabel={'Document Type'} required={true} checkboxLabels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
               <ShareWithCheckboxes
                 icon={<ImEye />}
-                shareWith={currentUser.coparents.map((x) => x.phone)}
+                shareWith={currentUser?.coparents.map((x) => x.phone)}
                 onCheck={handleShareWithSelection}
                 labelText={'Who is allowed to see it?'}
                 containerClass={'share-with-coparents'}
-                checkboxLabels={currentUser.coparents.map((x) => x.phone)}
+                checkboxLabels={currentUser?.coparents.map((x) => x.phone)}
               />
             </>
           </div>

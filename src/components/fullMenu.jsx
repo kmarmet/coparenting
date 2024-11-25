@@ -39,7 +39,7 @@ export default function FullMenu() {
   }
 
   const changeTheme = async (theme) => {
-    await DB_UserScoped.updateUserRecord(currentUser.phone, `settings/theme`, theme)
+    await DB_UserScoped.updateUserRecord(currentUser?.phone, `settings/theme`, theme)
     setState({ ...state, theme: theme })
     window.location.reload()
   }
@@ -75,7 +75,7 @@ export default function FullMenu() {
       hasSubmitButton={false}>
       <div id="full-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
         {/* ADMIN DASHBOARD */}
-        {currentUser.email === 'kmarmet1@gmail.com' && (
+        {currentUser?.email === 'kmarmet1@gmail.com' && (
           <div
             className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
             onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>

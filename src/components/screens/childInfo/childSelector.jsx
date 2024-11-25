@@ -25,7 +25,7 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
   const [children, setChildren] = useState(currentUser?.children)
 
   const setUserChildren = async () => {
-    const currentUserChildren = await DB.getTable(`users/${currentUser.phone}/children`)
+    const currentUserChildren = await DB.getTable(`users/${currentUser?.phone}/children`)
     setChildren(currentUserChildren)
   }
 
@@ -47,7 +47,7 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
           children.map((child, index) => {
             return (
               <p
-                className={`child-name ${child?.general?.name === activeInfoChild?.general?.name ? 'active' : ''}`}
+                className={`child-name pill ${child?.general?.name === activeInfoChild?.general?.name ? 'active' : ''}`}
                 key={index}
                 onClick={(e) => setActiveChild(child)}>
                 {formatNameFirstNameOnly(child?.general?.name)}

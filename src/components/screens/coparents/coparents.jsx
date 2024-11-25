@@ -71,7 +71,7 @@ export default function Coparents() {
   const onValueChange = async () => {
     if (currentUser) {
       const dbRef = getDatabase()
-      const userRef = ref(dbRef, `${DB.tables.users}/${currentUser.phone}/coparents`)
+      const userRef = ref(dbRef, `${DB.tables.users}/${currentUser?.phone}/coparents`)
       onValue(userRef, async (snapshot) => {
         await getCoparents(snapshot.val())
       })
