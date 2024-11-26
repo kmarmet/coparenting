@@ -21,13 +21,13 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import DB_UserScoped from '@userScoped'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { FaChevronDown } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
+import { IoCloseOutline } from 'react-icons/io5'
 
 function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -37,14 +37,14 @@ function Schooling({ activeChild, setActiveChild }) {
   const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'schooling', Manager.toCamelCase(prop))
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'schooling', toCamelCase(prop))
     setSelectedChild()
     setArrowDirection('down')
     setActiveChild(updatedChild)
   }
 
   const update = async (section, prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', Manager.toCamelCase(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', toCamelCase(prop), value)
     AlertManager.successAlert('Updated!')
     setActiveChild(updatedChild)
   }
@@ -80,7 +80,7 @@ function Schooling({ activeChild, setActiveChild }) {
               return (
                 <div key={index} className="flex input">
                   <InputWrapper inputType={'input'} labelText={infoLabel} defaultValue={value} />
-                  <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                  <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                 </div>
               )
             })}

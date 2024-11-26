@@ -523,7 +523,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
               icon={<ImEye />}
               labelText={'Who is allowed to see it?'}
               containerClass={'share-with-coparents'}
-              checkboxLabels={currentUser?.coparents?.map((x) => x.phone)}
+              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
             />
           )}
           <hr />

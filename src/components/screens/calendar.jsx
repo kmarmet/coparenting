@@ -11,7 +11,8 @@ import BottomCard from 'components/shared/bottomCard'
 import DateFormats from '../../constants/dateFormats'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
-import { FaAngleDown, FaAngleUp, FaChildren } from 'react-icons/fa6'
+import { FaChildren } from 'react-icons/fa6'
+import { PiBellSimpleRinging, PiCalendarPlusDuotone, PiCaretDownThin, PiCaretUpThin, PiGlobeDuotone } from 'react-icons/pi'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
 import { CgClose } from 'react-icons/cg'
@@ -35,7 +36,6 @@ import { child, getDatabase, onValue, ref } from 'firebase/database'
 import NewCalendarEvent from '../forms/newCalendarEvent'
 import EditCalEvent from '../forms/editCalEvent'
 import { TbLocation } from 'react-icons/tb'
-import { PiBellSimpleRinging, PiCalendarPlusDuotone, PiGlobeDuotone } from 'react-icons/pi'
 import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
 import DB_UserScoped from '@userScoped'
@@ -302,15 +302,6 @@ export default function EventCalendar() {
     }
   }, [showHolidays])
 
-  const toggleDetailsArrow = (arrow) => {
-    const scopedArrow = arrow.target
-    if (scopedArrow.classList.contains('active')) {
-      // return <FaAngleDown className={'details-toggle-arrow'} />
-    } else {
-      // return <FaAngleUp className={'details-toggle-arrow'} />
-    }
-  }
-
   const toggleDetails = (element) => {
     const textWrapper = element.target.parentNode.closest('.text')
     const details = textWrapper.querySelector('#details')
@@ -526,8 +517,8 @@ export default function EventCalendar() {
                             )}
                             {CalendarManager.formatEventTitle(event?.title)}
                           </p>
-                          <FaAngleUp className={'details-toggle-arrow up'} />
-                          <FaAngleDown className={'details-toggle-arrow down active'} />
+                          <PiCaretDownThin className={'details-toggle-arrow down active'} />
+                          <PiCaretUpThin className={'details-toggle-arrow up'} />
                         </div>
                         {/* DATE CONTAINER */}
                         <div id="date-container-and-edit-button" className="flex space-between">

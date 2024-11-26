@@ -23,6 +23,7 @@ import {
 
 const DocumentConversionManager = {
   tocHeaders: [
+    'income-tax-exemptions',
     'child-support',
     'spousal-maintenance',
     'matrimonial-home',

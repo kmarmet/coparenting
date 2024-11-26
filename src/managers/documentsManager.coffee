@@ -20,7 +20,6 @@ import {
 } from "../globalFunctions"
 
 export default DocumentsManager =
-
   deleteDocsWithIds: (toDelete, currentUser, callback = () => {}) ->
     for docId in toDelete
       docs = await DB.getTable(DB.tables.documents)

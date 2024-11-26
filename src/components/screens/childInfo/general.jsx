@@ -4,6 +4,7 @@ import globalState from '../../../context'
 import Manager from '@manager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
+import { IoCloseOutline } from 'react-icons/io5'
 import {
   camelCaseToString,
   contains,
@@ -23,7 +24,6 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import DB_UserScoped from '@userScoped'
 import Accordion from '@mui/material/Accordion'
 import Autocomplete from 'react-google-autocomplete'
@@ -39,7 +39,7 @@ function General({ activeChild, setActiveChild }) {
   const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', Manager.toCamelCase(prop))
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', toCamelCase(prop))
     setActiveChild(updatedChild)
     setSelectedChild()
     setArrowDirection('down')
@@ -56,7 +56,7 @@ function General({ activeChild, setActiveChild }) {
   const update = async (section, prop, value, isArray) => {
     // Update DB
     AlertManager.successAlert('Updated!')
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', Manager.toCamelCase(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', toCamelCase(prop), value)
     setActiveChild(updatedChild)
   }
 
@@ -80,6 +80,7 @@ function General({ activeChild, setActiveChild }) {
             generalValues.map((prop, index) => {
               const infoLabel = formatInfoLabel(prop[0])
               const value = prop[1]
+              console.log(infoLabel)
               return (
                 <div key={index}>
                   <div className="flex input">
@@ -109,7 +110,7 @@ function General({ activeChild, setActiveChild }) {
                         }}
                       />
                     )}
-                    {infoLabel.toLowerCase() !== 'name' && <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />}
+                    {infoLabel.toLowerCase() !== 'name' && <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />}
                   </div>
                 </div>
               )

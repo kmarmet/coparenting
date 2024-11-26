@@ -248,10 +248,11 @@
         .flex {
           &.input {
             .delete-icon {
-              color: $red;
-              font-size: 22px;
+              color: $lightDarkGrey;
+              font-size: 26px;
               position: relative;
               margin-left: 10px;
+              bottom: 5px;
             }
           }
         }

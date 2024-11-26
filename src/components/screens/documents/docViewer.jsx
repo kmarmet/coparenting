@@ -341,7 +341,7 @@ export default function DocViewer() {
         )}
       </div>
       {/* INPUT */}
-      <BottomCard className="form search-card" showCard={showSearch} title={'Search'} onClose={() => closeSearch}>
+      <BottomCard hasSubmitButton={false} className="form search-card" showCard={showSearch} title={'Find Text'} onClose={closeSearch}>
         <div className="flex">
           <DebounceInput minLength={3} id="search-input" onChange={(e) => search(e.target.value)} debounceTimeout={500} />
           {/* SEARCH NAV */}
@@ -359,16 +359,11 @@ export default function DocViewer() {
             </div>
           )}
         </div>
-        <div className="buttons">
-          <button className="card-button cancel" onClick={closeSearch}>
-            Close
-          </button>
-        </div>
       </BottomCard>
 
       {/* TABLE OF CONTENTS */}
       {Manager.isValid(document.querySelectorAll('.header'), true) && (
-        <BottomCard showCard={showCard} onClose={() => setShowCard(false)} className="toc" title={'Table of Contents'}>
+        <BottomCard hasSubmitButton={false} showCard={showCard} onClose={() => setShowCard(false)} className="toc" title={'Table of Contents'}>
           <div id="table-of-contents">
             <button
               id="toc-scroll-button"
@@ -404,11 +399,6 @@ export default function DocViewer() {
                   )
                 })}
             </div>
-          </div>
-          <div className="buttons">
-            <button className="card-button cancel" onClick={() => setShowCard(false)}>
-              Close
-            </button>
           </div>
         </BottomCard>
       )}

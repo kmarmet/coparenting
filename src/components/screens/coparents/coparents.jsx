@@ -47,13 +47,13 @@ export default function Coparents() {
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
 
   const deleteProp = async (prop) => {
-    await DB_UserScoped.deleteCoparentInfoProp(currentUser, Manager.toCamelCase(prop), selectedCoparent)
+    await DB_UserScoped.deleteCoparentInfoProp(currentUser, toCamelCase(prop), selectedCoparent)
   }
 
   const update = async (prop, value) => {
     // Update DB
     AlertManager.successAlert('Updated!')
-    const updatedChild = await DB_UserScoped.updateCoparent(currentUser, selectedCoparent, Manager.toCamelCase(prop), value)
+    const updatedChild = await DB_UserScoped.updateCoparent(currentUser, selectedCoparent, toCamelCase(prop), value)
     setSelectedCoparent(updatedChild)
   }
 

@@ -40,7 +40,7 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       AlertManager.throwError('Please fill/select required fields')
       return false
     }
-    const updatedChild = await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, Manager.toCamelCase(title), value)
+    const updatedChild = await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, toCamelCase(title), value)
     AlertManager.successAlert(`${uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`)
     resetForm()
     setActiveChild(updatedChild)

@@ -114,8 +114,34 @@
       
       .row {
         min-height: 50px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         margin-bottom: 20px;
+        background-color: white;
+        padding: 10px;
+        border-radius: $borderRadius;
+        border: 1px solid $borderColor;
+        
+        .checkbox {
+          @include extraClickableSpace;
+          position: relative;
+          &:after {
+            top: -10px;
+            left: auto;
+            right: -10px;
+            transform: none;
+          }
+        }
+        
+        .doc-type {
+          padding-top: 5px;
+          p {
+            font-size: 15px;
+            opacity: .7;
+          }
+          svg {
+            font-size: 18px;
+            margin-right: 8px;
+          }
+        }
         
         .section {
           @include lineItem;

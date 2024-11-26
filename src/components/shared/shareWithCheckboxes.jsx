@@ -19,6 +19,7 @@ import {
   wordCount,
 } from '../../globalFunctions'
 import Label from './label'
+import { RiShieldUserLine } from 'react-icons/ri'
 
 function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', dataPhone, defaultPhones, labelText = '', icon = '' }) {
   const { state, setState } = useContext(globalState)
@@ -35,7 +36,10 @@ function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass 
 
   return (
     <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass} mt-15 mb-15`}>
-      <Label text={labelText} required={true}></Label>
+      <div className="flex">
+        <RiShieldUserLine className={'fs-22 mr-5'} />
+        <Label text={labelText} required={true} />
+      </div>
       <div className="flex" id="checkboxes">
         {Manager.isValid(shareWith, true) &&
           shareWith.map((user, index) => {

@@ -338,14 +338,14 @@
     display: block;
     width: 100%;
     outline: 0;
-    border-radius: 8px;
     font-weight: 400;
-    padding: 10px;
-    border: 1px solid $borderColor;
-
-    &.required-field-error {
-      border-bottom: 2px solid $red;
-    }
+    padding: 15px 0 5px 10px;
+    border: 0;
+    background: rgba(241, 241, 241, 0.24);
+    border-bottom: 1px solid rgba(28, 28, 28, 0.09);
+    border-radius: 0;
+    caret-color: black;
+    transition: all 0.2s ease-in-out;
 
     &.rs-input {
       margin-bottom: 0;
@@ -361,13 +361,17 @@
 
     &:focus {
       outline: none;
+      border-bottom: 2px solid $mainBlue;
+      background: rgba(153, 178, 255, 0.14);
+      border-radius: 5px;
     }
   }
 
   textarea {
     height: 150px;
     padding: 10px;
-    border-radius: 8px;
+    border-bottom: 1px solid rgba(28, 28, 28, 0.27);
+    border-radius: 0;
   }
 
   label {
@@ -986,7 +990,7 @@
     #blur {
       height: auto;
       width: auto;
-      left: 20px;
+      left: 10px;
       opacity: 1;
     }
 
@@ -1014,7 +1018,7 @@
       }
     }
     #blur {
-      left: 20px;
+      left: 10px;
       opacity: 1;
       height: auto;
       width: auto;
@@ -1142,7 +1146,7 @@
   background-color: $bestGreyForWhite;
   border-radius: 20px;
   margin-bottom: 20px;
-
+  height: 40px;
   * {
     line-height: 1;
     margin: 0;
@@ -1156,7 +1160,6 @@
       width: calc(100% / 2);
       padding: 5px 10px;
       margin: 0;
-     
 
       p {
         position: relative;
@@ -1184,21 +1187,22 @@
     text-transform: uppercase;
     transition: all 0.3s ease-in-out;
     border: 0;
-    padding: 0 10px;
+    padding: 10px;
     display: flex;
     align-self: stretch;
     border-radius: 20px;
     width: calc(100% / 3);
 
     &.active {
-      background-color: $mainBlue;
+      background-color: rgba(0, 0, 0, 0.05);
       width: 50%;
       span,
       svg,
       p {
-        color: white;
+        color: rgba(45, 104, 255, 0.71);
         line-height: 1;
         opacity: 1;
+        font-weight: $fwBold;
       }
     }
 
@@ -2238,8 +2242,8 @@
 
   // DOC VIEWER SEARCH
   &.search-card {
-    max-height: 250px;
-    min-height: 250px;
+    max-height: 175px;
+    min-height: 175px;
     #input-and-nav {
       .flex {
         align-items: center;
@@ -2251,6 +2255,7 @@
         align-items: center;
         position: relative;
         top: 3px;
+        color: $mainBlue;
 
         &:first-child {
           margin-left: 8px;
@@ -2552,7 +2557,7 @@
       }
       p {
         padding-left: 0;
-        
+
         &.pill {
           padding-left: 15px;
         }
@@ -2825,12 +2830,12 @@
       font-size: 32px;
       color: white;
     }
-    
+
     &.close {
       background-color: $red;
-      
+
       svg {
-        color:white;
+        color: white;
       }
     }
   }

@@ -20,8 +20,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
-
+import { IoCloseOutline } from 'react-icons/io5'
 import DB_UserScoped from '@userScoped'
 import Accordion from '@mui/material/Accordion'
 import { FaChevronDown } from 'react-icons/fa6'
@@ -38,13 +37,13 @@ function Behavior({ activeChild, setActiveChild }) {
   const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'behavior', Manager.toCamelCase(prop))
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'behavior', toCamelCase(prop))
     setSelectedChild()
     setArrowDirection('down')
     setActiveChild(updatedChild)
   }
   const update = async (section, prop, value, isArray) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'behavior', Manager.toCamelCase(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'behavior', toCamelCase(prop), value)
     setActiveChild(updatedChild)
     AlertManager.successAlert('Updated!')
   }
@@ -85,7 +84,7 @@ function Behavior({ activeChild, setActiveChild }) {
                         await update('behavior', infoLabel, `${inputValue}`)
                       }}
                     />
-                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                    <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                   </div>
                 </div>
               )

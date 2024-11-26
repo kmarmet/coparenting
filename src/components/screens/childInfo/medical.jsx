@@ -26,8 +26,8 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import { FaChevronDown } from 'react-icons/fa6'
 import InputWrapper from '../../shared/inputWrapper'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import AlertManager from '../../../managers/alertManager'
+import { IoCloseOutline } from 'react-icons/io5'
 
 function Medical({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -37,14 +37,14 @@ function Medical({ activeChild, setActiveChild }) {
   const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', Manager.toCamelCase(prop))
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', toCamelCase(prop))
     setArrowDirection('down')
     setActiveChild(updatedChild)
     setSelectedChild()
   }
 
   const update = async (section, prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'medical', Manager.toCamelCase(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'medical', toCamelCase(prop), value)
     setActiveChild(updatedChild)
     AlertManager.successAlert('Updated!')
   }
@@ -90,7 +90,7 @@ function Medical({ activeChild, setActiveChild }) {
                         update('medical', infoLabel, `${inputValue}`).then((r) => r)
                       }}
                     />
-                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                    <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                   </div>
                 </div>
               )

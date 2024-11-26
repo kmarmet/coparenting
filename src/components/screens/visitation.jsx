@@ -653,7 +653,7 @@ export default function Visitation() {
               icon={<ImEye />}
               labelText={'Who is allowed to see it?'}
               containerClass={'share-with-coparents'}
-              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+              dataPhone={currentUser?.coparents.map((x) => x.name)}
             />
 
             {/* LOCATION */}

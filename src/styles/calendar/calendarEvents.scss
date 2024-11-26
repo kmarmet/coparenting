@@ -8,8 +8,8 @@
       padding: 20px 15px 200px 15px;
       margin-top: 10px;
       background: white;
-      border-radius: $bigBorderRadius $bigBorderRadius 0 0;
-      border: 1px solid $borderColor;
+      border-radius: 25px 25px 0 0;
+      border: 1px solid rgba(222, 224, 225, 0.48);
       hr {
         width: 80%;
       }
@@ -28,19 +28,23 @@
         position: relative;
         margin-bottom: 20px;
 
+        * {
+          line-height: 1;
+        }
         #bottom-border {
           width: 95%;
           height: 1px;
-          background: $borderColor;
+          background: rgba(222, 224, 225, 0.48);
           margin-left: 20px;
         }
 
         .details-toggle-arrow {
           display: none;
-          opacity: 0.5;
+          opacity: 0.7;
           position: relative;
           top: 2px;
           left: 8px;
+          font-size: 26px;
 
           &.active {
             display: inherit;
@@ -74,7 +78,7 @@
             padding: 0 0 5px 20px;
             justify-content: space-between;
             flex-wrap: wrap;
-            
+
             &.active {
               width: 100%;
               opacity: 1;
@@ -86,28 +90,30 @@
                 display: inherit;
               }
             }
-            
+
             #nav-website {
               display: flex;
               align-items: center;
-              gap: 10px;
+              gap: 15px;
               justify-content: flex-start;
               margin-bottom: 5px;
+              margin-top: 8px;
+              width: 100%;
               * {
                 align-self: stretch;
                 display: flex;
                 align-items: center;
               }
-              
+
               svg {
                 margin-right: 2px;
-                font-size: 20px;
+                font-size: 16px;
                 color: $mainBlue;
                 opacity: 1;
               }
-              
+
               a {
-                font-size: 14px;
+                font-size: 13px;
               }
             }
 
@@ -185,7 +191,7 @@
             width: 100%;
             display: flex;
             align-items: center;
-            padding-left: 22px;
+            padding-left: 20px;
 
             * {
               display: inline;
@@ -235,6 +241,9 @@
           }
           .notes {
             font-size: 14px;
+            margin-top: 5px;
+            width: 100%;
+            line-height: 1.4;
           }
         }
       }

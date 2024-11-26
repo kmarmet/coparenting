@@ -1,6 +1,7 @@
 @import './palette';
 @import './variables';
 #external-overrides {
+  // EVENT ROW
   .event-row {
     .text {
       .MuiPaper-root {
@@ -33,6 +34,8 @@
       }
     }
   }
+
+  // STATIC CALENDAR
   #static-calendar {
     .MuiPickersLayout-root {
       max-width: calc(100vw - 3px) !important;
@@ -48,6 +51,7 @@
       padding: 0 0 0 10px !important;
     }
   }
+
   // PARENT/ROOT CALENDAR WRAPPER
   .MuiPickersLayout-contentWrapper {
     max-width: 408px !important;
@@ -56,6 +60,45 @@
       max-width: 408px !important;
     }
   }
+
+  .MuiTimePickerToolbar-hourMinuteLabel {
+    button {
+      border: 1px solid $lightDarkGrey !important;
+    }
+  }
+
+  // AM/PM SELECTION
+  .MuiTimePickerToolbar-ampmSelection {
+    flex-wrap: nowrap;
+    flex-direction: row;
+    margin: 10px 25px 0 0;
+    gap: 5px;
+    button {
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 40px !important;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      
+      span {
+        padding: 0 !important;
+        width: 40px !important;
+      }
+
+      &:not(.Mui-selected) {
+        border: 0 !important;
+      }
+      .Mui-selected.MuiTypography-subtitle2 {
+        border-radius: $borderRadius;
+        border: 0;
+        width: 40px !important;
+        height: auto;
+      }
+    }
+  }
+
   // CALENDAR ARROWS
   .MuiPickersArrowSwitcher-rightArrowIcon,
   .MuiPickersArrowSwitcher-leftArrowIcon {
@@ -294,6 +337,12 @@
       min-height: 425px !important;
       max-width: calc(100vw - 100px) !important;
 
+      // New/Edit Datepicker
+      &[role='presentation'] {
+        width: 100%;
+        max-width: 100% !important;
+      }
+
       .MuiDayCalendar-monthContainer {
         [role='row'] {
           max-width: calc(100vw - 30px) !important;
@@ -417,7 +466,6 @@
       height: auto !important;
     }
   }
-  // Select
   .MuiFormControl-root {
     &.css-1b5lkxe-MuiFormControl-root {
       .MuiOutlinedInput-root {
@@ -433,9 +481,26 @@
   // Primary calendar picker container
   .MuiPaper-root {
     background-color: $lightBg;
-    border-radius: 25px;
+    border-radius: 30px;
     width: 95vw !important;
     @include bestShadow;
+
+    &[role='dialog'] {
+      .MuiPickersLayout-root {
+        background-color: white !important;
+        width: 100vw !important;
+        max-width: 100% !important;
+
+        [aria-colindex='1'],
+        [aria-colindex='7'] {
+          opacity: 0.5 !important;
+
+          &.Mui-selected {
+            opacity: 1 !important;
+          }
+        }
+      }
+    }
 
     .MuiButtonBase-root {
       &.Mui-selected {
@@ -456,7 +521,7 @@
         color: $mainBlue !important;
         background-color: transparent;
         &:nth-child(2) {
-          border: 0 !important;
+          border: 1px solid $green !important;
           background-color: $green;
           color: white !important;
         }
@@ -618,9 +683,9 @@
 
     .Mui-selected {
       &.MuiTypography-subtitle2 {
-        background-color: $mainBlue;
+        background-color: transparent;
         width: 100%;
-        color: white;
+        color: $mainBlue;
         border-radius: 15px;
         display: flex;
         align-items: center;
@@ -637,7 +702,8 @@
       width: 50px;
       height: 50px;
       font-size: 16px;
-      color: $mainBlue;
+      color: black;
+
       &.Mui-selected {
         background-color: $mainBlue;
         width: 100%;
@@ -651,13 +717,13 @@
         color: white;
         font-weight: bold;
         border-radius: $borderRadius;
-        font-size: 16px !important;
+        font-size: 14px !important;
         display: flex;
         align-items: center;
         line-height: 1;
         min-width: 100px;
-        height: 40px;
-        padding: 0;
+        height: 20px;
+        padding: 15px 0;
         margin-top: 10px;
         &:nth-child(3) {
           margin-right: 8px;
@@ -712,26 +778,27 @@
     }
   }
 
-  .MuiClockPointer-root {
-    background-color: $accent;
-  }
+  // TIME CLOCK WHEEL
+  .MuiTimeClock-root {
+    .MuiClock-root {
+      transform: scale(1.1);
+      .MuiClockPointer-root {
+        background-color: $mainBlue;
 
-  // Clock Wheel
-  .MuiClock-pin,
-  .MuiClockPointer-thumb {
-  }
-  .MuiClockPointer-thumb {
-    border: 16px solid $accent;
-    color: red;
-    color: red !important;
-    * {
-      color: red !important;
+        .MuiClockPointer-thumb {
+          border: 16px solid $mainBlue;
+        }
+      }
     }
   }
 
   .MuiPickersLayout-contentWrapper,
   .MuiPickersLayout-actionBar {
     max-width: 365px;
+    &.MuiPickersLayout-actionBar {
+      margin-top: 10px;
+      gap: 20px;
+    }
   }
 
   .MuiInputBase-root {

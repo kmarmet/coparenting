@@ -6,7 +6,7 @@ import Manager from '@manager'
 import globalState from '../../../context'
 import DocumentsManager from '../../../managers/documentsManager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-
+import { GrDocumentImage, GrDocumentText, GrDocumentUpload } from 'react-icons/gr'
 import {
   contains,
   formatFileName,
@@ -27,7 +27,6 @@ import {
 import SecurityManager from '../../../managers/securityManager'
 import UploadDocuments from './uploadDocuments'
 import NavBar from '../../navBar'
-import { GrDocumentUpload } from 'react-icons/gr'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 
 export default function DocsList() {
@@ -103,14 +102,14 @@ export default function DocsList() {
                       </div>
                     </div>
                     {fileType === 'Document' && (
-                      <div className="flex">
-                        <span className="material-icons-round fs-22 pr-5">description</span>
+                      <div className="flex doc-type">
+                        <GrDocumentText />
                         <p className="italic">From Document</p>
                       </div>
                     )}
                     {fileType === 'Image' && (
-                      <div className="flex">
-                        <span className="material-icons-round fs-22 pr-5">image</span>
+                      <div className="flex doc-type">
+                        <GrDocumentImage />
                         <p className="italic">From Image</p>
                       </div>
                     )}

@@ -514,8 +514,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </div>
           )}
 
-          <hr />
-
           {/* WHO IS ALLOWED TO SEE IT? */}
           {Manager.isValid(currentUser?.coparents, true) && (
             <ShareWithCheckboxes
@@ -528,8 +526,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               dataPhone={currentUser?.coparents.map((x) => x.phone)}
             />
           )}
-
-          <hr />
 
           {/* ALL DAY / HAS END DATE */}
           <div className="flex">
@@ -725,10 +721,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </>
           )}
 
-          <hr />
-
           {/* URL/WEBSITE */}
           <InputWrapper
+            wrapperClasses="mt-15"
             refreshKey={refreshKey}
             labelText={'Website'}
             required={false}

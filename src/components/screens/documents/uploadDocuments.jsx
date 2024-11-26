@@ -170,7 +170,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
                 onCheck={handleShareWithSelection}
                 labelText={'Who is allowed to see it?'}
                 containerClass={'share-with-coparents'}
-                checkboxLabels={currentUser?.coparents.map((x) => x.phone)}
+                dataPhone={currentUser?.coparents.map((x) => x.phone)}
               />
             </>
           </div>
