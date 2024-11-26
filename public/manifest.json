@@ -5,8 +5,8 @@
   "scope": "https://peaceful-coparenting.app/",
   "id": "https://peaceful-coparenting.app/",
   "display": "standalone",
-  "background_color": "#f4f8ff",
-  "theme_color": "#f4f8ff",
+  "background_color": "white",
+  "theme_color": "white",
   "orientation": "portrait",
   "icons": [
     {
