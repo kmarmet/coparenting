@@ -8,6 +8,7 @@
         background: transparent;
         height: auto;
         border-bottom: 1px solid $borderColor;
+        
         border-radius: 0;
         &:before {
           display: none;
@@ -282,7 +283,7 @@
     }
 
     .standard-event-dot {
-      background-color: #a0f3a3;
+      background-color: rgba(46, 204, 113, 0.65);
     }
   }
   .invisible-dots {

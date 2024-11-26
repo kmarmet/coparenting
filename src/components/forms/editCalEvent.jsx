@@ -510,7 +510,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
               </div>
             </div>
           )}
-          <hr />
           {/* WHO IS ALLOWED TO SEE IT? */}
           {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
             <ShareWithCheckboxes
@@ -526,7 +525,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
               dataPhone={currentUser?.coparents?.map((x) => x.phone)}
             />
           )}
-          <hr />
           {/* ALL DAY / HAS END DATE */}
           <div className="flex all-day-toggle">
             <p>All Day</p>
@@ -652,8 +650,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
             </div>
           )}
         </div>
-
-        <hr className="mb-0" />
 
         {/* URL/WEBSITE */}
         <InputWrapper

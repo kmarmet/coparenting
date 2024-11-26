@@ -335,18 +335,6 @@
 
   input,
   textarea {
-    display: block;
-    width: 100%;
-    outline: 0;
-    font-weight: 400;
-    padding: 15px 0 5px 10px;
-    border: 0;
-    background: rgba(241, 241, 241, 0.24);
-    border-bottom: 1px solid rgba(28, 28, 28, 0.09);
-    border-radius: 0;
-    caret-color: black;
-    transition: all 0.2s ease-in-out;
-
     &.rs-input {
       margin-bottom: 0;
     }
@@ -361,17 +349,11 @@
 
     &:focus {
       outline: none;
-      border-bottom: 2px solid $mainBlue;
+      border: 1px solid $mainBlue;
       background: rgba(153, 178, 255, 0.14);
-      border-radius: 5px;
+      border-radius: 4px;
+      padding: 10px;
     }
-  }
-
-  textarea {
-    height: 150px;
-    padding: 10px;
-    border-bottom: 1px solid rgba(28, 28, 28, 0.27);
-    border-radius: 0;
   }
 
   label {
@@ -943,69 +925,38 @@
   width: 100%;
   margin-bottom: 8px;
 
-  #label-wrapper {
-    margin: 0;
-    label {
-      margin: 0;
-      color: $lightBlueMedium;
-      font-size: 14px;
-      font-weight: $fwMedium;
-    }
-  }
-
-  #blur {
-    backdrop-filter: blur(8px);
-    position: relative;
-    z-index: 100;
-    top: 10px;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    left: -200px;
-    transition: all 0.4s ease-in-out;
-    opacity: 0;
-    height: 0;
-    width: 0;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: -8px;
-      left: -8px;
-      background-position: 50%;
-      filter: blur(8px);
-      z-index: -1;
-    }
-  }
-
   .MuiInputBase-root {
     height: 43px;
   }
-
-  &.textarea {
-    height: 150px;
-  }
-
-  &.date {
-    #blur {
-      height: auto;
-      width: auto;
-      left: 10px;
-      opacity: 1;
+  
+  textarea {
+    max-height: 30px;
+    height: 30px;
+    overflow: hidden;
+    
+    &:focus {
+      height: 150px;
+      padding: 10px;
+      max-height: 150px;
     }
+  }
+  
+  input,
+  textarea {
+    display: block;
+    width: 100%;
+    outline: 0;
+    font-weight: 400;
+    caret-color: black;
+    transition: all 0.2s ease-in-out;
+    margin-bottom: 10px;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid $iconGrey;
 
-    .floating-label {
-      opacity: 1;
-      z-index: 100;
-
-      span {
-        font-size: 14px;
-        color: $mainBlue;
-
-        &.asterisk {
-          color: $red;
-        }
-      }
+    &:focus {
+      border: 1px solid $mainBlue;
+      border-radius: 4px;
     }
   }
 
@@ -1017,34 +968,6 @@
         color: transparent;
       }
     }
-    #blur {
-      left: 10px;
-      opacity: 1;
-      height: auto;
-      width: auto;
-    }
-    .floating-label {
-      opacity: 1;
-
-      span {
-        font-size: 14px;
-        color: $mainBlue;
-
-        &.asterisk {
-          color: $red;
-        }
-      }
-    }
-  }
-
-  .floating-label {
-    transition: all 0.4s ease-in-out;
-    opacity: 0;
-    z-index: 10000;
-    width: auto;
-    display: inline-block;
-    position: relative;
-    background-color: transparent;
   }
 }
 @mixin inputSugguestionDropdown {
@@ -1143,14 +1066,12 @@
 @mixin actionPills() {
   display: flex;
   align-items: center;
-  background-color: $bestGreyForWhite;
-  border-radius: 20px;
   margin-bottom: 20px;
-  height: 40px;
   * {
     line-height: 1;
     margin: 0;
     padding: 0;
+    transition: all .3s ease-in-out;
   }
 
   &.calendar {
@@ -1181,21 +1102,14 @@
     align-items: center;
     justify-content: center;
     color: $lightDarkGrey;
-    margin-right: 10px;
     background-color: transparent;
     text-align: center;
     text-transform: uppercase;
     transition: all 0.3s ease-in-out;
     border: 0;
-    padding: 10px;
     display: flex;
-    align-self: stretch;
-    border-radius: 20px;
-    width: calc(100% / 3);
 
     &.active {
-      background-color: rgba(0, 0, 0, 0.05);
-      width: 50%;
       span,
       svg,
       p {
@@ -1203,7 +1117,13 @@
         line-height: 1;
         opacity: 1;
         font-weight: $fwBold;
+        transform: scale(1.1);
+        
       }
+        svg {
+          position: relative;
+          right: 5px;
+        }
     }
 
     p {
@@ -1213,18 +1133,7 @@
       opacity: 0.9;
       display: flex;
       align-items: center;
-      transition: all 0.3s ease-in-out;
       color: $lightDarkGrey;
-    }
-
-    span {
-      font-size: 18px;
-      color: $lightDarkGrey;
-      margin-right: 5px;
-      display: flex;
-      position: relative;
-      top: -1px;
-      align-items: center;
     }
   }
 }

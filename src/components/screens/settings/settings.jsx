@@ -28,6 +28,8 @@ import {
 import DateManager from '../../../managers/dateManager'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
+import InputWrapper from '../../shared/inputWrapper'
+import Label from '../../shared/label'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
@@ -110,19 +112,19 @@ export default function Settings() {
       <div id="settings-container" className={`${theme} page-container form`}>
         <p className="screen-title">Settings</p>
         {/* CALENDAR SETTINGS */}
-        <label>Calendar</label>
+        <Label text={'Calendar'} />
         <div className="calendar-settings mb-10 form">
           <div className="section summary mb-10 ">
-            <span className="material-icons mr-10">calendar_month</span>
-
             <div className="input-container">
               {/* MORNING SUMMARY */}
-              <label>Morning Summary Hour</label>
-              <MobileTimePicker className={`${theme} mt-0 w-100`} views={['hours']} onAccept={(e) => setMorningSummaryTime(e)} />
+              <InputWrapper labelText={'Morning Summary Hour'} inputType={'date'}>
+                <MobileTimePicker className={`${theme} w-100`} views={['hours']} onAccept={(e) => setMorningSummaryTime(e)} />
+              </InputWrapper>
               {/* EVENING SUMMARY */}
               <div className="input-container">
-                <label>Evening Summary Hour</label>
-                <MobileTimePicker className={`${theme} mt-0 w-100`} views={['hours']} onAccept={(e) => setEveningSummaryTime(e)} />
+                <InputWrapper labelText={'Evening Summary Hour'} inputType={'date'}>
+                  <MobileTimePicker className={`${theme} mt-0 w-100`} views={['hours']} onAccept={(e) => setEveningSummaryTime(e)} />
+                </InputWrapper>
               </div>
             </div>
           </div>

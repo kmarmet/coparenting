@@ -508,7 +508,13 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               <span>&nbsp;to&nbsp;</span>
               <div>
                 <InputWrapper wrapperClasses="higher-label" labelText={'End Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker defaultValue={null} minutesStep={5} className={`${theme} `} onAccept={(e) => setEventEndTime(e)} />
+                  <MobileTimePicker
+                    format={'h:mma'}
+                    defaultValue={null}
+                    minutesStep={5}
+                    className={`${theme} `}
+                    onAccept={(e) => setEventEndTime(e)}
+                  />
                 </InputWrapper>
               </div>
             </div>

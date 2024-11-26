@@ -12,10 +12,11 @@ import DateFormats from '../../constants/dateFormats'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
 import { FaChildren } from 'react-icons/fa6'
-import { PiBellSimpleRinging, PiCalendarPlusDuotone, PiCaretDownThin, PiCaretUpThin, PiGlobeDuotone } from 'react-icons/pi'
+import { PiBellSimpleRinging, PiCalendarPlusDuotone, PiGlobeDuotone } from 'react-icons/pi'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
 import { CgClose } from 'react-icons/cg'
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import {
   contains,
   formatFileName,
@@ -179,7 +180,6 @@ export default function EventCalendar() {
         if (events.filter((x) => x.startDate === formattedDay && showPaydayEmoji(x.title)).length > 0) {
           const payDayIcon = document.createElement('span')
           payDayIcon.classList.add('payday-emoji')
-
           payDayIcon.innerText = '$'
           day.append(payDayIcon)
         }
@@ -195,7 +195,7 @@ export default function EventCalendar() {
           dotWrapper.append(visitationDot)
         }
         // STANDARD EVENT DOT
-        if (events.filter((x) => x.startDate === formattedDay).length > 0) {
+        if (events.filter((x) => x.startDate === formattedDay && !x.fromVisitationSchedule).length > 0) {
           const standardEventDot = document.createElement('span')
           standardEventDot.classList.add('standard-event-dot')
           standardEventDot.classList.add('dot')
@@ -227,7 +227,7 @@ export default function EventCalendar() {
     document.querySelectorAll('.event-row').forEach((eventRow, i) => {
       setTimeout(() => {
         eventRow.classList.add('active')
-      }, 200 * i)
+      }, 300 * i)
     })
   }
 
@@ -517,8 +517,8 @@ export default function EventCalendar() {
                             )}
                             {CalendarManager.formatEventTitle(event?.title)}
                           </p>
-                          <PiCaretDownThin className={'details-toggle-arrow down active'} />
-                          <PiCaretUpThin className={'details-toggle-arrow up'} />
+                          <IoIosArrowDown className={'details-toggle-arrow down active'} />
+                          <IoIosArrowUp className={'details-toggle-arrow up'} />
                         </div>
                         {/* DATE CONTAINER */}
                         <div id="date-container-and-edit-button" className="flex space-between">
