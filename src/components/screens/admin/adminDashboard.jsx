@@ -293,7 +293,6 @@ export default function AdminDashboard() {
                                 <b className="subset-prop">User Phone:</b> {member.phone}
                               </p>
                             </div>
-                            <hr />
                           </div>
                         )
                       })}

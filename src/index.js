@@ -75,7 +75,7 @@ root.render(
             <a href="mailto:support@peaceful-coparenting.app">support@peaceful-coparenting.app</a>
           </div>
         </div>
-        <hr />
+
         <div id="text-container">
           <p className="heading mb-5">Try this first</p>
         </div>
@@ -99,7 +99,6 @@ root.render(
             <b>If that did not resolve the issue, please follow the steps below.</b>
           </p>
         </div>
-        <hr />
 
         {/* CLEAR CACHE - IOS */}
         <div id="text-container" className="mb-15">
@@ -136,7 +135,6 @@ root.render(
             </p>
           </div>
         </div>
-        <hr />
 
         {/* CLEAR CACHE - ANDROID */}
         <div id="text-container" className="mb-15">

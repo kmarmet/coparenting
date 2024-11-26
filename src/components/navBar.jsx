@@ -1,9 +1,8 @@
 import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
-import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone } from 'react-icons/pi'
+import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone, PiPersonLight } from 'react-icons/pi'
 import { VscSettings } from 'react-icons/vsc'
-import { FaChild } from 'react-icons/fa'
 import { FiMenu } from 'react-icons/fi'
 
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
@@ -53,7 +52,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
             <div
               onClick={() => changeCurrentScreen(ScreenNames.childInfo)}
               className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>
-              <FaChild />
+              <PiPersonLight className={'child-info'} />
             </div>
 
             {/*/!* MEMORIES *!/*/}

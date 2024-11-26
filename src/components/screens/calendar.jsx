@@ -39,7 +39,6 @@ import EditCalEvent from '../forms/editCalEvent'
 import { TbLocation } from 'react-icons/tb'
 import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
-import DB_UserScoped from '@userScoped'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -317,11 +316,6 @@ export default function EventCalendar() {
       svgDown.classList.remove('active')
       svgUp.classList.add('active')
     }
-  }
-
-  const getCoparentName = async (coparentPhone) => {
-    const coparent = await DB_UserScoped.getCoparentByPhone(coparentPhone, currentUser)
-    return coparent.name
   }
 
   // ON PAGE LOAD

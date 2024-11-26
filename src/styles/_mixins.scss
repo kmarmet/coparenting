@@ -2792,6 +2792,10 @@
 
       svg {
         font-size: 32px;
+        
+        &.child-info {
+          font-size: 34px;
+        }
       }
 
       &.active:not(#add-new-button) {

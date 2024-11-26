@@ -11,7 +11,7 @@ import DateFormats from 'constants/dateFormats.js'
 import moment from 'moment'
 import '../../prototypes.js'
 import BottomCard from '../shared/bottomCard'
-import { PiBellSimpleRinging, PiClockCountdownDuotone, PiConfettiDuotone } from 'react-icons/pi'
+import { PiBellSimpleRinging, PiConfettiDuotone } from 'react-icons/pi'
 import { AiOutlineFileAdd } from 'react-icons/ai'
 import SecurityManager from '../../managers/securityManager'
 import NewExpenseForm from '../forms/newExpenseForm'
@@ -22,6 +22,7 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import 'lightgallery/css/lightgallery.css'
 import { MdEventRepeat, MdOutlineFilterAltOff, MdPriceCheck } from 'react-icons/md'
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 //noinspection JSUnresolvedVariable
 import {
   contains,
@@ -51,6 +52,7 @@ import Label from '../shared/label'
 import ExpenseCategories from '../../constants/expenseCategories'
 import DatasetManager from '../../managers/datasetManager'
 import AlertManager from '../../managers/alertManager'
+import DomManager from '../../managers/domManager'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -152,10 +154,22 @@ export default function ExpenseTracker() {
 
   const handleFullExpenseToggle = async (e, expenseId) => {
     const expenseToShow = document.querySelector(`[data-expense-id='${expenseId}']`)
+    const svgDown = expenseToShow.querySelector('svg.down')
+    const svgUp = expenseToShow.querySelector('svg.up')
 
     if (expenseToShow) {
-      setShowFullExpenseCard(true)
-      expenseToShow.classList.add('active')
+      if (DomManager.hasClass(expenseToShow, 'active')) {
+        setShowFullExpenseCard(false)
+        expenseToShow.classList.remove('active')
+        svgDown.classList.add('active')
+        svgUp.classList.remove('active')
+      } else {
+        setShowFullExpenseCard(true)
+        expenseToShow.classList.add('active')
+        svgDown.classList.remove('active')
+        svgUp.classList.add('active')
+      }
+      console.log(expenseToShow)
     }
   }
 
@@ -221,6 +235,23 @@ export default function ExpenseTracker() {
     setShowFilterCard(false)
   }
 
+  const toggleDetails = (element) => {
+    const nameWrapper = element.target
+    const details = nameWrapper.querySelector('#content-to-toggle')
+    const svgDown = nameWrapper.querySelector('svg.down')
+    const svgUp = nameWrapper.querySelector('svg.up')
+
+    if (details.classList.contains('active')) {
+      nameWrapper.querySelector('#content-to-toggle').classList.remove('active')
+      svgDown.classList.add('active')
+      svgUp.classList.remove('active')
+    } else {
+      nameWrapper.querySelector('#content-to-toggle').classList.add('active')
+      svgDown.classList.remove('active')
+      svgUp.classList.add('active')
+    }
+  }
+
   useEffect(() => {
     onTableChange().then((r) => r)
     Manager.showPageContainer()
@@ -231,190 +262,182 @@ export default function ExpenseTracker() {
       {/* NEW EXPENSE FORM */}
       <NewExpenseForm showCard={showNewExpenseCard} hideCard={(e) => setShowNewExpenseCard(false)} />
 
-      {/* FILTER CARD */}
-      <BottomCard
-        refreshKey={refreshKey}
-        hasSubmitButton={false}
-        className="filter-card"
-        title={'Filter Expenses'}
-        submitIcon={<BsFilter />}
-        showCard={showFilterCard}
-        onClose={() => {
-          setShowFilterCard(false)
-          setRefreshKey(Manager.getUid())
-        }}
-        submitText={'View Expenses'}>
-        <>
-          <Label isBold={true} text={'Expense Type'} classes="mb-5"></Label>
-          <div className="pills type">
-            <div className="pill" onClick={() => handleExpenseTypeSelection('all')}>
-              All
-            </div>
-            <div className="pill" onClick={() => handleExpenseTypeSelection('single')}>
-              Single Date
-            </div>
-            <div className="pill" onClick={() => handleExpenseTypeSelection('repeating')}>
-              Repeating
-            </div>
-          </div>
-          <hr />
-          <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
-          <div className="pills type">
-            <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
-              Unpaid
-            </div>
-            <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
-              Paid
-            </div>
-          </div>
-          <hr />
-          <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>
-          <div className="pills category">
-            {ExpenseCategories.sort().map((cat, index) => {
-              return (
-                <>
-                  {categoriesInUse.includes(cat) && (
-                    <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
-                      {cat}
-                    </div>
-                  )}
-                </>
-              )
-            })}
-          </div>
-          <hr />
-          <Label isBold={true} text={'Sort by'} classes="mb-5 sort-by"></Label>
-          <FormControl fullWidth>
-            <Select className={'w-100'} value={sortByValue} onChange={handleSortBySelection}>
-              <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
-              <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
-              <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
-              <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
-            </Select>
-          </FormControl>
-        </>
-      </BottomCard>
-
-      {/* PAYMENT OPTIONS */}
+      {/* CARDS */}
       <>
+        {/* FILTER CARD */}
         <BottomCard
+          refreshKey={refreshKey}
           hasSubmitButton={false}
-          subtitle="There are a multitude of simple and FREE ways to send money to a co-parent for expenses, or for any other reason. Please look below to
+          className="filter-card"
+          title={'Filter Expenses'}
+          submitIcon={<BsFilter />}
+          showCard={showFilterCard}
+          onClose={() => {
+            setShowFilterCard(false)
+            setRefreshKey(Manager.getUid())
+          }}
+          submitText={'View Expenses'}>
+          <>
+            <Label isBold={true} text={'Expense Type'} classes="mb-5"></Label>
+            <div className="pills type">
+              <div className="pill" onClick={() => handleExpenseTypeSelection('all')}>
+                All
+              </div>
+              <div className="pill" onClick={() => handleExpenseTypeSelection('single')}>
+                Single Date
+              </div>
+              <div className="pill" onClick={() => handleExpenseTypeSelection('repeating')}>
+                Repeating
+              </div>
+            </div>
+            <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
+            <div className="pills type">
+              <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
+                Unpaid
+              </div>
+              <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
+                Paid
+              </div>
+            </div>
+            <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>
+            <div className="pills category">
+              {ExpenseCategories.sort().map((cat, index) => {
+                return (
+                  <>
+                    {categoriesInUse.includes(cat) && (
+                      <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
+                        {cat}
+                      </div>
+                    )}
+                  </>
+                )
+              })}
+            </div>
+            <Label isBold={true} text={'Sort by'} classes="mb-5 sort-by"></Label>
+            <FormControl fullWidth>
+              <Select className={'w-100'} value={sortByValue} onChange={handleSortBySelection}>
+                <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
+                <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
+                <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
+                <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
+              </Select>
+            </FormControl>
+          </>
+        </BottomCard>
+
+        {/* PAYMENT OPTIONS */}
+        <>
+          <BottomCard
+            hasSubmitButton={false}
+            subtitle="There are a multitude of simple and FREE ways to send money to a co-parent for expenses, or for any other reason. Please look below to
               see which option works best for you."
-          title={'Payment/Transfer Options'}
-          className="payment-options-card"
-          onClose={() => setShowPaymentOptionsCard(false)}
-          showCard={showPaymentOptionsCard}>
-          <div id="payment-options-card">
-            <div className="options">
-              {/* ZELLE */}
-              <div className="option zelle">
-                <div className="flex brand-name-wrapper zelle">
-                  <p className="brand-name accent mr-10">Zelle</p>
-                  <SiZelle className={'zelle-icon'} />
+            title={'Payment/Transfer Options'}
+            className="payment-options-card"
+            onClose={() => setShowPaymentOptionsCard(false)}
+            showCard={showPaymentOptionsCard}>
+            <div id="payment-options-card">
+              <div className="options">
+                {/* ZELLE */}
+                <div className="option zelle">
+                  <div className="flex brand-name-wrapper zelle">
+                    <p className="brand-name accent mr-10">Zelle</p>
+                    <SiZelle className={'zelle-icon'} />
+                  </div>
+                  <div className="flex">
+                    <div className="text">
+                      <p className="description payment-options">Safely send money to co-parent, no matter where they bank.</p>
+                      <a href="https://www.zellepay.com/how-it-works" target="_blank" className="setup-instructions mb-10">
+                        Learn More <span className="material-icons">open_in_new</span>
+                      </a>
+                    </div>
+                  </div>
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO"
+                    title="Zelle® | How it Works"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen></iframe>
                 </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className="description payment-options">Safely send money to co-parent, no matter where they bank.</p>
-                    <a href="https://www.zellepay.com/how-it-works" target="_blank" className="setup-instructions mb-10">
-                      Learn More <span className="material-icons">open_in_new</span>
-                    </a>
+
+                {/* VENMO */}
+                <div className="option venmo">
+                  <div className="flex brand-name-wrapper venmo">
+                    <p className="brand-name mr-10">Venmo</p>
+                    <IoLogoVenmo className={'venmo-icon'} />
+                  </div>
+                  <div className="flex">
+                    <div className="text">
+                      <p className="description payment-options">Fast, safe, social payments.</p>
+                      <a
+                        href="https://help.venmo.com/hc/en-us/articles/209690068-How-to-Sign-Up-for-a-Personal-Venmo-Account"
+                        target="_blank"
+                        className="setup-instructions mb-10">
+                        Learn More <span className="material-icons">open_in_new</span>
+                      </a>
+                    </div>
+                  </div>
+                  <iframe
+                    src="https://www.youtube.com/embed/zAqz0Kzootg"
+                    title="Paying or Requesting Payment From Multiple Users in a Single Transaction"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen></iframe>
+                </div>
+
+                {/* APPLE PAY */}
+                <div className="option apple-cash">
+                  <div className="flex brand-name-wrapper apple">
+                    <p className="brand-name mr-10">Apple Cash</p>
+                    <ImAppleinc className={'apple-icon'} />
+                  </div>
+                  <div className="flex ">
+                    <div className="text">
+                      <p className="description payment-options">Use Apple Cash to send and receive money with people you know.</p>
+                      <a href="https://support.apple.com/en-us/105013" target="_blank" className="setup-instructions mb-10">
+                        Learn More <span className="material-icons">open_in_new</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
-                <iframe
-                  width="560"
-                  height="315"
-                  src="https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO"
-                  title="Zelle® | How it Works"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen></iframe>
-              </div>
 
-              <hr />
-
-              {/* VENMO */}
-              <div className="option venmo">
-                <div className="flex brand-name-wrapper venmo">
-                  <p className="brand-name mr-10">Venmo</p>
-                  <IoLogoVenmo className={'venmo-icon'} />
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className="description payment-options">Fast, safe, social payments.</p>
-                    <a
-                      href="https://help.venmo.com/hc/en-us/articles/209690068-How-to-Sign-Up-for-a-Personal-Venmo-Account"
-                      target="_blank"
-                      className="setup-instructions mb-10">
-                      Learn More <span className="material-icons">open_in_new</span>
-                    </a>
+                {/* PAYPAL */}
+                <div className="option paypal">
+                  <div className="flex brand-name-wrapper paypal">
+                    <p className="brand-name mr-10">PayPal</p>
+                    <LiaCcPaypal className={'paypal-icon'} />
+                  </div>
+                  <div className="flex">
+                    <div className="text">
+                      <p className="description payment-options">Send and request money, quickly and securely.</p>
+                      <a href="https://www.paypal.com/us/digital-wallet/send-receive-money" target="_blank" className="setup-instructions mb-10">
+                        Learn More <span className="material-icons">open_in_new</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
-                <iframe
-                  src="https://www.youtube.com/embed/zAqz0Kzootg"
-                  title="Paying or Requesting Payment From Multiple Users in a Single Transaction"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen></iframe>
-              </div>
 
-              <hr />
-
-              {/* APPLE PAY */}
-              <div className="option apple-cash">
-                <div className="flex brand-name-wrapper apple">
-                  <p className="brand-name mr-10">Apple Cash</p>
-                  <ImAppleinc className={'apple-icon'} />
-                </div>
-                <div className="flex ">
-                  <div className="text">
-                    <p className="description payment-options">Use Apple Cash to send and receive money with people you know.</p>
-                    <a href="https://support.apple.com/en-us/105013" target="_blank" className="setup-instructions mb-10">
-                      Learn More <span className="material-icons">open_in_new</span>
-                    </a>
+                {/* CASHAPP */}
+                <div className="option cashapp">
+                  <div className="flex brand-name-wrapper cashapp">
+                    <p className="brand-name mr-10">CashApp</p>
+                    <SiCashapp />
                   </div>
-                </div>
-              </div>
-
-              <hr />
-
-              {/* PAYPAL */}
-              <div className="option paypal">
-                <div className="flex brand-name-wrapper paypal">
-                  <p className="brand-name mr-10">PayPal</p>
-                  <LiaCcPaypal className={'paypal-icon'} />
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className="description payment-options">Send and request money, quickly and securely.</p>
-                    <a href="https://www.paypal.com/us/digital-wallet/send-receive-money" target="_blank" className="setup-instructions mb-10">
-                      Learn More <span className="material-icons">open_in_new</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <hr />
-
-              {/* CASHAPP */}
-              <div className="option cashapp">
-                <div className="flex brand-name-wrapper cashapp">
-                  <p className="brand-name mr-10">CashApp</p>
-                  <SiCashapp />
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className="description payment-options">Pay anyone, instantly.</p>
-                    <a href="https://cash.app/help/6485-getting-started-with-cash-app" target="_blank" className="setup-instructions mb-10">
-                      Learn More <span className="material-icons">open_in_new</span>
-                    </a>
+                  <div className="flex">
+                    <div className="text">
+                      <p className="description payment-options">Pay anyone, instantly.</p>
+                      <a href="https://cash.app/help/6485-getting-started-with-cash-app" target="_blank" className="setup-instructions mb-10">
+                        Learn More <span className="material-icons">open_in_new</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </BottomCard>
+          </BottomCard>
+        </>
       </>
 
       {/* PAGE CONTAINER */}
@@ -435,12 +458,14 @@ export default function ExpenseTracker() {
           </button>
         )}
 
+        {/* CLEAR FILTER BUTTON */}
         {filterApplied && (
           <button onClick={async () => await getSecuredExpenses()} id="filter-button">
             Clear Filter <MdOutlineFilterAltOff />
           </button>
         )}
 
+        {/* INSTRUCTIONS */}
         {expenses.length === 0 && (
           <div id="instructions-wrapper">
             <p className="instructions center">
@@ -451,174 +476,155 @@ export default function ExpenseTracker() {
 
         {/* LOOP EXPENSES */}
         <div id="expenses-container">
-          <div id="expenses-card-container">
-            {Manager.isValid(expenses, true) &&
-              expenses.map((expense, index) => {
-                return (
-                  <div key={index}>
-                    <div onClick={(e) => handleFullExpenseToggle(e, expense.id)} data-expense-id={expense.id} className={` expense`}>
-                      <div className="content">
-                        <div className="lower-details">
-                          {/* LOWER DETAILS TEXT */}
-                          <div className="lower-details-text">
-                            {/* EXPENSE NAME */}
-                            <div className="flex align-center">
-                              <p
-                                onBlur={(e) => {
-                                  handleEditable(e, expense, 'name', e.currentTarget.innerHTML).then((r) => r)
-                                }}
-                                contentEditable
-                                dangerouslySetInnerHTML={{ __html: uppercaseFirstLetterOfAllWords(expense.name).toString() }}
-                                className="name"></p>
+          {Manager.isValid(expenses, true) &&
+            expenses.map((expense, index) => {
+              return (
+                <div key={index}>
+                  <div onClick={(e) => handleFullExpenseToggle(e, expense.id)} data-expense-id={expense.id} className={`expense`}>
+                    {/* EXPENSE NAME */}
+                    <div id="name-wrapper" className="flex align-center">
+                      <p
+                        onBlur={(e) => {
+                          handleEditable(e, expense, 'name', e.currentTarget.innerHTML).then((r) => r)
+                        }}
+                        contentEditable
+                        dangerouslySetInnerHTML={{ __html: uppercaseFirstLetterOfAllWords(expense.name).toString() }}
+                        className="name"></p>
 
-                              {/* AMOUNT */}
-                              {expense.paidStatus === 'unpaid' && (
-                                <span
-                                  className="amount"
-                                  onBlur={(e) => {
-                                    handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
-                                  }}
-                                  contentEditable
-                                  dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
-                              )}
-                              {expense.paidStatus === 'paid' && (
-                                <span className="amount paid">
-                                  PAID <MdPriceCheck className={'fs-22'} />
-                                </span>
-                              )}
-                            </div>
+                      <IoIosArrowDown className={'details-toggle-arrow down active'} />
+                      <IoIosArrowUp className={'details-toggle-arrow up'} />
+                    </div>
 
-                            {/* CATEGORY */}
-                            {expense?.category?.length > 0 && (
-                              <p id="expense-category" className="mt-5" onClick={() => handleCategorySelection(expense.category)}>
-                                Category: <span>{expense.category}</span>
-                              </p>
-                            )}
-
-                            {(!expense.category || expense?.category?.length === 0) && <p id="expense-category">Category: None</p>}
-                            <span className={showFullExpenseCard ? 'active' : ''} id="hr">
-                              <hr />
-                            </span>
-                            {/* EXPENSE CONTENT TO TOGGLE */}
-                            <div id="content-to-toggle">
-                              {/* PAY TO */}
-                              <div className="flex editable">
-                                <p className="recipient subtext">Pay to:</p>
-                                <span
-                                  onBlur={(e) => {
-                                    handleEditable(e, expense, 'recipientName', e.currentTarget.innerHTML).then((r) => r)
-                                  }}
-                                  contentEditable
-                                  dangerouslySetInnerHTML={{ __html: expense.recipientName }}
-                                  className="recipient subtext"></span>
-                              </div>
-
-                              {/* CHILDREN */}
-                              {expense && expense.children && expense.children.length > 0 && (
-                                <div className="flex">
-                                  <p>Children</p>
-                                  <span>{expense.children.join(', ')}</span>
-                                </div>
-                              )}
-
-                              {/* DATE ADDED */}
-                              <div className="group flex">
-                                <p id="date-added-text">Date Added:</p>
-                                <span>{DateManager.formatDate(expense.dateAdded)}</span>
-                              </div>
-
-                              {/* REPEATING */}
-                              {expense.repeating && (
-                                <p>
-                                  Repeating <MdEventRepeat id={'repeating-icon'} />{' '}
-                                </p>
-                              )}
-
-                              {/* NOTES */}
-                              {expense.notes && expense.notes.length > 0 && (
-                                <div className="flex editable notes">
-                                  <p>Notes:</p>
-                                  <span
-                                    onBlur={(e) => {
-                                      handleEditable(e, expense, 'notes', e.currentTarget.innerHTML).then((r) => r)
-                                    }}
-                                    contentEditable
-                                    dangerouslySetInnerHTML={{ __html: expense.notes }}></span>
-                                </div>
-                              )}
-
-                              {/* DUE DATE */}
-                              {expense.dueDate && expense.dueDate.length > 0 && (
-                                <div className="flex editable">
-                                  <p>Due Date:</p>
-
-                                  <span
-                                    onBlur={(e) => {
-                                      handleEditable(e, expense, 'dueDate', e.currentTarget.innerHTML).then((r) => r)
-                                    }}
-                                    contentEditable
-                                    dangerouslySetInnerHTML={{ __html: DateManager.formatDate(expense.dueDate) }}></span>
-                                </div>
-                              )}
-
-                              {/* DUE IN... */}
-                              {expense.dueDate.length > 0 && (
-                                <div className="flex due-in">
-                                  <p>Countdown:</p>
-                                  <span>
-                                    <PiClockCountdownDuotone className={'fs-24 mr-5'} />
-                                    {moment(moment(expense.dueDate).startOf('day')).fromNow().toString()}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* EXPENSE IMAGE */}
-                            {Manager.isValid(expense.imageUrl) && (
-                              <div id="expense-image">
-                                <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
-                                  <div
-                                    style={{ backgroundImage: `url(${expense.imageUrl})` }}
-                                    data-src={expense.imageUrl}
-                                    id="img-container"
-                                    className="flex"></div>
-                                </LightGallery>
-                                <BsArrowsAngleExpand />
-                              </div>
-                            )}
-
-                            {/* BUTTONS */}
-                            {expense.paidStatus === 'unpaid' && (
-                              <div id="button-group" className="flex">
-                                <button onClick={async () => await markAsPaid(expense)} className="green-text">
-                                  Paid <MdPriceCheck className={'fs-22'} />
-                                </button>
-                                {expense.ownerPhone === currentUser?.phone && (
-                                  <button className="send-reminder" onClick={() => sendReminder(expense)}>
-                                    Send Reminder <PiBellSimpleRinging className={'fs-18'} />
-                                  </button>
-                                )}
-                              </div>
-                            )}
-
-                            {/* DELETE */}
-                            {expense.ownerPhone === currentUser?.phone && (
-                              <p
-                                onClick={async () => {
-                                  await deleteExpense(expense)
-                                }}
-                                id="delete-button">
-                                DELETE
-                              </p>
-                            )}
-                          </div>
-                        </div>
+                    {/* CATEGORY */}
+                    {expense?.category?.length > 0 && (
+                      <div className="flex space-between" id="category-and-amount">
+                        <p id="expense-category" className="mt-5" onClick={() => handleCategorySelection(expense.category)}>
+                          Category: <span>{expense.category}</span>
+                        </p>
+                        {expense.paidStatus === 'unpaid' && (
+                          <span
+                            className="amount"
+                            onBlur={(e) => {
+                              handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
+                            }}
+                            contentEditable
+                            dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
+                        )}
+                        {/* PAID TEXT */}
+                        {expense.paidStatus === 'paid' && <span className="amount paid">PAID</span>}
                       </div>
+                    )}
+
+                    {(!expense.category || expense?.category?.length === 0) && <p id="expense-category">Category: None</p>}
+
+                    {/*  CONTENT TO TOGGLE */}
+                    <div id="content-to-toggle">
+                      {/* PAY TO */}
+                      <div className="flex editable">
+                        <p className="recipient subtext">Pay to:</p>
+                        <span
+                          onBlur={(e) => {
+                            handleEditable(e, expense, 'recipientName', e.currentTarget.innerHTML).then((r) => r)
+                          }}
+                          contentEditable
+                          dangerouslySetInnerHTML={{ __html: expense.recipientName }}
+                          className="recipient subtext"></span>
+                      </div>
+
+                      {/* CHILDREN */}
+                      {expense && expense.children && expense.children.length > 0 && (
+                        <div className="flex">
+                          <p>Children</p>
+                          <span>{expense.children.join(', ')}</span>
+                        </div>
+                      )}
+
+                      {/* DATE ADDED */}
+                      <div className="group flex">
+                        <p id="date-added-text">Date Added:</p>
+                        <span>{DateManager.formatDate(expense.dateAdded)}</span>
+                      </div>
+
+                      {/* REPEATING */}
+                      {expense.repeating && (
+                        <p>
+                          Repeating <MdEventRepeat id={'repeating-icon'} />{' '}
+                        </p>
+                      )}
+
+                      {/* NOTES */}
+                      {expense.notes && expense.notes.length > 0 && (
+                        <div className="flex editable notes">
+                          <p>Notes:</p>
+                          <span
+                            onBlur={(e) => {
+                              handleEditable(e, expense, 'notes', e.currentTarget.innerHTML).then((r) => r)
+                            }}
+                            contentEditable
+                            dangerouslySetInnerHTML={{ __html: expense.notes }}></span>
+                        </div>
+                      )}
+
+                      {/* DUE DATE */}
+                      {expense.dueDate && expense.dueDate.length > 0 && (
+                        <div className="flex editable">
+                          <p>Due Date:</p>
+
+                          <span
+                            onBlur={(e) => {
+                              handleEditable(e, expense, 'dueDate', e.currentTarget.innerHTML).then((r) => r)
+                            }}
+                            contentEditable
+                            dangerouslySetInnerHTML={{ __html: DateManager.formatDate(expense.dueDate) }}></span>
+                        </div>
+                      )}
+
+                      {/* DUE IN... */}
+                      {expense.dueDate.length > 0 && <p id="due-in">Due {moment(moment(expense.dueDate).startOf('day')).fromNow().toString()}</p>}
+
+                      {/* EXPENSE IMAGE */}
+                      {Manager.isValid(expense.imageUrl) && (
+                        <div id="expense-image">
+                          <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
+                            <div
+                              style={{ backgroundImage: `url(${expense.imageUrl})` }}
+                              data-src={expense.imageUrl}
+                              id="img-container"
+                              className="flex"></div>
+                          </LightGallery>
+                          <BsArrowsAngleExpand />
+                        </div>
+                      )}
+
+                      {/* BUTTONS */}
+                      {expense.paidStatus === 'unpaid' && (
+                        <div id="button-group" className="flex">
+                          <button onClick={async () => await markAsPaid(expense)} className="green-text">
+                            Paid <MdPriceCheck className={'fs-22'} />
+                          </button>
+                          {expense.ownerPhone === currentUser?.phone && (
+                            <button className="send-reminder" onClick={() => sendReminder(expense)}>
+                              Send Reminder <PiBellSimpleRinging className={'fs-18'} />
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* DELETE */}
+                      {expense.ownerPhone === currentUser?.phone && (
+                        <p
+                          onClick={async () => {
+                            await deleteExpense(expense)
+                          }}
+                          id="delete-button">
+                          DELETE
+                        </p>
+                      )}
                     </div>
                   </div>
-                )
-              })}
-          </div>
+                </div>
+              )
+            })}
         </div>
       </div>
       {!showNewExpenseCard && !showPaymentOptionsCard && !showFilterCard && (

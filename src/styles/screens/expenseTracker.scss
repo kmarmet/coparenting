@@ -4,7 +4,7 @@
   #add-expense-form {
     margin: 0;
     position: relative;
-    
+
     #amount-input-wrapper {
       margin: 0 auto;
       width: 200px;
@@ -15,7 +15,7 @@
           font-size: 20px;
         }
       }
-      
+
       #zero {
         font-size: 30px;
         opacity: 0.7;
@@ -25,14 +25,14 @@
           opacity: 1;
         }
       }
-      
+
       .defaults {
         text-align: center;
         width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
-        
+
         span {
           text-align: center;
         }
@@ -109,7 +109,7 @@
         margin-left: 5px;
       }
     }
-    
+
     .action-pills {
       .flex {
         padding: 0;
@@ -150,68 +150,147 @@
       }
     }
 
-    #expenses-card-container {
-      margin-top: 10px;
-      background-color: transparent;
-      
-      hr {
-        margin: 10px;
-        width: 80%;
-        margin: 10px auto;
-      }
+    /*#region  EXPENSE*/
+    .expense {
+      display: block;
+      margin: 15px 0;
+      border-bottom: 1px solid rgba(222, 224, 225, 0.48);
+      padding-bottom: 10px;
 
-      .content {
-        border-radius: $bigBorderRadius;
-      }
-
-      .expense {
-        border-radius: $bigBorderRadius;
-        display: block;
-        max-height: 110px;
-        overflow: hidden;
+      &.active {
+        overflow: auto;
+        max-height: 10000px;
         transition: all 0.3s ease-in-out;
-        margin-bottom: 10px;
-        
-        
-        &.active {
-          overflow: auto;
-          max-height: 10000px;
-          transition: all 0.3s ease-in-out;
-
-          #content-to-toggle {
-            opacity: 1;
-          }
-        }
-
-        &:last-child {
-          border-bottom: 0;
-        }
-        
-        #hr {
-          display: none;
-          
-          hr {
-            width: 100%;
-            display: none;
-          }
-          
-          &.active {
-            display: block;
-            
-            hr {
-              display: block;
-            }
-          }
-        }
 
         #content-to-toggle {
+          opacity: 1;
+          overflow: auto;
+          width: 100%;
+          max-height: 1000px;
+          transform: scale(1);
+          transition: all 0.5s ease-in-out;
+        }
+
+        #category-and-amount {
+          #expense-category {
+            padding-left: 10px;
+            transition: all 0.3s ease-in-out;
+          }
+        }
+      }
+
+      * {
+        line-height: 1;
+      }
+      
+      p:not(.name) {
+        opacity: .85;
+        font-size: 13px;
+      }
+      
+      span {
+        font-size: 13px;
+      }
+
+      #category-and-amount {
+        margin-top: 0;
+        .amount {
+          font-size: 20px;
+          color: $red;
+          font-weight: bold;
+          display: inline;
+          margin-left: auto;
+          width: auto;
+          float: right;
+          text-align: right;
+
+          &.paid {
+            color: $green;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: $fwMedium;
+          }
+        }
+
+        #expense-category {
+          display: flex;
+          align-items: center;
+          color: $lightBlack;
           transition: all 0.3s ease-in-out;
-          opacity: 0;
-          
-          #repeating-icon {
-            font-size: 22px;
-            position: relative;
-            top: 5px;
+          span {
+            margin-left: 5px;
+            color: $lightAccent;
+            line-height: 1;
+          }
+        }
+      }
+
+      #name-wrapper {
+        width: 100%;
+        margin-top: 0;
+        .details-toggle-arrow {
+          display: none;
+          opacity: 0.4;
+          position: relative;
+          right: 0;
+          justify-self: flex-end;
+          font-size: 24px;
+
+          &.active {
+            display: inherit;
+          }
+        }
+        .name {
+          line-height: 1;
+          font-weight: 600;
+          width: 100%;
+          display: inline;
+        }
+      }
+
+      #content-to-toggle {
+        transition: all 0.3s ease-in-out;
+        max-height: 0;
+        transform: scale(0);
+        opacity: 0;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding-left: 10px;
+
+        #due-in {
+          color: $red;
+          margin-top: 8px;
+          font-weight: $fwMedium;
+        }
+
+        #button-group {
+          width: 100%;
+          gap: 10px;
+          border-radius: $bigBorderRadius;
+          margin-top: 20px;
+          button {
+            border-radius: $borderRadius;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            line-height: 1;
+            padding: 5px 10px;
+
+            &:first-child {
+              background-color: $green;
+              color: white;
+              border: 1px solid $green;
+            }
+
+            &:last-child {
+              background-color: transparent;
+              border: 1px solid $mainBlue;
+              padding: 7px 10px;
+              color: $mainBlue;
+            }
           }
         }
 
@@ -233,237 +312,57 @@
           }
         }
 
-        .lower-details {
-          background: white;
-          border-radius: $bigBorderRadius;
-          border: 1px solid $iconGrey;
-          .lower-details-text {
-            border-radius: $bigBorderRadius;
-            position: relative;
-            padding: 20px;
-            
-            * {
-              line-height: 1;
-            }
+        #repeating-icon {
+          font-size: 22px;
+          position: relative;
+          top: 5px;
+        }
+      }
 
-            p {
-              color: $lightBlack;
-            }
+      #img-container {
+        width: 50px;
+        height: 50px;
+        background-size: cover;
+        border-radius: $borderRadius;
+        background-position: center;
+        float: left;
+        justify-self: flex-start;
+      }
 
-            span {
-              display: flex;
-              align-items: center;
-            }
+      #img-expand-text {
+        margin-top: 10px;
+        width: 100%;
+        text-align: center;
+        font-style: italic;
+      }
 
-            #delete-button {
-              font-size: 14px;
-              margin-left: auto;
-              display: block;
-              color: $red;
-              margin-top: 15px;
-              width: 100%;
-              text-align: right;
-              font-weight: $fwMedium;
-            }
+      #delete-button {
+        font-size: 14px;
+        margin-left: auto;
+        display: block;
+        color: $red;
+        margin-top: 15px;
+        text-align: right;
+        font-weight: $fwMedium;
+      }
 
-            .amount {
-              font-size: 22px;
-              color: $red;
-              font-weight: bold;
-              display: inline;
-              margin-left: auto;
-              width: auto;
-              float: right;
-              text-align: right;
-              
-              &.paid {
-                display: flex;
-                color: $green;
-                font-size: 18px;
-              }
-            }
+      .flex {
+        align-items: center;
+        flex-wrap: nowrap;
+        margin-top: 8px;
+        width: 100%;
 
-            .name {
-              line-height: 1;
-              font-weight: 600;
-              width: auto;
-              color: $mainBlue;
-              display: inline;
-              font-size: 22px;
-            }
-
-            #expense-category {
-              opacity: 0.7;
-              padding-top: 3px;
-              display: flex;
-              align-items: center;
-              span {
-                margin-left: 5px;
-                border: 1px solid $accent;
-                color: $lightAccent;
-                padding: 3px 8px;
-                font-size: 14px;
-                border-radius: 20px;
-                line-height: 1;
-              }
-            }
-
-            .flex {
-              border-radius: $borderRadius;
-              align-items: center;
-              width: auto;
-              flex-wrap: nowrap;
-              margin-top: 8px;
-              
-              &:first-child {
-                margin-top: 0;
-              }
-              
-              
-              &.due-in {
-                span {
-                  color: $red;
-                }
-              }
-
-              p {
-                width: 120px;
-                
-                &.name {
-                  width: 100%;
-                }
-              }
-
-              span {
-                font-weight: 600;
-              }
-
-              &.editable {
-                justify-content: flex-start;
-
-                &.due-date {
-                  background-color: $red;
-
-                  p,
-                  span {
-                    color: white;
-                    font-weight: bold;
-
-                    b {
-                      font-weight: bold;
-                    }
-                  }
-                }
-
-                &.notes {
-                  span {
-                    width: 100%;
-                  }
-                }
-
-                span {
-                  top: -1px;
-                }
-              }
-            }
-          }
-
-          #img-container {
-            width: 50px;
-            height: 50px;
-            background-size: cover;
-            border-radius: $borderRadius;
-            background-position: center;
-            float: left;
-            justify-self: flex-start;
-          }
-
-          #img-expand-text {
-            margin-top: 10px;
-            width: 100%;
-            text-align: center;
-            font-style: italic;
-          }
-
-          .group {
-            border-radius: $borderRadius;
-            margin-bottom: 5px;
-            align-items: center;
-            line-height: 1;
-
-            &.subtext {
-              p {
-                padding: 8px 10px;
-              }
-            }
-          }
+        p {
+          margin-right: 10px;
+          min-width: 120px;
+          font-weight: $fwMedium;
         }
 
-        #button-group {
-          width: 100%;
-          gap: 10px;
-          border-radius: $bigBorderRadius;
-          margin-top: 20px;
-          button {
-            border-radius: $borderRadius;
-            min-width: 120px;
-            padding: 8px 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            justify-content: center;
-            line-height: 1;
-            height: 40px;
-
-            &:first-child {
-              background-color: $green;
-              color: white;
-              border: 1px solid $green;
-            }
-
-            &:last-child {
-              background-color: transparent;
-              border: 1px solid $green;
-              color: $green;
-            }
-          }
-        }
-
-        .content {
-          .rs-panel-body {
-            padding: 0;
-          }
-
-          p {
-            line-height: 1.3;
-            opacity: 0.9;
-            margin: 0;
-
-            &.due-date {
-              color: $red;
-              font-weight: 500;
-
-              b {
-                font-weight: 600;
-              }
-            }
-          }
-
-          .top-details {
-            justify-content: space-between;
-            flex-wrap: nowrap;
-            background-color: transparent;
-            transition: all 0.8s linear;
-            display: flex;
-            width: 100%;
-            align-items: center;
-
-            b {
-              font-weight: 500;
-            }
-          }
+        &.editable {
+          justify-content: flex-start;
         }
       }
     }
+    /*#endregion  EXPENSE*/
   }
 }
