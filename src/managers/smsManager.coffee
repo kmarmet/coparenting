@@ -32,25 +32,10 @@ export default SmsManager =
     "#{userName} ,please enter this code to continue registration: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getPhoneVerificationTemplate: (verificationCode) ->    "Please enter this code for Peaceful coParenting registration #{SmsManager.lineBreak} #{verificationCode}"
   send: (phoneNumber, message) =>
-    if location.hostname != 'localhost'
-      fetch 'https://textbelt.com/text',
-        method: 'post'
-        headers: 'Content-Type': 'application/json'
-        body: JSON.stringify
-          phone: phoneNumber
-          message: message
-          key: apiKey
-      .then (data) ->
-        data.json().then (test) ->
-          console.log test
-        textsRemaining = data['quotaRemaining']
-        if textsRemaining <= 5
-          SmsManager.send '3307494534', 'Fund SMS account immediately!'
-    else
-      fetch 'https://textbelt.com/text',
-        method: 'post'
-        headers: 'Content-Type': 'application/json'
-        body: JSON.stringify
-          phone: phoneNumber
-          message: message
-          key: apiKey
+    fetch 'https://textbelt.com/text',
+      method: 'post'
+      headers: 'Content-Type': 'application/json'
+      body: JSON.stringify
+        phone: phoneNumber
+        message: message
+        key: apiKey

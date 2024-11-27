@@ -17,21 +17,7 @@ import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
 import { CgClose } from 'react-icons/cg'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
+import { contains, formatNameFirstNameOnly } from '../../globalFunctions'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 
 import NewCalendarEvent from '../forms/newCalendarEvent'
@@ -307,12 +293,12 @@ export default function EventCalendar() {
     const svgDown = textWrapper.querySelector('svg.down')
     const svgUp = textWrapper.querySelector('svg.up')
 
-    if (details.classList.contains('active')) {
-      textWrapper.querySelector('#details').classList.remove('active')
+    if (details.classList.contains('open')) {
+      details.classList.remove('open')
       svgDown.classList.add('active')
       svgUp.classList.remove('active')
     } else {
-      textWrapper.querySelector('#details').classList.add('active')
+      details.classList.add('open')
       svgDown.classList.remove('active')
       svgUp.classList.add('active')
     }
@@ -608,7 +594,6 @@ export default function EventCalendar() {
                           )}
                         </div>
                       </div>
-                      <div id="bottom-border"></div>
                     </div>
                   </div>
                 )

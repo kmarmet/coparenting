@@ -136,7 +136,7 @@
   background-color: white !important;
 
   &.react-toggle-thumb {
-//    border: 0;
+    //    border: 0;
     border-color: rgba(0, 0, 0, 0.21);
   }
   &.react-toggle--checked {
@@ -189,7 +189,7 @@
     height: 30px;
     font-size: 18px;
     @include centerHoriz;
-    
+
     svg {
       margin-left: 15px;
     }
@@ -260,7 +260,9 @@
     /*#endregion ELEMENT DEFAULTS*/
 
     /*#region MIXINS */
-
+    #row {
+      @include row;
+    }
     .mui-input {
       &::placeholder {
         font-size: 12px !important;
@@ -732,7 +734,7 @@
       animation-name: fadeInUp;
       -webkit-animation-name: fadeInUp;
     }
-    
+
     .space-between {
       justify-content: space-between;
     }

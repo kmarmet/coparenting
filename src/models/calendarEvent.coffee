@@ -26,7 +26,7 @@ export default class CalendarEvent
     @visibleToAll = false
     @holidayName = ''
     @visitationSchedule = ''
-    @isRepeating = ''
+    @isRepeating = false
     @isCloned = ''
     @isDateRange = ''
   ) ->

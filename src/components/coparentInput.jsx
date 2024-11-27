@@ -56,7 +56,7 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
         onChange={(e) => setUserPhone(e.target.value)}
       />
       <CheckboxGroup
-        parentLabel={'Parent Type'}
+        parentLabel={name.length > 0 ? `${uppercaseFirstLetterOfAllWords(name)}'s Parent Type` : 'Parent Type'}
         className="coparent-type"
         skipNameFormatting={true}
         checkboxLabels={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}

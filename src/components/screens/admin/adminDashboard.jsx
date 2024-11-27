@@ -45,6 +45,7 @@ export default function AdminDashboard() {
   const [getRecordsSearchValue, setGetRecordsSearchValue] = useState('')
   const [tableName, setTableName] = useState(DB.tables.calendarEvents)
   const [dbTables, setDbTables] = useState(Object.values(DB.tables).sort())
+  const [remainingTextBeltTexts, setRemainingTextBeltTexts] = useState(0)
   // eslint-disable-next-line no-undef
   new ClipboardJS('.chat-recovery-clipboard-button')
 
@@ -178,8 +179,30 @@ export default function AdminDashboard() {
     set(child(dbRef, DB.tables[tableName]), validRows)
   }
 
+  const getTextBeltCount = async () => {
+    return fetch('https://textbelt.com/text', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        phone: '3307494534',
+        message: 'Message',
+        key: process.env.REACT_APP_SMS_API_KEY,
+      }),
+    })
+      .then((response) => {
+        return response.json()
+      })
+      .then((data) => {
+        const { quotaRemaining } = data
+        setRemainingTextBeltTexts(quotaRemaining)
+      })
+  }
+
   return (
     <div id="admin-dashboard-wrapper" className="page-container form">
+      <p className="screen-title">Admin</p>
       <div className="flex grid gap-10">
         {/* Get Database Record */}
         <div className="tool-box">
@@ -204,6 +227,17 @@ export default function AdminDashboard() {
           <div className="buttons">
             <button className="button center" onClick={setNewUpdate}>
               Update
+            </button>
+          </div>
+        </div>
+
+        {/* TEXTBELT */}
+        <div className="tool-box">
+          <p className="box-title">TextBelt</p>
+          <p className="center-text">{remainingTextBeltTexts}</p>
+          <div className="buttons">
+            <button className="button center" onClick={getTextBeltCount}>
+              Get Remaining Texts Count
             </button>
           </div>
         </div>

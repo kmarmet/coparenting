@@ -18,28 +18,9 @@ import Numpad from '../shared/numpad'
 import Toggle from 'react-toggle'
 import { ImEye } from 'react-icons/im'
 import { PiMoneyWavyDuotone } from 'react-icons/pi'
-import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
-import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl'
 
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
+import { formatNameFirstNameOnly } from '../../globalFunctions'
 import UploadInputs from '../shared/uploadInputs'
 import DateManager from '../../managers/dateManager'
 import ModelNames from '../../models/modelNames'
@@ -50,6 +31,7 @@ import ExpenseCategories from '../../constants/expenseCategories'
 import ObjectManager from '../../managers/objectManager'
 import AlertManager from '../../managers/alertManager'
 import ImageManager from '../../managers/imageManager'
+import SelectDropdown from '../shared/selectDropdown'
 
 function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -361,18 +343,15 @@ function NewExpenseForm({ hideCard, showCard }) {
           </>
 
           {/* EXPENSE TYPE */}
-          <FormControl fullWidth className={'mt-10 mb-15'}>
-            <InputLabel className={'w-100'}>Expense Type</InputLabel>
-            <Select value={expenseCategory} label="Expense Type" onChange={handleCategorySelection}>
-              {ExpenseCategories.map((type, index) => {
-                return (
-                  <MenuItem key={index} value={type}>
-                    {type}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-          </FormControl>
+          <SelectDropdown wrapperClasses={'mb-15'} selectValue={expenseCategory} onChange={handleCategorySelection} labelText={'Expense Type'}>
+            {ExpenseCategories.map((type, index) => {
+              return (
+                <MenuItem key={index} value={type}>
+                  {type}
+                </MenuItem>
+              )
+            })}
+          </SelectDropdown>
 
           {/* EXPENSE NAME */}
           <InputWrapper onChange={(e) => setExpenseName(e.target.value)} inputType={'input'} labelText={'Name'} required={true}></InputWrapper>

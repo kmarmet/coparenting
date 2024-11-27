@@ -185,13 +185,11 @@
         font-size: 16px;
 
         &#add-child-button {
-          opacity: 0.8;
           font-size: 14px;
           margin: 20px auto 0;
         }
 
         &#add-coparent-button {
-          opacity: 0.8;
           font-size: 14px;
           margin: 20px auto;
         }
@@ -211,7 +209,8 @@
         }
 
         .flex {
-          width: 50%;
+          width: 45%;
+          flex-wrap: wrap;
 
           .box {
             &.active {

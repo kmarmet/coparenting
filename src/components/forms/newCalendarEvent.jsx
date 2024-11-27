@@ -148,10 +148,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     newEvent.createdBy = currentUser?.name
     newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
     newEvent.notes = eventNotes
+    newEvent.isRepeating = eventIsRepeating
     newEvent.websiteUrl = eventWebsite
     newEvent.reminderTimes = eventReminderTimes
     newEvent.repeatInterval = repeatInterval
-    newEvent.fromVisitationSchedule = isVisitation ? true : false
+    newEvent.fromVisitationSchedule = isVisitation
 
     if (Manager.isValid(newEvent)) {
       // Repeating Events Validation
@@ -325,7 +326,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         moment(eventStartDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
         repeatingEndDate
       )
-      datesToIterate.push(eventStartDate)
+      if (datesToIterate) {
+        datesToIterate.push(eventStartDate)
+      }
     }
 
     // CLONED DATES

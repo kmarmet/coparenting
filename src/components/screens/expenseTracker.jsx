@@ -18,29 +18,11 @@ import NewExpenseForm from '../forms/newExpenseForm'
 import FirebaseStorage from '@firebaseStorage'
 import LightGallery from 'lightgallery/react'
 import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
 import 'lightgallery/css/lightgallery.css'
 import { MdEventRepeat, MdOutlineFilterAltOff, MdPriceCheck } from 'react-icons/md'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 //noinspection JSUnresolvedVariable
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
+import { uppercaseFirstLetterOfAllWords } from '../../globalFunctions'
 // ICONS
 import { ImAppleinc } from 'react-icons/im'
 import { IoLogoVenmo } from 'react-icons/io5'
@@ -53,6 +35,7 @@ import ExpenseCategories from '../../constants/expenseCategories'
 import DatasetManager from '../../managers/datasetManager'
 import AlertManager from '../../managers/alertManager'
 import DomManager from '../../managers/domManager'
+import SelectDropdown from '../shared/selectDropdown'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -62,12 +45,11 @@ const SortByTypes = {
 }
 
 export default function ExpenseTracker() {
-  const { state, setState, theme, navbarButton } = useContext(globalState)
+  const { state, setState, theme } = useContext(globalState)
   const { currentUser } = state
   const [expenses, setExpenses] = useState([])
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
-  const [showFullExpenseCard, setShowFullExpenseCard] = useState(false)
   const [showFilterCard, setShowFilterCard] = useState(false)
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [sortByValue, setSortByValue] = useState('')
@@ -77,7 +59,7 @@ export default function ExpenseTracker() {
 
   const markAsPaid = async (expense) => {
     await DB.updateRecord(DB.tables.expenseTracker, expense, 'paidStatus', 'paid').then(async () => {
-      const subId = await NotificationManager.getUserSubId(expense.ownerPhone)
+      const subId = await NotificationManager.getUserSubId(expense.payer.phone)
       PushAlertApi.sendMessage(
         `Expense Paid`,
         `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${expense.name} \nYou can delete the expense now`,
@@ -156,18 +138,19 @@ export default function ExpenseTracker() {
     const expenseToShow = document.querySelector(`[data-expense-id='${expenseId}']`)
     const svgDown = expenseToShow.querySelector('svg.down')
     const svgUp = expenseToShow.querySelector('svg.up')
+    const details = expenseToShow.querySelector('#details')
 
     if (expenseToShow) {
       if (DomManager.hasClass(expenseToShow, 'active')) {
-        setShowFullExpenseCard(false)
         expenseToShow.classList.remove('active')
         svgDown.classList.add('active')
         svgUp.classList.remove('active')
+        details.classList.remove('open')
       } else {
-        setShowFullExpenseCard(true)
         expenseToShow.classList.add('active')
         svgDown.classList.remove('active')
         svgUp.classList.add('active')
+        details.classList.add('open')
       }
       console.log(expenseToShow)
     }
@@ -235,23 +218,6 @@ export default function ExpenseTracker() {
     setShowFilterCard(false)
   }
 
-  const toggleDetails = (element) => {
-    const nameWrapper = element.target
-    const details = nameWrapper.querySelector('#content-to-toggle')
-    const svgDown = nameWrapper.querySelector('svg.down')
-    const svgUp = nameWrapper.querySelector('svg.up')
-
-    if (details.classList.contains('active')) {
-      nameWrapper.querySelector('#content-to-toggle').classList.remove('active')
-      svgDown.classList.add('active')
-      svgUp.classList.remove('active')
-    } else {
-      nameWrapper.querySelector('#content-to-toggle').classList.add('active')
-      svgDown.classList.remove('active')
-      svgUp.classList.add('active')
-    }
-  }
-
   useEffect(() => {
     onTableChange().then((r) => r)
     Manager.showPageContainer()
@@ -278,50 +244,53 @@ export default function ExpenseTracker() {
           }}
           submitText={'View Expenses'}>
           <>
-            <Label isBold={true} text={'Expense Type'} classes="mb-5"></Label>
-            <div className="pills type">
-              <div className="pill" onClick={() => handleExpenseTypeSelection('all')}>
-                All
-              </div>
-              <div className="pill" onClick={() => handleExpenseTypeSelection('single')}>
-                Single Date
-              </div>
-              <div className="pill" onClick={() => handleExpenseTypeSelection('repeating')}>
-                Repeating
+            <div className="filter-row">
+              <Label isBold={true} text={'Expense Type'} classes="mb-5"></Label>
+              <div className="pills type">
+                <div className="pill" onClick={() => handleExpenseTypeSelection('all')}>
+                  All
+                </div>
+                <div className="pill" onClick={() => handleExpenseTypeSelection('single')}>
+                  Single Date
+                </div>
+                <div className="pill" onClick={() => handleExpenseTypeSelection('repeating')}>
+                  Repeating
+                </div>
               </div>
             </div>
-            <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
-            <div className="pills type">
-              <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
-                Unpaid
-              </div>
-              <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
-                Paid
+            <div className="filter-row">
+              <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
+              <div className="pills type">
+                <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
+                  Unpaid
+                </div>
+                <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
+                  Paid
+                </div>
               </div>
             </div>
             <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>
-            <div className="pills category">
-              {ExpenseCategories.sort().map((cat, index) => {
-                return (
-                  <>
-                    {categoriesInUse.includes(cat) && (
-                      <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
-                        {cat}
-                      </div>
-                    )}
-                  </>
-                )
-              })}
+            <div className="filter-row">
+              <div className="pills category">
+                {ExpenseCategories.sort().map((cat, index) => {
+                  return (
+                    <>
+                      {categoriesInUse.includes(cat) && (
+                        <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
+                          {cat}
+                        </div>
+                      )}
+                    </>
+                  )
+                })}
+              </div>
             </div>
-            <Label isBold={true} text={'Sort by'} classes="mb-5 sort-by"></Label>
-            <FormControl fullWidth>
-              <Select className={'w-100'} value={sortByValue} onChange={handleSortBySelection}>
-                <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
-                <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
-                <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
-                <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
-              </Select>
-            </FormControl>
+            <SelectDropdown selectValue={SortByTypes.recentlyAdded} labelText={'Sort by'} onChange={handleSortBySelection}>
+              <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
+              <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
+              <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
+              <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
+            </SelectDropdown>
           </>
         </BottomCard>
 
@@ -479,7 +448,7 @@ export default function ExpenseTracker() {
           {Manager.isValid(expenses, true) &&
             expenses.map((expense, index) => {
               return (
-                <div key={index}>
+                <div key={index} className="mt-20">
                   <div onClick={(e) => handleFullExpenseToggle(e, expense.id)} data-expense-id={expense.id} className={`expense`}>
                     {/* EXPENSE NAME */}
                     <div id="name-wrapper" className="flex align-center">
@@ -518,7 +487,7 @@ export default function ExpenseTracker() {
                     {(!expense.category || expense?.category?.length === 0) && <p id="expense-category">Category: None</p>}
 
                     {/*  CONTENT TO TOGGLE */}
-                    <div id="content-to-toggle">
+                    <div id="details">
                       {/* PAY TO */}
                       <div className="flex editable">
                         <p className="recipient subtext">Pay to:</p>

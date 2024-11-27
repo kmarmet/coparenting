@@ -635,7 +635,7 @@ export default function Registration() {
               </button>
             )}
             <button
-              className="button default  green"
+              className="button default w-40 mt-10 green"
               onClick={async () => {
                 const isValidForm = await formIsValid()
                 if (isValidForm) {
@@ -644,7 +644,7 @@ export default function Registration() {
               }}>
               Verify Phone <MdOutlineSecurity />
             </button>
-            <button className="button default " onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+            <button className="button default w-40 " onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
               Back to Login
             </button>
           </div>

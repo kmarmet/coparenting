@@ -910,6 +910,50 @@
 /*#endregion  POSITIONING*/
 
 /*#region  COMPONENTS*/
+@mixin row {
+  display: block;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(222, 224, 225, 0.48);
+  &.active {
+    max-height: 10000px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  * {
+    line-height: 1;
+  }
+
+  #details {
+    max-height: 0;
+    transition: all 0.3s ease-in-out;
+    transform: scale(0);
+    opacity: 0;
+    display: flex;
+    padding: 0 0 5px 20px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    
+    &.open {
+      opacity: 1;
+      overflow: auto;
+      width: 100%;
+      max-height: 1000px;
+      transform: scale(1);
+      transition: all 0.5s ease-in-out;
+    }
+  }
+  .details-toggle-arrow {
+    display: none;
+    opacity: 0.4;
+    position: absolute;
+    right: 0;
+    font-size: 24px;
+
+    &.active {
+      display: inherit;
+    }
+  }
+}
 @mixin label {
   label {
     font-size: 16px;
@@ -928,19 +972,19 @@
   .MuiInputBase-root {
     height: 43px;
   }
-  
+
   textarea {
     max-height: 30px;
     height: 30px;
     overflow: hidden;
-    
+
     &:focus {
       height: 150px;
       padding: 10px;
       max-height: 150px;
     }
   }
-  
+
   input,
   textarea {
     display: block;
@@ -1071,7 +1115,7 @@
     line-height: 1;
     margin: 0;
     padding: 0;
-    transition: all .3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
 
   &.calendar {
@@ -1118,12 +1162,11 @@
         opacity: 1;
         font-weight: $fwBold;
         transform: scale(1.1);
-        
       }
-        svg {
-          position: relative;
-          right: 5px;
-        }
+      svg {
+        position: relative;
+        right: 5px;
+      }
     }
 
     p {
@@ -2047,6 +2090,10 @@
 
   // EXPENSE TRACKER FILTER CARD
   &.filter-card {
+    
+    .filter-row {
+      margin-bottom: 15px;
+    }
     label {
       line-height: 1;
       font-size: 18px;
@@ -2532,7 +2579,7 @@
     height: 100%;
     transition: all 0.6s ease-in-out;
     justify-content: space-between;
-    padding: 15px 10px 0 10px;
+    padding: 15px 0;
     margin: 0 auto;
     gap: 10px 5px;
     width: 100%;
@@ -2543,7 +2590,7 @@
       transition: all 0.6s ease-in-out;
       width: calc((100% / 3) - 5px);
       background-color: white;
-      height: 100px;
+      height: 110px;
       border-radius: $bigBorderRadius;
       padding: 8px;
       display: flex;
@@ -2664,7 +2711,7 @@
         margin-top: 0;
         transition: all 0.6s ease-in-out;
         transform: scale(1);
-        opacity: 0.75;
+        opacity: 0.65;
 
         p {
           font-weight: $fwRegular;
@@ -2785,6 +2832,14 @@
           font-size: 12px;
         }
       }
+      
+      &.full-menu-icon {
+        opacity: 1;
+        svg {
+          font-size: 30px;
+          opacity: 1;
+        }
+      }
 
       span {
         font-size: 13px;
@@ -2792,7 +2847,7 @@
 
       svg {
         font-size: 32px;
-        
+
         &.child-info {
           font-size: 34px;
         }

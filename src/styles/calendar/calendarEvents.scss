@@ -1,7 +1,7 @@
 @import '../colors';
 @import '../palette';
 @import '../variables';
-
+@import '../mixins';
 #external-overrides {
   #calendar-container {
     .events {
@@ -9,9 +9,6 @@
       margin-top: 10px;
       background: white;
       border-radius: 25px 25px 0 0;
-      hr {
-        width: 80%;
-      }
       .material-icons-round {
         color: $mainBlue;
         font-size: 18px;
@@ -26,32 +23,19 @@
         background: white;
         position: relative;
         margin-bottom: 20px;
-
-        * {
-          line-height: 1;
-        }
-        #bottom-border {
-          width: 95%;
-          height: 1px;
-          background: rgba(222, 224, 225, 0.48);
-          margin-left: 20px;
-        }
-
-        .details-toggle-arrow {
-          display: none;
-          opacity: 0.4;
-          position: relative;
-          left: 8px;
-          font-size: 24px;
-
-          &.active {
-            display: inherit;
-          }
-        }
+        @include row;
 
         &.active {
           transition: all 0.3s ease-in;
           opacity: 1;
+
+          .text {
+            #details {
+              #edit-button {
+                display: block;
+              }
+            }
+          }
         }
 
         svg {
@@ -68,27 +52,6 @@
           justify-content: flex-start;
 
           #details {
-            max-height: 0;
-            transition: all 0.3s ease-in-out;
-            transform: scale(0);
-            opacity: 0;
-            display: flex;
-            padding: 0 0 5px 20px;
-            justify-content: space-between;
-            flex-wrap: wrap;
-
-            &.active {
-              width: 100%;
-              opacity: 1;
-              max-height: 1000px;
-              transform: scale(1);
-              transition: all 0.5s ease-in-out;
-
-              #edit-button {
-                display: inherit;
-              }
-            }
-
             #nav-website {
               display: flex;
               align-items: center;

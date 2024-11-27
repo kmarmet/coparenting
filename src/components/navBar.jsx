@@ -3,7 +3,7 @@ import globalState from '../context'
 import ScreenNames from '@screenNames'
 import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone, PiPersonLight } from 'react-icons/pi'
 import { VscSettings } from 'react-icons/vsc'
-import { FiMenu } from 'react-icons/fi'
+import { TbGridDots } from 'react-icons/tb'
 
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
@@ -24,7 +24,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
           <div id="menu-items" className="flex">
             {/* FULL MENU ICON  */}
             <div onClick={() => setState({ ...state, menuIsOpen: true })} className={`full-menu-icon menu-item`}>
-              <FiMenu />
+              <TbGridDots />
             </div>
 
             {/* CALENDAR */}
