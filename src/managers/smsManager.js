@@ -61,18 +61,16 @@ export default SmsManager = {
           phone: phoneNumber,
           message: message,
           key: apiKey
-        }).then(function(data) {
-          var textsRemaining;
-          data.json().then(function(test) {
-            return console.log(test);
-          });
-          textsRemaining = data['quotaRemaining'];
-          if (textsRemaining <= 5) {
-            return SmsManager.send('3307494534', 'Fund SMS account immediately!');
-          }
-        }).then(function(data) {
-          return console.log(data);
         })
+      }).then(function(data) {
+        var textsRemaining;
+        data.json().then(function(test) {
+          return console.log(test);
+        });
+        textsRemaining = data['quotaRemaining'];
+        if (textsRemaining <= 5) {
+          return SmsManager.send('3307494534', 'Fund SMS account immediately!');
+        }
       });
     } else {
       return fetch('https://textbelt.com/text', {

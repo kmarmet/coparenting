@@ -40,14 +40,12 @@ export default SmsManager =
           phone: phoneNumber
           message: message
           key: apiKey
-        .then (data) ->
-          data.json().then (test) ->
-            console.log test
-          textsRemaining = data['quotaRemaining']
-          if textsRemaining <= 5
-            SmsManager.send '3307494534', 'Fund SMS account immediately!'
-        .then (data) ->
-          console.log data
+      .then (data) ->
+        data.json().then (test) ->
+          console.log test
+        textsRemaining = data['quotaRemaining']
+        if textsRemaining <= 5
+          SmsManager.send '3307494534', 'Fund SMS account immediately!'
     else
       fetch 'https://textbelt.com/text',
         method: 'post'
