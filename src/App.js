@@ -111,9 +111,6 @@ export default function App() {
   useEffect(() => {
     // Error Boundary Test
     // throw new Error('Something went wrong')
-
-    // AppManager.deleteExpiredCalendarEvents().then((r) => r)
-    // AppManager.deleteExpiredMemories().then((r) => r)
     document.body.appendChild(myCanvas)
 
     onAuthStateChanged(auth, (user) => {

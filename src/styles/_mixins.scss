@@ -2749,6 +2749,10 @@
   bottom: 0;
   opacity: 1;
   z-index: $maxZIndex;
+  
+  &.hidden {
+    bottom: -200px;
+  }
 
   &.no-add-new-button {
     #svg-wrapper {

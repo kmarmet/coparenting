@@ -1,24 +1,7 @@
 // @ts-ignore
 import DB from '@db'
 import '../prototypes'
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../globalFunctions'
+import { hasClass, uppercaseFirstLetterOfAllWords } from '../globalFunctions'
 import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
 
@@ -111,8 +94,29 @@ const Manager = {
   showPageContainer: () => {
     const interval = setInterval(() => {
       const pageContainer = document.querySelector('.page-container')
+      const navbar = document.getElementById('navbar')
+      const eventsWrapper = document.querySelector('.with-padding')
       if (pageContainer) {
         pageContainer.classList.add('active')
+        pageContainer.addEventListener('scroll', () => {
+          const scrollDistance = pageContainer.scrollTop
+          if (scrollDistance >= 50) {
+            navbar.classList.add('hidden')
+          } else {
+            navbar.classList.remove('hidden')
+          }
+        })
+
+        if (eventsWrapper) {
+          eventsWrapper.addEventListener('scroll', () => {
+            const scrollDistance = eventsWrapper.scrollTop
+            if (scrollDistance >= 50) {
+              navbar.classList.add('hidden')
+            } else {
+              navbar.classList.remove('hidden')
+            }
+          })
+        }
         Manager.scrollToTopOfPage()
         clearInterval(interval)
       }
