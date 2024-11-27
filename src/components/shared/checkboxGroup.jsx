@@ -20,10 +20,12 @@ export default function CheckboxGroup({
   const { theme } = state
   return (
     <div id="checkbox-group" className={`${theme} ${elClass} mt-15 mb-15`}>
-      <div id="parent-label-wrapper">
-        <label id="parent-label">{parentLabel}</label>
-        {required && <span className="asterisk">*</span>}
-      </div>
+      {parentLabel.length > 0 && (
+        <div id="parent-label-wrapper">
+          <label id="parent-label">{parentLabel}</label>
+          {required && <span className="asterisk">*</span>}
+        </div>
+      )}
       <div id="checkboxes">
         {Manager.isValid(checkboxLabels, true) &&
           checkboxLabels.map((label, index) => {

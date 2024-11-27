@@ -19,6 +19,7 @@ import { MdOutlineSecurity, MdOutlineSystemSecurityUpdateGood } from 'react-icon
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
+
 import {
   contains,
   formatFileName,
@@ -53,6 +54,7 @@ import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import LogManager from '../../../managers/logManager'
+import { TbDeviceMobileMessage } from 'react-icons/tb'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -91,37 +93,41 @@ export default function Registration() {
       parentPermissionCode.code = permissionCode
       parentPermissionCode.parentPhone = parentPhone
       parentPermissionCode.childPhone = userPhone
-      parentPermissionCode.expiration = moment().add(10, 'minutes').format(DateFormats.fullDatetime)
+      parentPermissionCode.expiration = moment().add(5, 'minutes').format(DateFormats.fullDatetime)
       setVerificationCode(permissionCode)
+
+      // Add code to DB
       await DB.add(DB.tables.parentPermissionCodes, parentPermissionCode)
-      const expirationMessage = ` The code will expire at ${moment().add(5, 'minutes').format('hh:mma')}.`
+
+      // Expiration Message
+      const expirationMessage = `The code will expire at ${moment().add(5, 'minutes').format('h:mma')}.`
+
       // Enter code alert
-      AlertManager.displayAlert(
-        'input',
-        'Enter the Code Provided by your Parent',
+      AlertManager.inputAlert(
+        'Enter the code provided by your parent',
         `If the code has expired, please register again to send another code. ${expirationMessage}`,
         async (e) => {
           const existingCodes = Manager.convertToArray(await DB.getTable(DB.tables.parentPermissionCodes))
 
           if (Manager.isValid(existingCodes, true)) {
             const existingCode = existingCodes.filter((x) => x.parentPhone === parentPhone && x.childPhone === userPhone)[0]
-
             // Existing code already exists, check expiration
             if (Manager.isValid(existingCode)) {
               const expirationTime = moment(existingCode.expiration, DateFormats.fullDatetime).minute()
               const now = moment().minute()
               const duration = expirationTime - now
-
               // Expired
               if (duration >= 5) {
                 AlertManager.throwError('The code has expired, please send another code')
-                const deleteKey = await DB.getFlatTableKey(DB.tables.parentPermissionCodes)
-                await DB.deleteByPath(`${DB.tables.parentPermissionCodes}/${deleteKey}`)
-              } else {
-                if (verificationCode === existingCode.code) {
+              }
+              // Register
+              else {
+                if (permissionCode === existingCode.code) {
                   await submitChild()
                 }
               }
+              const deleteKey = await DB.getFlatTableKey(DB.tables.parentPermissionCodes)
+              await DB.deleteByPath(`${DB.tables.parentPermissionCodes}/${deleteKey}`)
             }
           }
         }
@@ -234,10 +240,10 @@ export default function Registration() {
 
   const validateChildForm = async () => {
     let isValid = true
-    await DB.getTable(DB.tables.users).then((users) => {
+    await DB.getTable(DB.tables.users).then(async (users) => {
       users = Manager.convertToArray(users)
-      let foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
-      if (foundUser) {
+      let existingUser = await DB.find(DB.tables.users, ['phone', userPhone], true)
+      if (existingUser) {
         AlertManager.throwError('Account already exists, please login')
         isValid = false
         setAccountAlreadyExists(true)
@@ -253,22 +259,18 @@ export default function Registration() {
       isValid = false
       return false
     }
-    return isValid
     if (userName.length === 0) {
       AlertManager.throwError('Your name is required')
       isValid = false
     }
-    return isValid
     if (password.length === 0) {
       AlertManager.throwError('Your password is required')
       isValid = false
     }
-    return isValid
     if (confirmedPassword.length === 0) {
       AlertManager.throwError('Confirmed password is required')
       isValid = false
     }
-    return isValid
     if (confirmedPassword !== password) {
       AlertManager.throwError('Password and confirmed password do not match')
       isValid = false
@@ -518,23 +520,25 @@ export default function Registration() {
               return <span key={index}>{input}</span>
             })}
             {parents.length > 0 && (
-              <button id="add-parent-button" className="button default w-60" onClick={addParentInput}>
+              <button id="add-parent-button" className="button default" onClick={addParentInput}>
                 Add Another Parent
               </button>
             )}
-            <p className="mt-20">
-              <b>Request Parent Sharing Permissions</b>
+
+            <Label classes="mt-20" text={'Request Parent Sharing Permissions'} />
+            <p>
+              For privacy and security, your parent must provide a code to give you access to view items within the app. A text message will be sent
+              to your parent with the code. Once they provide the code to you, you will have access to the application.
             </p>
-            <p>A text message will be sent to your parent with a code. Once they provide the code to you, you will have access to the application.</p>
 
             <button
-              className="button default w-10 green"
+              className="button default mt-20 green"
               onClick={async () => {
                 await sendChildVerificationCode()
               }}>
-              <span className="material-icons-round fs-22">send</span>
+              Send Message <TbDeviceMobileMessage />
             </button>
-            <button className="button default w-60" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+            <button className="button default" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
               Back to Login
             </button>
           </div>

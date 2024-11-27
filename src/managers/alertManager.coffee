@@ -92,7 +92,7 @@ AlertManager = {
       if result.isConfirmed
         if onConfirm then onConfirm(result)
 
-   inputAlert : (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "input") ->
+   inputAlert : (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "text") ->
     Swal.fire
       title: title
       text: text
@@ -113,9 +113,9 @@ AlertManager = {
               animate__fadeOutDown
               animate__faster
             """
-        .then (result) ->
-          if result.isConfirmed
-            if onConfirm then onConfirm(result)
+    .then (result) ->
+      if result.isConfirmed
+        if onConfirm then onConfirm(result)
 }
 
 export default AlertManager

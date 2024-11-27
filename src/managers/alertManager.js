@@ -101,7 +101,7 @@ animate__faster`
       }
     });
   },
-  inputAlert: function(title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "input") {
+  inputAlert: function(title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "text") {
     return Swal.fire({
       title: title,
       text: text,
@@ -119,13 +119,13 @@ animate__faster`
         popup: `animate__animated
 animate__fadeOutDown
 animate__faster`
-      }.then(function(result) {
-        if (result.isConfirmed) {
-          if (onConfirm) {
-            return onConfirm(result);
-          }
+      }
+    }).then(function(result) {
+      if (result.isConfirmed) {
+        if (onConfirm) {
+          return onConfirm(result);
         }
-      })
+      }
     });
   }
 };

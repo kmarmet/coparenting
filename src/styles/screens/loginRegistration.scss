@@ -127,11 +127,7 @@
       #coparent-input-container,
       #parent-input-container,
       #child-input-container {
-        padding: 15px;
-        background-color: white;
         margin: 15px  auto;
-        border: 1px solid $borderColor;
-        border-radius: $borderRadius;
         
         button {
           margin-top: 15px;
@@ -141,9 +137,8 @@
         #parent-label,
         #child-label {
           color: $blue;
-          font-size: 22px;
+          font-size: 18px;
           font-weight: bold;
-          margin-bottom: 10px;
         }
 
         #checkbox-group {

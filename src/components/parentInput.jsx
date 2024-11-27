@@ -20,6 +20,8 @@ import {
 } from '../globalFunctions'
 import { phone } from 'phone'
 import AlertManager from '../managers/alertManager'
+import InputWrapper from './shared/inputWrapper'
+import { RiUserAddLine } from 'react-icons/ri'
 
 export default function ParentInput({ add, parentsLength = 1, labels }) {
   const { state, setState } = useContext(globalState)
@@ -38,14 +40,14 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
       <p id="parent-label">
         Parent #{parentsLength} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
       </p>
-      <label>
-        Name <span className="asterisk">*</span>
-      </label>
-      <input type="text" className="parent-date" onChange={(e) => setName(e.target.value)} />
-      <label>
-        Phone Number <span className="asterisk">*</span>
-      </label>
-      <input className="parent-phone" type="number" pattern="[0-9]*" inputMode="numeric" onChange={(e) => setUserPhone(e.target.value)} />
+      <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
+      <InputWrapper
+        inputType={'input'}
+        inputValueType="phone"
+        labelText={'Phone Number'}
+        required={true}
+        onChange={(e) => setUserPhone(e.target.value)}
+      />
       {showAddButton && (
         <button
           className="button center default green"
@@ -62,7 +64,7 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
             add({ name, userPhone })
             setShowAddButton(false)
           }}>
-          Add <span className="material-icons">add</span>
+          Add <RiUserAddLine />
         </button>
       )}
     </div>
