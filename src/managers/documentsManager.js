@@ -31,30 +31,31 @@ import {
   wordCount
 } from "../globalFunctions";
 
+import DatasetManager from "./datasetManager";
+
 export default DocumentsManager = {
   deleteDocsWithIds: async function(toDelete, currentUser, callback = () => {
       return {};
     }) {
-    var dbDocs, docId, docs, i, len, results, thisDoc;
+    var docId, docs, i, len, results, thisDoc;
     results = [];
     for (i = 0, len = toDelete.length; i < len; i++) {
       docId = toDelete[i];
-      docs = (await DB.getTable(DB.tables.documents));
-      docs = Manager.convertToArray(docs).flat();
-      dbDocs = Manager.convertToArray(docs);
-      if (Manager.isValid(dbDocs, true)) {
+      docs = DatasetManager.getValidArray((await DB.getTable(DB.tables.documents)));
+      if (Manager.isValid(docs, true)) {
         results.push((await (async function() {
           var j, len1, results1;
           results1 = [];
-          for (j = 0, len1 = dbDocs.length; j < len1; j++) {
-            thisDoc = dbDocs[j];
-            if (!(thisDoc.id === docId)) {
-              continue;
-            }
-            await DB.delete(DB.tables.documents, docId);
-            await FirebaseStorage.delete(FirebaseStorage.directories.documents, currentUser.id, thisDoc.name);
-            if (callback) {
-              results1.push(callback(docId));
+          for (j = 0, len1 = docs.length; j < len1; j++) {
+            thisDoc = docs[j];
+            if (thisDoc.id === docId) {
+              await DB.delete(DB.tables.documents, docId);
+              await FirebaseStorage.delete(FirebaseStorage.directories.documents, currentUser.id, thisDoc.name);
+              if (callback) {
+                results1.push(callback(docId));
+              } else {
+                results1.push(void 0);
+              }
             } else {
               results1.push(void 0);
             }

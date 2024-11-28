@@ -124,8 +124,7 @@ const DB_UserScoped = {
   getCoparentByPhone: async (coparentPhone, currentUser, getBioCoparent) => {
     let coparent
     if (Manager.isValid(currentUser)) {
-      const users = await DB.getTable(DB.tables.users)
-      coparent = await DB.find(users, ['phone', coparentPhone], false)
+      coparent = await DB.find(DB.tables.users, ['phone', coparentPhone], true)
     }
     return coparent
   },

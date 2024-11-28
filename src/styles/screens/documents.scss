@@ -113,12 +113,13 @@
       }
       
       .row {
-        min-height: 50px;
-        margin-bottom: 20px;
-        background-color: white;
-        padding: 10px;
-        border-radius: $borderRadius;
-        border: 1px solid $borderColor;
+//        min-height: 50px;
+//        margin-bottom: 20px;
+//        background-color: white;
+//        padding: 10px;
+//        border-radius: $borderRadius;
+//        border: 1px solid $borderColor;
+        @include row;
         
         .checkbox {
           @include extraClickableSpace;
@@ -542,14 +543,11 @@
       input,
       label,
       button {
-        width: 50%;
         font-weight: 500;
         display: flex;
         align-items: center;
         text-transform: uppercase;
-        font-size: 18px;
         text-align: center;
-        justify-content: center;
         line-height: 1;
 
         &:first-child {

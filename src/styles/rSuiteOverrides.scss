@@ -1,17 +1,8 @@
 @import './mixins';
 
 #external-overrides {
-  .flatpickr-months {
-    align-items: center;
-
-    * {
-      display: flex;
-      justify-content: center;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      max-width: 245px;
-    }
+  .rs-multi-date-picker {
+    margin-bottom: 10px;
   }
   .MuiFormControl-root {
     &.light {
@@ -26,17 +17,6 @@
     }
   }
 
-  .rs-picker {
-    /*#region  LIGHT THEME*/
-    &.light {
-      .rs-input-group {
-        input {
-          background-color: white !important;
-        }
-      }
-    }
-    /*#endregion  LIGHT THEME*/
-  }
   .rs-input {
     margin: 0 !important;
   }
@@ -68,50 +48,6 @@
       }
     }
   }
-  // Color Palette
-  #calendar-ui-container {
-    /*#region  DARK THEME*/
-    &.dark {
-      .flatpickr-months {
-        .flatpickr-prev-month,
-        .flatpickr-next-month {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          border-radius: 10px;
-          height: 35px;
-          width: 35px;
-          border: 1px solid $translucentLightest;
-        }
-      }
-      .flatpickr-calendar {
-        .calendar-arrow {
-          top: auto !important;
-          left: auto !important;
-          right: auto !important;
-        }
-        .flatpickr-weekday {
-          color: $offWhite;
-        }
-      }
-      .multidate-picker {
-        .rs-input {
-          color: $offWhite;
-          -webkit-text-fill-color: $offWhite !important;
-        }
-      }
-       .flatpickr-days {
-        .flatpickr-day {
-          color: white;
-
-          &.selected {
-            background-color: $purple;
-          }
-        }
-      }
-    }
-    /*#endregion  DARK THEME*/
-  }
 
   // Rest -> garbage
   .rs-calendar-table-cell-in-range {
@@ -125,391 +61,6 @@
       opacity: 0.8 !important;
     }
   }
-  .flatpickr-calendar {
-    width: 100%;
-    position: relative;
-    box-shadow: none;
-    left: 0;
-    right: 0;
-    border-radius: $bigBorderRadius;
-    background-color: white;
-    box-sizing: border-box;
-    margin: 0 auto 10px auto;
-    border: 1px solid $borderColor;
-    padding: 0 10px;
-
-    @media screen and (min-width: 768px) {
-      margin: 0 auto;
-      max-width: 600px;
-    }
-
-
-    @media screen and (min-width: 768px) {
-      max-width: 600px;
-
-      .flatpickr-innerContainer {
-        margin: 0 auto;
-        max-width: 600px;
-      }
-      &.dayContainer {
-        height: 350px;
-      }
-    }
-    
-    // LINKS
-    a {
-      color: $linkColor !important;
-    }
-
-    .flatpickr-days {
-      .flatpickr-day {
-        max-width: 100px;
-        font-weight: 400;
-        position: relative;
-        transform: scale(1.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        width: calc(100% /7);
-
-        &:hover {
-          background: transparent !important;
-          border: 0 !important;
-          height: auto !important;
-          transform: none !important;
-          &.selected {
-            height: 39px !important;
-          }
-        }
-
-        /*#region  DOT INDICATORS*/
-        .invisible-dots {
-          width: 100%;
-        }
-        .dot-wrapper {
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          position: relative;
-          top: -8px;
-          gap: 3px;
-
-          .dot {
-            margin: 0;
-            height: 5px;
-            width: 5px;
-            border: 0;
-            display: block;
-            border-radius: 100%;
-          }
-
-          .current-user-visitation-dot {
-            background-color: $mainBlue;
-          }
-
-          .coparent-visitation-dot {
-            background-color: #a7d9fd;
-          }
-
-          .standard-event-dot {
-            background-color: $lightDarkGrey;
-          }
-        }
-        /*#endregion  */
-
-        .holiday-emoji,
-        .payday-emoji {
-          position: absolute;
-          top: 0;
-          left: 55%;
-          right: 50%;
-          z-index: 100;
-          width: 15px;
-          height: 20px;
-          display: flex;
-          justify-content: center;
-          border-radius: 50%;
-          align-items: center;
-          &.payday-emoji {
-            color: $green !important;
-            font-size: 14px;
-            font-weight: bold !important;
-          }
-        }
-
-        &.today {
-          border: 0;
-          font-weight: bold !important;
-          position: relative;
-          top: 1px;
-          color: #ff668b !important;
-          transform: scale(1.3);
-
-          .visitation-dot,
-          .dot {
-            top: 38px;
-          }
-          
-          .dot-wrapper {
-            top: -11px;
-          }
-        }
-
-        &.selected {
-          border-radius: 10px;
-          transform-origin: center;
-          position: relative;
-//          max-width: 39px;
-          font-weight: bold !important;
-          top: 0;
-          padding-top: 8px;
-          line-height: 1;
-          border: 1px solid $mainBlue;
-          background-color: $mainBlue !important;
-          color: white !important;
-          transform: scale(1);
-          font-size: 20px;
-          padding-top: 5px;
-
-          .dot-wrapper {
-            margin-top: 25px;
-          }
-        }
-
-        &.nextMonthDay,
-        &.prevMonthDay {
-          opacity: 0.4;
-
-          &.selected {
-            background-color: $red;
-            border: 1px solid $darkBlue;
-            color: white;
-          }
-        }
-
-        @media screen and (min-width: 768px) {
-          &.selected {
-            top: 15px;
-            max-width: 65px;
-            left: 5px;
-            border-radius: $borderRadius;
-
-            .visitation-dot,
-            .dot {
-              top: 30px;
-            }
-          }
-        }
-      }
-    }
-
-    &.hide {
-      display: none !important;
-    }
-
-    &::before,
-    &::after {
-      display: none;
-    }
-
-    *:not(.flatpickr-month, .flatpickr-current-month, .flatpickr-monthDropdown-months, .flatpickr-monthDropdown-month, .flatpickr-months) {
-      font-weight: 400;
-    }
-
-    .calendar-arrow {
-      font-size: 25px !important;
-      position: relative;
-      opacity: .3 !important;
-      top: 1px;
-
-      &.left {
-      }
-
-      &.right {
-      }
-    }
-
-    .flatpickr-innerContainer,
-    .flatpickr-days,
-    .dayContainer {
-      margin: 0 auto;
-      width: 100%;
-      
-      &.dayContainer {
-        max-width: 100% !important;
-        margin: 0 !important;
-      }
-      
-      &.flatpickr-days {
-        margin: 0 !important;
-      }
-      
-      .flatpickr-day {
-//        max-width: 52px !important;
-      }
-      
-      &.flatpickr-innerContainer {
-        padding-bottom: 15px;
-      }
-      @media screen and (min-width: 768px) {
-        max-width: 600px;
-
-        &.flatpickr-innerContainer {
-          margin: 0 auto;
-          padding-bottom: 15px;
-        }
-        &.dayContainer {
-          height: 350px;
-        }
-      }
-
-      @media screen and (min-width: 1024px) {
-        //        width: 80vw;
-        max-width: 600px;
-        &.flatpickr-innerContainer {
-          //          margin: 0 auto;
-          margin: 0;
-        }
-      }
-
-      &.dayContainer {
-        //        height: 250px;
-      }
-    }
-
-    .numInputWrapper {
-    }
-
-    // TOP MONTH SELECTOR
-    .flatpickr-months {
-      margin: 0 auto;
-      display: flex;
-      justify-content: center;
-      
-      @media screen and (min-width: 1024px) {
-        max-width: 70vw;
-        margin: 0;
-      }
-      .flatpickr-month {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 0;
-        height: 60px;
-        position: relative;
-      }
-      .flatpickr-current-month,
-      .flatpickr-monthDropdown-months {
-        padding: 0;
-        font-weight: $fwMedium !important;
-
-        .arrowUp,
-        .arrowDown {
-          display: none;
-        }
-
-        select {
-          border: 0;
-          -moz-appearance: none;
-          -webkit-appearance: none;
-
-          &::-ms-expand {
-            display: none;
-          }
-        }
-
-        &.flatpickr-current-month {
-          justify-content: center;
-          margin: 0 auto;
-          position: absolute;
-          left: 0;
-          @include  centerHoriz;
-
-          .numInputWrapper {
-            .numInput {
-              &.cur-year {
-                font-size: 16px !important;
-                opacity: 0.6;
-              }
-            }
-          }
-        }
-
-        @media screen and (min-width: 1024px) {
-          max-width: 70vw;
-          margin: 0;
-        }
-      }
-
-      .flatpickr-monthDropdown-months {
-        font-size: 16px !important;
-        option {
-          font-size: 16px;
-          font-weight: 500;
-        }
-      }
-    }
-
-    .flatpickr-current-month {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      select,
-      option {
-        font-weight: 500;
-      }
-    }
-
-    .flatpickr-prev-month,
-    .flatpickr-next-month {
-      position: relative;
-      padding-left: 0;
-      padding-right: 0;
-      font-weight: bold !important;
-
-      svg {
-        transform: scale(150%);
-        fill: white;
-        opacity: 0.9;
-        font-weight: bold !important;
-      }
-
-      &.flatpickr-prev-month {
-        left: -5px;
-
-        @media screen and (min-width: 800px) {
-          left: 25px;
-        }
-      }
-
-      &.flatpickr-next-month {
-        right: -5px;
-
-        @media screen and (min-width: 800px) {
-          right: 25px;
-        }
-      }
-    }
-
-    .flatpickr-weekdays {
-//      margin-bottom: 10px;
-    }
-
-    .flatpickr-weekday {
-      transform: scale(1.1);
-      font-weight: 400 !important;
-      color: $lightDarkGrey !important;
-    }
-
-    .flatpickr-rContainer {
-      width: 100%;
-      * {
-      }
-    }
-  }
-
   .rs-picker-toggle {
     outline: none;
 
@@ -945,50 +496,6 @@
     display: none !important;
   }
 
-  .flatpickr-days {
-    height: 300px;
-    padding-top: 5px;
-    .flatpickr-day {
-      opacity: 0.9;
-      border-radius: 0;
-      height: 60px;
-      color: $lightBlack !important;
-      
-      &.today {
-        opacity: 1;
-      }
-      
-      &:hover {
-        background: transparent !important;
-        border: 0 !important;
-        height: auto !important;
-        transform: none !important;
-      }
-      
-      &.weekend-day {
-        color: $lightDarkGrey !important;
-      }
-
-      &.prevMonthDay {
-        opacity: 0.5;
-      }
-      &.selected {
-        height: 40px;
-        position: relative;
-        top: 15px;
-        display: flex;
-        align-items: center;
-
-        .holiday-emoji,
-        .payday-emoji {
-          top: -10px;
-          background-color: transparent;
-          left: 60%;
-        }
-      }
-    }
-  }
-
   .rs-picker-toggle {
     outline: none;
 
@@ -1035,7 +542,6 @@
   .rs-input-group {
     input,
     textarea {
-      border-radius: 8px !important;
       display: block;
       width: 100%;
       outline: 0;
@@ -1043,8 +549,14 @@
       align-items: flex-end !important;
       outline: none !important;
       justify-content: flex-end !important;
-      background-color: rgba(44, 54, 111, 0.2);
-      padding: 11px !important;
+      outline: 0;
+      caret-color: black;
+      padding: 5px;
+      transition: all 0.2s ease-in-out;
+      border: 0;
+      border-radius: 0;
+      border-bottom: 1px solid #e3e8ee;
+    
 
       &:focus,
       &:valid,

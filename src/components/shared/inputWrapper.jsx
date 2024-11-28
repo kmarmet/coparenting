@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { DebounceInput } from 'react-debounce-input'
+import Label from './label'
 
 function InputWrapper({
   wrapperClasses = '',
@@ -56,7 +57,12 @@ function InputWrapper({
           />
         </>
       )}
-      {noInputTypes.includes(inputType) && <div className="w-100">{children}</div>}
+      {noInputTypes.includes(inputType) && (
+        <div className="w-100">
+          {inputType === 'date' && <Label classes="date-label" text={getPlaceholder()} />}
+          {children}
+        </div>
+      )}
       {inputType === 'textarea' && (
         <textarea onChange={onChange} className={inputClasses} placeholder={getPlaceholder()} cols="30" rows="10"></textarea>
       )}

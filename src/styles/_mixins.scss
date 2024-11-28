@@ -360,9 +360,10 @@
     justify-content: flex-start;
     align-items: center;
     color: black;
-    font-weight: 600;
-    font-size: 16px;
+    font-weight: $fwMedium;
+    font-size: 15px;
     line-height: 1;
+    opacity: .85;
     margin-bottom: 3px;
 
     svg {
@@ -913,6 +914,8 @@
   display: block;
   margin-bottom: 25px;
   border-bottom: 1px solid rgba(222, 224, 225, 0.48);
+  padding-bottom: 10px;
+  
   &.active {
     max-height: 10000px;
     transition: all 0.3s ease-in-out;
@@ -928,7 +931,7 @@
     transform: scale(0);
     opacity: 0;
     display: flex;
-    padding: 0 0 5px 20px;
+    padding: 0 0 5px 0;
     justify-content: space-between;
     flex-wrap: wrap;
     
@@ -945,7 +948,7 @@
     display: none;
     opacity: 0.4;
     position: absolute;
-    right: 0;
+    right: 10px;
     font-size: 24px;
 
     &.active {
@@ -955,8 +958,10 @@
 }
 @mixin label {
   label {
-    font-size: 16px;
-    margin-right: 8px;
+    font-size: 14px;
+    font-weight: $fwMedium;
+    opacity: .85;
+    margin: 0;
   }
 }
 @mixin inputWrapper {
@@ -1110,6 +1115,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  
   * {
     line-height: 1;
     margin: 0;
@@ -1137,6 +1143,15 @@
         &.single-day-icon {
           font-size: 20px;
         }
+      }
+    }
+  }
+  
+  &.swap-request {
+    gap: 30px;
+    .duration-option {
+      p {
+        margin-left: 5px;
       }
     }
   }
@@ -1197,21 +1212,22 @@
 
   &.active {
     background-color: $purple;
-    -webkit-box-shadow: 0 0 12px 0 $purple;
-    -moz-box-shadow: 0 0 12px 0 $purple;
-    box-shadow: 0 0 12px 0 $purple;
+//    -webkit-box-shadow: 0 0 12px 0 $purple;
+//    -moz-box-shadow: 0 0 12px 0 $purple;
+//    box-shadow: 0 0 12px 0 $purple;
+    border: 0;
 
     &.delete {
       background-color: $red;
-      -webkit-box-shadow: 0 0 12px 0 $red;
-      -moz-box-shadow: 0 0 12px 0 $red;
-      box-shadow: 0 0 12px 0 $red;
+//      -webkit-box-shadow: 0 0 12px 0 $red;
+//      -moz-box-shadow: 0 0 12px 0 $red;
+//      box-shadow: 0 0 12px 0 $red;
     }
 
     .checkmark-icon {
       display: block;
       margin: 0 auto;
-      font-size: 20px;
+      font-size: 18px;
     }
   }
 }
@@ -1284,14 +1300,14 @@
       }
 
       .box {
-        height: 18px;
-        width: 18px;
+        height: 16px;
+        width: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.5s ease-out;
         border-radius: 100%;
-        min-width: 18px;
+        min-width: 16px;
         border: 1.5px solid $lightDarkGrey;
 
         &.active {
@@ -1302,8 +1318,8 @@
         }
 
         #inner-circle {
-          height: 16px;
-          width: 16px;
+          height: 14px;
+          width: 14px;
           border: 3px solid white;
           border-radius: 100%;
           transition: all 0.3s ease-out;
@@ -1320,13 +1336,6 @@
     .flex {
       align-items: stretch;
       width: 100%;
-      button,
-      label,
-      input {
-        width: 50%;
-        border-radius: $borderRadius;
-        height: 45px;
-      }
     }
   }
 
@@ -2080,6 +2089,10 @@
   }
 
   /*#region  CARDS BY CLASS*/
+  // UPLOAD DOCUMENT
+  &.upload-document-card {
+    min-height: 80vh;
+  }
   // VIEW HOLIDAYS
   &.view-holidays {
     min-height: 250px;

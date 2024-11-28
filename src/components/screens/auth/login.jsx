@@ -52,8 +52,9 @@ export default function Login() {
   const auth = getAuth(app)
 
   const tryGetCurrentUser = async (firebaseUser) => {
-    const users = await DB.getTable(DB.tables.users)
-    const relevantUser = users.filter((x) => x.email === firebaseUser.email)[0]
+    console.log(firebaseUser)
+    const relevantUser = await DB.find(DB.tables.users, ['email', firebaseUser.email], true)
+    console.log(relevantUser)
     return relevantUser
   }
 
@@ -114,6 +115,7 @@ export default function Login() {
             .then(async (userCredential) => {
               const user = userCredential.user
               const _currentUser = await tryGetCurrentUser(user)
+              console.log(_currentUser)
               subscribeUser(_currentUser)
               // USER NEEDS TO VERIFY EMAIL
               if (!user.emailVerified) {
@@ -219,6 +221,7 @@ export default function Login() {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const _currentUser = await tryGetCurrentUser(user)
+        console.log(_currentUser)
         // User is signed in.
         setState({
           ...state,

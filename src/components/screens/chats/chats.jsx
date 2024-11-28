@@ -30,6 +30,7 @@ import SecurityManager from '../../../managers/securityManager'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import NavBar from '../../navBar'
 import DB from '@db'
+import AlertManager from '../../../managers/alertManager'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -56,7 +57,9 @@ const Chats = () => {
   })
 
   const openMessageThread = async (coparentPhone) => {
+    console.log(coparentPhone)
     const userCoparent = await DB_UserScoped.getCoparentByPhone(coparentPhone, currentUser)
+    console.log(userCoparent)
     setState({ ...state, currentScreen: ScreenNames.conversation, messageToUser: userCoparent })
   }
 
@@ -132,7 +135,8 @@ const Chats = () => {
         onClose={() => setShowNewConvoCard(false)}
         showCard={showNewConvoCard}
         title={'New Conversation'}>
-        {Manager.isValid(currentUser?.coparents, true) &&
+        {currentUser?.accountType === 'parent' &&
+          Manager.isValid(currentUser?.coparents, true) &&
           currentUser?.coparents?.map((coparent, index) => {
             return (
               <div key={index}>
@@ -149,7 +153,27 @@ const Chats = () => {
               </div>
             )
           })}
+        {currentUser?.accountType === 'child' &&
+          Manager.isValid(currentUser?.parents, true) &&
+          currentUser?.parents?.map((parent, index) => {
+            console.log(parent)
+            return (
+              <div key={index}>
+                {!activeThreadPhones.includes(parent.phone) && (
+                  <p
+                    className="coparent-name new-thread-coparent-name"
+                    onClick={() => {
+                      openMessageThread(parent.phone).then((r) => r)
+                    }}>
+                    {parent.name}
+                  </p>
+                )}
+                {activeThreadPhones.includes(parent.phone) && <p>All available co-parents aleady have an open conversation with you. </p>}
+              </div>
+            )
+          })}
       </BottomCard>
+
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
         <p className="screen-title">Chats</p>
@@ -197,7 +221,7 @@ const Chats = () => {
                     {/* DELETE CHAT BUTTON */}
                     <BiSolidMessageRoundedMinus
                       onClick={(e) =>
-                        confirmAlert(
+                        AlertManager.confirmAlert(
                           'Are you sure you would like to delete this conversation? You can recover it later.',
                           "I'm Sure",
                           true,

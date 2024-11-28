@@ -196,7 +196,7 @@ export default function Registration() {
         childUser.name = uppercaseFirstLetterOfAllWords(userName)
         childUser.accountType = 'child'
         childUser.parents = parents
-        childUser.email = ''
+        childUser.email = email
         childUser.settings.theme = 'light'
         childUser.settings.eveningReminderSummaryHour = '8pm'
         childUser.settings.morningReminderSummaryHour = '10am'

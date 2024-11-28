@@ -18,18 +18,18 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount
 } from "../globalFunctions"
+import DatasetManager from "./datasetManager"
 
 export default DocumentsManager =
   deleteDocsWithIds: (toDelete, currentUser, callback = () => {}) ->
     for docId in toDelete
-      docs = await DB.getTable(DB.tables.documents)
-      docs = Manager.convertToArray(docs).flat()
-      dbDocs = Manager.convertToArray(docs)
-      if Manager.isValid(dbDocs, true)
-        for thisDoc in dbDocs when thisDoc.id is docId
-          await DB.delete(DB.tables.documents, docId)
-          await FirebaseStorage.delete(FirebaseStorage.directories.documents, currentUser.id, thisDoc.name)
-          if callback then callback(docId)
+      docs = DatasetManager.getValidArray(await DB.getTable(DB.tables.documents))
+      if Manager.isValid(docs, true)
+        for thisDoc in docs
+          if thisDoc.id == docId
+            await DB.delete(DB.tables.documents, docId)
+            await FirebaseStorage.delete(FirebaseStorage.directories.documents, currentUser.id, thisDoc.name)
+            if callback then callback(docId)
   addDocumentToDocumentsTable: ( data) ->
     dbRef = ref getDatabase()
     tableData = await DB.getTable (DB.tables.documents)

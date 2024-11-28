@@ -5,7 +5,6 @@ import FirebaseStorage from '@firebaseStorage'
 import CheckboxGroup from '@shared/checkboxGroup'
 import Doc from '../../../models/doc'
 import NotificationManager from '@managers/notificationManager'
-import { ImEye } from 'react-icons/im'
 
 import {
   contains,
@@ -33,6 +32,7 @@ import ImageManager from '../../../managers/imageManager'
 import ModelNames from '../../../models/modelNames'
 import ObjectManager from '../../../managers/objectManager'
 import DocumentsManager from '../../../managers/documentsManager'
+import { HiOutlineDocumentArrowUp } from 'react-icons/hi2'
 
 export default function UploadDocuments({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -42,10 +42,10 @@ export default function UploadDocuments({ hideCard, showCard }) {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
   const resetForm = () => {
+    hideCard()
     Manager.resetForm('upload-doc-wrapper')
     setShareWith([])
     setDocType(null)
-    hideCard()
     setRefreshKey(Manager.getUid())
   }
 
@@ -80,6 +80,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
       setState({ ...state, isLoading: false })
       return false
     }
+
     let localImages = []
 
     if (docType === 'image') {
@@ -95,6 +96,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
       .finally(async () => {
         // Add documents to 'documents' property for currentUser
         await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.documents, currentUser?.id, files).then(async (urls) => {
+          resetForm()
           // Add to user documents object
           for (const url of urls) {
             const newDocument = new Doc()
@@ -108,9 +110,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
             await DocumentsManager.addDocumentToDocumentsTable(cleanedDoc)
           }
 
-          setState({ ...state, isLoading: false })
           AlertManager.successAlert('Document Uploaded!')
-          resetForm()
 
           // Send Notification
           NotificationManager.sendToShareWith(shareWith, 'New Document', `${currentUser} has uploaded a new document`)
@@ -139,7 +139,15 @@ export default function UploadDocuments({ hideCard, showCard }) {
   }, [])
 
   return (
-    <BottomCard onSubmit={upload} refreshKey={refreshKey} submitText={'Upload'} showCard={showCard} title={'Upload Document'} onClose={resetForm}>
+    <BottomCard
+      className="upload-document-card"
+      onSubmit={upload}
+      refreshKey={refreshKey}
+      submitText={'Upload'}
+      showCard={showCard}
+      submitIcon={<HiOutlineDocumentArrowUp />}
+      title={'Upload Document'}
+      onClose={resetForm}>
       <div className="upload-doc-wrapper">
         {/* PAGE CONTAINER */}
         <div id="upload-documents-container" className={`${theme} form `}>
@@ -164,14 +172,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
           <div className="form">
             <>
               <CheckboxGroup parentLabel={'Document Type'} required={true} checkboxLabels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
-              <ShareWithCheckboxes
-                icon={<ImEye />}
-                shareWith={currentUser?.coparents?.map((x) => x.phone)}
-                onCheck={handleShareWithSelection}
-                labelText={'Who is allowed to see it?'}
-                containerClass={'share-with-coparents'}
-                dataPhone={currentUser?.coparents?.map((x) => x.phone)}
-              />
+              <ShareWithCheckboxes onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
             </>
           </div>
           {/* UPLOAD BUTTONS */}

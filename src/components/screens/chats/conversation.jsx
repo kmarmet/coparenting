@@ -38,14 +38,13 @@ import { CgClose } from 'react-icons/cg'
 import { TbMessageCircleSearch } from 'react-icons/tb'
 import ContentEditable from '../../shared/contentEditable'
 import { useLongPress } from 'use-long-press'
-import useClipboard from 'react-use-clipboard'
 import PushAlertApi from '../../../api/pushAlert'
 import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, messageToUser, navbarButton } = state
+  const { currentUser, theme, messageToUser } = state
   const [existingChat, setExistingChat] = useState(null)
   const [messagesToLoop, setMessagesToLoop] = useState(null)
   const [searchResults, setSearchResults] = useState([])
@@ -56,7 +55,6 @@ const Conversation = () => {
   const [messageText, setMessageText] = useState('')
   const [searchInputQuery, setSearchInputQuery] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-  const [isCopied, setCopied] = useClipboard()
 
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)

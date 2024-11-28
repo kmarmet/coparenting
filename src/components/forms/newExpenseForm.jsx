@@ -192,7 +192,8 @@ function NewExpenseForm({ hideCard, showCard }) {
       async (e) => {
         const activeCoparentEl = document.querySelector('#checkbox-container.active')
         const coparentPhone = activeCoparentEl.getAttribute('data-phone')
-        const coparent = await DB_UserScoped.getCoparentByPhone(coparentPhone, currentUser)
+        const coparent = currentUser?.coparents?.filter((x) => x.phone === coparentPhone)[0]
+        console.log(coparent)
         const coparentName = coparent.name
         setPayer({
           phone: coparentPhone,

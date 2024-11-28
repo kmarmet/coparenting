@@ -4,6 +4,7 @@ import '../prototypes'
 import { hasClass, uppercaseFirstLetterOfAllWords } from '../globalFunctions'
 import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
+import DomManager from './domManager'
 
 const Manager = {
   resetForm: (parentClass) => {
@@ -230,7 +231,7 @@ const Manager = {
     const checkbox = clickedEl.querySelector('.box')
     const labels = clickedEl.closest('#checkbox-group').querySelectorAll(`[data-label]`)
 
-    if (hasClass(checkbox, 'active')) {
+    if (DomManager.hasClass(checkbox, 'active')) {
       const label = clickedEl.dataset['label']
       checkbox.classList.remove('active')
       if (onCheckRemoval) onCheckRemoval(label)

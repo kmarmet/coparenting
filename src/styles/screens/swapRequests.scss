@@ -1,4 +1,4 @@
-    @import '../mixins';
+@import '../mixins';
 
 #swap-requests {
   @include lengthSelection;
@@ -21,22 +21,222 @@
   }
 
   .request {
-    background-color: white;
-    border-radius: $bigBorderRadius;
     width: 100%;
     overflow: hidden;
     transition: all 0.3s ease-in-out;
-    padding: 20px;
-    border: 1px solid $borderColor;
     opacity: 0;
-    margin: 100px 0 0 0;
-    
+
+    @include row;
+
     &.active {
       margin-top: 0;
       transition: all 0.3s ease-in;
       opacity: 1;
     }
-    
+
+    #details {
+      .content {
+        position: relative;
+        align-items: center;
+        overflow: hidden;
+
+        .top-details {
+          width: 100%;
+          .row {
+            width: 100%;
+            border-radius: $borderRadius;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+          }
+        }
+
+        .reason {
+          font-weight: 300;
+          font-size: 14px;
+        }
+
+        .reason-text {
+          -ms-word-break: break-all;
+          word-break: break-all;
+
+          &.wrap {
+            width: 100%;
+          }
+        }
+
+        .flex {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+
+          p {
+            font-weight: 400;
+            line-height: 1.2;
+            opacity: 0.9;
+            margin: 0;
+
+            &.label {
+              opacity: 0.87;
+            }
+
+            &.subtext {
+              opacity: 0.6;
+            }
+
+            &.unpaid {
+              color: $red;
+              opacity: 1;
+            }
+
+            &.request-date,
+            &.amount {
+              font-weight: 500;
+            }
+
+            &.time {
+              span {
+                position: relative;
+                top: 2px;
+              }
+            }
+          }
+
+          b {
+            font-weight: 500;
+            display: block;
+          }
+        }
+
+        #reminder-button {
+          margin: 10px 0;
+          span {
+            color: black;
+          }
+        }
+      }
+      #children {
+        svg {
+          font-size: 20px;
+          margin-right: 8px;
+          color: black;
+          opacity: 0.4;
+        }
+        .divider {
+          opacity: 0.5;
+          padding: 0 5px;
+        }
+        p {
+          font-size: 14px;
+          color: $darkGrey;
+          margin-left: auto;
+          display: flex;
+          align-items: center;
+          position: relative;
+        }
+      }
+      #delete-button {
+        font-size: 14px;
+        margin-left: auto;
+        display: block;
+        color: $red;
+        margin-top: 15px;
+        text-align: right;
+        font-weight: $fwMedium;
+      }
+      #request-buttons {
+        width: 100%;
+        justify-content: center;
+        gap: 15px;
+
+        button {
+  background-color: transparent;
+          padding: 0;
+
+          &.red {
+            color: $red;
+          }
+          &.blue {
+            color: $mainBlue;
+          }
+          &.green {
+            color: $green;
+            display: flex;
+            align-items: center;
+
+            svg {
+              font-size: 18px;
+              margin-left: 5px;
+              position: relative;
+              top: -2px;
+            }
+          }
+        }
+      }
+      #request-form {
+        margin-top: 50px;
+
+        .rs-picker {
+          margin: 0;
+        }
+
+        .form {
+          @include form;
+
+          button {
+            padding: 8px 10px;
+            margin: 20px auto 0 auto;
+            display: block;
+            width: 50%;
+
+            &.rs-picker-clean {
+              display: none;
+            }
+
+            span {
+              position: relative;
+              top: 3px;
+              margin-left: 5px;
+            }
+          }
+        }
+      }
+
+      .button-group {
+        display: flex;
+
+        button {
+          &.submit {
+            margin-right: 10px;
+            min-width: 0;
+            width: 50%;
+          }
+
+          &.close {
+            min-width: 0;
+            width: 50%;
+          }
+        }
+      }
+    }
+
+    .details-toggle-arrow {
+      &svg {
+        display: none;
+        opacity: 0.4;
+        position: absolute;
+        right: 10px;
+        font-size: 24px;
+
+        &.active {
+          display: inherit;
+        }
+      }
+    }
+
+    * {
+      line-height: 1;
+    }
+
     a {
       display: none;
       align-items: center;
@@ -48,214 +248,29 @@
         margin-right: 5px;
       }
     }
-    
-    .row, #children {
-      margin-bottom: 5px;
-    }
-    
+
+    .row,
     #children {
-      svg {
-        font-size: 20px;
-        margin-right: 8px;
-        color: black;
-        opacity: 0.4;
-      }
-      .divider {
-        opacity: 0.5;
-        padding: 0 5px;
-      }
-      p {
-        font-size: 14px;
-        color: $darkGrey;
-        margin-left: auto;
-        display: flex;
-        align-items: center;
-        position: relative;
-      }
-    }
-    
-    #request-buttons {
-      width: 100%;
-      justify-content: center;
-      gap: 15px;
-      
-      button {
-        background:transparent;
-        text-transform: uppercase;
-        font-weight: $fwMedium;
-        color: $lightDarkGrey;
-        font-size: 14px;
-        line-height: 1;
-        margin: 0;
-        padding: 0;
-        
-        &.red {
-          color: $red;
-        }
-        &.blue {
-          color: $mainBlue;
-        }
-        &.green {
-          color: $green;
-          display: flex;
-          align-items: center;
-          
-          svg {
-            font-size: 18px;
-            margin-left: 5px;
-            position: relative;
-            top:-2px;
-          }
-        }
-      }
+      margin-bottom: 5px;
     }
 
     #request-date {
       line-height: 1;
       font-weight: $fwMediumBold;
       width: auto;
-      color: $mainBlue;
       display: inline;
-      font-size: 22px;
-      
+
       span {
         font-size: 16px;
         display: block;
         line-height: 1.2;
         font-weight: 400;
-        
+
         &:nth-child(2),
         &.time {
           font-size: 12px;
           opacity: 0.7;
         }
-      }
-    }
-
-    .content {
-      position: relative;
-      align-items: center;
-      overflow: hidden;
-      padding: 10px 0;
-
-      .top-details {
-        width: 100%;
-        .row {
-          width: 100%;
-          border-radius: $borderRadius;
-          justify-content: flex-start;
-          flex-wrap: wrap;
-        }
-      }
-
-      .reason {
-        font-weight: 300;
-        font-size: 14px;
-      }
-
-      .reason-text {
-        -ms-word-break: break-all;
-        word-break: break-all;
-
-        &.wrap {
-          width: 100%;
-        }
-      }
-
-      .flex {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-
-        p {
-          font-weight: 400;
-          line-height: 1.2;
-          opacity: 0.9;
-          margin: 0;
-
-          &.label {
-            opacity: 0.87;
-          }
-
-          &.subtext {
-            opacity: 0.6;
-          }
-
-          &.unpaid {
-            color: $red;
-            opacity: 1;
-          }
-
-          &.request-date,
-          &.amount {
-            font-weight: 500;
-          }
-
-          &.time {
-            span {
-              position: relative;
-              top: 2px;
-            }
-          }
-        }
-
-        b {
-          font-weight: 500;
-          display: block;
-        }
-      }
-
-      #reminder-button {
-        margin: 10px 0;
-        span {
-          color: black;
-        }
-      }
-    }
-  }
-
-  #request-form {
-    margin-top: 50px;
-
-    .rs-picker {
-      margin: 0;
-    }
-
-    .form {
-      @include form;
-
-      button {
-        padding: 8px 10px;
-        margin: 20px auto 0 auto;
-        display: block;
-        width: 50%;
-
-        &.rs-picker-clean {
-          display: none;
-        }
-
-        span {
-          position: relative;
-          top: 3px;
-          margin-left: 5px;
-        }
-      }
-    }
-  }
-
-  .button-group {
-    display: flex;
-
-    button {
-      &.submit {
-        margin-right: 10px;
-        min-width: 0;
-        width: 50%;
-      }
-
-      &.close {
-        min-width: 0;
-        width: 50%;
       }
     }
   }

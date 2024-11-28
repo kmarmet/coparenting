@@ -31,7 +31,7 @@ import NoDataFallbackText from '../../shared/noDataFallbackText'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, navbarButton } = state
+  const { currentUser, theme } = state
   const [docs, setDocs] = useState([])
   const [selectedDoc, setSelectedDoc] = useState(null)
   const [toDelete, setToDelete] = useState([])
@@ -40,6 +40,7 @@ export default function DocsList() {
   const getSecuredDocs = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)
     setDocs(allDocs)
+    setState({ ...state, isLoading: false })
   }
 
   const handleDeleteCheckbox = (checkbox) => {
@@ -55,8 +56,8 @@ export default function DocsList() {
 
   const deleteDocs = async () => {
     DocumentsManager.deleteDocsWithIds(toDelete, currentUser, (docId) => {
-      setToDelete(toDelete.filter((x) => x !== docId))
-      setDocs(docs.filter((x) => x.id !== docId))
+      setToDelete([])
+      // setDocs(docs.filter((x) => x.id !== docId))
     })
   }
 
@@ -66,6 +67,7 @@ export default function DocsList() {
       await getSecuredDocs()
     })
   }
+
   useEffect(() => {
     onTableChange().then((r) => r)
     Manager.showPageContainer()
@@ -78,7 +80,7 @@ export default function DocsList() {
         <p className="screen-title ">Documents</p>
         {docs.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
         <p className="mb-10">Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise.</p>
-        <p className="mb-10">If the document type you tap is an Image, the loading time may be a bit longer.</p>
+        <p className="mb-10">If the document type you tap is an image, the loading time may be a bit longer.</p>
         {!Manager.isValid(selectedDoc, false, true) && (
           <div className="sections">
             {Manager.isValid(docs, true) &&
@@ -97,20 +99,20 @@ export default function DocsList() {
                         }}>
                         {removeFileExtension(doc.name)}
                       </p>
-                      <div className={`checkbox ml-20 delete`} onClick={(e) => handleDeleteCheckbox(e.currentTarget)}>
+                      <div className={`checkbox delete`} onClick={(e) => handleDeleteCheckbox(e.currentTarget)}>
                         <span className="checkmark-icon material-icons-round">check</span>
                       </div>
                     </div>
                     {fileType === 'Document' && (
                       <div className="flex doc-type">
                         <GrDocumentText />
-                        <p className="italic">From Document</p>
+                        <p>Document</p>
                       </div>
                     )}
                     {fileType === 'Image' && (
                       <div className="flex doc-type">
                         <GrDocumentImage />
-                        <p className="italic">From Image</p>
+                        <p>Image</p>
                       </div>
                     )}
                   </div>

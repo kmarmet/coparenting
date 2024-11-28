@@ -574,11 +574,9 @@
     .rs-tag {
       background-color: $mainBlue;
       color: white;
-      padding: 5px 15px;
+      padding: 0 15px;
       line-height: 1;
-      margin-left: 0;
-      margin-right: 5px;
-      margin-bottom: 5px;
+      margin: 8px 5px 5px 0;
       width: 145px;
       display: flex;
       align-items: center;
@@ -621,10 +619,6 @@
 
     .material-icons-outlined {
       font-family: 'Material Icons Outlined', serif;
-    }
-
-    .accent {
-      color: $accent;
     }
 
     .wrap {

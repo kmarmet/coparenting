@@ -61,7 +61,7 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
               return false
             }
 
-            add({ name, userPhone })
+            add({ name, phone: userPhone })
             setShowAddButton(false)
           }}>
           Add <RiUserAddLine />

@@ -680,7 +680,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       <InputWrapper inputType={'date'}>
                         <Label text={'Month to End Repeating Events'} required={true} classes="mt-15 mb-0" />
                         <DatetimePicker
-                          className={`mt-0 w-100 mb-15`}
+                          className={`mt-0 w-100`}
                           format={DateFormats.readableMonth}
                           views={DatetimePickerViews.monthAndYear}
                           hasAmPm={false}
@@ -708,7 +708,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               {/* CLONED */}
               {showCloneInput && (
                 <div>
-                  <InputWrapper wrapperClasses="cloned-date-wrapper" labelText={''} required={false} inputType={'date'}>
+                  <InputWrapper wrapperClasses="cloned-date-wrapper" labelText={'Other Dates'} required={false} inputType={'date'}>
                     <MultiDatePicker
                       className={`${theme} multidate-picker`}
                       placement="auto"

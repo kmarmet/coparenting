@@ -16,6 +16,7 @@ import { FaChildren } from 'react-icons/fa6'
 import { AiTwotoneNotification } from 'react-icons/ai'
 import NavBar from '../navBar'
 import AlertManager from '../../managers/alertManager'
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -74,6 +75,24 @@ export default function SwapRequests() {
     })
   }
 
+  const toggleDetails = (element) => {
+    const textWrapper = element.target
+    const details = textWrapper.querySelector('#details')
+    const svgDown = textWrapper.querySelector('svg.down')
+    const svgUp = textWrapper.querySelector('svg.up')
+    if (details) {
+      if (details.classList.contains('open')) {
+        details.classList.remove('open')
+        svgDown.classList.add('active')
+        svgUp.classList.remove('active')
+      } else {
+        details.classList.add('open')
+        svgDown.classList.remove('active')
+        svgUp.classList.add('active')
+      }
+    }
+  }
+
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
@@ -102,7 +121,7 @@ export default function SwapRequests() {
           {Manager.isValid(existingRequests) &&
             existingRequests.map((request, index) => {
               return (
-                <div key={index} className="request w-100 mb-10">
+                <div key={index} className="request w-100 mb-10" onClick={toggleDetails}>
                   {/* REQUEST DATE */}
                   <p id="request-date">
                     {request.duration === SwapDurations.single && moment(request.startDate).format('dddd, MMM Do')}
@@ -116,88 +135,98 @@ export default function SwapRequests() {
                     )}
                     {request.duration === SwapDurations.multiple &&
                       `${moment(request.startDate).format('dddd, MMM Do')} - ${moment(request.endDate).format('dddd, MMM Do')}`}
+                    <IoIosArrowDown className={'details-toggle-arrow down active fs-24'} />
+                    <IoIosArrowUp className={'details-toggle-arrow up fs-24'} />
                   </p>
-                  <div className={`content ${request?.reason?.length > 20 ? 'long-text' : ''}`}>
-                    <div className="flex top-details">
-                      {/* SENT TO */}
-                      {request?.recipientPhone !== currentUser?.phone && (
-                        <div className="flex row">
-                          <p>
-                            <b>Request Sent to:&nbsp;</b>
-                          </p>
-                          <p>{currentUser?.coparents.filter((x) => x.phone === request.recipientPhone)[0]?.name}</p>
-                        </div>
-                      )}
 
-                      {/* REASON */}
-                      {request?.reason && request?.reason.length > 0 && (
-                        <div className="flex row">
-                          <p className={`reason`}>
-                            <b>Reason:&nbsp;</b>
-                          </p>
-                          <p className={request?.reason.length > 50 ? 'wrap reason-text' : 'reason-text'}>{request?.reason}</p>
-                        </div>
-                      )}
-
-                      {/* CHILDREN */}
-                      <div id="children">
-                        {/* CHILDREN */}
-                        {request?.children && request?.children.length > 0 && (
-                          <div className="children flex">
-                            <FaChildren />
-                            <p
-                              className="fs-14 "
-                              dangerouslySetInnerHTML={{
-                                __html: `${request?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                              }}></p>
+                  <div id="details">
+                    <div className={`content ${request?.reason?.length > 20 ? 'long-text' : ''}`}>
+                      <div className="flex top-details">
+                        {/* SENT TO */}
+                        {request?.recipientPhone !== currentUser?.phone && (
+                          <div className="flex row">
+                            <p>
+                              <b>Request Sent to:&nbsp;</b>
+                            </p>
+                            <p>{currentUser?.coparents.filter((x) => x.phone === request.recipientPhone)[0]?.name}</p>
                           </div>
                         )}
+
+                        {/* REASON */}
+                        {request?.reason && request?.reason.length > 0 && (
+                          <div className="flex row">
+                            <p className={`reason`}>
+                              <b>Reason:&nbsp;</b>
+                            </p>
+                            <p className={request?.reason.length > 50 ? 'wrap reason-text' : 'reason-text'}>{request?.reason}</p>
+                          </div>
+                        )}
+
+                        {/* CHILDREN */}
+                        <div id="children">
+                          {/* CHILDREN */}
+                          {request?.children && request?.children.length > 0 && (
+                            <div className="children flex">
+                              <FaChildren />
+                              <p
+                                className="fs-14 "
+                                dangerouslySetInnerHTML={{
+                                  __html: `${request?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                                }}></p>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* REQUEST BUTTONS */}
-                  <div className="flex" id="request-buttons">
-                    {/* REQUEST RECIPIENT IS VIEWING */}
-                    {request?.recipientPhone === currentUser?.phone && (
-                      <>
-                        <button className="green" onClick={(e) => selectDecision(request, Decisions.approved)}>
-                          Approve
-                        </button>
-                        <button
-                          className="red"
-                          data-request-id={request.id}
-                          onClick={async (e) => {
-                            inputAlert(
-                              'Rejection Reason',
-                              'Please enter a rejection reason',
-                              async () => {
-                                await selectDecision(request, Decisions.rejected)
-                              },
-                              true,
-                              true,
-                              'textarea'
-                            )
-                          }}>
-                          Reject
-                        </button>
-                      </>
-                    )}
-                    {/* REQUEST OWNER IS VIEWING */}
-                    {request?.recipientPhone !== currentUser?.phone && (
-                      <>
-                        {/* SEND REMINDER BUTTON */}
-                        {request.ownerPhone === currentUser?.phone && (
-                          <button className="green" id="reminder-button" onClick={() => sendReminder(request)}>
-                            Send Reminder <AiTwotoneNotification />
+                    {/* REQUEST BUTTONS */}
+                    <div className="flex" id="request-buttons">
+                      {/* REQUEST RECIPIENT IS VIEWING */}
+                      {request?.recipientPhone === currentUser?.phone && (
+                        <>
+                          <button className="green" onClick={(e) => selectDecision(request, Decisions.approved)}>
+                            Approve
                           </button>
-                        )}
-                        {/* DELETE BUTTON */}
-                        <button className="red" data-request-id={request.id} onClick={(e) => selectDecision(request, Decisions.delete)}>
-                          Delete
-                        </button>
-                      </>
-                    )}
+                          <button
+                            className="red"
+                            id="delete-button"
+                            data-request-id={request.id}
+                            onClick={async (e) => {
+                              AlertManager.inputAlert(
+                                'Rejection Reason',
+                                'Please enter a rejection reason',
+                                async () => {
+                                  await selectDecision(request, Decisions.rejected)
+                                },
+                                true,
+                                true,
+                                'textarea'
+                              )
+                            }}>
+                            Reject
+                          </button>
+                        </>
+                      )}
+                      {/* REQUEST OWNER IS VIEWING */}
+                      {request?.recipientPhone !== currentUser?.phone && (
+                        <>
+                          {/* SEND REMINDER BUTTON */}
+                          {request.ownerPhone === currentUser?.phone && (
+                            <button className="green" id="reminder-button" onClick={() => sendReminder(request)}>
+                              Send Reminder <AiTwotoneNotification />
+                            </button>
+                          )}
+                          {/* DELETE BUTTON */}
+                          <button
+                            className="red"
+                            id="delete-button"
+                            data-request-id={request.id}
+                            onClick={(e) => selectDecision(request, Decisions.delete)}>
+                            Delete
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               )
