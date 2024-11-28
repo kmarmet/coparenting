@@ -166,11 +166,11 @@ export default function UploadDocuments({ hideCard, showCard }) {
               <CheckboxGroup parentLabel={'Document Type'} required={true} checkboxLabels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
               <ShareWithCheckboxes
                 icon={<ImEye />}
-                shareWith={currentUser?.coparents.map((x) => x.phone)}
+                shareWith={currentUser?.coparents?.map((x) => x.phone)}
                 onCheck={handleShareWithSelection}
                 labelText={'Who is allowed to see it?'}
                 containerClass={'share-with-coparents'}
-                dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                dataPhone={currentUser?.coparents?.map((x) => x.phone)}
               />
             </>
           </div>

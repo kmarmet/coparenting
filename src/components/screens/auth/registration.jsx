@@ -136,7 +136,7 @@ export default function Registration() {
   }
 
   // SUBMIT PARENT
-  const submit = async () => {
+  const submitParent = async () => {
     const validForm = await formIsValid() // Check for existing account
 
     if (validForm) {
@@ -192,7 +192,7 @@ export default function Registration() {
       if (Manager.isValid(parent)) {
         let childUser = new ChildUser()
         childUser.id = Manager.getUid()
-        childUser.phone = userPhone
+        childUser.phone = formatPhone(userPhone)
         childUser.name = uppercaseFirstLetterOfAllWords(userName)
         childUser.accountType = 'child'
         childUser.parents = parents
@@ -368,7 +368,7 @@ export default function Registration() {
     }
     if (phoneVerificationCode === enteredPhoneCode) {
       setPhoneIsVerified(true)
-      await submit()
+      await submitParent()
     } else {
       AlertManager.throwError('Verification code is incorrect, please try again')
     }
@@ -634,17 +634,26 @@ export default function Registration() {
                 Add Another Child
               </button>
             )}
-            <button
-              className="button default w-40 mt-10 green"
-              onClick={async () => {
-                const isValidForm = await formIsValid()
-                if (isValidForm) {
-                  setShowVerificationCard(true)
-                }
-              }}>
-              Verify Phone <MdOutlineSecurity />
-            </button>
-            <button className="button default w-40 " onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+
+            {/* VERIFY PHONE BUTTON */}
+            {userPhone.length > 0 &&
+              userName.length > 0 &&
+              email.length > 0 &&
+              password.length > 0 &&
+              confirmedPassword.length > 0 &&
+              parentType.length > 0 && (
+                <button
+                  className="button default mt-10 green"
+                  onClick={async () => {
+                    const isValidForm = await formIsValid()
+                    if (isValidForm) {
+                      setShowVerificationCard(true)
+                    }
+                  }}>
+                  Verify Phone <MdOutlineSecurity />
+                </button>
+              )}
+            <button id="back-to-login-button" className="button default " onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
               Back to Login
             </button>
           </div>

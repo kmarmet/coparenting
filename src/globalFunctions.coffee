@@ -87,13 +87,18 @@ export camelCaseToString = (word) ->
   result.charAt(0).toUpperCase() + result.slice(1)
 
 export formatPhone =  (input)->
-  input.toString()
+  input = input.toString()
     .replace(/-/g, '')
     .replace(/\s+/g, '')
     .replace(/\(/g, '')
     .replace(/\)/g, '')
     .replace(/\+/g, '')
     .replace(/\+1/g, '')
+  input
+
+export formatDbProp = (prop) ->
+  prop = toCamelCase(prop).replaceAll(" ", "")
+  prop
 
 export lowercaseShouldBeLowercase = (input) ->
   input.replace("Of", "of")

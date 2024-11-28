@@ -10,7 +10,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import DateFormats from '../../constants/dateFormats'
 import moment from 'moment'
 import Memory from '../../models/memory'
-import { ImEye } from 'react-icons/im'
 import {
   contains,
   formatFileName,
@@ -164,13 +163,10 @@ function NewMemoryForm({ hideCard, showCard }) {
             {/* SHARE WITH */}
             {currentUser && (
               <ShareWithCheckboxes
-                icon={<ImEye />}
-                shareWith={currentUser?.coparents.map((x) => x.phone)}
                 onCheck={handleShareWithSelection}
-                labelText={'Who is allowed to see it?'}
                 containerClass={'share-with-coparents'}
-                dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+                dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+                checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
               />
             )}
 

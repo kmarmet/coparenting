@@ -19,7 +19,6 @@ import InputSuggestionWrapper from '../shared/inputSuggestionWrapper'
 import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
 import Toggle from 'react-toggle'
 import '../../styles/reactToggle.css'
-import { ImEye } from 'react-icons/im'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
@@ -56,6 +55,7 @@ import _ from 'lodash'
 import FormNames from '../../models/formNames'
 import CalendarManager from '../../managers/calendarManager'
 import NotificationManager from '../../managers/notificationManager'
+import Label from '../shared/label'
 
 // COMPONENT
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
@@ -525,15 +525,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
           {/* WHO IS ALLOWED TO SEE IT? */}
           {Manager.isValid(currentUser?.coparents, true) && (
-            <ShareWithCheckboxes
-              icon={<ImEye />}
-              required={true}
-              shareWith={currentUser?.coparents.map((x) => x.phone)}
-              onCheck={handleShareWithSelection}
-              labelText={'Who is allowed to see it?'}
-              containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents.map((x) => x.phone)}
-            />
+            <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
 
           {/* ALL DAY / HAS END DATE */}
@@ -613,16 +605,16 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   {currentUser?.accountType === 'parent' && (
                     <CheckboxGroup
                       elClass={`${theme} `}
-                      dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                      checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+                      dataPhone={currentUser?.coparents?.map((x) => x?.phone)}
+                      checkboxLabels={currentUser?.coparents?.map((x) => x?.name)}
                       onCheck={handleCoparentsToRemindSelection}
                     />
                   )}
                   {currentUser?.accountType === 'child' && (
                     <CheckboxGroup
                       elClass={`${theme} `}
-                      dataPhone={currentUser?.parents.map((x) => x.phone)}
-                      checkboxLabels={currentUser?.parents.map((x) => x.name)}
+                      dataPhone={currentUser?.parents?.map((x) => x?.phone)}
+                      checkboxLabels={currentUser?.parents?.map((x) => x?.name)}
                       onCheck={handleCoparentsToRemindSelection}
                     />
                   )}
@@ -651,7 +643,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 <AccordionDetails>
                   <CheckboxGroup
                     elClass={`${theme} `}
-                    checkboxLabels={currentUser?.children.map((x) => x['general'].name)}
+                    checkboxLabels={currentUser?.children?.map((x) => x['general'].name)}
                     onCheck={handleChildSelection}
                   />
                 </AccordionDetails>
@@ -681,19 +673,20 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   <AccordionDetails>
                     <CheckboxGroup
                       elClass={`${theme} `}
-                      boxWidth={35}
                       onCheck={handleRepeatingSelection}
                       checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
                     />
                     {repeatInterval && (
-                      <DatetimePicker
-                        className={`mt-0 w-100 mb-15`}
-                        label={'Month to end repeating events'}
-                        format={DateFormats.readableMonth}
-                        views={DatetimePickerViews.monthAndYear}
-                        hasAmPm={false}
-                        onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
-                      />
+                      <InputWrapper inputType={'date'}>
+                        <Label text={'Month to End Repeating Events'} required={true} classes="mt-15 mb-0" />
+                        <DatetimePicker
+                          className={`mt-0 w-100 mb-15`}
+                          format={DateFormats.readableMonth}
+                          views={DatetimePickerViews.monthAndYear}
+                          hasAmPm={false}
+                          onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
+                        />
+                      </InputWrapper>
                     )}
                   </AccordionDetails>
                 </Accordion>

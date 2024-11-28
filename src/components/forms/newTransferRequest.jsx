@@ -155,7 +155,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
             <CheckboxGroup
               skipNameFormatting={true}
-              dataPhone={currentUser?.coparents.map((x) => x.phone)}
+              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
               checkboxLabels={['Set as Preferred Transfer Location']}
               onCheck={handlePreferredLocation}
             />
@@ -166,18 +166,18 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
             {/* SEND REQUEST TO */}
             <CheckboxGroup
               parentLabel={'Who is the request being sent to?'}
-              dataPhone={currentUser?.coparents.map((x) => x.phone)}
-              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+              checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
               onCheck={handleRequestRecipient}
             />
             <ShareWithCheckboxes
               icon={<ImEye />}
-              shareWith={currentUser?.coparents.map((x) => x.phone)}
+              shareWith={currentUser?.coparents?.map((x) => x.phone)}
               onCheck={handleShareWithSelection}
               labelText={'Who is allowed to see it?'}
               containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents.map((x) => x.phone)}
-              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+              checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
             />
             <div className="buttons gap">
               {moment(requestDate).format(DateFormats.dateForDb).replace('Invalid date', '').length > 0 && requestRecipientPhone.length > 0 && (

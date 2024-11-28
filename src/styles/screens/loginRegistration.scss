@@ -17,6 +17,30 @@
       }
     }
     
+    #add-coparent-button, #add-child-button {
+      border-radius: 0;
+      border: 0;
+      border-bottom: 1px solid $mainBlue;
+      padding: 3px;
+      min-height: 0;
+      margin-top: 15px;
+      margin-bottom: 30px;
+    }
+    
+    #back-to-login-button {
+      @include centerHoriz;
+      border: 0;
+      border-radius: 0;
+      position: fixed;
+      bottom: 0;
+      padding: 8px;
+      min-height: 0;
+      color: $lightDarkGrey;
+      background-color: white;
+      width: 100%;
+      margin: 0;
+    }
+    
     #install-button {
       display: flex;
       align-items: center;
@@ -39,66 +63,6 @@
     #password-validation {
       margin: 10px 0 !important;
     }
-
-    /*#region  LIGHT THEME*/
-    &.light {
-      &.page-container {
-        #checkbox-group {
-          #checkbox-container {
-            &.flex {
-              span {
-                color: $lightBlueLightDark;
-              }
-            }
-          }
-        }
-        .form {
-          ul {
-            li {
-              span {
-                color: $lightBlueLightDark;
-              }
-            }
-          }
-        }
-        .rs-anim-collapse {
-          margin-bottom: 15px;
-          background-color: $mainBlue;
-          p {
-            color:white;
-            padding: 10px;
-          }
-          .material-icons-round {
-            color: white;
-            padding: 10px;
-          }
-        }
-      }
-      .form {
-        #coparent-input-container, #child-input-container {
-          background-color: $mainBlue;
-          
-          p,label {
-            color: white;
-            
-            &#coparent-label, &#child-label {
-              color:white;
-            }
-          }
-        }
-      }
-    }
-    /*#endregion  LIGHT THEME*/
-
-    /*#region  DARK THEME*/
-    &.dark {
-      input,
-      textarea {
-        background-color: $darkBlue;
-        color: $offWhite;
-      }
-    }
-    /*#endregion  DARK THEME*/
 
     label {
       font-weight: bold;
@@ -123,14 +87,27 @@
         border-radius: $borderRadius;
         padding: 10px;
       }
-
+      
       #coparent-input-container,
       #parent-input-container,
       #child-input-container {
         margin: 15px  auto;
+        border: 1px solid rgba(33, 59, 199, 0.11);
+        padding: 15px;
+        border-radius: $borderRadius;
+        
+        #checkbox-group {
+          margin-top: 0;
+        }
         
         button {
+          border-radius: 0;
+          border: 0;
+          border-bottom: 1px solid $green;
+          padding: 3px;
+          min-height: 0;
           margin-top: 15px;
+          margin-bottom: 0;
         }
 
         #coparent-label,
@@ -183,16 +160,6 @@
         display: block;
         margin: 0 auto 10px auto;
         font-size: 16px;
-
-        &#add-child-button {
-          font-size: 14px;
-          margin: 20px auto 0;
-        }
-
-        &#add-coparent-button {
-          font-size: 14px;
-          margin: 20px auto;
-        }
       }
 
       #checkbox-group {
@@ -293,7 +260,11 @@
     }
 
     #forgot-password-link {
+      color: $mainBlue;
       font-size: 16px;
+      border-bottom: 1px solid $mainBlue;
+      width: 180px;
+      padding-bottom: 3px;
 
       span {
         position: relative;
@@ -309,9 +280,8 @@
       margin: 15px auto 0;
 
       b {
-        font-weight: 500;
+        font-weight: $fwMedium;
         font-style: italic;
-        color: $accent;
         opacity: 0.8;
         font-size: 18px;
       }
@@ -333,7 +303,6 @@
       p {
         font-size: 18px;
         width: 100%;
-
         text-align: center;
         font-style: italic;
 

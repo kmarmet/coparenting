@@ -80,7 +80,6 @@ function General({ activeChild, setActiveChild }) {
             generalValues.map((prop, index) => {
               const infoLabel = formatInfoLabel(prop[0])
               const value = prop[1]
-              console.log(infoLabel)
               return (
                 <div key={index}>
                   <div className="flex input">

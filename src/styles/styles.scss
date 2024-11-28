@@ -338,7 +338,9 @@
     /*#endregion MIXINS */
 
     /*#region  CLASS/ID DEFAULTS*/
-
+    .green {
+      color: $green;
+    }
     .rs-input-group-addon {
       height: 30px !important;
 

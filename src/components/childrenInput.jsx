@@ -65,8 +65,7 @@ export default function ChildrenInput({ add, childrenCount }) {
             add(child)
             setShowAddButton(false)
           }}>
-          Add Child
-          <span className="material-icons">check</span>
+          {name.length > 0 && userPhone.length > 0 && <p className="green">Save {uppercaseFirstLetterOfAllWords(name)}</p>}
         </button>
       )}
     </div>

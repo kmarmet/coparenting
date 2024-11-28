@@ -1,134 +1,137 @@
-@import "../mixins";
+@import '../mixins';
 
 #coparents-container {
-    #coparent-container {
-        display: flex;
-        width: 100%;
-        // border: 1px solid red;
-        overflow: auto;
-        background-color: transparent;
-        border-radius: 0;
+  #coparent-container {
+    display: flex;
+    width: 100%;
+    overflow: auto;
+    background-color: transparent;
+    border-radius: 0;
+    border: 0;
+    padding: 10px;
+    margin: 0;
+
+    .coparent {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-width: calc(100% / 3);
+      margin-right: 5px;
+      transition: all 0.3s ease-in-out;
+
+      &.active {
+        margin-top: -10px;
+        transition: all 0.3s ease-in-out;
+
+        .material-icons-round {
+          color: $mainBlue;
+          opacity: 1;
+        }
+
+        .coparent-name {
+          opacity: 1;
+            font-weight: $fwMedium;
+        }
+
+        .child-name {
+          font-weight: 500;
+          opacity: 1;
+        }
+
+        .coparent-type {
+          opacity: 0.8;
+        }
+      }
+
+      span {
+        font-size: 40px;
+        opacity: 0.7;
+
+        &.coparent-type {
+          font-size: 12px;
+          text-align: center;
+          font-weight: 400;
+          line-height: 1;
+          font-style: italic;
+        }
+      }
+
+      .coparent-name {
+        font-size: 14px;
+        font-weight: 400;
+        opacity: 0.7;
+
         border: 0;
-        padding: 10px;
-        margin: 0;
-
-        .coparent {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-width: calc(100% / 3);
-            margin-right: 5px;
-            transition: all .3s ease-in-out;
-
-            &.active {
-                margin-top: -10px;
-                transition: all .3s ease-in-out;
-
-                span {
-                    color: $accent;
-                    opacity: 1;
-                }
-
-                .child-name {
-                    font-weight: 500;
-                    opacity: 1;
-                }
-
-                .coparent-type {
-                    opacity: .8;
-                }
-
-            }
-
-            span {
-                
-                font-size: 40px;
-                opacity: .7;
-
-                &.coparent-type {
-                    font-size: 12px;
-                    text-align: center;
-                    font-weight: 400;
-                    line-height: 1;
-                    font-style: italic;
-                }
-            }
-
-            .coparent-name {
-                
-                font-size: 14px;
-                font-weight: 400;
-                opacity: .7;
-                border: 0;
-            }
-        }
+      }
     }
+  }
 
-    #coparent-info {
-        margin-top: 20px;
-        
-        .row {
-            overflow: hidden;
-            transition: max-height .3s ease-in-out;
+  #coparent-info {
+    margin-top: 20px;
 
-            &.active {
-                max-height: 1000px;
+    .row {
+      overflow: hidden;
+      transition: max-height 0.3s ease-in-out;
 
-                .header {
-                    border-bottom: 0;
-                }
-            }
+      &.active {
+        max-height: 1000px;
 
-            .flex {
-                width: 95%;
-                
-                input {
-                    margin: 0;
-                }
-
-                &.input {
-                    display: flex;
-                    align-items: center;
-                    .delete-icon {
-                        position: relative;
-                        transform: scale(1.2);
-                        margin-left: 10px;
-                        color: $red;
-                    }
-                }
-            }
-
-            .header {
-                display: flex;
-                justify-content: space-between;
-                @include lineItem;
-
-                span {
-                    font-size: 18px;
-                    margin-left: 10px;
-                }
-            }
-
-            .directions-icon {
-                position: relative;
-                top: -4px;
-                margin-right: 10px;
-            }
-
-            a {
-                span {
-                    font-size: 30px;
-                }
-            }
-
-            p {
-                font-weight: 400;
-            }
-
-            button {
-                width: 70%;
-            }
+        .header {
+          border-bottom: 0;
         }
+      }
+
+      .flex {
+        width: 95%;
+        align-items: center;
+        input {
+          margin: 0;
+        }
+
+        &.input {
+          display: flex;
+          align-items: center;
+          .delete-icon {
+            position: relative;
+            margin-left: 10px;
+            bottom: 10px;
+            font-size: 20px;
+            color: $red;
+          }
+        }
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        @include lineItem;
+
+        span {
+          font-size: 18px;
+          margin-left: 10px;
+        }
+      }
+
+      .directions-icon {
+        position: relative;
+        top: -4px;
+        margin-right: 10px;
+      }
+
+      a {
+        span {
+          font-size: 30px;
+        }
+      }
+
+      p {
+        font-weight: 400;
+      }
+
+      button {
+        width: 70%;
+      }
     }
+  }
 }

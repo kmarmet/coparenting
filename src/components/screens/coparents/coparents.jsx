@@ -11,22 +11,13 @@ import { FaWandMagicSparkles } from 'react-icons/fa6'
 import { IoPersonRemove } from 'react-icons/io5'
 import {
   contains,
-  formatFileName,
+  formatDbProp,
   formatNameFirstNameOnly,
   formatTitleWords,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
   lowercaseShouldBeLowercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
   spaceBetweenWords,
-  stringHasNumbers,
   toCamelCase,
-  uniqueArray,
   uppercaseFirstLetterOfAllWords,
-  wordCount,
 } from '../../../globalFunctions'
 import { IoMdRemoveCircle } from 'react-icons/io'
 import NavBar from '../../navBar'
@@ -34,6 +25,7 @@ import { BsPersonAdd } from 'react-icons/bs'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
+import DatasetManager from '../../../managers/datasetManager'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -41,31 +33,39 @@ export default function Coparents() {
 
   // State
   const [userCoparents, setUserCoparents] = useState([])
-  const [selectedCoparent, setSelectedCoparent] = useState(null)
+  const [selectedCoparentDataArray, setSelectedCoparentDataArray] = useState(null)
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
-  const [coparentData, setCoparentData] = useState([])
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
 
   const deleteProp = async (prop) => {
-    await DB_UserScoped.deleteCoparentInfoProp(currentUser, toCamelCase(prop), selectedCoparent)
+    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
+
+    const coparentPhone = selectedCoparentDataArray.filter((x) => contains(x, 'phone'))[0][1]
+    const coparent = coparents.filter((x) => x.phone === coparentPhone)[0]
+    await DB_UserScoped.deleteCoparentInfoProp(currentUser, formatDbProp(prop), coparent)
   }
 
   const update = async (prop, value) => {
     // Update DB
     AlertManager.successAlert('Updated!')
-    const updatedChild = await DB_UserScoped.updateCoparent(currentUser, selectedCoparent, toCamelCase(prop), value)
-    setSelectedCoparent(updatedChild)
+    const updatedCoparent = await DB_UserScoped.updateCoparent(currentUser, selectedCoparentDataArray, formatDbProp(prop), value)
+    setSelectedCoparentDataArray(updatedCoparent)
   }
 
-  const deleteCoparent = async () => await DB_UserScoped.deleteCoparent(currentUser, selectedCoparent)
+  const deleteCoparent = async () => {
+    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
+    const coparentPhone = selectedCoparentDataArray.filter((x) => contains(x, 'phone'))[0][1]
+    const coparent = coparents.filter((x) => x.phone === coparentPhone)[0]
+    await DB_UserScoped.deleteCoparent(currentUser, coparent)
+  }
 
-  const getCoparents = async (coparents) => {
-    if (Manager.isValid(coparents, true)) {
-      // setSelectedCoparent(coparents[0])
-      setUserCoparents(coparents)
-    } else {
-      setSelectedCoparent(null)
-    }
+  const getCoparents = async () => {
+    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
+    coparents = DatasetManager.getValidArray(coparents)
+    setUserCoparents(coparents)
+    setTimeout(() => {
+      setSelectedCoparentDataArray(Object.entries(coparents[0]))
+    }, 300)
   }
 
   const onValueChange = async () => {
@@ -78,33 +78,17 @@ export default function Coparents() {
     }
   }
 
-  const formatParentType = (type) => {
-    if (type) {
-      type = type
-        .replace('Biological Parent', 'Bio')
-        .replace('Biological', 'Bio')
-        .replace('Step-Parent', 'Step')
-        .replace("Partner's Co-Parent", "Partner's Co-parent")
-    }
-    return type
-  }
-
   useEffect(() => {
-    if (currentUser) {
-      onValueChange().then((r) => r)
-    }
+    onValueChange().then((r) => r)
     Manager.showPageContainer()
-
-    setCoparentData(Object.entries(currentUser?.coparents[0]))
-    setSelectedCoparent(currentUser?.coparents[0])
   }, [])
 
   return (
     <>
       {/* CUSTOM INFO FORM */}
-      <CustomCoparentInfo hideCard={() => setShowCustomInfoCard(false)} activeCoparent={selectedCoparent} showCard={showCustomInfoCard} />
+      <CustomCoparentInfo hideCard={() => setShowCustomInfoCard(false)} activeCoparent={selectedCoparentDataArray} showCard={showCustomInfoCard} />
 
-      {!selectedCoparent && <NoDataFallbackText text={'No Co-Parents Added'} />}
+      {!selectedCoparentDataArray && <NoDataFallbackText text={'No Co-Parents Added'} />}
 
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
@@ -114,16 +98,16 @@ export default function Coparents() {
         <p className="screen-title">Co-Parents</p>
         {/* COPARENT ICONS CONTAINER */}
         <div id="coparent-container">
-          {selectedCoparent &&
+          {selectedCoparentDataArray &&
             Manager.isValid(userCoparents, true) &&
             userCoparents.map((coparent, index) => {
+              const coparentPhone = selectedCoparentDataArray.filter((x) => contains(x, 'phone'))[0][1]
               return (
                 <div
                   onClick={() => {
-                    setSelectedCoparent(coparent)
-                    setCoparentData(Object.entries(coparent))
+                    setSelectedCoparentDataArray(Object.entries(coparent))
                   }}
-                  className={selectedCoparent && selectedCoparent.phone === coparent.phone ? 'active coparent' : 'coparent'}
+                  className={coparentPhone && coparentPhone === coparent.phone ? 'active coparent' : 'coparent'}
                   data-phone={coparent.phone}
                   data-name={coparent.name}
                   key={index}>
@@ -135,77 +119,78 @@ export default function Coparents() {
             })}
         </div>
 
+        {selectedCoparentDataArray?.length === 0 && <NoDataFallbackText text={'You do not have any co-parents currently'} />}
+
         {/* COPARENT INFO */}
         <div id="coparent-info">
-          {selectedCoparent && (
-            <div className="form">
-              {Manager.isValid(coparentData) &&
-                coparentData.map((propArray, index) => {
-                  let infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(propArray[0])))
-                  infoLabel = formatTitleWords(infoLabel)
-                  const value = propArray[1]
-                  return (
-                    <div key={index}>
-                      {infoLabel !== 'Id' && (
-                        <div className="row">
-                          <div className="flex input">
-                            {/* LOCATION */}
-                            {contains(infoLabel.toLowerCase(), 'address') && (
-                              <InputWrapper inputType={'date'} labelText={infoLabel}>
-                                <Autocomplete
-                                  apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                                  options={{
-                                    types: ['geocode', 'establishment'],
-                                    componentRestrictions: { country: 'usa' },
-                                  }}
-                                  onPlaceSelected={async (place) => {
-                                    await update('address', place.formatted_address)
-                                  }}
-                                  placeholder={Manager.isValid(selectedCoparent.address) ? selectedCoparent.address : 'Location'}
-                                />
-                              </InputWrapper>
-                            )}
-
-                            {/* TEXT INPUT */}
-                            {!contains(infoLabel.toLowerCase(), 'address') && (
-                              <InputWrapper
-                                defaultValue={value}
-                                onChange={async (e) => {
-                                  const inputValue = e.target.value
-                                  await update(infoLabel, `${inputValue}`)
+          <div className="form">
+            {/* ITERATE COPARENT INFO */}
+            {Manager.isValid(selectedCoparentDataArray, true) &&
+              selectedCoparentDataArray.map((propArray, index) => {
+                let infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(propArray[0])))
+                infoLabel = formatTitleWords(infoLabel)
+                const value = propArray[1]
+                return (
+                  <div key={index}>
+                    {infoLabel !== 'Id' && (
+                      <div className="row">
+                        <div className="flex input">
+                          {/* LOCATION */}
+                          {contains(infoLabel.toLowerCase(), 'address') && (
+                            <InputWrapper inputType={'date'} labelText={infoLabel}>
+                              <Autocomplete
+                                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                                options={{
+                                  types: ['geocode', 'establishment'],
+                                  componentRestrictions: { country: 'usa' },
                                 }}
-                                inputType={'input'}
-                                labelText={infoLabel}></InputWrapper>
-                            )}
-                            <IoMdRemoveCircle className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
+                                onPlaceSelected={async (place) => {
+                                  await update('address', place.formatted_address)
+                                }}
+                                defaultValue={contains(infoLabel, 'Address') ? value : 'Home Address'}
+                              />
+                            </InputWrapper>
+                          )}
 
-              {/* BUTTONS */}
-              <button
-                className="button w-60 default center white-text mb-10 mt-20 green"
-                onClick={() => {
-                  setShowCustomInfoCard(true)
-                }}>
-                Add Your Own Info <FaWandMagicSparkles />
-              </button>
-              <button
-                className="button w-60  default red center"
-                onClick={(e) => {
-                  AlertManager.confirmAlert(`Are you sure you would like to remove ${selectedCoparent.name}`, "I'm Sure", true, async () => {
-                    await deleteCoparent()
-                    AlertManager.successAlert('Co-Parent Removed')
-                    setSelectedCoparent(null)
-                  })
-                }}>
-                Remove Co-parent <IoPersonRemove />
-              </button>
-            </div>
-          )}
+                          {/* TEXT INPUT */}
+                          {!contains(infoLabel.toLowerCase(), 'address') && (
+                            <InputWrapper
+                              defaultValue={value}
+                              onChange={async (e) => {
+                                const inputValue = e.target.value
+                                await update(infoLabel, `${inputValue}`)
+                              }}
+                              inputType={'input'}
+                              labelText={infoLabel}></InputWrapper>
+                          )}
+                          <IoMdRemoveCircle className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+
+            {/* BUTTONS */}
+            <button
+              className="button w-50 default center white-text mb-10 mt-20 green"
+              onClick={() => {
+                setShowCustomInfoCard(true)
+              }}>
+              Add Your Own Info <FaWandMagicSparkles />
+            </button>
+            <button
+              className="button w-50  default red center"
+              onClick={(e) => {
+                AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
+                  await deleteCoparent()
+                  AlertManager.successAlert('Co-Parent Removed')
+                  setSelectedCoparentDataArray(null)
+                })
+              }}>
+              Remove Co-Parent <IoPersonRemove />
+            </button>
+          </div>
         </div>
       </div>
       {!showNewCoparentFormCard && !showCustomInfoCard && (

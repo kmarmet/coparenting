@@ -51,7 +51,7 @@ function InputWrapper({
             className={inputClasses}
             placeholder={getPlaceholder()}
             onChange={onChange}
-            debounceTimeout={500}
+            debounceTimeout={800}
             type={inputValueType}
           />
         </>

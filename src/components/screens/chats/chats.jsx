@@ -133,7 +133,7 @@ const Chats = () => {
         showCard={showNewConvoCard}
         title={'New Conversation'}>
         {Manager.isValid(currentUser?.coparents, true) &&
-          currentUser?.coparents.map((coparent, index) => {
+          currentUser?.coparents?.map((coparent, index) => {
             return (
               <div key={index}>
                 {!activeThreadPhones.includes(coparent.phone) && (

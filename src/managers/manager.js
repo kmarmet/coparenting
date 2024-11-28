@@ -100,20 +100,24 @@ const Manager = {
         pageContainer.classList.add('active')
         pageContainer.addEventListener('scroll', () => {
           const scrollDistance = pageContainer.scrollTop
-          if (scrollDistance >= 50) {
-            navbar.classList.add('hidden')
-          } else {
-            navbar.classList.remove('hidden')
+          if (navbar) {
+            if (scrollDistance >= 50) {
+              navbar.classList.add('hidden')
+            } else {
+              navbar.classList.remove('hidden')
+            }
           }
         })
 
         if (eventsWrapper) {
           eventsWrapper.addEventListener('scroll', () => {
             const scrollDistance = eventsWrapper.scrollTop
-            if (scrollDistance >= 50) {
-              navbar.classList.add('hidden')
-            } else {
-              navbar.classList.remove('hidden')
+            if (navbar) {
+              if (scrollDistance >= 50) {
+                navbar.classList.add('hidden')
+              } else {
+                navbar.classList.remove('hidden')
+              }
             }
           })
         }

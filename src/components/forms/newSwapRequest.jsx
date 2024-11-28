@@ -210,8 +210,8 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                 <CheckboxGroup
                   required={true}
                   parentLabel={'Who are you sending the request to?'}
-                  dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                  checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+                  dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+                  checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
                   onCheck={handleRecipientSelection}
                 />
 
@@ -219,11 +219,11 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                 <ShareWithCheckboxes
                   icon={<ImEye />}
                   required={true}
-                  shareWith={currentUser?.coparents.map((x) => x.phone)}
+                  shareWith={currentUser?.coparents?.map((x) => x.phone)}
                   onCheck={handleShareWithSelection}
                   labelText={'Who is allowed to see it?'}
                   containerClass={'share-with-coparents'}
-                  dataPhone={currentUser?.coparents.map((x) => x.phone)}
+                  dataPhone={currentUser?.coparents?.map((x) => x.phone)}
                 />
               </>
             )}

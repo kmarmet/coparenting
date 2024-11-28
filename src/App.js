@@ -94,11 +94,6 @@ export default function App() {
     })
   }
 
-  const handleRefresh = (e) => {
-    console.log('pulled')
-    window.location.reload()
-  }
-
   // CLEAR APP BADGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {

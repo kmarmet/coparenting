@@ -132,7 +132,13 @@ export var camelCaseToString = function(word) {
 };
 
 export var formatPhone = function(input) {
-  return input.toString().replace(/-/g, '').replace(/\s+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\+/g, '').replace(/\+1/g, '');
+  input = input.toString().replace(/-/g, '').replace(/\s+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\+/g, '').replace(/\+1/g, '');
+  return input;
+};
+
+export var formatDbProp = function(prop) {
+  prop = toCamelCase(prop).replaceAll(" ", "");
+  return prop;
 };
 
 export var lowercaseShouldBeLowercase = function(input) {

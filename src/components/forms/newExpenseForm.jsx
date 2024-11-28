@@ -372,8 +372,8 @@ function NewExpenseForm({ hideCard, showCard }) {
             <CheckboxGroup
               required={true}
               parentLabel={'Who will be paying the expense?'}
-              dataPhone={currentUser?.coparents.map((x) => x.phone)}
-              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+              checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
               onCheck={(e) => {
                 const checkbox = e.target.closest('#checkbox-container')
                 document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
@@ -387,12 +387,12 @@ function NewExpenseForm({ hideCard, showCard }) {
           {currentUser && (
             <ShareWithCheckboxes
               icon={<ImEye />}
-              shareWith={currentUser?.coparents.map((x) => x.phone)}
+              shareWith={currentUser?.coparents?.map((x) => x.phone)}
               onCheck={handleShareWithSelection}
               labelText={'Who is allowed to see it?'}
               containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents.map((x) => x.phone)}
-              checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+              checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
             />
           )}
 

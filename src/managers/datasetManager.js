@@ -7,7 +7,16 @@ import _ from "lodash";
 
 import moment from "moment";
 
+import Manager from "./manager";
+
 DatasetManager = {
+  getValidArray: function(arr) {
+    if (Manager.isValid(arr, true)) {
+      return arr.filter(function(x) {
+        return x;
+      });
+    }
+  },
   getNestedObject: async function(table, objectPath) {
     var dataset;
     dataset = (await DB.getTable(table));

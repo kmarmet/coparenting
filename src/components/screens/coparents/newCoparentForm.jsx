@@ -1,4 +1,3 @@
-import { child, getDatabase, ref, set } from 'firebase/database'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../../context'
@@ -27,9 +26,10 @@ import ModelNames from '../../../models/modelNames'
 import ObjectManager from '../../../managers/objectManager'
 import InputWrapper from '../../shared/inputWrapper'
 import BottomCard from '../../shared/bottomCard'
-import DatasetManager from '../../../managers/datasetManager'
 import AlertManager from '../../../managers/alertManager'
 import LogManager from '../../../managers/logManager'
+import DB_UserScoped from '@userScoped'
+import validator from 'validator'
 
 const NewCoparentForm = ({ showCard, hideCard }) => {
   const { state, setState } = useContext(globalState)
@@ -53,8 +53,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
   }
 
   const submit = async () => {
-    const dbRef = ref(getDatabase())
-    if (!Manager.phoneNumberIsValid(phoneNumber)) {
+    if (!validator.isMobilePhone(phoneNumber) || !Manager.phoneNumberIsValid(phoneNumber)) {
       AlertManager.throwError('Phone number is not valid')
       return false
     }
@@ -63,21 +62,18 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
     } else {
       const newCoparent = new Coparent()
       newCoparent.id = Manager.getUid()
-      newCoparent.address = address !== null ? address : ''
+      newCoparent.address = address
       newCoparent.phone = formatPhone(phoneNumber)
-      newCoparent.name = name
+      newCoparent.name = uppercaseFirstLetterOfAllWords(name)
       newCoparent.parentType = parentType
 
       const cleanCoparent = ObjectManager.cleanObject(newCoparent, ModelNames.coparent)
-
-      // Has coparents already
       try {
-        await set(child(dbRef, `users/${currentUser?.phone}/coparents`), DatasetManager.mergeMultiple([currentUser?.coparents, cleanCoparent]))
+        await DB_UserScoped.addCoparent(currentUser, cleanCoparent)
       } catch (error) {
         LogManager.log(error.message, LogManager.logTypes.error)
       }
       AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
-
       resetForm()
     }
   }
@@ -129,6 +125,16 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
               className="coparent-type"
               skipNameFormatting={true}
               checkboxLabels={['Step-Parent', 'Biological Parent', "Spouse's Co-Parent"]}
+              onCheck={handleCoparentType}
+            />
+
+            {/* RELATIONSHIP */}
+            <CheckboxGroup
+              elClass={'mt-15'}
+              parentLabel={'Relationship to Me'}
+              className="relationship-to-me mt-15"
+              skipNameFormatting={true}
+              checkboxLabels={['Spouse', 'Former Spouse', "Spouse's Former Spouse"]}
               onCheck={handleCoparentType}
             />
           </div>

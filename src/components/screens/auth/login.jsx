@@ -246,9 +246,6 @@ export default function Login() {
         <img className="ml-auto mr-auto" src={require('../../../img/logo.png')} alt="Peaceful coParenting" />
         {/* QUOTE CONTAINER */}
         <div id="quote-container">
-          <span>
-            <code>❝</code>
-          </span>
           <p id="quote">
             Co-parenting. It's not a competition between two homes. It's <b>a collaboration of parents doing what is best for the kids.</b>
           </p>

@@ -648,12 +648,12 @@ export default function Visitation() {
             {/* SHARE WITH */}
             <ShareWithCheckboxes
               required={true}
-              shareWith={currentUser?.coparents.map((x) => x.phone)}
+              shareWith={currentUser?.coparents?.map((x) => x.phone)}
               onCheck={handleShareWithSelection}
               icon={<ImEye />}
               labelText={'Who is allowed to see it?'}
               containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents.map((x) => x.name)}
+              dataPhone={currentUser?.coparents?.map((x) => x.name)}
             />
 
             {/* LOCATION */}

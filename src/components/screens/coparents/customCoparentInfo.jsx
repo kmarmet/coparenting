@@ -23,6 +23,7 @@ import BottomCard from '../../shared/bottomCard'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import _ from 'lodash'
 import AlertManager from '../../../managers/alertManager'
+import InputWrapper from '../../shared/inputWrapper'
 
 export default function CustomCoparentInfo({ hideCard, setActiveCoparent, activeCoparent, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -44,10 +45,9 @@ export default function CustomCoparentInfo({ hideCard, setActiveCoparent, active
       AlertManager.throwError('Both fields are required')
       return false
     }
-    const updatedCoparent = await DB_UserScoped.addCoparentProp(currentUser, activeCoparent, toCamelCase(title), value)
-    AlertManager.successAlert(`${title} Added!`)
+    await DB_UserScoped.addCoparentProp(currentUser, activeCoparent, title, value)
+    AlertManager.successAlert(`${uppercaseFirstLetterOfAllWords(title)} Added!`)
     resetForm()
-    setActiveCoparent(updatedCoparent)
   }
 
   return (
@@ -61,8 +61,8 @@ export default function CustomCoparentInfo({ hideCard, setActiveCoparent, active
       onClose={resetForm}>
       <div className="custom-coparent-info-wrapper">
         <div className={`${theme} form`}>
-          <input className="mb-5" type="text" placeholder="Title/Label*" onChange={(e) => setTitle(e.target.value)} />
-          <input className="mb-5" type="text" placeholder="Value*" onChange={(e) => setValue(e.target.value)} />
+          <InputWrapper inputType={'input'} labelText={'Title/Label*'} onChange={(e) => setTitle(e.target.value)} />
+          <InputWrapper inputType={'input'} labelText={'Value*'} onChange={(e) => setValue(e.target.value)} />
         </div>
       </div>
     </BottomCard>

@@ -16,7 +16,6 @@ import DateFormats from '../../constants/dateFormats'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import CalendarManager from '../../managers/calendarManager'
 import Toggle from 'react-toggle'
-import { ImEye } from 'react-icons/im'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -512,18 +511,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           )}
           {/* WHO IS ALLOWED TO SEE IT? */}
           {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
-            <ShareWithCheckboxes
-              required={true}
-              shareWith={DatasetManager.getUniqueArrayFromMultiple(
-                currentUser?.coparents?.map((x) => x.phone),
-                event?.shareWith
-              )}
-              onCheck={(e) => handleShareWithSelection(e)}
-              icon={<ImEye />}
-              labelText={'Who is allowed to see it?'}
-              containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
-            />
+            <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
           {/* ALL DAY / HAS END DATE */}
           <div className="flex all-day-toggle">
@@ -567,17 +555,22 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <CheckboxGroup
-                    elClass={`${theme} `}
-                    containerClass={'reminder-times'}
-                    defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
-                    skipNameFormatting={true}
-                    dataPhone={
-                      currentUser?.accountType === 'parent' ? currentUser?.coparents?.map((x) => x.phone) : currentUser?.parents?.map((x) => x.phone)
-                    }
-                    checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
-                    onCheck={handleReminderSelection}
-                  />
+                  {Manager.isValid(currentUser?.coparents, true) ||
+                    (Manager.isValid(currentUser?.parents, true) && (
+                      <CheckboxGroup
+                        elClass={`${theme} `}
+                        containerClass={'reminder-times'}
+                        defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
+                        skipNameFormatting={true}
+                        dataPhone={
+                          currentUser?.accountType === 'parent'
+                            ? currentUser?.coparents?.map((x) => x.phone)
+                            : currentUser?.parents?.map((x) => x.phone)
+                        }
+                        checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                        onCheck={handleReminderSelection}
+                      />
+                    ))}
                 </AccordionDetails>
               </Accordion>
             </>
@@ -604,16 +597,16 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   {currentUser?.accountType === 'parent' && (
                     <CheckboxGroup
                       elClass={`${theme} `}
-                      dataPhone={currentUser?.coparents.map((x) => x.phone)}
-                      checkboxLabels={currentUser?.coparents.map((x) => x.name)}
+                      dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+                      checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
                       onCheck={handleRemindOthersSelection}
                     />
                   )}
                   {currentUser?.accountType === 'child' && (
                     <CheckboxGroup
                       elClass={`${theme} `}
-                      dataPhone={currentUser?.parents.map((x) => x.phone)}
-                      checkboxLabels={currentUser?.parents.map((x) => x.name)}
+                      dataPhone={currentUser?.parents?.map((x) => x.phone)}
+                      checkboxLabels={currentUser?.parents?.map((x) => x.name)}
                       onCheck={handleRemindOthersSelection}
                     />
                   )}

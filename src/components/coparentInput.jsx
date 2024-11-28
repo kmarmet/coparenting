@@ -81,7 +81,7 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
             setShowAddButton(false)
             add({ name, phone: userPhone, parentType })
           }}>
-          Add Co-Parent <span className="material-icons">check</span>
+          {name.length > 0 && userPhone.length > 0 && parentType.length > 0 && <p className="green">Save {uppercaseFirstLetterOfAllWords(name)}</p>}
         </button>
       )}
     </div>
