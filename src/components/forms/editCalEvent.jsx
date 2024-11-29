@@ -343,7 +343,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
     if (eventCount === 1) {
-      console.log(event?.id)
       await DB.delete(DB.tables.calendarEvents, event?.id)
       resetForm()
     } else {

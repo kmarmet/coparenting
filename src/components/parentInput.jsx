@@ -43,7 +43,7 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
       <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
       <InputWrapper
         inputType={'input'}
-        inputValueType="phone"
+        inputValueType="number"
         labelText={'Phone Number'}
         required={true}
         onChange={(e) => setUserPhone(e.target.value)}

@@ -122,7 +122,6 @@ const DB = {
       else {
         tableData = [data]
       }
-      console.log(tableData)
       resolve('')
       try {
         await set(child(dbRef, path), tableData)

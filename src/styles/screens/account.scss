@@ -30,9 +30,9 @@
             font-weight: 500;
             padding-bottom: 8px;
 
-            span {
+            svg {
                 font-size: 20px;
-                color: $accent;
+                color: $mainBlue;
                 position: relative;
                 top: 3px;
             }
@@ -42,7 +42,15 @@
             .section {
                 @include lineItem;
                 justify-content: flex-start;
-                color: $darkBlueMedium;
+                border-bottom: 1px solid $borderColor;
+                
+                p {
+                    color: black;
+                }
+                
+                svg {
+                    color: $mainBlue;
+                }
 
                 &.notifications {
                     flex-wrap: nowrap;
@@ -109,7 +117,7 @@
                     font-size: 25px;
                     margin-right: 20px;
                     opacity: .8;
-                    color: $accent;
+                    color: $mainBlue;
                 }
 
             }
@@ -124,7 +132,6 @@
             color: $linkColor;
             justify-content: flex-start;
             width: auto;
-            padding: 0;
             position: fixed;
             left: -15px;
             padding: 0 8px;

@@ -527,7 +527,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {Manager.isValid(currentUser?.coparents, true) && (
             <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
-
+          {Manager.isValid(currentUser?.parents, true) && (
+            <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
+          )}
           {/* ALL DAY / HAS END DATE */}
           <div className="flex">
             <p>All Day</p>

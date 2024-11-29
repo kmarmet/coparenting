@@ -84,8 +84,15 @@ export default function Registration() {
 
   // SEND VERIFICATION CODE
   const sendChildVerificationCode = async () => {
+    const requiredInputs = [userPhone, email, parentPhone, userName, password, confirmedPassword, parents]
+    const isInvalid = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length == 0).length > 0
+    if (isInvalid) {
+      AlertManager.throwError('Please complete all fields')
+      return false
+    }
     if (validator.isMobilePhone(userPhone)) {
       const permissionCode = Manager.getUid().slice(0, 6)
+      const recordId = Manager.getUid()
       SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, permissionCode))
 
       // Add Parent Permission record to DB
@@ -93,45 +100,24 @@ export default function Registration() {
       parentPermissionCode.code = permissionCode
       parentPermissionCode.parentPhone = parentPhone
       parentPermissionCode.childPhone = userPhone
+      parentPermissionCode.id = recordId
       parentPermissionCode.expiration = moment().add(5, 'minutes').format(DateFormats.fullDatetime)
       setVerificationCode(permissionCode)
 
       // Add code to DB
       await DB.add(DB.tables.parentPermissionCodes, parentPermissionCode)
 
-      // Expiration Message
-      const expirationMessage = `The code will expire at ${moment().add(5, 'minutes').format('h:mma')}.`
-
       // Enter code alert
-      AlertManager.inputAlert(
-        'Enter the code provided by your parent',
-        `If the code has expired, please register again to send another code. ${expirationMessage}`,
-        async (e) => {
-          const existingCodes = Manager.convertToArray(await DB.getTable(DB.tables.parentPermissionCodes))
-
-          if (Manager.isValid(existingCodes, true)) {
-            const existingCode = existingCodes.filter((x) => x.parentPhone === parentPhone && x.childPhone === userPhone)[0]
-            // Existing code already exists, check expiration
-            if (Manager.isValid(existingCode)) {
-              const expirationTime = moment(existingCode.expiration, DateFormats.fullDatetime).minute()
-              const now = moment().minute()
-              const duration = expirationTime - now
-              // Expired
-              if (duration >= 5) {
-                AlertManager.throwError('The code has expired, please send another code')
-              }
-              // Register
-              else {
-                if (permissionCode === existingCode.code) {
-                  await submitChild()
-                }
-              }
-              const deleteKey = await DB.getFlatTableKey(DB.tables.parentPermissionCodes)
-              await DB.deleteByPath(`${DB.tables.parentPermissionCodes}/${deleteKey}`)
-            }
-          }
+      AlertManager.inputAlert('Enter the code provided by your parent', ``, async (e) => {
+        const existingCodes = Manager.convertToArray(await DB.getTable(DB.tables.parentPermissionCodes))
+        const existingCode = existingCodes.filter((x) => x.parentPhone === parentPhone && x.childPhone === userPhone)[0]
+        console.log(permissionCode, existingCode.code)
+        if (permissionCode === existingCode.code) {
+          await submitChild()
         }
-      )
+        const deleteKey = await DB.getFlatTableKey(DB.tables.parentPermissionCodes, recordId)
+        await DB.deleteByPath(`${DB.tables.parentPermissionCodes}/${deleteKey}`)
+      })
     }
   }
 
@@ -186,96 +172,63 @@ export default function Registration() {
 
   // SUBMIT CHILD
   const submitChild = async () => {
-    const isValid = await validateChildForm()
-    if (isValid) {
-      let parent = await DB_UserScoped.getUser(DB.tables.users, parentPhone)
-      if (Manager.isValid(parent)) {
-        let childUser = new ChildUser()
-        childUser.id = Manager.getUid()
-        childUser.phone = formatPhone(userPhone)
-        childUser.name = uppercaseFirstLetterOfAllWords(userName)
-        childUser.accountType = 'child'
-        childUser.parents = parents
-        childUser.email = email
-        childUser.settings.theme = 'light'
-        childUser.settings.eveningReminderSummaryHour = '8pm'
-        childUser.settings.morningReminderSummaryHour = '10am'
-        childUser.general.name = userName
-        childUser.general.phone = userPhone
-        childUser.emailVerified = false
-        childUser.updatedApp = true
-        const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
-        const dbRef = ref(getDatabase())
-        await set(child(dbRef, `users/${userPhone}`), cleanChild)
-        createUserWithEmailAndPassword(auth, email, password)
-          .then(async (userCredential) => {
-            // Signed up successfully
-            const user = userCredential.user
-            console.log('Signed up as:', user.email)
-            await set(child(dbRef, `users/${cleanChild.phone}`), cleanChild)
-          })
-          .catch((error) => {
-            console.error('Sign up error:', error.message)
-          })
-
-        // SEND SMS MESSAGES
-        // Send to parent
-        const parentSubId = await NotificationManager.getUserSubId(parentPhone)
-        PushAlertApi.sendMessage(`${userName} has registered.`, parentSubId)
-        // Send to child
-        const childSubId = await NotificationManager.getUserSubId(userPhone)
-        PushAlertApi.sendMessage(`${userName} has registered.`, childSubId)
-        // Send to me
-        const mySubId = await NotificationManager.getUserSubId('3307494534')
-        PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone}`, mySubId)
-        AlertManager.successAlert(`Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
-        setState({ ...state, currentScreen: ScreenNames.login })
-      } else {
-        // Parent account does not exist
-        AlertManager.throwError(`There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`)
-        return false
-      }
-    }
-  }
-
-  const validateChildForm = async () => {
-    let isValid = true
-    await DB.getTable(DB.tables.users).then(async (users) => {
-      users = Manager.convertToArray(users)
-      let existingUser = await DB.find(DB.tables.users, ['phone', userPhone], true)
-      if (existingUser) {
-        AlertManager.throwError('Account already exists, please login')
-        isValid = false
-        setAccountAlreadyExists(true)
-      } else {
-        if (userPhone === parentPhone) {
-          AlertManager.throwError("Your phone number cannot be the same as your parent's phone number")
-          isValid = false
-        }
-      }
-    })
-    if (!validator.isMobilePhone(userPhone)) {
-      AlertManager.throwError('Phone number is not valid')
-      isValid = false
+    const requiredInputs = [userPhone, email, parentPhone, userName, password, confirmedPassword, parents]
+    const isInvalid = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length == 0).length > 0
+    if (isInvalid) {
+      AlertManager.throwError('Please complete all fields')
       return false
     }
-    if (userName.length === 0) {
-      AlertManager.throwError('Your name is required')
-      isValid = false
+    let parent = await DB_UserScoped.getUser(DB.tables.users, parentPhone)
+    console.log(parent)
+    if (Manager.isValid(parent)) {
+      let childUser = new ChildUser()
+      childUser.id = Manager.getUid()
+      childUser.phone = formatPhone(userPhone)
+      childUser.name = uppercaseFirstLetterOfAllWords(userName)
+      childUser.accountType = 'child'
+      childUser.parents = parents
+      childUser.email = email
+      childUser.settings.theme = 'light'
+      childUser.settings.eveningReminderSummaryHour = '8pm'
+      childUser.settings.morningReminderSummaryHour = '10am'
+      childUser.general.name = userName
+      childUser.general.phone = userPhone
+      childUser.emailVerified = false
+      childUser.updatedApp = true
+      const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
+      console.log(cleanChild)
+      const dbRef = ref(getDatabase())
+      console.log('after child added to db')
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
+          // Signed up successfully
+          const user = userCredential.user
+          console.log('Signed up as:', user.email)
+          await set(child(dbRef, `users/${cleanChild.phone}`), cleanChild)
+        })
+        .catch((error) => {
+          console.error('Sign up error:', error.message)
+        })
+
+      // SEND SMS MESSAGES
+      // Send to parent
+      console.log('created 1')
+      const parentSubId = await NotificationManager.getUserSubId(parentPhone)
+      PushAlertApi.sendMessage(`${userName} is now signed up`, parentSubId)
+      // Send to child
+      const childSubId = await NotificationManager.getUserSubId(userPhone)
+      PushAlertApi.sendMessage('You are now signed up!', childSubId)
+      PushAlertApi.sendMessage(`${userName} has registered.`, childSubId)
+      // Send to me
+      const mySubId = await NotificationManager.getUserSubId('3307494534')
+      PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone}`, mySubId)
+      AlertManager.successAlert(`Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
+      setState({ ...state, currentScreen: ScreenNames.login })
+    } else {
+      // Parent account does not exist
+      AlertManager.throwError(`There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`)
+      return false
     }
-    if (password.length === 0) {
-      AlertManager.throwError('Your password is required')
-      isValid = false
-    }
-    if (confirmedPassword.length === 0) {
-      AlertManager.throwError('Confirmed password is required')
-      isValid = false
-    }
-    if (confirmedPassword !== password) {
-      AlertManager.throwError('Password and confirmed password do not match')
-      isValid = false
-    }
-    return isValid
   }
 
   const formIsValid = async () => {
@@ -526,9 +479,9 @@ export default function Registration() {
             )}
 
             <Label classes="mt-20" text={'Request Parent Sharing Permissions'} />
+            <p>For privacy and security, your parent must provide a code to give you access to view items within the app.</p>
             <p>
-              For privacy and security, your parent must provide a code to give you access to view items within the app. A text message will be sent
-              to your parent with the code. Once they provide the code to you, you will have access to the application.
+              A text message will be sent to your parent with the code. Once they provide the code to you, you will have access to the application.
             </p>
 
             <button

@@ -35,25 +35,10 @@ export default function EventCalendar() {
   const [eventToEdit, setEventToEdit] = useState(null)
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [showHolidays, setShowHolidays] = useState(false)
-  const [showNotes, setShowNotes] = useState(false)
   const [searchResults, setSearchResults] = useState([])
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedNewEventDay, setSelectedNewEventDay] = useState(moment())
-  const [dayFromEdit, setDayFromEdit] = useState(null)
-
-  const formatEvents = (events) => {
-    let dateArr = []
-    events.forEach((event, index) => {
-      if (dateArr.findIndex((x) => x.some((d) => d.startDate === event?.startDate || d.startDate === event?.startDate)) === -1) {
-        dateArr.push([event])
-      } else {
-        const arrIndex = dateArr.findIndex((x) => x.some((d) => d.date === event?.date || d.startDate === event?.date))
-        dateArr[arrIndex].push(event)
-      }
-    })
-    return dateArr
-  }
 
   // GET EVENTS
   const getSecuredEvents = async (selectedDay, selectedMonth) => {

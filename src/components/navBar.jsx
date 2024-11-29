@@ -20,7 +20,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   return (
     <>
       {!menuIsOpen && (
-        <div id="navbar" className={`${theme} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
+        <div id="navbar" className={`${theme} ${currentUser?.accountType} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
           <div id="menu-items" className="flex">
             {/* FULL MENU ICON  */}
             <div onClick={() => setState({ ...state, menuIsOpen: true })} className={`full-menu-icon menu-item`}>
@@ -35,13 +35,15 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
             </div>
 
             {/* CHATS */}
-            <div
-              id="chat-menu-item"
-              onClick={() => changeCurrentScreen(ScreenNames.chats)}
-              className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
-              {unreadMessageCount > 0 && <p className="navbar-activity-badge"></p>}
-              <PiChatsCircleDuotone />
-            </div>
+            {currentUser && currentUser?.accountType === 'parent' && (
+              <div
+                id="chat-menu-item"
+                onClick={() => changeCurrentScreen(ScreenNames.chats)}
+                className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
+                {unreadMessageCount > 0 && <p className="navbar-activity-badge"></p>}
+                <PiChatsCircleDuotone />
+              </div>
+            )}
 
             {/* ADD NEW BUTTON */}
             <div id="svg-wrapper" className={addOrClose}>
@@ -49,11 +51,13 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
             </div>
 
             {/* CHILD INFO */}
-            <div
-              onClick={() => changeCurrentScreen(ScreenNames.childInfo)}
-              className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>
-              <PiPersonLight className={'child-info'} />
-            </div>
+            {currentUser && currentUser?.accountType === 'parent' && (
+              <div
+                onClick={() => changeCurrentScreen(ScreenNames.childInfo)}
+                className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>
+                <PiPersonLight className={'child-info'} />
+              </div>
+            )}
 
             {/*/!* MEMORIES *!/*/}
             <div

@@ -28,9 +28,10 @@ function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass 
 
   useEffect(() => {
     if (Manager.isValid(currentUser)) {
-      const coparents = currentUser?.coparents
+      const coparents = currentUser?.coparents || []
+      const parents = currentUser?.parents || []
       //TODO ADD CHILD ACCOUNTS TO SHARE WITH
-      setShareWith(coparents)
+      setShareWith(coparents.concat(parents))
     }
   }, [])
 

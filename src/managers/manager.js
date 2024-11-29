@@ -152,10 +152,17 @@ const Manager = {
   validation: (inputs) => {
     let errors = []
     inputs.forEach((input) => {
-      if (!Manager.isValid(input, Array.isArray(input) ? true : false)) {
+      console.log(input)
+      if (Array.isArray(input)) {
+        if (!Manager.isValid(input, true)) {
+          errors.push(input)
+        }
+      }
+      if (!Manager.isValid(input) || input.value.length === 0) {
         errors.push(input)
       }
     })
+    console.log(errors)
     return errors.length
   },
   isValid: (variable, checkArrayLength, validateObject, checkStringLength) => {

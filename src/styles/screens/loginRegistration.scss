@@ -95,6 +95,12 @@
         border: 1px solid rgba(33, 59, 199, 0.11);
         padding: 15px;
         border-radius: $borderRadius;
+        background: $lightBlue;
+        
+        input {
+          background: transparent;
+          border-bottom: 1px solid rgba(179, 180, 182, 0.49);
+        }
         
         #checkbox-group {
           margin-top: 0;
@@ -265,12 +271,11 @@
       border-bottom: 1px solid $mainBlue;
       width: 180px;
       padding-bottom: 3px;
-
-      span {
-        position: relative;
-        top: 3px;
-        margin-left: 10px;
-        font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      svg {
+        margin-left: 5px;
       }
     }
 

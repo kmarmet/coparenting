@@ -19,10 +19,9 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import UpdateContactInfo from './updateContactInfo'
-
 // ICONS
-import { MdOutlineContactMail, MdOutlineContactPhone } from 'react-icons/md'
+import { MdOutlineContactMail, MdOutlineContactPhone, MdOutlinePassword } from 'react-icons/md'
+import UpdateContactInfo from './updateContactInfo'
 import { PiChatsCircleDuotone, PiHandWavingDuotone } from 'react-icons/pi'
 import NavBar from '../../navBar'
 
@@ -47,7 +46,8 @@ export default function Account() {
         </p>
         <div className="sections">
           <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.forgotPassword })}>
-            <span className="material-icons-round">password</span>Reset Password
+            <MdOutlinePassword className={'mr-10'} />
+            Reset Password
           </p>
           <p
             onClick={() => {
@@ -67,10 +67,12 @@ export default function Account() {
             <MdOutlineContactMail className={'mr-10'} />
             Update Email Address
           </p>
-          <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.chatRecovery })}>
-            <PiChatsCircleDuotone className={'mr-10'} />
-            Chat Recovery
-          </p>
+          {currentUser && currentUser?.accountType === 'parent' && (
+            <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.chatRecovery })}>
+              <PiChatsCircleDuotone className={'mr-10'} />
+              Chat Recovery
+            </p>
+          )}
         </div>
       </div>
       {!showUpdateCard && <NavBar navbarClass={'account no-add-new-button'}></NavBar>}

@@ -5,5 +5,6 @@ export default class ParentPermissionCodes
    @code = ""
    @expiration = moment().add(5, "minutes")
    @parentPhone = ""
+   @id = ''
    @childPhone = ''
   ) ->

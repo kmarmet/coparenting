@@ -5,6 +5,7 @@ import DB from '@db'
 import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup.jsx'
 import InstallAppPopup from 'components/installAppPopup.jsx'
+import { IoPersonAddOutline } from 'react-icons/io5'
 import { child, getDatabase, ref, set } from 'firebase/database'
 import {
   browserLocalPersistence,
@@ -18,6 +19,7 @@ import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import { PiEyeClosedDuotone, PiEyeDuotone } from 'react-icons/pi'
 import validator from 'validator'
+import { MdOutlinePassword } from 'react-icons/md'
 
 import {
   contains,
@@ -38,6 +40,7 @@ import {
 } from '../../../globalFunctions'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
+import { SlLogin } from 'react-icons/sl'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
@@ -99,8 +102,8 @@ export default function Login() {
       setState({ ...state, isLoading: false })
       return false
     }
-
-    if (Manager.validation([email, password]) > 0) {
+    console.log(email, password)
+    if (email.length === 0 || password.length === 0) {
       AlertManager.throwError('Please fill out all fields')
       setState({ ...state, isLoading: false })
       return false
@@ -294,17 +297,17 @@ export default function Login() {
             />
             <div className="flex w-100 mb-15 gap">
               <button className="button default green w-50" onClick={signIn}>
-                Login <span className="material-icons-round">lock_open</span>
+                Login <SlLogin />
               </button>
               <button className="button default w-50 light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
-                Register <span className="material-icons-round">person_add</span>
+                Sign Up <IoPersonAddOutline />
               </button>
             </div>
           </div>
 
           {/* FORGOT PASSWORD BUTTON */}
           <p id="forgot-password-link" className="mt-20" onClick={() => setState({ ...state, currentScreen: ScreenNames.forgotPassword })}>
-            Forgot Password <span className="material-icons-round">password</span>
+            Forgot Password <MdOutlinePassword className={'fs-18'} />
           </p>
         </div>
       </div>

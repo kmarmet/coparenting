@@ -1045,7 +1045,7 @@
 }
 @mixin label {
   label {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: $fwMedium;
     opacity: 0.85;
     margin: 0;
@@ -2924,6 +2924,17 @@
 
   &.hidden {
     bottom: -200px;
+  }
+  
+  &.child {
+    .menu-item {
+      width: calc(100vw / 4);
+    }
+    #svg-wrapper {
+      &.add {
+        width: 62px;
+      }
+    }
   }
 
   &.no-add-new-button {
