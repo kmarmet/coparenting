@@ -60,6 +60,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
       newRequest.date = moment(requestDate).format(DateFormats.dateForDb)
       newRequest.directionsLink = directionsLink
       newRequest.recipientPhone = requestRecipientPhone
+      newRequest.status = 'pending'
       newRequest.preferredTransferLocation = requestLocation
 
       if (preferredLocation.length > 0) {

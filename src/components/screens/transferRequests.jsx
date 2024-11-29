@@ -15,6 +15,7 @@ import NavBar from '../navBar'
 import { IoAdd } from 'react-icons/io5'
 import SecurityManager from '../../managers/securityManager'
 import { BiNavigation } from 'react-icons/bi'
+import { PiCarProfileDuotone, PiUserDuotone } from 'react-icons/pi'
 import {
   contains,
   formatFileName,
@@ -32,6 +33,8 @@ import {
   wordCount,
 } from 'globalFunctions'
 import AlertManager from '../../managers/alertManager'
+import { MdOutlineNotes } from 'react-icons/md'
+import BottomCard from '../shared/bottomCard'
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
@@ -42,6 +45,8 @@ export default function TransferRequests() {
   const [showNewRequestCard, setShowNewRequestCard] = useState(false)
   const [showRevisionCard, setShowRevisionCard] = useState(false)
   const [requestToRevise, setRequestToRevise] = useState(null)
+  const [activeRequest, setActiveRequest] = useState(null)
+  const [showDetails, setShowDetails] = useState(false)
 
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
@@ -78,6 +83,7 @@ export default function TransferRequests() {
           )
         )
       })
+      setShowDetails(false)
     })
   }
 
@@ -99,6 +105,24 @@ export default function TransferRequests() {
     })
   }
 
+  const toggleDetails = (element) => {
+    const wrapper = element.target
+    const details = wrapper.querySelector('#details')
+    const svgDown = wrapper.querySelector('svg.down')
+    const svgUp = wrapper.querySelector('svg.up')
+    if (details) {
+      if (details.classList.contains('open')) {
+        details.classList.remove('open')
+        svgDown.classList.add('active')
+        svgUp.classList.remove('active')
+      } else {
+        details.classList.add('open')
+        svgDown.classList.remove('active')
+        svgUp.classList.add('active')
+      }
+    }
+  }
+
   useEffect(() => {
     onTableChange().then((r) => r)
     Manager.showPageContainer()
@@ -109,6 +133,94 @@ export default function TransferRequests() {
       <NewTransferChangeRequest showCard={showNewRequestCard} hideCard={() => setShowNewRequestCard(false)} />
       <ReviseChildTransferChangeRequest revisionRequest={requestToRevise} showCard={showRevisionCard} hideCard={() => setShowRevisionCard(false)} />
 
+      {/* DETAILS CARD */}
+      <BottomCard
+        submitText={'Approve'}
+        title={'Request Details'}
+        onSubmit={() => approve(activeRequest)}
+        className="transfer-change"
+        onClose={() => setShowDetails(false)}
+        showCard={showDetails}>
+        <div id="details" className={`content ${activeRequest?.reason.length > 20 ? 'long-text' : ''}`}>
+          <div id="row" className="flex-start mb-20">
+            <div id="primary-icon-wrapper">
+              <PiUserDuotone id="primary-row-icon" />
+            </div>
+            {/* SENT TO */}
+            <p id="title">
+              Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
+            </p>
+          </div>
+          {/* TIME */}
+          {activeRequest?.time && activeRequest?.time.length > 0 && (
+            <p className="time label info-row">
+              <span className="material-icons-outlined mr-5">schedule</span>
+              {activeRequest?.time}
+            </p>
+          )}
+
+          {/* LOCATION */}
+          {activeRequest?.location && activeRequest?.location.length > 0 && (
+            <div className="flex mb-20" id="row">
+              <div id="primary-icon-wrapper">
+                <BiNavigation id={'primary-row-icon'} />
+              </div>
+              <p id="title" className="mr-auto">
+                Location
+              </p>
+              <a
+                target="_blank"
+                href={
+                  Manager.isIos() ? `http://maps.apple.com/?daddr=${encodeURIComponent(activeRequest?.location)}` : activeRequest?.directionsLink
+                }>
+                {activeRequest?.location}
+              </a>
+            </div>
+          )}
+
+          {/* REASON */}
+          {activeRequest?.reason && activeRequest?.reason.length > 0 && (
+            <div className="flex mb-20" id="row">
+              <div id="primary-icon-wrapper">
+                <MdOutlineNotes id={'primary-row-icon'} />
+              </div>
+              <p id="title" className="mr-auto">
+                Reason
+              </p>
+              <p className="reason-text">{activeRequest?.reason}</p>
+            </div>
+          )}
+          {/* BUTTONS */}
+          <div className="action-buttons">
+            <button
+              onClick={(e) => {
+                setRequestToRevise(activeRequest)
+                setShowRevisionCard(true)
+              }}
+              className="blue">
+              Revise
+            </button>
+            <button
+              className="red"
+              data-request-id={activeRequest?.id}
+              onClick={async (e) => {
+                AlertManager.inputAlert(
+                  'Rejection Reason',
+                  'Please enter a rejection reason',
+                  async () => {
+                    await reject(activeRequest)
+                  },
+                  true,
+                  true,
+                  'textarea'
+                )
+              }}>
+              Reject
+            </button>
+          </div>
+        </div>
+      </BottomCard>
+
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         <p className="screen-title">Transfer Change Requests</p>
         <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>
@@ -118,92 +230,35 @@ export default function TransferRequests() {
           </div>
         )}
 
+        {existingRequests.length > 0 && <p id="page-title">All Requests</p>}
+
+        {/* LOOP REQUESTS */}
         {!showNewRequestCard && (
           <div id="all-transfer-requests-container" className="mt-15">
             {Manager.isValid(existingRequests, true) &&
               existingRequests.map((request, index) => {
                 return (
-                  <div key={index} data-request-id={request.id} className="request open mb-15">
-                    <p id="request-date">{DateManager.formatDate(request.date)}</p>
-                    <div className={`content ${request.reason.length > 20 ? 'long-text' : ''}`}>
-                      <div className="flex top-details">
-                        {/* TIME */}
-                        {request?.time && request?.time.length > 0 && (
-                          <p className="time label row">
-                            <span className="material-icons-outlined mr-5">schedule</span>
-                            {request.time}
-                          </p>
-                        )}
-
-                        {/* LOCATION */}
-                        {request.location && request.location.length > 0 && (
-                          <div className="flex row">
-                            <p>
-                              <b className="label">Suggested Location&nbsp;</b>
-                            </p>
-                            <a
-                              target="_blank"
-                              href={
-                                Manager.isIos() ? `http://maps.apple.com/?daddr=${encodeURIComponent(request.location)}` : request.directionsLink
-                              }>
-                              <BiNavigation className={'fs-24'} />
-                              {request.location}
-                            </a>
-                          </div>
-                        )}
-
-                        {/* SENT TO */}
-                        <div className="flex row">
-                          <p className="label">
-                            <b>Request Sent to:&nbsp;</b>
-                          </p>
-                          <p className="ml-10 mr-10">
-                            {Manager.isValid(recipients, true) &&
-                              recipients.filter((x) => x.phone === request.recipientPhone)[0].name.formatNameFirstNameOnly()}
-                          </p>
-                        </div>
-                        {/* REASON */}
-                        {request?.reason && request?.reason.length > 0 && (
-                          <div className="flex row">
-                            <p className={`reason `}>
-                              <b>Reason:&nbsp;</b>
-                            </p>
-                            <p className="reason-text">{request?.reason}</p>
-                          </div>
-                        )}
-                      </div>
+                  <div
+                    className="flex"
+                    id="row"
+                    onClick={() => {
+                      setActiveRequest(request)
+                      setTimeout(() => {
+                        setShowDetails(true)
+                      }, 300)
+                    }}>
+                    <div id="primary-icon-wrapper">
+                      <PiCarProfileDuotone id={'primary-row-icon'} />
                     </div>
-
-                    {/* BUTTONS */}
-                    <div id="request-buttons">
-                      <button onClick={(e) => approve(request)} className="green">
-                        Approve
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          setRequestToRevise(request)
-                          setShowRevisionCard(true)
-                        }}
-                        className="blue">
-                        Revise
-                      </button>
-                      <button
-                        className="red"
-                        data-request-id={request.id}
-                        onClick={async (e) => {
-                          AlertManager.inputAlert(
-                            'Rejection Reason',
-                            'Please enter a rejection reason',
-                            async () => {
-                              await reject(request)
-                            },
-                            true,
-                            true,
-                            'textarea'
-                          )
-                        }}>
-                        Reject
-                      </button>
+                    <div onClick={toggleDetails} key={index} data-request-id={request.id} className="request " id="content">
+                      {/* DATE */}
+                      <p id="title" className="flex date row-title">
+                        {DateManager.formatDate(request.date)}
+                        <span className={request.status} id="request-status">
+                          {uppercaseFirstLetterOfAllWords(request.status)}
+                        </span>
+                      </p>
+                      <p id="subtitle">Sent to {currentUser?.coparents?.filter((x) => x.phone === request.recipientPhone)[0]?.name}</p>
                     </div>
                   </div>
                 )
@@ -212,7 +267,7 @@ export default function TransferRequests() {
         )}
       </div>
 
-      {!showNewRequestCard && !showRevisionCard && (
+      {!showNewRequestCard && !showRevisionCard && !showDetails && (
         <NavBar navbarClass={'transfer-requests'}>
           <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />
         </NavBar>

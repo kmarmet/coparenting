@@ -17,6 +17,7 @@ import { AiTwotoneNotification } from 'react-icons/ai'
 import NavBar from '../navBar'
 import AlertManager from '../../managers/alertManager'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
+import Label from '../shared/label'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -155,9 +156,7 @@ export default function SwapRequests() {
                         {/* REASON */}
                         {request?.reason && request?.reason.length > 0 && (
                           <div className="flex row">
-                            <p className={`reason`}>
-                              <b>Reason:&nbsp;</b>
-                            </p>
+                            <Label text={'Reason: '} />
                             <p className={request?.reason.length > 50 ? 'wrap reason-text' : 'reason-text'}>{request?.reason}</p>
                           </div>
                         )}

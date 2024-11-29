@@ -8,39 +8,46 @@
     grid-template-columns: auto auto;
     grid-gap: 10px;
   }
+  #page-title {
+    font-weight: $fwBold;
+    font-size: 20px;
+    margin-top: 15px;
+  }
 
   #all-transfer-requests-container {
-
     .request {
-      background-color: white;
-      border-radius: $bigBorderRadius;
-      width: 100%;
-      overflow: hidden;
-      transition: all 0.3s ease-in-out;
-      padding: 20px;
-      border: 1px solid $borderColor;
-      opacity: 0;
-      margin: 100px 0 0 0;
-      
       &.active {
         margin-top: 0;
         transition: all 0.3s ease-in;
         opacity: 1;
       }
-      
-      .row, #children {
-        margin-bottom: 5px;
+
+      #request-status {
+        margin-left: auto;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: $fwMedium;
+        display: flex;
+        align-items: center;
+        line-height: 1;
+
+        &.pending {
+          background-color: $yellow;
+          color: $orange;
+          border: 1px solid $orange;
+        }
       }
-      
+
       #request-buttons {
         display: flex;
         width: 100%;
         justify-content: center;
         gap: 30px;
         margin-top: 20px;
-        
+
         button {
-          background:transparent;
+          background: transparent;
           text-transform: uppercase;
           font-weight: $fwMedium;
           color: $lightDarkGrey;
@@ -48,7 +55,7 @@
           line-height: 1;
           margin: 0;
           padding: 0;
-          
+
           &.red {
             color: $red;
           }
@@ -59,128 +66,57 @@
             color: $green;
             display: flex;
             align-items: center;
-            
+
             svg {
               font-size: 18px;
               margin-left: 5px;
               position: relative;
-              top:-2px;
+              top: -2px;
             }
           }
         }
       }
-
-      a {
-        align-items: center;
-        margin-top: 5px;
-        font-weight: 400;
-        display: flex;
-
-        span {
-          margin-right: 5px;
-        }
-      }
-      
-      #request-date {
-        line-height: 1;
-        font-weight: $fwMediumBold;
-        width: auto;
-        color: $mainBlue;
-        display: inline;
-        font-size: 22px;
-        
-        span {
-          font-size: 16px;
-          display: block;
-          line-height: 1.2;
-          font-weight: 400;
-          
-          &:nth-child(2),
-          &.time {
-            font-size: 12px;
-            opacity: 0.7;
-          }
-        }
-      }
-      
-      .content {
+      #details {
         position: relative;
         align-items: center;
         overflow: hidden;
         padding: 10px 0;
-        
-        .top-details {
-          width: 100%;
-          .row {
-            width: 100%;
-            border-radius: $borderRadius;
-            justify-content: flex-start;
-            flex-wrap: wrap;
+
+        .button-group {
+          display: flex;
+
+          button {
+            &.submit {
+              margin-right: 10px;
+              min-width: 0;
+              width: 50%;
+            }
+
+            &.close {
+              min-width: 0;
+              width: 50%;
+            }
           }
         }
-        
+
         .reason {
           font-weight: 300;
           font-size: 14px;
         }
-        
+
         .reason-text {
           -ms-word-break: break-all;
           word-break: break-all;
-          
+
           &.wrap {
             width: 100%;
           }
         }
-        
+
         .flex {
           display: flex;
           justify-content: space-between;
           flex-wrap: wrap;
-          
-          p {
-            font-weight: 400;
-            line-height: 1.2;
-            opacity: 0.9;
-            margin: 0;
-            
-            &.label {
-              opacity: 0.87;
-            }
-            
-            &.subtext {
-              opacity: 0.6;
-            }
-            
-            &.unpaid {
-              color: $red;
-              opacity: 1;
-            }
-            
-            &.request-date,
-            &.amount {
-              font-weight: 500;
-            }
-            
-            &.time {
-              span {
-                position: relative;
-                top: 2px;
-              }
-            }
-          }
-          
-          b {
-            font-weight: 500;
-            display: block;
-          }
-        }
-        
-        #reminder-button {
-          margin: 10px 0;
-          span {
-            color: black;
-          }
         }
       }
     }
@@ -211,23 +147,6 @@
           top: 3px;
           margin-left: 5px;
         }
-      }
-    }
-  }
-
-  .button-group {
-    display: flex;
-
-    button {
-      &.submit {
-        margin-right: 10px;
-        min-width: 0;
-        width: 50%;
-      }
-
-      &.close {
-        min-width: 0;
-        width: 50%;
       }
     }
   }

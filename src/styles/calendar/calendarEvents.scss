@@ -111,11 +111,32 @@
             width: 100%;
             justify-content: space-between;
             display: flex;
-            @include extraClickableSpace();
             &:after {
               top: 0;
               left: 0;
               transform: none;
+            }
+            // REMINDERS
+            .reminders {
+              
+              svg {
+                margin-right: 5px;
+                font-size: 17px;
+                opacity: .4;
+              }
+              
+              .reminder-times {
+                p,
+                span {
+                  font-size: 13px;
+                  opacity: 0.85;
+                  font-weight: $fwRegular;
+                  color:black;
+                }
+                .divider {
+                  padding: 0 5px;
+                }
+              }
             }
             .title {
               padding: 0;
@@ -174,32 +195,7 @@
               }
             }
           }
-          // REMINDERS
-          .reminders {
-            flex-wrap: nowrap;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            width: 100%;
-            margin-bottom: 8px;
-            margin-top: 5px;
 
-            svg {
-              margin-right: 5px;
-              font-size: 18px;
-            }
-
-            .reminder-times {
-              p,
-              span {
-                font-size: 13px;
-                opacity: 0.7;
-              }
-              .divider {
-                padding: 0 5px;
-              }
-            }
-          }
           .notes {
             font-size: 14px;
             margin-top: 5px;

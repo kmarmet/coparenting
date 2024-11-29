@@ -13,7 +13,6 @@ export default class SwapRequest
     @children = ''
     @fromHour = ''
     @toHour = ''
+    @status = 'pending'
     @range = []
   ) ->
-
-

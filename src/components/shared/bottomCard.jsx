@@ -65,7 +65,7 @@ export default function BottomCard({
   }
 
   return (
-    <div {...handlers} key={refreshKey} id="bottom-card" className={`${cardClasses()} ${alertType} `}>
+    <div key={refreshKey} id="bottom-card" className={`${cardClasses()} ${alertType} `}>
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
           <div id="title" dangerouslySetInnerHTML={{ __html: title }}></div>

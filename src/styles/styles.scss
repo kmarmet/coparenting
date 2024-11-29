@@ -263,6 +263,9 @@
     #row {
       @include row;
     }
+    .flex-start {
+      justify-content: flex-start !important;
+    }
     .mui-input {
       &::placeholder {
         font-size: 12px !important;
@@ -569,6 +572,10 @@
         position: relative;
         top: 5px;
       }
+    }
+    
+    #table {
+      @include table;
     }
 
     .rs-tag {

@@ -12,14 +12,13 @@ import DateFormats from '../../constants/dateFormats'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
 import { FaChildren } from 'react-icons/fa6'
-import { PiBellSimpleRinging, PiCalendarPlusDuotone, PiGlobeDuotone } from 'react-icons/pi'
+import { PiCalendarPlusDuotone, PiGlobeDuotone } from 'react-icons/pi'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
 import { CgClose } from 'react-icons/cg'
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { contains, formatNameFirstNameOnly } from '../../globalFunctions'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-
+import { MdNotificationsActive } from 'react-icons/md'
 import NewCalendarEvent from '../forms/newCalendarEvent'
 import EditCalEvent from '../forms/editCalEvent'
 import { TbLocation } from 'react-icons/tb'
@@ -482,13 +481,15 @@ export default function EventCalendar() {
                 return (
                   <div key={index}>
                     <div
+                      id="row"
+                      onClick={(e) => handleEventRowClick(e, event)}
                       data-from-date={event?.startDate}
                       className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
                       <div className="text flex space-between">
                         {/* LEFT COLUMN */}
                         {/* TITLE */}
-                        <div className="flex space-between" id="title-wrapper" onClick={toggleDetails}>
-                          <p className="title flex" data-event-id={event?.id}>
+                        <div className="flex space-between" id="title-wrapper">
+                          <p className="title flex" id="title" data-event-id={event?.id}>
                             {contains(eventType, 'coparent') && <span className="event-type-square coparent"></span>}
                             {contains(eventType, 'standard') && <span className="event-type-square standard"></span>}
                             {contains(eventType, 'current') && <span className="event-type-square current-user-visitation"></span>}
@@ -497,49 +498,10 @@ export default function EventCalendar() {
                             )}
                             {CalendarManager.formatEventTitle(event?.title)}
                           </p>
-                          <IoIosArrowDown className={'details-toggle-arrow down active'} />
-                          <IoIosArrowUp className={'details-toggle-arrow up'} />
-                        </div>
-                        {/* DATE CONTAINER */}
-                        <div id="date-container-and-edit-button" className="flex space-between">
-                          <div id="date-container">
-                            {/* FROM DATE */}
-                            {!contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
-                              <span className="start-date">
-                                {moment(event?.startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
-                              </span>
-                            )}
-                            {/* TO WORD */}
-                            {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
-                              <span className="end-date">&nbsp;to&nbsp; </span>
-                            )}
-                            {/* TO DATE */}
-                            {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
-                              <span>{moment(event?.endDate).format(DateFormats.readableDay)}</span>
-                            )}
-                            {/* ALL DAY */}
-                            {event &&
-                              !Manager.isValid(event?.startTime) &&
-                              (!Manager.isValid(event?.endDate) || event?.endDate.indexOf('Invalid') > -1) &&
-                              event?.endDate !== event?.startDate && <span className="end-date">&nbsp;- ALL DAY</span>}
-                            {/* TIMES */}
-                            {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
-                              <span className="from-time">
-                                <span className="at-symbol">&nbsp;@</span> {event?.startTime}
-                              </span>
-                            )}
-                            {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
-                              <span className="to-time">&nbsp;-&nbsp;{event?.endTime}</span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* EVENT DETAILS */}
-                        <div id="details">
                           {Manager.isValid(readableReminderTimes, true) && (
                             <div className="flex reminders">
                               <>
-                                <PiBellSimpleRinging className={'event-icon'} />
+                                <MdNotificationsActive className={'event-icon'} />
                                 <p
                                   className="flex reminder-times"
                                   dangerouslySetInnerHTML={{
@@ -548,51 +510,87 @@ export default function EventCalendar() {
                               </>
                             </div>
                           )}
-                          {/* CHILDREN */}
-                          {event?.children && event?.children.length > 0 && (
-                            <div id="children">
-                              {/* CHILDREN */}
-                              <div className="children flex">
-                                <FaChildren />
-                                <p
-                                  className="fs-14 "
-                                  dangerouslySetInnerHTML={{
-                                    __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                                  }}></p>
-                              </div>
-                            </div>
-                          )}
-                          {/* DIRECTIONS LINK */}
-                          {event?.location && event?.location.length > 0 && (
-                            <div className="flex" id="nav-website">
-                              {event?.websiteUrl && true && event?.websiteUrl.length > 0 && (
-                                <div className="website flex">
-                                  <PiGlobeDuotone />
-                                  <a target="_blank" href={event?.websiteUrl} className="website-url fs-14" rel="noreferrer">
-                                    Website
-                                  </a>
-                                </div>
+                        </div>
+                        {/* DATE CONTAINER */}
+                        <div id="subtitle" className="flex space-between calendar">
+                          <div id="date-container">
+                            {/* FROM DATE */}
+                            {!contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
+                              <span className="start-date" id="subtitle">
+                                {moment(event?.startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
+                              </span>
+                            )}
+                            {/* TO WORD */}
+                            {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                              <span className="end-date" id="subtitle">
+                                &nbsp;to&nbsp;{' '}
+                              </span>
+                            )}
+                            {/* TO DATE */}
+                            {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                              <span id="subtitle">{moment(event?.endDate).format(DateFormats.readableDay)}</span>
+                            )}
+                            {/* ALL DAY */}
+                            {event &&
+                              !Manager.isValid(event?.startTime) &&
+                              (!Manager.isValid(event?.endDate) || event?.endDate.indexOf('Invalid') > -1) &&
+                              event?.endDate !== event?.startDate && (
+                                <span id="subtitle" className="end-date">
+                                  &nbsp;- ALL DAY
+                                </span>
                               )}
-                              <div className="directions">
-                                <TbLocation />
-                                <a href={Manager.getDirectionsLink(event?.location)} target="_blank">
-                                  Nav
+                            {/* TIMES */}
+                            {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
+                              <span id="subtitle" className="from-time">
+                                <span className="at-symbol">&nbsp;@</span> {event?.startTime}
+                              </span>
+                            )}
+                            {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
+                              <span id="subtitle" className="to-time">
+                                &nbsp;-&nbsp;{event?.endTime}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* CHILDREN */}
+                        {event?.children && event?.children.length > 0 && (
+                          <div id="children">
+                            {/* CHILDREN */}
+                            <div className="children flex">
+                              <FaChildren />
+                              <p
+                                className="fs-14 "
+                                dangerouslySetInnerHTML={{
+                                  __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                                }}></p>
+                            </div>
+                          </div>
+                        )}
+                        {/* DIRECTIONS LINK */}
+                        {event?.location && event?.location.length > 0 && (
+                          <div className="flex" id="nav-website">
+                            {event?.websiteUrl && true && event?.websiteUrl.length > 0 && (
+                              <div className="website flex">
+                                <PiGlobeDuotone />
+                                <a target="_blank" href={event?.websiteUrl} className="website-url fs-14" rel="noreferrer">
+                                  Website
                                 </a>
                               </div>
+                            )}
+                            <div className="directions">
+                              <TbLocation />
+                              <a href={Manager.getDirectionsLink(event?.location)} target="_blank">
+                                Nav
+                              </a>
                             </div>
-                          )}
+                          </div>
+                        )}
 
-                          {/* NOTES */}
-                          {Manager.isValid(event?.notes) && event?.notes.length > 0 && (
-                            <p className={showNotes ? 'active notes pb-10' : 'notes 0'}>{event?.notes}</p>
-                          )}
-                          {/* EDIT BUTTON */}
-                          {event.ownerPhone === currentUser?.phone && (
-                            <button onClick={(e) => handleEventRowClick(e, event)} id="edit-button">
-                              EDIT
-                            </button>
-                          )}
-                        </div>
+                        {/* NOTES */}
+                        {Manager.isValid(event?.notes) && event?.notes.length > 0 && (
+                          <p className={showNotes ? 'active notes pb-10' : 'notes 0'}>{event?.notes}</p>
+                        )}
                       </div>
                     </div>
                   </div>
