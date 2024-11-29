@@ -10,32 +10,50 @@ import DateManager from 'managers/dateManager.js'
 import DateFormats from 'constants/dateFormats.js'
 import moment from 'moment'
 import '../../prototypes.js'
+import { TbCalendarDollar } from 'react-icons/tb'
 import BottomCard from '../shared/bottomCard'
-import { PiBellSimpleRinging, PiConfettiDuotone } from 'react-icons/pi'
+import { PiBellSimpleRinging, PiConfettiDuotone, PiMoneyWavyDuotone, PiUserDuotone } from 'react-icons/pi'
 import { AiOutlineFileAdd } from 'react-icons/ai'
+import { MdOutlineFilterAltOff, MdOutlineNotes, MdPriceCheck } from 'react-icons/md'
 import SecurityManager from '../../managers/securityManager'
 import NewExpenseForm from '../forms/newExpenseForm'
 import FirebaseStorage from '@firebaseStorage'
 import LightGallery from 'lightgallery/react'
 import MenuItem from '@mui/material/MenuItem'
+import { FaChildren } from 'react-icons/fa6'
+
 import 'lightgallery/css/lightgallery.css'
-import { MdEventRepeat, MdOutlineFilterAltOff, MdPriceCheck } from 'react-icons/md'
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 //noinspection JSUnresolvedVariable
-import { uppercaseFirstLetterOfAllWords } from '../../globalFunctions'
+import {
+  contains,
+  displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
+} from 'globalFunctions'
 // ICONS
 import { ImAppleinc } from 'react-icons/im'
 import { IoLogoVenmo } from 'react-icons/io5'
 import { SiCashapp, SiZelle } from 'react-icons/si'
 import { LiaCcPaypal } from 'react-icons/lia'
-import { BsArrowsAngleExpand, BsFilter } from 'react-icons/bs'
+import { BsFilter } from 'react-icons/bs'
 import NavBar from '../navBar'
 import Label from '../shared/label'
 import ExpenseCategories from '../../constants/expenseCategories'
 import DatasetManager from '../../managers/datasetManager'
 import AlertManager from '../../managers/alertManager'
-import DomManager from '../../managers/domManager'
 import SelectDropdown from '../shared/selectDropdown'
+import InputWrapper from '../shared/inputWrapper'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -55,6 +73,8 @@ export default function ExpenseTracker() {
   const [sortByValue, setSortByValue] = useState('')
   const [filterApplied, setFilterApplied] = useState(false)
   const [categoriesInUse, setCategoriesInUse] = useState([])
+  const [activeExpense, setActiveExpense] = useState(null)
+  const [showDetails, setShowDetails] = useState(false)
   let contentEditable = useRef()
 
   const markAsPaid = async (expense) => {
@@ -132,28 +152,6 @@ export default function ExpenseTracker() {
     await DB.updateRecord(DB.tables.expenseTracker, recordToUpdate, propName, value, 'id').finally(async () => {
       await getSecuredExpenses()
     })
-  }
-
-  const handleFullExpenseToggle = async (e, expenseId) => {
-    const expenseToShow = document.querySelector(`[data-expense-id='${expenseId}']`)
-    const svgDown = expenseToShow.querySelector('svg.down')
-    const svgUp = expenseToShow.querySelector('svg.up')
-    const details = expenseToShow.querySelector('#details')
-
-    if (expenseToShow) {
-      if (DomManager.hasClass(expenseToShow, 'active')) {
-        expenseToShow.classList.remove('active')
-        svgDown.classList.add('active')
-        svgUp.classList.remove('active')
-        details.classList.remove('open')
-      } else {
-        expenseToShow.classList.add('active')
-        svgDown.classList.remove('active')
-        svgUp.classList.add('active')
-        details.classList.add('open')
-      }
-      console.log(expenseToShow)
-    }
   }
 
   const onTableChange = async () => {
@@ -407,6 +405,130 @@ export default function ExpenseTracker() {
             </div>
           </BottomCard>
         </>
+
+        {/* DETAILS CARD */}
+        <BottomCard
+          submitText={'Paid'}
+          title={'Expense Details'}
+          submitIcon={<MdPriceCheck className={'fs-22'} />}
+          onSubmit={async () => await markAsPaid(activeExpense)}
+          className="expense-tracker"
+          onClose={() => {
+            setActiveExpense(null)
+            setShowDetails(false)
+          }}
+          showCard={showDetails}>
+          <div id="details" className={`content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
+            <InputWrapper
+              inputType="input"
+              labelText={'Name'}
+              defaultValue={activeExpense?.name}
+              onChange={(e) => handleEditable(e, activeExpense, 'name', e.target.value)}
+            />
+            <div id="row" className="flex-start mb-15">
+              <div id="primary-icon-wrapper">{<PiUserDuotone id="primary-row-icon" />}</div>
+              {/* SENT TO */}
+              <p id="title">
+                Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
+              </p>
+            </div>
+
+            {/* PAY TO */}
+            <div id="row" className="flex-start mb-15">
+              <div id="primary-icon-wrapper">{<PiUserDuotone id="primary-row-icon" />}</div>
+              <p id="title">Pay to {formatNameFirstNameOnly(activeExpense?.recipientName)}</p>
+            </div>
+
+            {/* DUE IN... */}
+            {/*{activeExpense?.dueDate !== undefined && activeExpense?.dueDate?.length > 0 && (*/}
+            {/*  <div id="row" className="flex-start mb-15">*/}
+            {/*    <div id="primary-icon-wrapper">{<PiClockCountdownDuotone id="primary-row-icon" />}</div>*/}
+            {/*    {!contains(activeExpense?.dueDate, 'N/A') && (*/}
+            {/*      <p id="title">Due {moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString()}</p>*/}
+            {/*    )}*/}
+            {/*  </div>*/}
+            {/*)}*/}
+
+            {/* CHILDREN */}
+            {Manager.isValid(activeExpense?.children.length, true) && (
+              <div className="flex flex-start mb-15" id="row">
+                <div id="primary-icon-wrapper">
+                  <FaChildren id={'primary-row-icon'} />
+                </div>
+                <p
+                  id="title"
+                  dangerouslySetInnerHTML={{
+                    __html: `${activeExpense?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                  }}></p>
+              </div>
+            )}
+
+            {/* DATE ADDED */}
+            <div id="row" className="flex-start flex mb-15">
+              <div id="primary-icon-wrapper">
+                <TbCalendarDollar id={'primary-row-icon'} />
+              </div>
+              <p id="title">Expense Created on {DateManager.formatDate(activeExpense?.dateAdded)}</p>
+            </div>
+
+            {/* DUE DATE */}
+            {activeExpense?.dueDate && activeExpense?.dueDate.length > 0 && (
+              <div className="flex flex-start mb-15" id="row">
+                <div id="primary-icon-wrapper">
+                  <TbCalendarDollar id={'primary-row-icon'} />
+                </div>
+                <p id="title">Due Date is {DateManager.formatDate(activeExpense?.dueDate)}</p>
+              </div>
+            )}
+
+            {/* NOTES */}
+            {activeExpense?.notes && activeExpense?.notes.length > 0 && (
+              <div className="flex mb-15" id="row">
+                <div id="primary-icon-wrapper">{<MdOutlineNotes id={'primary-row-icon'} />}</div>
+                <p id="title" className="mr-auto">
+                  Notes
+                </p>
+                <p className="notes">{activeExpense?.notes}</p>
+              </div>
+            )}
+
+            {/* EXPENSE IMAGE */}
+            {Manager.isValid(activeExpense?.imageUrl) && (
+              <>
+                <Label text={'Expense Images'} />
+                <div id="expense-image">
+                  <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
+                    <div
+                      style={{ backgroundImage: `url(${activeExpense?.imageUrl})` }}
+                      data-src={activeExpense?.imageUrl}
+                      id="img-container"
+                      className="flex"></div>
+                  </LightGallery>
+                </div>
+              </>
+            )}
+            {/* BUTTONS */}
+            <div className="action-buttons">
+              {activeExpense?.paidStatus === 'unpaid' && activeExpense?.ownerPhone === currentUser?.phone && (
+                <button className="green" onClick={() => sendReminder(activeExpense)}>
+                  Send Reminder <PiBellSimpleRinging className={'fs-18'} />
+                </button>
+              )}
+
+              {/* DELETE */}
+              {activeExpense?.ownerPhone === currentUser?.phone && (
+                <button
+                  onClick={async () => {
+                    await deleteExpense(activeExpense)
+                  }}
+                  className="red"
+                  id="delete-button">
+                  DELETE
+                </button>
+              )}
+            </div>
+          </div>
+        </BottomCard>
       </>
 
       {/* PAGE CONTAINER */}
@@ -416,7 +538,7 @@ export default function ExpenseTracker() {
           Add expenses to be paid by your co-parent. If a new expense is created for you to pay, you will have the opportunity to approve or reject
           it.
         </p>
-        <p className="payment-options-link mb-20 mt-10" onClick={() => setShowPaymentOptionsCard(true)}>
+        <p className="payment-options-link mb-15 mt-10" onClick={() => setShowPaymentOptionsCard(true)}>
           Bill Payment & Money Transfer Options
         </p>
 
@@ -448,155 +570,56 @@ export default function ExpenseTracker() {
           {Manager.isValid(expenses, true) &&
             expenses.map((expense, index) => {
               return (
-                <div key={index} className="mt-20">
-                  <div onClick={(e) => handleFullExpenseToggle(e, expense.id)} data-expense-id={expense.id} className={`expense`}>
+                <div
+                  key={index}
+                  className="mt-20"
+                  id="row"
+                  onClick={() => {
+                    setActiveExpense(expense)
+                    setShowDetails(!showDetails)
+                  }}>
+                  <div id="primary-icon-wrapper">
+                    <PiMoneyWavyDuotone id={'primary-row-icon'} />
+                  </div>
+                  <div id="content" data-expense-id={expense.id} className={`expense wrap`}>
                     {/* EXPENSE NAME */}
                     <div id="name-wrapper" className="flex align-center">
-                      <p
-                        onBlur={(e) => {
-                          handleEditable(e, expense, 'name', e.currentTarget.innerHTML).then((r) => r)
-                        }}
-                        contentEditable
-                        dangerouslySetInnerHTML={{ __html: uppercaseFirstLetterOfAllWords(expense.name).toString() }}
-                        className="name"></p>
-
-                      <IoIosArrowDown className={'details-toggle-arrow down active'} />
-                      <IoIosArrowUp className={'details-toggle-arrow up'} />
+                      <p id="title" className="name row-title">
+                        {uppercaseFirstLetterOfAllWords(expense.name)}
+                      </p>
+                      <span className={`${expense.paidStatus} status`} id="request-status">
+                        {uppercaseFirstLetterOfAllWords(expense.paidStatus)}
+                      </span>
                     </div>
 
                     {/* CATEGORY */}
                     {expense?.category?.length > 0 && (
                       <div className="flex space-between" id="category-and-amount">
-                        <p id="expense-category" className="mt-5" onClick={() => handleCategorySelection(expense.category)}>
+                        <p id="subtitle" onClick={() => handleCategorySelection(expense.category)}>
                           Category: <span>{expense.category}</span>
+                          {expense.paidStatus === 'unpaid' && (
+                            <span
+                              className="amount"
+                              onBlur={(e) => {
+                                handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
+                              }}
+                              contentEditable
+                              dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
+                          )}
+                          {/* PAID TEXT */}
+                          {expense.paidStatus === 'paid' && <span className="amount paid">PAID</span>}
                         </p>
-                        {expense.paidStatus === 'unpaid' && (
-                          <span
-                            className="amount"
-                            onBlur={(e) => {
-                              handleEditable(e, expense, 'amount', e.currentTarget.innerHTML.replace('$', '')).then((r) => r)
-                            }}
-                            contentEditable
-                            dangerouslySetInnerHTML={{ __html: `${expense.amount}`.replace(/^/, '$') }}></span>
-                        )}
-                        {/* PAID TEXT */}
-                        {expense.paidStatus === 'paid' && <span className="amount paid">PAID</span>}
                       </div>
                     )}
 
-                    {(!expense.category || expense?.category?.length === 0) && <p id="expense-category">Category: None</p>}
-
-                    {/*  CONTENT TO TOGGLE */}
-                    <div id="details">
-                      {/* PAY TO */}
-                      <div className="flex editable">
-                        <p className="recipient subtext">Pay to:</p>
-                        <span
-                          onBlur={(e) => {
-                            handleEditable(e, expense, 'recipientName', e.currentTarget.innerHTML).then((r) => r)
-                          }}
-                          contentEditable
-                          dangerouslySetInnerHTML={{ __html: expense.recipientName }}
-                          className="recipient subtext"></span>
-                      </div>
-
-                      {/* CHILDREN */}
-                      {expense && expense.children && expense.children.length > 0 && (
-                        <div className="flex">
-                          <p>Children</p>
-                          <span>{expense.children.join(', ')}</span>
-                        </div>
-                      )}
-
-                      {/* DATE ADDED */}
-                      <div className="group flex">
-                        <p id="date-added-text">Date Added:</p>
-                        <span>{DateManager.formatDate(expense.dateAdded)}</span>
-                      </div>
-
-                      {/* REPEATING */}
-                      {expense.repeating && (
-                        <p>
-                          Repeating <MdEventRepeat id={'repeating-icon'} />{' '}
-                        </p>
-                      )}
-
-                      {/* NOTES */}
-                      {expense.notes && expense.notes.length > 0 && (
-                        <div className="flex editable notes">
-                          <p>Notes:</p>
-                          <span
-                            onBlur={(e) => {
-                              handleEditable(e, expense, 'notes', e.currentTarget.innerHTML).then((r) => r)
-                            }}
-                            contentEditable
-                            dangerouslySetInnerHTML={{ __html: expense.notes }}></span>
-                        </div>
-                      )}
-
-                      {/* DUE DATE */}
-                      {expense.dueDate && expense.dueDate.length > 0 && (
-                        <div className="flex editable">
-                          <p>Due Date:</p>
-
-                          <span
-                            onBlur={(e) => {
-                              handleEditable(e, expense, 'dueDate', e.currentTarget.innerHTML).then((r) => r)
-                            }}
-                            contentEditable
-                            dangerouslySetInnerHTML={{ __html: DateManager.formatDate(expense.dueDate) }}></span>
-                        </div>
-                      )}
-
-                      {/* DUE IN... */}
-                      {expense.dueDate.length > 0 && <p id="due-in">Due {moment(moment(expense.dueDate).startOf('day')).fromNow().toString()}</p>}
-
-                      {/* EXPENSE IMAGE */}
-                      {Manager.isValid(expense.imageUrl) && (
-                        <div id="expense-image">
-                          <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
-                            <div
-                              style={{ backgroundImage: `url(${expense.imageUrl})` }}
-                              data-src={expense.imageUrl}
-                              id="img-container"
-                              className="flex"></div>
-                          </LightGallery>
-                          <BsArrowsAngleExpand />
-                        </div>
-                      )}
-
-                      {/* BUTTONS */}
-                      {expense.paidStatus === 'unpaid' && (
-                        <div id="button-group" className="flex">
-                          <button onClick={async () => await markAsPaid(expense)} className="green-text">
-                            Paid <MdPriceCheck className={'fs-22'} />
-                          </button>
-                          {expense.ownerPhone === currentUser?.phone && (
-                            <button className="send-reminder" onClick={() => sendReminder(expense)}>
-                              Send Reminder <PiBellSimpleRinging className={'fs-18'} />
-                            </button>
-                          )}
-                        </div>
-                      )}
-
-                      {/* DELETE */}
-                      {expense.ownerPhone === currentUser?.phone && (
-                        <p
-                          onClick={async () => {
-                            await deleteExpense(expense)
-                          }}
-                          id="delete-button">
-                          DELETE
-                        </p>
-                      )}
-                    </div>
+                    {(!expense.category || expense?.category?.length === 0) && <p id="subtitle">Category: None</p>}
                   </div>
                 </div>
               )
             })}
         </div>
       </div>
-      {!showNewExpenseCard && !showPaymentOptionsCard && !showFilterCard && (
+      {!showNewExpenseCard && !showPaymentOptionsCard && !showFilterCard && !showDetails && (
         <NavBar navbarClass={'child-info'}>
           <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />
         </NavBar>

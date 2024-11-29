@@ -9,6 +9,7 @@
       margin-top: 10px;
       background: white;
       border-radius: 25px 25px 0 0;
+      
       .material-icons-round {
         color: $mainBlue;
         font-size: 18px;
@@ -16,26 +17,11 @@
       }
       .event-row {
         transition: all 0.3s ease-in;
-        flex-wrap: wrap;
-        opacity: 0;
-        border: 0;
-        border-radius: 0;
-        background: white;
-        position: relative;
-        margin-bottom: 20px;
         @include row;
 
         &.active {
           transition: all 0.3s ease-in;
           opacity: 1;
-
-          .text {
-            #details {
-              #edit-button {
-                display: block;
-              }
-            }
-          }
         }
 
         svg {
@@ -43,6 +29,21 @@
           margin-right: 8px;
           color: black;
           opacity: 0.5;
+        }
+        
+        #children {
+          margin-bottom: 5px;
+          margin-left: auto;
+          svg {
+            font-size: 18px;
+            opacity: 0.4;
+          }
+          p {
+            font-size: 13px;
+            font-weight: $fwRegular;
+            opacity: 0.85;
+            color:black;
+          }
         }
 
         .text {
@@ -77,35 +78,7 @@
               }
             }
 
-            #children {
-              width: 100%;
-              margin-bottom: 5px;
-              svg {
-                font-size: 18px;
-                opacity: 0.4;
-              }
-              p {
-                font-size: 13px;
-                font-weight: $fwRegular;
-                opacity: 0.7;
-              }
-            }
-
-            #edit-button {
-              font-weight: $fwMedium;
-              background: transparent;
-              height: 18px;
-              font-size: 13px;
-              border-radius: 0;
-              justify-self: flex-end;
-              color: $mainBlue;
-              display: none;
-              margin-left: auto;
-              &.disabled {
-                opacity: 0.4 !important;
-                display: none;
-              }
-            }
+     
           }
           #title-wrapper {
             width: 100%;
@@ -146,7 +119,7 @@
               color: black;
               letter-spacing: 0.5px;
 
-              .event-type-square {
+              .event-type-dot {
                 height: 10px;
                 width: 10px;
                 margin-right: 10px;

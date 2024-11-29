@@ -85,7 +85,7 @@ function NewExpenseForm({ hideCard, showCard }) {
     newExpense.children = expenseChildren
     newExpense.amount = parseInt(expenseAmount)
     newExpense.category = expenseCategory
-    newExpense.dueDate = DateManager.dateIsValid(expenseDueDate) ? moment(expenseDueDate).format(DateFormats.dateForDb) : ''
+    newExpense.dueDate = DateManager.dateIsValid(expenseDueDate) ? moment(expenseDueDate).format(DateFormats.dateForDb) : 'N/A'
     newExpense.dateAdded = Manager.getCurrentDate()
     newExpense.notes = expenseNotes
     newExpense.paidStatus = 'unpaid'

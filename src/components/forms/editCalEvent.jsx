@@ -294,6 +294,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     const checkboxClasses = []
 
     // Reminder Toggle
+    console.log(Manager.isValid(event?.reminderTimes, true))
     if (Manager.isValid(event?.reminderTimes, true)) {
       checkboxClasses.push('.reminder-times-toggle')
       setShowReminders(true)
@@ -525,18 +526,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
             />
           </div>
 
-          {/* IS VISITATION? */}
-          <div className="flex visitation-toggle">
-            <p>Visitation Event</p>
-            <Toggle
-              icons={{
-                unchecked: null,
-              }}
-              className={'ml-auto'}
-              onChange={(e) => setIsVisitation(!!e.target.checked)}
-            />
-          </div>
-
           {/* REMINDER */}
           {!isAllDay && (
             <>
@@ -555,27 +544,33 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
-                  {Manager.isValid(currentUser?.coparents, true) ||
-                    (Manager.isValid(currentUser?.parents, true) && (
-                      <CheckboxGroup
-                        elClass={`${theme} `}
-                        containerClass={'reminder-times'}
-                        defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
-                        skipNameFormatting={true}
-                        dataPhone={
-                          currentUser?.accountType === 'parent'
-                            ? currentUser?.coparents?.map((x) => x.phone)
-                            : currentUser?.parents?.map((x) => x.phone)
-                        }
-                        checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
-                        onCheck={handleReminderSelection}
-                      />
-                    ))}
+                  <CheckboxGroup
+                    elClass={`${theme} `}
+                    containerClass={'reminder-times'}
+                    defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
+                    skipNameFormatting={true}
+                    dataPhone={
+                      currentUser?.accountType === 'parent' ? currentUser?.coparents?.map((x) => x.phone) : currentUser?.parents?.map((x) => x.phone)
+                    }
+                    checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                    onCheck={handleReminderSelection}
+                  />
                 </AccordionDetails>
               </Accordion>
             </>
           )}
 
+          {/* IS VISITATION? */}
+          <div className="flex visitation-toggle">
+            <p>Visitation Event</p>
+            <Toggle
+              icons={{
+                unchecked: null,
+              }}
+              className={'ml-auto'}
+              onChange={(e) => setIsVisitation(!!e.target.checked)}
+            />
+          </div>
           {/* REMIND COPARENTS */}
           {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
             <div className="share-with-container">
@@ -616,31 +611,31 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           )}
 
           {/* INCLUDING WHICH CHILDREN */}
-          {Manager.isValid(currentUser?.children, true) && currentUser?.accountType === 'parent' && (
-            <div className="share-with-container children-toggle">
-              <Accordion expanded={includeChildren} id={'checkboxes'}>
-                <AccordionSummary>
-                  <div className="flex">
-                    <p>Include Children</p>
-                    <Toggle
-                      icons={{
-                        checked: <span className="material-icons-round">face</span>,
-                        unchecked: null,
-                      }}
-                      className={'ml-auto'}
-                      onChange={(e) => setIncludeChildren(!includeChildren)}
-                    />
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
+          {currentUser?.accountType === 'parent' && (
+            <Accordion expanded={includeChildren} id={'checkboxes'}>
+              <AccordionSummary>
+                <div className="flex">
+                  <p>Include Children</p>
+                  <Toggle
+                    icons={{
+                      checked: <span className="material-icons-round">face</span>,
+                      unchecked: null,
+                    }}
+                    className={'ml-auto'}
+                    onChange={(e) => setIncludeChildren(!includeChildren)}
+                  />
+                </div>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div id="include-children-checkbox-container">
                   <CheckboxGroup
                     containerClass={'include-children-checkbox-container'}
                     checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
                     onCheck={handleChildSelection}
                   />
-                </AccordionDetails>
-              </Accordion>
-            </div>
+                </div>
+              </AccordionDetails>
+            </Accordion>
           )}
         </div>
 
@@ -650,6 +645,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           labelText={'URL/Website'}
           required={false}
           inputType={'input'}
+          inputClasses="mt-15"
           onChange={(e) => setEventWebsiteUrl(e.target.value)}></InputWrapper>
 
         {/* LOCATION/ADDRESS */}

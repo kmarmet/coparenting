@@ -920,6 +920,7 @@
   align-items: center;
   justify-content: space-between;
   display: flex;
+  
   &.active {
     max-height: 10000px;
     transition: all 0.3s ease-in-out;
@@ -927,6 +928,39 @@
 
   * {
     line-height: 1;
+  }
+  
+  a, .notes {
+    margin: 0 0 0 45px;
+  }
+  
+  .status {
+    margin-left: auto;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: $fwMedium;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    
+    &.paid {
+      background-color: $lightestGreen;
+      color: $green;
+      border: 1px solid $green;
+    }
+    
+    &.pending {
+      background-color: $yellow;
+      color: $orange;
+      border: 1px solid $orange;
+    }
+    
+    &.unpaid {
+      background-color: $bgRed;
+      color: $red;
+      border: 1px solid $red;
+    }
   }
 
   #subtitle {
@@ -936,6 +970,7 @@
     margin-top: 0;
     font-weight: $fwRegular;
     color: black;
+    width: 100%;
     
     &.calendar {
       margin-left: 20px;
@@ -1025,9 +1060,9 @@
   width: 100%;
   margin-bottom: 8px;
 
-  .MuiInputBase-root {
-    height: 43px;
-  }
+//  .MuiInputBase-root {
+//    height: 43px;
+//  }
 
   textarea {
     max-height: 30px;
@@ -2141,9 +2176,23 @@
 
   /*#region  CARDS BY CLASS*/
   // TRANSFER
-  &.transfer-change {
+  &.transfer-change, &.expense-tracker {
     a {
       margin: 0 0 0 45px;
+    }
+    
+    &.expense-tracker {
+      #expense-image {
+        height: 100px;
+        width: 100px;
+        #img-container {
+          height: 100px;
+          width: 100px;
+          border-radius: $borderRadius;
+          background-size: cover;
+          border: 1px solid $borderColor;
+        }
+      }
     }
     .reason-text {
       margin-left: 45px;
@@ -2177,7 +2226,7 @@
         padding: 5px 10px;
         border-radius: $borderRadius;
         background-color: transparent;
-        width: 30%;
+        min-width: 30%;
         &.green {
           border: 1px solid $green;
         }

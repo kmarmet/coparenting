@@ -254,7 +254,7 @@ export default function TransferRequests() {
                       {/* DATE */}
                       <p id="title" className="flex date row-title">
                         {DateManager.formatDate(request.date)}
-                        <span className={request.status} id="request-status">
+                        <span className={`${request.status} status`} id="request-status">
                           {uppercaseFirstLetterOfAllWords(request.status)}
                         </span>
                       </p>

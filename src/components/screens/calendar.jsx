@@ -12,7 +12,7 @@ import DateFormats from '../../constants/dateFormats'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
 import { FaChildren } from 'react-icons/fa6'
-import { PiCalendarPlusDuotone, PiGlobeDuotone } from 'react-icons/pi'
+import { PiCalendarPlusDuotone } from 'react-icons/pi'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
 import { CgClose } from 'react-icons/cg'
@@ -21,7 +21,6 @@ import { child, getDatabase, onValue, ref } from 'firebase/database'
 import { MdNotificationsActive } from 'react-icons/md'
 import NewCalendarEvent from '../forms/newCalendarEvent'
 import EditCalEvent from '../forms/editCalEvent'
-import { TbLocation } from 'react-icons/tb'
 import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
 
@@ -490,11 +489,11 @@ export default function EventCalendar() {
                         {/* TITLE */}
                         <div className="flex space-between" id="title-wrapper">
                           <p className="title flex" id="title" data-event-id={event?.id}>
-                            {contains(eventType, 'coparent') && <span className="event-type-square coparent"></span>}
-                            {contains(eventType, 'standard') && <span className="event-type-square standard"></span>}
-                            {contains(eventType, 'current') && <span className="event-type-square current-user-visitation"></span>}
+                            {contains(eventType, 'coparent') && <span className="event-type-dot coparent"></span>}
+                            {contains(eventType, 'standard') && <span className="event-type-dot standard"></span>}
+                            {contains(eventType, 'current') && <span className="event-type-dot current-user-visitation"></span>}
                             {!contains(eventType, 'current') && !contains(eventType, 'standard') && !contains(eventType, 'coparent') && (
-                              <span className="event-type-square blank"></span>
+                              <span className="event-type-dot blank"></span>
                             )}
                             {CalendarManager.formatEventTitle(event?.title)}
                           </p>
@@ -551,46 +550,19 @@ export default function EventCalendar() {
                               </span>
                             )}
                           </div>
-                        </div>
-
-                        {/* CHILDREN */}
-                        {event?.children && event?.children.length > 0 && (
-                          <div id="children">
-                            {/* CHILDREN */}
-                            <div className="children flex">
-                              <FaChildren />
-                              <p
-                                className="fs-14 "
-                                dangerouslySetInnerHTML={{
-                                  __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                                }}></p>
-                            </div>
-                          </div>
-                        )}
-                        {/* DIRECTIONS LINK */}
-                        {event?.location && event?.location.length > 0 && (
-                          <div className="flex" id="nav-website">
-                            {event?.websiteUrl && true && event?.websiteUrl.length > 0 && (
-                              <div className="website flex">
-                                <PiGlobeDuotone />
-                                <a target="_blank" href={event?.websiteUrl} className="website-url fs-14" rel="noreferrer">
-                                  Website
-                                </a>
+                          {/* CHILDREN */}
+                          {event?.children && event?.children.length > 0 && (
+                            <div id="children">
+                              <div className="children flex">
+                                <FaChildren />
+                                <p
+                                  dangerouslySetInnerHTML={{
+                                    __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                                  }}></p>
                               </div>
-                            )}
-                            <div className="directions">
-                              <TbLocation />
-                              <a href={Manager.getDirectionsLink(event?.location)} target="_blank">
-                                Nav
-                              </a>
                             </div>
-                          </div>
-                        )}
-
-                        {/* NOTES */}
-                        {Manager.isValid(event?.notes) && event?.notes.length > 0 && (
-                          <p className={showNotes ? 'active notes pb-10' : 'notes 0'}>{event?.notes}</p>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

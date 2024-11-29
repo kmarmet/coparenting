@@ -54,6 +54,7 @@ function InputWrapper({
             onChange={onChange}
             debounceTimeout={800}
             type={inputValueType}
+            onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
           />
         </>
       )}
@@ -64,7 +65,13 @@ function InputWrapper({
         </div>
       )}
       {inputType === 'textarea' && (
-        <textarea onChange={onChange} className={inputClasses} placeholder={getPlaceholder()} cols="30" rows="10"></textarea>
+        <textarea
+          onClick={(e) => e.target.scrollIntoView()}
+          onChange={onChange}
+          className={inputClasses}
+          placeholder={getPlaceholder()}
+          cols="30"
+          rows="10"></textarea>
       )}
     </div>
   )

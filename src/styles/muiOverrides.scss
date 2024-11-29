@@ -1,6 +1,9 @@
 @import './palette';
 @import './variables';
 #external-overrides {
+  .Mui-expanded {
+    margin: 0 !important;
+  }
   // EVENT ROW
   .event-row {
     .text {
@@ -8,7 +11,7 @@
         background: transparent;
         height: auto;
         border-bottom: 1px solid $borderColor;
-        
+
         border-radius: 0;
         &:before {
           display: none;
@@ -82,7 +85,7 @@
       justify-content: center;
       display: flex;
       align-items: center;
-      
+
       span {
         padding: 0 !important;
         width: 40px !important;
@@ -211,7 +214,7 @@
 
       .MuiButtonBase-root {
         padding: 0 !important;
-        
+
         &.general {
           svg {
             color: #f4d03f;

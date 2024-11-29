@@ -151,19 +151,11 @@
 
     /*#region  EXPENSE*/
     .expense {
-      @include row;
 
       &.active {
         overflow: auto;
         max-height: 10000px;
         transition: all 0.3s ease-in-out;
-
-        #category-and-amount {
-          #expense-category {
-            padding-left: 10px;
-            transition: all 0.3s ease-in-out;
-          }
-        }
       }
 
       * {
@@ -323,9 +315,6 @@
 
       .flex {
         align-items: center;
-        flex-wrap: nowrap;
-        margin-top: 8px;
-        width: 100%;
 
         p {
           margin-right: 10px;

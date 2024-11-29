@@ -18,6 +18,25 @@ import NavBar from '../navBar'
 import AlertManager from '../../managers/alertManager'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import Label from '../shared/label'
+import BottomCard from '../shared/bottomCard'
+
+import {
+  contains,
+  displayAlert,
+  formatFileName,
+  formatNameFirstNameOnly,
+  getFileExtension,
+  getFirstWord,
+  isAllUppercase,
+  removeFileExtension,
+  removeSpacesAndLowerCase,
+  spaceBetweenWords,
+  stringHasNumbers,
+  toCamelCase,
+  uniqueArray,
+  uppercaseFirstLetterOfAllWords,
+  wordCount,
+} from 'globalFunctions'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -32,7 +51,8 @@ export default function SwapRequests() {
   const [rejectionReason, setRejectionReason] = useState('')
   const [showCard, setShowCard] = useState(false)
   const [showReviseCard, setShowReviseCard] = useState(false)
-
+  const [activeRequest, setActiveRequest] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getSwapRequests(currentUser).then((r) => r)
     setExistingRequests(allRequests)
@@ -112,12 +132,88 @@ export default function SwapRequests() {
   return (
     <>
       <NewSwapRequest showCard={showCard} hideCard={() => setShowCard(false)} />
+      {/* DETAILS CARD */}
+      <BottomCard
+        submitText={'Approve'}
+        title={'Request Details'}
+        onSubmit={() => {}}
+        className="transfer-change"
+        onClose={() => setShowDetails(false)}
+        showCard={showDetails}>
+        <div id="details" className={`content ${activeRequest?.reason.length > 20 ? 'long-text' : ''}`}>
+          <div id="row" className="flex-start mb-20">
+            <div id="primary-icon-wrapper">{/*<PiUserDuotone id="primary-row-icon" />*/}</div>
+            {/* SENT TO */}
+            <p id="title">
+              Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
+            </p>
+          </div>
+          {/* TIME */}
+          {activeRequest?.time && activeRequest?.time.length > 0 && (
+            <p className="time label info-row">
+              <span className="material-icons-outlined mr-5">schedule</span>
+              {activeRequest?.time}
+            </p>
+          )}
+
+          {/* LOCATION */}
+          {activeRequest?.location && activeRequest?.location.length > 0 && (
+            <div className="flex mb-20" id="row">
+              <div id="primary-icon-wrapper">{/*<BiNavigation id={'primary-row-icon'} />*/}</div>
+              <p id="title" className="mr-auto">
+                Location
+              </p>
+              <a
+                target="_blank"
+                href={
+                  Manager.isIos() ? `http://maps.apple.com/?daddr=${encodeURIComponent(activeRequest?.location)}` : activeRequest?.directionsLink
+                }>
+                {activeRequest?.location}
+              </a>
+            </div>
+          )}
+
+          {/* REASON */}
+          {activeRequest?.reason && activeRequest?.reason.length > 0 && (
+            <div className="flex mb-20" id="row">
+              <div id="primary-icon-wrapper">{/*<MdOutlineNotes id={'primary-row-icon'} />*/}</div>
+              <p id="title" className="mr-auto">
+                Reason
+              </p>
+              <p className="reason-text">{activeRequest?.reason}</p>
+            </div>
+          )}
+          {/* BUTTONS */}
+          <div className="action-buttons">
+            <button
+              onClick={(e) => {
+                setActiveRequest(activeRequest)
+                setShowDetails(true)
+              }}
+              className="blue">
+              Revise
+            </button>
+            <button
+              className="red"
+              data-request-id={activeRequest?.id}
+              onClick={async (e) => {
+                AlertManager.inputAlert('Rejection Reason', 'Please enter a rejection reason', async () => {}, true, true, 'textarea')
+              }}>
+              Reject
+            </button>
+          </div>
+        </div>
+      </BottomCard>
+
+      {/* PAGE CONTAINER */}
       <div id="swap-requests" className={`${theme} page-container form`}>
         <p className="screen-title">Swap Requests</p>
         <>
           <p className="text-screen-intro mb-15">A request for your child(ren) to stay with you during your co-parent's scheduled visitation time.</p>
           {existingRequests.length === 0 && <p className="instructions center">There are currently no requests</p>}
         </>
+
+        {/* LOOP REQUESTS */}
         <div id="swap-requests-container">
           {Manager.isValid(existingRequests) &&
             existingRequests.map((request, index) => {

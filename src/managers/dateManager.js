@@ -46,13 +46,16 @@ const DateManager = {
   formatDate: (inputDate, inputFormat = 'M-DD-YYYY', outputFormat = 'dddd, MMM DD') => {
     let inputFormatString = inputFormat
     let inputString = inputDate
-    if (inputFormat.indexOf('-') > -1) {
-      inputFormatString = inputFormat.replaceAll('-', '/')
+    if (inputDate) {
+      if (inputFormat.indexOf('-') > -1) {
+        inputFormatString = inputFormat.replaceAll('-', '/')
+      }
+      if (inputDate.indexOf('-') > -1) {
+        inputString = inputDate.replaceAll('-', '/')
+      }
+      return moment(inputDate, inputFormatString).format(outputFormat)
     }
-    if (inputDate.indexOf('-') > -1) {
-      inputString = inputDate.replaceAll('-', '/')
-    }
-    return moment(inputDate, inputFormatString).format(outputFormat)
+    return inputDate
   },
   sortCalendarEvents: (events, datePropertyName, timePropertyName) => {
     const sorted = events.sort((a, b) => moment(a.startTime, DateFormats.timeForDb).diff(moment(b.startTime, DateFormats.timeForDb)))

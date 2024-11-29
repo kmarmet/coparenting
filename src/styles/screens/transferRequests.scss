@@ -22,23 +22,6 @@
         opacity: 1;
       }
 
-      #request-status {
-        margin-left: auto;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: $fwMedium;
-        display: flex;
-        align-items: center;
-        line-height: 1;
-
-        &.pending {
-          background-color: $yellow;
-          color: $orange;
-          border: 1px solid $orange;
-        }
-      }
-
       #request-buttons {
         display: flex;
         width: 100%;
