@@ -42,14 +42,18 @@ function InputWrapper({
   }, [])
 
   return (
-    <div key={refreshKey} id="input-wrapper" className={`${wrapperClasses} ${inputType} input-container`}>
+    <div
+      key={refreshKey}
+      id="input-wrapper"
+      className={`${wrapperClasses} ${inputType} ${defaultValue.length > 0 || noInputTypes.includes(inputType) ? 'mb-15' : ''} input-container`}>
       {!noInputTypes.includes(inputType) && (
         <>
+          {defaultValue.length > 0 && <Label text={labelText} />}
           <DebounceInput
             value={inputValue}
             element={inputType}
             minLength={2}
-            className={inputClasses}
+            className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
             placeholder={getPlaceholder()}
             onChange={onChange}
             debounceTimeout={800}
@@ -65,13 +69,16 @@ function InputWrapper({
         </div>
       )}
       {inputType === 'textarea' && (
-        <textarea
-          onClick={(e) => e.target.scrollIntoView()}
-          onChange={onChange}
-          className={inputClasses}
-          placeholder={getPlaceholder()}
-          cols="30"
-          rows="10"></textarea>
+        <>
+          {defaultValue.length > 0 && <Label text={labelText} />}
+          <textarea
+            onClick={(e) => e.target.scrollIntoView()}
+            onChange={onChange}
+            className={inputClasses}
+            placeholder={getPlaceholder()}
+            cols="30"
+            rows="10"></textarea>
+        </>
       )}
     </div>
   )

@@ -39,6 +39,10 @@
   margin-bottom: 20px !important;
 }
 
+.mb-25 {
+  margin-bottom: 25px !important;
+}
+
 .mb-30 {
   margin-bottom: 30px !important;
 }
@@ -84,6 +88,10 @@
   margin-top: 20px !important;
 }
 
+.mt-25 {
+  margin-top: 25px !important;
+}
+
 // Margin Right
 .mr-0 {
   margin-right: 0px !important;
@@ -102,6 +110,10 @@
 
 .mr-20 {
   margin-right: 20px !important;
+}
+
+.mr-25 {
+  margin-right: 25px !important;
 }
 
 // Margin Left
@@ -125,21 +137,27 @@
 
 /*#region Positioning*/
 .neg-5 {
+  position: relative;
   top: -5px !important;
 }
 .neg-3 {
+  position: relative;
   top: -3px !important;
 }
 .neg-10 {
+  position: relative;
   top: -10px !important;
 }
 .neg-10 {
+  position: relative;
   top: -10px !important;
 }
 .neg-20 {
+  position: relative;
   top: -20px !important;
 }
 .neg-30 {
+  position: relative;
   top: -30px !important;
 }
 /*#endregion  */

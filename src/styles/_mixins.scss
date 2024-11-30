@@ -73,7 +73,7 @@
 
 // SCREEN TITLE
 @mixin screenTitle {
-  font-size: 26px;
+  font-size: 24px;
   width: 100%;
   word-break: break-word;
   transition: all 0.6s linear;
@@ -82,10 +82,10 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  color: $mainBlue;
-  font-weight: 600;
+  font-weight: $fwMediumBold;
   padding-bottom: 10px;
   text-align: center;
+  opacity: 0.85;
 
   &.active {
     transform: scale(1);
@@ -128,6 +128,7 @@
 @mixin pageOverlay {
   width: 100vw;
   height: 100vh;
+  backdrop-filter: blur(2px);
   position: fixed;
   left: 0;
   right: 0;
@@ -136,7 +137,7 @@
   opacity: 0;
   z-index: -1;
   transition: all 0.3s ease-in-out;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
   overflow: hidden;
 
   &.active {
@@ -306,6 +307,18 @@
     }
   }
 }
+@mixin text($color: black, $fontWeight: $fwRegular, $lineHeight: 1.4, $fontSize: 16px, $opacity: 1) {
+  color: $color;
+  font-weight: $fontWeight;
+  line-height: $lineHeight;
+  font-size: $fontSize;
+  opacity: $opacity;
+
+  @if $color == black {
+    color: black;
+    opacity: 0.85;
+  }
+}
 
 /*#region  FORM*/
 @mixin form {
@@ -384,14 +397,14 @@
 /*#region  BUTTONS*/
 @mixin pillButton {
   font-size: 14px;
-  border: 1px solid $lightAccent;
-  color: $lightAccent;
+  border: 1px solid $mainBlue;
+  color: $mainBlue;
   padding: 2px 15px;
   border-radius: 20px;
   transition: all 0.3s ease-in-out;
   text-align: center;
   &.active {
-    background-color: $lightAccent;
+    background-color: $mainBlue;
     color: white;
   }
 }
@@ -920,7 +933,7 @@
   align-items: center;
   justify-content: space-between;
   display: flex;
-  
+
   &.active {
     max-height: 10000px;
     transition: all 0.3s ease-in-out;
@@ -929,11 +942,17 @@
   * {
     line-height: 1;
   }
-  
-  a, .notes {
+
+  a,
+  .notes {
     margin: 0 0 0 45px;
+    width: 100%;
+    
+    &.notes {
+      opacity: .85;
+    }
   }
-  
+
   .status {
     margin-left: auto;
     padding: 4px 12px;
@@ -943,19 +962,19 @@
     display: flex;
     align-items: center;
     line-height: 1;
-    
+
     &.paid {
       background-color: $lightestGreen;
       color: $green;
       border: 1px solid $green;
     }
-    
+
     &.pending {
       background-color: $yellow;
       color: $orange;
       border: 1px solid $orange;
     }
-    
+
     &.unpaid {
       background-color: $bgRed;
       color: $red;
@@ -964,14 +983,15 @@
   }
 
   #subtitle {
-    opacity: 0.85;
-    font-size: 14px;
     padding-top: 5px;
     margin-top: 0;
+    width: 100%;
+    line-height: 1;
+    font-size: 14px;
     font-weight: $fwRegular;
     color: black;
-    width: 100%;
-    
+    opacity: .85;
+
     &.calendar {
       margin-left: 20px;
     }
@@ -998,6 +1018,11 @@
     #primary-row-icon {
       font-size: 30px;
       color: $mainBlue;
+    }
+    span,p {
+      color: $mainBlue;
+      font-size: 15px;
+      font-weight: $fwMedium;
     }
   }
 
@@ -1048,7 +1073,9 @@
     font-size: 16px;
     font-weight: $fwMedium;
     opacity: 0.85;
+    color: black;
     margin: 0;
+    letter-spacing: .4px;
   }
 }
 @mixin inputWrapper {
@@ -1060,9 +1087,9 @@
   width: 100%;
   margin-bottom: 8px;
 
-//  .MuiInputBase-root {
-//    height: 43px;
-//  }
+  //  .MuiInputBase-root {
+  //    height: 43px;
+  //  }
 
   textarea {
     max-height: 30px;
@@ -2176,12 +2203,14 @@
 
   /*#region  CARDS BY CLASS*/
   // TRANSFER
-  &.transfer-change, &.expense-tracker {
+  &.transfer-change,
+  &.expense-tracker {
     a {
       margin: 0 0 0 45px;
     }
-    
+
     &.expense-tracker {
+      min-height: 90vh;
       #expense-image {
         height: 100px;
         width: 100px;
@@ -2201,12 +2230,12 @@
     }
     #row {
       border: 0;
-      padding:0;
-      flex-wrap: wrap;
+      padding: 0;
       margin-bottom: 25px;
     }
     #title {
       font-weight: $fwRegular;
+      line-height: 1.2;
       font-size: 18px;
     }
     #primary-icon-wrapper {
@@ -2223,10 +2252,17 @@
       margin-top: 15px;
       justify-content: center;
       button {
+        display: flex;
+        align-items: center;
         padding: 5px 10px;
         border-radius: $borderRadius;
         background-color: transparent;
         min-width: 30%;
+        justify-content: center;
+        
+        svg {
+          margin-left: 5px;
+        }
         &.green {
           border: 1px solid $green;
         }
@@ -2531,10 +2567,10 @@
   #relative-wrapper {
     position: relative;
     padding: 0 20px 200px 20px;
-    
+
     #subtitle {
       font-size: 18px;
-      opacity: .85;
+      opacity: 0.85;
     }
 
     #title-wrapper {
@@ -2547,14 +2583,9 @@
       padding-top: 20px;
       margin: 0;
       padding-bottom: 10px;
-      #title {
+      #large-title {
         justify-content: center;
-        color: black;
-        width: 100%;
-        font-size: 25px;
-        opacity: .85;
-        font-weight: bold;
-        line-height: 1.2;
+        
       }
       .close-icon {
         font-size: 30px;
@@ -2581,7 +2612,6 @@
       background-color: white;
       @include centerHoriz;
       padding: 15px 20px 25px 15px;
-      border-top: 1px solid $borderColor;
 
       * {
         line-height: 1;
@@ -2641,7 +2671,7 @@
           color: $mainBlue;
           font-weight: $fwBold;
           font-size: 17px;
-          
+
           svg {
             color: $mainBlue;
           }
@@ -2925,7 +2955,7 @@
   &.hidden {
     bottom: -200px;
   }
-  
+
   &.child {
     .menu-item {
       width: calc(100vw / 4);

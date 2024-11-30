@@ -127,8 +127,6 @@
     }
   }
 }
-
-// REACT TOGGLE
 .react-toggle--checked,
 .react-toggle--focus,
 .react-toggle-thumb {
@@ -251,7 +249,9 @@
     }
 
     p {
-      color: $lightBlack;
+      color:black;
+      opacity: .85;
+      letter-spacing: .6px;
     }
 
     b {
@@ -489,6 +489,29 @@
       align-items: center;
     }
 
+    #large-title {
+      color: black;
+      width: 100%;
+      font-size: 25px;
+      opacity: 0.85;
+      font-weight: $fwBold;
+      line-height: 1.2;
+    }
+
+    #medium-title {
+      color: black;
+      font-size: 20px;
+      opacity: 0.75;
+      font-weight: $fwMediumBold;
+      line-height: 1.2;
+      width: auto;
+      display: inline-block;
+      
+      &.blue {
+        color: $mainBlue;
+      }
+    }
+
     .block {
       display: block;
     }
@@ -573,7 +596,7 @@
         top: 5px;
       }
     }
-    
+
     #table {
       @include table;
     }

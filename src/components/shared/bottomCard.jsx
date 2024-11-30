@@ -68,7 +68,7 @@ export default function BottomCard({
     <div key={refreshKey} id="bottom-card" className={`${cardClasses()} ${alertType} `}>
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
-          <div id="title" dangerouslySetInnerHTML={{ __html: title }}></div>
+          <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
           <CgClose className="close-icon" onClick={onClose} />
         </div>
         <div id="content">

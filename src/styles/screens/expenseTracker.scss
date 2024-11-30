@@ -157,6 +157,10 @@
         max-height: 10000px;
         transition: all 0.3s ease-in-out;
       }
+      
+      span {
+        font-size: 14px;
+      }
 
       * {
         line-height: 1;
@@ -166,17 +170,14 @@
         opacity: .85;
         font-size: 13px;
       }
-      
-      span {
-        font-size: 13px;
-      }
 
       #category-and-amount {
         margin-top: 0;
         .amount {
           font-size: 16px;
-          color: $red;
-          font-weight: bold;
+//          color: ;$red
+          opacity: 0.85;
+          font-weight: $fwMedium;
           display: inline;
           margin-left: auto;
           width: auto;

@@ -462,8 +462,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           </div>
 
           {/* FROM DATE */}
-          <div className="flex gap m-0">
-            {/* FROM DATE */}
+          <div className="flex gap mb-15">
             {eventLength === EventLengths.single && (
               <>
                 <div className="w-100">
