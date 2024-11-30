@@ -45,7 +45,7 @@ function InputWrapper({
     <div
       key={refreshKey}
       id="input-wrapper"
-      className={`${wrapperClasses} ${inputType} ${defaultValue.length > 0 || noInputTypes.includes(inputType) ? 'mb-15' : ''} input-container`}>
+      className={`${wrapperClasses} ${inputType} ${defaultValue.length > 0 || (noInputTypes.includes(inputType) && inputType !== 'location') ? 'mb-15' : ''} input-container`}>
       {!noInputTypes.includes(inputType) && (
         <>
           {defaultValue.length > 0 && <Label text={labelText} />}
@@ -63,8 +63,8 @@ function InputWrapper({
         </>
       )}
       {noInputTypes.includes(inputType) && (
-        <div className="w-100">
-          {inputType === 'date' && <Label classes="date-label" text={getPlaceholder()} />}
+        <div className={`w-100`}>
+          {inputType === 'date' && <Label classes={`date-label`} text={getPlaceholder()} />}
           {children}
         </div>
       )}

@@ -7,14 +7,15 @@ import Manager from "../managers/manager";
 
 UserMapper = {
   childrenToChildAccounts: async function(children) {
-    var child, childAccounts, i, len, thisChild, users;
+    var child, childAccounts, i, len, ref, thisChild;
     childAccounts = [];
-    users = (await DB.getTable(DB.tables.users));
-    for (i = 0, len = children.length; i < len; i++) {
-      child = children[i];
-      thisChild = (await DB.find(users, ["phone", child != null ? child.phone : void 0], true));
-      if (Manager.isValid(thisChild)) {
-        childAccounts.push(thisChild);
+    if (Manager.isValid(children, true)) {
+      for (i = 0, len = children.length; i < len; i++) {
+        child = children[i];
+        thisChild = (await DB.find(DB.tables.users, ["phone", child != null ? (ref = child.general) != null ? ref.phone : void 0 : void 0], true));
+        if (Manager.isValid(thisChild)) {
+          childAccounts.push(thisChild);
+        }
       }
     }
     return childAccounts;

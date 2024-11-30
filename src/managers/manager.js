@@ -7,6 +7,13 @@ import _ from 'lodash'
 import DomManager from './domManager'
 
 const Manager = {
+  invalidInputs: (requiredInputs) => {
+    const invalidInputs = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length == 0)
+    if (invalidInputs.length > 0) {
+      return invalidInputs
+    }
+    return []
+  },
   resetForm: (parentClass) => {
     const inputWrappers = document.querySelectorAll('.input-container')
     const parentClassInputs = document.querySelector(`.${parentClass}`)?.querySelectorAll('input, textarea')
@@ -267,25 +274,36 @@ const Manager = {
     // On check
     else {
       if (currentUser?.accountType === 'parent') {
-        currentUser?.coparents.forEach((coparent) => {
-          if (coparent.phone === selectedValue) {
+        currentUser?.coparents?.forEach((coparent) => {
+          if (coparent?.phone === selectedValue) {
             if (shareWith?.length === 0) {
-              shareWith = [coparent.phone]
+              shareWith = [coparent?.phone]
             } else {
               if (shareWith?.length > 0) {
-                shareWith = [...shareWith, coparent.phone]
+                shareWith = [...shareWith, coparent?.phone]
+              }
+            }
+          }
+        })
+        currentUser?.children?.forEach((child) => {
+          if (child?.general?.phone === selectedValue) {
+            if (shareWith?.length === 0) {
+              shareWith = [child?.general?.phone]
+            } else {
+              if (shareWith?.length > 0) {
+                shareWith = [...shareWith, child?.general?.phone]
               }
             }
           }
         })
       } else {
         if (currentUser.accountType === 'child') {
-          currentUser?.parents.forEach((parent) => {
-            if (parent.phone === selectedValue) {
+          currentUser?.parents?.forEach((parent) => {
+            if (parent?.phone === selectedValue) {
               if (shareWith.length === 0) {
-                shareWith = [parent.phone]
+                shareWith = [parent?.phone]
               } else {
-                shareWith = [...shareWith, parent.phone]
+                shareWith = [...shareWith, parent?.phone]
               }
             }
           })

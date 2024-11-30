@@ -24,14 +24,14 @@
         margin-top: -10px;
         transition: all 0.3s ease-in-out;
 
-        .material-icons-round {
+        svg {
           color: $mainBlue;
           opacity: 1;
         }
 
         .coparent-name {
           opacity: 1;
-            font-weight: $fwMedium;
+          font-weight: $fwMedium;
         }
 
         .child-name {

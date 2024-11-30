@@ -55,9 +55,7 @@ export default function Login() {
   const auth = getAuth(app)
 
   const tryGetCurrentUser = async (firebaseUser) => {
-    console.log(firebaseUser)
     const relevantUser = await DB.find(DB.tables.users, ['email', firebaseUser.email], true)
-    console.log(relevantUser)
     return relevantUser
   }
 
@@ -102,7 +100,6 @@ export default function Login() {
       setState({ ...state, isLoading: false })
       return false
     }
-    console.log(email, password)
     if (email.length === 0 || password.length === 0) {
       AlertManager.throwError('Please fill out all fields')
       setState({ ...state, isLoading: false })
@@ -118,7 +115,6 @@ export default function Login() {
             .then(async (userCredential) => {
               const user = userCredential.user
               const _currentUser = await tryGetCurrentUser(user)
-              console.log(_currentUser)
               subscribeUser(_currentUser)
               // USER NEEDS TO VERIFY EMAIL
               if (!user.emailVerified) {
@@ -224,7 +220,6 @@ export default function Login() {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const _currentUser = await tryGetCurrentUser(user)
-        console.log(_currentUser)
         // User is signed in.
         setState({
           ...state,

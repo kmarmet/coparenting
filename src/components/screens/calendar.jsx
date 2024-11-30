@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import DB from '@db'
-import AppManager from '@managers/appManager'
 import DateManager from '@managers/dateManager'
 import Manager from '@manager'
 import moment from 'moment'
@@ -239,7 +238,7 @@ export default function EventCalendar() {
       return false
     }
     const shouldShowEditCard = !event?.isHoliday && e.target.tagName !== 'A' && e.target.id !== 'more-button'
-    const hasEditAccess = AppManager.getAccountType(currentUser) === 'parent' && event.ownerPhone === currentUser?.phone
+    const hasEditAccess = event.ownerPhone === currentUser?.phone
     if (shouldShowEditCard && hasEditAccess) {
       setEventToEdit(event)
       setShowEditCard(true)

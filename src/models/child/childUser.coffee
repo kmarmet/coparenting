@@ -10,7 +10,6 @@ export default class ChildUser
     _id = ''
     _allowNotifications = 'Yes'
     _email = ''
-    _phone = ''
     _accountType = 'child'
     _parents = []
     _settings = {
@@ -25,7 +24,6 @@ export default class ChildUser
     @parents = _parents
     @name = _name
     @email = _email
-    @phone = _phone
     @accountType = _accountType
     @allowNotifications = _allowNotifications
     @id = Manager.getUid()
@@ -34,5 +32,3 @@ export default class ChildUser
     @medical = medical
     @schooling = schooling
     @behavior = behavior
-
-

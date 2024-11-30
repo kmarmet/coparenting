@@ -245,7 +245,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
   const handleShareWithSelection = (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
-    console.log(e)
     console.log(shareWithNumbers)
     setEventShareWith(shareWithNumbers)
   }

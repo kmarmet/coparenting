@@ -20,18 +20,23 @@ import {
 } from '../../globalFunctions'
 import Label from './label'
 import { RiShieldUserLine } from 'react-icons/ri'
+import UserMapper from '../../mappers/userMapper'
 
 function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', defaultPhones, labelText = '', icon = '' }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
   const [shareWith, setShareWith] = useState([])
 
+  const setShareWithUsers = async () => {
+    const coparents = currentUser?.coparents || []
+    const parents = currentUser?.parents || []
+    const children = (await UserMapper.childrenToChildAccounts(currentUser?.children)) || []
+    setShareWith(coparents.concat(parents).concat(children))
+  }
+
   useEffect(() => {
     if (Manager.isValid(currentUser)) {
-      const coparents = currentUser?.coparents || []
-      const parents = currentUser?.parents || []
-      //TODO ADD CHILD ACCOUNTS TO SHARE WITH
-      setShareWith(coparents.concat(parents))
+      setShareWithUsers().then((r) => r)
     }
   }, [])
 

@@ -11,6 +11,5 @@ export default class Child
     @medical = new Medical()
     @schooling = new Schooling()
     @behavior = new Behavior()
+    @phone = ''
     @profilePic = ''
-
-

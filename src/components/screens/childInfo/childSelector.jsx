@@ -31,7 +31,6 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
 
   useEffect(() => {
     setUserChildren().then((r) => r)
-    console.log(activeInfoChild)
   }, [activeInfoChild])
 
   return (

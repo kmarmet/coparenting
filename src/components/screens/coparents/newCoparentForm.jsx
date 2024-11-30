@@ -22,6 +22,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
+import { RiUserAddLine } from 'react-icons/ri'
 import ModelNames from '../../../models/modelNames'
 import ObjectManager from '../../../managers/objectManager'
 import InputWrapper from '../../shared/inputWrapper'
@@ -41,7 +42,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [parentType, setParentType] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-
+  const [relationshipType, setRelationshipType] = useState('')
   const resetForm = () => {
     Manager.resetForm('new-coparent-wrapper')
     setName('')
@@ -57,7 +58,8 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       AlertManager.throwError('Phone number is not valid')
       return false
     }
-    if (Manager.validation([phoneNumber, address, name, parentType]) > 0) {
+    const invalidInputs = Manager.invalidInputs([phoneNumber, address, name, parentType])
+    if (!invalidInputs) {
       AlertManager.throwError('All fields are required')
     } else {
       const newCoparent = new Coparent()
@@ -66,6 +68,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       newCoparent.phone = formatPhone(phoneNumber)
       newCoparent.name = uppercaseFirstLetterOfAllWords(name)
       newCoparent.parentType = parentType
+      newCoparent.relationshipToMe = relationshipType
 
       const cleanCoparent = ObjectManager.cleanObject(newCoparent, ModelNames.coparent)
       try {
@@ -90,6 +93,18 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
     )
   }
 
+  const handleRelationshipType = (e) => {
+    Manager.handleCheckboxSelection(
+      e,
+      (e) => {
+        setRelationshipType(e)
+      },
+      (e) => {
+        setRelationshipType('')
+      }
+    )
+  }
+
   useEffect(() => {
     Manager.showPageContainer()
   }, [])
@@ -101,6 +116,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       submitText={name.length > 0 ? `Add ${uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
       title={'New Co-Parent'}
       showCard={showCard}
+      submitIcon={<RiUserAddLine />}
       onClose={resetForm}>
       <div className="new-coparent-wrapper">
         <div id="new-coparent-container" className={`${theme} form`}>
@@ -135,7 +151,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
               className="relationship-to-me mt-15"
               skipNameFormatting={true}
               checkboxLabels={['Spouse', 'Former Spouse', "Spouse's Former Spouse"]}
-              onCheck={handleCoparentType}
+              onCheck={handleRelationshipType}
             />
           </div>
         </div>

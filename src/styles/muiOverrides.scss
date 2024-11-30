@@ -413,13 +413,15 @@
     width: 100vw;
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 15px !important;
     position: relative;
     z-index: 100000;
-    padding: 0 15px 10px 0;
+    padding: 0 0 10px 0;
+    justify-content: center;
 
     button,
     p {
+      opacity: 1 !important;
       color: $mainBlue !important;
       text-transform: uppercase;
       margin: 0;
@@ -431,6 +433,7 @@
       width: 83px !important;
       text-align: center;
       position: relative;
+      background: $lightBlue;
 
       &:before {
         content: '' !important;

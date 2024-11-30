@@ -9,6 +9,7 @@ import CustomCoparentInfo from './customCoparentInfo'
 import NewCoparentForm from './newCoparentForm'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import { IoPersonRemove } from 'react-icons/io5'
+import { RiParentFill } from 'react-icons/ri'
 import {
   contains,
   formatDbProp,
@@ -111,7 +112,8 @@ export default function Coparents() {
                   data-phone={coparent.phone}
                   data-name={coparent.name}
                   key={index}>
-                  <span className="material-icons-round">escalator_warning</span>
+                  <RiParentFill />
+                  {/*<span className="material-icons-round">escalator_warning</span>*/}
                   <span className="coparent-name">{formatNameFirstNameOnly(coparent.name)}</span>
                   <span className="coparent-type">{coparent.parentType}</span>
                 </div>

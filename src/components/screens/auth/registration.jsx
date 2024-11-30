@@ -179,11 +179,9 @@ export default function Registration() {
       return false
     }
     let parent = await DB_UserScoped.getUser(DB.tables.users, parentPhone)
-    console.log(parent)
     if (Manager.isValid(parent)) {
       let childUser = new ChildUser()
       childUser.id = Manager.getUid()
-      childUser.phone = formatPhone(userPhone)
       childUser.name = uppercaseFirstLetterOfAllWords(userName)
       childUser.accountType = 'child'
       childUser.parents = parents
@@ -192,13 +190,11 @@ export default function Registration() {
       childUser.settings.eveningReminderSummaryHour = '8pm'
       childUser.settings.morningReminderSummaryHour = '10am'
       childUser.general.name = userName
-      childUser.general.phone = userPhone
+      childUser.general.phone = formatPhone(userPhone)
       childUser.emailVerified = false
       childUser.updatedApp = true
       const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
-      console.log(cleanChild)
       const dbRef = ref(getDatabase())
-      console.log('after child added to db')
       createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
           // Signed up successfully
@@ -212,7 +208,6 @@ export default function Registration() {
 
       // SEND SMS MESSAGES
       // Send to parent
-      console.log('created 1')
       const parentSubId = await NotificationManager.getUserSubId(parentPhone)
       PushAlertApi.sendMessage(`${userName} is now signed up`, parentSubId)
       // Send to child
