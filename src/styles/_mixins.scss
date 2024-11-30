@@ -952,6 +952,15 @@
       opacity: .85;
     }
   }
+  
+  .two-column {
+    width:calc(100% - 45px);
+    flex-wrap: wrap;
+    
+    p {
+      margin-top: 0;
+    }
+  }
 
   .status {
     margin-left: auto;
@@ -2204,7 +2213,7 @@
   /*#region  CARDS BY CLASS*/
   // TRANSFER
   &.transfer-change,
-  &.expense-tracker {
+  &.expense-tracker, &.swap-requests {
     a {
       margin: 0 0 0 45px;
     }
@@ -2222,11 +2231,6 @@
           border: 1px solid $borderColor;
         }
       }
-    }
-    .reason-text {
-      margin-left: 45px;
-      line-height: 1.4;
-      margin-top: 0;
     }
     #row {
       border: 0;

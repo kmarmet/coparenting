@@ -250,7 +250,7 @@ export default function TransferRequests() {
                     <div id="primary-icon-wrapper">
                       <PiCarProfileDuotone id={'primary-row-icon'} />
                     </div>
-                    <div onClick={toggleDetails} key={index} data-request-id={request.id} className="request " id="content">
+                    <div key={index} data-request-id={request.id} className="request " id="content">
                       {/* DATE */}
                       <p id="title" className="flex date row-title">
                         {DateManager.formatDate(request.date)}

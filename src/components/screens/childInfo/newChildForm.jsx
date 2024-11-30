@@ -52,7 +52,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
   }
 
   const submit = async () => {
-    if (Manager.validation([name, dateOfBirth]) > 0) {
+    if (Manager.invalidInputs([name, dateOfBirth]).length > 0) {
       AlertManager.throwError('Please fill out required fields')
       return false
     } else {

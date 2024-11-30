@@ -34,7 +34,6 @@ import ModelNames from '../../models/modelNames'
 import InputWrapper from '../shared/inputWrapper'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import DateFormats from '../../constants/dateFormats'
-import DateManager from '../../managers/dateManager'
 import ObjectManager from '../../managers/objectManager'
 import AlertManager from '../../managers/alertManager'
 
@@ -56,12 +55,24 @@ export default function NewSwapRequest({ showCard, hideCard }) {
 
   const resetForm = () => {
     Manager.resetForm('swap-request-wrapper')
+    setRequestRange([])
+    setRequestReason('')
+    setRequestChildren([])
+    setShareWith([])
+    setRecipientName('')
+    setRequestFromHour('')
+    setRequestToHour('')
+    setSwapDuration('single')
+    setIncludeChildren(false)
+    setStartDate('')
+    setEndDate('')
     hideCard()
     setRefreshKey(Manager.getUid())
   }
 
   const submit = async () => {
-    if (!DateManager.dateIsValid(startDate) || shareWith.length === 0 || recipientName.length === 0) {
+    const invalidInputs = Manager.invalidInputs([startDate, shareWith, recipientName])
+    if (invalidInputs.length > 0) {
       AlertManager.throwError('Please fill out required fields')
       return false
     } else {

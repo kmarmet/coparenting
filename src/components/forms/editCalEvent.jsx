@@ -294,7 +294,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     const checkboxClasses = []
 
     // Reminder Toggle
-    console.log(Manager.isValid(event?.reminderTimes, true))
     if (Manager.isValid(event?.reminderTimes, true)) {
       checkboxClasses.push('.reminder-times-toggle')
       setShowReminders(true)
@@ -317,10 +316,10 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       document.querySelectorAll('.include-children-checkbox-container').forEach((container) => {
         if (event?.children.includes(container.getAttribute('data-phone'))) {
           container.querySelector('.box').classList.add('active')
+          checkboxClasses.push('.children-toggle')
+          setIncludeChildren(true)
         }
       })
-      checkboxClasses.push('.children-toggle')
-      setIncludeChildren(true)
     }
 
     if (Manager.isValid(checkboxClasses, true)) {
@@ -613,7 +612,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           {currentUser?.accountType === 'parent' && (
             <Accordion expanded={includeChildren} id={'checkboxes'}>
               <AccordionSummary>
-                <div className="flex">
+                <div className="flex children-toggle">
                   <p>Include Children</p>
                   <Toggle
                     icons={{

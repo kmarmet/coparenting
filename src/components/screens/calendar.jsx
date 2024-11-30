@@ -269,23 +269,6 @@ export default function EventCalendar() {
     }
   }, [showHolidays])
 
-  const toggleDetails = (element) => {
-    const textWrapper = element.target.parentNode.closest('.text')
-    const details = textWrapper.querySelector('#details')
-    const svgDown = textWrapper.querySelector('svg.down')
-    const svgUp = textWrapper.querySelector('svg.up')
-
-    if (details.classList.contains('open')) {
-      details.classList.remove('open')
-      svgDown.classList.add('active')
-      svgUp.classList.remove('active')
-    } else {
-      details.classList.add('open')
-      svgDown.classList.remove('active')
-      svgUp.classList.add('active')
-    }
-  }
-
   // ON PAGE LOAD
   useEffect(() => {
     const staticCalendar = document.querySelector('.MuiDialogActions-root')

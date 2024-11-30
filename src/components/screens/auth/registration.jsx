@@ -209,7 +209,10 @@ export default function Registration() {
       // SEND SMS MESSAGES
       // Send to parent
       const parentSubId = await NotificationManager.getUserSubId(parentPhone)
-      PushAlertApi.sendMessage(`${userName} is now signed up`, parentSubId)
+      PushAlertApi.sendMessage(
+        `${userName} is now signed up. If you would like to be able to provide viewing access for them, add them in the Child Info section of the app. Including their phone number is required.`,
+        parentSubId
+      )
       // Send to child
       const childSubId = await NotificationManager.getUserSubId(userPhone)
       PushAlertApi.sendMessage('You are now signed up!', childSubId)
@@ -221,7 +224,7 @@ export default function Registration() {
       setState({ ...state, currentScreen: ScreenNames.login })
     } else {
       // Parent account does not exist
-      AlertManager.throwError(`There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register.`)
+      AlertManager.throwError(`There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register first`)
       return false
     }
   }
@@ -346,7 +349,7 @@ export default function Registration() {
                   inputValueType="phone"
                   labelText={'Phone Number'}
                   required={true}
-                  onChange={(e) => setUserPhone(e.target.value)}
+                  onChange={(e) => setUserPhone(formatPhone(e.target.value))}
                 />
                 <button className="button default green center mt-15" onClick={sendPhoneVerificationCode}>
                   Send Phone Verification Code <MdOutlineSystemSecurityUpdateGood />
@@ -436,7 +439,7 @@ export default function Registration() {
               inputValueType="number"
               required={true}
               labelText={'Phone Number of Parent that has the App'}
-              onChange={(e) => setParentPhone(e.target.value)}
+              onChange={(e) => setParentPhone(formatPhone(e.target.value))}
             />
             <InputWrapper
               inputType={'input'}
