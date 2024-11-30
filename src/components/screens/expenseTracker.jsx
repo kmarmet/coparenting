@@ -86,7 +86,7 @@ export default function ExpenseTracker() {
         `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${expense.name} \nYou can delete the expense now`,
         subId
       )
-
+      setShowDetails(false)
       MyConfetti.fire()
     })
   }
@@ -550,6 +550,7 @@ export default function ExpenseTracker() {
                 <button
                   onClick={async () => {
                     await deleteExpense(activeExpense)
+                    setShowDetails(false)
                   }}
                   className="red"
                   id="delete-button">
@@ -610,7 +611,7 @@ export default function ExpenseTracker() {
                   }}>
                   <div id="primary-icon-wrapper">
                     {expense.paidStatus === 'unpaid' && <span className="amount">${expense.amount}</span>}
-                    {expense.paidStatus === 'paid' && <span className="amount paid">PAID</span>}
+                    {expense.paidStatus === 'paid' && <PiMoneyWavyDuotone id={'primary-row-icon'} />}
                   </div>
                   <div id="content" data-expense-id={expense.id} className={`expense wrap`}>
                     {/* EXPENSE NAME */}
