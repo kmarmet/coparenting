@@ -20,7 +20,7 @@ import {
 } from '../../globalFunctions'
 import Label from './label'
 import { RiShieldUserLine } from 'react-icons/ri'
-import UserMapper from '../../mappers/userMapper'
+import DatasetManager from '../../managers/datasetManager'
 
 function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', defaultPhones, labelText = '', icon = '' }) {
   const { state, setState } = useContext(globalState)
@@ -28,10 +28,18 @@ function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass 
   const [shareWith, setShareWith] = useState([])
 
   const setShareWithUsers = async () => {
-    const coparents = currentUser?.coparents || []
-    const parents = currentUser?.parents || []
-    const children = (await UserMapper.childrenToChildAccounts(currentUser?.children)) || []
-    setShareWith(coparents.concat(parents).concat(children))
+    let people = []
+    if (currentUser?.coparents?.length > 0) {
+      people = [...people, currentUser.coparents]
+    }
+    if (currentUser?.parents?.length > 0) {
+      people = [...people, currentUser.parents]
+    }
+    if (currentUser?.children?.length > 0) {
+      people = [...people, currentUser.children]
+    }
+    people = DatasetManager.getUniqueArray(people, true)
+    setShareWith(people)
   }
 
   useEffect(() => {
