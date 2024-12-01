@@ -19,7 +19,7 @@ export hasClass = (element, className) ->
     false
 
 export formatTitleWords = (str) ->
-  str = str.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and");
+  str = str.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and").replaceAll("Is", "is").replaceAll("Not", "not")
 
 export getFirstWord = (input) ->
   input.toString().replace(/ .*/, '')
@@ -109,7 +109,6 @@ export removeFileExtension = (input) ->
 # Arrays
 export uniqueArray = (array) ->
   Array.from(new Set(array))
-
 
 export displayAlert = (type, title, text = '', onConfirm) ->
   switch (true)

@@ -58,14 +58,15 @@ const NewChildForm = ({ hideCard, showCard }) => {
     } else {
       const newChild = new Child()
       const general = new General()
-      general.address = address !== null ? address : ''
-      general.phone = phoneNumber || ''
+      general.address = address
+      general.phone = phoneNumber
       general.name = name
-      general.gender = gender || ''
+      general.gender = gender
       general.dateOfBirth = dateOfBirth
-      newChild.general = general || ''
-
-      const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.childUser)
+      newChild.general = general
+      console.log(newChild)
+      const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.child)
+      console.log(cleanChild)
       await DB_UserScoped.addUserChild(currentUser, cleanChild)
       AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
 
@@ -82,8 +83,8 @@ const NewChildForm = ({ hideCard, showCard }) => {
   const handleGenderSelect = (e) => {
     Manager.handleCheckboxSelection(
       e,
-      () => {
-        setGender(e.target.value)
+      (e) => {
+        setGender(e)
       },
       () => {}
     )
@@ -125,7 +126,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
           </InputWrapper>
 
           {/* GENDER */}
-          <CheckboxGroup parentLabel={'Gender'} checkboxLabels={['Male', 'Female']} onCheck={(e) => handleGenderSelect(e)} />
+          <CheckboxGroup parentLabel={'Gender'} checkboxLabels={['Male', 'Female']} onCheck={handleGenderSelect} />
         </div>
       </div>
     </BottomCard>

@@ -37,6 +37,7 @@ import {
   wordCount,
 } from 'globalFunctions'
 import DateManager from '../../managers/dateManager'
+import NoDataFallbackText from '../shared/noDataFallbackText'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -59,34 +60,26 @@ export default function SwapRequests() {
     setExistingRequests(allRequests)
   }
 
-  const selectDecision = async (request, decision) => {
-    const subId = await NotificationManager.getUserSubId(request.recipientPhone)
-    // Delete
-    if (decision === Decisions.delete) {
-      await DB.delete(DB.tables.swapRequests, request.id)
-    }
-    //
+  const selectDecision = async (decision) => {
+    const subId = await NotificationManager.getUserSubId(activeRequest.recipientPhone)
+    console.log(subId)
+    const recipient = await DB_UserScoped.getCoparentByPhone(activeRequest.recipientPhone, currentUser)
+    const recipientName = recipient.name
     // Rejected
     if (decision === Decisions.rejected) {
-      await DB.updateRecord(DB.tables.swapRequests, request, 'rejectionReason', rejectionReason, 'id')
-      const notifMessage = PushAlertApi.templates.swapRequestDecision(request, decision)
+      await DB.updateRecord(DB.tables.swapRequests, activeRequest, 'reason', rejectionReason, 'id')
+      const notifMessage = PushAlertApi.templates.swapRequestRejection(activeRequest, recipientName)
       PushAlertApi.sendMessage('Swap Request Decision', notifMessage, subId)
+      await deleteRequest('rejected')
+      setShowDetails(false)
     }
 
     // Approved
     if (decision === Decisions.approved) {
-      const notifMessage = PushAlertApi.templates.swapRequestDecision(request, decision)
+      const notifMessage = PushAlertApi.templates.swapRequestApproval(activeRequest, recipientName)
       PushAlertApi.sendMessage('Swap Request Decision', notifMessage, subId)
-      await DB.delete(DB.tables.swapRequests, request.id)
+      await DB.delete(DB.tables.swapRequests, activeRequest.id)
     }
-  }
-
-  const sendReminder = async (request) => {
-    AlertManager.successAlert('Reminder Sent')
-    await DB_UserScoped.getCoparentByPhone(request.recipientPhone, currentUser).then(async (coparent) => {
-      const subId = await PushAlertApi.getSubId(coparent.phone)
-      PushAlertApi.sendMessage(`Pending Swap Decision`, ` ${moment(request.startDate).format('dddd, MMMM Do')}`, subId)
-    })
   }
 
   const addEventRowAnimation = () => {
@@ -107,9 +100,23 @@ export default function SwapRequests() {
     })
   }
 
+  const deleteRequest = async (action = 'deleted') => {
+    if (action === 'deleted') {
+      AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
+        await DB.delete(DB.tables.swapRequests, activeRequest?.id)
+        AlertManager.successAlert(`Swap Request has been deleted.`)
+        setShowDetails(false)
+      })
+    } else {
+      await DB.delete(DB.tables.swapRequests, activeRequest?.id)
+      AlertManager.successAlert(`Swap Request has been rejected and a notification has been sent to the request recipient.`)
+      setShowDetails(false)
+    }
+  }
+
   useEffect(() => {
     onTableChange().then((r) => r)
-    Manager.showPageContainer('show')
+    Manager.showPageContainer()
   }, [])
 
   return (
@@ -117,6 +124,7 @@ export default function SwapRequests() {
       <NewSwapRequest showCard={showCard} hideCard={() => setShowCard(false)} />
       {/* DETAILS CARD */}
       <BottomCard
+        onDelete={deleteRequest}
         hasDelete={true}
         submitText={'Approve'}
         title={'Request Details'}
@@ -205,20 +213,12 @@ export default function SwapRequests() {
           <div className="action-buttons">
             {formatNameFirstNameOnly(activeRequest?.createdBy) !== formatNameFirstNameOnly(currentUser?.name) && (
               <button
-                onClick={(e) => {
-                  setActiveRequest(activeRequest)
-                  setShowDetails(true)
-                }}
-                className="blue">
-                Revise
-              </button>
-            )}
-            {formatNameFirstNameOnly(activeRequest?.createdBy) !== formatNameFirstNameOnly(currentUser?.name) && (
-              <button
                 className="red"
                 data-request-id={activeRequest?.id}
                 onClick={async (e) => {
-                  AlertManager.inputAlert('Rejection Reason', 'Please enter a rejection reason', async () => {}, true, true, 'textarea')
+                  AlertManager.inputAlert('Rejection Reason', 'Please enter a rejection reason.', () => {
+                    selectDecision(Decisions.rejected)
+                  })
                 }}>
                 Reject
               </button>
@@ -232,7 +232,7 @@ export default function SwapRequests() {
         <p className="screen-title">Swap Requests</p>
         <>
           <p className="text-screen-intro mb-15">A request for your child(ren) to stay with you during your co-parent's scheduled visitation time.</p>
-          {existingRequests.length === 0 && <p className="instructions center">There are currently no requests</p>}
+          {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
         </>
 
         {/* LOOP REQUESTS */}

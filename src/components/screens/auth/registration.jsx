@@ -136,7 +136,6 @@ export default function Registration() {
       newUser.coparents = coparents
       newUser.parentType = parentType
       newUser.settings.theme = 'light'
-      newUser.updatedApp = true
       newUser.emailVerified = false
       newUser.settings.eveningReminderSummaryHour = '8pm'
       newUser.settings.morningReminderSummaryHour = '10am'
@@ -187,12 +186,9 @@ export default function Registration() {
       childUser.parents = parents
       childUser.email = email
       childUser.settings.theme = 'light'
-      childUser.settings.eveningReminderSummaryHour = '8pm'
-      childUser.settings.morningReminderSummaryHour = '10am'
       childUser.general.name = userName
       childUser.general.phone = formatPhone(userPhone)
       childUser.emailVerified = false
-      childUser.updatedApp = true
       const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
       const dbRef = ref(getDatabase())
       createUserWithEmailAndPassword(auth, email, password)
@@ -210,13 +206,13 @@ export default function Registration() {
       // Send to parent
       const parentSubId = await NotificationManager.getUserSubId(parentPhone)
       PushAlertApi.sendMessage(
+        'Child Registration',
         `${userName} is now signed up. If you would like to be able to provide viewing access for them, add them in the Child Info section of the app. Including their phone number is required.`,
         parentSubId
       )
       // Send to child
       const childSubId = await NotificationManager.getUserSubId(userPhone)
-      PushAlertApi.sendMessage('You are now signed up!', childSubId)
-      PushAlertApi.sendMessage(`${userName} has registered.`, childSubId)
+      PushAlertApi.sendMessage('Welcome Aboard!', 'You are now signed up!', childSubId)
       // Send to me
       const mySubId = await NotificationManager.getUserSubId('3307494534')
       PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone}`, mySubId)

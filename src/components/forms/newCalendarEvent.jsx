@@ -540,18 +540,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             />
           </div>
 
-          {/* IS VISITATION? */}
-          <div className="flex">
-            <p>Visitation Event</p>
-            <Toggle
-              icons={{
-                unchecked: null,
-              }}
-              className={'ml-auto visitation-toggle'}
-              onChange={(e) => setIsVisitation(!isVisitation)}
-            />
-          </div>
-
           {/* REMINDER */}
           {!isAllDay && (
             <>
@@ -583,6 +571,18 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               </div>
             </>
           )}
+
+          {/* IS VISITATION? */}
+          <div className="flex">
+            <p>Visitation Event</p>
+            <Toggle
+              icons={{
+                unchecked: null,
+              }}
+              className={'ml-auto visitation-toggle'}
+              onChange={(e) => setIsVisitation(!isVisitation)}
+            />
+          </div>
 
           {/* REMIND COPARENTS*/}
           {Manager.isValid(currentUser?.coparents, true) && (

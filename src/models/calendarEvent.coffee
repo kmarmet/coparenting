@@ -16,8 +16,6 @@ export default class CalendarEvent
     @coparentsToRemindPhones = []
     @directionsLink = ''
     @endTime = ''
-    @morningSummaryReminderSent = false
-    @eveningSummaryReminderSent = false
     @fromVisitationSchedule = false
     @repeatInterval = ''
     @sentReminders = []

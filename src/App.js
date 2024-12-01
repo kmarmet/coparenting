@@ -48,6 +48,7 @@ import { LicenseInfo } from '@mui/x-license'
 import ScreenNames from '@screenNames'
 import firebaseConfig from './firebaseConfig.js'
 import ContactUs from './components/screens/contactUs'
+import DB from '@db'
 
 export default function App() {
   // Initialize Firebase
@@ -56,7 +57,7 @@ export default function App() {
   const [state, setState] = useState(StateObj)
   const stateToUpdate = { state, setState }
   const { userIsLoggedIn, firebaseUser, setFirebaseUser } = state
-
+  const [userEmail, setUserEmail] = useState('')
   const myCanvas = document.createElement('canvas')
 
   emailjs.init({
@@ -94,12 +95,19 @@ export default function App() {
     })
   }
 
+  const setCurrentUser = async () => {
+    if (userEmail && userEmail.length > 0) {
+      const _currentUser = await DB.find(DB.tables.users, ['email', userEmail], true)
+      setState({ ...state, currentUser: _currentUser })
+    }
+  }
+
   // CLEAR APP BADGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
     }
-    // getUnreadMessageCount().then((r) => r)
+    setCurrentUser().then((r) => r)
   }, [currentScreen])
 
   // ON PAGE LOAD
@@ -111,6 +119,7 @@ export default function App() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const user = auth.currentUser
+        setUserEmail(user.email)
         // console.log(user)
       } else {
         console.log('signed out or user doesn"t exist')
@@ -123,10 +132,8 @@ export default function App() {
   // MENU OPEN/CLOSE
   useEffect(() => {
     if (menuIsOpen) {
-      document.querySelector('#app-container').classList.add('pushed')
       addMenuItemAnimation()
     } else {
-      document.querySelector('#app-container').classList.remove('pushed')
       deleteMenuAnimation()
     }
   }, [menuIsOpen])

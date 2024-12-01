@@ -3,30 +3,20 @@ var ChildUser;
 
 import Manager from '@manager';
 
-import General from "./general";
-
-import Medical from "./medical";
-
-import Schooling from "./schooling";
-
-import Behavior from "./behavior";
-
 export default ChildUser = class ChildUser {
-  constructor(_name = 'name', _id = '', _allowNotifications = 'Yes', _email = '', _accountType = 'child', _parents = [], _settings = {
+  constructor(parents = [], name = '', email = '', accountType = '', allowNotifications = '', id = Manager.getUid(), dailySummaries = {
+      morningSentDate: '',
+      eveningSentDate: '',
       morningReminderSummaryHour: '10am',
       eveningReminderSummaryHour: '8pm'
-    }, general = new General(), medical = new Medical(), behavior = new Behavior(), schooling = new Schooling()) {
-    this.parents = _parents;
-    this.name = _name;
-    this.email = _email;
-    this.accountType = _accountType;
-    this.allowNotifications = _allowNotifications;
-    this.id = Manager.getUid();
-    this.settings = _settings;
-    this.general = general;
-    this.medical = medical;
-    this.schooling = schooling;
-    this.behavior = behavior;
+    }) {
+    this.parents = parents;
+    this.name = name;
+    this.email = email;
+    this.accountType = accountType;
+    this.allowNotifications = allowNotifications;
+    this.id = id;
+    this.dailySummaries = dailySummaries;
   }
 
 };

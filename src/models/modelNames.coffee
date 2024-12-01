@@ -14,6 +14,7 @@ ModelNames =
   conversationThread: "conversationThread"
   childUser: 'childUser'
   doc:'doc'
+  child: 'child'
 
 
 export default ModelNames

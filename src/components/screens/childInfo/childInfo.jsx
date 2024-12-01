@@ -32,9 +32,9 @@ import DB_UserScoped from '@userScoped'
 import { IoPersonAddOutline } from 'react-icons/io5'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
+import NoDataFallbackText from '../../shared/noDataFallbackText'
 
 export default function ChildInfo() {
-  // @ts-ignore
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, navbarButton } = state
   const [showCard, setShowCard] = useState(false)
@@ -46,16 +46,15 @@ export default function ChildInfo() {
 
   const uploadProfilePic = async (img) => {
     setState({ ...state, isLoading: true })
-    // @ts-ignore
     const imgFiles = document.getElementById('upload-input').files
     if (imgFiles.length === 0) {
       AlertManager.throwError('Please choose an image')
       return false
     }
 
-    // Upload -> Set child/general/profilepic
-    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, activeInfoChild.id, img, 'profilepic').then(async (url) => {
-      const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilepic', url)
+    // Upload -> Set child/general/profilePic
+    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, activeInfoChild.id, img, 'profilePic').then(async (url) => {
+      const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilePic', url)
       setState({ ...state, isLoading: false })
       setActiveInfoChild(updatedChild)
     })
@@ -70,7 +69,7 @@ export default function ChildInfo() {
     const dbRef = ref(getDatabase())
 
     onValue(child(dbRef, `${DB.tables.users}/${currentUser?.phone}/children`), async (snapshot) => {
-      const kiddos = snapshot.val()
+      const kiddos = Manager.convertToArray(snapshot.val())
       if (Manager.isValid(kiddos, true)) {
         if (!activeInfoChild) {
           setActiveInfoChild(kiddos[0])
@@ -121,20 +120,27 @@ export default function ChildInfo() {
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
         <p className="screen-title">Child Info</p>
+
+        {!Manager.isValid(currentUser?.children?.[0]) && currentUser?.children?.length <= 0 && (
+          <NoDataFallbackText
+            text={'No children have been added yet. In order to share events (and other details) with a child, you will need to add them here.'}
+          />
+        )}
+
         {/* PROFILE PIC */}
         <div id="children-container">
           <>
             {activeInfoChild && activeInfoChild?.general && (
               <>
-                {Manager.isValid(activeInfoChild?.general['profilepic']) && (
-                  <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilepic']})` }}>
+                {Manager.isValid(activeInfoChild?.general['profilePic']) && (
+                  <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
                     <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
                     <div className="after">
                       <span className="material-icons-outlined">flip_camera_ios</span>
                     </div>
                   </div>
                 )}
-                {!Manager.isValid(activeInfoChild?.general['profilepic']) && (
+                {!Manager.isValid(activeInfoChild?.general['profilePic']) && (
                   <div className="profile-pic-container no-image">
                     <div className="after">
                       <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
@@ -161,7 +167,7 @@ export default function ChildInfo() {
               </div>
             )}
           </div>
-          {currentUser?.children?.length > 0 && (
+          {Manager.isValid(currentUser?.children, true) && (
             <>
               <button
                 className="button default center green white-text mt-20 w-60"
@@ -170,9 +176,11 @@ export default function ChildInfo() {
                 }}>
                 Add Your Own Info <FaWandMagicSparkles />
               </button>
-              <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center w-60">
-                Different Child
-              </button>
+              {currentUser.children.length > 0 && (
+                <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center w-60">
+                  Different Child
+                </button>
+              )}
             </>
           )}
         </>

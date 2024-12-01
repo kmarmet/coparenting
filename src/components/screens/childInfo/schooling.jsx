@@ -4,6 +4,7 @@ import Manager from '@manager'
 import {
   camelCaseToString,
   contains,
+  formatDbProp,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -32,19 +33,16 @@ import { IoCloseOutline } from 'react-icons/io5'
 function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
-  const [expandAccordion, setExpandAccordion] = useState(false)
   const [schoolingValues, setSchoolingValues] = useState([])
-  const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'schooling', toCamelCase(prop))
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'schooling', formatDbProp(prop))
     setSelectedChild()
-    setArrowDirection('down')
     setActiveChild(updatedChild)
   }
 
   const update = async (section, prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', toCamelCase(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', formatDbProp(prop), value)
     AlertManager.successAlert('Updated!')
     setActiveChild(updatedChild)
   }
@@ -72,14 +70,19 @@ function Schooling({ activeChild, setActiveChild }) {
           <span className="material-icons-round">school</span>
           Schooling
         </AccordionSummary>
-        <AccordionDetails expanded={expandAccordion}>
+        <AccordionDetails>
           {Manager.isValid(schoolingValues, true) &&
             schoolingValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
               const value = prop.flat()[1]
               return (
                 <div key={index} className="flex input">
-                  <InputWrapper inputType={'input'} labelText={infoLabel} defaultValue={value} />
+                  <InputWrapper
+                    inputType={'input'}
+                    labelText={infoLabel}
+                    defaultValue={value}
+                    onChange={() => update('schooling', infoLabel, value)}
+                  />
                   <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                 </div>
               )

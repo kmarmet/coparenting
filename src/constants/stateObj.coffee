@@ -24,7 +24,6 @@ StateObj =
   unreadMessageCount: 0
   userIsLoggedIn: false
   users: []
-  updateAvailable: false,
   viewExpenseForm: false
   viewSwapRequestForm: false
   viewTransferRequestForm: false
@@ -50,7 +49,6 @@ StateObj =
   setShowOverlay: (bool) ->
   setTheme: (theme) ->
   setTransferRequestToEdit: (request) ->
-  setUpdateAvailable: (bool) ->
   setUnreadMessageCount: (num) ->
   setUserIsLoggedIn: (isLoggedIn) ->
   setUsers: (users) ->

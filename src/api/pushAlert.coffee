@@ -28,6 +28,14 @@ PushAlertApi =
     swapRequestDecision: (request, decision) ->
       "A new Swap Request decision for #{request.startDate} has been made by #{request.createdBy}#{PushAlertApi.lineBreak}#{PushAlertApi.lineBreak}Decision: #{decision}"
 
+    swapRequestApproval: (request, recipientName) ->
+      "Swap Request decision for #{request.startDate} has been APPROVED by #{recipientName}#{PushAlertApi.lineBreak}#{PushAlertApi.lineBreak}"
+
+    swapRequestRejection: (request, recipientName) ->
+      "Swap Request for #{request.startDate} has been REJECTED.#{PushAlertApi.lineBreak}#{PushAlertApi.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the request,
+  you can communicate with #{recipientName} to come
+ to an agreement on the request."
+
 # Determine API URL based on environment
   apiUrl: ->
     if location.hostname is 'localhost'
@@ -85,15 +93,12 @@ PushAlertApi =
       headers: myHeaders
       body: urlencoded
       redirect: 'follow'
-
-    if location.hostname isnt "localhost"
-      fetch(urlToUse, requestOptions)
-        .then (result) -> console.log "Sent to: #{subIdToUse}"
-        .catch (error) -> console.error error
-    else
-      fetch(urlToUse, requestOptions)
-        .then (result) -> console.log "Sent to: #{await subIdToUse}"
-        .catch (error) -> console.error error
+    console.log(subIdToUse)
+    console.log(myHeaders)
+    console.log(urlToUse)
+    fetch(urlToUse, requestOptions)
+      .then (result) -> console.log "Sent to: #{subIdToUse}"
+      .catch (error) -> console.error error
 
 # Get subscriber ID for a user
   getSubId: (userPhone) ->

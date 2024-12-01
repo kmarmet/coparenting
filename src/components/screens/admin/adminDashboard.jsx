@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import moment from 'moment'
-import { child, getDatabase, ref, set } from 'firebase/database'
+import { child, getDatabase, ref, set, update } from 'firebase/database'
 
 import {
   contains,
@@ -49,10 +49,6 @@ export default function AdminDashboard() {
   // eslint-disable-next-line no-undef
   new ClipboardJS('.chat-recovery-clipboard-button')
 
-  const setNewUpdate = async () => {
-    AppManager.setUpdateAvailable()
-    AlertManager.successAlert('Updated')
-  }
   const deletedExpiredCalEvents = async () => AppManager.deleteExpiredCalendarEvents().then((r) => r)
   const deleteExpiredMemories = async () => AppManager.deleteExpiredMemories().then((r) => r)
   const setHolidays = async () => DateManager.setHolidays()
@@ -146,6 +142,18 @@ export default function AdminDashboard() {
     })
   }
 
+  const addDailySummariesToAllUsers = async (prop, value) => {
+    const dbRef = getDatabase()
+
+    const allUsers = await DB.getTable(DB.tables.users)
+    for (let user of allUsers) {
+      let updatedUser = user
+      updatedUser[prop] = value
+      console.log(updatedUser)
+      update(ref(dbRef, `${DB.tables.users}/${user.phone}`), updatedUser)
+    }
+  }
+
   const flattenObject = (obj, prefix = '') => {
     const result = {}
 
@@ -221,12 +229,21 @@ export default function AdminDashboard() {
           <div id="code-block"></div>
         </div>
 
-        {/* SET UPDATE AVAILABLE */}
+        {/* ADD PROP TO ALL USERS */}
         <div className="tool-box">
-          <p className="box-title">Set Update Available</p>
+          <p className="box-title">Add Daily Summaries to All Users</p>
           <div className="buttons">
-            <button className="button center" onClick={setNewUpdate}>
-              Update
+            <button
+              className="button center"
+              onClick={() =>
+                addDailySummariesToAllUsers('dailySummaries', {
+                  morningSentDate: '',
+                  eveningSentDate: '',
+                  morningReminderSummaryHour: '10am',
+                  eveningReminderSummaryHour: '8pm',
+                })
+              }>
+              Add
             </button>
           </div>
         </div>

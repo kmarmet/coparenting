@@ -11,6 +11,7 @@ import ConversationThread from "../models/conversationThread"
 import ConversationMessage from "../models/conversationMessage"
 import ChildUser from "../models/child/childUser"
 import Doc from "../models/doc"
+import Child from "../models/child/child"
 
 ObjectManager = {
   cleanObject: (object, modelName) ->
@@ -26,6 +27,7 @@ ObjectManager = {
       when ModelNames.conversationThread then new ConversationThread()
       when ModelNames.conversationMessage then new ConversationMessage()
       when ModelNames.childUser then new ChildUser()
+      when ModelNames.child then new Child()
       when ModelNames.doc then new Doc()
     for prop of object
       if Array.isArray(object[prop])

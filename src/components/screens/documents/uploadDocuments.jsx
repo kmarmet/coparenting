@@ -152,17 +152,8 @@ export default function UploadDocuments({ hideCard, showCard }) {
         {/* PAGE CONTAINER */}
         <div id="upload-documents-container" className={`${theme} form `}>
           <p className={`${theme} text-screen-intro`}>
-            Upload documents (.doc or .docx) , or images of documents you would like to save or share with a co-parent.
-          </p>
-          <p className={`${theme} text-screen-intro`}>
-            The uploaded document. If the document you are uploading is a different type is not .docx (.doc, .pdf, .txt, .etc) please click the link
-            below to convert it to .docx for free.
-          </p>
-          <p>
-            <span className="accent pr-5">
-              <b>MUST</b>
-            </span>
-            be of type <b className="pl-5">.docx</b>
+            If the you are uploading a document, the file name <b>MUST</b> be <b>.docx</b> (not .doc, .pdf, .txt, .etc). If the file name does not end
+            with .docx, please click the link below to convert it to .docx for free.
           </p>
           <a href="https://convertio.co/" target="_blank" className="mb-10">
             Convert to .docx

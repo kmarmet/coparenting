@@ -29,7 +29,7 @@ export default NotificationManager = {
     results = [];
     for (i = 0, len = coparentPhones.length; i < len; i++) {
       phone = coparentPhones[i];
-      subId = NotificationManager.getUserSubId(phone);
+      subId = (await NotificationManager.getUserSubId(phone));
       results.push((await PushAlertApi.sendMessage(title, message, subId)));
     }
     return results;

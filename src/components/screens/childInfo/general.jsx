@@ -8,6 +8,7 @@ import { IoCloseOutline } from 'react-icons/io5'
 import {
   camelCaseToString,
   contains,
+  formatDbProp,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -34,29 +35,25 @@ import AlertManager from '../../../managers/alertManager'
 function General({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
-  const [expandAccordion, setExpandAccordion] = useState(false)
   const [generalValues, setGeneralValues] = useState([])
-  const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', toCamelCase(prop))
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', formatDbProp(prop))
     setActiveChild(updatedChild)
     setSelectedChild()
-    setArrowDirection('down')
   }
 
   const setSelectedChild = () => {
     if (Manager.isValid(activeChild.general)) {
       // Set info
       let values = Object.entries(activeChild.general)
-      setGeneralValues(values.filter((x) => x[0] !== 'profilepic'))
+      setGeneralValues(values.filter((x) => x[0] !== 'profilePic'))
     }
   }
 
   const update = async (section, prop, value, isArray) => {
-    // Update DB
     AlertManager.successAlert('Updated!')
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', toCamelCase(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', formatDbProp(prop), value)
     setActiveChild(updatedChild)
   }
 
@@ -105,7 +102,7 @@ function General({ activeChild, setActiveChild }) {
                         defaultValue={value}
                         onChange={async (e) => {
                           const inputValue = e.target.value
-                          await update('general', infoLabel, `${inputValue}`)
+                          await update('general', infoLabel, inputValue)
                         }}
                       />
                     )}

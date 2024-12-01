@@ -4,6 +4,7 @@ import Manager from '@manager'
 import {
   camelCaseToString,
   contains,
+  formatDbProp,
   formatFileName,
   formatNameFirstNameOnly,
   getFileExtension,
@@ -32,19 +33,16 @@ import { IoCloseOutline } from 'react-icons/io5'
 function Medical({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
-  const [expandAccordion, setExpandAccordion] = useState(false)
   const [medicalValues, setMedicalValues] = useState([])
-  const [arrowDirection, setArrowDirection] = useState('down')
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', toCamelCase(prop))
-    setArrowDirection('down')
+    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', formatDbProp(prop))
     setActiveChild(updatedChild)
     setSelectedChild()
   }
 
   const update = async (section, prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'medical', toCamelCase(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'medical', formatDbProp(prop), value)
     setActiveChild(updatedChild)
     AlertManager.successAlert('Updated!')
   }
@@ -71,7 +69,7 @@ function Medical({ activeChild, setActiveChild }) {
           className={!Manager.isValid(activeChild.medical) ? 'disabled header medical' : 'header medical'}>
           <span className="material-icons-round">medical_information</span> Medical {!Manager.isValid(activeChild.medical) ? '- No Info' : ''}
         </AccordionSummary>
-        <AccordionDetails expanded={expandAccordion === true ? true : false}>
+        <AccordionDetails>
           {Manager.isValid(medicalValues) &&
             medicalValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))

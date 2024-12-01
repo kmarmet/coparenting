@@ -5,6 +5,7 @@ import Manager from "./manager"
 import {
   formatFileName,
   formatNameFirstNameOnly,
+  formatTitleWords,
   getFirstWord,
   isAllUppercase,
   removeFileExtension,
@@ -13,21 +14,16 @@ import {
   stringHasNumbers,
   toCamelCase,
   uppercaseFirstLetterOfAllWords,
-  wordCount,
+  wordCount
 } from "../globalFunctions"
 import DatasetManager from "./datasetManager"
-import CalendarEvent from "../models/calendarEvent"
-import DateManager from "./dateManager"
-import DateFormats from "../constants/dateFormats"
-import ObjectManager from "./objectManager"
-import ModelNames from "../models/modelNames"
 import LogManager from "./logManager"
 
 export default CalendarManager =
   formatEventTitle: (title) =>
     if title and title.length > 0
       title = uppercaseFirstLetterOfAllWords(title)
-      title = title.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At","at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and")
+      title = formatTitleWords(title)
       return title
   addMultipleCalEvents: (currentUser, newEvents) ->
     dbRef = ref(getDatabase())

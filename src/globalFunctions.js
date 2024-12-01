@@ -30,7 +30,7 @@ export var hasClass = function(element, className) {
 };
 
 export var formatTitleWords = function(str) {
-  return str = str.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and");
+  return str = str.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and").replaceAll("Is", "is").replaceAll("Not", "not");
 };
 
 export var getFirstWord = function(input) {

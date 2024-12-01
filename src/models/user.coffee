@@ -14,12 +14,10 @@ export default class User
     @emailVerified = false
     @defaultTransferLocation = ''
     @defaultTransferNavLink = ''
-    @settings = {
+    @dailySummaries = {
+      morningSentDate: ''
+      eveningSentDate: ''
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'
     }
   ) ->
-
-
-
-

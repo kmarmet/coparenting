@@ -20,7 +20,6 @@ import {
 } from '../../globalFunctions'
 import Label from './label'
 import { RiShieldUserLine } from 'react-icons/ri'
-import DatasetManager from '../../managers/datasetManager'
 
 function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', defaultPhones, labelText = '', icon = '' }) {
   const { state, setState } = useContext(globalState)
@@ -30,16 +29,16 @@ function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass 
   const setShareWithUsers = async () => {
     let people = []
     if (currentUser?.coparents?.length > 0) {
-      people = [...people, currentUser.coparents]
+      people = [...people, [...currentUser.coparents]].filter((x) => x)
     }
     if (currentUser?.parents?.length > 0) {
-      people = [...people, currentUser.parents]
+      people = [...people, [...currentUser.parents]].filter((x) => x)
     }
     if (currentUser?.children?.length > 0) {
-      people = [...people, currentUser.children]
+      people = [...people, [...currentUser.children]].filter((x) => x)
     }
-    people = DatasetManager.getUniqueArray(people, true)
-    setShareWith(people)
+    console.log(people.flat())
+    setShareWith(people.flat())
   }
 
   useEffect(() => {
@@ -57,19 +56,26 @@ function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass 
       <div className="flex" id="checkboxes">
         {Manager.isValid(shareWith, true) &&
           shareWith?.map((user, index) => {
-            const userName = user?.name
+            let name = user?.name
+            let phone = user.phone
+            if (!Manager.isValid(phone)) {
+              phone = user?.general?.phone
+            }
+            if (!Manager.isValid(name)) {
+              name = user?.general?.name
+            }
 
             return (
               <div
                 key={index}
                 id="share-with-checkbox-container"
-                data-phone={user?.phone ? user?.phone : ''}
+                data-phone={phone ? phone : ''}
                 className={`flex ${containerClass}`}
                 onClick={onCheck}>
                 <div className={`box ${Manager.isValid(defaultPhones, true) && defaultPhones.includes(user) ? 'active' : ''}`}>
                   <div id="inner-circle"></div>
                 </div>
-                <span>{formatNameFirstNameOnly(userName)}</span>
+                <span>{formatNameFirstNameOnly(name)}</span>
               </div>
             )
           })}

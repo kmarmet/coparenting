@@ -15,7 +15,8 @@ ModelNames = {
   conversationMessage: "conversationMessage",
   conversationThread: "conversationThread",
   childUser: 'childUser',
-  doc: 'doc'
+  doc: 'doc',
+  child: 'child'
 };
 
 export default ModelNames;
