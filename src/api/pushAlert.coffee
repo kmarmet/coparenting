@@ -25,16 +25,19 @@ PushAlertApi =
       'Visit New Updates in the menu to learn more'
 
 # Template for swap request decision
-    swapRequestDecision: (request, decision) ->
-      "A new Swap Request decision for #{request.startDate} has been made by #{request.createdBy}#{PushAlertApi.lineBreak}#{PushAlertApi.lineBreak}Decision: #{decision}"
-
     swapRequestApproval: (request, recipientName) ->
       "Swap Request decision for #{request.startDate} has been APPROVED by #{recipientName}#{PushAlertApi.lineBreak}#{PushAlertApi.lineBreak}"
 
     swapRequestRejection: (request, recipientName) ->
       "Swap Request for #{request.startDate} has been REJECTED.#{PushAlertApi.lineBreak}#{PushAlertApi.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the request,
-  you can communicate with #{recipientName} to come
- to an agreement on the request."
+  you can communicate with #{recipientName} to come to an agreement on the request."
+
+    transferRequestApproval: (request, recipientName) ->
+      "Transfer Change Request decision for #{request.date} has been APPROVED by #{recipientName}#{PushAlertApi.lineBreak}#{PushAlertApi.lineBreak}"
+
+    transferRequestRejection: (request, recipientName) ->
+      "Transfer Change Request for #{request.date} has been REJECTED.#{PushAlertApi.lineBreak}#{PushAlertApi.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the
+ request, you can communicate with #{recipientName} to come to an agreement on the request."
 
 # Determine API URL based on environment
   apiUrl: ->
@@ -52,7 +55,16 @@ PushAlertApi =
         title: title
         message: message
 
-# Subscribe a user to push notifications
+# Manually Trigger Subscribe Alert
+  showSubscribeAlert: () ->
+    window.pushalertbyiw ?= []
+    window.pushalertbyiw.push ['onReady', onPAReady]
+    onPAReady = ->
+      PushAlertCo.forceSubscribe
+#    onPAReady = ->
+#      PushAlertCo.triggerMe true
+
+  # Subscribe a user to push notifications
   subscribeUser: (userPhone) ->
     myHeaders = new Headers()
     myHeaders.append 'Content-Type', 'application/json'

@@ -37,8 +37,7 @@ function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass 
     if (currentUser?.children?.length > 0) {
       people = [...people, [...currentUser.children]].filter((x) => x)
     }
-    console.log(people.flat())
-    setShareWith(people.flat())
+    setShareWith(Manager.convertToArray(people).flat())
   }
 
   useEffect(() => {

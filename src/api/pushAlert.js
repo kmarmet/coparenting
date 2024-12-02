@@ -29,14 +29,17 @@ PushAlertApi = {
       return 'Visit New Updates in the menu to learn more';
     },
     // Template for swap request decision
-    swapRequestDecision: function(request, decision) {
-      return `A new Swap Request decision for ${request.startDate} has been made by ${request.createdBy}${PushAlertApi.lineBreak}${PushAlertApi.lineBreak}Decision: ${decision}`;
-    },
     swapRequestApproval: function(request, recipientName) {
       return `Swap Request decision for ${request.startDate} has been APPROVED by ${recipientName}${PushAlertApi.lineBreak}${PushAlertApi.lineBreak}`;
     },
     swapRequestRejection: function(request, recipientName) {
       return `Swap Request for ${request.startDate} has been REJECTED.${PushAlertApi.lineBreak}${PushAlertApi.lineBreak} Reason: ${request.reason}. If you would still prefer to proceed with the request, you can communicate with ${recipientName} to come to an agreement on the request.`;
+    },
+    transferRequestApproval: function(request, recipientName) {
+      return `Transfer Change Request decision for ${request.date} has been APPROVED by ${recipientName}${PushAlertApi.lineBreak}${PushAlertApi.lineBreak}`;
+    },
+    transferRequestRejection: function(request, recipientName) {
+      return `Transfer Change Request for ${request.date} has been REJECTED.${PushAlertApi.lineBreak}${PushAlertApi.lineBreak} Reason: ${request.reason}. If you would still prefer to proceed with the request, you can communicate with ${recipientName} to come to an agreement on the request.`;
     }
   },
   // Determine API URL based on environment
@@ -58,6 +61,20 @@ PushAlertApi = {
       })
     });
   },
+  // Manually Trigger Subscribe Alert
+  showSubscribeAlert: function() {
+    var onPAReady;
+    if (window.pushalertbyiw == null) {
+      window.pushalertbyiw = [];
+    }
+    window.pushalertbyiw.push(['onReady', onPAReady]);
+    return onPAReady = function() {
+      return PushAlertCo.forceSubscribe;
+    };
+  },
+  //    onPAReady = ->
+  //      PushAlertCo.triggerMe true
+
   // Subscribe a user to push notifications
   subscribeUser: function(userPhone) {
     var myHeaders, requestOptions, urlToUse;

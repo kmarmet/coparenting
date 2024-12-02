@@ -61,15 +61,14 @@ export default function SwapRequests() {
   }
 
   const selectDecision = async (decision) => {
-    const subId = await NotificationManager.getUserSubId(activeRequest.recipientPhone)
-    console.log(subId)
+    const ownerSubId = await NotificationManager.getUserSubId(activeRequest.ownerPhone)
     const recipient = await DB_UserScoped.getCoparentByPhone(activeRequest.recipientPhone, currentUser)
     const recipientName = recipient.name
     // Rejected
     if (decision === Decisions.rejected) {
       await DB.updateRecord(DB.tables.swapRequests, activeRequest, 'reason', rejectionReason, 'id')
       const notifMessage = PushAlertApi.templates.swapRequestRejection(activeRequest, recipientName)
-      PushAlertApi.sendMessage('Swap Request Decision', notifMessage, subId)
+      PushAlertApi.sendMessage('Swap Request Decision', notifMessage, ownerSubId)
       await deleteRequest('rejected')
       setShowDetails(false)
     }
@@ -77,7 +76,7 @@ export default function SwapRequests() {
     // Approved
     if (decision === Decisions.approved) {
       const notifMessage = PushAlertApi.templates.swapRequestApproval(activeRequest, recipientName)
-      PushAlertApi.sendMessage('Swap Request Decision', notifMessage, subId)
+      PushAlertApi.sendMessage('Swap Request Decision', notifMessage, ownerSubId)
       await DB.delete(DB.tables.swapRequests, activeRequest.id)
     }
   }
@@ -128,7 +127,7 @@ export default function SwapRequests() {
         hasDelete={true}
         submitText={'Approve'}
         title={'Request Details'}
-        onSubmit={() => {}}
+        onSubmit={() => selectDecision(Decisions.approved)}
         className="swap-requests"
         onClose={() => {
           setShowDetails(false)

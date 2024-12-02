@@ -945,7 +945,6 @@
 
   a,
   .notes {
-    margin: 0 0 0 45px;
     width: 100%;
     
     &.notes {
@@ -957,8 +956,9 @@
     width:calc(100% - 45px);
     flex-wrap: wrap;
     
-    p {
+    p, a {
       margin-top: 0;
+      line-height: 1.3;
     }
   }
 
@@ -2214,9 +2214,6 @@
   // TRANSFER
   &.transfer-change,
   &.expense-tracker, &.swap-requests {
-    a {
-      margin: 0 0 0 45px;
-    }
 
     &.expense-tracker {
       min-height: 90vh;

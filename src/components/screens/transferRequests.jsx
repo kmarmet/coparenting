@@ -4,7 +4,6 @@ import Manager from '@manager'
 import globalState from '../../context.js'
 import 'rsuite/dist/rsuite.min.css'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-import SmsManager from '@managers/smsManager.js'
 import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
 import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
@@ -36,6 +35,12 @@ import AlertManager from '../../managers/alertManager'
 import { MdOutlineNotes } from 'react-icons/md'
 import BottomCard from '../shared/bottomCard'
 
+const Decisions = {
+  approved: 'APPROVED',
+  rejected: 'REJECTED',
+  delete: 'DELETE',
+}
+
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, navbarButton } = state
@@ -56,35 +61,40 @@ export default function TransferRequests() {
     setExistingRequests(allRequests)
   }
 
-  const reject = async (request) => {
-    await DB.delete(DB.tables.transferChangeRequests, request.id).finally(async () => {
-      await DB_UserScoped.getCoparentByPhone(request.recipientName, currentUser).then(async (cop) => {
-        const subId = await NotificationManager.getUserSubId(cop.phone)
-        PushAlertApi.sendMessage(
-          'Swap Request Decision',
-          SmsManager.getTransferRequestDecisionTemplate(`${request.startDate}`.replace(',', ' to '), 'rejected', rejectionReason, currentUser?.name),
-          subId
-        )
+  const deleteRequest = async (action = 'deleted') => {
+    if (action === 'deleted') {
+      AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
+        await DB.delete(DB.tables.transferChangeRequests, activeRequest?.id)
+        AlertManager.successAlert(`Swap Request has been deleted.`)
+        setShowDetails(false)
       })
-    })
+    } else {
+      await DB.delete(DB.tables.transferChangeRequests, activeRequest?.id)
+      AlertManager.successAlert(`Swap Request has been rejected and a notification has been sent to the request recipient.`)
+      setShowDetails(false)
+    }
   }
 
-  const approve = async (request) => {
-    await DB.delete(DB.tables.transferChangeRequests, request.id).finally(async () => {
-      await DB_UserScoped.getCoparentByPhone(request.recipientName, currentUser).then(async (cop) => {
-        const subId = await NotificationManager.getUserSubId(cop.phone)
-
-        PushAlertApi.sendMessage(
-          'Swap Request Decision',
-          SmsManager.send(
-            cop.phone,
-            SmsManager.getTransferRequestDecisionTemplate(`${request.startDate}`.replace(',', ' to '), 'approved', null, currentUser?.name),
-            subId
-          )
-        )
-      })
+  const selectDecision = async (decision) => {
+    const ownerSubId = await NotificationManager.getUserSubId(activeRequest.ownerPhone)
+    const recipient = await DB_UserScoped.getCoparentByPhone(activeRequest.recipientPhone, currentUser)
+    const recipientName = recipient.name
+    // Rejected
+    if (decision === Decisions.rejected) {
+      await DB.updateRecord(DB.tables.transferChangeRequests, activeRequest, 'reason', rejectionReason, 'id')
+      const notifMessage = PushAlertApi.templates.transferRequestRejection(activeRequest, recipientName)
+      PushAlertApi.sendMessage('Transfer Change Request Decision', notifMessage, ownerSubId)
+      await deleteRequest('rejected')
       setShowDetails(false)
-    })
+    }
+
+    // Approved
+    if (decision === Decisions.approved) {
+      const notifMessage = PushAlertApi.templates.transferRequestApproval(activeRequest, recipientName)
+      PushAlertApi.sendMessage('Transfer Change Request Decision', notifMessage, ownerSubId)
+      await DB.delete(DB.tables.transferChangeRequests, activeRequest.id)
+      setShowDetails(false)
+    }
   }
 
   const addEventRowAnimation = () => {
@@ -105,24 +115,6 @@ export default function TransferRequests() {
     })
   }
 
-  const toggleDetails = (element) => {
-    const wrapper = element.target
-    const details = wrapper.querySelector('#details')
-    const svgDown = wrapper.querySelector('svg.down')
-    const svgUp = wrapper.querySelector('svg.up')
-    if (details) {
-      if (details.classList.contains('open')) {
-        details.classList.remove('open')
-        svgDown.classList.add('active')
-        svgUp.classList.remove('active')
-      } else {
-        details.classList.add('open')
-        svgDown.classList.remove('active')
-        svgUp.classList.add('active')
-      }
-    }
-  }
-
   useEffect(() => {
     onTableChange().then((r) => r)
     Manager.showPageContainer()
@@ -137,7 +129,7 @@ export default function TransferRequests() {
       <BottomCard
         submitText={'Approve'}
         title={'Request Details'}
-        onSubmit={() => approve(activeRequest)}
+        onSubmit={() => selectDecision(Decisions.approved)}
         className="transfer-change"
         onClose={() => setShowDetails(false)}
         showCard={showDetails}>
@@ -147,9 +139,12 @@ export default function TransferRequests() {
               <PiUserDuotone id="primary-row-icon" />
             </div>
             {/* SENT TO */}
-            <p id="title">
-              Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
-            </p>
+            {activeRequest?.recipientPhone === currentUser.phone && <p id="title">From {formatNameFirstNameOnly(activeRequest?.createdBy)}</p>}
+            {activeRequest?.recipientPhone !== currentUser.phone && (
+              <p id="title">
+                Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
+              </p>
+            )}
           </div>
           {/* TIME */}
           {activeRequest?.time && activeRequest?.time.length > 0 && (
@@ -161,20 +156,22 @@ export default function TransferRequests() {
 
           {/* LOCATION */}
           {activeRequest?.location && activeRequest?.location.length > 0 && (
-            <div className="flex mb-20" id="row">
+            <div className="flex mb-20 flex-start" id="row">
               <div id="primary-icon-wrapper">
                 <BiNavigation id={'primary-row-icon'} />
               </div>
-              <p id="title" className="mr-auto">
-                Location
-              </p>
-              <a
-                target="_blank"
-                href={
-                  Manager.isIos() ? `http://maps.apple.com/?daddr=${encodeURIComponent(activeRequest?.location)}` : activeRequest?.directionsLink
-                }>
-                {activeRequest?.location}
-              </a>
+              <div className="two-column">
+                <p id="title" className="mr-auto">
+                  Location
+                </p>
+                <a
+                  target="_blank"
+                  href={
+                    Manager.isIos() ? `http://maps.apple.com/?daddr=${encodeURIComponent(activeRequest?.location)}` : activeRequest?.directionsLink
+                  }>
+                  {activeRequest?.location}
+                </a>
+              </div>
             </div>
           )}
 
@@ -184,22 +181,16 @@ export default function TransferRequests() {
               <div id="primary-icon-wrapper">
                 <MdOutlineNotes id={'primary-row-icon'} />
               </div>
-              <p id="title" className="mr-auto">
-                Reason
-              </p>
-              <p className="reason-text">{activeRequest?.reason}</p>
+              <div className="two-column">
+                <p id="title" className="mr-auto">
+                  Reason
+                </p>
+                <p className="reason-text">{activeRequest?.reason}</p>
+              </div>
             </div>
           )}
           {/* BUTTONS */}
           <div className="action-buttons">
-            <button
-              onClick={(e) => {
-                setRequestToRevise(activeRequest)
-                setShowRevisionCard(true)
-              }}
-              className="blue">
-              Revise
-            </button>
             <button
               className="red"
               data-request-id={activeRequest?.id}
@@ -208,7 +199,7 @@ export default function TransferRequests() {
                   'Rejection Reason',
                   'Please enter a rejection reason',
                   async () => {
-                    await reject(activeRequest)
+                    await selectDecision(Decisions.rejected)
                   },
                   true,
                   true,
@@ -239,6 +230,7 @@ export default function TransferRequests() {
               existingRequests.map((request, index) => {
                 return (
                   <div
+                    key={index}
                     className="flex"
                     id="row"
                     onClick={() => {
@@ -250,7 +242,7 @@ export default function TransferRequests() {
                     <div id="primary-icon-wrapper">
                       <PiCarProfileDuotone id={'primary-row-icon'} />
                     </div>
-                    <div key={index} data-request-id={request.id} className="request " id="content">
+                    <div data-request-id={request.id} className="request " id="content">
                       {/* DATE */}
                       <p id="title" className="flex date row-title">
                         {DateManager.formatDate(request.date)}
@@ -258,7 +250,13 @@ export default function TransferRequests() {
                           {uppercaseFirstLetterOfAllWords(request.status)}
                         </span>
                       </p>
-                      <p id="subtitle">Sent to {currentUser?.coparents?.filter((x) => x.phone === request.recipientPhone)[0]?.name}</p>
+                      {request?.recipientPhone === currentUser.phone && <p id="subtitle">From {formatNameFirstNameOnly(request?.createdBy)}</p>}
+                      {request?.recipientPhone !== currentUser.phone && (
+                        <p id="subtitle">
+                          Request Sent to{' '}
+                          {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === request?.recipientPhone)[0]?.name)}
+                        </p>
+                      )}
                     </div>
                   </div>
                 )

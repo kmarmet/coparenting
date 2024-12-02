@@ -2,23 +2,19 @@
 
 #external-overrides {
   #settings-container {
-    /*#region  DARK THEME*/
-      &.dark {
-        .rs-panel-body-collapse {
-          background-color: $darkBlue;
-        }
-        &.form {
-          input {
-            background: $translucentLightest
-          }
-        }
-      }
-    /*#endregion  DARK THEME*/
     .rs-panel-body-collapse {
       padding: 10px;
       border-radius: 0 0 $borderRadius $borderRadius;
       border-top: 0;
     }
+    
+    #label-wrapper {
+      #medium-title {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+    }
+    
     .back-button {
       font-weight: 400;
       margin-bottom: 8px;
@@ -52,7 +48,7 @@
 
       .section {
         width: 100%;
-        display: flex;
+//        display: flex;
 
         .input-container {
           width: 100%;
