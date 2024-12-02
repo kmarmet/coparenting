@@ -49,13 +49,14 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
       AlertManager.throwError('Please choose the day of the requested transfer change')
       return false
     } else {
+      const requestTimeIsValid = DateManager.dateIsValid(moment(requestTime, DateFormats.timeForDb).format(DateFormats.timeForDb))
       let newRequest = new TransferChangeRequest()
       newRequest.id = Manager.getUid()
       newRequest.reason = requestReason
       newRequest.ownerPhone = currentUser?.phone
       newRequest.createdBy = currentUser?.name
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
-      newRequest.time = DateManager.dateIsValid(moment(requestTime).format(DateFormats.timeForDb)) || ''
+      newRequest.time = requestTimeIsValid ? requestTime : ''
       newRequest.location = requestLocation
       newRequest.date = moment(requestDate).format(DateFormats.dateForDb)
       newRequest.directionsLink = directionsLink

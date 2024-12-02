@@ -49,7 +49,6 @@ export default function Memories() {
 
   const getSecuredMemories = async () => {
     let all = await SecurityManager.getMemories(currentUser)
-    console.log(all)
     if (Manager.isValid(all, true)) {
       setState({ ...state, isLoading: true })
       const resolvedImages = async () =>
@@ -58,6 +57,13 @@ export default function Memories() {
           for (const memory of all) {
             if (Manager.isValid(memory.url)) {
               promises.push(await FirebaseStorage.imageExists(memory.url, memory))
+              fetch(memory.url).then(async (response) => {
+                const statusCode = response.status
+                if (statusCode === 404) {
+                  // Delete memory if no longer in Firebase Storage
+                  await DB.deleteMemory(currentUser.phone, memory)
+                }
+              })
             }
           }
           if (Manager.isValid(promises, true)) {
@@ -68,9 +74,12 @@ export default function Memories() {
                 resolve(toReturn)
               })
               .catch(() => {
+                console.log('failed')
                 reject('failed')
               })
           }
+        }).catch((error) => {
+          console.log(error)
         })
       let validImages = await resolvedImages()
       validImages = validImages.filter((x) => x)
@@ -100,6 +109,7 @@ export default function Memories() {
             addImageAnimation()
           }, 200)
         } else {
+          setState({ ...state, isLoading: false })
           setMemories([])
         }
       }

@@ -26,12 +26,10 @@ import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
-import DB from '@db'
 
 export default function ResetPassword() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, firebaseUser } = state
-  const [viewPassword, setViewPassword] = useState(false)
   const [email, setEmail] = useState('')
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
@@ -43,14 +41,10 @@ export default function ResetPassword() {
     }
     await sendPasswordResetEmail(auth, email)
       .then(async (link) => {
-        const users = Manager.convertToArray(await DB.getTable(DB.tables.users))
-        const foundUser = users.filter((x) => x.email === password)[0]
-
         AlertManager.successAlert('A reset link has been sent to your email')
         setState({
           ...state,
           currentScreen: ScreenNames.login,
-          currentUser: foundUser,
           userIsLoggedIn: true,
         })
       })

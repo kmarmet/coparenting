@@ -8,11 +8,9 @@ import Manager from '@manager'
 import ChildrenInput from '../../childrenInput.jsx'
 import CoparentInputs from '../../coparentInput.jsx'
 import CheckboxGroup from '@shared/checkboxGroup.jsx'
-import DB from '@db'
 import SmsManager from '@managers/smsManager.js'
 import NotificationManager from '@managers/notificationManager.js'
 import PushAlertApi from '@api/pushAlert'
-import DB_UserScoped from '@userScoped'
 import ChildUser from 'models/child/childUser.js'
 import ParentInput from '../../parentInput'
 import { MdOutlineSecurity, MdOutlineSystemSecurityUpdateGood } from 'react-icons/md'
@@ -38,14 +36,11 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import moment from 'moment'
 import ModelNames from '../../../models/modelNames'
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import InstallAppPopup from '../../installAppPopup'
-import ParentPermissionCode from '../../../models/parentPermissionCode'
-import DateFormats from '../../../constants/dateFormats'
 import BottomCard from '../../shared/bottomCard'
 import { PiInfoDuotone } from 'react-icons/pi'
 import validator from 'validator'
@@ -70,7 +65,6 @@ export default function Registration() {
   const [parents, setParents] = useState([])
   const [coparents, setCoparents] = useState([])
   const [parentTypeAccExpanded, setParentTypeAccExpanded] = useState(false)
-  const [verificationCode, setVerificationCode] = useState(Manager.getUid().slice(0, 4))
   const [accountAlreadyExists, setAccountAlreadyExists] = useState(false)
   const [phoneIsVerified, setPhoneIsVerified] = useState(false)
   const [showVerificationCard, setShowVerificationCard] = useState(false)
@@ -92,31 +86,18 @@ export default function Registration() {
     }
     if (validator.isMobilePhone(userPhone)) {
       const permissionCode = Manager.getUid().slice(0, 6)
-      const recordId = Manager.getUid()
       SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, permissionCode))
 
-      // Add Parent Permission record to DB
-      const parentPermissionCode = new ParentPermissionCode()
-      parentPermissionCode.code = permissionCode
-      parentPermissionCode.parentPhone = parentPhone
-      parentPermissionCode.childPhone = userPhone
-      parentPermissionCode.id = recordId
-      parentPermissionCode.expiration = moment().add(5, 'minutes').format(DateFormats.fullDatetime)
-      setVerificationCode(permissionCode)
-
-      // Add code to DB
-      await DB.add(DB.tables.parentPermissionCodes, parentPermissionCode)
+      localStorage.setItem('parentPermissionCode', permissionCode)
 
       // Enter code alert
       AlertManager.inputAlert('Enter the code provided by your parent', ``, async (e) => {
-        const existingCodes = Manager.convertToArray(await DB.getTable(DB.tables.parentPermissionCodes))
-        const existingCode = existingCodes.filter((x) => x.parentPhone === parentPhone && x.childPhone === userPhone)[0]
-        console.log(permissionCode, existingCode.code)
-        if (permissionCode === existingCode.code) {
+        const localStorageCode = localStorage.getItem('parentPermissionCode')
+        console.log(e)
+        if (localStorageCode === e) {
           await submitChild()
         }
-        const deleteKey = await DB.getFlatTableKey(DB.tables.parentPermissionCodes, recordId)
-        await DB.deleteByPath(`${DB.tables.parentPermissionCodes}/${deleteKey}`)
+        localStorage.removeItem('parentPermissionCode')
       })
     }
   }
@@ -163,8 +144,8 @@ export default function Registration() {
         })
 
       // const dbRef = ref(getDatabase())
-      // const subId = await NotificationManager.getUserSubId('3307494534')
-      // PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone} \n Name: ${userName}`, subId)
+      const subId = await NotificationManager.getUserSubIdFromApi('3307494534')
+      PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone} \n Name: ${userName}`, subId)
     }
   }
 
@@ -176,51 +157,43 @@ export default function Registration() {
       AlertManager.throwError('Please complete all fields')
       return false
     }
-    let parent = await DB_UserScoped.getUser(DB.tables.users, parentPhone)
-    if (Manager.isValid(parent)) {
-      let childUser = new ChildUser()
-      childUser.id = Manager.getUid()
-      childUser.name = uppercaseFirstLetterOfAllWords(userName)
-      childUser.accountType = 'child'
-      childUser.parents = parents
-      childUser.email = email
-      childUser.settings.theme = 'light'
-      childUser.general.name = userName
-      childUser.general.phone = formatPhone(userPhone)
-      const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
-      const dbRef = ref(getDatabase())
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(async (userCredential) => {
-          // Signed up successfully
-          const user = userCredential.user
-          console.log('Signed up as:', user.email)
-          await set(child(dbRef, `users/${cleanChild.phone}`), cleanChild)
-        })
-        .catch((error) => {
-          console.error('Sign up error:', error.message)
-        })
+    let childUser = new ChildUser()
+    childUser.id = Manager.getUid()
+    childUser.name = uppercaseFirstLetterOfAllWords(userName)
+    childUser.accountType = 'child'
+    childUser.parents = parents
+    childUser.email = email
+    childUser.settings.theme = 'light'
+    childUser.phone = formatPhone(userPhone)
+    const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
+    const dbRef = ref(getDatabase())
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        // Signed up successfully
+        const user = userCredential.user
+        console.log('Signed up as:', user.email)
+        await set(child(dbRef, `users/${cleanChild.phone}`), cleanChild)
+      })
+      .catch((error) => {
+        console.error('Sign up error:', error.message)
+      })
 
-      // SEND SMS MESSAGES
-      // Send to parent
-      const parentSubId = await NotificationManager.getUserSubId(parentPhone)
-      PushAlertApi.sendMessage(
-        'Child Registration',
-        `${userName} is now signed up. If you would like to be able to provide viewing access for them, add them in the Child Info section of the app. Including their phone number is required.`,
-        parentSubId
-      )
-      // Send to child
-      const childSubId = await NotificationManager.getUserSubId(userPhone)
-      PushAlertApi.sendMessage('Welcome Aboard!', 'You are now signed up!', childSubId)
-      // Send to me
-      const mySubId = await NotificationManager.getUserSubId('3307494534')
-      PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone}`, mySubId)
-      AlertManager.successAlert(`Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
-      setState({ ...state, currentScreen: ScreenNames.login })
-    } else {
-      // Parent account does not exist
-      AlertManager.throwError(`There is no account with the phone number ${parentPhone}. Please re-enter or have your parent register first`)
-      return false
-    }
+    // SEND SMS MESSAGES
+    // Send to parent
+    const parentSubId = await NotificationManager.getUserSubIdFromApi(parentPhone)
+    PushAlertApi.sendMessage(
+      'Child Registration',
+      `${userName} is now signed up. If you would like to be able to provide viewing access for them, add them in the Child Info section of the app. Including their phone number is required.`,
+      parentSubId
+    )
+    // Send to child
+    const childSubId = await NotificationManager.getUserSubIdFromApi(userPhone)
+    PushAlertApi.sendMessage('Welcome Aboard!', 'You are now signed up!', childSubId)
+    // Send to me
+    const mySubId = await NotificationManager.getUserSubIdFromApi('3307494534')
+    PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone}`, mySubId)
+    AlertManager.successAlert(`Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
+    setState({ ...state, currentScreen: ScreenNames.login })
   }
 
   const formIsValid = async () => {

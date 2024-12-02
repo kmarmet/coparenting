@@ -290,8 +290,8 @@ const DateManager = {
     // holidayEvents = holidayEvents.filter((value, index, self) => index === self.findIndex((t) => t.startDate === value.startDate))
     await CalendarManager.setHolidays(holidayEvents)
   },
-  dateIsValid: (inputDate) => {
-    return moment(inputDate).isValid()
+  dateIsValid: (inputDate, format = DateFormats.dateForDb) => {
+    return moment(inputDate, format).isValid()
   },
   returnValidDate: (inputDate, type, outputFormat) => {
     const inputFormats = [DateFormats.dateForDb, DateFormats.timeForDb, DateFormats.dateForDb, DateFormats.fullDatetime]

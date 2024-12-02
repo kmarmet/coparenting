@@ -29,7 +29,7 @@ import BottomCard from './shared/bottomCard'
 
 export default function FullMenu() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, theme, currentUser, showCenterNavbarButton } = state
+  const { currentScreen, menuIsOpen, theme, currentUser } = state
 
   const auth = getAuth()
 
@@ -39,8 +39,8 @@ export default function FullMenu() {
   }
 
   const changeTheme = async (theme) => {
+    console.log(theme)
     await DB_UserScoped.updateUserRecord(currentUser?.phone, `settings/theme`, theme)
-    setState({ ...state, theme: theme })
     window.location.reload()
   }
 
@@ -195,13 +195,13 @@ export default function FullMenu() {
         </div>
 
         {/* THEME TOGGLE */}
-        {theme === 'dark' && (
+        {currentUser?.settings?.theme === 'dark' && (
           <div className="menu-item theme">
             <PiSunDuotone />
             <p onClick={() => changeTheme('light')}>Light Mode</p>
           </div>
         )}
-        {theme === 'light' && (
+        {currentUser?.settings?.theme === 'light' && (
           <div className="menu-item theme">
             <PiMoonStarsDuotone />
             <p onClick={() => changeTheme('dark')}> Dark Mode</p>

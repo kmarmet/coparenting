@@ -11,6 +11,15 @@ export default NotificationManager =
       _subId = snapshot.val()
       subId = _subId[userPhone]
 
+  getUserSubIdFromApi:(userPhone) =>
+    subId = ''
+
+    fetch "https://peaceful-coparenting.app:5000/firebase/getSubId?phoneNumber=#{userPhone}"
+      .then (response) ->
+        response.text()
+      .then (response) ->
+        subId = response
+        console.log response
     return subId
   sendToShareWith: (coparentPhones, title, message) =>
     for phone in coparentPhones

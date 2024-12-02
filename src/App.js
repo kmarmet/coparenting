@@ -39,6 +39,8 @@ import ReviseChildTransferChangeRequest from './components/forms/reviseTransferR
 import emailjs from '@emailjs/browser'
 import './globalFunctions'
 import StateObj from './constants/stateObj'
+import { getDatabase, ref } from 'firebase/database'
+
 // Menus
 import FullMenu from './components/fullMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
@@ -95,19 +97,11 @@ export default function App() {
     })
   }
 
-  const setCurrentUser = async () => {
-    if (userEmail && userEmail.length > 0) {
-      const _currentUser = await DB.find(DB.tables.users, ['email', userEmail], true)
-      setState({ ...state, currentUser: _currentUser })
-    }
-  }
-
   // CLEAR APP BADGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
     }
-    setCurrentUser().then((r) => r)
   }, [currentScreen])
 
   // ON PAGE LOAD
@@ -116,10 +110,52 @@ export default function App() {
     // throw new Error('Something went wrong')
     document.body.appendChild(myCanvas)
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         const user = auth.currentUser
         setUserEmail(user.email)
+        const dbRef = ref(getDatabase())
+        const _currentUser = await DB.find(DB.tables.users, ['email', user.email], true)
+
+        setState({ ...state, currentUser: _currentUser })
+
+        // DB.getTable(DB.tables.pushAlertSubscribers).then(async (users) => {
+        //   const _currentUser = await DB.find(DB.tables.users, ['email', user.email], true)
+        //   const subId = await DB.getPushAlertSubscriberId(_currentUser.phone)
+        //
+        //   if (!Manager.isValid(subId)) {
+        //   }
+        //   // let subIds =`
+        //   // let pushalertbyiw = []
+        //   // ;(pushalertbyiw = window.pushalertbyiw || []).push(['disableAutoInit', true])
+        //   // ;(pushalertbyiw = window.pushalertbyiw || []).push(['disableAutoInit', true])
+        //   // PushAlertCo.init()
+        //   // ;(pushalertbyiw = window.pushalertbyiw || []).push(['disableAutoInit', true])
+        //
+        //   // ;(pushalertbyiw = window.pushalertbyiw || []).push(['addToSegment', 38837, onSubscribe])
+        //
+        //   // async function onSubscribe(result) {
+        //   //   if (result.success) {
+        //   //     ;(pushalertbyiw = window.pushalertbyiw || []).push(['onReady', onPushAlertReady])
+        //   //   } else {
+        //   //     ;(pushalertbyiw = window.pushalertbyiw || []).push(['subscribeToSegment', 38837])
+        //   //   }
+        //   // }
+        //   //
+        //   // async function onPushAlertReady() {
+        //   //   console.log('onPushAlertReady')
+        //   // }
+        //   // subscribers.forEach((sub) => {
+        //   //   const phone = sub[0]
+        //   //   const id = sub[1]
+        //   //   if (user && phone === user.phone) {
+        //   //     return false
+        //   //   } else {
+        //   //     const subId = PushAlertCo.subs_id
+        //   //     set(child(dbRef, `pushAlertSubscribers/${user.phone}/`), subId)
+        //   //   }
+        //   // })
+        // })
         // console.log(user)
       } else {
         console.log('signed out or user doesn"t exist')

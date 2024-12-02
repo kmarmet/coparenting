@@ -108,6 +108,7 @@ export default function TransferRequests() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.transferChangeRequests), async (snapshot) => {
+      console.log(snapshot.val())
       await getSecuredRequests().then((r) => r)
       setTimeout(() => {
         addEventRowAnimation()
@@ -118,7 +119,7 @@ export default function TransferRequests() {
   useEffect(() => {
     onTableChange().then((r) => r)
     Manager.showPageContainer()
-  })
+  }, [])
 
   return (
     <>

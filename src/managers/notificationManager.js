@@ -17,10 +17,20 @@ export default NotificationManager = {
     var dbRef, subId;
     dbRef = ref(getDatabase());
     subId = '';
-    await get(child(dbRef, `${DB.tables.pushAlertSubscribers}`)).then(function(snapshot) {
+    return (await get(child(dbRef, `${DB.tables.pushAlertSubscribers}`)).then(function(snapshot) {
       var _subId;
       _subId = snapshot.val();
       return subId = _subId[userPhone];
+    }));
+  },
+  getUserSubIdFromApi: (userPhone) => {
+    var subId;
+    subId = '';
+    fetch(`https://peaceful-coparenting.app:5000/firebase/getSubId?phoneNumber=${'3307494534'}`).then(function(response) {
+      return response.text();
+    }).then(function(response) {
+      subId = response;
+      return console.log(response);
     });
     return subId;
   },

@@ -43,6 +43,16 @@ const DB = {
       return []
     }
   },
+  getPushAlertSubscriberId: async (phone) => {
+    let subId
+    const allUsers = await DB.getTable(DB.tables.pushAlertSubscribers, true)
+    for (let userPhone in allUsers) {
+      if (userPhone === phone) {
+        subId = allUsers[userPhone]
+      }
+    }
+    return subId
+  },
   getFlatTableKey: async (path, id) => {
     const records = await DB.getTable(path)
     let key

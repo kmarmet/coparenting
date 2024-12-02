@@ -1,12 +1,10 @@
 import React, { useContext, useLayoutEffect, useState } from 'react'
 import ScreenNames from '@screenNames'
 import globalState from '../../../context.js'
-import DB from '@db'
 import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup.jsx'
 import InstallAppPopup from 'components/installAppPopup.jsx'
 import { IoPersonAddOutline } from 'react-icons/io5'
-import { child, getDatabase, ref, set } from 'firebase/database'
 import {
   browserLocalPersistence,
   getAuth,
@@ -53,42 +51,21 @@ export default function Login() {
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
-  const tryGetCurrentUser = async (firebaseUser) => {
-    const relevantUser = await DB.find(DB.tables.users, ['email', firebaseUser.email], true)
-    return relevantUser
-  }
-
   const subscribeUser = (user) => {
     // eslint-disable-next-line no-undef
+    // ;(pushalertbyiw = window.pushalertbyiw || []).push(['disableAutoInit', true])
+    // async function onSubscribe(result) {
+    //   if (result.success) {
+    //     ;(pushalertbyiw = window.pushalertbyiw || []).push(['onReady', onPushAlertReady])
+    //   } else {
+    //     ;(pushalertbyiw = window.pushalertbyiw || []).push(['subscribeToSegment', 38837])
+    //   }
+    // }
     let pushalertbyiw = []
-    ;(pushalertbyiw = window.pushalertbyiw || []).push(['addToSegment', 38837, onSubscribe])
+    ;(pushalertbyiw = window.pushalertbyiw || []).push(['onReady', onPAReady])
 
-    async function onSubscribe(result) {
-      if (result.success) {
-        ;(pushalertbyiw = window.pushalertbyiw || []).push(['onReady', onPushAlertReady])
-      } else {
-        ;(pushalertbyiw = window.pushalertbyiw || []).push(['subscribeToSegment', 38837])
-      }
-    }
-
-    async function onPushAlertReady() {
-      console.log('onPushAlertReady')
-      const dbRef = ref(getDatabase())
-
-      DB.getTable(DB.tables.pushAlertSubscribers).then((users) => {
-        const subscribers = Object.entries(users)
-        subscribers.forEach((sub) => {
-          const phone = sub[0]
-          const id = sub[1]
-          if (user && phone === user.phone) {
-            return false
-          } else {
-            // eslint-disable-next-line no-undef
-            const subId = PushAlertCo.subs_id
-            set(child(dbRef, `pushAlertSubscribers/${user.phone}/`), subId)
-          }
-        })
-      })
+    function onPAReady() {
+      PushAlertCo.init() //You can call this method to request subscription box manually
     }
   }
 
@@ -112,8 +89,6 @@ export default function Login() {
         return signInWithEmailAndPassword(auth, email, password)
           .then(async (userCredential) => {
             const user = userCredential.user
-            const _currentUser = await tryGetCurrentUser(user)
-            subscribeUser(_currentUser)
             // USER NEEDS TO VERIFY EMAIL
             if (!user.emailVerified) {
               AlertManager.oneButtonAlert(
@@ -128,7 +103,6 @@ export default function Login() {
                 userIsLoggedIn: true,
                 isLoading: false,
                 currentScreen: ScreenNames.calendar,
-                currentUser: _currentUser,
               })
             } else {
               setState({
@@ -136,7 +110,6 @@ export default function Login() {
                 userIsLoggedIn: true,
                 isLoading: false,
                 currentScreen: ScreenNames.calendar,
-                currentUser: _currentUser,
               })
             }
           })
@@ -162,8 +135,6 @@ export default function Login() {
     signInWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const user = userCredential.user
-        const _currentUser = await tryGetCurrentUser(user)
-        subscribeUser(_currentUser)
         // USER NEEDS TO VERIFY EMAIL
         if (!user.emailVerified) {
           AlertManager.oneButtonAlert(
@@ -178,7 +149,6 @@ export default function Login() {
             userIsLoggedIn: true,
             isLoading: false,
             currentScreen: ScreenNames.calendar,
-            currentUser: _currentUser,
           })
         } else {
           setState({
@@ -186,7 +156,6 @@ export default function Login() {
             userIsLoggedIn: true,
             isLoading: false,
             currentScreen: ScreenNames.calendar,
-            currentUser: _currentUser,
           })
         }
       })
@@ -201,7 +170,6 @@ export default function Login() {
         } else {
           AlertManager.throwError(`Incorrect password`, 'Please tap Reset Password.')
         }
-        // AlertManager.throwError('Incorrect phone and/or password')
       })
   }
 
@@ -223,12 +191,10 @@ export default function Login() {
     document.querySelector('.App').classList.remove('pushed')
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const _currentUser = await tryGetCurrentUser(user)
         // User is signed in.
         setState({
           ...state,
           currentScreen: ScreenNames.calendar,
-          currentUser: _currentUser,
           userIsLoggedIn: true,
           isLoading: false,
         })
@@ -275,11 +241,12 @@ export default function Login() {
             {/* EMAIL */}
             <InputWrapper inputValueType="email" required={true} labelText={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
             {/* PASSWORD */}
-            <div className="flex inputs mb-10">
+            <div className="flex inputs">
               <InputWrapper
                 inputValueType={viewPassword ? 'text' : 'password'}
                 required={true}
                 labelText={'Password'}
+                inputClasses="mb-0"
                 onChange={(e) => setPassword(e.target.value)}
               />
               {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue eye-icon ml-10'} />}
@@ -310,7 +277,8 @@ export default function Login() {
           </p>
 
           <p id="contact-support-text">
-            If you need help resetting your email address, please contact us at{' '}
+            If you need to reset your email address, please contact us at
+            <br />
             <a href="mailto:support@peaceful-coparenting.app">support@peaceful-coparenting.app</a>
           </p>
         </div>

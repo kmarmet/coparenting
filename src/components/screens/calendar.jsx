@@ -211,9 +211,17 @@ export default function EventCalendar() {
 
   const showVisitationHolidays = async () => {
     const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
-    let userVisitationHolidays = allEvents.filter(
-      (x) => x.isHoliday === true && x.ownerPhone === currentUser?.phone && contains(x.title.toLowerCase(), 'holiday')
-    )
+    let userVisitationHolidays = []
+    if (currentUser.accountType === 'parent') {
+      userVisitationHolidays = allEvents.filter(
+        (x) => x.isHoliday === true && x.ownerPhone === currentUser?.phone && contains(x.title.toLowerCase(), 'holiday')
+      )
+    }
+    if (currentUser.accountType === 'child') {
+      // const parentNumbers = (currentUser?.parents?.userVisitationHolidays = allEvents.filter(
+      //   (x) => x.isHoliday === true && x.ownerPhone === currentUser?.phone && contains(x.title.toLowerCase(), 'holiday')
+      // ))
+    }
     userVisitationHolidays.forEach((holiday) => {
       holiday.title += ` (${holiday.holidayName})`
     })
@@ -285,9 +293,15 @@ export default function EventCalendar() {
         setShowSearchCard(true)
       })
     }
-    onTableChange().then((r) => r)
+
     Manager.showPageContainer('show')
   }, [])
+
+  useEffect(() => {
+    if (Manager.isValid(currentUser)) {
+      onTableChange().then((r) => r)
+    }
+  }, [currentUser])
 
   return (
     <>
