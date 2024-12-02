@@ -20,7 +20,6 @@ import { initializeApp } from 'firebase/app'
 import { PiEyeClosedDuotone, PiEyeDuotone } from 'react-icons/pi'
 import validator from 'validator'
 import { MdOutlinePassword } from 'react-icons/md'
-
 import {
   contains,
   formatFileName,
@@ -109,50 +108,47 @@ export default function Login() {
     // Is Persistent
     if (isPersistent) {
       setState({ ...state, isLoading: true })
-      setPersistence(auth, browserLocalPersistence)
-        .then(async () => {
-          return signInWithEmailAndPassword(auth, email, password)
-            .then(async (userCredential) => {
-              const user = userCredential.user
-              const _currentUser = await tryGetCurrentUser(user)
-              subscribeUser(_currentUser)
-              // USER NEEDS TO VERIFY EMAIL
-              if (!user.emailVerified) {
-                AlertManager.oneButtonAlert(
-                  'Email Address Verification Needed',
-                  `For security purposes, we need to verify ${user.email}. Please click the link sent to your email. Once your email is verified, return here and tap/click 'Okay'`,
-                  'info',
-                  () => {}
-                )
-                sendEmailVerification(user)
-                setState({
-                  ...state,
-                  userIsLoggedIn: true,
-                  isLoading: false,
-                  currentScreen: ScreenNames.calendar,
-                  currentUser: _currentUser,
-                })
-              } else {
-                setState({
-                  ...state,
-                  userIsLoggedIn: true,
-                  isLoading: false,
-                  currentScreen: ScreenNames.calendar,
-                  currentUser: _currentUser,
-                })
-              }
-            })
-            .catch((error) => {
-              setState({ ...state, isLoading: false })
-              console.error('Sign in error:', error.message)
-              AlertManager.throwError('Incorrect phone and/or password')
-            })
-        })
-        .catch((error) => {
-          setState({ ...state, isLoading: false })
-          console.error('Sign in error:', error.message)
-          AlertManager.throwError('Incorrect phone and/or password')
-        })
+      setPersistence(auth, browserLocalPersistence).then(async () => {
+        return signInWithEmailAndPassword(auth, email, password)
+          .then(async (userCredential) => {
+            const user = userCredential.user
+            const _currentUser = await tryGetCurrentUser(user)
+            subscribeUser(_currentUser)
+            // USER NEEDS TO VERIFY EMAIL
+            if (!user.emailVerified) {
+              AlertManager.oneButtonAlert(
+                'Email Address Verification Needed',
+                `For security purposes, we need to verify ${user.email}. Please click the link sent to your email. Once your email is verified, return here and tap/click 'Okay'`,
+                'info',
+                () => {}
+              )
+              sendEmailVerification(user)
+              setState({
+                ...state,
+                userIsLoggedIn: true,
+                isLoading: false,
+                currentScreen: ScreenNames.calendar,
+                currentUser: _currentUser,
+              })
+            } else {
+              setState({
+                ...state,
+                userIsLoggedIn: true,
+                isLoading: false,
+                currentScreen: ScreenNames.calendar,
+                currentUser: _currentUser,
+              })
+            }
+          })
+          .catch((error) => {
+            setState({ ...state, isLoading: false })
+            console.error('Sign in error:', error.message)
+            if (contains(error.message, 'wrong-password')) {
+              console.log('found')
+              AlertManager.throwError(`Incorrect Password`, 'Please tap Reset Password below')
+            }
+          })
+      })
     }
 
     // Not Persistent
@@ -197,7 +193,15 @@ export default function Login() {
       .catch((error) => {
         setState({ ...state, isLoading: false })
         console.error('Sign in error:', error.message)
-        AlertManager.throwError('Incorrect phone and/or password')
+        if (contains(error.message, 'user-not-found')) {
+          AlertManager.throwError(
+            `No account with email ${email} found.`,
+            'Please tap Rest Email if you may have registered with the wrong email address.'
+          )
+        } else {
+          AlertManager.throwError(`Incorrect password`, 'Please tap Reset Password.')
+        }
+        // AlertManager.throwError('Incorrect phone and/or password')
       })
   }
 
@@ -278,8 +282,8 @@ export default function Login() {
                 labelText={'Password'}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue ml-10'} />}
-              {viewPassword && <PiEyeClosedDuotone onClick={() => setViewPassword(false)} className={'blue ml-10'} />}
+              {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue eye-icon ml-10'} />}
+              {viewPassword && <PiEyeClosedDuotone onClick={() => setViewPassword(false)} className={'blue eye-icon ml-10'} />}
             </div>
 
             {/* REMEMBER ME */}
@@ -301,8 +305,13 @@ export default function Login() {
           </div>
 
           {/* FORGOT PASSWORD BUTTON */}
-          <p id="forgot-password-link" className="mt-20" onClick={() => setState({ ...state, currentScreen: ScreenNames.forgotPassword })}>
-            Forgot Password <MdOutlinePassword className={'fs-18'} />
+          <p id="forgot-password-link" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
+            Reset Password <MdOutlinePassword />
+          </p>
+
+          <p id="contact-support-text">
+            If you need help resetting your email address, please contact us at{' '}
+            <a href="mailto:support@peaceful-coparenting.app">support@peaceful-coparenting.app</a>
           </p>
         </div>
       </div>

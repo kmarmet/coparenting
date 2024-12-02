@@ -42,8 +42,6 @@ export default function UpdateContactInfo({ updateType, showCard, hideCard }) {
   const auth = getAuth(app)
 
   const logout = () => {
-    localStorage.removeItem('rememberKey')
-
     signOut(auth)
       .then(() => {
         setState({
@@ -63,7 +61,7 @@ export default function UpdateContactInfo({ updateType, showCard, hideCard }) {
   const updateUserEmail = async () => {
     AlertManager.successAlert('Email has been updated!')
     if (!Manager.isValid(email, false, false, true)) {
-      AlertManager.throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'Number' : 'Address'}`)
+      AlertManager.throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'number' : 'Address'}`)
       return false
     }
     if (!validator.isEmail(email)) {
@@ -80,8 +78,6 @@ export default function UpdateContactInfo({ updateType, showCard, hideCard }) {
             email: email,
           })
           await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/email`, email)
-          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/emailVerified`, false)
-          localStorage.removeItem('rememberKey')
           logout()
           hideCard()
         })
@@ -107,7 +103,6 @@ export default function UpdateContactInfo({ updateType, showCard, hideCard }) {
     if (updateType === 'phone') {
       await DB_UserScoped.updateUserContactInfo(currentUser, currentUser?.phone, phone, 'phone')
       AlertManager.successAlert('Phone number has been updated')
-      localStorage.removeItem('rememberKey')
       hideCard()
       logout()
     }

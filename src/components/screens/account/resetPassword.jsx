@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
-import DB from '@db'
 import globalState from '../../../context'
 import Manager from '@manager'
 import ScreenNames from '@screenNames'
+
 import {
   contains,
   formatFileName,
@@ -20,43 +20,42 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
+import validator from 'validator'
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
+import DB from '@db'
 
-export default function ForgotPassword() {
+export default function ResetPassword() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, firebaseUser } = state
+  const [viewPassword, setViewPassword] = useState(false)
   const [email, setEmail] = useState('')
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
   const sendResetLink = async () => {
-    if (email.length === 0) {
-      AlertManager.displayAlert('error', 'Email is required to reset password')
+    if (!validator.isEmail(email)) {
+      AlertManager.throwError('Email is not valid')
+      return false
     }
     await sendPasswordResetEmail(auth, email)
       .then(async (link) => {
         const users = Manager.convertToArray(await DB.getTable(DB.tables.users))
-        const foundUser = users.filter((x) => x.email === email)[0]
+        const foundUser = users.filter((x) => x.email === password)[0]
 
-        if (Manager.isValid(foundUser)) {
-          AlertManager.successAlert('A reset link has been sent to your email')
-          setState({
-            ...state,
-            currentScreen: ScreenNames.login,
-            currentUser: foundUser,
-            userIsLoggedIn: true,
-          })
-        } else {
-          console.log('no user')
-          AlertManager.displayAlert('error', 'We could not find an account with the email provided')
-        }
+        AlertManager.successAlert('A reset link has been sent to your email')
+        setState({
+          ...state,
+          currentScreen: ScreenNames.login,
+          currentUser: foundUser,
+          userIsLoggedIn: true,
+        })
       })
-
       .catch((error) => {
+        AlertManager.throwError('error', 'We could not find an account with the email provided')
         console.log(error)
         // Some error occurred.
       })
@@ -68,13 +67,13 @@ export default function ForgotPassword() {
 
   return (
     <>
-      {/*<p className="screen-title ">Forgot Password</p>*/}
       <div id="forgot-password-container" className="page-container light form">
+        <p className="screen-title ">Reset Password</p>
         <div className="form" autoComplete="off">
-          <InputWrapper labelText={'Email Address'} required={true} inputValueType="email" onChange={(e) => setEmail(e.target.value)} />
+          <InputWrapper labelText={'Email Address'} required={true} inputValueType={'email'} onChange={(e) => setEmail(e.target.value)} />
           <div className="flex gap">
             <button className="button default green" onClick={sendResetLink}>
-              Reset
+              Send Reset Link
             </button>
             <button className="button default" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
               Nevermind

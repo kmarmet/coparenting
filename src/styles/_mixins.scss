@@ -792,6 +792,11 @@
   -moz-box-shadow: 0px 0px 12px 0px $green;
   box-shadow: 0px 0px 12px 0px $green;
 }
+@mixin blueGlow {
+  -webkit-box-shadow: 0px 0px 12px 0px $mainBlue;
+  -moz-box-shadow: 0px 0px 12px 0px $mainBlue;
+  box-shadow: 0px 0px 12px 0px $mainBlue;
+}
 @mixin fadeBottom {
   mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
 }

@@ -11,7 +11,6 @@ export default class User
     @accountType = ''
     @allowNotifications = ''
     @id = Manager.getUid()
-    @emailVerified = false
     @defaultTransferLocation = ''
     @defaultTransferNavLink = ''
     @dailySummaries = {

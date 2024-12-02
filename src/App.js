@@ -15,7 +15,7 @@ import Coparents from '@screens/coparents/coparents.jsx'
 import DocsList from '@screens/documents/docsList.jsx'
 import UploadDocuments from '@screens/documents/uploadDocuments.jsx'
 import ExpenseTracker from '@screens/expenseTracker.jsx'
-import ForgotPassword from '@screens/account/forgotPassword.jsx'
+import ResetPassword from '@screens/account/resetPassword.jsx'
 import Login from '@screens/auth/login.jsx'
 import Memories from '@screens/memories.jsx'
 import Registration from '@screens/auth/registration.jsx'
@@ -190,7 +190,7 @@ export default function App() {
             {currentScreen === ScreenNames.account && <Account />}
             {currentScreen === ScreenNames.expenseTracker && <ExpenseTracker />}
             {currentScreen === ScreenNames.swapRequests && <SwapRequests />}
-            {currentScreen === ScreenNames.forgotPassword && <ForgotPassword />}
+            {currentScreen === ScreenNames.resetPassword && <ResetPassword />}
             {currentScreen === ScreenNames.transferRequests && <TransferRequests />}
             {currentScreen === ScreenNames.memories && <Memories />}
             {currentScreen === ScreenNames.childInfo && <ChildInfo />}

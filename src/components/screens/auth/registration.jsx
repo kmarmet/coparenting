@@ -136,7 +136,6 @@ export default function Registration() {
       newUser.coparents = coparents
       newUser.parentType = parentType
       newUser.settings.theme = 'light'
-      newUser.emailVerified = false
       newUser.settings.eveningReminderSummaryHour = '8pm'
       newUser.settings.morningReminderSummaryHour = '10am'
 
@@ -188,7 +187,6 @@ export default function Registration() {
       childUser.settings.theme = 'light'
       childUser.general.name = userName
       childUser.general.phone = formatPhone(userPhone)
-      childUser.emailVerified = false
       const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
       const dbRef = ref(getDatabase())
       createUserWithEmailAndPassword(auth, email, password)

@@ -172,6 +172,14 @@
   }
 }
 
+.password-validation {
+  .checklist-icon {
+    font-size: 15px !important;
+    height: 10px !important;
+    width: 10px !important;
+  }
+}
+
 #external-overrides {
   // MENU
   .full-menu {
@@ -249,9 +257,9 @@
     }
 
     p {
-      color:black;
-      opacity: .85;
-      letter-spacing: .6px;
+      color: black;
+      opacity: 0.85;
+      letter-spacing: 0.6px;
     }
 
     b {
@@ -506,7 +514,7 @@
       line-height: 1.2;
       width: auto;
       display: inline-block;
-      
+
       &.blue {
         color: $mainBlue;
       }
