@@ -65,12 +65,12 @@ export default function TransferRequests() {
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
         await DB.delete(DB.tables.transferChangeRequests, activeRequest?.id)
-        AlertManager.successAlert(`Swap Request has been deleted.`)
+        AlertManager.successAlert(`Transfer Change Request has been deleted.`)
         setShowDetails(false)
       })
     } else {
       await DB.delete(DB.tables.transferChangeRequests, activeRequest?.id)
-      AlertManager.successAlert(`Swap Request has been rejected and a notification has been sent to the request recipient.`)
+      AlertManager.successAlert(`Transfer Change Request has been rejected and a notification has been sent to the request recipient.`)
       setShowDetails(false)
     }
   }
@@ -129,7 +129,10 @@ export default function TransferRequests() {
       {/* DETAILS CARD */}
       <BottomCard
         submitText={'Approve'}
+        onDelete={() => deleteRequest('deleted')}
         title={'Request Details'}
+        hasDelete={formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) ? true : false}
+        hasSubmitButton={formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) ? false : true}
         onSubmit={() => selectDecision(Decisions.approved)}
         className="transfer-change"
         onClose={() => setShowDetails(false)}
@@ -192,23 +195,25 @@ export default function TransferRequests() {
           )}
           {/* BUTTONS */}
           <div className="action-buttons">
-            <button
-              className="red"
-              data-request-id={activeRequest?.id}
-              onClick={async (e) => {
-                AlertManager.inputAlert(
-                  'Rejection Reason',
-                  'Please enter a rejection reason',
-                  async () => {
-                    await selectDecision(Decisions.rejected)
-                  },
-                  true,
-                  true,
-                  'textarea'
-                )
-              }}>
-              Reject
-            </button>
+            {formatNameFirstNameOnly(activeRequest?.createdBy) !== formatNameFirstNameOnly(currentUser?.name) && (
+              <button
+                className="red"
+                data-request-id={activeRequest?.id}
+                onClick={async (e) => {
+                  AlertManager.inputAlert(
+                    'Rejection Reason',
+                    'Please enter a rejection reason',
+                    async () => {
+                      await selectDecision(Decisions.rejected)
+                    },
+                    true,
+                    true,
+                    'textarea'
+                  )
+                }}>
+                Reject
+              </button>
+            )}
           </div>
         </div>
       </BottomCard>

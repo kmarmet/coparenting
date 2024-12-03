@@ -4,10 +4,8 @@ import FirebaseStorage from '@firebaseStorage'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import Manager from '@manager'
 import globalState from '../../context'
-import Memory from '../../models/memory'
 import SecurityManager from '../../managers/securityManager'
 import NewMemoryForm from '../forms/newMemoryForm'
-import ModelNames from '../../models/modelNames'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import { HiOutlineSave } from 'react-icons/hi'
@@ -37,11 +35,10 @@ import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
-import ObjectManager from '../../managers/objectManager'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, navbarButton } = state
+  const { currentUser, theme } = state
   const [memories, setMemories] = useState([])
   const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
   const dbRef = ref(getDatabase())
@@ -51,56 +48,22 @@ export default function Memories() {
     let all = await SecurityManager.getMemories(currentUser)
     if (Manager.isValid(all, true)) {
       setState({ ...state, isLoading: true })
-      const resolvedImages = async () =>
-        await new Promise(async (resolve, reject) => {
-          let promises = []
-          for (const memory of all) {
-            if (Manager.isValid(memory.url)) {
-              promises.push(await FirebaseStorage.imageExists(memory.url, memory))
-              fetch(memory.url).then(async (response) => {
-                const statusCode = response.status
-                if (statusCode === 404) {
-                  // Delete memory if no longer in Firebase Storage
-                  await DB.deleteMemory(currentUser.phone, memory)
-                }
-              })
-            }
+      let validImages = []
+      for (const memory of all) {
+        if (Manager.isValid(memory.url)) {
+          const imageStatusCode = await ImageManager.getStatusCode(memory.url)
+          if (imageStatusCode === 404) {
+            // Delete memory if no longer in Firebase Storage
+            await DB.deleteMemory(currentUser.phone, memory)
           }
-          if (Manager.isValid(promises, true)) {
-            Promise.all(promises)
-              .then((results) => {
-                let toReturn = results.filter((x) => x.successful && x !== undefined).flat() || []
-                toReturn = toReturn.map((x) => x.successful)
-                resolve(toReturn)
-              })
-              .catch(() => {
-                console.log('failed')
-                reject('failed')
-              })
+          if (imageStatusCode === 200) {
+            validImages.push(memory)
           }
-        }).catch((error) => {
-          console.log(error)
-        })
-      let validImages = await resolvedImages()
+        }
+      }
       validImages = validImages.filter((x) => x)
       if (currentUser) {
         if (Manager.isValid(validImages, true)) {
-          let arr = []
-          validImages.forEach((img) => {
-            if (img) {
-              const imageName = FirebaseStorage.getImageNameFromUrl(img.url)
-              const newMemory = new Memory()
-              newMemory.id = img.id
-              newMemory.notes = img.notes
-              newMemory.url = img.url
-              newMemory.title = img.title
-              newMemory.createdBy = currentUser?.phone
-              newMemory.memoryName = imageName
-
-              const cleanedObject = ObjectManager.cleanObject(newMemory, ModelNames.memory)
-              arr.push(cleanedObject)
-            }
-          })
           setMemories(validImages)
           setTimeout(() => {
             setState({ ...state, isLoading: false })

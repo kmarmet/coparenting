@@ -32,9 +32,19 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const [preferredLocation, setPreferredLocation] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
-  const resetForm = () => {
+  const resetForm = async () => {
     Manager.resetForm('transfer-request-wrapper')
     hideCard()
+    setRequestReason('')
+    setShareWith([])
+    setRequestTime('')
+    setRequestLocation('')
+    setRequestDate('')
+    setDirectionsLink('')
+    setRequestRecipientPhone('')
+    setPreferredLocation('')
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
     setRefreshKey(Manager.getUid())
   }
 
@@ -171,6 +181,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
               dataPhone={currentUser?.coparents?.map((x) => x.phone)}
               checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
               onCheck={handleRequestRecipient}
+              required={true}
             />
             <ShareWithCheckboxes
               icon={<ImEye />}

@@ -78,6 +78,7 @@ export default function SwapRequests() {
       const notifMessage = PushAlertApi.templates.swapRequestApproval(activeRequest, recipientName)
       PushAlertApi.sendMessage('Swap Request Decision', notifMessage, ownerSubId)
       await DB.delete(DB.tables.swapRequests, activeRequest.id)
+      setShowDetails(false)
     }
   }
 
@@ -103,12 +104,17 @@ export default function SwapRequests() {
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
         await DB.delete(DB.tables.swapRequests, activeRequest?.id)
-        AlertManager.successAlert(`Swap Request has been deleted.`)
+        AlertManager.successAlert(`Swap Request has been deleted`)
         setShowDetails(false)
       })
     } else {
-      await DB.delete(DB.tables.swapRequests, activeRequest?.id)
-      AlertManager.successAlert(`Swap Request has been rejected and a notification has been sent to the request recipient.`)
+      if (formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name)) {
+        await DB.delete(DB.tables.swapRequests, activeRequest?.id)
+        AlertManager.successAlert(`Swap Request has been deleted.`)
+      } else {
+        await DB.delete(DB.tables.swapRequests, activeRequest?.id)
+        AlertManager.successAlert(`Swap Request has been rejected and a notification has been sent to the request recipient.`)
+      }
       setShowDetails(false)
     }
   }
@@ -124,7 +130,8 @@ export default function SwapRequests() {
       {/* DETAILS CARD */}
       <BottomCard
         onDelete={deleteRequest}
-        hasDelete={true}
+        hasDelete={formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) ? true : false}
+        hasSubmitButton={formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) ? false : true}
         submitText={'Approve'}
         title={'Request Details'}
         onSubmit={() => selectDecision(Decisions.approved)}
@@ -173,9 +180,14 @@ export default function SwapRequests() {
             <div id="primary-icon-wrapper">
               <PiUserDuotone id="primary-row-icon" />
             </div>
-            <p id="title">
-              Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
-            </p>
+            {formatNameFirstNameOnly(activeRequest?.createdBy) !== formatNameFirstNameOnly(currentUser?.name) && (
+              <p id="title">From {formatNameFirstNameOnly(activeRequest.createdBy)}</p>
+            )}
+            {formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) && (
+              <p id="title">
+                Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
+              </p>
+            )}
           </div>
 
           {/* REASON */}

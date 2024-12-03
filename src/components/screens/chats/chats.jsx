@@ -3,12 +3,13 @@ import Manager from '@manager'
 import globalState from '../../../context.js'
 import 'rsuite/dist/rsuite.min.css'
 import ScreenNames from '@screenNames'
-import { useSwipeable } from 'react-swipeable'
 import ChatManager from '@managers/chatManager.js'
 import DB_UserScoped from '@userScoped'
 import { BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
 import { IoNotificationsOffCircle } from 'react-icons/io5'
 import { HiMiniBellAlert } from 'react-icons/hi2'
+import { HiOutlineDotsCircleHorizontal } from 'react-icons/hi'
+import { IoMdCloseCircleOutline } from 'react-icons/io'
 import {
   contains,
   formatFileName,
@@ -31,6 +32,7 @@ import NoDataFallbackText from '../../shared/noDataFallbackText'
 import NavBar from '../../navBar'
 import DB from '@db'
 import AlertManager from '../../../managers/alertManager'
+import DomManager from '../../../managers/domManager'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -40,21 +42,7 @@ const Chats = () => {
   const [selectedCoparent, setSelectedCoparent] = useState(null)
   const [activeThreadPhones, setActiveThreadPhones] = useState([])
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
-  const [showThreadActions, setShowThreadActions] = useState(false)
-
-  const handlers = useSwipeable({
-    onSwipedLeft: (e) => {
-      const threadItem = e.event.target
-
-      // Only allow swipe if message is NOT muted
-      if (!hasClass(threadItem, 'muted')) {
-        setShowThreadActions(true)
-      }
-    },
-    onSwipedRight: () => {
-      setShowThreadActions(false)
-    },
-  })
+  const [threadActionToShow, setThreadActionToShow] = useState(false)
 
   const openMessageThread = async (coparentPhone) => {
     console.log(coparentPhone)
@@ -98,7 +86,7 @@ const Chats = () => {
     }, 100)
   }
 
-  const muteChat = async (coparentPhone, muteOrUnmute) => {
+  const muteChat = async (coparentPhone, muteOrUnmute, threadId) => {
     let scopedChat = await ChatManager.getScopedChat(currentUser, coparentPhone)
     const { key, chat } = scopedChat
     const currentMutedMembers = Manager.isValid(scopedChat?.mutedMembers, true) ? scopedChat.mutedMembers : []
@@ -116,7 +104,19 @@ const Chats = () => {
       await DB.updateEntireRecord(`${DB.tables.chats}/${key}`, chat)
     }
     await getSecuredChats()
-    setShowThreadActions(false)
+    toggleThreadActions(threadId)
+  }
+
+  const toggleThreadActions = (threadId) => {
+    const threadAction = document.querySelector(`.thread-actions[data-thread-id='${threadId}']`)
+
+    if (DomManager.hasClass(threadAction, 'active')) {
+      threadAction.classList.remove('active')
+      setThreadActionToShow(null)
+    } else {
+      setThreadActionToShow(threadId)
+      threadAction.classList.add('active')
+    }
   }
 
   useEffect(() => {
@@ -186,11 +186,10 @@ const Chats = () => {
             const lastMessage = coparentMessages[coparentMessages?.length - 1]?.message
             const threadIsMuted = thread?.mutedMembers?.filter((x) => x.target === coparent.phone).length > 0
             return (
-              <div key={index}>
+              <div data-thread-id={thread.id} id="row" key={index}>
                 {/* THREAD ITEM */}
                 <div
                   className={`flex thread-item ${threadIsMuted ? 'muted' : ''}`}
-                  {...handlers}
                   onClick={(e) => {
                     if (hasClass(e.target, 'thread-item')) {
                       openMessageThread(coparent.phone).then((r) => r)
@@ -208,17 +207,17 @@ const Chats = () => {
                     </p>
                   </div>
 
-                  {/* UNMUTE BUTTON */}
-                  {threadIsMuted && (
-                    <div id="unmute-wrapper">
-                      <HiMiniBellAlert id={'unmute-icon'} onClick={() => muteChat(coparent.phone, 'unmute')} />
-                      <span>UNMUTE</span>
-                    </div>
+                  {threadActionToShow === thread.id && (
+                    <IoMdCloseCircleOutline id={'close-thread-actions-icon'} onClick={() => toggleThreadActions(thread.id)} />
                   )}
-
-                  {/* THREAD ACTIONS */}
-                  <div className={showThreadActions ? 'active flex thread-actions' : 'flex thread-actions'}>
-                    {/* DELETE CHAT BUTTON */}
+                  {threadActionToShow !== thread.id && (
+                    <HiOutlineDotsCircleHorizontal id={'edit-icon'} onClick={() => toggleThreadActions(thread.id)} />
+                  )}
+                </div>
+                {/* THREAD ACTIONS */}
+                <div data-thread-id={thread.id} className={'flex thread-actions'}>
+                  {/* DELETE CHAT BUTTON */}
+                  <div id="archive-wrapper">
                     <BiSolidMessageRoundedMinus
                       onClick={(e) =>
                         AlertManager.confirmAlert(
@@ -229,16 +228,29 @@ const Chats = () => {
                             await archive(coparent)
                           },
                           () => {
-                            setShowThreadActions(false)
+                            setThreadActionToShow(false)
                             setNavbarButton(() => setShowNewThreadForm(), 'green', <BiSolidEdit />)
                           }
                         )
                       }
-                      className={`delete-icon mr-10 ${showThreadActions ? 'active' : ''}`}
+                      className={`delete-icon ${threadActionToShow ? 'active' : ''}`}
                     />
-
-                    {!threadIsMuted && <IoNotificationsOffCircle onClick={() => muteChat(coparent.phone, 'mute')} className={'mute-icon '} />}
+                    <span>DELETE</span>
                   </div>
+
+                  {!threadIsMuted && (
+                    <div id="mute-wrapper">
+                      <IoNotificationsOffCircle onClick={() => muteChat(coparent.phone, 'mute', thread.id)} className={'mute-icon '} />
+                      <span>MUTE</span>
+                    </div>
+                  )}
+                  {/* UNMUTE BUTTON */}
+                  {threadIsMuted && (
+                    <div id="unmute-wrapper">
+                      <HiMiniBellAlert id={'unmute-icon'} onClick={() => muteChat(coparent.phone, 'unmute', thread.id)} />
+                      <span>UNMUTE</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )

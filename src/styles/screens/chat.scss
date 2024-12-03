@@ -77,6 +77,61 @@
         transform: scale(1.6);
       }
     }
+    
+    #row {
+      flex-wrap: wrap;
+      .thread-actions {
+        position: relative;
+        opacity: 0;
+        width: 100%;
+        transition: all 0.3s ease-in-out;
+        justify-content: center;
+        gap: 10px;
+        max-height: 0;
+        align-items: flex-start;
+        &.active {
+          right: 0;
+          max-height: 1000px;
+          z-index: 1;
+          opacity: 1;
+          transition: all 0.3s ease-in-out;
+        }
+        
+        #unmute-wrapper, #archive-wrapper, #mute-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-wrap: wrap;
+          
+          &#archive-wrapper {
+            svg {
+              color: $red;
+            }
+          }
+          
+          svg {
+            font-size: 32px;
+            color: $mainBlue;
+          }
+          span {
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            padding-top: 5px;
+          }
+        }
+        
+        .delete-icon,
+        .mute-icon, {
+          color: $red;
+          font-size: 32px;
+          
+          &.mute-icon {
+            color: $accentBlue;
+          }
+        }
+      }
+    }
 
     .thread-item {
       color: $mainBlue;
@@ -88,6 +143,11 @@
       position: relative;
       .flex {
         align-items: flex-end;
+      }
+      
+      #edit-icon , #close-thread-actions-icon{
+        font-size: 28px;
+        color: $lightDarkGrey;
       }
 
       #unmute-wrapper {
@@ -143,31 +203,6 @@
           font-size: 28px;
           font-weight: $fwMedium;
           color: white;
-        }
-      }
-
-      .thread-actions {
-        z-index: -1;
-        position: relative;
-        right: -100px;
-        opacity: 0;
-        transition: all 0.3s ease-in-out;
-        &.active {
-          right: 0;
-          z-index: 1;
-          opacity: 1;
-          transition: all 0.3s ease-in-out;
-        }
-
-        .delete-icon,
-        .mute-icon {
-          color: $red;
-          border-radius: 100%;
-          font-size: 30px;
-
-          &.mute-icon {
-            color: $accentBlue;
-          }
         }
       }
 

@@ -18,7 +18,6 @@ import DateManager from '../../managers/dateManager'
 import InputSuggestionWrapper from '../shared/inputSuggestionWrapper'
 import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
 import Toggle from 'react-toggle'
-import '../../styles/reactToggle.css'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
@@ -56,6 +55,7 @@ import FormNames from '../../models/formNames'
 import CalendarManager from '../../managers/calendarManager'
 import NotificationManager from '../../managers/notificationManager'
 import Label from '../shared/label'
+import DB_UserScoped from '@userScoped'
 
 // COMPONENT
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
@@ -93,7 +93,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [suggestionRefreshKey, setSuggestionRefreshKey] = useState(Manager.getUid())
 
-  const resetForm = () => {
+  const resetForm = async () => {
     Manager.resetForm('new-event-form')
     setEventLength(EventLengths.single)
     setEventStartDate('')
@@ -122,6 +122,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     setShowCoparentReminderToggle(false)
     setRefreshKey(Manager.getUid())
     setSuggestionRefreshKey(Manager.getUid())
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
     hideCard()
   }
 

@@ -38,6 +38,7 @@ import DateManager from '../../managers/dateManager'
 import ObjectManager from '../../managers/objectManager'
 import ImageManager from '../../managers/imageManager'
 import AlertManager from '../../managers/alertManager'
+import DB_UserScoped from '@userScoped'
 
 function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -50,10 +51,16 @@ function NewMemoryForm({ hideCard, showCard }) {
   const [resetKey, setResetKey] = useState(Manager.getUid())
   const inputFile = useRef(null)
 
-  const resetForm = () => {
+  const resetForm = async () => {
     Manager.resetForm('new-memory-wrapper')
+    setMemoryNotes('')
+    setImages([])
+    setMemoryTitle('')
+    setMemoryDate('')
     setState({ ...state, isLoading: false })
     hideCard()
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
     setResetKey(Manager.getUid())
   }
 

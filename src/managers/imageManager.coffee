@@ -8,6 +8,13 @@ domtoimage = require 'dom-to-image'
 Manager = require '@manager'
 
 ImageManager =
+  getStatusCode: (url) ->
+    fetch  url
+      .then (response) ->
+        statusCode = response.status
+        console.log(statusCode)
+        return statusCode
+
   compressImage: (imgFile) ->
     options = {
       maxSizeMB: 1,

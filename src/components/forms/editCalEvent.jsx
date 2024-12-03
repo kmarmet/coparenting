@@ -19,7 +19,7 @@ import Toggle from 'react-toggle'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-
+import 'react-toggle/style.css'
 import {
   contains,
   formatFileName,
@@ -48,6 +48,7 @@ import BottomCard from '../shared/bottomCard'
 import ObjectManager from '../../managers/objectManager'
 import DatasetManager from '../../managers/datasetManager'
 import AlertManager from '../../managers/alertManager'
+import DB_UserScoped from '@userScoped'
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
@@ -82,10 +83,38 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const [defaultEndTime, setDefaultEndTime] = useState(moment())
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
-  const resetForm = () => {
+  const resetForm = async () => {
     Manager.resetForm('edit-event-form')
+    setEventFromDate('')
+    setEventLocation('')
+    setEventTitle('')
+    setEventWebsiteUrl('')
+    setEventStartTime('')
+    setEventNotes('')
+    setEventEndDate('')
+    setEventEndTime('')
+    setEventChildren(event?.children || [])
+    setEventReminderTimes([])
+    setEventShareWith(event?.shareWith || [])
+    setEventIsRepeating(false)
+    setEventIsDateRange(false)
+    setClonedDatesToSubmit([])
+    setRepeatingDatesToSubmit([])
+    setEventLength(EventLengths.single)
+    setIsAllDay(false)
+    setCoparentsToRemind([])
+    setIncludeChildren(false)
+    setShowReminders(false)
+    setAllEvents([])
+    setIsVisitation(false)
+    setShowCoparentsToRemind(false)
+    setDefaultStartTime(moment())
+    setDefaultEndTime(moment())
+    setRefreshKey(Manager.getUid())
     onClose(moment(event.startDate))
     setRefreshKey(Manager.getUid())
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
   }
 
   // SUBMIT

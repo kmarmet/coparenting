@@ -18,6 +18,14 @@ domtoimage = require('dom-to-image');
 Manager = require('@manager');
 
 ImageManager = {
+  getStatusCode: function(url) {
+    return fetch(url).then(function(response) {
+      var statusCode;
+      statusCode = response.status;
+      console.log(statusCode);
+      return statusCode;
+    });
+  },
   compressImage: async function(imgFile) {
     var compressedFile, options;
     options = {

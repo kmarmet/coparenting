@@ -105,9 +105,6 @@ PushAlertApi =
       headers: myHeaders
       body: urlencoded
       redirect: 'follow'
-    console.log(subIdToUse)
-    console.log(myHeaders)
-    console.log(urlToUse)
     fetch(urlToUse, requestOptions)
       .then (result) -> console.log "Sent to: #{subIdToUse}"
       .catch (error) -> console.error error

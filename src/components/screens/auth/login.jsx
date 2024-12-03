@@ -51,24 +51,6 @@ export default function Login() {
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
-  const subscribeUser = (user) => {
-    // eslint-disable-next-line no-undef
-    // ;(pushalertbyiw = window.pushalertbyiw || []).push(['disableAutoInit', true])
-    // async function onSubscribe(result) {
-    //   if (result.success) {
-    //     ;(pushalertbyiw = window.pushalertbyiw || []).push(['onReady', onPushAlertReady])
-    //   } else {
-    //     ;(pushalertbyiw = window.pushalertbyiw || []).push(['subscribeToSegment', 38837])
-    //   }
-    // }
-    let pushalertbyiw = []
-    ;(pushalertbyiw = window.pushalertbyiw || []).push(['onReady', onPAReady])
-
-    function onPAReady() {
-      PushAlertCo.init() //You can call this method to request subscription box manually
-    }
-  }
-
   const signIn = async () => {
     // Validation
     if (!validator.isEmail(email)) {

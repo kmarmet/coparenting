@@ -35,7 +35,6 @@ export default function Settings() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [defaultReminderTimes, setDefaultReminderTimes] = useState([])
-  const [shortcutsToSendToDb, setShortcutsToSendToDb] = useState([])
   const [morningSummaryTime, setMorningSummaryTime] = useState('')
   const [eveningSummaryTime, setEveningSummaryTime] = useState('')
 
@@ -56,27 +55,16 @@ export default function Settings() {
         moment(eveningSummaryTime).format(DateFormats.summaryHour)
       )
     }
-    await DB_UserScoped.updateUserRecord(currentUser?.phone, 'settings/defaultReminderTimes', defaultReminderTimes)
     AlertManager.successAlert('Calendar settings have been updated!')
   }
 
-  // const unsub = () => {
-  //   console.log('ready')
-  //   // PushAlertCo.init()
-  //   PushAlertCo.triggerMe(true)
-  // }
-
   useEffect(() => {
     Manager.showPageContainer()
-    // // ;(pushalertbyiw = window.pushalertbyiw || []).push(['disableAutoInit', true])
-    // ;(pushalertbyiw = window.pushalertbyiw || []).push(['onReady', unsub])
+    const pushAlertWidget = document.querySelector('.pa-subscribe-widget-round')
+    if (pushAlertWidget) {
+      pushAlertWidget.style.display = 'none'
+    }
   }, [])
-
-  function onPAReady() {
-    // console.log('ready')
-    // PushAlertCo.unsubscribe()
-    // PushAlertCo.init()
-  }
 
   return (
     <>

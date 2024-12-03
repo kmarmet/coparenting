@@ -36,6 +36,7 @@ import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import DateFormats from '../../constants/dateFormats'
 import ObjectManager from '../../managers/objectManager'
 import AlertManager from '../../managers/alertManager'
+import DB_UserScoped from '@userScoped'
 
 export default function NewSwapRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -53,7 +54,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   const [endDate, setEndDate] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
-  const resetForm = () => {
+  const resetForm = async () => {
     Manager.resetForm('swap-request-wrapper')
     setRequestRange([])
     setRequestReason('')
@@ -67,6 +68,8 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     setStartDate('')
     setEndDate('')
     hideCard()
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
     setRefreshKey(Manager.getUid())
   }
 

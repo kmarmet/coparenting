@@ -51,6 +51,14 @@
                 svg {
                     color: $mainBlue;
                 }
+                
+                &.close-account {
+                    color: $red;
+                    
+                    svg {
+                        color: $red;
+                    }
+                }
 
                 &.notifications {
                     flex-wrap: nowrap;

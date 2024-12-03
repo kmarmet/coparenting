@@ -56,9 +56,28 @@ function NewExpenseForm({ hideCard, showCard }) {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const imgRef = useRef()
 
-  const resetForm = () => {
+  const resetForm = async () => {
     Manager.resetForm('expenses-wrapper')
     setRefreshKey(Manager.getUid())
+    setExpenseName('')
+    setExpenseChildren([])
+    setExpenseDueDate('')
+    setExpenseNotes('')
+    setExpenseImage('')
+    setIncludeChildren(false)
+    setRepeating(false)
+    setExpenseCategory('')
+    setPayer({
+      phone: '',
+      name: '',
+    })
+    setShareWith([])
+    setRepeatInterval('')
+    setRepeatingEndDate('')
+    setShowNumpad(false)
+    setExpenseAmount('')
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
     hideCard()
   }
 

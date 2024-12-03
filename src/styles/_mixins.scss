@@ -372,12 +372,13 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    color: black;
-    font-weight: $fwMedium;
-    font-size: 15px;
     line-height: 1;
+    font-size: 16px;
+    font-weight: 500;
     opacity: 0.85;
-    margin-bottom: 3px;
+    color: black;
+    margin: 0;
+    letter-spacing: 0.4px;
 
     svg {
       font-size: 22px;

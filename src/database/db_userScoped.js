@@ -25,6 +25,10 @@ import DatasetManager from '../managers/datasetManager'
 
 const DB_UserScoped = {
   // GET
+  getCurrentUser: async (currentUserPhone) => {
+    const currentUser = await DB.find(DB.tables.users, ['phone', currentUserPhone], true)
+    return currentUser
+  },
   getCurrentUserRecords: (tableName, currentUser, objectName) => {
     return new Promise((resolve, reject) => {
       DB_UserScoped.getRecordsByUser(tableName, currentUser, objectName)

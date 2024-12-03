@@ -45,9 +45,14 @@ const NewChildForm = ({ hideCard, showCard }) => {
   const [dateOfBirth, setDateOfBirth] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
-  const resetForm = () => {
+  const resetForm = async () => {
     Manager.resetForm('new-child-wrapper')
     hideCard()
+    setExistingChildren([])
+    setGender('male')
+    setDateOfBirth('')
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
     setRefreshKey(Manager.getUid())
   }
 

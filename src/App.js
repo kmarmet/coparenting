@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import globalState from './context.js'
+import 'react-toggle/style.css'
 // Screens
 import Activity from './components/screens/activity'
 import EventCalendar from '@screens/calendar.jsx'
@@ -109,6 +110,14 @@ export default function App() {
     // Error Boundary Test
     // throw new Error('Something went wrong')
     document.body.appendChild(myCanvas)
+    const pushAlertWidget = document.querySelector('.pa-subscribe-widget-round')
+    const pushAlertBarCloseButton = document.getElementById('pa-deny-btn')
+    if (pushAlertBarCloseButton) {
+      pushAlertBarCloseButton.style.display = 'none'
+    }
+    if (pushAlertWidget) {
+      // pushAlertWidget.style.display = 'none'
+    }
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {

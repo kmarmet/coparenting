@@ -20,10 +20,11 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 // ICONS
+import { PiChatsCircleDuotone, PiHandWavingDuotone, PiUserCircleMinusDuotone } from 'react-icons/pi'
 import { MdOutlineContactMail, MdOutlineContactPhone, MdOutlinePassword } from 'react-icons/md'
 import UpdateContactInfo from './updateContactInfo'
-import { PiChatsCircleDuotone, PiHandWavingDuotone } from 'react-icons/pi'
 import NavBar from '../../navBar'
+import AlertManager from '../../../managers/alertManager'
 
 export default function Account() {
   const { state, setState } = useContext(globalState)
@@ -73,6 +74,21 @@ export default function Account() {
               Chat Recovery
             </p>
           )}
+          <p
+            className="section close-account"
+            onClick={() => {
+              AlertManager.confirmAlert(
+                'Are you sure you would like to PERMANENTLY close your account? All of your data will be deleted and this action cannot be reversed.',
+                "I'm Sure",
+                true,
+                () => {
+                  console.log('Deleted')
+                }
+              )
+            }}>
+            <PiUserCircleMinusDuotone className={'mr-10'} />
+            Close Account
+          </p>
         </div>
       </div>
       {!showUpdateCard && <NavBar navbarClass={'account no-add-new-button'}></NavBar>}

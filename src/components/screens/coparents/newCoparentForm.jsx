@@ -43,7 +43,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
   const [parentType, setParentType] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [relationshipType, setRelationshipType] = useState('')
-  const resetForm = () => {
+  const resetForm = async () => {
     Manager.resetForm('new-coparent-wrapper')
     setName('')
     setAddress('')
@@ -51,6 +51,8 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
     setParentType('')
     setRefreshKey(Manager.getUid())
     hideCard()
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
   }
 
   const submit = async () => {
