@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react'
+import React, { useContext, useEffect } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
 import Manager from '@manager'
-import PushAlertApi from '@api/pushAlert'
 import AppManager from '@managers/appManager'
 import ThemeToggle from './screens/settings/themeToggle'
-import InstallAppPopup from './installAppPopup'
 
 export default function Menu() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, currentUser } = state
+  const { currentScreen, menuIsOpen, currentUser, theme } = state
 
   const changeCurrentScreen = (screen) => {
     if (screen === ScreenNames.calendar) {

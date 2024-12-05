@@ -10,7 +10,6 @@ import CoparentInputs from '../../coparentInput.jsx'
 import CheckboxGroup from '@shared/checkboxGroup.jsx'
 import SmsManager from '@managers/smsManager.js'
 import NotificationManager from '@managers/notificationManager.js'
-import PushAlertApi from '@api/pushAlert'
 import ChildUser from 'models/child/childUser.js'
 import ParentInput from '../../parentInput'
 import { MdOutlineSecurity, MdOutlineSystemSecurityUpdateGood } from 'react-icons/md'
@@ -145,7 +144,7 @@ export default function Registration() {
 
       // const dbRef = ref(getDatabase())
       const subId = await NotificationManager.getUserSubIdFromApi('3307494534')
-      PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone} \n Name: ${userName}`, subId)
+      NotificationManager.sendNotification('New Registration', `Phone: ${userPhone} \n Name: ${userName}`, subId)
     }
   }
 
@@ -181,17 +180,17 @@ export default function Registration() {
     // SEND SMS MESSAGES
     // Send to parent
     const parentSubId = await NotificationManager.getUserSubIdFromApi(parentPhone)
-    PushAlertApi.sendMessage(
+    NotificationManager.sendNotification(
       'Child Registration',
       `${userName} is now signed up. If you would like to be able to provide viewing access for them, add them in the Child Info section of the app. Including their phone number is required.`,
       parentSubId
     )
     // Send to child
     const childSubId = await NotificationManager.getUserSubIdFromApi(userPhone)
-    PushAlertApi.sendMessage('Welcome Aboard!', 'You are now signed up!', childSubId)
+    NotificationManager.sendNotification('Welcome Aboard!', 'You are now signed up!', childSubId)
     // Send to me
     const mySubId = await NotificationManager.getUserSubIdFromApi('3307494534')
-    PushAlertApi.sendMessage('New Registration', `Phone: ${userPhone}`, mySubId)
+    NotificationManager.sendNotification('New Registration', `Phone: ${userPhone}`, mySubId)
     AlertManager.successAlert(`Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
     setState({ ...state, currentScreen: ScreenNames.login })
   }

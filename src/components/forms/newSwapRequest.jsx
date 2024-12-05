@@ -1,6 +1,5 @@
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
-import PushAlertApi from '@api/pushAlert'
 import SwapDurations from '@constants/swapDurations'
 import globalState from '../../context'
 import DB from '@db'
@@ -99,7 +98,11 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       await DB.add(DB.tables.swapRequests, cleanObject).finally(() => {
         shareWith.forEach(async (coparentPhone) => {
           const subId = await NotificationManager.getUserSubId(coparentPhone)
-          PushAlertApi.sendMessage(`New Swap Request`, `${formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`, subId)
+          NotificationManager.sendNotification(
+            `New Swap Request`,
+            `${formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
+            subId
+          )
         })
         setSwapDuration(SwapDurations.single)
       })

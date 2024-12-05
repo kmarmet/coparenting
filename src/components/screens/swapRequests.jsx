@@ -6,7 +6,6 @@ import 'rsuite/dist/rsuite.min.css'
 import moment from 'moment'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import SwapDurations from '@constants/swapDurations.js'
-import PushAlertApi from '@api/pushAlert'
 import NotificationManager from '@managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
 import SecurityManager from '../../managers/securityManager'
@@ -67,16 +66,16 @@ export default function SwapRequests() {
     // Rejected
     if (decision === Decisions.rejected) {
       await DB.updateRecord(DB.tables.swapRequests, activeRequest, 'reason', rejectionReason, 'id')
-      const notifMessage = PushAlertApi.templates.swapRequestRejection(activeRequest, recipientName)
-      PushAlertApi.sendMessage('Swap Request Decision', notifMessage, ownerSubId)
+      const notifMessage = NotificationManager.templates.swapRequestRejection(activeRequest, recipientName)
+      NotificationManager.sendNotification('Swap Request Decision', notifMessage, ownerSubId)
       await deleteRequest('rejected')
       setShowDetails(false)
     }
 
     // Approved
     if (decision === Decisions.approved) {
-      const notifMessage = PushAlertApi.templates.swapRequestApproval(activeRequest, recipientName)
-      PushAlertApi.sendMessage('Swap Request Decision', notifMessage, ownerSubId)
+      const notifMessage = NotificationManager.templates.swapRequestApproval(activeRequest, recipientName)
+      NotificationManager.sendNotification('Swap Request Decision', notifMessage, ownerSubId)
       await DB.delete(DB.tables.swapRequests, activeRequest.id)
       setShowDetails(false)
     }

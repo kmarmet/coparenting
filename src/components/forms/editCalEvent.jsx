@@ -8,7 +8,6 @@ import DB from '@db'
 import CalendarEvent from '@models/calendarEvent'
 import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup'
-import PushAlertApi from '@api/pushAlert'
 import NotificationManager from '@managers/notificationManager'
 import CalendarMapper from '../../mappers/calMapper'
 import CalMapper from '../../mappers/calMapper'
@@ -233,7 +232,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     // Share with Notifications
     for (const phone of eventShareWith) {
       const subId = await NotificationManager.getUserSubId(phone)
-      PushAlertApi.sendMessage('Event Updated', `${eventTitle} has been updated`, subId)
+      NotificationManager.sendNotification('Event Updated', `${eventTitle} has been updated`, subId)
     }
 
     if (navigator.setAppBadge) {

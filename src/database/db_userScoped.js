@@ -311,7 +311,7 @@ const DB_UserScoped = {
   recursiveObjectUpdate: (obj, currentValue, updatedValue, propNameToUpdate) => {
     let updatedObject
     for (const key in obj) {
-      if (key === 'pushAlertSubscribers' && propNameToUpdate === 'phone') {
+      if (key === 'notificationSubscribers' && propNameToUpdate === 'phone') {
         let updatedPushAlertSubs = {}
         for (let prop in obj[key]) {
           if (prop === currentValue) {
@@ -321,7 +321,7 @@ const DB_UserScoped = {
             updatedPushAlertSubs[prop] = obj[key][currentValue]
           }
         }
-        obj['pushAlertSubscribers'] = updatedPushAlertSubs
+        obj['notificationSubscribers'] = updatedPushAlertSubs
       }
       if (key === 'users' && propNameToUpdate === 'phone') {
         let updatedUsers = {}

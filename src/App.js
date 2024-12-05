@@ -40,8 +40,6 @@ import ReviseChildTransferChangeRequest from './components/forms/reviseTransferR
 import emailjs from '@emailjs/browser'
 import './globalFunctions'
 import StateObj from './constants/stateObj'
-import { getDatabase, ref } from 'firebase/database'
-
 // Menus
 import FullMenu from './components/fullMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
@@ -52,6 +50,9 @@ import ScreenNames from '@screenNames'
 import firebaseConfig from './firebaseConfig.js'
 import ContactUs from './components/screens/contactUs'
 import DB from '@db'
+import NotificationManager from './managers/notificationManager.js'
+import NotificationSubscriber from './models/notificationSubscriber.js'
+import Manager from '@manager'
 
 export default function App() {
   // Initialize Firebase
@@ -62,6 +63,7 @@ export default function App() {
   const { userIsLoggedIn, firebaseUser, setFirebaseUser } = state
   const [userEmail, setUserEmail] = useState('')
   const myCanvas = document.createElement('canvas')
+  const subscriptionId = localStorage.getItem('subscriptionId')
 
   emailjs.init({
     publicKey: 'khikD1NoIHmBPlckL',
@@ -110,69 +112,43 @@ export default function App() {
     // Error Boundary Test
     // throw new Error('Something went wrong')
     document.body.appendChild(myCanvas)
-    const pushAlertWidget = document.querySelector('.pa-subscribe-widget-round')
-    const pushAlertBarCloseButton = document.getElementById('pa-deny-btn')
-    if (pushAlertBarCloseButton) {
-      pushAlertBarCloseButton.style.display = 'none'
-    }
-    if (pushAlertWidget) {
-      // pushAlertWidget.style.display = 'none'
-    }
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const user = auth.currentUser
         setUserEmail(user.email)
-        const dbRef = ref(getDatabase())
         const _currentUser = await DB.find(DB.tables.users, ['email', user.email], true)
-
         setState({ ...state, currentUser: _currentUser })
-
-        // DB.getTable(DB.tables.pushAlertSubscribers).then(async (users) => {
-        //   const _currentUser = await DB.find(DB.tables.users, ['email', user.email], true)
-        //   const subId = await DB.getPushAlertSubscriberId(_currentUser.phone)
-        //
-        //   if (!Manager.isValid(subId)) {
-        //   }
-        //   // let subIds =`
-        //   // let pushalertbyiw = []
-        //   // ;(pushalertbyiw = window.pushalertbyiw || []).push(['disableAutoInit', true])
-        //   // ;(pushalertbyiw = window.pushalertbyiw || []).push(['disableAutoInit', true])
-        //   // PushAlertCo.init()
-        //   // ;(pushalertbyiw = window.pushalertbyiw || []).push(['disableAutoInit', true])
-        //
-        //   // ;(pushalertbyiw = window.pushalertbyiw || []).push(['addToSegment', 38837, onSubscribe])
-        //
-        //   // async function onSubscribe(result) {
-        //   //   if (result.success) {
-        //   //     ;(pushalertbyiw = window.pushalertbyiw || []).push(['onReady', onPushAlertReady])
-        //   //   } else {
-        //   //     ;(pushalertbyiw = window.pushalertbyiw || []).push(['subscribeToSegment', 38837])
-        //   //   }
-        //   // }
-        //   //
-        //   // async function onPushAlertReady() {
-        //   //   console.log('onPushAlertReady')
-        //   // }
-        //   // subscribers.forEach((sub) => {
-        //   //   const phone = sub[0]
-        //   //   const id = sub[1]
-        //   //   if (user && phone === user.phone) {
-        //   //     return false
-        //   //   } else {
-        //   //     const subId = PushAlertCo.subs_id
-        //   //     set(child(dbRef, `pushAlertSubscribers/${user.phone}/`), subId)
-        //   //   }
-        //   // })
-        // })
-        // console.log(user)
       } else {
         console.log('signed out or user doesn"t exist')
       }
     })
 
     LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
+    NotificationManager.init()
   }, [])
+
+  const addNotifUserToDatabase = async () => {
+    const subId = localStorage.getItem('subscriptionId')
+    const existingRecord = await DB.find(DB.tables.notificationSubscribers, ['email', currentUser.email], true)
+    if (subId && !Manager.isValid(existingRecord)) {
+      const newSubscriber = new NotificationSubscriber()
+      newSubscriber.email = currentUser?.email
+      newSubscriber.phone = currentUser?.phone
+      newSubscriber.id = Manager.getUid()
+      newSubscriber.subscriptionId = subId
+      await DB.add(`/${DB.tables.notificationSubscribers}`, newSubscriber)
+      await NotificationManager.sendNotification('Welcome Aboard!', 'You are now subscribed to peaceful communications!', subId)
+      localStorage.removeItem('subscriptionId')
+    }
+  }
+
+  useEffect(() => {
+    const subId = localStorage.getItem('subscriptionId')
+    if (subId && currentUser.hasOwnProperty('email')) {
+      addNotifUserToDatabase().then((r) => r)
+    }
+  }, [subscriptionId, currentUser])
 
   // MENU OPEN/CLOSE
   useEffect(() => {

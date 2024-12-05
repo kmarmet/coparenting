@@ -6,7 +6,6 @@ import 'rsuite/dist/rsuite.min.css'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
 import NotificationManager from '@managers/notificationManager.js'
-import PushAlertApi from '@api/pushAlert'
 import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
 import ReviseChildTransferChangeRequest from '../forms/reviseTransferRequest'
@@ -82,16 +81,16 @@ export default function TransferRequests() {
     // Rejected
     if (decision === Decisions.rejected) {
       await DB.updateRecord(DB.tables.transferChangeRequests, activeRequest, 'reason', rejectionReason, 'id')
-      const notifMessage = PushAlertApi.templates.transferRequestRejection(activeRequest, recipientName)
-      PushAlertApi.sendMessage('Transfer Change Request Decision', notifMessage, ownerSubId)
+      const notifMessage = NotificationManager.templates.transferRequestRejection(activeRequest, recipientName)
+      NotificationManager.sendNotification('Transfer Change Request Decision', notifMessage, ownerSubId)
       await deleteRequest('rejected')
       setShowDetails(false)
     }
 
     // Approved
     if (decision === Decisions.approved) {
-      const notifMessage = PushAlertApi.templates.transferRequestApproval(activeRequest, recipientName)
-      PushAlertApi.sendMessage('Transfer Change Request Decision', notifMessage, ownerSubId)
+      const notifMessage = NotificationManager.templates.transferRequestApproval(activeRequest, recipientName)
+      NotificationManager.sendNotification('Transfer Change Request Decision', notifMessage, ownerSubId)
       await DB.delete(DB.tables.transferChangeRequests, activeRequest.id)
       setShowDetails(false)
     }

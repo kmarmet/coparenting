@@ -4,7 +4,6 @@ import Manager from '@manager'
 import globalState from '../../context.js'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import NotificationManager from '@managers/notificationManager.js'
-import PushAlertApi from '@api/pushAlert'
 import MyConfetti from '@shared/myConfetti.js'
 import DateManager from 'managers/dateManager.js'
 import DateFormats from 'constants/dateFormats.js'
@@ -81,7 +80,7 @@ export default function ExpenseTracker() {
   const markAsPaid = async (expense) => {
     await DB.updateRecord(DB.tables.expenseTracker, expense, 'paidStatus', 'paid').then(async () => {
       const subId = await NotificationManager.getUserSubId(expense.payer.phone)
-      PushAlertApi.sendMessage(
+      NotificationManager.sendNotification(
         `Expense Paid`,
         `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${expense.name} \nYou can delete the expense now`,
         subId
@@ -142,7 +141,7 @@ export default function ExpenseTracker() {
     const message = `This is a reminder to pay the ${expense.name} expense.  ${
       Manager.isValid(expense.dueDate) ? 'Due date is: ' + expense.dueDate : ''
     }`
-    PushAlertApi.sendMessage(`Expense Reminder`, message, subId)
+    NotificationManager.sendNotification(`Expense Reminder`, message, subId)
     AlertManager.successAlert('Reminder Sent')
   }
 

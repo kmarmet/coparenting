@@ -5,7 +5,6 @@ import Autocomplete from 'react-google-autocomplete'
 import moment from 'moment'
 import DB from '@db'
 import NotificationManager from '@managers/notificationManager.js'
-import PushAlertApi from '@api/pushAlert'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
@@ -78,7 +77,7 @@ export default function ReviseChildTransferChangeRequest({ hideCard, showCard, r
     // Notify
     if (revisionRequest?.recipientPhone) {
       const subId = await NotificationManager.getUserSubId(revisionRequest?.requestRecipientPhone)
-      PushAlertApi.sendMessage(
+      NotificationManager.sendNotification(
         `Transfer Change Request`,
         `${formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
         subId

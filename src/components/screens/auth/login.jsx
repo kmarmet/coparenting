@@ -180,7 +180,6 @@ export default function Login() {
           userIsLoggedIn: true,
           isLoading: false,
         })
-        console.log('Signed In...redirecting to calendar')
       } else {
         // No user is signed in.
         setState({ ...state, isLoading: false })

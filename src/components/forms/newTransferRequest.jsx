@@ -7,7 +7,6 @@ import TransferChangeRequest from '../../models/transferChangeRequest'
 import moment from 'moment'
 import DB from '@db'
 import NotificationManager from '@managers/notificationManager.js'
-import PushAlertApi from '@api/pushAlert'
 import DB_UserScoped from '@userScoped'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import { ImEye } from 'react-icons/im'
@@ -82,7 +81,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
       // Notify
       const subId = await NotificationManager.getUserSubId(requestRecipientPhone)
-      PushAlertApi.sendMessage(
+      NotificationManager.sendNotification(
         `Transfer Change Request`,
         `${formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
         subId

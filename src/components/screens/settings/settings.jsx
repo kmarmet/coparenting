@@ -60,10 +60,6 @@ export default function Settings() {
 
   useEffect(() => {
     Manager.showPageContainer()
-    const pushAlertWidget = document.querySelector('.pa-subscribe-widget-round')
-    if (pushAlertWidget) {
-      pushAlertWidget.style.display = 'none'
-    }
   }, [])
 
   return (
@@ -102,12 +98,7 @@ export default function Settings() {
                 unchecked: null,
               }}
               className={'ml-auto visitation-toggle'}
-              onChange={(e) => {
-                // console.log('here')
-                // PushAlertCo.triggerMe(false)
-                // PushAlertCo.init()
-                // PushAlertApi.showSubscribeAlert()
-              }}
+              onChange={(e) => {}}
             />
           </div>
         </div>

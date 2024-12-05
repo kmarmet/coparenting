@@ -6,7 +6,6 @@ import globalState from '../../context'
 import moment from 'moment'
 import CheckboxGroup from '@shared/checkboxGroup'
 import Expense from '@models/expense'
-import PushAlertApi from '@api/pushAlert'
 import FirebaseStorage from '@firebaseStorage'
 import NotificationManager from '@managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
@@ -149,7 +148,7 @@ function NewExpenseForm({ hideCard, showCard }) {
       // Send notification
       const subId = await NotificationManager.getUserSubId(payer.phone)
       if (subId) {
-        PushAlertApi.sendMessage(`New Expense`, `${formatNameFirstNameOnly(currentUser?.name)} has created a new expense`, subId)
+        NotificationManager.sendNotification(`New Expense`, `${formatNameFirstNameOnly(currentUser?.name)} has created a new expense`, subId)
       }
 
       // Go back to expense screen

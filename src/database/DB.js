@@ -11,7 +11,6 @@ const DB = {
     users: 'users',
     calendarEvents: 'calendarEvents',
     transferChangeRequests: 'transferChangeRequests',
-    pushAlertSubscribers: 'pushAlertSubscribers',
     profilePics: 'profilePics',
     chats: 'chats',
     documents: 'documents',
@@ -20,6 +19,7 @@ const DB = {
     suggestions: 'suggestions',
     memories: 'memories',
     parentPermissionCodes: 'parentPermissionCodes',
+    notificationSubscribers: 'notificationSubscribers',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true) => {
     let result
@@ -42,16 +42,6 @@ const DB = {
     } else {
       return []
     }
-  },
-  getPushAlertSubscriberId: async (phone) => {
-    let subId
-    const allUsers = await DB.getTable(DB.tables.pushAlertSubscribers, true)
-    for (let userPhone in allUsers) {
-      if (userPhone === phone) {
-        subId = allUsers[userPhone]
-      }
-    }
-    return subId
   },
   getFlatTableKey: async (path, id) => {
     const records = await DB.getTable(path)
@@ -136,6 +126,7 @@ const DB = {
       try {
         await set(child(dbRef, path), tableData)
       } catch (error) {
+        console.log(error.message)
         LogManager.log(error.message, LogManager.logTypes.error, error.stack)
       }
     }),

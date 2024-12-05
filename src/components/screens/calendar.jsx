@@ -22,7 +22,6 @@ import NewCalendarEvent from '../forms/newCalendarEvent'
 import EditCalEvent from '../forms/editCalEvent'
 import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
-import DB_UserScoped from '@userScoped'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -39,6 +38,14 @@ export default function EventCalendar() {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedNewEventDay, setSelectedNewEventDay] = useState(moment())
+
+  // const addNotifRecordToDatabase = async () => {
+  //   const _currentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+  //   if (Manager.isValid(_currentUser)) {
+  //     NotificationManager.addToDatabase(_currentUser).then((r) => r)
+  //   }
+  // }
+  // addNotifRecordToDatabase().then((r) => r)
 
   // GET EVENTS
   const getSecuredEvents = async (selectedDay, selectedMonth) => {
@@ -264,8 +271,6 @@ export default function EventCalendar() {
     onValue(child(dbRef, `${DB.tables.calendarEvents}`), async (snapshot) => {
       await getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
     })
-    const test = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    console.log(test)
   }
 
   useEffect(() => {

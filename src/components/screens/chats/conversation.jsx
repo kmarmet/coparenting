@@ -38,7 +38,6 @@ import { CgClose } from 'react-icons/cg'
 import { TbMessageCircleSearch } from 'react-icons/tb'
 import ContentEditable from '../../shared/contentEditable'
 import { useLongPress } from 'use-long-press'
-import PushAlertApi from '../../../api/pushAlert'
 import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
 
@@ -129,7 +128,7 @@ const Conversation = () => {
       const coparentHasChatMuted = existingChat.mutedMembers.filter((x) => x.ownerPhone === messageToUser.phone).length > 0
       if (!coparentHasChatMuted) {
         const subId = await NotificationManager.getUserSubId(messageToUser.phone)
-        PushAlertApi.sendMessage('New Message', `You have an unread conversation message 💬`, subId)
+        NotificationManager.sendNotification('New Message', `You have an unread conversation message 💬`, subId)
       }
     }
 
