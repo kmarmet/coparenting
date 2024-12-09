@@ -51,6 +51,7 @@ import firebaseConfig from './firebaseConfig.js'
 import ContactUs from './components/screens/contactUs'
 import DB from '@db'
 import NotificationManager from './managers/notificationManager.js'
+import Home from './components/screens/home'
 
 export default function App() {
   // Initialize Firebase
@@ -194,6 +195,7 @@ export default function App() {
             {currentScreen === ScreenNames.newCoparent && <NewCoparentForm />}
 
             {/* STANDARD */}
+            {currentScreen === ScreenNames.home && <Home />}
             {currentScreen === ScreenNames.activity && <Activity />}
             {currentScreen === ScreenNames.calendar && <EventCalendar />}
             {currentScreen === ScreenNames.settings && <Settings />}

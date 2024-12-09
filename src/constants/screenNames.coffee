@@ -1,4 +1,5 @@
 ScreenNames =
+  home: 'home'
   activity: 'activity'
   adminDashboard: 'adminDashboard'
   expenseTracker: 'expenseTracker'

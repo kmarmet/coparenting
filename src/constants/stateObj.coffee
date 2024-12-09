@@ -4,7 +4,7 @@ import ActivitySet from "../models/activitySet"
 StateObj =
   activeInfoChild: null
   activitySet: new ActivitySet(),
-  currentScreen: ScreenNames.login
+  currentScreen: ScreenNames.home
   currentUser: {}
   activeInfoCoparent: [],
   docToView: ''
