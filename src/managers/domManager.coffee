@@ -1,3 +1,4 @@
+import Manager from "./manager"
 
 DomManager = {
   hasClass: (element, className) ->
@@ -8,12 +9,13 @@ DomManager = {
     else
       false
   isInViewport: (el) ->
-    rect = el.getBoundingClientRect()
+    if Manager.isValid(el)
+      rect = el.getBoundingClientRect()
 
-    rect.top >= 0 and
-      rect.left >= 0 and
-      rect.bottom <= (window.innerHeight or document.documentElement.clientHeight) and # or $(window).height()
-      rect.right <= (window.innerWidth or document.documentElement.clientWidth) # or $(window).width()
+      rect.top >= 0 and
+        rect.left >= 0 and
+        rect.bottom <= (window.innerHeight or document.documentElement.clientHeight) and # or $(window).height()
+        rect.right <= (window.innerWidth or document.documentElement.clientWidth) # or $(window).width()
 
 
 }
