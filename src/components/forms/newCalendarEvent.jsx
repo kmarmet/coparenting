@@ -219,7 +219,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       // Add single date
       if (addSingleEvent) {
         await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
-          NotificationManager.sendToShareWith(eventShareWith, 'New Calendar Event', `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`)
+          NotificationManager.sendToShareWith(
+            eventShareWith,
+            currentUser,
+            'New Calendar Event',
+            `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`
+          )
 
           // Repeating Events
           if (navigator.setAppBadge) {

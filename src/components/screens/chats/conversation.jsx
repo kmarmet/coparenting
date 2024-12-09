@@ -15,6 +15,7 @@ import 'rc-tooltip/assets/bootstrap_white.css'
 import ChatManager from '@managers/chatManager.js'
 import DateFormats from '../../../constants/dateFormats'
 import { PiBookmarkSimpleDuotone, PiBookmarksSimpleDuotone } from 'react-icons/pi'
+import { FaBookmark } from 'react-icons/fa'
 import ModelNames from '../../../models/modelNames'
 import {
   contains,
@@ -60,7 +61,7 @@ const Conversation = () => {
     AlertManager.successAlert('Message Copied!', false)
   })
 
-  const bookmarkMessage = async (messageObject, bookmarkButton) => {
+  const toggleMessageBookmark = async (messageObject, isBookmarked) => {
     const { id } = messageObject
     await ChatManager.toggleMessageBookmark(currentUser, messageRecipient, id)
   }
@@ -348,7 +349,7 @@ const Conversation = () => {
                 <div key={index}>
                   <p className={bookmark.sender === currentUser?.name ? 'message from' : 'to message'}>
                     {bookmark.message}
-                    <PiBookmarkSimpleDuotone className={isBookmarked ? 'bookmarked' : ''} onClick={(e) => bookmarkMessage(bookmark, e.target)} />
+                    <FaBookmark className={isBookmarked ? 'bookmarked' : ''} onClick={(e) => toggleMessageBookmark(bookmark, true)} />
                   </p>
                   <span className={bookmark.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                     From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
@@ -380,10 +381,8 @@ const Conversation = () => {
                     <div key={index}>
                       <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
                         {message.message}
-                        <PiBookmarkSimpleDuotone
-                          className={isBookmarked ? 'bookmarked' : ''}
-                          onClick={(e) => bookmarkMessage(message, e.target.parentNode)}
-                        />
+                        {isBookmarked && <FaBookmark className={'bookmarked'} onClick={() => toggleMessageBookmark(message, true)} />}
+                        {!isBookmarked && <PiBookmarkSimpleDuotone onClick={(e) => toggleMessageBookmark(message, false)} />}
                       </p>
                       <span className={message.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
                     </div>

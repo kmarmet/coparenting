@@ -134,8 +134,7 @@ export default function App() {
   // Add Notification Subscriber to Database
   useEffect(() => {
     const subId = localStorage.getItem('subscriptionId')
-    if (subId && currentUser.hasOwnProperty('email')) {
-      console.log(subId)
+    if (subId && currentUser && currentUser.hasOwnProperty('email')) {
       addNotifUserToDatabase().then((r) => r)
     }
   }, [subscriptionId, currentUser])

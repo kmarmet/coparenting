@@ -392,7 +392,7 @@
       min-width: 10%;
       width: 28vw;
     }
-
+    
     .timestamp {
       width: 100%;
       display: block;
@@ -445,6 +445,9 @@
         &.bookmarked {
           color: $mainBlue;
           opacity: 1;
+          font-size: 16px;
+          position: relative;
+          top: 4px;
         }
       }
 
@@ -463,8 +466,8 @@
         &.from {
           z-index: 100;
           margin-right: auto;
-          background-color: #ebf4fb;
-          color: #70819d;
+          background-color: $lightIconBgBlue;
+          color: #092549;
 
           &:after {
             content: '';
@@ -473,7 +476,7 @@
             left: -25px;
             width: 40px;
             height: 25px;
-            background: radial-gradient(30px at top left, #0000 99%, #ebf4fb 102%);
+            background: radial-gradient(30px at top left, #0000 99%, $lightIconBgBlue 102%);
           }
 
           .under-message {

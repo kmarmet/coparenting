@@ -9,6 +9,8 @@ import Manager from "./manager.js";
 
 import NotificationSubscriber from "../models/notificationSubscriber";
 
+import DB_UserScoped from "../database/db_userScoped";
+
 export default NotificationManager = {
   lineBreak: '\r\n',
   // Define message templates
@@ -122,12 +124,15 @@ export default NotificationManager = {
   //      method: 'DELETE'
   //      headers:
   //        accept: 'application/json'
-  sendToShareWith: async function(coparentPhones, title, message) {
-    var i, len, phone, results, subId;
+  sendToShareWith: async function(coparentPhones, currentUser, title, message) {
+    var coparent, i, len, phone, results, subId;
     results = [];
     for (i = 0, len = coparentPhones.length; i < len; i++) {
       phone = coparentPhones[i];
-      subId = (await NotificationManager.getUserSubId(phone));
+      coparent = (await DB_UserScoped.getCoparentByPhone(phone, currentUser));
+      console.log(coparent);
+      console.log(phone);
+      subId = (await NotificationManager.getUserSubId(coparent));
       results.push((await NotificationManager.sendNotification(title, message, subId)));
     }
     return results;

@@ -278,7 +278,7 @@
     }
 
     .current-user-visitation-dot {
-      background-color: $accentBlue;
+      background-color: $mainBlue;
     }
 
     .coparent-visitation-dot {
@@ -286,7 +286,7 @@
     }
 
     .standard-event-dot {
-      background-color: rgba(46, 204, 113, 0.65);
+      background-color: $green;
     }
   }
   .invisible-dots {
@@ -382,12 +382,13 @@
         }
       }
       &.Mui-selected {
-        color: white !important;
-        background-color: $mainBlue;
+        background-color: $lightIconBgBlue;
         height: 40px !important;
         width: 50px !important;
         margin-top: 3px !important;
-
+        border: 1px solid $mainBlue;
+        color: $mainBlue !important;
+        font-weight: $fwMediumBold !important;
         .dot-wrapper {
           top: -3px;
         }
@@ -398,7 +399,6 @@
     background: $lightBg !important;
     margin: 0 !important;
     border-radius: 0;
-    //    border-bottom: 1px solid $iconGrey;
 
     .MuiPickersCalendarHeader-label {
       font-weight: $fwMedium !important;

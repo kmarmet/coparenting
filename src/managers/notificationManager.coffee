@@ -2,6 +2,7 @@ import DB from '../../src/database/DB'
 import OneSignal from 'react-onesignal'
 import Manager from "./manager.js"
 import NotificationSubscriber from "../models/notificationSubscriber"
+import DB_UserScoped from "../database/db_userScoped"
 
 export default NotificationManager =
   lineBreak: '\r\n'
@@ -112,9 +113,12 @@ export default NotificationManager =
 #        accept: 'application/json'
 
 
-  sendToShareWith: (coparentPhones, title, message) ->
+  sendToShareWith: (coparentPhones, currentUser, title, message) ->
     for phone in coparentPhones
-      subId = await NotificationManager.getUserSubId(phone)
+      coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
+      console.log(coparent)
+      console.log(phone)
+      subId = await NotificationManager.getUserSubId(coparent)
       await NotificationManager.sendNotification(title, message, subId )
 
   assignExternalId: (currentUser) ->
