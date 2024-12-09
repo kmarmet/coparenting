@@ -36,7 +36,7 @@ import DomManager from '../../../managers/domManager'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, navbarButton } = state
+  const { currentUser, theme } = state
   const [showNewThreadForm, setShowNewThreadForm] = useState(false)
   const [threads, setThreads] = useState([])
   const [selectedCoparent, setSelectedCoparent] = useState(null)
@@ -45,10 +45,8 @@ const Chats = () => {
   const [threadActionToShow, setThreadActionToShow] = useState(false)
 
   const openMessageThread = async (coparentPhone) => {
-    console.log(coparentPhone)
     const userCoparent = await DB_UserScoped.getCoparentByPhone(coparentPhone, currentUser)
-    console.log(userCoparent)
-    setState({ ...state, currentScreen: ScreenNames.conversation, messageToUser: userCoparent })
+    setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: userCoparent })
   }
 
   const getSecuredChats = async () => {
@@ -68,22 +66,6 @@ const Chats = () => {
       await getSecuredChats()
       setSelectedCoparent(null)
     }
-  }
-
-  const setNavbarButton = (action, color, icon) => {
-    setTimeout(() => {
-      setState({
-        ...state,
-        navbarButton: {
-          ...navbarButton,
-          action: () => {
-            action()
-          },
-          color: color,
-          icon: icon,
-        },
-      })
-    }, 100)
   }
 
   const muteChat = async (coparentPhone, muteOrUnmute, threadId) => {
@@ -229,7 +211,6 @@ const Chats = () => {
                           },
                           () => {
                             setThreadActionToShow(false)
-                            setNavbarButton(() => setShowNewThreadForm(), 'green', <BiSolidEdit />)
                           }
                         )
                       }

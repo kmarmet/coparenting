@@ -43,7 +43,7 @@ import AlertManager from '../../../managers/alertManager'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, messageToUser } = state
+  const { currentUser, theme, messageRecipient } = state
   const [existingChat, setExistingChat] = useState(null)
   const [messagesToLoop, setMessagesToLoop] = useState(null)
   const [searchResults, setSearchResults] = useState([])
@@ -62,7 +62,7 @@ const Conversation = () => {
 
   const bookmarkMessage = async (messageObject, bookmarkButton) => {
     const { id } = messageObject
-    await ChatManager.toggleMessageBookmark(currentUser, messageToUser, id)
+    await ChatManager.toggleMessageBookmark(currentUser, messageRecipient, id)
   }
 
   const sendMessage = async () => {
@@ -82,15 +82,15 @@ const Conversation = () => {
     conversationMessage.id = Manager.getUid()
     conversationMessage.timestamp = moment().format('MM/DD/yyyy hh:mma')
     conversationMessage.sender = currentUser?.name
-    conversationMessage.recipient = messageToUser.name
+    conversationMessage.recipient = messageRecipient.name
     conversationMessage.message = messageText
     conversationMessage.readState = 'delivered'
     conversationMessage.notificationSent = false
     conversationMessage.bookmarked = false
     const cleanMessage = ObjectManager.cleanObject(conversationMessage, ModelNames.conversationMessage)
 
-    //Thread
-    const { name, id, phone } = messageToUser
+    // Thread
+    const { name, id, phone } = messageRecipient
     const { name: crName, id: crId, phone: crPhone } = currentUser
     const memberTwo = { name: crName, id: crId, phone: crPhone }
     const memberOne = { name, id, phone }
@@ -124,12 +124,14 @@ const Conversation = () => {
     }
 
     // Only send notification if coparent has chat UNmuted
+    const messageRecipientSubId = await NotificationManager.getUserSubId(messageRecipient)
     if (Manager.isValid(existingChat?.mutedMembers, true)) {
-      const coparentHasChatMuted = existingChat.mutedMembers.filter((x) => x.ownerPhone === messageToUser.phone).length > 0
+      const coparentHasChatMuted = existingChat.mutedMembers.filter((x) => x.ownerPhone === messageRecipient.phone).length > 0
       if (!coparentHasChatMuted) {
-        const subId = await NotificationManager.getUserSubId(messageToUser.phone)
-        NotificationManager.sendNotification('New Message', `You have an unread conversation message 💬`, subId)
+        NotificationManager.sendNotification('New Message', `You have an unread conversation message 💬`, messageRecipientSubId)
       }
+    } else {
+      NotificationManager.sendNotification('New Message', `You have an unread conversation message 💬`, messageRecipientSubId)
     }
 
     await getExistingMessages()
@@ -146,7 +148,7 @@ const Conversation = () => {
   }
 
   const getExistingMessages = async () => {
-    let scopedChatObject = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
+    let scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient.phone)
     let { chat } = scopedChatObject
     const bookmarkObjects = chat?.bookmarks?.filter((x) => x.ownerPhone === currentUser?.phone) ?? []
     const bookmarkedMessageIds = bookmarkObjects?.map((x) => x.messageId) ?? []
@@ -168,7 +170,7 @@ const Conversation = () => {
       setBookmarks(bookmarkedMessages)
       setMessagesToLoop(messages.flat())
       setExistingChat(chat)
-      await ChatManager.markMessagesRead(currentUser, messageToUser, chat)
+      await ChatManager.markMessagesRead(currentUser, messageRecipient, chat)
     } else {
       setMessagesToLoop([])
       setExistingChat(null)
@@ -278,7 +280,7 @@ const Conversation = () => {
         {!showSearchInput && (
           <div className="flex top-buttons">
             <div className="flex" id="user-info">
-              <p id="user-name">{formatNameFirstNameOnly(messageToUser.name)}</p>
+              <p id="user-name">{formatNameFirstNameOnly(messageRecipient.name)}</p>
             </div>
             <div id="right-side" className="flex">
               <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />

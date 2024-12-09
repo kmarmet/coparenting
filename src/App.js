@@ -51,8 +51,6 @@ import firebaseConfig from './firebaseConfig.js'
 import ContactUs from './components/screens/contactUs'
 import DB from '@db'
 import NotificationManager from './managers/notificationManager.js'
-import NotificationSubscriber from './models/notificationSubscriber.js'
-import Manager from '@manager'
 
 export default function App() {
   // Initialize Firebase
@@ -100,6 +98,11 @@ export default function App() {
     })
   }
 
+  const addNotifUserToDatabase = async () => {
+    const subId = localStorage.getItem('subscriptionId')
+    await NotificationManager.addToDatabase(currentUser, subId)
+  }
+
   // CLEAR APP BADGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
@@ -125,27 +128,14 @@ export default function App() {
     })
 
     LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
-    NotificationManager.init()
+    NotificationManager.init(currentUser)
   }, [])
 
-  const addNotifUserToDatabase = async () => {
-    const subId = localStorage.getItem('subscriptionId')
-    const existingRecord = await DB.find(DB.tables.notificationSubscribers, ['email', currentUser.email], true)
-    if (subId && !Manager.isValid(existingRecord)) {
-      const newSubscriber = new NotificationSubscriber()
-      newSubscriber.email = currentUser?.email
-      newSubscriber.phone = currentUser?.phone
-      newSubscriber.id = Manager.getUid()
-      newSubscriber.subscriptionId = subId
-      await DB.add(`/${DB.tables.notificationSubscribers}`, newSubscriber)
-      await NotificationManager.sendNotification('Welcome Aboard!', 'You are now subscribed to peaceful communications!', subId)
-      localStorage.removeItem('subscriptionId')
-    }
-  }
-
+  // Add Notification Subscriber to Database
   useEffect(() => {
     const subId = localStorage.getItem('subscriptionId')
     if (subId && currentUser.hasOwnProperty('email')) {
+      console.log(subId)
       addNotifUserToDatabase().then((r) => r)
     }
   }, [subscriptionId, currentUser])
