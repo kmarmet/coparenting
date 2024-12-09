@@ -5,10 +5,9 @@ import 'rsuite/dist/rsuite.min.css'
 import ScreenNames from '@screenNames'
 import ChatManager from '@managers/chatManager.js'
 import DB_UserScoped from '@userScoped'
-import { BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
+import { BiDotsVerticalRounded, BiMessageRoundedDetail, BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
 import { IoNotificationsOffCircle } from 'react-icons/io5'
 import { HiMiniBellAlert } from 'react-icons/hi2'
-import { HiOutlineDotsCircleHorizontal } from 'react-icons/hi'
 import { IoMdCloseCircleOutline } from 'react-icons/io'
 import {
   contains,
@@ -180,7 +179,8 @@ const Chats = () => {
                   {/* COPARENT NAME */}
                   <div className="flex">
                     <div id="user-initial-wrapper">
-                      <span className="user-initial">{coparent.name.charAt(0).toUpperCase()}</span>
+                      {/*<span className="user-initial">{coparent.name.charAt(0).toUpperCase()}</span>*/}
+                      <BiMessageRoundedDetail />
                     </div>
                     <p data-coparent-phone={coparent.phone} className="coparent-name">
                       {formatNameFirstNameOnly(coparent.name)}
@@ -192,9 +192,7 @@ const Chats = () => {
                   {threadActionToShow === thread.id && (
                     <IoMdCloseCircleOutline id={'close-thread-actions-icon'} onClick={() => toggleThreadActions(thread.id)} />
                   )}
-                  {threadActionToShow !== thread.id && (
-                    <HiOutlineDotsCircleHorizontal id={'edit-icon'} onClick={() => toggleThreadActions(thread.id)} />
-                  )}
+                  {threadActionToShow !== thread.id && <BiDotsVerticalRounded id={'edit-icon'} onClick={() => toggleThreadActions(thread.id)} />}
                 </div>
                 {/* THREAD ACTIONS */}
                 <div data-thread-id={thread.id} className={'flex thread-actions'}>

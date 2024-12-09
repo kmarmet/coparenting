@@ -118,12 +118,25 @@ export default NotificationManager = {
       return console.error(error);
     });
   },
-  //disableNotifications: (id) ->
-  //    url = "https://api.onesignal.com/apps/#{NotificationManager.}/subscriptions/#{id}"
-  //    options =
-  //      method: 'DELETE'
-  //      headers:
-  //        accept: 'application/json'
+  disableNotifications: function(subId) {
+    var myHeaders, options, url;
+    myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
+    url = `https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}`;
+    options = {
+      method: 'DELETE',
+      headers: myHeaders
+    };
+    return fetch(url, options).then(function(res) {
+      return res.json();
+    }).then(function(json) {
+      return console.log(json);
+    }).catch(function(err) {
+      return console.error(err);
+    });
+  },
   sendToShareWith: async function(coparentPhones, currentUser, title, message) {
     var coparent, i, len, phone, results, subId;
     results = [];

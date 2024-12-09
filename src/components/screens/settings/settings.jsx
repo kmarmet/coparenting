@@ -30,6 +30,7 @@ import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import Label from '../../shared/label'
+import NotificationManager from '../../../managers/notificationManager.js'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
@@ -37,7 +38,7 @@ export default function Settings() {
   const [defaultReminderTimes, setDefaultReminderTimes] = useState([])
   const [morningSummaryTime, setMorningSummaryTime] = useState('')
   const [eveningSummaryTime, setEveningSummaryTime] = useState('')
-
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true)
   const submitCalendarSettings = async () => {
     console.log(DateManager.dateIsValid(morningSummaryTime))
     console.log(moment(eveningSummaryTime).format(DateFormats.summaryHour))
@@ -61,6 +62,19 @@ export default function Settings() {
   useEffect(() => {
     Manager.showPageContainer()
   }, [])
+
+  const toggleNotifications = async (e) => {
+    const parent = e.target.closest('.react-toggle')
+    const subId = await NotificationManager.getUserSubId(currentUser)
+    if (parent.classList.contains('react-toggle--checked')) {
+      setNotificationsEnabled(false)
+      console.log('uncheck')
+      await NotificationManager.disableNotifications(subId)
+    } else {
+      setNotificationsEnabled(true)
+      console.log('check')
+    }
+  }
 
   return (
     <>
@@ -92,13 +106,15 @@ export default function Settings() {
           {/* IS VISITATION? */}
           <Label text={'Notifications'} labelId="medium-title" classes="mt-30" />
           <div className="flex">
-            <p>Enable</p>
+            {notificationsEnabled && <p>Disable</p>}
+            {!notificationsEnabled && <p>Enable</p>}
             <Toggle
               icons={{
                 unchecked: null,
               }}
+              defaultChecked={true}
               className={'ml-auto visitation-toggle'}
-              onChange={(e) => {}}
+              onChange={toggleNotifications}
             />
           </div>
         </div>

@@ -105,12 +105,21 @@ export default NotificationManager =
         console.log("Sent to #{subId}")
       .catch (error) -> console.error error
 
-#disableNotifications: (id) ->
-#    url = "https://api.onesignal.com/apps/#{NotificationManager.}/subscriptions/#{id}"
-#    options =
-#      method: 'DELETE'
-#      headers:
-#        accept: 'application/json'
+  disableNotifications: (subId) ->
+    myHeaders = new Headers()
+    myHeaders.append "Accept", "application/json"
+    myHeaders.append "Content-Type", "application/json"
+    myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
+
+    url = "https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}"
+    options =
+      method: 'DELETE'
+      headers: myHeaders
+
+    fetch(url, options)
+      .then (res) -> res.json()
+      .then (json) -> console.log json
+      .catch (err) -> console.error err
 
 
   sendToShareWith: (coparentPhones, currentUser, title, message) ->

@@ -113,7 +113,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
         <div className="form new-child-form">
           {/* NAME */}
           <InputWrapper labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
-          <InputWrapper labelText={'Phone Number'} required={true} onChange={(e) => setPhoneNumber(e.target.value)} />
+          <InputWrapper labelText={'Phone Number'} required={false} onChange={(e) => setPhoneNumber(e.target.value)} />
           <InputWrapper labelText={'Date of Birth'} required={true} inputType={'date'}>
             <MobileDatePicker className="mt-0 w-100 event-from-date mui-input" onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
           </InputWrapper>

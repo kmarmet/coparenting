@@ -10,7 +10,6 @@ import ConversationThread from '../../../models/conversationThread'
 import Manager from '@manager'
 import NotificationManager from '@managers/notificationManager.js'
 import AppManager from '@managers/appManager.js'
-import { DebounceInput } from 'react-debounce-input'
 import 'rc-tooltip/assets/bootstrap_white.css'
 import ChatManager from '@managers/chatManager.js'
 import DateFormats from '../../../constants/dateFormats'
@@ -41,6 +40,7 @@ import ContentEditable from '../../shared/contentEditable'
 import { useLongPress } from 'use-long-press'
 import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
+import InputWrapper from '../../shared/inputWrapper'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -199,7 +199,15 @@ const Conversation = () => {
     })
   }
 
-  const handleMessageTyping = (input) => setMessageText(input.target.textContent)
+  const handleMessageTyping = (input) => {
+    const valueLength = input.target.textContent.length
+    const parent = input.target.parentNode
+    if (valueLength === 0) {
+      input.target.classList.remove('has-value')
+    } else {
+      setMessageText(input.target.textContent)
+    }
+  }
 
   useEffect(() => {
     onTableChange().then((r) => r)
@@ -236,6 +244,7 @@ const Conversation = () => {
         submitText={'Search'}
         submitIcon={<TbMessageCircleSearch />}
         showCard={showSearchCard}
+        showOverlay={false}
         onSubmit={() => {
           if (searchInputQuery.length === 0) {
             AlertManager.throwError('Please enter a search value')
@@ -245,6 +254,7 @@ const Conversation = () => {
           setBookmarks([])
           setSearchResults(results)
           setSearchInputQuery('')
+          setState({ ...state, showOverlay: false })
         }}
         refreshKey={refreshKey}
         onClose={() => {
@@ -254,16 +264,15 @@ const Conversation = () => {
           scrollToLatestMessage()
           setRefreshKey(Manager.getUid())
         }}>
-        <DebounceInput
-          placeholder="Find a message..."
-          minLength={2}
-          className="search-input"
-          debounceTimeout={500}
+        <InputWrapper
+          defaultValue="Find a message..."
+          inputType={'input'}
           onChange={(e) => {
             if (e.target.value.length > 2) {
               setSearchInputQuery(e.target.value)
             }
           }}
+          inputClasses="search-input"
         />
         <div
           className="buttons"
@@ -394,9 +403,13 @@ const Conversation = () => {
             {/* MESSAGE INPUT */}
             <div className="form message-input-form">
               {/* SEND BUTTON */}
-              <div className="flex" id="message-input-container">
+              <div
+                className={messageText.length > 1 ? 'flex has-value' : 'flex'}
+                id="message-input-container"
+                onClick={(e) => e.target.classList.add('has-value')}>
                 <ContentEditable classNames={'message-input'} onChange={handleMessageTyping} />
                 <button
+                  className={messageText.length > 1 ? 'filled' : 'outline'}
                   onClick={async () => {
                     const messageThreadContainer = document.getElementById('message-thread-container')
                     const vh = window.innerHeight
