@@ -8,6 +8,9 @@ DomManager = {
       true
     else
       false
+
+  isMobile: () -> window.screen.width < 800
+
   isInViewport: (el) ->
     if Manager.isValid(el)
       rect = el.getBoundingClientRect()

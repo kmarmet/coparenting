@@ -14,6 +14,9 @@ DomManager = {
       return false;
     }
   },
+  isMobile: function() {
+    return window.screen.width < 800;
+  },
   isInViewport: function(el) {
     var rect;
     if (Manager.isValid(el)) {

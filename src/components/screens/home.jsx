@@ -1,12 +1,60 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { contains, formatNameFirstNameOnly } from '../../globalFunctions'
 import ScreenNames from '@screenNames'
 import globalState from '../../context'
 import { Fade } from 'react-awesome-reveal'
+import { PiCalendarDotsDuotone, PiMoneyWavyDuotone } from 'react-icons/pi'
+import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool } from 'react-icons/ai'
+import { FaChildren } from 'react-icons/fa6'
+import DomManager from '../../managers/domManager'
+import { IoPersonAddOutline } from 'react-icons/io5'
+import { SlLogin } from 'react-icons/sl'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import firebaseConfig from '../../firebaseConfig'
+import { initializeApp } from 'firebase/app'
 
 export default function Home() {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
+
+  // Init Firebase
+  const app = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
+
+  useEffect(() => {
+    if (DomManager.isMobile()) {
+      window.onload = function () {
+        const imageWrapper = document.getElementById('images')
+        imageWrapper.scrollLeft += 325
+      }
+    }
+    const pageContainer = document.querySelector('.page-container')
+    pageContainer.addEventListener('scroll', () => {
+      const scrollDistance = pageContainer.scrollTop
+      const navbar = document.getElementById('home-navbar')
+      if (scrollDistance >= 200) {
+        navbar.classList.add('scrolled')
+      } else {
+        navbar.classList.remove('scrolled')
+      }
+    })
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // User is signed in.
+        setState({
+          ...state,
+          currentScreen: ScreenNames.calendar,
+          userIsLoggedIn: true,
+          isLoading: false,
+        })
+      } else {
+        // No user is signed in.
+        setState({ ...state, isLoading: false })
+        console.log('Signed out or no user exists')
+      }
+    })
+  }, [])
 
   return (
     <div className="page-container home" id="home-screen-wrapper">
@@ -14,15 +62,17 @@ export default function Home() {
       <div id="home-navbar" className="flex">
         <img src={require('../../img/logo.png')} alt="Peaceful coParenting" id="logo" />
         <div id="login-buttons">
-          <button id="register-button">Sign Up</button>
+          <button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
+            Sign Up <IoPersonAddOutline />
+          </button>
           <button id="login-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
-            Log In
+            Log In <SlLogin />
           </button>
         </div>
       </div>
       {/* ABOVE FOLD */}
       <div id="above-fold-wrapper">
-        <Fade direction={'up'}>
+        <Fade>
           <div className="section">
             <p id="title">Peaceful Co-Parenting</p>
             <p id="subtitle">Simplifying Communication for Parents, Empowering Kids with Stability</p>
@@ -34,8 +84,7 @@ export default function Home() {
           <img src={require('../../img/homepage/childInfo.png')} alt="" />
         </div>
       </div>
-      <div className="faded-top"></div>
-      <Fade direction={'up'}>
+      <Fade>
         <div id="below-fold-intro-text" className="section">
           <p>
             Our app provides a stress-free way to manage co-parenting by enhancing communication, scheduling, and decision-making, so{' '}
@@ -44,11 +93,12 @@ export default function Home() {
         </div>
       </Fade>
       {/* BELOW FOLD */}
-      <div id="below-fold-wrapper" className="section">
+      <div id="below-fold-wrapper">
         {/* MAIN CONTENT */}
-        <Fade direction={'up'}>
-          <div className="flex boxes">
+        <Fade>
+          <div className="flex boxes section">
             <div className="text-box">
+              <PiCalendarDotsDuotone />
               <p className="text-box-title"> Streamline your Parenting Schedule </p>
               <p className="text-box-subtitle">Shared Calendars, Real-Time Updates, and Reminders</p>
               <p className="text-box-main-text">
@@ -57,6 +107,7 @@ export default function Home() {
               </p>
             </div>
             <div className="text-box with-bg">
+              <AiTwotoneMessage />
               <p className="text-box-title"> Effective Communication without Conflict </p>
               <p className="text-box-subtitle">Clear Messaging for Healthier Conversations</p>
               <p className="text-box-main-text">
@@ -66,8 +117,9 @@ export default function Home() {
             </div>
           </div>
         </Fade>
-        <Fade direction={'up'}>
-          <div className="full-width-box section">
+        <Fade>
+          <div className="full-width-box section text-box">
+            <FaChildren />
             <p className="title">Child-Centered Decision Making</p>
             <p className="subtitle">Collaborate on Decisions that Matter Most</p>
             <p className="text">
@@ -76,8 +128,9 @@ export default function Home() {
             </p>
           </div>
         </Fade>
-        <Fade direction={'up'}>
+        <Fade>
           <div id="expenses-wrapper" className="section">
+            <PiMoneyWavyDuotone />
             <div className="text-wrapper">
               <p className="title">Track Expenses and Share Responsibilities</p>
               <p className="subtitle">Transparency in Shared Financial Responsibilities</p>
@@ -92,7 +145,7 @@ export default function Home() {
 
         {/* FOOTER WRAPPER */}
         <div id="footer-wrapper">
-          <Fade direction={'up'}>
+          <Fade>
             <div className="section">
               <p className="title">
                 Built for Families, <br /> Focused on Peace
@@ -104,11 +157,12 @@ export default function Home() {
               </p>
             </div>
           </Fade>
-          <Fade direction={'up'}>
+          <Fade>
             <img src={require('../../img/homepage/gallery.png')} alt="" />
           </Fade>
-          <Fade direction={'up'}>
-            <div className="box section">
+          <Fade>
+            <div className="box section security-and-privacy">
+              <AiTwotoneSafetyCertificate />
               <p className="title">Security & Privacy</p>
               <p className="subtitle">Transparency in Shared Financial Responsibilities</p>
               <p className="text">
@@ -122,9 +176,10 @@ export default function Home() {
             </div>
           </Fade>
         </div>
-        <div className="flex" id="double">
-          <Fade direction={'up'}>
+        <Fade>
+          <div className="flex" id="double">
             <div className="text-wrapper text-only box">
+              <AiTwotoneTool />
               <p className="title">Flexible Co-Parenting Tools</p>
               <p className="text">
                 <b>Swap Requests:</b> Need a schedule change? Easily request new times or locations for child transfers with just a few clicks.
@@ -138,9 +193,8 @@ export default function Home() {
                 sending reminders to the responsible co-parent.
               </p>
             </div>
-          </Fade>
-          <Fade direction={'up'}>
             <div className="text-wrapper text-only with-bg box">
+              <AiTwotoneMessage />
               <p className="title">Streamlined Communication</p>
               <p className="text">
                 <b>Easy Messaging: </b> Keep conversations organized with features like message archiving, bookmarking, and a powerful search tool for
@@ -151,8 +205,8 @@ export default function Home() {
                 connected with your child's journey.
               </p>
             </div>
-          </Fade>
-        </div>
+          </div>
+        </Fade>
       </div>
     </div>
   )

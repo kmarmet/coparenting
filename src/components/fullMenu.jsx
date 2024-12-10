@@ -51,12 +51,7 @@ export default function FullMenu() {
     }
     signOut(auth)
       .then(() => {
-        setState({
-          ...state,
-          currentScreen: ScreenNames.login,
-          currentUser: null,
-          userIsLoggedIn: false,
-        })
+        window.location.reload()
         // Sign-out successful.
         console.log('User signed out')
       })
