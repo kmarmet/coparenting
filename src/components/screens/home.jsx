@@ -73,8 +73,18 @@ export default function Home() {
       {/* ABOVE FOLD */}
       <div id="above-fold-wrapper">
         <Fade>
-          <div className="section">
-            <p id="title">Peaceful Co-Parenting</p>
+          <div className="section page-title">
+            {DomManager.isMobile() && (
+              <>
+                <p id="title" className="mobile">
+                  Peaceful
+                </p>
+                <p id="title" className="mobile">
+                  Co-Parenting
+                </p>
+              </>
+            )}
+            {!DomManager.isMobile() && <p id="title">Peaceful Co-Parenting</p>}
             <p id="subtitle">Simplifying Communication for Parents, Empowering Kids with Stability</p>
           </div>
         </Fade>

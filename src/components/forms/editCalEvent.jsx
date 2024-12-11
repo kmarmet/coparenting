@@ -225,13 +225,14 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     }
 
     AlertManager.successAlert('Event Updated')
-    resetForm()
+    await resetForm()
   }
 
   const afterUpdateCallback = async () => {
     // Share with Notifications
     for (const phone of eventShareWith) {
-      const subId = await NotificationManager.getUserSubId(phone)
+      const coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
+      const subId = await NotificationManager.getUserSubId(coparent)
       NotificationManager.sendNotification('Event Updated', `${eventTitle} has been updated`, subId)
     }
 

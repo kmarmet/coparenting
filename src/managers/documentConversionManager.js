@@ -128,8 +128,9 @@ const DocumentConversionManager = {
     let returnHtml = ''
     const all = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, currentUserId, fileName)
     const { status, imageUrl } = all
+
     if (status === 'success') {
-      await fetch(`https://peaceful-coparenting.app:5000/document/getDocText?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
+      await fetch(`http://localhost:5267/document/getDocText?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
         .then((response) => response.text())
         .then((result) => (returnHtml = result))
         .catch((error) => console.error(error))

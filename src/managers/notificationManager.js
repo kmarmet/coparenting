@@ -81,6 +81,7 @@ export default NotificationManager = {
       newSubscriber.phone = currentUser != null ? currentUser.phone : void 0;
       newSubscriber.id = Manager.getUid();
       newSubscriber.subscriptionId = subId;
+      //      await NotificationManager.assignExternalId(currentUser)
       await DB.add(`/${DB.tables.notificationSubscribers}`, newSubscriber);
       return (await NotificationManager.sendNotification('Welcome Aboard!', 'You are now subscribed to peaceful communications!', subId));
     }

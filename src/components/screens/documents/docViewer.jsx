@@ -56,6 +56,7 @@ export default function DocViewer() {
       }
     }, 500)
   }
+
   const convertAndAppendDocOrImage = async () => {
     const fileType = `.${getFileExtension(docToView.name)}`
     if (currentUser && fileType === '.docx') {
@@ -259,6 +260,7 @@ export default function DocViewer() {
       }
     })
     setTocHeaders(newHeaderArray.sort())
+    setState({ ...state, isLoading: false })
   }
 
   // Get/Append Image

@@ -72,7 +72,7 @@ export default NotificationManager =
       newSubscriber.phone = currentUser?.phone
       newSubscriber.id = Manager.getUid()
       newSubscriber.subscriptionId = subId
-
+#      await NotificationManager.assignExternalId(currentUser)
       await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
       await NotificationManager.sendNotification('Welcome Aboard!', 'You are now subscribed to peaceful communications!', subId)
 

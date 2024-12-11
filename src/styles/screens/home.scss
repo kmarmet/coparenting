@@ -21,6 +21,7 @@
       font-size: 28px;
       line-height: 1.2;
       font-weight: $fwBold;
+
     }
 
     .subtitle {
@@ -33,6 +34,10 @@
       opacity: 1;
       margin-top: 0;
       margin-bottom: 30px;
+      
+      &.page-title {
+        margin-top: 30px;
+      }
     }
 
     svg {
@@ -112,8 +117,9 @@
         }
         #title {
           font-size: 35px;
-          margin-top: 20px;
           word-break: break-word;
+          margin: 0;
+          
         }
 
         #images {
