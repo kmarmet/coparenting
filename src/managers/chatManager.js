@@ -20,9 +20,10 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../globalFunctions'
-import DB_UserScoped from '@userScoped'
 import ConversationMessageBookmark from '../models/conversationMessageBookmark'
 import LogManager from './logManager'
+import DB_UserScoped from '@userScoped'
+import DatasetManager from './datasetManager'
 
 const ChatManager = {
   getScopedChat: async (currentUser, messageToUserPhone) =>
@@ -42,18 +43,39 @@ const ChatManager = {
       }
     }),
   hideAndArchive: async (currentUser, coparent) => {
-    const securedChats = await SecurityManager.getChats(currentUser)
-    const securedChat = securedChats.filter(
-      (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(coparent.phone)
-    )[0]
-    const chatKey = await DB.getNestedSnapshotKey(`${DB.tables.chats}`, securedChat, 'id')
-    if (!Manager.isValid(securedChat?.threadVisibilityMembers, true)) {
-      securedChat.threadVisibilityMembers = [currentUser, coparent]
+    const securedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
+    const { chat, key, hideFrom } = securedChat
+    if (Manager.isValid(securedChat?.hideFrom, true)) {
+      securedChat.hideFrom = [...hideFrom, currentUser.phone]
+    } else {
+      securedChat.hideFrom = [currentUser.phone]
     }
-    const visMembersWithoutCurrentUser = securedChat.threadVisibilityMembers.filter((x) => x.phone !== currentUser.phone)
     try {
-      await DB_UserScoped.updateByPath(`${DB.tables.chats}/${chatKey}/threadVisibilityMembers`, visMembersWithoutCurrentUser)
+      await DB_UserScoped.updateByPath(`${DB.tables.chats}/${key}/hideFrom`, securedChat.hideFrom)
       await DB.add(`${DB.tables.archivedChats}/${currentUser.phone}`, securedChat)
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error)
+    }
+  },
+  toggleMute: async (currentUser, coparentPhone, muteOrUnmute = 'mute') => {
+    const securedChat = await ChatManager.getScopedChat(currentUser, coparentPhone)
+    const { chat, key, hideFrom } = securedChat
+    if (Manager.isValid(securedChat?.mutedFor, true)) {
+      if (muteOrUnmute === 'mute') {
+        securedChat.mutedFor = [...securedChat.mutedFor, currentUser.phone]
+      } else {
+        securedChat.mutedFor = securedChat.mutedFor.filter((x) => x !== currentUser.phone)
+      }
+    } else {
+      if (muteOrUnmute === 'mute') {
+        securedChat.mutedFor = [currentUser.phone]
+      }
+    }
+    // Get flat/unique
+    securedChat.mutedFor = DatasetManager.getUniqueArray(securedChat.mutedFor, true)
+    console.log(securedChat.mutedFor)
+    try {
+      await DB_UserScoped.updateByPath(`${DB.tables.chats}/${key}/mutedFor`, securedChat.mutedFor)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }

@@ -29,7 +29,6 @@ import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '../../../managers/securityManager'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import NavBar from '../../navBar'
-import DB from '@db'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
 
@@ -67,23 +66,9 @@ const Chats = () => {
     }
   }
 
-  const muteChat = async (coparentPhone, muteOrUnmute, threadId) => {
-    let scopedChat = await ChatManager.getScopedChat(currentUser, coparentPhone)
-    const { key, chat } = scopedChat
-    const currentMutedMembers = Manager.isValid(scopedChat?.mutedMembers, true) ? scopedChat.mutedMembers : []
-    if (muteOrUnmute === 'mute') {
-      chat.mutedMembers = [
-        ...currentMutedMembers,
-        {
-          target: coparentPhone,
-          ownerPhone: currentUser?.phone,
-        },
-      ]
-      await DB.updateEntireRecord(`${DB.tables.chats}/${key}`, chat)
-    } else {
-      chat.mutedMembers = chat.mutedMembers.filter((x) => x.ownerPhone !== currentUser?.phone && x.target !== coparentPhone)
-      await DB.updateEntireRecord(`${DB.tables.chats}/${key}`, chat)
-    }
+  const toggleMute = async (coparentPhone, muteOrUnmute, threadId) => {
+    console.log(muteOrUnmute)
+    await ChatManager.toggleMute(currentUser, coparentPhone, muteOrUnmute)
     await getSecuredChats()
     toggleThreadActions(threadId)
   }
@@ -165,7 +150,7 @@ const Chats = () => {
             const coparent = thread?.members?.filter((x) => x.phone !== currentUser?.phone)[0]
             const coparentMessages = Manager.convertToArray(thread.messages)?.filter((x) => x.sender === coparent.name)
             const lastMessage = coparentMessages[coparentMessages?.length - 1]?.message
-            const threadIsMuted = thread?.mutedMembers?.filter((x) => x.target === coparent.phone).length > 0
+            const threadIsMuted = thread?.mutedFor?.includes(currentUser.phone)
             return (
               <div data-thread-id={thread.id} id="row" key={index}>
                 {/* THREAD ITEM */}
@@ -219,14 +204,14 @@ const Chats = () => {
 
                   {!threadIsMuted && (
                     <div id="mute-wrapper">
-                      <IoNotificationsOffCircle onClick={() => muteChat(coparent.phone, 'mute', thread.id)} className={'mute-icon '} />
+                      <IoNotificationsOffCircle onClick={() => toggleMute(coparent.phone, 'mute', thread.id)} className={'mute-icon '} />
                       <span>MUTE</span>
                     </div>
                   )}
                   {/* UNMUTE BUTTON */}
                   {threadIsMuted && (
                     <div id="unmute-wrapper">
-                      <HiMiniBellAlert id={'unmute-icon'} onClick={() => muteChat(coparent.phone, 'unmute', thread.id)} />
+                      <HiMiniBellAlert id={'unmute-icon'} onClick={() => toggleMute(coparent.phone, 'unmute', thread.id)} />
                       <span>UNMUTE</span>
                     </div>
                   )}

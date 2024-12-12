@@ -2941,7 +2941,7 @@
   width: 100vw;
   background-color: $lightBg;
   position: fixed;
-  overflow: auto;
+  overflow: hidden;
   transition: all 0.5s ease-in-out;
   border-radius: 0 0 30px 30px;
   height: calc(90px + env(safe-area-inset-bottom));

@@ -50,7 +50,7 @@ export default function Coparents() {
     // Update DB
     AlertManager.successAlert('Updated!')
     const updatedCoparent = await DB_UserScoped.updateCoparent(currentUser, selectedCoparentDataArray, formatDbProp(prop), value)
-    setSelectedCoparentDataArray(updatedCoparent)
+    setSelectedCoparentDataArray(Object.entries(updatedCoparent))
   }
 
   const deleteCoparent = async () => {

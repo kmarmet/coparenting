@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
-import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone, PiPersonLight } from 'react-icons/pi'
+import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone } from 'react-icons/pi'
 import { VscSettings } from 'react-icons/vsc'
 import { TbGridDots } from 'react-icons/tb'
+import { BiFace } from 'react-icons/bi'
 
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
@@ -55,7 +56,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.childInfo)}
                 className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>
-                <PiPersonLight className={'child-info'} />
+                <BiFace className={'child-info'} />
               </div>
             )}
 

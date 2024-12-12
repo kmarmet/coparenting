@@ -98,11 +98,11 @@ const Conversation = () => {
     conversation.id = Manager.getUid()
     conversation.members = [memberOne, memberTwo]
     conversation.timestamp = moment().format('MM/DD/yyyy hh:mma')
-    conversation.threadVisibilityMembers = [memberOne, memberTwo]
+    conversation.muteFor = []
+    conversation.hideFrom = []
     conversation.messages = [cleanMessage]
     conversation.threadOwner = currentUser?.phone
     const cleanThread = ObjectManager.cleanObject(conversation, ModelNames.conversationThread)
-
     // Existing chat
     if (Manager.isValid(existingChat)) {
       const chatKey = await DB.getSnapshotKey(`${DB.tables.chats}`, existingChat, 'id')

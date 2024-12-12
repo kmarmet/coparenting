@@ -144,8 +144,6 @@ export default NotificationManager = {
     for (i = 0, len = coparentPhones.length; i < len; i++) {
       phone = coparentPhones[i];
       coparent = (await DB_UserScoped.getCoparentByPhone(phone, currentUser));
-      console.log(coparent);
-      console.log(phone);
       subId = (await NotificationManager.getUserSubId(coparent));
       results.push((await NotificationManager.sendNotification(title, message, subId)));
     }

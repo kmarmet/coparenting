@@ -25,7 +25,9 @@ export default function Home() {
     if (DomManager.isMobile()) {
       window.onload = function () {
         const imageWrapper = document.getElementById('images')
-        imageWrapper.scrollLeft += 325
+        if (imageWrapper) {
+          imageWrapper.scrollLeft += 325
+        }
       }
     }
     const pageContainer = document.querySelector('.page-container')

@@ -119,16 +119,11 @@ SecurityManager =
     # User does not have a chat with root access by phone
     if Manager.isValid(chats, true)
       for chat in chats.flat()
-        if Manager.isValid(chat.threadVisibilityMembers, true)
-          visibilityMemberPhones = chat.threadVisibilityMembers.map (x) -> x.phone
-          if visibilityMemberPhones.includes (currentUser?.phone)
-            members = chat.members.map (x) -> x.phone
+        # Do not push if chat is hidden
+        if !Manager.isValid(chat.hideFrom, true) or !chat.hideFrom.includes(currentUser.phone)
+            members = chat?.members?.map (x) -> x.phone
             if currentUser?.phone in members
               securedChats.push(chat)
-        else
-          members = chat.members.map (x) -> x.phone
-          if currentUser?.phone in members
-            securedChats.push(chat)
     return securedChats.flat()
   getCoparentChats: (currentUser) ->
     allChats = await DB.getTable('chats')

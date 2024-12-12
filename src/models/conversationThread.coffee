@@ -1,2 +1,2 @@
 export default class ConversationThread
-  constructor: (@id, @members = [], @timestamp = '', @messages = [],  @threadOwner = '', @threadVisibilityMembers = []) ->
+  constructor: (@id, @members = [], @timestamp = '', @messages = [],  @threadOwner = '', @hideFrom = [], @mutedFor  =[]) ->

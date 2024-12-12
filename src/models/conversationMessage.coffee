@@ -9,9 +9,4 @@ export default class ConversationMessage
     @timestamp = ''
     @readState = 'delivered'
     @message = ''
-    @notificationSent = false
-    @mutedMembers = [
-      target: ''
-      ownerPhone: ''
-    ]
   ) ->

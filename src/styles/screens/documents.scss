@@ -113,12 +113,6 @@
       }
       
       .row {
-//        min-height: 50px;
-//        margin-bottom: 20px;
-//        background-color: white;
-//        padding: 10px;
-//        border-radius: $borderRadius;
-//        border: 1px solid $borderColor;
         @include row;
         
         .checkbox {
@@ -133,6 +127,7 @@
         }
         
         .doc-type {
+          width: 100%;
           padding-top: 5px;
           p {
             font-size: 15px;
@@ -150,7 +145,9 @@
           border: 0;
           height: auto;
 
-          
+          &.flex {
+            justify-content: space-between;
+          }
           &.notifications {
             flex-wrap: nowrap;
             justify-content: space-between;
@@ -182,10 +179,9 @@
           }
           
           span {
-            font-size: 25px;
-            margin-right: 20px;
+            font-size: 18px;
             opacity: 0.8;
-            color: $accent;
+            color: white;
             
             &:nth-child(2) {
               font-size: 16px;

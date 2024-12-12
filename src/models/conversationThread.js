@@ -2,13 +2,14 @@
 var ConversationThread;
 
 export default ConversationThread = class ConversationThread {
-  constructor(id, members = [], timestamp = '', messages = [], threadOwner = '', threadVisibilityMembers = []) {
+  constructor(id, members = [], timestamp = '', messages = [], threadOwner = '', hideFrom = [], mutedFor = []) {
     this.id = id;
     this.members = members;
     this.timestamp = timestamp;
     this.messages = messages;
     this.threadOwner = threadOwner;
-    this.threadVisibilityMembers = threadVisibilityMembers;
+    this.hideFrom = hideFrom;
+    this.mutedFor = mutedFor;
   }
 
 };

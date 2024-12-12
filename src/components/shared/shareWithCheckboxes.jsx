@@ -21,7 +21,7 @@ import {
 import Label from './label'
 import { RiShieldUserLine } from 'react-icons/ri'
 
-function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', defaultPhones, labelText = '', icon = '' }) {
+export default function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', defaultPhones, labelText = '', icon = '' }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
   const [shareWith, setShareWith] = useState([])
@@ -82,5 +82,3 @@ function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass 
     </div>
   )
 }
-
-export default ShareWithCheckboxes

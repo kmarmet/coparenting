@@ -87,11 +87,9 @@ export default function DocsList() {
               docs.map((doc, index) => {
                 const fileType = getFileExtension(doc.name).contains('docx') ? 'Document' : 'Image'
                 return (
-                  <div className="row" key={index}>
-                    <div className="flex">
+                  <div key={Manager.getUid()} className="row" key={index}>
+                    <div className="flex section">
                       <p
-                        key={Manager.getUid()}
-                        className="section"
                         data-id={doc.id}
                         onClick={() => {
                           setSelectedDoc(doc)
@@ -102,19 +100,19 @@ export default function DocsList() {
                       <div className={`checkbox delete`} onClick={(e) => handleDeleteCheckbox(e.currentTarget)}>
                         <span className="checkmark-icon material-icons-round">check</span>
                       </div>
+                      {fileType === 'Document' && (
+                        <div className="flex doc-type">
+                          <GrDocumentText />
+                          <p>Document</p>
+                        </div>
+                      )}
+                      {fileType === 'Image' && (
+                        <div className="flex doc-type">
+                          <GrDocumentImage />
+                          <p>Image</p>
+                        </div>
+                      )}
                     </div>
-                    {fileType === 'Document' && (
-                      <div className="flex doc-type">
-                        <GrDocumentText />
-                        <p>Document</p>
-                      </div>
-                    )}
-                    {fileType === 'Image' && (
-                      <div className="flex doc-type">
-                        <GrDocumentImage />
-                        <p>Image</p>
-                      </div>
-                    )}
                   </div>
                 )
               })}

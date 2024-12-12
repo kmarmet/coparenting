@@ -125,8 +125,6 @@ export default NotificationManager =
   sendToShareWith: (coparentPhones, currentUser, title, message) ->
     for phone in coparentPhones
       coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
-      console.log(coparent)
-      console.log(phone)
       subId = await NotificationManager.getUserSubId(coparent)
       await NotificationManager.sendNotification(title, message, subId )
 
