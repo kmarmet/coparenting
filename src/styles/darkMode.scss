@@ -4,46 +4,50 @@
 
 #external-overrides {
   // MUI OVERRIDES
-  .MuiPaper-root {
-    background: unset;
-  }
-  .MuiAccordion-root {
-    .MuiAccordion-heading {
-      .MuiButtonBase-root {
-        .MuiAccordionSummary-content {
-          color: white;
+  #static-calendar {
+    &.dark {
+      .MuiPaper-root {
+        background: unset;
+      }
+      .MuiAccordion-root {
+        .MuiAccordion-heading {
+          .MuiButtonBase-root {
+            .MuiAccordionSummary-content {
+              color: white;
+            }
+          }
         }
       }
-    }
-  }
-  .MuiDialogActions-root {
-    p,
-    button {
-      background: transparent !important;
-      color: $darkBlue !important;
-      border-color: $darkBlue !important;
-    }
-  }
-  .MuiPickersLayout-root {
-    background: $darkBg !important;
-    .MuiPickersCalendarHeader-label {
-      color: white !important;
-      opacity: 0.85 !important;
-    }
-    svg {
-      color: white !important;
-    }
-
-    .MuiDateCalendar-root {
-      .MuiDayCalendar-weekDayLabel {
-        color: white !important;
-        opacity: 0.85;
+      .MuiDialogActions-root {
+        p,
+        button {
+          background: transparent !important;
+          color: $darkBlue !important;
+          border-color: $darkBlue !important;
+        }
       }
-      .MuiPickersDay-root {
-        color: white !important;
-
-        &.Mui-selected {
-          background: $darkBlue !important;
+      .MuiPickersLayout-root {
+        background: $darkBg !important;
+        .MuiPickersCalendarHeader-label {
+          color: white !important;
+          opacity: 0.85 !important;
+        }
+        svg {
+          color: white !important;
+        }
+        
+        .MuiDateCalendar-root {
+          .MuiDayCalendar-weekDayLabel {
+            color: white !important;
+            opacity: 0.85;
+          }
+          .MuiPickersDay-root {
+            color: white !important;
+            
+            &.Mui-selected {
+              background: $darkBlue !important;
+            }
+          }
         }
       }
     }

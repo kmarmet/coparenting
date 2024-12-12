@@ -415,7 +415,7 @@ export default function EventCalendar() {
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme} `}>
         {/* STATIC CALENDAR */}
-        <div id="static-calendar">
+        <div id="static-calendar" className={theme}>
           <StaticDatePicker
             showDaysOutsideCurrentMonth={true}
             defaultValue={moment(selectedNewEventDay)}
