@@ -52,7 +52,6 @@ const getDocumentCount = async () => {
 }
 
 const setActivities = async () => {
-  //   //TODO CHANGE PHONE
   let newActivitySet = await DB.getTable(`${DB.tables.activitySets}/3307494534`, true)
   const unreadMessageCount = await getMessageCount()
 

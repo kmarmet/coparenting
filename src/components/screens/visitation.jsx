@@ -687,7 +687,7 @@ export default function Visitation() {
           dataDate={dataDates}
         />
 
-        <button className="button default green center" onClick={() => setHolidaysInDatabase()}>
+        <button className="button default green center mt-30" onClick={() => setHolidaysInDatabase()}>
           Update Holidays
         </button>
       </div>

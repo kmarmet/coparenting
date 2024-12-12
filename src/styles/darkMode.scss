@@ -3,6 +3,67 @@
 @import './palette';
 
 #external-overrides {
+  // MUI OVERRIDES
+  .MuiPaper-root {
+    background: unset;
+  }
+  .MuiAccordion-root {
+    .MuiAccordion-heading {
+      .MuiButtonBase-root {
+        .MuiAccordionSummary-content {
+          color: white;
+        }
+      }
+    }
+  }
+  .MuiDialogActions-root {
+    p,
+    button {
+      background: transparent !important;
+      color: $darkBlue !important;
+      border-color: $darkBlue !important;
+    }
+  }
+  .MuiPickersLayout-root {
+    background: $darkBg !important;
+    .MuiPickersCalendarHeader-label {
+      color: white !important;
+      opacity: 0.85 !important;
+    }
+    svg {
+      color: white !important;
+    }
+
+    .MuiDateCalendar-root {
+      .MuiDayCalendar-weekDayLabel {
+        color: white !important;
+        opacity: 0.85;
+      }
+      .MuiPickersDay-root {
+        color: white !important;
+
+        &.Mui-selected {
+          background: $darkBlue !important;
+        }
+      }
+    }
+  }
+
+  // FULL MENU
+  .full-menu {
+    #full-menu {
+      .menu-item {
+        background: $darkBorderColor;
+
+        &.active {
+          p {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+
   #app-container {
     &.dark {
       background: $darkBg;
@@ -16,84 +77,117 @@
         border-color: $translucentLightest;
       }
 
+      #large-title {
+        color: white;
+      }
+
       // PAGE CONTAINER
       .page-container {
         background: $darkBg;
       }
 
       .screen-title {
-        color: $mainBlue;
+        color: $darkBlue;
+      }
+
+      // EXPENSE WRAPPER
+      #expense-tracker {
+        .expense {
+          #name-wrapper {
+            .name {
+              color: white;
+            }
+          }
+        }
+      }
+
+      // CONTACT US
+      #contact-us-container {
+        .section {
+          padding-bottom: 10px;
+        }
       }
 
       // CHATS
       #chats-container {
+        #row {
+          border: unset;
+        }
         .thread-item {
           border-bottom: 1px solid $translucentLightest;
+
+          #user-initial-wrapper {
+            svg {
+              color: $darkBlue;
+            }
+          }
+
+          #edit-icon {
+            color: white;
+            opacity: 0.85;
+          }
 
           .coparent-name {
             color: white;
             opacity: 0.9;
+
+            .last-message {
+              color: white;
+            }
           }
         }
       }
       #message-thread-container {
         .top-buttons {
-          background-color: $darkLightBg;
+          background-color: $darkBg;
           padding: 10px;
-          border-bottom: 1px solid $translucentLightest;
+          border: unset;
+        }
+
+        #right-side {
+          svg {
+            color: white;
+            opacity: 0.85;
+          }
         }
 
         .form {
-          background: $darkLightBg;
+          background: transparent;
 
-          textarea {
-            background: $translucentLightest;
-            border: 0;
+          .message-input {
+            background: transparent;
+            border-bottom: 1px solid $darkBlue;
+            color: white;
+
+            &:after {
+              color: white;
+            }
           }
 
           #send-button {
-            background: $darkPurple;
+            background: $darkBlue;
           }
         }
 
-        #default-messages {
+        #default-messages,
+        #bookmark-messages {
           background: $darkBg;
 
           .message {
             &.from {
-              background: $darkLightBg;
+              background: $darkBorderColor;
               &:after {
-                background: radial-gradient(30px at top left, rgba(0, 0, 0, 0) 99%, $darkLightBg 102%);
+                display: none;
               }
               color: white;
             }
 
             &.to {
-              background: $mainBlue;
+              background: $darkBlue;
               &:after {
-                background: radial-gradient(30px at top right, rgba(0, 0, 0, 0) 99%, $mainBlue 102%);
+                display: none;
               }
               color: white;
-            }
-          }
-        }
-      }
-
-      // SLIDE OUT MENU
-      #slide-out-menu {
-        p,
-        svg {
-          color: $darkPurple;
-          opacity: 0.4;
-        }
-
-        .slide-out-menu-item {
-          &.active {
-            background: $darkPurple;
-            svg,
-            p {
-              color: $darkBg;
-              opacity: 1;
             }
           }
         }
@@ -102,7 +196,6 @@
       // NAVBAR
       #navbar {
         background: $darkBg;
-        border-top: 1px solid $translucentLightest;
 
         #svg-wrapper {
           background: $darkGreen;
@@ -111,8 +204,9 @@
 
         #menu-items {
           .menu-item {
+            color: $borderColor;
             &.active:not(#add-new-button) {
-              color: $darkPurple;
+              color: $darkBlue;
             }
           }
         }
@@ -183,17 +277,34 @@
         }
       }
 
+      // LABEL WRAPPER
+      #label-wrapper {
+        label {
+          color: white;
+        }
+      }
+
       // INPUT WRAPPER
       #input-wrapper {
         input,
         textarea {
-          background: $translucentLighter;
+          background: transparent;
           border: 0;
           color: white;
           opacity: 0.9;
+          border-bottom: 1px solid $darkBorderColor;
+
+          &:focus {
+            outline: none;
+            border: 1px solid $darkBlue;
+            background: rgba(153, 178, 255, 0.14);
+            border-radius: 4px;
+            padding: 10px;
+          }
 
           &::placeholder {
             color: white;
+            opacity: 0.6;
           }
         }
 
@@ -225,15 +336,20 @@
           }
         }
       }
-      
+
       // CHILD INFO
       #child-info-container {
         .child-name {
-          color: $darkPurple;
+          color: $darkBlue;
+        }
+        .profile-pic-container {
+          &.no-image {
+            background: unset;
+          }
         }
         &.active {
           .profile-pic-container {
-            border: 3px solid $translucentLightest
+            border: unset;
           }
         }
       }
@@ -260,22 +376,101 @@
           background: $darkPurple !important;
         }
       }
-
-      // BOTTOM CARD [
-      #bottom-card {
-        background: $darkLightBg;
-
-        #title {
-          color: $darkPurple;
+      
+      // COPARENTS
+      #coparent-container {
+        .coparent {
+          .coparent-name, .coparent-type {
+            color:white;
+          }
         }
+      }
+
+      // BOTTOM CARD
+      #bottom-card {
+        background: $darkBg;
 
         p {
           color: white;
-          opacity: 0.9;
+          opacity: 0.7;
         }
 
         hr {
           border-color: $translucentLightest;
+        }
+
+        &.custom-child-info-wrapper {
+          #info-type {
+            background: $darkBorderColor;
+
+            .item {
+              color: white;
+              opacity: 0.65;
+
+              &.active {
+                opacity: 1;
+              }
+            }
+          }
+        }
+
+        &.expense-tracker {
+          #relative-wrapper {
+            .buttons {
+              .card-button {
+                &.submit {
+                  svg {
+                    color: white;
+                  }
+                }
+              }
+            }
+          }
+          #title {
+            color: $mainBlue;
+            opacity: 1;
+          }
+        }
+
+        #relative-wrapper {
+          .buttons {
+            background-color: transparent;
+
+            .card-button {
+              &.submit {
+                background-color: $darkBlue;
+                color: white;
+              }
+            }
+          }
+          #title-wrapper {
+            background: $darkBg;
+            .close-icon {
+              background: $darkBorderColor;
+              color: white;
+            }
+          }
+        }
+
+        &.full-menu {
+          #title-wrapper {
+            background: $darkBg !important;
+          }
+
+          #full-menu {
+            .menu-item {
+              &.active {
+                p,
+                svg {
+                  opacity: 1;
+                }
+              }
+            }
+          }
+        }
+
+        #title {
+          color: $darkPurple;
         }
 
         .buttons {
@@ -304,37 +499,56 @@
         }
       }
 
+      // ROW
+      #row {
+        border-bottom: 1px solid $darkBorderColor;
+        #subtitle {
+          color: white;
+        }
+      }
+
       // CALENDAR
       #calendar-container {
         .events {
+          background: $darkBg;
           .event-row {
-            p,b, span {
-              color:white;
-              opacity: .9;
-              
-              &.start-date, &#times, &.reminder-times {
-                opacity: .6;
+            .text {
+              #title-wrapper {
+                .title {
+                  color: white;
+                }
+                .reminders {
+                  svg {
+                    opacity: 0.85;
+                  }
+                  .reminder-times {
+                    span {
+                      color: white;
+                    }
+                  }
+                }
               }
             }
-            
+            svg {
+              color: $darkBlue;
+              opacity: 1;
+            }
+            p,
+            b,
+            span {
+              color: white;
+              opacity: 0.9;
+
+              &.start-date,
+              &#times,
+              &.reminder-times {
+                opacity: 0.6;
+              }
+            }
+
             svg {
               opacity: 1;
               color: $darkPurple;
-            }
-
-            &.standard {
-              background: $darkLightBg;
-              border: 1px solid $translucentLightest;
-            }
-
-            &.coparent-visitation {
-              background: $darkBlue;
-              border: 1px solid $translucentLightest;
-            }
-
-            &.current-user-visitation {
-              border: 1px solid $translucentLightest;
-              background: #017959;
             }
 
             #children {
