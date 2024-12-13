@@ -413,6 +413,7 @@ export default function EventCalendar() {
       </>
 
       {/* PAGE CONTAINER */}
+
       <div id="calendar-container" className={`page-container calendar ${theme} `}>
         {/* STATIC CALENDAR */}
         <div id="static-calendar" className={theme}>

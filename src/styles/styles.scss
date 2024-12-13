@@ -211,9 +211,10 @@
     margin: 0;
     display: flex;
     opacity: 1;
-    background-color: $lightBg;
+    background-color: $bestGreyForWhite;
     justify-content: flex-start;
     overflow-y: hidden;
+
 
     &.disable-scroll {
       overflow: hidden;
@@ -345,10 +346,10 @@
       &.default {
         @include defaultButton;
       }
-      
+
       &:hover {
         transform: scale(1.1);
-        transition: all .3s ease-in-out;
+        transition: all 0.3s ease-in-out;
       }
     }
     /*#endregion MIXINS */
@@ -357,6 +358,28 @@
     .green {
       color: $green;
     }
+    
+    #app-content-wrapper {
+      margin: 0 auto;
+      transition: all 0.5s ease-in-out;
+      transition-timing-function: cubic-bezier(0.17, 0.67, 0.21, 0.95);
+      background: $bestGreyForWhite;
+      overflow: auto;
+      overflow-x: hidden;
+      height: 100%;
+      padding: 15px 15px 200px 15px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+    
+    #side-navbar {
+      @include sideNavbar;
+    }
+
+    #brand-bar {
+      @include  brandBar;
+    }
+
     .rs-input-group-addon {
       height: 30px !important;
 
@@ -482,7 +505,7 @@
       background-color: white;
       z-index: $maxZIndex;
       display: none;
-      
+
       &.dark {
         background: $darkBg;
       }

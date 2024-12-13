@@ -52,6 +52,8 @@ import ContactUs from './components/screens/contactUs'
 import DB from '@db'
 import NotificationManager from './managers/notificationManager.js'
 import Home from './components/screens/home'
+import BrandBar from './components/shared/brandBar'
+import SideNavbar from './components/shared/sideNavbar'
 
 export default function App() {
   // Initialize Firebase
@@ -162,11 +164,14 @@ export default function App() {
         <InstallAppPopup />
 
         <globalState.Provider value={stateToUpdate}>
-          {/* SLIDE OUT MENU */}
+          {/* FULL MENU */}
           {userIsLoggedIn && <FullMenu />}
 
           {/* SCREENS */}
-          <>
+          <div className="flex" id="app-content-wrapper">
+            {/* TOP NAVBAR */}
+            <BrandBar />
+            <SideNavbar />
             {/* ADMIN */}
             {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
 
@@ -214,7 +219,7 @@ export default function App() {
             {currentScreen === ScreenNames.childSelector && <ChildSelector />}
             {currentScreen === ScreenNames.chatRecovery && <ChatRecovery />}
             {currentScreen === ScreenNames.contactUs && <ContactUs />}
-          </>
+          </div>
         </globalState.Provider>
       </div>
     </LocalizationProvider>
