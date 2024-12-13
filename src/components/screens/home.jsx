@@ -22,6 +22,7 @@ export default function Home() {
   const auth = getAuth(app)
 
   useEffect(() => {
+    setState({ ...state, isLoading: true })
     if (DomManager.isMobile()) {
       window.onload = function () {
         const imageWrapper = document.getElementById('images')
