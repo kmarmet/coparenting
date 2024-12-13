@@ -86,38 +86,46 @@ export default NotificationManager = {
       return (await NotificationManager.sendNotification('Welcome Aboard!', 'You are now subscribed to peaceful communications!', subId));
     }
   },
-  sendNotification: function(title, message, subId) {
-    var myHeaders, raw, requestOptions;
+  sendNotification: async function(title, message, subId) {
+    var currentUser, myHeaders, notificationsEnabled, raw, ref, requestOptions, subIdRecord;
     myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
-    raw = JSON.stringify({
-      contents: {
-        en: message
-      },
-      headings: {
-        en: title
-      },
-      target_channel: "push",
-      isAnyWeb: true,
-      include_subscription_ids: [subId],
-      app_id: NotificationManager.appId
-    });
-    requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
-    return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
-      return response.text();
-    }).then(function(result) {
-      console.log(result);
-      return console.log(`Sent to ${subId}`);
-    }).catch(function(error) {
-      return console.error(error);
-    });
+    subIdRecord = (await DB.find(DB.tables.notificationSubscribers, ["subscriptionId", subId], true));
+    currentUser = (await DB.find(DB.tables.users, ["phone", subIdRecord.phone]));
+    notificationsEnabled = currentUser != null ? (ref = currentUser.settings) != null ? ref.notificationsEnabled : void 0 : void 0;
+    if (notificationsEnabled) {
+      raw = JSON.stringify;
+      ({
+        contents: {
+          en: message
+        },
+        headings: {
+          en: title
+        },
+        target_channel: "push",
+        isAnyWeb: true,
+        include_subscription_ids: [subId],
+        app_id: NotificationManager.appId
+      });
+      requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+      };
+      return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
+        return response.text();
+      }).then(function(result) {
+        console.log(result);
+        return console.log(`Sent to ${subId}`);
+      }).catch(function(error) {
+        return console.error(error);
+      });
+    } else {
+      return console.log("Notifications disabled for this user");
+    }
   },
   disableNotifications: function(subId) {
     var myHeaders, options, url;
@@ -139,13 +147,18 @@ export default NotificationManager = {
     });
   },
   sendToShareWith: async function(coparentPhones, currentUser, title, message) {
-    var coparent, i, len, phone, results, subId;
+    var coparent, i, len, notificationsEnabled, phone, ref, results, subId;
     results = [];
     for (i = 0, len = coparentPhones.length; i < len; i++) {
       phone = coparentPhones[i];
       coparent = (await DB_UserScoped.getCoparentByPhone(phone, currentUser));
-      subId = (await NotificationManager.getUserSubId(coparent));
-      results.push((await NotificationManager.sendNotification(title, message, subId)));
+      notificationsEnabled = coparent != null ? (ref = coparent.settings) != null ? ref.notificationsEnabled : void 0 : void 0;
+      if (notificationsEnabled) {
+        subId = (await NotificationManager.getUserSubId(coparent));
+        results.push((await NotificationManager.sendNotification(title, message, subId)));
+      } else {
+        results.push(void 0);
+      }
     }
     return results;
   },

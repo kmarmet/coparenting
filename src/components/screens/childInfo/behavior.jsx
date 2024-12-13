@@ -30,7 +30,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
 
-function Behavior({ activeChild, setActiveChild }) {
+export default function Behavior({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [behaviorValues, setBehaviorValues] = useState([])
@@ -59,7 +59,7 @@ function Behavior({ activeChild, setActiveChild }) {
 
   return (
     <div className="info-section section behavior">
-      <Accordion>
+      <Accordion className={theme}>
         <AccordionSummary
           expandIcon={<FaChevronDown />}
           className={!Manager.isValid(activeChild.behavior) ? 'disabled header behavior' : 'header behavior'}>
@@ -92,5 +92,3 @@ function Behavior({ activeChild, setActiveChild }) {
     </div>
   )
 }
-
-export default Behavior

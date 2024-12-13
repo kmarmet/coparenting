@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react'
-import globalState from '../../context'
-import ScreenNames from '@screenNames'
+import React from 'react'
 
-export default function Loading({ isLoading }) {
+export default function Loading({ isLoading, theme }) {
   return (
-    <div className={isLoading === true ? 'loading-overlay active' : 'loading-overlay'}>
+    <div className={`${isLoading === true ? 'loading-overlay active' : 'loading-overlay'} ${theme}`}>
       <img src={require('../../img/loading.gif')} alt="Loading" />
     </div>
   )

@@ -13,6 +13,7 @@ export default class User
     @id = Manager.getUid()
     @defaultTransferLocation = ''
     @defaultTransferNavLink = ''
+    @notificationsEnabled = true
     @dailySummaries = {
       morningSentDate: ''
       eveningSentDate: ''

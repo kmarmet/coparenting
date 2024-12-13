@@ -63,7 +63,7 @@ export default function FullMenu() {
   return (
     <BottomCard
       title={'Menu'}
-      className="full-menu"
+      className={`full-menu ${theme}`}
       onClose={() => setState({ ...state, menuIsOpen: false })}
       showCard={menuIsOpen}
       hasDelete={false}

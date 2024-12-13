@@ -6,18 +6,6 @@
   // MUI OVERRIDES
   #static-calendar {
     &.dark {
-      .MuiPaper-root {
-        background: unset;
-      }
-      .MuiAccordion-root {
-        .MuiAccordion-heading {
-          .MuiButtonBase-root {
-            .MuiAccordionSummary-content {
-              color: white;
-            }
-          }
-        }
-      }
       .MuiDialogActions-root {
         p,
         button {
@@ -35,7 +23,7 @@
         svg {
           color: white !important;
         }
-        
+
         .MuiDateCalendar-root {
           .MuiDayCalendar-weekDayLabel {
             color: white !important;
@@ -43,9 +31,10 @@
           }
           .MuiPickersDay-root {
             color: white !important;
-            
+
             &.Mui-selected {
-              background: $darkBlue !important;
+              background: $darkBorderColor !important;
+              border: unset;
             }
           }
         }
@@ -55,13 +44,15 @@
 
   // FULL MENU
   .full-menu {
-    #full-menu {
-      .menu-item {
-        background: $darkBorderColor;
+    &.dark {
+      #full-menu {
+        .menu-item {
+          background: $darkBorderColor;
 
-        &.active {
-          p {
-            opacity: 1;
+          &.active {
+            p {
+              opacity: 1;
+            }
           }
         }
       }
@@ -71,7 +62,21 @@
   #app-container {
     &.dark {
       background: $darkBg;
-
+      
+      // MUI OVERRIDES
+      .MuiPaper-root {
+        background: unset;
+      }
+      .MuiAccordion-root {
+        .MuiAccordion-heading {
+          .MuiButtonBase-root {
+            .MuiAccordionSummary-content {
+              color: white;
+            }
+          }
+        }
+      }
+      
       p {
         color: white;
         opacity: 0.9;
@@ -80,9 +85,21 @@
       hr {
         border-color: $translucentLightest;
       }
+      
+      #disclaimer {
+        p {
+          color:white;
+        }
+      }
 
       #large-title {
         color: white;
+      }
+      
+      #share-with-checkbox-group {
+        svg {
+          color: $gold;
+        }
       }
 
       // PAGE CONTAINER
@@ -90,8 +107,33 @@
         background: $darkBg;
       }
 
+      // SCREEN TITLE
       .screen-title {
         color: $darkBlue;
+      }
+      
+      // LIGHT GALLERY
+      .light-gallery {
+        .memory {
+          border: unset;
+          background: $darkBorderColor;
+          
+          .memory-image {
+            .delete-icon {
+              background-color: unset;
+              color: $red;
+            }
+          }
+        }
+      }
+      
+      // MEMORIES
+      #memories-container {
+        #title-and-date, #below-image  {
+          p {
+            color: white;
+          }
+        }
       }
 
       // EXPENSE WRAPPER
@@ -268,12 +310,15 @@
             }
 
             .box {
+              border: 2px solid $darkBorderColor;
               #inner-circle {
-                border: 4px solid $translucentLightest;
+                border: unset;
               }
               &.active {
+                border: unset;
                 #inner-circle {
-                  background: $darkPurple;
+                  background: $darkBlue;
+                  border: unset;
                 }
               }
             }
@@ -285,6 +330,10 @@
       #label-wrapper {
         label {
           color: white;
+          
+          &#medium-title {
+            color: $gold;
+          }
         }
       }
 
@@ -300,8 +349,8 @@
 
           &:focus {
             outline: none;
-            border: 1px solid $darkBlue;
-            background: rgba(153, 178, 255, 0.14);
+            border: unset;
+            background: $darkBorderColor;
             border-radius: 4px;
             padding: 10px;
           }
@@ -375,17 +424,30 @@
       }
 
       // REACT TOGGLE
-      .react-toggle--checked {
+      
+      .react-toggle {
+        * {
+          user-select: none;
+          outline: 0 !important;
+        }
+        &.react-toggle--checked {
+          background: $darkBg !important;
+          .react-toggle-track-check, .react-toggle-track {
+            background: $darkBlue !important;
+          }
+        }
         .react-toggle-track {
-          background: $darkPurple !important;
+          background: transparent !important;
+          border: 1px solid $darkBorderColor;
         }
       }
-      
+
       // COPARENTS
       #coparent-container {
         .coparent {
-          .coparent-name, .coparent-type {
-            color:white;
+          .coparent-name,
+          .coparent-type {
+            color: white;
           }
         }
       }
@@ -435,8 +497,32 @@
             opacity: 1;
           }
         }
+        
+        // ACTION PILLS
+        .action-pills {
+          .duration-option {
+            p,
+            svg {
+              color: white;
+            }
+            &.active {
+              p,
+              svg {
+                color: $darkBlue;
+                opacity: 1;
+              }
+            }
+          }
+        }
 
         #relative-wrapper {
+          #holiday-card-buttons {
+            button {
+              &#view-visitation-holidays-item, &#view-all-holidays-item {
+                background: $darkBg;
+              }
+            }
+          }
           .buttons {
             background-color: transparent;
 
@@ -444,6 +530,10 @@
               &.submit {
                 background-color: $darkBlue;
                 color: white;
+                
+                svg {
+                  color:white;
+                }
               }
             }
           }
@@ -496,6 +586,11 @@
               border: 1px solid $red;
               color: $red;
             }
+            &.submit {
+              svg {
+                color: white;
+              }
+            }
             background-color: transparent;
             color: $green;
             border: 1px solid $green;
@@ -523,7 +618,8 @@
                 }
                 .reminders {
                   svg {
-                    opacity: 0.85;
+                    opacity: 0.7;
+                    color: white;
                   }
                   .reminder-times {
                     span {
@@ -533,13 +629,9 @@
                 }
               }
             }
-            svg {
-              color: $darkBlue;
-              opacity: 1;
-            }
             p,
             b,
-            span {
+            span:not(.event-type-dot) {
               color: white;
               opacity: 0.9;
 
@@ -548,11 +640,6 @@
               &.reminder-times {
                 opacity: 0.6;
               }
-            }
-
-            svg {
-              opacity: 1;
-              color: $darkPurple;
             }
 
             #children {

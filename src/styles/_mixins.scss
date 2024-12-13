@@ -2774,7 +2774,6 @@
 /*#region  MENU*/
 @mixin fullMenu {
   #full-menu {
-    //    background: $mainBlue;
     display: flex;
     flex-wrap: wrap;
     position: relative;
@@ -2792,7 +2791,7 @@
       transform: scale(0);
       transition: all 0.6s ease-in-out;
       width: calc((100% / 3) - 5px);
-      background-color: white;
+      background-color: transparent;
       height: 110px;
       border-radius: $bigBorderRadius;
       padding: 8px;

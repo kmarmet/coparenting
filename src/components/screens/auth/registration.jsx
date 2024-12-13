@@ -115,6 +115,7 @@ export default function Registration() {
       newUser.phone = formatPhone(userPhone)
       newUser.coparents = coparents
       newUser.parentType = parentType
+      newUser.notificationsEnabled = true
       newUser.settings.theme = 'light'
       newUser.settings.eveningReminderSummaryHour = '8pm'
       newUser.settings.morningReminderSummaryHour = '10am'
@@ -162,6 +163,7 @@ export default function Registration() {
     childUser.accountType = 'child'
     childUser.parents = parents
     childUser.email = email
+    childUser.notificationsEnabled = true
     childUser.settings.theme = 'light'
     childUser.phone = formatPhone(userPhone)
     const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)

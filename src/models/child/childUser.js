@@ -4,7 +4,7 @@ var ChildUser;
 import Manager from '@manager';
 
 export default ChildUser = class ChildUser {
-  constructor(parents = [], name = '', email = '', accountType = '', allowNotifications = '', id = Manager.getUid(), dailySummaries = {
+  constructor(parents = [], name = '', email = '', accountType = '', notificationsEnabled = true, id = Manager.getUid(), dailySummaries = {
       morningSentDate: '',
       eveningSentDate: '',
       morningReminderSummaryHour: '10am',
@@ -14,7 +14,7 @@ export default ChildUser = class ChildUser {
     this.name = name;
     this.email = email;
     this.accountType = accountType;
-    this.allowNotifications = allowNotifications;
+    this.notificationsEnabled = notificationsEnabled;
     this.id = id;
     this.dailySummaries = dailySummaries;
   }

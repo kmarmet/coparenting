@@ -148,7 +148,7 @@ export default function Memories() {
 
         {memories && memories.length === 0 && <NoDataFallbackText text={'There are currently no memories'} />}
         {/* GALLERY */}
-        <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'.memory-image'}>
+        <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
           <>
             {Manager.isValid(memories, true) &&
               memories.map((imgObj, index) => {

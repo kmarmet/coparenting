@@ -30,7 +30,7 @@ import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
 import { IoCloseOutline } from 'react-icons/io5'
 
-function Medical({ activeChild, setActiveChild }) {
+export default function Medical({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [medicalValues, setMedicalValues] = useState([])
@@ -63,7 +63,7 @@ function Medical({ activeChild, setActiveChild }) {
 
   return (
     <div className="info-section section medical">
-      <Accordion>
+      <Accordion className={theme}>
         <AccordionSummary
           expandIcon={<FaChevronDown />}
           className={!Manager.isValid(activeChild.medical) ? 'disabled header medical' : 'header medical'}>
@@ -98,5 +98,3 @@ function Medical({ activeChild, setActiveChild }) {
     </div>
   )
 }
-
-export default Medical

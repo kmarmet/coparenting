@@ -30,7 +30,6 @@ import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import Label from '../../shared/label'
-import NotificationManager from '../../../managers/notificationManager.js'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
@@ -38,48 +37,45 @@ export default function Settings() {
   const [defaultReminderTimes, setDefaultReminderTimes] = useState([])
   const [morningSummaryTime, setMorningSummaryTime] = useState('')
   const [eveningSummaryTime, setEveningSummaryTime] = useState('')
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true)
+  const [notificationsToggled, setNotificationsToggled] = useState(0)
   const submitCalendarSettings = async () => {
-    console.log(DateManager.dateIsValid(morningSummaryTime))
-    console.log(moment(eveningSummaryTime).format(DateFormats.summaryHour))
     if (DateManager.dateIsValid(morningSummaryTime)) {
       await DB_UserScoped.updateUserRecord(
         currentUser?.phone,
-        'settings/morningReminderSummaryHour',
+        'dailySummaries/morningReminderSummaryHour',
         moment(morningSummaryTime).format(DateFormats.summaryHour)
       )
     }
     if (DateManager.dateIsValid(eveningSummaryTime)) {
       await DB_UserScoped.updateUserRecord(
         currentUser?.phone,
-        'settings/eveningReminderSummaryHour',
+        'dailySummaries/eveningReminderSummaryHour',
         moment(eveningSummaryTime).format(DateFormats.summaryHour)
       )
     }
     AlertManager.successAlert('Calendar settings have been updated!')
   }
 
+  const toggleNotifications = async (e) => {
+    await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
+  }
+  const updateCurrentUser = async () => {
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
+    setNotificationsToggled(Manager.getUid())
+  }
+
+  useEffect(() => {
+    updateCurrentUser().then((r) => r)
+  }, [notificationsToggled])
+
   useEffect(() => {
     Manager.showPageContainer()
   }, [])
 
-  const toggleNotifications = async (e) => {
-    const parent = e.target.closest('.react-toggle')
-    const subId = await NotificationManager.getUserSubId(currentUser)
-    if (parent.classList.contains('react-toggle--checked')) {
-      setNotificationsEnabled(false)
-      console.log('uncheck')
-      await NotificationManager.disableNotifications(subId)
-    } else {
-      setNotificationsEnabled(true)
-      console.log('check')
-    }
-  }
-
   return (
     <>
       <div id="settings-container" className={`${theme} page-container form`}>
-        {/*<button onClick={unsub}>Click</button>*/}
         <p className="screen-title">Settings</p>
         {/* CALENDAR SETTINGS */}
         <Label text={'Calendar'} labelId="medium-title" />
@@ -106,13 +102,13 @@ export default function Settings() {
           {/* IS VISITATION? */}
           <Label text={'Notifications'} labelId="medium-title" classes="mt-30" />
           <div className="flex">
-            {notificationsEnabled && <p>Disable</p>}
-            {!notificationsEnabled && <p>Enable</p>}
+            {currentUser?.settings?.notificationsEnabled && <p>Disable</p>}
+            {!currentUser?.settings?.notificationsEnabled && <p>Enable</p>}
             <Toggle
               icons={{
                 unchecked: null,
               }}
-              defaultChecked={true}
+              defaultChecked={currentUser?.settings?.notificationsEnabled}
               className={'ml-auto visitation-toggle'}
               onChange={toggleNotifications}
             />

@@ -6,7 +6,7 @@ export default class ChildUser
     @name = ''
     @email = ''
     @accountType = ''
-    @allowNotifications = ''
+    @notificationsEnabled = true
     @id = Manager.getUid()
     @dailySummaries = {
       morningSentDate: ''

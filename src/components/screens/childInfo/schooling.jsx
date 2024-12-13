@@ -30,7 +30,7 @@ import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
 import { IoCloseOutline } from 'react-icons/io5'
 
-function Schooling({ activeChild, setActiveChild }) {
+export default function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [schoolingValues, setSchoolingValues] = useState([])
@@ -63,7 +63,7 @@ function Schooling({ activeChild, setActiveChild }) {
 
   return (
     <div className="info-section section schooling">
-      <Accordion>
+      <Accordion className={theme}>
         <AccordionSummary
           expandIcon={<FaChevronDown />}
           className={!Manager.isValid(activeChild.schooling) ? 'disabled header schooling' : 'header schooling'}>
@@ -92,5 +92,3 @@ function Schooling({ activeChild, setActiveChild }) {
     </div>
   )
 }
-
-export default Schooling

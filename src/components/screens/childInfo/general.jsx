@@ -65,7 +65,7 @@ function General({ activeChild, setActiveChild }) {
 
   return (
     <div className="info-section section general form">
-      <Accordion>
+      <Accordion className={theme}>
         <AccordionSummary
           expandIcon={<FaChevronDown />}
           className={!Manager.isValid(activeChild.general) ? 'disabled header general' : 'header general'}>

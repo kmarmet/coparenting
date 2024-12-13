@@ -4,7 +4,7 @@ var User;
 import Manager from "../managers/manager";
 
 export default User = class User {
-  constructor(name = '', email = '', phone = '', children = [], coparents = [], parentType = '', accountType = '', allowNotifications = '', id = Manager.getUid(), defaultTransferLocation = '', defaultTransferNavLink = '', dailySummaries = {
+  constructor(name = '', email = '', phone = '', children = [], coparents = [], parentType = '', accountType = '', allowNotifications = '', id = Manager.getUid(), defaultTransferLocation = '', defaultTransferNavLink = '', notificationsEnabled = true, dailySummaries = {
       morningSentDate: '',
       eveningSentDate: '',
       morningReminderSummaryHour: '10am',
@@ -21,6 +21,7 @@ export default User = class User {
     this.id = id;
     this.defaultTransferLocation = defaultTransferLocation;
     this.defaultTransferNavLink = defaultTransferNavLink;
+    this.notificationsEnabled = notificationsEnabled;
     this.dailySummaries = dailySummaries;
   }
 
