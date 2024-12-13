@@ -399,6 +399,13 @@ export default function Visitation() {
     }
   }
 
+  const addThemeToDatePickers = () => {
+    setTimeout(() => {
+      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
+      datetimeParent.classList.add(currentUser?.settings?.theme)
+    }, 100)
+  }
+
   // On Schedule Type Change
   useEffect(() => {
     if (scheduleType === ScheduleTypes.fiftyFifty) {
@@ -501,7 +508,7 @@ export default function Visitation() {
               }}
             />
           </InputWrapper>
-          <InputWrapper labelText={'Second  Period'} required={true} inputType={'date'}>
+          <InputWrapper labelText={'Second Period'} required={true} inputType={'date'}>
             <DateRangePicker
               showOneCalendar
               showHeader={false}
@@ -556,8 +563,8 @@ export default function Visitation() {
           title={'Every other Weekend'}
           showCard={showEveryOtherWeekendCard}
           onClose={() => setShowEveryOtherWeekendCard(false)}>
-          <InputWrapper labelText={'Friday of the next weekend you have your child(ren)'} required={true} inputType={'date'}>
-            <MobileDatePicker onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100`} />
+          <InputWrapper wrapperClasses="mt-15" labelText={'Friday of the next weekend you have your child(ren)'} required={true} inputType={'date'}>
+            <MobileDatePicker onOpen={addThemeToDatePickers} onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100`} />
           </InputWrapper>
         </BottomCard>
 

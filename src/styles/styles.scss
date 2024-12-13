@@ -482,6 +482,10 @@
       background-color: white;
       z-index: $maxZIndex;
       display: none;
+      
+      &.dark {
+        background: $darkBg;
+      }
 
       &.active {
         display: block;

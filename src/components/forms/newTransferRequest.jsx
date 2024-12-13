@@ -129,6 +129,13 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     )
   }
 
+  const addThemeToDatePickers = () => {
+    setTimeout(() => {
+      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
+      datetimeParent.classList.add(currentUser?.settings?.theme)
+    }, 100)
+  }
+
   useEffect(() => {
     Manager.showPageContainer('show')
   }, [])
@@ -140,10 +147,18 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
           <div className="form transfer-change">
             <div className="flex gap">
               <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
-                <MobileDatePicker className={`${theme}  mt-0 w-100`} onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))} />
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  className={`${theme}  mt-0 w-100`}
+                  onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
+                />
               </InputWrapper>
               <InputWrapper inputType={'date'} labelText={'New Time'}>
-                <MobileTimePicker className={`${theme}  mt-0 w-100`} onChange={(e) => setRequestTime(moment(e).format(DateFormats.timeForDb))} />
+                <MobileTimePicker
+                  onOpen={addThemeToDatePickers}
+                  className={`${theme}  mt-0 w-100`}
+                  onChange={(e) => setRequestTime(moment(e).format(DateFormats.timeForDb))}
+                />
               </InputWrapper>
             </div>
 

@@ -40,7 +40,7 @@ import ImageManager from '../../managers/imageManager'
 import AlertManager from '../../managers/alertManager'
 import DB_UserScoped from '@userScoped'
 
-function NewMemoryForm({ hideCard, showCard }) {
+export default function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, navbarButton, updateKey, theme } = state
   const [shareWith, setShareWith] = useState([])
@@ -157,6 +157,13 @@ function NewMemoryForm({ hideCard, showCard }) {
       })
   }
 
+  const addThemeToDatePickers = () => {
+    setTimeout(() => {
+      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
+      datetimeParent.classList.add(currentUser?.settings?.theme)
+    }, 100)
+  }
+
   useEffect(() => {
     Manager.showPageContainer()
     setResetKey(Manager.getUid())
@@ -187,7 +194,12 @@ function NewMemoryForm({ hideCard, showCard }) {
 
             {/* DATE */}
             <InputWrapper labelText={'Memory Capture Date'} inputType={'date'}>
-              <MobileDatePicker value={moment()} className={`${theme} m-0 w-100 mui-input`} onAccept={(e) => setMemoryDate(e)} />
+              <MobileDatePicker
+                onOpen={addThemeToDatePickers}
+                value={moment()}
+                className={`${theme} m-0 w-100 mui-input`}
+                onAccept={(e) => setMemoryDate(e)}
+              />
             </InputWrapper>
 
             {/* NOTES */}
@@ -218,5 +230,3 @@ function NewMemoryForm({ hideCard, showCard }) {
     </BottomCard>
   )
 }
-
-export default NewMemoryForm

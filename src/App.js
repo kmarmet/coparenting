@@ -122,6 +122,7 @@ export default function App() {
         const user = auth.currentUser
         setUserEmail(user.email)
         const _currentUser = await DB.find(DB.tables.users, ['email', user.email], true)
+
         setState({ ...state, currentUser: _currentUser, theme: _currentUser?.settings?.theme })
       } else {
         console.log('signed out or user doesn"t exist')

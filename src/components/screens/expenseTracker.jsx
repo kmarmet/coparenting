@@ -63,8 +63,8 @@ const SortByTypes = {
 }
 
 export default function ExpenseTracker() {
-  const { state, setState, theme } = useContext(globalState)
-  const { currentUser } = state
+  const { state, setState } = useContext(globalState)
+  const { currentUser, theme } = state
   const [expenses, setExpenses] = useState([])
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
@@ -315,7 +315,7 @@ export default function ExpenseTracker() {
                   </div>
                   <div className="flex">
                     <div className="text">
-                      <p className="description payment-options">Safely send money to co-parent, no matter where they bank.</p>
+                      <p className={`${theme} description payment-options`}>Safely send money to co-parent, no matter where they bank.</p>
                       <a href="https://www.zellepay.com/how-it-works" target="_blank" className="setup-instructions mb-10">
                         Learn More <span className="material-icons">open_in_new</span>
                       </a>
@@ -339,7 +339,7 @@ export default function ExpenseTracker() {
                   </div>
                   <div className="flex">
                     <div className="text">
-                      <p className="description payment-options">Fast, safe, social payments.</p>
+                      <p className={`${theme} description payment-options`}>Fast, safe, social payments.</p>
                       <a
                         href="https://help.venmo.com/hc/en-us/articles/209690068-How-to-Sign-Up-for-a-Personal-Venmo-Account"
                         target="_blank"
@@ -365,7 +365,7 @@ export default function ExpenseTracker() {
                   </div>
                   <div className="flex ">
                     <div className="text">
-                      <p className="description payment-options">Use Apple Cash to send and receive money with people you know.</p>
+                      <p className={`${theme} description payment-options`}>Use Apple Cash to send and receive money with people you know.</p>
                       <a href="https://support.apple.com/en-us/105013" target="_blank" className="setup-instructions mb-10">
                         Learn More <span className="material-icons">open_in_new</span>
                       </a>
@@ -381,7 +381,7 @@ export default function ExpenseTracker() {
                   </div>
                   <div className="flex">
                     <div className="text">
-                      <p className="description payment-options">Send and request money, quickly and securely.</p>
+                      <p className={`${theme} description payment-options`}>Send and request money, quickly and securely.</p>
                       <a href="https://www.paypal.com/us/digital-wallet/send-receive-money" target="_blank" className="setup-instructions mb-10">
                         Learn More <span className="material-icons">open_in_new</span>
                       </a>
@@ -397,7 +397,7 @@ export default function ExpenseTracker() {
                   </div>
                   <div className="flex">
                     <div className="text">
-                      <p className="description payment-options">Pay anyone, instantly.</p>
+                      <p className={`${theme} description payment-options`}>Pay anyone, instantly.</p>
                       <a href="https://cash.app/help/6485-getting-started-with-cash-app" target="_blank" className="setup-instructions mb-10">
                         Learn More <span className="material-icons">open_in_new</span>
                       </a>

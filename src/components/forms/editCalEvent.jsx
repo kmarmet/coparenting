@@ -406,6 +406,13 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setAllEvents(allEvents)
   }
 
+  const addThemeToDatePickers = () => {
+    setTimeout(() => {
+      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
+      datetimeParent.classList.add(currentUser?.settings?.theme)
+    }, 100)
+  }
+
   useEffect(() => {
     if (Manager.isValid(event)) {
       setDefaultValues()
@@ -472,6 +479,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                 <div className="w-100">
                   <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
                     <MobileDatePicker
+                      onOpen={addThemeToDatePickers}
                       value={moment(event?.startDate)}
                       className={`${theme} m-0 w-100 event-from-date mui-input`}
                       onAccept={(e) => {
@@ -490,6 +498,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
                     <MobileDateRangePicker
                       className={'w-100'}
+                      onOpen={addThemeToDatePickers}
                       onOpen={() => Manager.hideKeyboard('date-range-input')}
                       onAccept={(dateArray) => {
                         if (Manager.isValid(dateArray, true)) {
@@ -514,6 +523,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
               <div>
                 <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
                   <MobileTimePicker
+                    onOpen={addThemeToDatePickers}
                     format={'h:mma'}
                     value={moment(eventStartTime, 'hh:mma')}
                     minutesStep={5}
@@ -527,6 +537,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
               <div>
                 <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
                   <MobileTimePicker
+                    onOpen={addThemeToDatePickers}
                     format={'h:mma'}
                     value={moment(defaultEndTime, 'hh:mma')}
                     minutesStep={5}

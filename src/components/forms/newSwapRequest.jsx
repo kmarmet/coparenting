@@ -147,6 +147,13 @@ export default function NewSwapRequest({ showCard, hideCard }) {
 
   const changeSwapDuration = (duration) => setSwapDuration(duration)
 
+  const addThemeToDatePickers = () => {
+    setTimeout(() => {
+      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
+      datetimeParent.classList.add(currentUser?.settings?.theme)
+    }, 100)
+  }
+
   useEffect(() => {
     Manager.showPageContainer('show')
   }, [])
@@ -183,7 +190,11 @@ export default function NewSwapRequest({ showCard, hideCard }) {
             {/* SINGLE DATE */}
             {swapDuration === SwapDurations.single && (
               <InputWrapper inputType={'date'} labelText={'Date'} required={true}>
-                <MobileDatePicker className={`${theme}  w-100`} onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))} />
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  className={`${theme}  w-100`}
+                  onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
+                />
               </InputWrapper>
             )}
 
@@ -191,14 +202,26 @@ export default function NewSwapRequest({ showCard, hideCard }) {
             {swapDuration === SwapDurations.intra && (
               <>
                 <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
-                  <MobileDatePicker className={`${theme}  w-100`} onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))} />
+                  <MobileDatePicker
+                    onOpen={addThemeToDatePickers}
+                    className={`${theme}  w-100`}
+                    onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
+                  />
                 </InputWrapper>
                 <div className="flex gap ">
                   <InputWrapper inputType={'date'} labelText={'Start Time'} required={true}>
-                    <MobileTimePicker className={`${theme}  from-hour`} onChange={(e) => setRequestFromHour(moment(e).format('h a'))} />
+                    <MobileTimePicker
+                      onOpen={addThemeToDatePickers}
+                      className={`${theme}  from-hour`}
+                      onChange={(e) => setRequestFromHour(moment(e).format('h a'))}
+                    />
                   </InputWrapper>
                   <InputWrapper inputType={'date'} labelText={'End Time'} required={true}>
-                    <MobileTimePicker className={`${theme}  to-hour`} onChange={(e) => setRequestToHour(moment(e).format('h a'))} />
+                    <MobileTimePicker
+                      onOpen={addThemeToDatePickers}
+                      className={`${theme}  to-hour`}
+                      onChange={(e) => setRequestToHour(moment(e).format('h a'))}
+                    />
                   </InputWrapper>
                 </div>
               </>
@@ -208,6 +231,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
             {swapDuration === SwapDurations.multiple && (
               <InputWrapper labelText={'Date Range'} required={true} inputType={'date'}>
                 <MobileDateRangePicker
+                  onOpen={addThemeToDatePickers}
                   className={'w-100'}
                   onAccept={(dateArray) => {
                     if (Manager.isValid(dateArray, true)) {

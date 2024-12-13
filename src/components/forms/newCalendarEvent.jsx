@@ -232,7 +232,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           }
         })
       }
-      resetForm()
+      await resetForm()
     }
   }
 
@@ -384,6 +384,13 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     return datesToPush
   }
 
+  const addThemeToDatePickers = () => {
+    setTimeout(() => {
+      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
+      datetimeParent.classList.add(currentUser?.settings?.theme)
+    }, 100)
+  }
+
   useEffect(() => {
     if (selectedNewEventDay) {
       setEventStartDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
@@ -474,6 +481,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 <div className="w-100">
                   <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
                     <MobileDatePicker
+                      onOpen={addThemeToDatePickers}
                       value={moment(selectedNewEventDay)}
                       className={`${theme} m-0 w-100 event-from-date mui-input`}
                       onAccept={(e) => {
@@ -490,6 +498,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {eventLength === EventLengths.multiple && (
             <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
               <MobileDateRangePicker
+                onOpen={addThemeToDatePickers}
                 className={'w-100'}
                 onOpen={() => Manager.hideKeyboard('date-range-input')}
                 onAccept={(dateArray) => {
@@ -510,13 +519,14 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             <div className={'flex gap event-times-wrapper'}>
               <div>
                 <InputWrapper wrapperClasses="higher-label" labelText={'Start Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker minutesStep={5} className={`${theme}`} onAccept={(e) => setEventStartTime(e)} />
+                  <MobileTimePicker onOpen={addThemeToDatePickers} minutesStep={5} className={`${theme}`} onAccept={(e) => setEventStartTime(e)} />
                 </InputWrapper>
               </div>
               <span>&nbsp;to&nbsp;</span>
               <div>
                 <InputWrapper wrapperClasses="higher-label" labelText={'End Time'} required={false} inputType={'date'}>
                   <MobileTimePicker
+                    onOpen={addThemeToDatePickers}
                     format={'h:mma'}
                     defaultValue={null}
                     minutesStep={5}

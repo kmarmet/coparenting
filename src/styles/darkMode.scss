@@ -41,6 +41,54 @@
       }
     }
   }
+  .MuiDialog-root {
+    &.dark {
+      .MuiDateCalendar-root {
+        .MuiDayCalendar-weekDayLabel {
+          color: white !important;
+        }
+        .MuiPickersDay-root {
+          &.Mui-selected {
+            color: white !important;
+          }
+        }
+      }
+      .MuiPickersLayout-root,
+      .MuiButtonBase-root {
+        color: white;
+      }
+      .MuiPaper-root {
+        background: $darkBg;
+
+        .MuiClockNumber-root {
+          color: white !important;
+        }
+
+        .MuiTimePickerToolbar-ampmSelection {
+          span {
+            color: $darkBorderColor !important;
+
+            &.Mui-selected {
+              color: $darkBlue !important;
+            }
+          }
+        }
+
+        .MuiTimePickerToolbar-hourMinuteLabel {
+          button {
+            border: 1px solid $darkBorderColor !important;
+          }
+          span {
+            color: white !important;
+          }
+        }
+
+        .MuiPickersLayout-root {
+          background: $darkBg !important;
+        }
+      }
+    }
+  }
 
   // FULL MENU
   .full-menu {
@@ -62,7 +110,7 @@
   #app-container {
     &.dark {
       background: $darkBg;
-      
+
       // MUI OVERRIDES
       .MuiPaper-root {
         background: unset;
@@ -76,7 +124,7 @@
           }
         }
       }
-      
+
       p {
         color: white;
         opacity: 0.9;
@@ -85,17 +133,17 @@
       hr {
         border-color: $translucentLightest;
       }
-      
+
       #disclaimer {
         p {
-          color:white;
+          color: white;
         }
       }
 
       #large-title {
         color: white;
       }
-      
+
       #share-with-checkbox-group {
         svg {
           color: $gold;
@@ -111,13 +159,14 @@
       .screen-title {
         color: $darkBlue;
       }
-      
+
       // LIGHT GALLERY
       .light-gallery {
         .memory {
           border: unset;
-          background: $darkBorderColor;
-          
+          background: unset;
+          padding: 0;
+
           .memory-image {
             .delete-icon {
               background-color: unset;
@@ -126,10 +175,11 @@
           }
         }
       }
-      
+
       // MEMORIES
       #memories-container {
-        #title-and-date, #below-image  {
+        #title-and-date,
+        #below-image {
           p {
             color: white;
           }
@@ -296,6 +346,20 @@
               color: white;
               opacity: 0.9;
             }
+
+            .box {
+              border: 2px solid $darkBorderColor;
+              #inner-circle {
+                border: unset;
+              }
+              &.active {
+                border: unset;
+                #inner-circle {
+                  background: $darkBlue;
+                  border: unset;
+                }
+              }
+            }
           }
         }
       }
@@ -330,7 +394,7 @@
       #label-wrapper {
         label {
           color: white;
-          
+
           &#medium-title {
             color: $gold;
           }
@@ -346,6 +410,14 @@
           color: white;
           opacity: 0.9;
           border-bottom: 1px solid $darkBorderColor;
+
+          &.rs-date-range-input {
+            background: transparent !important;
+            border: 0 !important;
+            color: white !important;
+            opacity: 0.9 !important;
+            border-bottom: 1px solid $darkBorderColor !important;
+          }
 
           &:focus {
             outline: none;
@@ -424,7 +496,7 @@
       }
 
       // REACT TOGGLE
-      
+
       .react-toggle {
         * {
           user-select: none;
@@ -432,7 +504,8 @@
         }
         &.react-toggle--checked {
           background: $darkBg !important;
-          .react-toggle-track-check, .react-toggle-track {
+          .react-toggle-track-check,
+          .react-toggle-track {
             background: $darkBlue !important;
           }
         }
@@ -497,7 +570,18 @@
             opacity: 1;
           }
         }
-        
+
+        &.new-expense-card {
+          #add-expense-form {
+            #default-expense-amounts {
+              button {
+                background: $darkBorderColor;
+                color: white;
+              }
+            }
+          }
+        }
+
         // ACTION PILLS
         .action-pills {
           .duration-option {
@@ -518,7 +602,8 @@
         #relative-wrapper {
           #holiday-card-buttons {
             button {
-              &#view-visitation-holidays-item, &#view-all-holidays-item {
+              &#view-visitation-holidays-item,
+              &#view-all-holidays-item {
                 background: $darkBg;
               }
             }
@@ -530,9 +615,9 @@
               &.submit {
                 background-color: $darkBlue;
                 color: white;
-                
+
                 svg {
-                  color:white;
+                  color: white;
                 }
               }
             }

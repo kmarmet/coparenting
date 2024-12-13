@@ -32,7 +32,7 @@ import AlertManager from '../../managers/alertManager'
 import ImageManager from '../../managers/imageManager'
 import SelectDropdown from '../shared/selectDropdown'
 
-function NewExpenseForm({ hideCard, showCard }) {
+export default function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, formToShow } = state
   const [expenseName, setExpenseName] = useState('')
@@ -287,6 +287,13 @@ function NewExpenseForm({ hideCard, showCard }) {
     setExpenseCategory(category.target.value)
   }
 
+  const addThemeToDatePickers = () => {
+    setTimeout(() => {
+      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
+      datetimeParent.classList.add(currentUser?.settings?.theme)
+    }, 100)
+  }
+
   return (
     <BottomCard
       refreshKey={refreshKey}
@@ -295,6 +302,7 @@ function NewExpenseForm({ hideCard, showCard }) {
       submitIcon={<PiMoneyWavyDuotone />}
       submitText={'Create Expense'}
       title={'Add Expense'}
+      className="new-expense-card"
       showCard={showCard}
       onClose={resetForm}>
       <div className="expenses-wrapper">
@@ -378,6 +386,7 @@ function NewExpenseForm({ hideCard, showCard }) {
           {/* DUE DATE */}
           <InputWrapper inputType={'date'} labelText={'Due Date'}>
             <MobileDatePicker
+              onOpen={addThemeToDatePickers}
               className="mt-0 w-100"
               onChange={(e) => {
                 setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
@@ -455,6 +464,7 @@ function NewExpenseForm({ hideCard, showCard }) {
                   <label className="mb-5">Month to end repeating expense</label>
                   {repeatInterval && (
                     <MobileDatePicker
+                      onOpen={addThemeToDatePickers}
                       className={'mt-0 w-100'}
                       format={DateFormats.readableMonth}
                       views={DatetimePickerViews.monthAndYear}
@@ -490,5 +500,3 @@ function NewExpenseForm({ hideCard, showCard }) {
     </BottomCard>
   )
 }
-
-export default NewExpenseForm
