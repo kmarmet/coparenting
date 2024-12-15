@@ -36,7 +36,7 @@ export default function InstallAppPopup() {
 
           <AccordionDetails expanded={expandAppleAccordion.toString()}>
             <div className="os-container apple">
-              <p className="while-viewing">While viewing the website...</p>
+              <p className="while-viewing">While viewing the website in Safari...</p>
               <div className="flex steps">
                 <div className="flex">
                   <span className="step-number">1.</span>
@@ -76,7 +76,7 @@ export default function InstallAppPopup() {
           </AccordionSummary>
           <AccordionDetails expanded={expandAndroidAccordion.toString()}>
             <div className="os-container android">
-              <p className="while-viewing">While viewing the website...</p>
+              <p className="while-viewing">While viewing the website in Chrome (in browser's default browser)...</p>
               <div className="flex steps">
                 <div className="flex">
                   <span className="step-number">1.</span>
@@ -112,7 +112,7 @@ export default function InstallAppPopup() {
           </AccordionSummary>
           <AccordionDetails expanded={expandDesktopAccordion.toString()}>
             <div className="os-container apple">
-              <p className="while-viewing">While viewing the website...</p>
+              <p className="while-viewing">While viewing the website (in browser's default browser)...</p>
               <div className="flex steps">
                 <img src={require('../img/desktop-installation.png')} alt="" />
                 <div className="flex mt-15">

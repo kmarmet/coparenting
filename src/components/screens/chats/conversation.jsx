@@ -41,6 +41,7 @@ import { useLongPress } from 'use-long-press'
 import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
+import DomManager from '../../../managers/domManager'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -144,8 +145,10 @@ const Conversation = () => {
   }
 
   const viewBookmarks = async (e) => {
-    setShowBookmarks(!showBookmarks)
-    scrollToLatestMessage()
+    if (bookmarks.length > 0) {
+      setShowBookmarks(!showBookmarks)
+      scrollToLatestMessage()
+    }
   }
 
   const getExistingMessages = async () => {
@@ -287,7 +290,7 @@ const Conversation = () => {
       </BottomCard>
       <div key={refreshKey} id="message-thread-container" className={`${theme}  conversation`}>
         {/* TOP BAR */}
-        {!showSearchInput && (
+        {!showSearchInput && DomManager.isMobile() && (
           <div className="flex top-buttons">
             <div className="flex" id="user-info">
               <p id="user-name">{formatNameFirstNameOnly(messageRecipient.name)}</p>
@@ -310,6 +313,25 @@ const Conversation = () => {
                 id="close-icon"
               />
             </div>
+          </div>
+        )}
+
+        {/* DESKTOP SIDEBAR */}
+        {!DomManager.isMobile() && (
+          <div className="top-buttons">
+            <p id="user-name">{formatNameFirstNameOnly(messageRecipient.name)}</p>
+            <p id="find-messages" className="item" onClick={() => setShowSearchCard(true)}>
+              <TbMessageCircleSearch id="search-icon" /> Find Messages
+            </p>
+            <p id="view-bookmarks" className="item" onClick={(e) => viewBookmarks(e)}>
+              <PiBookmarksSimpleDuotone
+                id="conversation-bookmark-icon"
+                className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
+              />
+              {showBookmarks && <p>Hide Bookmarks</p>}
+              {!showBookmarks && bookmarks.length > 0 && <p>View Bookmarks</p>}
+              {bookmarks.length === 0 && !showBookmarks && <p>No Bookmarks</p>}
+            </p>
           </div>
         )}
 
@@ -381,10 +403,10 @@ const Conversation = () => {
                   if (bookmarks?.filter((x) => x.messageId === message.id).length > 0) {
                     isBookmarked = true
                   }
-                  let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mm a')
+                  let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mma')
                   // Message Sent Today
                   if (moment(message.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
-                    timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mm a')
+                    timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
                   }
                   return (
                     <div key={index}>
@@ -416,8 +438,8 @@ const Conversation = () => {
 
                     await sendMessage()
                     setTimeout(() => {
-                      messageThreadContainer.style.height = `${vh}px`
-                      messageThreadContainer.style.maxHeight = `${vh}px`
+                      messageThreadContainer.style.height = `${vh - 200}px`
+                      messageThreadContainer.style.maxHeight = `${vh - 200}px`
                     }, 300)
                   }}
                   id="send-button">

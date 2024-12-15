@@ -11,7 +11,7 @@ import DateFormats from '../../constants/dateFormats'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
 import { FaChildren } from 'react-icons/fa6'
-import { PiCalendarPlusDuotone } from 'react-icons/pi'
+import { PiCalendarPlusDuotone, PiCalendarXDuotone } from 'react-icons/pi'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
 import { CgClose } from 'react-icons/cg'
@@ -22,6 +22,8 @@ import NewCalendarEvent from '../forms/newCalendarEvent'
 import EditCalEvent from '../forms/editCalEvent'
 import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
+import { GiPartyPopper } from 'react-icons/gi'
+import DomManager from '../../managers/domManager'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -274,14 +276,16 @@ export default function EventCalendar() {
   }
 
   useEffect(() => {
-    if (showHolidays) {
-      const rows = document.querySelectorAll('.event-row')
+    if (DomManager.isMobile()) {
+      if (showHolidays) {
+        const rows = document.querySelectorAll('.event-row')
 
-      if (rows && rows[0]) {
-        rows[0].scrollIntoView({ behavior: 'smooth' })
+        if (rows && rows[0]) {
+          rows[0].scrollIntoView({ behavior: 'smooth' })
+        }
+      } else {
+        Manager.scrollIntoView('#static-calendar ')
       }
-    } else {
-      Manager.scrollIntoView('#static-calendar ')
     }
   }, [showHolidays])
 
@@ -413,7 +417,6 @@ export default function EventCalendar() {
       </>
 
       {/* PAGE CONTAINER */}
-
       <div id="calendar-container" className={`page-container calendar ${theme} `}>
         {/* STATIC CALENDAR */}
         <div id="static-calendar" className={theme}>
@@ -451,6 +454,7 @@ export default function EventCalendar() {
           )}
           {/* MAP/LOOP EVENTS */}
           <div className="events">
+            {!Manager.isValid(existingEvents, true) && <p id="no-events-text">No events on this day</p>}
             {Manager.isValid(existingEvents, true) &&
               existingEvents.map((event, index) => {
                 let readableReminderTimes = []
@@ -562,35 +566,94 @@ export default function EventCalendar() {
         </div>
       </div>
 
-      {!showNewEventCard && !showSearchCard && !showEditCard && !showHolidaysCard && !showHolidays && (
-        <NavBar navbarClass={'calendar search-results'} addOrClose={searchResults.length === 0 ? 'add' : 'close'}>
-          {searchResults.length === 0 && (
-            <PiCalendarPlusDuotone className={'new-event'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
+      {/* DESKTOP SIDEBAR */}
+      {!DomManager.isMobile() && (
+        <div id="calendar-sidebar">
+          <p className="item" id="new-event" onClick={() => setShowNewEventCard(true)}>
+            <PiCalendarPlusDuotone className={'new-event'} id={'add-new-button'} /> New Event
+          </p>
+          {!showHolidays && (
+            <p className="item" id="holidays-button" onClick={() => setShowHolidaysCard(true)}>
+              <GiPartyPopper />
+              Holidays
+            </p>
           )}
-          {searchResults.length > 0 && (
-            <CgClose
-              id={'close-button'}
+          {showHolidays && (
+            <p
+              className="item"
               onClick={async () => {
-                Manager.scrollIntoView('#static-calendar')
                 await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-                setSearchResults([])
-                setSearchQuery('')
-              }}
-            />
+                setShowHolidays(false)
+              }}>
+              <PiCalendarXDuotone /> Hide Holidays
+            </p>
           )}
-        </NavBar>
-      )}
-      {showHolidays && (
-        <NavBar navbarClass={'calendar'} addOrClose={showHolidays ? 'close' : 'add'}>
-          <CgClose
-            id={'close-button'}
-            onClick={async () => {
-              Manager.scrollIntoView('#static-calendar')
-              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-              setShowHolidays(false)
+
+          <InputWrapper
+            defaultValue="Find Events"
+            refreshKey={refreshKey}
+            inputType={'input'}
+            inputValue={searchQuery}
+            onChange={async (e) => {
+              const inputValue = e.target.value
+              if (inputValue.length > 3) {
+                setSearchQuery(inputValue)
+                let results = []
+                if (Manager.isValid(allEventsFromDb, true)) {
+                  results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+                }
+                if (results.length > 0) {
+                  setExistingEvents(results)
+                }
+              } else {
+                if (inputValue.length === 0) {
+                  setShowSearchCard(false)
+                  Manager.scrollIntoView('#static-calendar')
+                  await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+                  setRefreshKey(Manager.getUid())
+                  e.target.value = ''
+                  setSearchQuery('')
+                }
+              }
             }}
           />
-        </NavBar>
+        </div>
+      )}
+
+      {/* NAVBARS */}
+      {DomManager.isMobile() && (
+        <>
+          {!showNewEventCard && !showSearchCard && !showEditCard && !showHolidaysCard && !showHolidays && (
+            <NavBar navbarClass={'calendar search-results'} addOrClose={searchResults.length === 0 ? 'add' : 'close'}>
+              {searchResults.length === 0 && (
+                <PiCalendarPlusDuotone className={'new-event'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
+              )}
+              {searchResults.length > 0 && (
+                <CgClose
+                  id={'close-button'}
+                  onClick={async () => {
+                    Manager.scrollIntoView('#static-calendar')
+                    await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+                    setSearchResults([])
+                    setSearchQuery('')
+                  }}
+                />
+              )}
+            </NavBar>
+          )}
+          {showHolidays && (
+            <NavBar navbarClass={'calendar'} addOrClose={showHolidays ? 'close' : 'add'}>
+              <CgClose
+                id={'close-button'}
+                onClick={async () => {
+                  Manager.scrollIntoView('#static-calendar')
+                  await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+                  setShowHolidays(false)
+                }}
+              />
+            </NavBar>
+          )}
+        </>
       )}
     </>
   )

@@ -10,6 +10,15 @@
       background: white;
       border-radius: 25px 25px 0 0;
       
+      #no-events-text {
+        margin: 0 auto;
+        width: 100%;
+        text-align: center;
+        font-size: 14px;
+        font-style: italic;
+        opacity: .7;
+      }
+      
       .material-icons-round {
         color: $mainBlue;
         font-size: 18px;

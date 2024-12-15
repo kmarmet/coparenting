@@ -225,341 +225,339 @@ export default function ExpenseTracker() {
   }, [])
 
   return (
-    <div>
+    <>
       {/* NEW EXPENSE FORM */}
       <NewExpenseForm showCard={showNewExpenseCard} hideCard={(e) => setShowNewExpenseCard(false)} />
 
       {/* CARDS */}
-      <>
-        {/* FILTER CARD */}
-        <BottomCard
-          refreshKey={refreshKey}
-          hasSubmitButton={false}
-          className="filter-card"
-          title={'Filter Expenses'}
-          submitIcon={<BsFilter />}
-          showCard={showFilterCard}
-          onClose={() => {
-            setShowFilterCard(false)
-            setRefreshKey(Manager.getUid())
-          }}
-          submitText={'View Expenses'}>
-          <>
-            <div className="filter-row">
-              <Label isBold={true} text={'Expense Type'} classes="mb-5"></Label>
-              <div className="pills type">
-                <div className="pill" onClick={() => handleExpenseTypeSelection('all')}>
-                  All
-                </div>
-                <div className="pill" onClick={() => handleExpenseTypeSelection('single')}>
-                  Single Date
-                </div>
-                <div className="pill" onClick={() => handleExpenseTypeSelection('repeating')}>
-                  Repeating
-                </div>
-              </div>
-            </div>
-            <div className="filter-row">
-              <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
-              <div className="pills type">
-                <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
-                  Unpaid
-                </div>
-                <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
-                  Paid
-                </div>
-              </div>
-            </div>
-            <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>
-            <div className="filter-row">
-              <div className="pills category">
-                {ExpenseCategories.sort().map((cat, index) => {
-                  return (
-                    <>
-                      {categoriesInUse.includes(cat) && (
-                        <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
-                          {cat}
-                        </div>
-                      )}
-                    </>
-                  )
-                })}
-              </div>
-            </div>
-            <SelectDropdown selectValue={SortByTypes.recentlyAdded} labelText={'Sort by'} onChange={handleSortBySelection}>
-              <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
-              <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
-              <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
-              <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
-            </SelectDropdown>
-          </>
-        </BottomCard>
-
-        {/* PAYMENT OPTIONS */}
+      {/* FILTER CARD */}
+      <BottomCard
+        refreshKey={refreshKey}
+        hasSubmitButton={false}
+        className="filter-card"
+        title={'Filter Expenses'}
+        submitIcon={<BsFilter />}
+        showCard={showFilterCard}
+        onClose={() => {
+          setShowFilterCard(false)
+          setRefreshKey(Manager.getUid())
+        }}
+        submitText={'View Expenses'}>
         <>
-          <BottomCard
-            hasSubmitButton={false}
-            subtitle="There are a multitude of simple and FREE ways to send money to a co-parent for expenses, or for any other reason. Please look below to
-              see which option works best for you."
-            title={'Payment/Transfer Options'}
-            className="payment-options-card"
-            onClose={() => setShowPaymentOptionsCard(false)}
-            showCard={showPaymentOptionsCard}>
-            <div id="payment-options-card">
-              <div className="options">
-                {/* ZELLE */}
-                <div className="option zelle">
-                  <div className="flex brand-name-wrapper zelle">
-                    <p className="brand-name accent mr-10">Zelle</p>
-                    <SiZelle className={'zelle-icon'} />
-                  </div>
-                  <div className="flex">
-                    <div className="text">
-                      <p className={`${theme} description payment-options`}>Safely send money to co-parent, no matter where they bank.</p>
-                      <a href="https://www.zellepay.com/how-it-works" target="_blank" className="setup-instructions mb-10">
-                        Learn More <span className="material-icons">open_in_new</span>
-                      </a>
-                    </div>
-                  </div>
-                  <iframe
-                    width="560"
-                    height="315"
-                    src="https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO"
-                    title="Zelle® | How it Works"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen></iframe>
-                </div>
-
-                {/* VENMO */}
-                <div className="option venmo">
-                  <div className="flex brand-name-wrapper venmo">
-                    <p className="brand-name mr-10">Venmo</p>
-                    <IoLogoVenmo className={'venmo-icon'} />
-                  </div>
-                  <div className="flex">
-                    <div className="text">
-                      <p className={`${theme} description payment-options`}>Fast, safe, social payments.</p>
-                      <a
-                        href="https://help.venmo.com/hc/en-us/articles/209690068-How-to-Sign-Up-for-a-Personal-Venmo-Account"
-                        target="_blank"
-                        className="setup-instructions mb-10">
-                        Learn More <span className="material-icons">open_in_new</span>
-                      </a>
-                    </div>
-                  </div>
-                  <iframe
-                    src="https://www.youtube.com/embed/zAqz0Kzootg"
-                    title="Paying or Requesting Payment From Multiple Users in a Single Transaction"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen></iframe>
-                </div>
-
-                {/* APPLE PAY */}
-                <div className="option apple-cash">
-                  <div className="flex brand-name-wrapper apple">
-                    <p className="brand-name mr-10">Apple Cash</p>
-                    <ImAppleinc className={'apple-icon'} />
-                  </div>
-                  <div className="flex ">
-                    <div className="text">
-                      <p className={`${theme} description payment-options`}>Use Apple Cash to send and receive money with people you know.</p>
-                      <a href="https://support.apple.com/en-us/105013" target="_blank" className="setup-instructions mb-10">
-                        Learn More <span className="material-icons">open_in_new</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* PAYPAL */}
-                <div className="option paypal">
-                  <div className="flex brand-name-wrapper paypal">
-                    <p className="brand-name mr-10">PayPal</p>
-                    <LiaCcPaypal className={'paypal-icon'} />
-                  </div>
-                  <div className="flex">
-                    <div className="text">
-                      <p className={`${theme} description payment-options`}>Send and request money, quickly and securely.</p>
-                      <a href="https://www.paypal.com/us/digital-wallet/send-receive-money" target="_blank" className="setup-instructions mb-10">
-                        Learn More <span className="material-icons">open_in_new</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* CASHAPP */}
-                <div className="option cashapp">
-                  <div className="flex brand-name-wrapper cashapp">
-                    <p className="brand-name mr-10">CashApp</p>
-                    <SiCashapp />
-                  </div>
-                  <div className="flex">
-                    <div className="text">
-                      <p className={`${theme} description payment-options`}>Pay anyone, instantly.</p>
-                      <a href="https://cash.app/help/6485-getting-started-with-cash-app" target="_blank" className="setup-instructions mb-10">
-                        Learn More <span className="material-icons">open_in_new</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
+          <div className="filter-row">
+            <Label isBold={true} text={'Expense Type'} classes="mb-5"></Label>
+            <div className="pills type">
+              <div className="pill" onClick={() => handleExpenseTypeSelection('all')}>
+                All
+              </div>
+              <div className="pill" onClick={() => handleExpenseTypeSelection('single')}>
+                Single Date
+              </div>
+              <div className="pill" onClick={() => handleExpenseTypeSelection('repeating')}>
+                Repeating
               </div>
             </div>
-          </BottomCard>
+          </div>
+          <div className="filter-row">
+            <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
+            <div className="pills type">
+              <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
+                Unpaid
+              </div>
+              <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
+                Paid
+              </div>
+            </div>
+          </div>
+          <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>
+          <div className="filter-row">
+            <div className="pills category">
+              {ExpenseCategories.sort().map((cat, index) => {
+                return (
+                  <>
+                    {categoriesInUse.includes(cat) && (
+                      <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
+                        {cat}
+                      </div>
+                    )}
+                  </>
+                )
+              })}
+            </div>
+          </div>
+          <SelectDropdown selectValue={SortByTypes.recentlyAdded} labelText={'Sort by'} onChange={handleSortBySelection}>
+            <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
+            <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
+            <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
+            <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
+          </SelectDropdown>
         </>
+      </BottomCard>
 
-        {/* DETAILS CARD */}
+      {/* PAYMENT OPTIONS */}
+      <>
         <BottomCard
-          submitText={'Paid'}
-          title={`${uppercaseFirstLetterOfAllWords(activeExpense?.name || '')} Details`}
-          submitIcon={<MdPriceCheck className={'fs-22'} />}
-          onSubmit={async () => await markAsPaid(activeExpense)}
-          className="expense-tracker form"
-          onClose={() => {
-            setActiveExpense(null)
-            setShowDetails(false)
-          }}
-          showCard={showDetails}>
-          <div id="details" className={`content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
-            {/* AMOUNT */}
-            <div id="row" className="flex-start mb-15">
-              <div id="primary-icon-wrapper">
-                <PiMoneyWavyDuotone id={'primary-row-icon'} />
-              </div>
-              <p id="title">Amount to pay is ${activeExpense?.amount}</p>
-            </div>
-            <div id="row" className="flex-start mb-15">
-              <div id="primary-icon-wrapper">
-                <PiUserDuotone id="primary-row-icon" />
-              </div>
-              {/* SENT TO */}
-              <p id="title">
-                Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
-              </p>
-            </div>
-
-            {/* PAY TO */}
-            <div id="row" className="flex-start mb-15">
-              <div id="primary-icon-wrapper">
-                <PiUserDuotone id="primary-row-icon" />
-              </div>
-              <p id="title">Pay to {formatNameFirstNameOnly(activeExpense?.recipientName)}</p>
-            </div>
-
-            {/* DUE DATE */}
-            {activeExpense?.dueDate && activeExpense?.dueDate?.length > 0 && (
-              <div className="flex flex-start mb-15" id="row">
-                <div id="primary-icon-wrapper">
-                  <PiClockCountdownDuotone id="primary-row-icon" />
+          hasSubmitButton={false}
+          subtitle="There are a multitude of simple and FREE ways to send money to a co-parent for expenses, or for any other reason. Please look below to
+              see which option works best for you."
+          title={'Payment/Transfer Options'}
+          className="payment-options-card"
+          onClose={() => setShowPaymentOptionsCard(false)}
+          showCard={showPaymentOptionsCard}>
+          <div id="payment-options-card">
+            <div className="options">
+              {/* ZELLE */}
+              <div className="option zelle">
+                <div className="flex brand-name-wrapper zelle">
+                  <p className="brand-name accent mr-10">Zelle</p>
+                  <SiZelle className={'zelle-icon'} />
                 </div>
-                <p id="title">
-                  Due Date is {DateManager.formatDate(activeExpense?.dueDate)} (
-                  {moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString()})
-                </p>
-              </div>
-            )}
-
-            {/* CHILDREN */}
-            {Manager.isValid(activeExpense?.children?.length, true) && (
-              <div className="flex flex-start mb-15" id="row">
-                <div id="primary-icon-wrapper">
-                  <FaChildren id={'primary-row-icon'} />
+                <div className="flex">
+                  <div className="text">
+                    <p className={`${theme} description payment-options`}>Safely send money to co-parent, no matter where they bank.</p>
+                    <a href="https://www.zellepay.com/how-it-works" target="_blank" className="setup-instructions mb-10">
+                      Learn More <span className="material-icons">open_in_new</span>
+                    </a>
+                  </div>
                 </div>
-                <p
-                  id="title"
-                  dangerouslySetInnerHTML={{
-                    __html: `${activeExpense?.children?.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                  }}></p>
+                <iframe
+                  width="560"
+                  height="315"
+                  src="https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO"
+                  title="Zelle® | How it Works"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen></iframe>
               </div>
-            )}
 
-            {/* DATE ADDED */}
-            <div id="row" className="flex-start flex mb-15">
-              <div id="primary-icon-wrapper">
-                <TbCalendarDollar id={'primary-row-icon'} />
-              </div>
-              <p id="title">Expense Created on {DateManager.formatDate(activeExpense?.dateAdded)}</p>
-            </div>
-
-            {/* NOTES */}
-            {activeExpense?.notes && activeExpense?.notes?.length > 0 && (
-              <div className="flex mb-15 wrap" id="row">
-                <div id="primary-icon-wrapper">{<MdOutlineNotes id={'primary-row-icon'} />}</div>
-                <p id="title" className="mr-auto neg-5">
-                  Notes
-                </p>
-                <p className="notes neg-10">{activeExpense?.notes}</p>
-              </div>
-            )}
-
-            {/* EXPENSE IMAGE */}
-            {Manager.isValid(activeExpense?.imageUrl) && (
-              <>
-                <Label text={'Expense Images'} classes="mb-5" />
-                <div id="expense-image">
-                  <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
-                    <div
-                      style={{ backgroundImage: `url(${activeExpense?.imageUrl})` }}
-                      data-src={activeExpense?.imageUrl}
-                      id="img-container"
-                      className="flex"></div>
-                  </LightGallery>
+              {/* VENMO */}
+              <div className="option venmo">
+                <div className="flex brand-name-wrapper venmo">
+                  <p className="brand-name mr-10">Venmo</p>
+                  <IoLogoVenmo className={'venmo-icon'} />
                 </div>
-              </>
-            )}
+                <div className="flex">
+                  <div className="text">
+                    <p className={`${theme} description payment-options`}>Fast, safe, social payments.</p>
+                    <a
+                      href="https://help.venmo.com/hc/en-us/articles/209690068-How-to-Sign-Up-for-a-Personal-Venmo-Account"
+                      target="_blank"
+                      className="setup-instructions mb-10">
+                      Learn More <span className="material-icons">open_in_new</span>
+                    </a>
+                  </div>
+                </div>
+                <iframe
+                  src="https://www.youtube.com/embed/zAqz0Kzootg"
+                  title="Paying or Requesting Payment From Multiple Users in a Single Transaction"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen></iframe>
+              </div>
 
-            {/* UPDATES */}
-            <p id="medium-title" className="mt-25 mb-5 blue">
-              Update this Expense
-            </p>
+              {/* APPLE PAY */}
+              <div className="option apple-cash">
+                <div className="flex brand-name-wrapper apple">
+                  <p className="brand-name mr-10">Apple Cash</p>
+                  <ImAppleinc className={'apple-icon'} />
+                </div>
+                <div className="flex ">
+                  <div className="text">
+                    <p className={`${theme} description payment-options`}>Use Apple Cash to send and receive money with people you know.</p>
+                    <a href="https://support.apple.com/en-us/105013" target="_blank" className="setup-instructions mb-10">
+                      Learn More <span className="material-icons">open_in_new</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
 
-            <InputWrapper
-              inputType="input"
-              labelText={'Name'}
-              defaultValue={activeExpense?.name}
-              onChange={(e) => handleUpdates(e, activeExpense, 'name', e.target.value)}
-            />
+              {/* PAYPAL */}
+              <div className="option paypal">
+                <div className="flex brand-name-wrapper paypal">
+                  <p className="brand-name mr-10">PayPal</p>
+                  <LiaCcPaypal className={'paypal-icon'} />
+                </div>
+                <div className="flex">
+                  <div className="text">
+                    <p className={`${theme} description payment-options`}>Send and request money, quickly and securely.</p>
+                    <a href="https://www.paypal.com/us/digital-wallet/send-receive-money" target="_blank" className="setup-instructions mb-10">
+                      Learn More <span className="material-icons">open_in_new</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
 
-            {/* DUE DATE */}
-            <InputWrapper inputType={'date'} labelText={'Due Date'}>
-              <MobileDatePicker
-                value={moment(activeExpense?.dueDate)}
-                className="mt-0 w-100"
-                onAccept={(e) => handleUpdates(e, activeExpense, 'dueDate', moment(e).format('MM/DD/yyyy'))}
-              />
-            </InputWrapper>
-
-            <InputWrapper
-              defaultValue={activeExpense?.notes}
-              onChange={(e) => handleUpdates(e, activeExpense, 'notes', e.target.value)}
-              inputType={'textarea'}
-              labelText={'Notes'}></InputWrapper>
-
-            {/* BUTTONS */}
-            <div className="action-buttons">
-              {activeExpense?.paidStatus === 'unpaid' && activeExpense?.ownerPhone === currentUser?.phone && (
-                <button className="green" onClick={() => sendReminder(activeExpense)}>
-                  Send Reminder <PiBellSimpleRinging className={'fs-18'} />
-                </button>
-              )}
-
-              {/* DELETE */}
-              {activeExpense?.ownerPhone === currentUser?.phone && (
-                <button
-                  onClick={async () => {
-                    await deleteExpense(activeExpense)
-                    setShowDetails(false)
-                  }}
-                  className="red"
-                  id="delete-button">
-                  Delete
-                </button>
-              )}
+              {/* CASHAPP */}
+              <div className="option cashapp">
+                <div className="flex brand-name-wrapper cashapp">
+                  <p className="brand-name mr-10">CashApp</p>
+                  <SiCashapp />
+                </div>
+                <div className="flex">
+                  <div className="text">
+                    <p className={`${theme} description payment-options`}>Pay anyone, instantly.</p>
+                    <a href="https://cash.app/help/6485-getting-started-with-cash-app" target="_blank" className="setup-instructions mb-10">
+                      Learn More <span className="material-icons">open_in_new</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </BottomCard>
       </>
+
+      {/* DETAILS CARD */}
+      <BottomCard
+        submitText={'Paid'}
+        title={`${uppercaseFirstLetterOfAllWords(activeExpense?.name || '')} Details`}
+        submitIcon={<MdPriceCheck className={'fs-22'} />}
+        onSubmit={async () => await markAsPaid(activeExpense)}
+        className="expense-tracker form"
+        onClose={() => {
+          setActiveExpense(null)
+          setShowDetails(false)
+        }}
+        showCard={showDetails}>
+        <div id="details" className={`content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
+          {/* AMOUNT */}
+          <div id="row" className="flex-start mb-15">
+            <div id="primary-icon-wrapper">
+              <PiMoneyWavyDuotone id={'primary-row-icon'} />
+            </div>
+            <p id="title">Amount to pay is ${activeExpense?.amount}</p>
+          </div>
+          <div id="row" className="flex-start mb-15">
+            <div id="primary-icon-wrapper">
+              <PiUserDuotone id="primary-row-icon" />
+            </div>
+            {/* SENT TO */}
+            <p id="title">
+              Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
+            </p>
+          </div>
+
+          {/* PAY TO */}
+          <div id="row" className="flex-start mb-15">
+            <div id="primary-icon-wrapper">
+              <PiUserDuotone id="primary-row-icon" />
+            </div>
+            <p id="title">Pay to {formatNameFirstNameOnly(activeExpense?.recipientName)}</p>
+          </div>
+
+          {/* DUE DATE */}
+          {activeExpense?.dueDate && activeExpense?.dueDate?.length > 0 && (
+            <div className="flex flex-start mb-15" id="row">
+              <div id="primary-icon-wrapper">
+                <PiClockCountdownDuotone id="primary-row-icon" />
+              </div>
+              <p id="title">
+                Due Date is {DateManager.formatDate(activeExpense?.dueDate)} (
+                {moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString()})
+              </p>
+            </div>
+          )}
+
+          {/* CHILDREN */}
+          {Manager.isValid(activeExpense?.children?.length, true) && (
+            <div className="flex flex-start mb-15" id="row">
+              <div id="primary-icon-wrapper">
+                <FaChildren id={'primary-row-icon'} />
+              </div>
+              <p
+                id="title"
+                dangerouslySetInnerHTML={{
+                  __html: `${activeExpense?.children?.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                }}></p>
+            </div>
+          )}
+
+          {/* DATE ADDED */}
+          <div id="row" className="flex-start flex mb-15">
+            <div id="primary-icon-wrapper">
+              <TbCalendarDollar id={'primary-row-icon'} />
+            </div>
+            <p id="title">Expense Created on {DateManager.formatDate(activeExpense?.dateAdded)}</p>
+          </div>
+
+          {/* NOTES */}
+          {activeExpense?.notes && activeExpense?.notes?.length > 0 && (
+            <div className="flex mb-15 wrap" id="row">
+              <div id="primary-icon-wrapper">{<MdOutlineNotes id={'primary-row-icon'} />}</div>
+              <p id="title" className="mr-auto neg-5">
+                Notes
+              </p>
+              <p className="notes neg-10">{activeExpense?.notes}</p>
+            </div>
+          )}
+
+          {/* EXPENSE IMAGE */}
+          {Manager.isValid(activeExpense?.imageUrl) && (
+            <>
+              <Label text={'Expense Images'} classes="mb-5" />
+              <div id="expense-image">
+                <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
+                  <div
+                    style={{ backgroundImage: `url(${activeExpense?.imageUrl})` }}
+                    data-src={activeExpense?.imageUrl}
+                    id="img-container"
+                    className="flex"></div>
+                </LightGallery>
+              </div>
+            </>
+          )}
+
+          {/* UPDATES */}
+          <p id="medium-title" className="mt-25 mb-5 blue">
+            Update this Expense
+          </p>
+
+          <InputWrapper
+            inputType="input"
+            labelText={'Name'}
+            defaultValue={activeExpense?.name}
+            onChange={(e) => handleUpdates(e, activeExpense, 'name', e.target.value)}
+          />
+
+          {/* DUE DATE */}
+          <InputWrapper inputType={'date'} labelText={'Due Date'}>
+            <MobileDatePicker
+              value={moment(activeExpense?.dueDate)}
+              className="mt-0 w-100"
+              onAccept={(e) => handleUpdates(e, activeExpense, 'dueDate', moment(e).format('MM/DD/yyyy'))}
+            />
+          </InputWrapper>
+
+          <InputWrapper
+            defaultValue={activeExpense?.notes}
+            onChange={(e) => handleUpdates(e, activeExpense, 'notes', e.target.value)}
+            inputType={'textarea'}
+            labelText={'Notes'}></InputWrapper>
+
+          {/* BUTTONS */}
+          <div className="action-buttons">
+            {activeExpense?.paidStatus === 'unpaid' && activeExpense?.ownerPhone === currentUser?.phone && (
+              <button className="green" onClick={() => sendReminder(activeExpense)}>
+                Send Reminder <PiBellSimpleRinging className={'fs-18'} />
+              </button>
+            )}
+
+            {/* DELETE */}
+            {activeExpense?.ownerPhone === currentUser?.phone && (
+              <button
+                onClick={async () => {
+                  await deleteExpense(activeExpense)
+                  setShowDetails(false)
+                }}
+                className="red"
+                id="delete-button">
+                Delete
+              </button>
+            )}
+          </div>
+        </div>
+      </BottomCard>
 
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>
@@ -642,6 +640,6 @@ export default function ExpenseTracker() {
           <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />
         </NavBar>
       )}
-    </div>
+    </>
   )
 }

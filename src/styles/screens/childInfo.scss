@@ -4,6 +4,14 @@
   #child-info-container {
     padding-top: 20px;
     opacity: 0.5;
+    
+    .button {
+      &.default {
+        &.center {
+          min-width: 60%;
+        }
+      }
+    }
 
     .info-icon {
       font-size: 25px;

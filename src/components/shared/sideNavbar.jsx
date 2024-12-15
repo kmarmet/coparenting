@@ -61,7 +61,7 @@ export default function SideNavbar() {
   }
 
   return (
-    <div id="side-navbar">
+    <div id="side-navbar" className={theme}>
       <div id="top">
         {/* ADMIN DASHBOARD */}
         {currentUser?.email === 'kmarmet1@gmail.com' && (
@@ -93,7 +93,7 @@ export default function SideNavbar() {
 
             {/* CHATS */}
             <div
-              className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
+              className={`menu-item chats ${currentScreen === ScreenNames.chats || currentScreen === ScreenNames.conversation ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.chats)}>
               <PiChatsCircleDuotone />
               <p className="text">Chats</p>

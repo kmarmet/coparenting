@@ -170,8 +170,9 @@ export default function App() {
           {/* SCREENS */}
           <div className="flex" id="app-content-wrapper">
             {/* TOP NAVBAR */}
-            <BrandBar />
-            <SideNavbar />
+
+            {currentScreen !== ScreenNames.home && <BrandBar />}
+            {currentScreen !== ScreenNames.home && <SideNavbar />}
             {/* ADMIN */}
             {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
 

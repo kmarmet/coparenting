@@ -546,15 +546,17 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
           {/* ALL DAY / HAS END DATE */}
-          <div className="flex">
-            <p>All Day</p>
-            <Toggle
-              icons={{
-                unchecked: null,
-              }}
-              className={'ml-auto reminder-toggle'}
-              onChange={(e) => setIsAllDay(!isAllDay)}
-            />
+          <div className="share-with-container">
+            <div className="flex">
+              <p>All Day</p>
+              <Toggle
+                icons={{
+                  unchecked: null,
+                }}
+                className={'ml-auto reminder-toggle'}
+                onChange={(e) => setIsAllDay(!isAllDay)}
+              />
+            </div>
           </div>
 
           {/* REMINDER */}
@@ -590,15 +592,17 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           )}
 
           {/* IS VISITATION? */}
-          <div className="flex">
-            <p>Visitation Event</p>
-            <Toggle
-              icons={{
-                unchecked: null,
-              }}
-              className={'ml-auto visitation-toggle'}
-              onChange={(e) => setIsVisitation(!isVisitation)}
-            />
+          <div className="share-with-container">
+            <div className="flex">
+              <p>Visitation Event</p>
+              <Toggle
+                icons={{
+                  unchecked: null,
+                }}
+                className={'ml-auto visitation-toggle'}
+                onChange={(e) => setIsVisitation(!isVisitation)}
+              />
+            </div>
           </div>
 
           {/* REMIND COPARENTS*/}
@@ -710,16 +714,18 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               </div>
 
               {/* CLONE */}
-              <div className="flex">
-                <p>Copy Event to Other Dates</p>
-                <Toggle
-                  icons={{
-                    checked: <FaClone />,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto clone-toggle'}
-                  onChange={(e) => setShowCloneInput(!showCloneInput)}
-                />
+              <div className="share-with-container">
+                <div className="flex">
+                  <p>Copy Event to Other Dates</p>
+                  <Toggle
+                    icons={{
+                      checked: <FaClone />,
+                      unchecked: null,
+                    }}
+                    className={'ml-auto clone-toggle'}
+                    onChange={(e) => setShowCloneInput(!showCloneInput)}
+                  />
+                </div>
               </div>
 
               {/* CLONED */}

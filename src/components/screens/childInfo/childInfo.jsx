@@ -94,7 +94,7 @@ export default function ChildInfo() {
   }, [])
 
   return (
-    <div>
+    <>
       {/* CHILD SELECTOR */}
       <ChildSelector
         activeInfoChild={activeInfoChild}
@@ -170,14 +170,14 @@ export default function ChildInfo() {
           {Manager.isValid(currentUser?.children, true) && (
             <>
               <button
-                className="button default center green white-text mt-20 w-60"
+                className="button default center green white-text mt-20"
                 onClick={() => {
                   setShowInfoCard(true)
                 }}>
                 Add Your Own Info <FaWandMagicSparkles />
               </button>
               {currentUser.children.length > 0 && (
-                <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center w-60">
+                <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center">
                   Different Child
                 </button>
               )}
@@ -190,6 +190,6 @@ export default function ChildInfo() {
           <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />
         </NavBar>
       )}
-    </div>
+    </>
   )
 }

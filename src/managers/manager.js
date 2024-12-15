@@ -104,6 +104,8 @@ const Manager = {
       const pageContainer = document.querySelector('.page-container')
       const navbar = document.getElementById('navbar')
       const eventsWrapper = document.querySelector('.with-padding')
+      const appContentWrapper = document.getElementById('app-content-wrapper')
+
       if (pageContainer) {
         pageContainer.classList.add('active')
         pageContainer.addEventListener('scroll', () => {
@@ -130,6 +132,11 @@ const Manager = {
           })
         }
         Manager.scrollToTopOfPage()
+        setTimeout(() => {
+          if (appContentWrapper) {
+            appContentWrapper.scrollTop = 0
+          }
+        }, 500)
         clearInterval(interval)
       }
     }, 200)

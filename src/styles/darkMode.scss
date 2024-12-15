@@ -111,6 +111,26 @@
     &.dark {
       background: $darkBg;
 
+      // PAGE CONTAINER
+      .page-container {
+        background: $darkBg;
+        border: unset;
+        @include shadow;
+      }
+
+      // SCREEN TITLE
+      .screen-title {
+        color: $darkBlue;
+      }
+
+      #app-content-wrapper {
+        background: $darkestBg;
+      }
+      
+      .section {
+        border-bottom: 1px solid $darkBorderColor;
+      }
+
       // MUI OVERRIDES
       .MuiPaper-root {
         background: unset;
@@ -148,16 +168,6 @@
         svg {
           color: $gold;
         }
-      }
-
-      // PAGE CONTAINER
-      .page-container {
-        background: $darkBg;
-      }
-
-      // SCREEN TITLE
-      .screen-title {
-        color: $darkBlue;
       }
 
       // LIGHT GALLERY
@@ -208,9 +218,31 @@
       #chats-container {
         #row {
           border: unset;
+
+          .thread-actions {
+            margin-top: 10px;
+
+            #archive-wrapper,
+            #mute-wrapper {
+              @include transformHover;
+            }
+
+            span {
+              color: white;
+              padding-top: 5px;
+              opacity: 0.7;
+            }
+          }
         }
         .thread-item {
           border-bottom: 1px solid $translucentLightest;
+          padding-bottom: 10px;
+
+          #close-thread-actions-icon {
+            color: white;
+            opacity: 0.7;
+            @include transformHover;
+          }
 
           #user-initial-wrapper {
             svg {
@@ -221,6 +253,7 @@
           #edit-icon {
             color: white;
             opacity: 0.85;
+            @include hover;
           }
 
           .coparent-name {
@@ -255,6 +288,10 @@
             border-bottom: 1px solid $darkBlue;
             color: white;
 
+            &:focus {
+              background: $darkBg;
+            }
+
             &:after {
               color: white;
             }
@@ -268,6 +305,11 @@
         #default-messages,
         #bookmark-messages {
           background: $darkBg;
+
+          .timestamp {
+            opacity: 0.6;
+            font-style: italic;
+          }
 
           .message {
             &.from {
@@ -289,10 +331,31 @@
         }
       }
 
+      // BRAND BAR
+      #brand-bar {
+        background: $darkBg;
+        border: unset;
+      }
+
+      // SIDEBAR
+      #side-navbar {
+        #top,
+        #bottom {
+          background: $darkBg;
+          border: unset;
+          @include shadow;
+          svg {
+            opacity: 0.7;
+            color: white;
+          }
+        }
+      }
+
       // NAVBAR
       #navbar {
-        background: $darkBg;
-
+        @media screen and (max-width: 600px) {
+          background: $darkBg;
+        }
         #svg-wrapper {
           background: $darkGreen;
           border: 0;
@@ -303,36 +366,6 @@
             color: $borderColor;
             &.active:not(#add-new-button) {
               color: $darkBlue;
-            }
-          }
-        }
-      }
-
-      // FLATPICKR CAL
-      .flatpickr-calendar {
-        background: $darkLightBg;
-        border: 1px solid $translucentLightest;
-
-        .flatpickr-current-month {
-          input {
-            &.cur-year {
-              color: white !important;
-            }
-          }
-        }
-        .flatpickr-current-month {
-          .flatpickr-monthDropdown-months {
-            color: white !important;
-            opacity: 0.9;
-          }
-        }
-
-        .flatpickr-days {
-          .flatpickr-day {
-            color: white !important;
-
-            &.weekend-day {
-              opacity: 0.6 !important;
             }
           }
         }

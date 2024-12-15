@@ -152,19 +152,20 @@ const Chats = () => {
             const lastMessage = coparentMessages[coparentMessages?.length - 1]?.message
             const threadIsMuted = thread?.mutedFor?.includes(currentUser.phone)
             return (
-              <div data-thread-id={thread.id} id="row" key={index}>
+              <div
+                onClick={(e) => {
+                  if (e.currentTarget.id === 'row') {
+                    openMessageThread(coparent.phone).then((r) => r)
+                  }
+                }}
+                data-thread-id={thread.id}
+                id="row"
+                key={index}>
                 {/* THREAD ITEM */}
-                <div
-                  className={`flex thread-item ${threadIsMuted ? 'muted' : ''}`}
-                  onClick={(e) => {
-                    if (hasClass(e.target, 'thread-item')) {
-                      openMessageThread(coparent.phone).then((r) => r)
-                    }
-                  }}>
+                <div className={`flex thread-item ${threadIsMuted ? 'muted' : ''}`}>
                   {/* COPARENT NAME */}
                   <div className="flex">
                     <div id="user-initial-wrapper">
-                      {/*<span className="user-initial">{coparent.name.charAt(0).toUpperCase()}</span>*/}
                       <BiMessageRoundedDetail />
                     </div>
                     <p data-coparent-phone={coparent.phone} className="coparent-name">

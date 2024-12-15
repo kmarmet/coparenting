@@ -215,9 +215,12 @@
     justify-content: flex-start;
     overflow-y: hidden;
 
-
     &.disable-scroll {
       overflow: hidden;
+      
+      #app-content-wrapper {
+        overflow: hidden;
+      }
     }
 
     &.pushed {
@@ -358,26 +361,28 @@
     .green {
       color: $green;
     }
-    
+
     #app-content-wrapper {
-      margin: 0 auto;
-      transition: all 0.5s ease-in-out;
-      transition-timing-function: cubic-bezier(0.17, 0.67, 0.21, 0.95);
-      background: $bestGreyForWhite;
-      overflow: auto;
-      overflow-x: hidden;
-      height: 100%;
-      padding: 15px 15px 200px 15px;
-      flex-wrap: wrap;
-      align-items: flex-start;
+      @media screen and (min-width: 1000px) {
+        margin: 0 auto;
+        transition: all 0.5s ease-in-out;
+        transition-timing-function: cubic-bezier(0.17, 0.67, 0.21, 0.95);
+        background: #f4f5f6;
+        overflow: auto;
+        overflow-x: hidden;
+        height: 100%;
+        padding: 0 0 200px 0;
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
     }
-    
+
     #side-navbar {
       @include sideNavbar;
     }
 
     #brand-bar {
-      @include  brandBar;
+      @include brandBar;
     }
 
     .rs-input-group-addon {
@@ -924,6 +929,8 @@
         svg {
           color: $mainBlue;
         }
+
+
       }
     }
     .sparkle {

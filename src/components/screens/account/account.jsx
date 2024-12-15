@@ -46,7 +46,7 @@ export default function Account() {
           Hello {formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone className={'fs-24'} />
         </p>
         <div className="sections">
-          <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.forgotPassword })}>
+          <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
             <MdOutlinePassword className={'mr-10'} />
             Reset Password
           </p>

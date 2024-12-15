@@ -7,7 +7,6 @@ import { PiCalendarDotsDuotone, PiMoneyWavyDuotone } from 'react-icons/pi'
 import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool } from 'react-icons/ai'
 import { FaChildren } from 'react-icons/fa6'
 import DomManager from '../../managers/domManager'
-import { IoPersonAddOutline } from 'react-icons/io5'
 import { SlLogin } from 'react-icons/sl'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import firebaseConfig from '../../firebaseConfig'
@@ -65,9 +64,9 @@ export default function Home() {
       <div id="home-navbar" className="flex">
         <img src={require('../../img/logo.png')} alt="Peaceful coParenting" id="logo" />
         <div id="login-buttons">
-          <button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
-            Sign Up <IoPersonAddOutline />
-          </button>
+          {/*<button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
+          {/*  Sign Up <IoPersonAddOutline />*/}
+          {/*</button>*/}
           <button id="login-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
             Log In <SlLogin />
           </button>
@@ -155,6 +154,15 @@ export default function Home() {
             <img src={require('../../img/homepage/expense-tracker.png')} alt="" />
           </div>
         </Fade>
+
+        <div className="section" id="all-devices">
+          <p className="title">Compatibility & Accessibility</p>
+          <p className="subtitle">
+            Available on on any device, both big and small. Dark and light mode are both supported to ease viewing concerns despite disability or
+            adverse lighting.
+          </p>
+          <img id="all-devices-image" src={require('../../img/homepage/all-devices.png')} alt="" />
+        </div>
 
         {/* FOOTER WRAPPER */}
         <div id="footer-wrapper">

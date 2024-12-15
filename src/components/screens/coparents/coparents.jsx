@@ -175,14 +175,14 @@ export default function Coparents() {
 
             {/* BUTTONS */}
             <button
-              className="button w-60 default center white-text mb-10 mt-20 green"
+              className="button  default center white-text mb-10 mt-20 green"
               onClick={() => {
                 setShowCustomInfoCard(true)
               }}>
               Add Your Own Info <FaWandMagicSparkles />
             </button>
             <button
-              className="button w-60  default red center"
+              className="button   default red center"
               onClick={(e) => {
                 AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
                   await deleteCoparent()
