@@ -156,7 +156,7 @@ export default function App() {
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div className={`${currentUser?.settings?.theme} App`} id="app-container">
         {/* LOADING */}
-        <Loading isLoading={isLoading} theme={currentUser?.settings?.theme} />
+        {isLoading && <Loading isLoading={isLoading} theme={currentUser?.settings?.theme} />}
 
         <div id="page-overlay"></div>
 

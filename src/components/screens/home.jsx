@@ -12,6 +12,7 @@ import firebaseConfig from '../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import { TbSunMoon } from 'react-icons/tb'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
+import LazyLoad from 'react-lazyload'
 
 export default function Home() {
   const { state, setState } = useContext(globalState)
@@ -22,25 +23,9 @@ export default function Home() {
   const auth = getAuth(app)
 
   useEffect(() => {
-    setState({ ...state, isLoading: true })
-    if (DomManager.isMobile()) {
-      window.onload = function () {
-        const imageWrapper = document.getElementById('images')
-        if (imageWrapper) {
-          imageWrapper.scrollLeft += 325
-        }
-      }
-    }
-    // const pageContainer = document.querySelector('.page-container')
-    // pageContainer.addEventListener('scroll', () => {
-    //   const scrollDistance = pageContainer.scrollTop
-    //   const navbar = document.getElementById('home-navbar')
-    //   if (scrollDistance >= 200) {
-    //     navbar.classList.add('scrolled')
-    //   } else {
-    //     navbar.classList.remove('scrolled')
-    //   }
-    // })
+    // setState({ ...state, isLoading: true })
+
+    const allImages = document.querySelectorAll('img')
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -49,7 +34,7 @@ export default function Home() {
           ...state,
           currentScreen: ScreenNames.calendar,
           userIsLoggedIn: true,
-          isLoading: false,
+          // isLoading: false,
         })
       } else {
         // No user is signed in.
@@ -63,7 +48,9 @@ export default function Home() {
     <div className="page-container home" id="home-screen-wrapper">
       {/* NAVBAR */}
       <div id="home-navbar" className="flex">
-        <img src={require('../../img/logo.png')} alt="Peaceful coParenting" id="logo" />
+        <LazyLoad>
+          <img threshold={0} src={require('../../img/logo.png')} alt="Peaceful coParenting" id="logo" />
+        </LazyLoad>
         <div id="login-buttons">
           {/*<button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
           {/*  Sign Up <IoPersonAddOutline />*/}
@@ -74,7 +61,7 @@ export default function Home() {
         </div>
       </div>
       {/* ABOVE FOLD */}
-      <div id="above-fold-wrapper">
+      <div id="above-fold-wrapper" className="section above-fold">
         <Fade>
           <div className="section page-title">
             {DomManager.isMobile() && (
@@ -91,11 +78,32 @@ export default function Home() {
             <p id="subtitle">Built for Families - Focused on Peace</p>
           </div>
         </Fade>
-        <div className="flex" id="images">
-          <img src={require('../../img/homepage/calendar.png')} alt="" />
-          <img src={require('../../img/homepage/memories.png')} alt="" />
-          <img src={require('../../img/homepage/childInfo.png')} alt="" />
-        </div>
+        {!DomManager.isMobile() && (
+          <div className="flex" id="images">
+            <LazyLoad>
+              <img threshold={0} src={require('../../img/homepage/calendar.png')} alt="" />
+            </LazyLoad>
+            <LazyLoad>
+              <img threshold={0} src={require('../../img/homepage/memories.png')} alt="" />
+            </LazyLoad>
+            <LazyLoad>
+              <img threshold={0} src={require('../../img/homepage/childInfo.png')} alt="" />
+            </LazyLoad>
+          </div>
+        )}
+        {DomManager.isMobile() && (
+          <div className="flex" id="images">
+            <div id="single-image">
+              <LazyLoad>
+                <img threshold={0} src={require('../../img/homepage/calendar.png')} />
+              </LazyLoad>
+            </div>
+            <div className="flex" id="double-images">
+              <img threshold={0} src={require('../../img/homepage/memories.png')} alt="" />
+              <img threshold={0} src={require('../../img/homepage/childInfo.png')} alt="" />
+            </div>
+          </div>
+        )}
       </div>
       <div id="below-fold-intro-text" className="section">
         <p>
@@ -146,7 +154,9 @@ export default function Home() {
                 environment for your children.
               </p>
             </div>
-            <img src={require('../../img/homepage/menu.png')} alt="" />
+            <LazyLoad>
+              <img threshold={0} src={require('../../img/homepage/menu.png')} alt="" />
+            </LazyLoad>
           </div>
         </Fade>
         <Fade>
@@ -160,7 +170,9 @@ export default function Home() {
                 costs and avoid conflicts over money.
               </p>
             </div>
-            <img src={require('../../img/homepage/expense-tracker.png')} alt="" />
+            <LazyLoad>
+              <img threshold={0} src={require('../../img/homepage/expense-tracker.png')} alt="" />
+            </LazyLoad>
           </div>
         </Fade>
 
@@ -191,9 +203,15 @@ export default function Home() {
             </div>
 
             <div className="flex images mt-15">
-              <img className="phone" src={require('../../img/homepage/devices/phone.png')} alt="" />
-              <img className="laptop" src={require('../../img/homepage/devices/laptop.png')} alt="" />
-              <img className="tablet" src={require('../../img/homepage/devices/tablet.png')} alt="" />
+              <LazyLoad>
+                <img threshold={0} className="phone" src={require('../../img/homepage/devices/phone.png')} alt="" />
+              </LazyLoad>
+              <LazyLoad>
+                <img threshold={0} className="laptop" src={require('../../img/homepage/devices/laptop.png')} alt="" />
+              </LazyLoad>
+              <LazyLoad>
+                <img threshold={0} className="tablet" src={require('../../img/homepage/devices/tablet.png')} alt="" />
+              </LazyLoad>
             </div>
 
             <p className="subtitle mt-25 mb-0" id="multiple-device-usage">
