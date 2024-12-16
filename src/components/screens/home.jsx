@@ -5,12 +5,13 @@ import globalState from '../../context'
 import { Fade } from 'react-awesome-reveal'
 import { PiCalendarDotsDuotone, PiMoneyWavyDuotone } from 'react-icons/pi'
 import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool } from 'react-icons/ai'
-import { FaChildren } from 'react-icons/fa6'
 import DomManager from '../../managers/domManager'
 import { SlLogin } from 'react-icons/sl'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import firebaseConfig from '../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
+import { TbSunMoon } from 'react-icons/tb'
+import { FaWandMagicSparkles } from 'react-icons/fa6'
 
 export default function Home() {
   const { state, setState } = useContext(globalState)
@@ -30,16 +31,16 @@ export default function Home() {
         }
       }
     }
-    const pageContainer = document.querySelector('.page-container')
-    pageContainer.addEventListener('scroll', () => {
-      const scrollDistance = pageContainer.scrollTop
-      const navbar = document.getElementById('home-navbar')
-      if (scrollDistance >= 200) {
-        navbar.classList.add('scrolled')
-      } else {
-        navbar.classList.remove('scrolled')
-      }
-    })
+    // const pageContainer = document.querySelector('.page-container')
+    // pageContainer.addEventListener('scroll', () => {
+    //   const scrollDistance = pageContainer.scrollTop
+    //   const navbar = document.getElementById('home-navbar')
+    //   if (scrollDistance >= 200) {
+    //     navbar.classList.add('scrolled')
+    //   } else {
+    //     navbar.classList.remove('scrolled')
+    //   }
+    // })
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -67,7 +68,7 @@ export default function Home() {
           {/*<button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
           {/*  Sign Up <IoPersonAddOutline />*/}
           {/*</button>*/}
-          <button id="login-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+          <button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
             Log In <SlLogin />
           </button>
         </div>
@@ -87,7 +88,7 @@ export default function Home() {
               </>
             )}
             {!DomManager.isMobile() && <p id="title">Peaceful Co-Parenting</p>}
-            <p id="subtitle">Simplifying Communication for Parents, Empowering Kids with Stability</p>
+            <p id="subtitle">Built for Families - Focused on Peace</p>
           </div>
         </Fade>
         <div className="flex" id="images">
@@ -96,14 +97,12 @@ export default function Home() {
           <img src={require('../../img/homepage/childInfo.png')} alt="" />
         </div>
       </div>
-      <Fade>
-        <div id="below-fold-intro-text" className="section">
-          <p>
-            Our app provides a stress-free way to manage co-parenting by enhancing communication, scheduling, and decision-making, so{' '}
-            <b>you can focus on what matters most, your children's well-being</b>.
-          </p>
-        </div>
-      </Fade>
+      <div id="below-fold-intro-text" className="section">
+        <p>
+          Our app provides a stress-free way to manage co-parenting by enhancing communication, scheduling, and decision-making, so{' '}
+          <b>you can focus on what matters most, your children's well-being</b>.
+        </p>
+      </div>
       {/* BELOW FOLD */}
       <div id="below-fold-wrapper">
         {/* MAIN CONTENT */}
@@ -130,18 +129,28 @@ export default function Home() {
           </div>
         </Fade>
         <Fade>
-          <div className="full-width-box section text-box">
-            <FaChildren />
-            <p className="title">Child-Centered Decision Making</p>
-            <p className="subtitle">Collaborate on Decisions that Matter Most</p>
-            <p className="text">
-              From medical appointments to school choices, collaborate effectively through our platform’s decision-making tools, keeping your child’s
-              best interests at the forefront.
-            </p>
+          <div id="collaboration" className="section text-box flex">
+            <FaWandMagicSparkles />
+            <div className="text-wrapper">
+              <p className="title">Collaborate on Decisions that Matter Most</p>
+              <p className="text subtitle">
+                From medical appointments to school choices, collaborate effectively through our platform’s decision-making tools, keeping your
+                child’s best interests at the forefront.
+              </p>
+              <p className="text">
+                Co-parenting peacefully requires a lot of tools and resources. With that in mind, everything you need can be found in our menu - no
+                time spent looking for anything!
+              </p>
+              <p>
+                Our mission is to provide a supportive space where you and your co-parent can reduce stress and focus on creating a harmonious
+                environment for your children.
+              </p>
+            </div>
+            <img src={require('../../img/homepage/menu.png')} alt="" />
           </div>
         </Fade>
         <Fade>
-          <div id="expenses-wrapper" className="section">
+          <div id="expenses-wrapper" className="section expenses">
             <PiMoneyWavyDuotone />
             <div className="text-wrapper">
               <p className="title">Track Expenses and Share Responsibilities</p>
@@ -155,34 +164,48 @@ export default function Home() {
           </div>
         </Fade>
 
-        <div className="section" id="all-devices">
-          <p className="title">Compatibility & Accessibility</p>
-          <p className="subtitle">
-            Available on on any device, both big and small. Dark and light mode are both supported to ease viewing concerns despite disability or
-            adverse lighting.
-          </p>
-          <img id="all-devices-image" src={require('../../img/homepage/all-devices.png')} alt="" />
-        </div>
+        <Fade>
+          <div className="section text-box all-devices" id="all-devices">
+            <TbSunMoon />
+            <p className="title">Compatible & Accessible</p>
+            <div className="flex text">
+              <p className="subtitle">
+                <b>Available on All Devices: </b>
+              </p>
+              <span>iOS, Android, Windows, Mac, .etc.</span>
+            </div>
+            <div className="flex text">
+              <p className="subtitle">
+                <b>Available on All Screen Sizes: </b>
+              </p>
+              <span>Adapts to any screen size (phone, tablet, laptop, .etc) and/or screen orientation.</span>
+            </div>
+            <div className="flex text">
+              <p className="subtitle">
+                <b>Supports both Light & Dark Modes: </b>
+              </p>
+              <span>
+                Whether you are visually impaired, or glare is a concern due to lighting - we got you covered! Our application supports Light and Dark
+                mode that can be toggled at the tap of a button.
+              </span>
+            </div>
+
+            <div className="flex images mt-15">
+              <img className="phone" src={require('../../img/homepage/devices/phone.png')} alt="" />
+              <img className="laptop" src={require('../../img/homepage/devices/laptop.png')} alt="" />
+              <img className="tablet" src={require('../../img/homepage/devices/tablet.png')} alt="" />
+            </div>
+
+            <p className="subtitle mt-25 mb-0" id="multiple-device-usage">
+              You can use the application across multiple devices and all of your data will be kept in sync across them all!
+            </p>
+          </div>
+        </Fade>
 
         {/* FOOTER WRAPPER */}
         <div id="footer-wrapper">
           <Fade>
-            <div className="section">
-              <p className="title">
-                Built for Families, <br /> Focused on Peace
-              </p>
-              <p className="subtitle">Putting the Well-Being of Children First</p>
-              <p>
-                Our mission is to provide a supportive space where co-parents can reduce stress and focus on creating a harmonius environment for
-                their children. Peaceful co-parenting is just a click away!
-              </p>
-            </div>
-          </Fade>
-          <Fade>
-            <img src={require('../../img/homepage/gallery.png')} alt="" />
-          </Fade>
-          <Fade>
-            <div className="box section security-and-privacy">
+            <div className="box section security-and-privacy with-bg">
               <AiTwotoneSafetyCertificate />
               <p className="title">Security & Privacy</p>
               <p className="subtitle">Transparency in Shared Financial Responsibilities</p>
@@ -214,7 +237,7 @@ export default function Home() {
                 sending reminders to the responsible co-parent.
               </p>
             </div>
-            <div className="text-wrapper text-only with-bg box">
+            <div className="text-wrapper text-only  box">
               <AiTwotoneMessage />
               <p className="title">Streamlined Communication</p>
               <p className="text">
