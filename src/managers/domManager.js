@@ -17,12 +17,31 @@ DomManager = {
   isMobile: function() {
     return window.screen.width < 800;
   },
+  debounce: function(callback, delay) {
+    var executedFunction, timeout;
+    timeout = null;
+    executedFunction = function() {
+      var later;
+      later = function() {
+        clearTimeout(timeout);
+        return callback();
+      };
+      clearTimeout(timeout);
+      return timeout = setTimeout(later, delay);
+    };
+    return executedFunction;
+  },
   isInViewport: function(el) {
     var rect;
     if (Manager.isValid(el)) {
       rect = el.getBoundingClientRect();
       return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth); // or $(window).width()
     }
+  },
+  addScrollListener: function(scrollableElement, callback, delay) {
+    return scrollableElement.addEventListener('scroll', DomManager.debounce(function() {
+      return callback();
+    }, delay));
   }
 };
 

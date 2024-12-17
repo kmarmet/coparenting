@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { contains, formatNameFirstNameOnly } from '../../globalFunctions'
 import ScreenNames from '@screenNames'
 import globalState from '../../context'
@@ -12,20 +12,63 @@ import firebaseConfig from '../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import { TbSunMoon } from 'react-icons/tb'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
-import LazyLoad from 'react-lazyload'
+import MemoriesImage from '../../img/homepage/memories.png'
+import ChildInfoImage from '../../img/homepage/childInfo.png'
+import CalendarImage from '../../img/homepage/calendar.png'
+import MenuImage from '../../img/homepage/menu.png'
+import ExpensesImage from '../../img/homepage/expense-tracker.png'
+import TabletImage from '../../img/homepage/devices/tablet.png'
+import LaptopImage from '../../img/homepage/devices/laptop.png'
+import PhoneImage from '../../img/homepage/devices/phone.png'
+import Logo from '../../img/logo.png'
+
+function LazyImage({ show, importedImage, imagesObjectPropName }) {
+  const [showImage, setShowImage] = useState(false)
+
+  useEffect(() => {
+    if (show) {
+      setShowImage(true)
+    }
+  }, [show])
+  return (
+    <div className="img-wrapper" data-name={imagesObjectPropName}>
+      {showImage && (
+        <Fade>
+          <img src={importedImage} className={`lazy-loaded-image`} />
+        </Fade>
+      )}
+      {!showImage && <img id="lazy-loaded-img-placeholder" src={require('../../img/loading.gif')} />}
+    </div>
+  )
+}
 
 export default function Home() {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
+  const [loadedImages, setLoadedImages] = useState([])
 
   // Init Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
   useEffect(() => {
-    // setState({ ...state, isLoading: true })
+    const pageContainer = document.querySelector('.page-container')
 
-    const allImages = document.querySelectorAll('img')
+    if (pageContainer) {
+      const imageWrappers = document.querySelectorAll('.img-wrapper')
+      DomManager.addScrollListener(
+        pageContainer,
+        () => {
+          for (let imageWrapper of imageWrappers) {
+            const imagesObjectPropName = imageWrapper.dataset.name
+            if (DomManager.isInViewport(imageWrapper)) {
+              setLoadedImages([...loadedImages, imagesObjectPropName])
+            }
+          }
+        },
+        0
+      )
+    }
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -48,9 +91,7 @@ export default function Home() {
     <div className="page-container home" id="home-screen-wrapper">
       {/* NAVBAR */}
       <div id="home-navbar" className="flex">
-        <LazyLoad>
-          <img threshold={0} src={require('../../img/logo.png')} alt="Peaceful coParenting" id="logo" />
-        </LazyLoad>
+        <img src={Logo} id="logo" />
         <div id="login-buttons">
           {/*<button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
           {/*  Sign Up <IoPersonAddOutline />*/}
@@ -80,27 +121,19 @@ export default function Home() {
         </Fade>
         {!DomManager.isMobile() && (
           <div className="flex" id="images">
-            <LazyLoad>
-              <img threshold={0} src={require('../../img/homepage/calendar.png')} alt="" />
-            </LazyLoad>
-            <LazyLoad>
-              <img threshold={0} src={require('../../img/homepage/memories.png')} alt="" />
-            </LazyLoad>
-            <LazyLoad>
-              <img threshold={0} src={require('../../img/homepage/childInfo.png')} alt="" />
-            </LazyLoad>
+            <img src={CalendarImage} />
+            <img src={MemoriesImage} />
+            <img src={ChildInfoImage} />
           </div>
         )}
         {DomManager.isMobile() && (
           <div className="flex" id="images">
             <div id="single-image">
-              <LazyLoad>
-                <img threshold={0} src={require('../../img/homepage/calendar.png')} />
-              </LazyLoad>
+              <img src={CalendarImage} />
             </div>
             <div className="flex" id="double-images">
-              <img threshold={0} src={require('../../img/homepage/memories.png')} alt="" />
-              <img threshold={0} src={require('../../img/homepage/childInfo.png')} alt="" />
+              <img src={MemoriesImage} />
+              <img src={ChildInfoImage} />
             </div>
           </div>
         )}
@@ -121,7 +154,7 @@ export default function Home() {
               <p className="text-box-title"> Streamline your Parenting Schedule </p>
               <p className="text-box-subtitle">Shared Calendars, Real-Time Updates, and Reminders</p>
               <p className="text-box-main-text">
-                Easily coordinate visitation, school events, and extracurricular activitess with our intuitive scheduling tool. Ensuring both parents
+                Easily coordinate visitation, school events, and extracurricular activities with our intuitive scheduling tool. Ensuring both parents
                 stay on the same page without the hassle.
               </p>
             </div>
@@ -154,9 +187,7 @@ export default function Home() {
                 environment for your children.
               </p>
             </div>
-            <LazyLoad>
-              <img threshold={0} src={require('../../img/homepage/menu.png')} alt="" />
-            </LazyLoad>
+            <LazyImage show={loadedImages.includes('menu')} importedImage={MenuImage} imagesObjectPropName={'menu'} />
           </div>
         </Fade>
         <Fade>
@@ -170,9 +201,7 @@ export default function Home() {
                 costs and avoid conflicts over money.
               </p>
             </div>
-            <LazyLoad>
-              <img threshold={0} src={require('../../img/homepage/expense-tracker.png')} alt="" />
-            </LazyLoad>
+            <LazyImage importedImage={ExpensesImage} imagesObjectPropName={'expenses'} show={loadedImages.includes('expenses')} />
           </div>
         </Fade>
 
@@ -203,15 +232,9 @@ export default function Home() {
             </div>
 
             <div className="flex images mt-15">
-              <LazyLoad>
-                <img threshold={0} className="phone" src={require('../../img/homepage/devices/phone.png')} alt="" />
-              </LazyLoad>
-              <LazyLoad>
-                <img threshold={0} className="laptop" src={require('../../img/homepage/devices/laptop.png')} alt="" />
-              </LazyLoad>
-              <LazyLoad>
-                <img threshold={0} className="tablet" src={require('../../img/homepage/devices/tablet.png')} alt="" />
-              </LazyLoad>
+              <LazyImage importedImage={PhoneImage} imagesObjectPropName={'phone'} show={loadedImages.includes('phone')} className="phone" />
+              <LazyImage importedImage={LaptopImage} imagesObjectPropName={'laptop'} show={loadedImages.includes('laptop')} className="laptop" />
+              <LazyImage importedImage={TabletImage} imagesObjectPropName={'tablet'} show={loadedImages.includes('tablet')} className="tablet" />
             </div>
 
             <p className="subtitle mt-25 mb-0" id="multiple-device-usage">

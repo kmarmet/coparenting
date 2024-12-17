@@ -376,6 +376,10 @@
         align-items: flex-start;
       }
     }
+    
+    #lazy-loaded-img-placeholder {
+      transform: scale(.4);
+    }
 
     #side-navbar {
       @include sideNavbar;

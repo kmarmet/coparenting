@@ -58,16 +58,9 @@ export default function Settings() {
 
   const toggleNotifications = async (e) => {
     await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
-  }
-  const updateCurrentUser = async () => {
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
     setState({ ...state, currentUser: updatedCurrentUser })
-    setNotificationsToggled(Manager.getUid())
   }
-
-  useEffect(() => {
-    updateCurrentUser().then((r) => r)
-  }, [notificationsToggled])
 
   useEffect(() => {
     Manager.showPageContainer()

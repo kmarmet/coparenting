@@ -67,7 +67,6 @@ const Chats = () => {
   }
 
   const toggleMute = async (coparentPhone, muteOrUnmute, threadId) => {
-    console.log(muteOrUnmute)
     await ChatManager.toggleMute(currentUser, coparentPhone, muteOrUnmute)
     await getSecuredChats()
     toggleThreadActions(threadId)
@@ -154,9 +153,12 @@ const Chats = () => {
             return (
               <div
                 onClick={(e) => {
+                  e.stopPropagation()
                   if (e.currentTarget.id === 'row') {
                     openMessageThread(coparent.phone).then((r) => r)
                   }
+                  console.log(e.currentTarget)
+                  if (e.target !== e.currentTarget) return
                 }}
                 data-thread-id={thread.id}
                 id="row"
@@ -176,16 +178,31 @@ const Chats = () => {
                   </div>
 
                   {threadActionToShow === thread.id && (
-                    <IoMdCloseCircleOutline id={'close-thread-actions-icon'} onClick={() => toggleThreadActions(thread.id)} />
+                    <IoMdCloseCircleOutline
+                      id={'close-thread-actions-icon'}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleThreadActions(thread.id)
+                      }}
+                    />
                   )}
-                  {threadActionToShow !== thread.id && <BiDotsVerticalRounded id={'edit-icon'} onClick={() => toggleThreadActions(thread.id)} />}
+                  {threadActionToShow !== thread.id && (
+                    <BiDotsVerticalRounded
+                      id={'edit-icon'}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleThreadActions(thread.id)
+                      }}
+                    />
+                  )}
                 </div>
                 {/* THREAD ACTIONS */}
                 <div data-thread-id={thread.id} className={'flex thread-actions'}>
                   {/* DELETE CHAT BUTTON */}
                   <div id="archive-wrapper">
                     <BiSolidMessageRoundedMinus
-                      onClick={(e) =>
+                      onClick={(e) => {
+                        e.stopPropagation()
                         AlertManager.confirmAlert(
                           'Are you sure you would like to delete this conversation? You can recover it later.',
                           "I'm Sure",
@@ -197,7 +214,7 @@ const Chats = () => {
                             setThreadActionToShow(false)
                           }
                         )
-                      }
+                      }}
                       className={`delete-icon ${threadActionToShow ? 'active' : ''}`}
                     />
                     <span>DELETE</span>
@@ -205,7 +222,13 @@ const Chats = () => {
 
                   {!threadIsMuted && (
                     <div id="mute-wrapper">
-                      <IoNotificationsOffCircle onClick={() => toggleMute(coparent.phone, 'mute', thread.id)} className={'mute-icon '} />
+                      <IoNotificationsOffCircle
+                        onClick={async (e) => {
+                          e.stopPropagation()
+                          await toggleMute(coparent.phone, 'mute', thread.id)
+                        }}
+                        className={'mute-icon '}
+                      />
                       <span>MUTE</span>
                     </div>
                   )}
