@@ -14,6 +14,9 @@ export default class User
     @defaultTransferLocation = ''
     @defaultTransferNavLink = ''
     @notificationsEnabled = true
+    @settings = {
+      theme: 'light'
+    }
     @dailySummaries = {
       morningSentDate: ''
       eveningSentDate: ''

@@ -49,11 +49,11 @@ import { LicenseInfo } from '@mui/x-license'
 import ScreenNames from '@screenNames'
 import firebaseConfig from './firebaseConfig.js'
 import ContactUs from './components/screens/contactUs'
-import DB from '@db'
 import NotificationManager from './managers/notificationManager.js'
 import Home from './components/screens/home'
 import BrandBar from './components/shared/brandBar'
 import SideNavbar from './components/shared/sideNavbar'
+import DB_UserScoped from '@userScoped'
 
 export default function App() {
   // Initialize Firebase
@@ -64,6 +64,7 @@ export default function App() {
   const { userIsLoggedIn, firebaseUser, setFirebaseUser } = state
   const [userEmail, setUserEmail] = useState('')
   const myCanvas = document.createElement('canvas')
+  const [currentUserPhone, setCurrentUserPhone] = useState('')
   const subscriptionId = localStorage.getItem('subscriptionId')
 
   emailjs.init({
@@ -101,11 +102,6 @@ export default function App() {
     })
   }
 
-  const addNotifUserToDatabase = async () => {
-    const subId = localStorage.getItem('subscriptionId')
-    await NotificationManager.addToDatabase(currentUser, subId)
-  }
-
   // CLEAR APP BADGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
@@ -119,12 +115,13 @@ export default function App() {
     // throw new Error('Something went wrong')
     document.body.appendChild(myCanvas)
 
+    // FIREBASE AUTH
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const user = auth.currentUser
         setUserEmail(user.email)
-        const _currentUser = await DB.find(DB.tables.users, ['email', user.email], true)
-
+        const _currentUser = await DB_UserScoped.getCurrentUser(user.email, 'email')
+        NotificationManager.init(_currentUser)
         setState({ ...state, currentUser: _currentUser, theme: _currentUser?.settings?.theme })
       } else {
         console.log('signed out or user doesn"t exist')
@@ -132,16 +129,7 @@ export default function App() {
     })
 
     LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
-    NotificationManager.init(currentUser)
   }, [])
-
-  // Add Notification Subscriber to Database
-  useEffect(() => {
-    const subId = localStorage.getItem('subscriptionId')
-    if (subId && currentUser && currentUser.hasOwnProperty('email')) {
-      addNotifUserToDatabase().then((r) => r)
-    }
-  }, [subscriptionId, currentUser])
 
   // MENU OPEN/CLOSE
   useEffect(() => {

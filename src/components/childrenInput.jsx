@@ -24,6 +24,7 @@ import {
 import AlertManager from '../managers/alertManager'
 import ChildUser from '../models/child/childUser'
 import InputWrapper from './shared/inputWrapper'
+import General from '../models/child/general'
 
 export default function ChildrenInput({ add, childrenCount }) {
   const { state, setState } = useContext(globalState)
@@ -59,13 +60,14 @@ export default function ChildrenInput({ add, childrenCount }) {
               }
             }
             const child = new ChildUser()
+            child.general = new General()
             child.id = Manager.getUid()
             child.general.name = name
             child.general.phone = userPhone
             add(child)
             setShowAddButton(false)
           }}>
-          {name.length > 0 && userPhone.length > 0 && <p className="green">Save {uppercaseFirstLetterOfAllWords(name)}</p>}
+          {name.length > 0 && <p className="green">Save {uppercaseFirstLetterOfAllWords(name)}</p>}
         </button>
       )}
     </div>

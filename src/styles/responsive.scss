@@ -3,6 +3,17 @@
 @import './mixins';
 
 #external-overrides {
+  @media screen and (max-width: 800px) {
+    .MuiYearCalendar-root {
+      border-radius: $bigBorderRadius;
+      background: $bestGreyForWhite !important;
+    }
+    .MuiPickersYear-yearButton {
+      &.Mui-selected {
+        background: $mainBlue;
+      }
+    }
+  }
   #app-container {
     // HUGE SCREENS
     .MuiPaper-root {
@@ -10,8 +21,11 @@
         max-width: 100%;
       }
     }
-    @media screen and (min-width: 1600px) {
+    @media screen and (min-width: 1000px) {
       #static-calendar {
+        .MuiYearCalendar-root {
+          background: $bestGreyForWhite;
+        }
         .MuiPickersLayout-root {
           max-width: 50vw !important;
         }
@@ -45,7 +59,7 @@
       // CALENDAR
       #calendar-sidebar {
         width: 20vw;
-        background: $darkBg;
+        background:white;
         padding: 20px;
         border-radius: $bigBorderRadius;
         height: 100%;
@@ -53,6 +67,11 @@
         
         @media screen and (max-width: 600px) {
           display: none;
+        }
+        
+        input {
+          font-size: 14px;
+          font-style: italic;
         }
         
         .item {
@@ -83,6 +102,8 @@
           }
         }
       }
+      
+
       
       // SECTION
       .section {

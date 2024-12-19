@@ -4,4 +4,5 @@ export default class NotificationSubscribers
     @phone = ''
     @email = ''
     @subscriptionId = ''
+    @oneSignalId = ''
   ) ->

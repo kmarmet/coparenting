@@ -145,10 +145,7 @@ export default function Login() {
         setState({ ...state, isLoading: false })
         console.error('Sign in error:', error.message)
         if (contains(error.message, 'user-not-found')) {
-          AlertManager.throwError(
-            `No account with email ${email} found.`,
-            'Please tap Rest Email if you may have registered with the wrong email address.'
-          )
+          AlertManager.throwError(`No account with email ${email} found.`, 'If you have forgotten your password, please tap Reset Password')
         } else {
           AlertManager.throwError(`Incorrect password`, 'Please tap Reset Password.')
         }

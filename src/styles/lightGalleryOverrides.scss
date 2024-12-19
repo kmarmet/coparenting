@@ -5,13 +5,12 @@
 .light-gallery {
   .memory {
     padding: 15px;
-    background-color: white;
     border-radius: $bigBorderRadius;
     margin-bottom: 25px;
     border: 1px solid $borderColor;
     position: relative;
     width: 100%;
-    background: $lightBlue;
+    background: $bestGreyForWhite;
     
     .memory-image {
       width: 100% !important;

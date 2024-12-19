@@ -5,6 +5,7 @@ import NotificationSubscriber from "../models/notificationSubscriber"
 import DB_UserScoped from "../database/db_userScoped"
 
 export default NotificationManager =
+  currentUser: null
   lineBreak: '\r\n'
 # Define message templates
   templates:
@@ -40,9 +41,16 @@ export default NotificationManager =
       "Transfer Change Request for #{request.date} has been REJECTED.#{NotificationManager.lineBreak}#{NotificationManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed
  with the
  request, you can communicate with #{recipientName} to come to an agreement on the request."
-  apiKey: 'os_v2_app_wjb2emrqojh2re4vwfdvavgfgfpm3s3xxaduhlnuiah2weksujvxpesz4fnbclq7b2dch2k3ixixovlaroxcredbec4ghwac4qpcjbi'
-  appId: 'b243a232-3072-4fa8-9395-b1475054c531'
-  init: () ->
+
+      #  PRODUCTION
+#  apiKey: 'os_v2_app_wjb2emrqojh2re4vwfdvavgfgfpm3s3xxaduhlnuiah2weksujvxpesz4fnbclq7b2dch2k3ixixovlaroxcredbec4ghwac4qpcjbi'
+#  appId: 'b243a232-3072-4fa8-9395-b1475054c531'
+
+# LOCALHOST
+  apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
+  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
+  init: (currentUser) ->
+    NotificationManager.currentUser = currentUser
     window.OneSignalDeferred = window.OneSignalDeferred or []
     OneSignalDeferred.push ->
       OneSignal.init
@@ -52,29 +60,42 @@ export default NotificationManager =
 
   eventListener:  (event) ->
     userSubscribed = OneSignal.User.PushSubscription.optedIn
-
-    if userSubscribed
-        localStorage.setItem("subscriptionId", event?.current?.id)
-        setTimeout ->
-          window.location.reload()
-        , 2000
+    subId =  event?.current?.id
+    if userSubscribed && subId
+      newSubscriber = new NotificationSubscriber()
+      setTimeout  ->
+        newSubscriber.email = NotificationManager?.currentUser?.email
+        newSubscriber.phone = NotificationManager?.currentUser?.phone
+        newSubscriber.id = Manager.getUid()
+        newSubscriber.subscriptionId = subId
+        fetch("https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity")
+          .then (identity) ->
+            userIdentity = await identity.json()
+            newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
+            await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
+      , 500
 
   getUserSubId: (currentUser) ->
     existingRecord = await DB.find(DB.tables.notificationSubscribers, ['email', currentUser?.email], true)
     existingRecord?.subscriptionId
 
-  addToDatabase: (currentUser, subId) ->
-    existingRecord = await DB.find(DB.tables.notificationSubscribers, ['email', currentUser.email], true)
+  deleteUser: (oneSignalId, subId) ->
+    fetch "https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}",
+      method: 'DELETE'
+      headers:
+        'accept': 'application/json'
 
-    if subId and not Manager.isValid(existingRecord)
-      newSubscriber = new NotificationSubscriber()
-      newSubscriber.email = currentUser?.email
-      newSubscriber.phone = currentUser?.phone
-      newSubscriber.id = Manager.getUid()
-      newSubscriber.subscriptionId = subId
-#      await NotificationManager.assignExternalId(currentUser)
-      await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
-      await NotificationManager.sendNotification('Welcome Aboard!', 'You are now subscribed to peaceful communications!', subId)
+    fetch "https://api.onesignal.com/apps/#{NotificationManager.appId}/users/by/onesignal_id/#{oneSignalId}",
+      method: 'DELETE'
+
+  viewUser: (subId) ->
+    userIdentity = ''
+    fetch("https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity")
+      .then (identity) ->
+        userIdentity =await identity.json()
+      .then (result) ->
+      .catch (error) -> console.error error
+    userIdentity
 
   sendNotification: (title, message, subId) ->
     myHeaders = new Headers()
@@ -100,6 +121,7 @@ export default NotificationManager =
         method: "POST"
         headers: myHeaders
         body: raw
+        mode: "no-cors"
         redirect: "follow"
 
       fetch "https://api.onesignal.com/notifications", requestOptions
@@ -127,7 +149,6 @@ export default NotificationManager =
       .then (json) -> console.log json
       .catch (err) -> console.error err
 
-
   sendToShareWith: (coparentPhones, currentUser, title, message) ->
     for phone in coparentPhones
       coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
@@ -137,26 +158,34 @@ export default NotificationManager =
         await NotificationManager.sendNotification(title, message, subId )
 
   assignExternalId: (currentUser) ->
-    myHeaders = new Headers()
-    myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
-    myHeaders.append "Content-Type", "application/json"
-
-    raw = JSON.stringify
-      identity:
-        external_id: currentUser.email
-      type: "Web Push"
-
-    requestOptions =
-      method: "PATCH"
-      headers: myHeaders
-      body: raw
-      redirect: "follow"
-
     subId = localStorage.getItem("subscriptionId")
-
-    fetch "https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity", requestOptions
-        .then (response) -> response.text()
-        .then (result) ->
-          console.log("Assign External ID Result", result)
-          localStorage.removeItem('subscriptionId')
-        .catch (error) -> console.error error
+    fetch "https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity",
+      method: 'PATCH'
+      headers:
+        'Content-Type': 'application/json; charset=utf-8'
+      body: JSON.stringify
+        identity:
+          'email': currentUser.email
+#    myHeaders = new Headers()
+#    myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
+#    myHeaders.append "Content-Type", "application/json"
+#
+#    raw = JSON.stringify
+#      identity:
+#        external_id: currentUser.email
+#      type: "Web Push"
+#
+#    requestOptions =
+#      method: "PATCH"
+#      headers: myHeaders
+#      body: raw
+#      redirect: "follow"
+#
+#    subId = localStorage.getItem("subscriptionId")
+#
+#    fetch "https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity", requestOptions
+#        .then (response) -> response.text()
+#        .then (result) ->
+#          console.log("Assign External ID Result", result)
+#          localStorage.removeItem('subscriptionId')
+#        .catch (error) -> console.error error

@@ -41,7 +41,7 @@ if ('serviceWorker' in navigator) {
   // Update content
   navigator.serviceWorker.ready.then((registration) => {
     registration.update().then(() => {
-      console.log('PWA Updated')
+      // console.log('PWA Updated')
     })
   })
   function isReachable(url) {

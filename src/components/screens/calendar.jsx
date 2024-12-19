@@ -24,6 +24,7 @@ import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
 import { GiPartyPopper } from 'react-icons/gi'
 import DomManager from '../../managers/domManager'
+import DB_UserScoped from '@userScoped'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -275,6 +276,13 @@ export default function EventCalendar() {
     })
   }
 
+  const updateCurrentUser = async () => {
+    if (currentUser && currentUser.hasOwnProperty('email')) {
+      const _currentUser = await DB_UserScoped.getCurrentUser(currentUser?.email, 'email')
+      setState({ ...state, currentUser: _currentUser, theme: _currentUser?.settings?.theme })
+    }
+  }
+
   useEffect(() => {
     if (DomManager.isMobile()) {
       if (showHolidays) {
@@ -305,6 +313,8 @@ export default function EventCalendar() {
         setShowSearchCard(true)
       })
     }
+
+    updateCurrentUser().then((r) => r)
 
     Manager.showPageContainer('show')
   }, [])
@@ -459,13 +469,13 @@ export default function EventCalendar() {
               existingEvents.map((event, index) => {
                 let readableReminderTimes = []
                 event?.reminderTimes?.forEach((time) => {
-                  if (time && time !== undefined) {
+                  if (time) {
                     readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
                   }
                 })
                 let eventType = 'standard'
                 if (event?.fromVisitationSchedule) {
-                  if (contains(event?.createdBy?.toLowerCase(), currentUser?.name.toLowerCase())) {
+                  if (contains(formatNameFirstNameOnly(event?.createdBy)?.toLowerCase(), formatNameFirstNameOnly(currentUser?.name).toLowerCase())) {
                     eventType = 'current-user-visitation'
                   } else {
                     eventType = 'coparent-visitation'

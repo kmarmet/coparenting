@@ -23,7 +23,7 @@ export default SmsManager =
   getNewCalEventTemplate: (title, date, createdBy) =>
     "A new Shared Calendar event has been created by #{createdBy}#{SmsManager.lineBreak}#{SmsManager.lineBreak}Title:#{title}#{SmsManager.lineBreak}Date:#{date}#{SmsManager.lineBreak}#{SmsManager.signature}"
   getNewExpenseTemplate: (title, amount, createdBy) =>
-   "A new Expense has been created by #{createdBy}#{SmsManager.lineBreak}#{SmsManager.lineBreak}Expense: #{title}#{SmsManager.lineBreak}Amount: $#{amount}#{SmsManager.lineBreak}#{SmsManager.signature}"
+    "A new Expense has been created by #{createdBy}#{SmsManager.lineBreak}#{SmsManager.lineBreak}Expense: #{title}#{SmsManager.lineBreak}Amount: $#{amount}#{SmsManager.lineBreak}#{SmsManager.signature}"
   getNewSwapRequestTemplate: (date, createdBy) =>
     "A new Swap Request has been created by #{createdBy}#{SmsManager.lineBreak}#{SmsManager.lineBreak}Date(s): #{date}#{SmsManager.lineBreak}#{SmsManager.signature}"
   getSwapRequestDecisionTemplate: (date, decision, reason, createdBy) =>
@@ -44,15 +44,25 @@ export default SmsManager =
     "A new Child Transfer Request has been created by #{createdBy} for #{request.date} at #{request.time} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getParentVerificationTemplate: (childName, verificationCode) ->
     "#{uppercaseFirstLetterOfAllWords(childName)} is registering for an account and requires your permission
- for access. #{SmsManager.lineBreak}#{SmsManager.lineBreak}If you accept, please share this code with them: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
+   for access. #{SmsManager.lineBreak}#{SmsManager.lineBreak}If you accept, please share this code with them: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getRegistrationVerificationTemplate: (userName, verificationCode) ->
     "#{userName} ,please enter this code to continue registration: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getPhoneVerificationTemplate: (verificationCode) ->    "Please enter this code for Peaceful coParenting registration #{SmsManager.lineBreak} #{verificationCode}"
-  send: (phoneNumber, message) =>
-    fetch 'https://textbelt.com/text',
-      method: 'post'
-      headers: 'Content-Type': 'application/json'
-      body: JSON.stringify
-        phone: phoneNumber
-        message: message
-        key: apiKey
+
+  send: (phoneNumber, message) ->
+      formData = new FormData()
+      formData.append 'phone', phoneNumber
+      formData.append 'message', message
+      formData.append 'key', apiKey
+
+      requestOptions =
+        method: 'POST'
+        body: formData
+        redirect: 'follow'
+
+      try
+        response = await fetch 'https://localhost:5000/messaging/sendSms', requestOptions
+        result = await response.text()
+        console.log result
+      catch error
+        console.error error

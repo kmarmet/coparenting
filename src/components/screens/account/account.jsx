@@ -25,12 +25,63 @@ import { MdOutlineContactMail, MdOutlineContactPhone, MdOutlinePassword } from '
 import UpdateContactInfo from './updateContactInfo'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
+import firebaseConfig from '../../../firebaseConfig'
+import { getAuth, signOut } from 'firebase/auth'
+import { initializeApp } from 'firebase/app'
+import FirebaseStorage from '@firebaseStorage'
+import DB_UserScoped from '@userScoped'
+import DB from '@db'
+import NotificationManager from '../../../managers/notificationManager'
 
 export default function Account() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [updateType, setUpdateType] = useState('email')
   const [showUpdateCard, setShowUpdateCard] = useState(false)
+
+  // Init Firebase
+  const app = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
+  const firebaseUser = auth.currentUser
+
+  const closeAccount = async () => {
+    setState({ ...state, isLoading: true })
+
+    // Delete from Firebase Auth
+    firebaseUser.delete().then(async () => {
+      // Delete from Firebase Storage
+      const allStorageDirectories = Object.keys(FirebaseStorage.directories)
+      for (let dir of allStorageDirectories) {
+        await FirebaseStorage.deleteDirectory(dir, currentUser.id)
+      }
+
+      // Delete from OneSignal
+      const subscriber = await DB.find(DB.tables.notificationSubscribers, ['phone', currentUser.phone], true)
+
+      if (subscriber) {
+        await NotificationManager.deleteUser(subscriber.oneSignalId, subscriber.subscriptionId)
+
+        // Delete from Realtime Database
+        await DB_UserScoped.deleteUserData(currentUser)
+
+        // Delete user from Firebase Realtime/Storage
+        await DB.deleteByPath(`${DB.tables.users}/${currentUser.phone}`)
+      }
+
+      // Sign Out
+      signOut(auth)
+        .then(() => {
+          window.location.reload()
+          // Sign-out successful.
+          console.log('User signed out')
+        })
+        .catch((error) => {
+          // An error happened.
+          console.log(error.message)
+        })
+    })
+  }
+
   useEffect(() => {
     Manager.showPageContainer('show')
   }, [])
@@ -81,8 +132,8 @@ export default function Account() {
                 'Are you sure you would like to PERMANENTLY close your account? All of your data will be deleted and this action cannot be reversed.',
                 "I'm Sure",
                 true,
-                () => {
-                  console.log('Deleted')
+                async () => {
+                  await closeAccount()
                 }
               )
             }}>

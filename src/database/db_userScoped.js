@@ -22,12 +22,12 @@ import {
   wordCount,
 } from '../globalFunctions'
 import DatasetManager from '../managers/datasetManager'
+import _ from 'lodash'
 
 const DB_UserScoped = {
   // GET
-  getCurrentUser: async (currentUserPhone) => {
-    const currentUser = await DB.find(DB.tables.users, ['phone', currentUserPhone], true)
-    return currentUser
+  getCurrentUser: async (currentUserPhoneOrEmail, phoneOrEmail = 'phone') => {
+    return await DB.find(DB.tables.users, [phoneOrEmail, currentUserPhoneOrEmail], true)
   },
   getCurrentUserRecords: (tableName, currentUser, objectName) => {
     return new Promise((resolve, reject) => {
@@ -268,7 +268,6 @@ const DB_UserScoped = {
     }
 
     const updatedDatabase = { ...updatedEmailRecords, ...updatedPhoneRecords }
-    console.log(updatedDatabase)
     await set(dbRef, updatedDatabase)
   },
 
@@ -306,11 +305,53 @@ const DB_UserScoped = {
     const coparents = await DB.getTable(`users/${currentUser?.phone}/coparents`)
     return coparents
   },
+  deleteUserData: async (currentUser) => {
+    const dbRef = ref(getDatabase())
+    const events = await DB.getTable(DB.tables.calendarEvents)
+    const memories = await DB.getTable(DB.tables.memories)
+    const expenses = await DB.getTable(DB.tables.expenseTracker)
+    const suggestions = await DB.getTable(DB.tables.suggestions)
+    const notificationSubs = await DB.getTable(DB.tables.notificationSubscribers)
+    const merged = _.concat(events, memories, expenses, suggestions, notificationSubs).filter((x) => x)
+    const scopedToCurrentUser = merged.filter(
+      (x) => x.ownerPhone === currentUser.phone || formatNameFirstNameOnly(x.createdBy) === formatNameFirstNameOnly(currentUser?.name)
+    )
+
+    for (let record of scopedToCurrentUser) {
+      let tableName
+      if (record.hasOwnProperty('fromVisitationSchedule')) {
+        await DB.deleteMultipleRows(DB.tables.calendarEvents, events, currentUser)
+      }
+
+      if (record.hasOwnProperty('paidStatus')) {
+        await DB.deleteMultipleRows(DB.tables.expenseTracker, expenses, currentUser)
+      }
+
+      if (record.hasOwnProperty('memoryCaptureDate')) {
+        await DB.deleteMultipleRows(DB.tables.memories, memories, currentUser)
+      }
+
+      if (record.hasOwnProperty('subscriptionId')) {
+        await DB.deleteMultipleRows(DB.tables.notificationSubscribers, notificationSubs, currentUser)
+      }
+
+      if (record.hasOwnProperty('suggestion')) {
+        await DB.deleteMultipleRows(DB.tables.suggestions, suggestions, currentUser)
+      }
+      if (tableName) {
+      }
+    }
+    // console.log(scopedToCurrentUser)
+    // DELETE ROOTED (users, archivedChat)
+    // await remove(child(dbRef, `${DB.tables.users}/${currentUser?.phone}`))
+    // await remove(child(dbRef, `${DB.tables.archivedChats}/${currentUser?.phone}`))
+  },
 
   // MISC.
   recursiveObjectUpdate: (obj, currentValue, updatedValue, propNameToUpdate) => {
     let updatedObject
     for (const key in obj) {
+      // NOTIFICATION SUBSCRIBERS
       if (key === 'notificationSubscribers' && propNameToUpdate === 'phone') {
         let updatedPushAlertSubs = {}
         for (let prop in obj[key]) {
@@ -323,6 +364,8 @@ const DB_UserScoped = {
         }
         obj['notificationSubscribers'] = updatedPushAlertSubs
       }
+
+      // USERS
       if (key === 'users' && propNameToUpdate === 'phone') {
         let updatedUsers = {}
         for (let prop in obj[key]) {

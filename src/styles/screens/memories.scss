@@ -2,6 +2,9 @@
 
 #external-overrides {
   #memories-container {
+    .loading-memory-gif {
+      transform: scale(.5);
+    }
     #disclaimer {
       p {
         font-weight: $fwMedium;
@@ -96,7 +99,6 @@
         margin-bottom: 10px;
         transition: all .5s ease-in-out;
         opacity: 0;
-        
         transform: scale(.6);
         
         &.active {

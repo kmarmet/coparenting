@@ -22,7 +22,6 @@ ImageManager = {
     return fetch(url).then(function(response) {
       var statusCode;
       statusCode = response.status;
-      console.log(statusCode);
       return statusCode;
     });
   },

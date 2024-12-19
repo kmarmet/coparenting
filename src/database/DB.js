@@ -1,6 +1,5 @@
 import Manager from '@manager'
 import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
-import DatasetManager from '../managers/datasetManager'
 import _ from 'lodash'
 import LogManager from '../managers/logManager'
 
@@ -160,15 +159,16 @@ const DB = {
     }
   },
   deleteMultipleRows: async function (table, rows, currentUser) {
-    rows = DatasetManager.getUniqueArray(rows, true)
-    let dbRef, row, i, idToDelete, len
-    dbRef = ref(getDatabase())
+    rows = Manager.convertToArray(rows)
+    let dbRef = ref(getDatabase())
+    let idToDelete
     if (Manager.isValid(rows, true)) {
-      for (let row in rows) {
+      for (let row of rows) {
         idToDelete = await DB.getSnapshotKey(table, row, 'id')
         if (Manager.isValid(idToDelete)) {
           try {
             await remove(child(dbRef, `${table}/${idToDelete}/`))
+            console.log(`${table} record deleted`)
           } catch (error) {
             LogManager.log(error.message, LogManager.logTypes.error, error.stack)
           }

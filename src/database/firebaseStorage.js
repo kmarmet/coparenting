@@ -182,13 +182,10 @@ const FirebaseStorage = {
     }
   },
   delete: async (imgDirectory, uid, imageName, recordToDeleteIfNoImage) => {
-    // console.log('DELETING')
-    // console.log(imageName)
     const storage = getStorage()
     let bin = ref(storage, `${imgDirectory}/${uid}`)
     if (imageName) {
       bin = ref(storage, `${imgDirectory}/${uid}/${imageName}`)
-      // console.log(bin)
     }
     // Delete the file
     deleteObject(bin)
@@ -202,6 +199,29 @@ const FirebaseStorage = {
           DB.delete(DB.tables.users, recordToDeleteIfNoImage.id)
         }
         // Uh-oh, an error occurred!
+      })
+  },
+  deleteDirectory: async (directoryName, currentUserId) => {
+    const storage = getStorage()
+    // Create a reference to the folder you want to delete
+    const folderRef = ref(storage, `${directoryName}/${currentUserId}`)
+
+    // List all the files in the folder
+    listAll(folderRef)
+      .then((res) => {
+        // Delete each file
+        res.items.forEach((itemRef) => {
+          deleteObject(itemRef)
+            .then(() => {
+              console.log('File deleted successfully')
+            })
+            .catch((error) => {
+              console.error('Error deleting file:', error)
+            })
+        })
+      })
+      .catch((error) => {
+        console.error('Error listing files:', error)
       })
   },
   downloadImage: async (imageSrc, imageName = 'Image') => {

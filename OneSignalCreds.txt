@@ -18,3 +18,6 @@ If you reset permissions you will be unsubscribed (will not get messages)
 
 https://api.onesignal.com/apps/appId/subscriptions/25ae6154-e99a-4eb2-9e71-c0a257ac22fe
 
+  "OneSignalApiKey": "os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty",
+  
+    "OneSignalAppId": "4f864936-7169-4b17-acfa-ef403cbbafe8",

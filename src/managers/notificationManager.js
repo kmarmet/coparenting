@@ -12,6 +12,7 @@ import NotificationSubscriber from "../models/notificationSubscriber";
 import DB_UserScoped from "../database/db_userScoped";
 
 export default NotificationManager = {
+  currentUser: null,
   lineBreak: '\r\n',
   // Define message templates
   templates: {
@@ -45,9 +46,15 @@ export default NotificationManager = {
       return `Transfer Change Request for ${request.date} has been REJECTED.${NotificationManager.lineBreak}${NotificationManager.lineBreak} Reason: ${request.reason}. If you would still prefer to proceed with the request, you can communicate with ${recipientName} to come to an agreement on the request.`;
     }
   },
-  apiKey: 'os_v2_app_wjb2emrqojh2re4vwfdvavgfgfpm3s3xxaduhlnuiah2weksujvxpesz4fnbclq7b2dch2k3ixixovlaroxcredbec4ghwac4qpcjbi',
-  appId: 'b243a232-3072-4fa8-9395-b1475054c531',
-  init: function() {
+  //  PRODUCTION
+  //  apiKey: 'os_v2_app_wjb2emrqojh2re4vwfdvavgfgfpm3s3xxaduhlnuiah2weksujvxpesz4fnbclq7b2dch2k3ixixovlaroxcredbec4ghwac4qpcjbi'
+  //  appId: 'b243a232-3072-4fa8-9395-b1475054c531'
+
+  // LOCALHOST
+  apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty',
+  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8',
+  init: function(currentUser) {
+    NotificationManager.currentUser = currentUser;
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     return OneSignalDeferred.push(function() {
       return OneSignal.init({
@@ -58,13 +65,24 @@ export default NotificationManager = {
     });
   },
   eventListener: function(event) {
-    var ref, userSubscribed;
+    var newSubscriber, ref, subId, userSubscribed;
     userSubscribed = OneSignal.User.PushSubscription.optedIn;
-    if (userSubscribed) {
-      localStorage.setItem("subscriptionId", event != null ? (ref = event.current) != null ? ref.id : void 0 : void 0);
+    subId = event != null ? (ref = event.current) != null ? ref.id : void 0 : void 0;
+    if (userSubscribed && subId) {
+      newSubscriber = new NotificationSubscriber();
       return setTimeout(function() {
-        return window.location.reload();
-      }, 2000);
+        var ref1, ref2;
+        newSubscriber.email = NotificationManager != null ? (ref1 = NotificationManager.currentUser) != null ? ref1.email : void 0 : void 0;
+        newSubscriber.phone = NotificationManager != null ? (ref2 = NotificationManager.currentUser) != null ? ref2.phone : void 0 : void 0;
+        newSubscriber.id = Manager.getUid();
+        newSubscriber.subscriptionId = subId;
+        return fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}/user/identity`).then(async function(identity) {
+          var ref3, userIdentity;
+          userIdentity = (await identity.json());
+          newSubscriber.oneSignalId = userIdentity != null ? (ref3 = userIdentity.identity) != null ? ref3.onesignal_id : void 0 : void 0;
+          return (await DB.add(`/${DB.tables.notificationSubscribers}`, newSubscriber));
+        });
+      }, 500);
     }
   },
   getUserSubId: async function(currentUser) {
@@ -72,19 +90,26 @@ export default NotificationManager = {
     existingRecord = (await DB.find(DB.tables.notificationSubscribers, ['email', currentUser != null ? currentUser.email : void 0], true));
     return existingRecord != null ? existingRecord.subscriptionId : void 0;
   },
-  addToDatabase: async function(currentUser, subId) {
-    var existingRecord, newSubscriber;
-    existingRecord = (await DB.find(DB.tables.notificationSubscribers, ['email', currentUser.email], true));
-    if (subId && !Manager.isValid(existingRecord)) {
-      newSubscriber = new NotificationSubscriber();
-      newSubscriber.email = currentUser != null ? currentUser.email : void 0;
-      newSubscriber.phone = currentUser != null ? currentUser.phone : void 0;
-      newSubscriber.id = Manager.getUid();
-      newSubscriber.subscriptionId = subId;
-      //      await NotificationManager.assignExternalId(currentUser)
-      await DB.add(`/${DB.tables.notificationSubscribers}`, newSubscriber);
-      return (await NotificationManager.sendNotification('Welcome Aboard!', 'You are now subscribed to peaceful communications!', subId));
-    }
+  deleteUser: function(oneSignalId, subId) {
+    fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}`, {
+      method: 'DELETE',
+      headers: {
+        'accept': 'application/json'
+      }
+    });
+    return fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/users/by/onesignal_id/${oneSignalId}`, {
+      method: 'DELETE'
+    });
+  },
+  viewUser: function(subId) {
+    var userIdentity;
+    userIdentity = '';
+    fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}/user/identity`).then(async function(identity) {
+      return userIdentity = (await identity.json());
+    }).then(function(result) {}).catch(function(error) {
+      return console.error(error);
+    });
+    return userIdentity;
   },
   sendNotification: async function(title, message, subId) {
     var currentUser, myHeaders, notificationsEnabled, raw, ref, requestOptions, subIdRecord;
@@ -113,6 +138,7 @@ export default NotificationManager = {
         method: "POST",
         headers: myHeaders,
         body: raw,
+        mode: "no-cors",
         redirect: "follow"
       };
       return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
@@ -163,32 +189,44 @@ export default NotificationManager = {
     return results;
   },
   assignExternalId: function(currentUser) {
-    var myHeaders, raw, requestOptions, subId;
-    myHeaders = new Headers();
-    myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
-    myHeaders.append("Content-Type", "application/json");
-    raw = JSON.stringify({
-      identity: {
-        external_id: currentUser.email
-      },
-      type: "Web Push"
-    });
-    requestOptions = {
-      method: "PATCH",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
+    var subId;
     subId = localStorage.getItem("subscriptionId");
-    return fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}/user/identity`, requestOptions).then(function(response) {
-      return response.text();
-    }).then(function(result) {
-      console.log("Assign External ID Result", result);
-      return localStorage.removeItem('subscriptionId');
-    }).catch(function(error) {
-      return console.error(error);
+    return fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}/user/identity`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      body: JSON.stringify({
+        identity: {
+          'email': currentUser.email
+        }
+      })
     });
   }
 };
+
+//    myHeaders = new Headers()
+//    myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
+//    myHeaders.append "Content-Type", "application/json"
+
+//    raw = JSON.stringify
+//      identity:
+//        external_id: currentUser.email
+//      type: "Web Push"
+
+//    requestOptions =
+//      method: "PATCH"
+//      headers: myHeaders
+//      body: raw
+//      redirect: "follow"
+
+//    subId = localStorage.getItem("subscriptionId")
+
+//    fetch "https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity", requestOptions
+//        .then (response) -> response.text()
+//        .then (result) ->
+//          console.log("Assign External ID Result", result)
+//          localStorage.removeItem('subscriptionId')
+//        .catch (error) -> console.error error
 
 //# sourceMappingURL=notificationManager.js.map

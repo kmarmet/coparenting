@@ -12,7 +12,6 @@ ImageManager =
     fetch  url
       .then (response) ->
         statusCode = response.status
-        console.log(statusCode)
         return statusCode
 
   compressImage: (imgFile) ->

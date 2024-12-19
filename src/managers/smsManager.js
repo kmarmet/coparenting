@@ -68,18 +68,25 @@ export default SmsManager = {
   getPhoneVerificationTemplate: function(verificationCode) {
     return `Please enter this code for Peaceful coParenting registration ${SmsManager.lineBreak} ${verificationCode}`;
   },
-  send: (phoneNumber, message) => {
-    return fetch('https://textbelt.com/text', {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        phone: phoneNumber,
-        message: message,
-        key: apiKey
-      })
-    });
+  send: async function(phoneNumber, message) {
+    var error, formData, requestOptions, response, result;
+    formData = new FormData();
+    formData.append('phone', phoneNumber);
+    formData.append('message', message);
+    formData.append('key', apiKey);
+    requestOptions = {
+      method: 'POST',
+      body: formData,
+      redirect: 'follow'
+    };
+    try {
+      response = (await fetch('https://localhost:5000/messaging/sendSms', requestOptions));
+      result = (await response.text());
+      return console.log(result);
+    } catch (error1) {
+      error = error1;
+      return console.error(error);
+    }
   }
 };
 

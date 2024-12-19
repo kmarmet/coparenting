@@ -47,7 +47,7 @@ export default function Memories() {
   const getSecuredMemories = async () => {
     let all = await SecurityManager.getMemories(currentUser)
     if (Manager.isValid(all, true)) {
-      setState({ ...state, isLoading: true })
+      // setState({ ...state, isLoading: true })
       let validImages = []
       for (const memory of all) {
         if (Manager.isValid(memory.url)) {
@@ -107,6 +107,8 @@ export default function Memories() {
     document.querySelectorAll('.memory-image').forEach((memoryImage, i) => {
       setTimeout(() => {
         setTimeout(() => {
+          const parent = memoryImage.parentNode
+          parent.querySelector('.loading-memory-gif').remove()
           memoryImage.classList.add('active')
         }, 200 * i)
       }, 500)
@@ -131,6 +133,7 @@ export default function Memories() {
 
   useEffect(() => {
     onTableChange().then((r) => r)
+
     Manager.showPageContainer()
   }, [])
 
@@ -146,7 +149,9 @@ export default function Memories() {
           Upload photos of memories that are too good NOT to share <span className="material-icons heart">favorite</span>
         </p>
 
+        {/* NO DATA FALLBACK TEXT */}
         {memories && memories.length === 0 && <NoDataFallbackText text={'There are currently no memories'} />}
+
         {/* GALLERY */}
         <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
           <>
@@ -168,9 +173,12 @@ export default function Memories() {
                     )}
 
                     {/* IMAGE */}
-                    <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}>
-                      {/* DELETE ICON */}
-                      <IoIosCloseCircle className={'delete-icon'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
+                    <div id="memory-image-wrapper">
+                      <img src={require('../../img/loading.gif')} className="loading-memory-gif" alt="" />
+                      <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}>
+                        {/* DELETE ICON */}
+                        <IoIosCloseCircle className={'delete-icon'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
+                      </div>
                     </div>
 
                     {/* NOTES */}

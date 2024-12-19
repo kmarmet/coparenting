@@ -70,6 +70,7 @@ export default function Registration() {
   const [phoneVerificationSent, setPhoneVerificationSent] = useState(false)
   const [phoneVerificationCode, setPhoneVerificationCode] = useState('')
   const [enteredPhoneCode, setEnteredPhoneCode] = useState('')
+
   // Firebase init
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
@@ -142,10 +143,6 @@ export default function Registration() {
             setShowVerificationCard(false)
           }
         })
-
-      // const dbRef = ref(getDatabase())
-      const subId = await NotificationManager.getUserSubIdFromApi('3307494534')
-      NotificationManager.sendNotification('New Registration', `Phone: ${userPhone} \n Name: ${userName}`, subId)
     }
   }
 
@@ -226,7 +223,7 @@ export default function Registration() {
       return false
     }
 
-    if (Manager.validation([userName, parentType]) > 0) {
+    if (userName.length === 0 || parentType.length === 0) {
       AlertManager.throwError('Please fill out all fields')
       isValid = false
     }
@@ -244,7 +241,18 @@ export default function Registration() {
     return isValid
   }
 
-  const handleParentType = (e) => Manager.handleCheckboxSelection(e, setParentType(null), setParentType(e.currentTarget.dataset.label))
+  const handleParentType = (e) => {
+    Manager.handleCheckboxSelection(
+      e,
+      (e) => {
+        console.log(e)
+        setParentType(e)
+      },
+      () => {
+        setParentType(null)
+      }
+    )
+  }
 
   // CHILDREN
   const addChild = (childObject) => setChildren([...children, childObject])
@@ -275,7 +283,7 @@ export default function Registration() {
     } else {
       const phoneCode = Manager.getUid().slice(0, 6)
       setPhoneVerificationCode(phoneCode)
-      SmsManager.send(userPhone, SmsManager.getPhoneVerificationTemplate(phoneCode))
+      SmsManager.send(userPhone, SmsManager.send(userPhone, SmsManager.getPhoneVerificationTemplate(phoneCode)))
       setPhoneVerificationSent(true)
     }
   }
@@ -306,12 +314,22 @@ export default function Registration() {
 
   return (
     <>
-      <BottomCard hasSubmitButton={false} showCard={showVerificationCard} title={'Verify Your Phone'} onClose={() => setShowVerificationCard(false)}>
+      {/* VERIFY YOUR PHONE */}
+      <BottomCard
+        hasSubmitButton={false}
+        showCard={showVerificationCard}
+        title={'Verify Your Phone'}
+        subtitle="If you do not receive a code within 3 minutes, please tap the (X) button at the top right and tap Verify Phone again."
+        onClose={() => {
+          setPhoneVerificationSent(false)
+          setShowVerificationCard(false)
+        }}>
         <div id="phone-verification-container" className=" form">
           <div className="form" autoComplete="off">
             {!phoneIsVerified && !phoneVerificationSent && (
               <>
                 <InputWrapper
+                  wrapperClasses="mt-15"
                   inputValue={userPhone}
                   inputType={'input'}
                   inputValueType="phone"
@@ -327,6 +345,7 @@ export default function Registration() {
             {phoneVerificationSent && (
               <>
                 <InputWrapper
+                  wrapperClasses="mt-15"
                   inputType={'input'}
                   inputValueType="phone"
                   labelText={'Verification Code'}
@@ -548,7 +567,7 @@ export default function Registration() {
                 return <span key={index}>{input}</span>
               })}
             </div>
-            {children.length > 0 && (
+            {children?.length > 0 && (
               <button id="add-child-button" className="button default " onClick={addChildInput}>
                 Add Another Child
               </button>

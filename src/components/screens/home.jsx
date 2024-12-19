@@ -82,7 +82,6 @@ export default function Home() {
       } else {
         // No user is signed in.
         setState({ ...state, isLoading: false })
-        console.log('Signed out or no user exists')
       }
     })
   }, [])
