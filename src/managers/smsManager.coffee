@@ -61,7 +61,7 @@ export default SmsManager =
         redirect: 'follow'
 
       try
-        response = await fetch 'https://localhost:5000/messaging/sendSms', requestOptions
+        response = await fetch 'https://peaceful-coparenting.app:5000/messaging/sendSms', requestOptions
         result = await response.text()
         console.log result
       catch error

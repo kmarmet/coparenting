@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
 import Manager from '@manager'
@@ -59,6 +59,10 @@ export default function FullMenu() {
         // An error happened.
       })
   }
+
+  useEffect(() => {
+    console.log(currentScreen)
+  }, [])
 
   return (
     <BottomCard

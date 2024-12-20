@@ -68,7 +68,7 @@ export default function Schooling({ activeChild, setActiveChild }) {
           expandIcon={<FaChevronDown />}
           className={!Manager.isValid(activeChild.schooling) ? 'disabled header schooling' : 'header schooling'}>
           <span className="material-icons-round">school</span>
-          Schooling
+          Schooling {!Manager.isValid(activeChild.schooling) ? '- No Info' : ''}
         </AccordionSummary>
         <AccordionDetails>
           {Manager.isValid(schoolingValues, true) &&

@@ -79,7 +79,7 @@ export default function ExpenseTracker() {
 
   const markAsPaid = async (expense) => {
     await DB.updateRecord(DB.tables.expenseTracker, expense, 'paidStatus', 'paid').then(async () => {
-      const subId = await NotificationManager.getUserSubId(expense.payer.phone)
+      const subId = await NotificationManager.getUserSubId(expense.payer.phone, 'phone')
       NotificationManager.sendNotification(
         `Expense Paid`,
         `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${expense.name} \nYou can delete the expense now`,
@@ -137,7 +137,7 @@ export default function ExpenseTracker() {
   }
 
   const sendReminder = async (expense) => {
-    const subId = await NotificationManager.getUserSubId(expense?.payer?.phone)
+    const subId = await NotificationManager.getUserSubId(expense?.payer?.phone, 'phone')
     const message = `This is a reminder to pay the ${expense.name} expense.  ${
       Manager.isValid(expense.dueDate) ? 'Due date is: ' + expense.dueDate : ''
     }`

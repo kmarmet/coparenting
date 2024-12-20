@@ -126,9 +126,9 @@ const Conversation = () => {
     }
 
     // Only send notification if coparent has chat UNmuted
-    const messageRecipientSubId = await NotificationManager.getUserSubId(messageRecipient)
-    if (Manager.isValid(existingChat?.mutedMembers, true)) {
-      const coparentHasChatMuted = existingChat.mutedMembers.filter((x) => x.ownerPhone === messageRecipient.phone).length > 0
+    const messageRecipientSubId = await NotificationManager.getUserSubId(messageRecipient.phone, 'phone')
+    if (Manager.isValid(existingChat?.mutedFor, true)) {
+      const coparentHasChatMuted = existingChat.mutedFor.filter((x) => x.ownerPhone === messageRecipient.phone).length > 0
       if (!coparentHasChatMuted) {
         NotificationManager.sendNotification('New Message', `You have an unread conversation message 💬`, messageRecipientSubId)
       }

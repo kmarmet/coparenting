@@ -75,7 +75,7 @@ export default function TransferRequests() {
   }
 
   const selectDecision = async (decision) => {
-    const ownerSubId = await NotificationManager.getUserSubId(activeRequest.ownerPhone)
+    const ownerSubId = await NotificationManager.getUserSubId(activeRequest.ownerPhone, 'phone')
     const recipient = await DB_UserScoped.getCoparentByPhone(activeRequest.recipientPhone, currentUser)
     const recipientName = recipient.name
     // Rejected

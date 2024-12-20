@@ -80,7 +80,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
       }
 
       // Notify
-      const subId = await NotificationManager.getUserSubId(requestRecipientPhone)
+      const subId = await NotificationManager.getUserSubId(requestRecipientPhone, 'phone')
       NotificationManager.sendNotification(
         `Transfer Change Request`,
         `${formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,

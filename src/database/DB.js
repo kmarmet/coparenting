@@ -10,7 +10,6 @@ const DB = {
     users: 'users',
     calendarEvents: 'calendarEvents',
     transferChangeRequests: 'transferChangeRequests',
-    profilePics: 'profilePics',
     chats: 'chats',
     documents: 'documents',
     archivedChats: 'archivedChats',
@@ -30,10 +29,6 @@ const DB = {
     }
     return result
   },
-  runQuery: async (table, query) => {
-    const records = await DB.getTable(table)
-    return records.filter(query)
-  },
   convertKeyObjectToArray: (keyObject) => {
     // console.log(keyObject)
     if (Manager.isValid(keyObject)) {
@@ -41,16 +36,6 @@ const DB = {
     } else {
       return []
     }
-  },
-  getFlatTableKey: async (path, id) => {
-    const records = await DB.getTable(path)
-    let key
-    records.forEach((record, index) => {
-      if (record.id === id) {
-        key = index
-      }
-    })
-    return key
   },
   getSnapshotKey: async (path, objectToCheck, propertyToCompare) =>
     await new Promise(async (resolve) => {
@@ -165,6 +150,7 @@ const DB = {
     if (Manager.isValid(rows, true)) {
       for (let row of rows) {
         idToDelete = await DB.getSnapshotKey(table, row, 'id')
+        console.log(`${table} | ID to delete: ${idToDelete}`)
         if (Manager.isValid(idToDelete)) {
           try {
             await remove(child(dbRef, `${table}/${idToDelete}/`))
@@ -184,12 +170,6 @@ const DB = {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }
   },
-  deleteImage: async (tableName, memory) => {
-    const dbRef = ref(getDatabase())
-    let toDeleteId
-    const key = await DB.getSnapshotKey(tableName, memory, 'id')
-    remove(child(dbRef, `${DB.tables.memories}/${toDeleteId}/`))
-  },
   deleteMemory: async (phoneUid, memory) => {
     const dbRef = ref(getDatabase())
     const key = await DB.getSnapshotKey(`${DB.tables.memories}`, memory, 'id')
@@ -198,10 +178,6 @@ const DB = {
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }
-  },
-  removeShareWithAccess: async (path, currentUser, record) => {
-    const shareWith = record.shareWith
-    const dbShareWith = await DB.getTable(path)
   },
   getTable: async (path, returnObject = false) => {
     const dbRef = ref(getDatabase())

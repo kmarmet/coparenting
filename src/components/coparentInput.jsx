@@ -62,7 +62,7 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
         checkboxLabels={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}
         onCheck={handleCoparentType}
       />
-      {showAddButton && (
+      {showAddButton && name.length > 0 && userPhone.length > 0 && parentType.length > 0 && (
         <button
           className="button default green"
           onClick={() => {
@@ -81,7 +81,7 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
             setShowAddButton(false)
             add({ name, phone: userPhone, parentType })
           }}>
-          {name.length > 0 && userPhone.length > 0 && parentType.length > 0 && <p className="green">Save {uppercaseFirstLetterOfAllWords(name)}</p>}
+          Save {uppercaseFirstLetterOfAllWords(name)}
         </button>
       )}
     </div>

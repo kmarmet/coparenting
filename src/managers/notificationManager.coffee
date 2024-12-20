@@ -75,8 +75,8 @@ export default NotificationManager =
             await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
       , 500
 
-  getUserSubId: (currentUser) ->
-    existingRecord = await DB.find(DB.tables.notificationSubscribers, ['email', currentUser?.email], true)
+  getUserSubId: (currentUserPhoneOrEmail, phoneOrEmail = "email") ->
+    existingRecord = DB.find(DB.tables.notificationSubscribers, [phoneOrEmail, currentUserPhoneOrEmail], true)
     existingRecord?.subscriptionId
 
   deleteUser: (oneSignalId, subId) ->

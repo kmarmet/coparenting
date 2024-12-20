@@ -272,17 +272,18 @@ export default function EventCalendar() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, `${DB.tables.calendarEvents}`), async (snapshot) => {
+      console.log('done with cal')
       await getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
     })
-  }
-
-  const updateCurrentUser = async () => {
     if (currentUser && currentUser.hasOwnProperty('email')) {
       const _currentUser = await DB_UserScoped.getCurrentUser(currentUser?.email, 'email')
-      setState({ ...state, currentUser: _currentUser, theme: _currentUser?.settings?.theme })
+      setState({ ...state, currentUser: _currentUser, theme: _currentUser?.settings?.theme, isLoading: false })
     }
   }
 
+  {
+    /* ON SHOW HOLIDAYS CHANGE */
+  }
   useEffect(() => {
     if (DomManager.isMobile()) {
       if (showHolidays) {
@@ -314,16 +315,12 @@ export default function EventCalendar() {
       })
     }
 
-    updateCurrentUser().then((r) => r)
-
-    Manager.showPageContainer('show')
-  }, [])
-
-  useEffect(() => {
     if (Manager.isValid(currentUser)) {
       onTableChange().then((r) => r)
     }
-  }, [currentUser])
+
+    Manager.showPageContainer('show')
+  }, [])
 
   return (
     <>

@@ -146,7 +146,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       }
 
       // Send notification
-      const subId = await NotificationManager.getUserSubId(payer.phone)
+      const subId = await NotificationManager.getUserSubId(payer.phone, 'phone')
       if (subId) {
         NotificationManager.sendNotification(`New Expense`, `${formatNameFirstNameOnly(currentUser?.name)} has created a new expense`, subId)
       }

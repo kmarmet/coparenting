@@ -97,7 +97,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       // Send Notification
       await DB.add(DB.tables.swapRequests, cleanObject).finally(() => {
         shareWith.forEach(async (coparentPhone) => {
-          const subId = await NotificationManager.getUserSubId(coparentPhone)
+          const subId = await NotificationManager.getUserSubId(coparentPhone, 'phone')
           NotificationManager.sendNotification(
             `New Swap Request`,
             `${formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
@@ -108,7 +108,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       })
       AlertManager.successAlert('Swap Request Sent')
 
-      resetForm()
+      await resetForm()
     }
   }
 

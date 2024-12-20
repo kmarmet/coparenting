@@ -49,6 +49,8 @@ import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import LogManager from '../../../managers/logManager'
 import { TbDeviceMobileMessage } from 'react-icons/tb'
+import DateFormats from '../../../constants/dateFormats'
+import moment from 'moment'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -110,7 +112,7 @@ export default function Registration() {
       let newUser = new User()
       newUser.id = Manager.getUid()
       newUser.email = email
-      newUser.name = uppercaseFirstLetterOfAllWords(userName)
+      newUser.name = uppercaseFirstLetterOfAllWords(userName).trim()
       newUser.accountType = 'parent'
       newUser.children = children
       newUser.phone = formatPhone(userPhone)
@@ -118,9 +120,10 @@ export default function Registration() {
       newUser.parentType = parentType
       newUser.notificationsEnabled = true
       newUser.settings.theme = 'light'
-      newUser.settings.eveningReminderSummaryHour = '8pm'
-      newUser.settings.morningReminderSummaryHour = '10am'
-
+      newUser.dailySummaries.eveningReminderSummaryHour = '8pm'
+      newUser.dailySummaries.morningReminderSummaryHour = '10am'
+      newUser.dailySummaries.eveningSentDate = moment().format(DateFormats.dateForDb)
+      newUser.dailySummaries.morningSentDateSentDate = moment().format(DateFormats.dateForDb)
       createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
           try {
@@ -156,12 +159,16 @@ export default function Registration() {
     }
     let childUser = new ChildUser()
     childUser.id = Manager.getUid()
-    childUser.name = uppercaseFirstLetterOfAllWords(userName)
+    childUser.name = uppercaseFirstLetterOfAllWords(userName).trim()
     childUser.accountType = 'child'
     childUser.parents = parents
     childUser.email = email
     childUser.notificationsEnabled = true
     childUser.settings.theme = 'light'
+    childUser.dailySummaries.eveningReminderSummaryHour = '8pm'
+    childUser.dailySummaries.morningReminderSummaryHour = '10am'
+    childUser.dailySummaries.eveningSentDate = moment().format(DateFormats.dateForDb)
+    childUser.dailySummaries.morningSentDateSentDate = moment().format(DateFormats.dateForDb)
     childUser.phone = formatPhone(userPhone)
     const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
     const dbRef = ref(getDatabase())
@@ -178,17 +185,17 @@ export default function Registration() {
 
     // SEND SMS MESSAGES
     // Send to parent
-    const parentSubId = await NotificationManager.getUserSubIdFromApi(parentPhone)
+    const parentSubId = await NotificationManager.getUserSubId(parentPhone, 'phone')
     NotificationManager.sendNotification(
       'Child Registration',
       `${userName} is now signed up. If you would like to be able to provide viewing access for them, add them in the Child Info section of the app. Including their phone number is required.`,
       parentSubId
     )
     // Send to child
-    const childSubId = await NotificationManager.getUserSubIdFromApi(userPhone)
+    const childSubId = await NotificationManager.getUserSubId(userPhone, 'phone')
     NotificationManager.sendNotification('Welcome Aboard!', 'You are now signed up!', childSubId)
     // Send to me
-    const mySubId = await NotificationManager.getUserSubIdFromApi('3307494534')
+    const mySubId = await NotificationManager.getUserSubId('3307494534', 'phone')
     NotificationManager.sendNotification('New Registration', `Phone: ${userPhone}`, mySubId)
     AlertManager.successAlert(`Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
     setState({ ...state, currentScreen: ScreenNames.login })

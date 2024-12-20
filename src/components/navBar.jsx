@@ -8,13 +8,12 @@ import { BiFace } from 'react-icons/bi'
 
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, currentUser, menuIsOpen, showCenterNavbarButton, theme, showNavbar, navbarButton, unreadMessageCount } = state
+  const { currentScreen, currentUser, menuIsOpen, theme, unreadMessageCount } = state
 
   const changeCurrentScreen = async (screen) => {
     setState({
       ...state,
       currentScreen: screen,
-      showCenterNavbarButton: true,
     })
   }
 

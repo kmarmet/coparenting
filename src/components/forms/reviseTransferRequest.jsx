@@ -76,7 +76,7 @@ export default function ReviseChildTransferChangeRequest({ hideCard, showCard, r
 
     // Notify
     if (revisionRequest?.recipientPhone) {
-      const subId = await NotificationManager.getUserSubId(revisionRequest?.requestRecipientPhone)
+      const subId = await NotificationManager.getUserSubId(revisionRequest?.recipientPhone, 'phone')
       NotificationManager.sendNotification(
         `Transfer Change Request`,
         `${formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,

@@ -8,7 +8,6 @@ import Activity from './components/screens/activity'
 import EventCalendar from '@screens/calendar.jsx'
 import InstallAppPopup from '@components/installAppPopup.jsx'
 import Account from '@screens/account/account.jsx'
-import UpdateContactInfo from '@screens/account/updateContactInfo.jsx'
 import Chat from '@screens/chats/chats.jsx'
 import Conversation from '@screens/chats/conversation.jsx'
 import ChildInfo from '@screens/childInfo/childInfo.jsx'
@@ -54,6 +53,8 @@ import Home from './components/screens/home'
 import BrandBar from './components/shared/brandBar'
 import SideNavbar from './components/shared/sideNavbar'
 import DB_UserScoped from '@userScoped'
+import DB from '@db'
+import Manager from '@manager'
 
 export default function App() {
   // Initialize Firebase
@@ -62,10 +63,7 @@ export default function App() {
   const [state, setState] = useState(StateObj)
   const stateToUpdate = { state, setState }
   const { userIsLoggedIn, firebaseUser, setFirebaseUser } = state
-  const [userEmail, setUserEmail] = useState('')
   const myCanvas = document.createElement('canvas')
-  const [currentUserPhone, setCurrentUserPhone] = useState('')
-  const subscriptionId = localStorage.getItem('subscriptionId')
 
   emailjs.init({
     publicKey: 'khikD1NoIHmBPlckL',
@@ -111,6 +109,7 @@ export default function App() {
 
   // ON PAGE LOAD
   useEffect(() => {
+    setState({ ...state, isLoading: true })
     // Error Boundary Test
     // throw new Error('Something went wrong')
     document.body.appendChild(myCanvas)
@@ -119,10 +118,17 @@ export default function App() {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const user = auth.currentUser
-        setUserEmail(user.email)
         const _currentUser = await DB_UserScoped.getCurrentUser(user.email, 'email')
+
+        // Delete scoped permission codes if they exist
         NotificationManager.init(_currentUser)
-        setState({ ...state, currentUser: _currentUser, theme: _currentUser?.settings?.theme })
+        const permissionCodes = await DB.getTable(DB.tables.parentPermissionCodes)
+        const scopedCodes = permissionCodes.filter((x) => x.parentPhone === _currentUser.phone || x.childPhone === _currentUser.phone)
+        if (Manager.isValid(scopedCodes)) {
+          await DB.deleteMultipleRows(DB.tables.parentPermissionCodes, scopedCodes, _currentUser)
+        }
+        setState({ ...state, currentUser: _currentUser, theme: _currentUser?.settings?.theme, isLoading: false })
+        console.log('done')
       } else {
         console.log('signed out or user doesn"t exist')
       }
@@ -159,8 +165,12 @@ export default function App() {
           <div className="flex" id="app-content-wrapper">
             {/* TOP NAVBAR */}
 
-            {currentScreen !== ScreenNames.home && <BrandBar />}
-            {currentScreen !== ScreenNames.home && <SideNavbar />}
+            {currentScreen !== ScreenNames.home && currentScreen !== ScreenNames.login && (
+              <>
+                <BrandBar />
+                <SideNavbar />
+              </>
+            )}
             {/* ADMIN */}
             {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
 
@@ -170,7 +180,6 @@ export default function App() {
 
             {/* UPDATE/EDIT */}
             {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}
-            {currentScreen === ScreenNames.updateContactInfo && <UpdateContactInfo />}
             {currentScreen === ScreenNames.reviseTransferRequest && <ReviseChildTransferChangeRequest />}
 
             {/* DOCUMENTS */}

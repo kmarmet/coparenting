@@ -8,6 +8,7 @@ import { CgClose } from 'react-icons/cg'
 export default function BottomCard({
   submitText,
   submitIcon,
+  submitButtonColor = '',
   onSubmit,
   onDelete,
   onClose,
@@ -77,7 +78,7 @@ export default function BottomCard({
         </div>
         <div className={` flex buttons`}>
           {hasSubmitButton && (
-            <button className="button card-button submit" onClick={onSubmit}>
+            <button className={`button card-button submit ${submitButtonColor}`} onClick={onSubmit}>
               {submitText} {submitIcon}
             </button>
           )}

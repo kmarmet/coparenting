@@ -191,7 +191,7 @@ export default function Login() {
       <InstallAppPopup />
 
       {/* PAGE CONTAINER */}
-      <div id="login-container" className={`light page-container form login`}>
+      <div id="login-container" className={`page-container form login`}>
         <img className="ml-auto mr-auto" src={require('../../../img/logo.png')} alt="Peaceful coParenting" />
         {/* QUOTE CONTAINER */}
         <div id="quote-container">

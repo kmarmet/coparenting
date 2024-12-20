@@ -307,18 +307,27 @@ const DB_UserScoped = {
   },
   deleteUserData: async (currentUser) => {
     const dbRef = ref(getDatabase())
-    const events = await DB.getTable(DB.tables.calendarEvents)
-    const memories = await DB.getTable(DB.tables.memories)
-    const expenses = await DB.getTable(DB.tables.expenseTracker)
-    const suggestions = await DB.getTable(DB.tables.suggestions)
-    const notificationSubs = await DB.getTable(DB.tables.notificationSubscribers)
-    const merged = _.concat(events, memories, expenses, suggestions, notificationSubs).filter((x) => x)
+    const events = await Manager.convertToArray(DB.getTable(DB.tables.calendarEvents))
+    const memories = await Manager.convertToArray(DB.getTable(DB.tables.memories))
+    const expenses = await Manager.convertToArray(DB.getTable(DB.tables.expenseTracker))
+    const suggestions = await Manager.convertToArray(DB.getTable(DB.tables.suggestions))
+    const merged = _.concat(events, memories, expenses, suggestions).filter((x) => x)
     const scopedToCurrentUser = merged.filter(
-      (x) => x.ownerPhone === currentUser.phone || formatNameFirstNameOnly(x.createdBy) === formatNameFirstNameOnly(currentUser?.name)
+      (x) =>
+        x?.ownerPhone === currentUser?.phone ||
+        x?.phone === currentUser?.phone ||
+        formatNameFirstNameOnly(x?.createdBy) === formatNameFirstNameOnly(currentUser?.name)
     )
 
+    // Delete subscriber from DB
+    const subscriber = await DB.find(DB.tables.notificationSubscribers, ['phone', currentUser.phone], true)
+
+    if (Manager.isValid(subscriber)) {
+      const notifSubDeleteKey = await DB.getSnapshotKey(DB.tables.notificationSubscribers, subscriber, 'id')
+      await DB.deleteByPath(`${DB.tables.notificationSubscribers}/${notifSubDeleteKey}`)
+    }
+
     for (let record of scopedToCurrentUser) {
-      let tableName
       if (record.hasOwnProperty('fromVisitationSchedule')) {
         await DB.deleteMultipleRows(DB.tables.calendarEvents, events, currentUser)
       }
@@ -331,20 +340,14 @@ const DB_UserScoped = {
         await DB.deleteMultipleRows(DB.tables.memories, memories, currentUser)
       }
 
-      if (record.hasOwnProperty('subscriptionId')) {
-        await DB.deleteMultipleRows(DB.tables.notificationSubscribers, notificationSubs, currentUser)
-      }
-
       if (record.hasOwnProperty('suggestion')) {
+        console.log(record)
         await DB.deleteMultipleRows(DB.tables.suggestions, suggestions, currentUser)
       }
-      if (tableName) {
-      }
     }
-    // console.log(scopedToCurrentUser)
     // DELETE ROOTED (users, archivedChat)
-    // await remove(child(dbRef, `${DB.tables.users}/${currentUser?.phone}`))
-    // await remove(child(dbRef, `${DB.tables.archivedChats}/${currentUser?.phone}`))
+    await remove(child(dbRef, `${DB.tables.users}/${currentUser?.phone}`))
+    await remove(child(dbRef, `${DB.tables.archivedChats}/${currentUser?.phone}`))
   },
 
   // MISC.

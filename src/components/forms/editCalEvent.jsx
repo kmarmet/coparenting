@@ -232,7 +232,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     // Share with Notifications
     for (const phone of eventShareWith) {
       const coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
-      const subId = await NotificationManager.getUserSubId(coparent)
+      const subId = await NotificationManager.getUserSubId(coparent.phone, 'phone')
       NotificationManager.sendNotification('Event Updated', `${eventTitle} has been updated`, subId)
     }
 

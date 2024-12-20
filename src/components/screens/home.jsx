@@ -76,7 +76,7 @@ export default function Home() {
         setState({
           ...state,
           currentScreen: ScreenNames.calendar,
-          userIsLoggedIn: true,
+          // userIsLoggedIn: true,
           // isLoading: false,
         })
       } else {
