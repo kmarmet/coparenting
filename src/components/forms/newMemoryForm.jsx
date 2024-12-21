@@ -153,7 +153,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
           )
         })
         AppManager.setAppBadge(1)
-        resetForm()
+        await resetForm()
       })
   }
 

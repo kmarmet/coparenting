@@ -3,6 +3,35 @@
 @import './mixins';
 
 #external-overrides {
+  /*#region  1000PX OUTSIDE APP CONTAINER*/
+  @media screen and (min-width: 1600px) {
+    .full-menu {
+      #full-menu {
+        gap: 10px;
+        .menu-item {
+          width: 23%;
+          height: 150px;
+        }
+      }
+    }
+
+    #bottom-card {
+      max-width: 40vw;
+      width: 40vw;
+
+      #relative-wrapper {
+        .buttons {
+          padding-bottom: 0;
+        }
+      }
+
+      &.full-menu {
+        .buttons {
+          background-color: transparent !important;
+        }
+      }
+    }
+  }
   @media screen and (max-width: 800px) {
     .MuiYearCalendar-root {
       border-radius: $bigBorderRadius;
@@ -14,14 +43,81 @@
       }
     }
   }
+  /*#endregion  1000PX OUTSIDE APP CONTAINER*/
+
+  /*#region  1000PX APP CONTAINER*/
   #app-container {
-    // HUGE SCREENS
-    .MuiPaper-root {
-      @media screen and (min-width: 1000px) {
+    @media screen and (min-width: 1000px) {
+      .page-container {
+        padding: 20px 20px 200px 20px;
+      }
+      // LOGIN SCREEN
+      #app-content-with-sidebar {
+        &.fullscreen {
+          margin: 0;
+          height: 100vh;
+          background: white;
+
+          #login-container {
+            max-width: 60vw;
+          }
+        }
+        #forgot-password-container {
+          margin-top: 15px;
+          max-width: 60vw;
+
+          .button {
+            width: 25%;
+          }
+        }
+        #login-container {
+          padding-top: 15px;
+
+          #forgot-password-link {
+            max-width: 180px;
+            @include hover;
+          }
+
+          .buttons {
+            justify-content: flex-start;
+
+            button {
+              width: 25%;
+            }
+          }
+        }
+      }
+
+      // INSTRUCTIONS WRAPPER
+      #instructions-wrapper {
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        .instructions {
+          text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          &.center {
+            text-align: center;
+            font-size: 14px;
+            left: unset;
+            right: unset;
+            width: unset;
+            top: unset;
+            bottom: unset;
+            transform: unset;
+            position: relative;
+          }
+        }
+      }
+
+      // MUI - STATIC CALENDAR
+      .MuiPaper-root {
         max-width: 100%;
       }
-    }
-    @media screen and (min-width: 1000px) {
       #static-calendar {
         .MuiYearCalendar-root {
           background: $bestGreyForWhite;
@@ -53,61 +149,68 @@
       .MuiDialogActions-root {
         max-width: 50vw !important;
       }
-    }
 
-    @media screen and (min-width: 1000px) {
       // CALENDAR
+      #calendar-container {
+        .events {
+          max-height: 20vh;
+        }
+      }
       #calendar-sidebar {
-        width: 20vw;
-        background:white;
+        background: white;
         padding: 20px;
         border-radius: $bigBorderRadius;
-        height: 100%;
-        margin-right: auto;
-        
+        border: 1px solid #e0e0e0;
+        width: 40%;
+
         @media screen and (max-width: 600px) {
           display: none;
         }
-        
+
         input {
-          font-size: 14px;
-          font-style: italic;
+          &::placeholder {
+            font-size: 12px;
+            font-style: italic;
+            opacity: 0.8;
+          }
         }
-        
+
         .item {
           margin-top: 0;
           margin-bottom: 15px;
           display: flex;
           align-items: center;
-          @include hover;
-          
+          opacity: 0.85;
+          @include transformHover;
+
           * {
             line-height: 1;
           }
-          
+
           &#new-event {
             color: $green;
             font-weight: $fwMedium;
           }
-          
+
           &:not(#new-event) {
             &:hover {
               color: $mainBlue;
             }
           }
-          
+
           svg {
             font-size: 22px;
             margin-right: 15px;
+            opacity: 0.85;
           }
         }
       }
-      
+
       // SECTION
       .section {
         @include hover;
       }
-      
+
       // BUTTONS
       button {
         &.button {
@@ -136,7 +239,7 @@
           }
         }
       }
-      
+
       // CHILD INFO
       #child-info-container {
         .button {
@@ -147,25 +250,47 @@
           }
         }
       }
-      
+
       // MEMORIES
       #memories-container {
         .light-gallery {
           gap: 20px;
           .memory {
-            width: auto;
-            min-width: 270px;
+            width: 180px;
+            height: 180px;
+            background: unset;
+            padding: unset;
+            border: unset;
+          }
+
+          .memory-image {
+            @include transformHover;
+            height: 150px;
+            min-height: 0;
+            border: 1px solid $bestGreyForWhite;
+            &:hover {
+              @include bestShadow;
+              border: unset;
+            }
+
+            .delete-icon {
+              font-size: 22px;
+              height: unset;
+              width: unset;
+              color: $red;
+              &:hover {
+                @include bestShadow;
+                border: unset;
+              }
+            }
           }
         }
-        .memory-image {
-          @include transformHover;
-        }
       }
-      
+
       #disclaimer {
-        max-width: 20vw;
+        max-width: 70%;
         margin: 0 auto;
-        
+
         p {
           width: auto;
           font-size: 14px;
@@ -173,53 +298,97 @@
           font-style: italic;
         }
       }
-      
+
       // SHARE WITH WRAPPER
       .share-with-container {
+        width: 100%;
         @media screen and (min-width: 1000px) {
           display: flex;
           justify-content: space-between;
-          
+          flex-wrap: wrap;
+
+          .MuiAccordionSummary-content,
+          .MuiAccordion-heading {
+            .react-toggle {
+              position: relative;
+              left: 10px;
+            }
+          }
+
           .flex:not(#checkbox-container) {
-            width: calc(40vw - 50px);
             justify-content: space-between;
+            width: 100%;
             padding: 0;
             margin: 0;
             .react-toggle {
               justify-self: flex-end;
             }
           }
+          #checkbox-group {
+            width: 100%;
+          }
         }
       }
-      
+
       // BOTTOM CARD
       #bottom-card {
+        @media screen and (min-width: 1000px) {
+          &.active {
+            min-height: unset;
+            max-height: unset;
+            height: 90vh;
+          }
+
+          &.view-holidays {
+            max-height: 25vh;
+            min-height: 0;
+            button {
+              transform: unset;
+            }
+
+            #relative-wrapper {
+              #holiday-card-buttons {
+                margin: 15px 0;
+
+                button {
+                  &#view-all-holidays-item {
+                    &:hover {
+                      background: $green;
+                      color: white;
+                    }
+                  }
+                  &#view-visitation-holidays-item {
+                    &:hover {
+                      background: $mainBlue;
+                      color: white;
+
+                      &.blue {
+                        color: white;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
         @media screen and (min-width: 800px) {
           @include deadCenter;
           @include bestShadow;
           border-radius: $bigBorderRadius;
-          
-          &.active {
-            //          min-height: 90vh;
-            //          max-height: 90vh;
-            
-            &.view-holidays {
-              max-height: 90vh;
-            }
-          }
-          
+
           .close-icon {
             @include hover;
           }
-          
+
           #duration-options {
             .duration-option {
               @include hover;
             }
           }
-          
+
           #relative-wrapper {
-            max-height: calc(100% - 50px);
+            //            max-height: 90%;
             overflow: scroll;
             padding-bottom: 0;
             .buttons {
@@ -232,7 +401,7 @@
                   cursor: pointer;
                   background: $mainBlue;
                   color: white;
-                  
+
                   svg {
                     color: white;
                   }
@@ -244,7 +413,7 @@
           }
         }
       }
-      
+
       // CHATS
       #chats-container {
         .thread-item {
@@ -257,13 +426,14 @@
         }
       }
       #message-thread-container {
-        width: 60vw;
-        max-width: 60vw;
         position: unset;
         margin-right: auto;
         border-radius: $bigBorderRadius;
         flex-direction: row;
-        
+        margin-left: 15px;
+        height: calc(100vh - 100px);
+        max-height: calc(100vh - 100px);
+
         .top-buttons {
           position: unset;
           order: 1;
@@ -271,41 +441,65 @@
           margin-left: 20px;
           width: 20vw;
           border-radius: $bigBorderRadius;
-          @include shadow;
-          
+          border: 1px solid #e0e0e0;
+
           #user-name {
             color: $mainBlue;
             font-weight: $fwMediumBold;
             font-size: 20px;
             margin: 0 0 15px 0;
           }
-          
+
           .item {
             display: flex;
+            margin-bottom: 15px;
             align-items: center;
-            margin: 0 0 15px 0;
-            
+
+            &#find-messages,
+            &#view-bookmarks {
+              opacity: 0.75;
+              svg {
+                font-size: 22px;
+                margin-right: 20px;
+                opacity: 0.65;
+              }
+            }
+
             &:hover {
               cursor: pointer;
-              
               color: $mainBlue;
             }
-            
+
             svg {
               font-size: 22px;
-              margin-right: 15px;
+              margin-right: 20px;
+              opacity: 0.85;
             }
           }
         }
-        
+
         .form {
-          max-width: 42vw;
           width: 100%;
-          
+          display: flex;
+          justify-content: center;
+          border-left: 1px solid #e0e0e0;
+          border-right: 1px solid #e0e0e0;
+          border-bottom: 1px solid #e0e0e0;
+          border-radius: 0 0 $bigBorderRadius $bigBorderRadius;
+
+          position: fixed;
+          bottom: 0;
+
           .message-input {
             backdrop-filter: blur(20px);
           }
-          
+
+          #message-input-container {
+            padding: 0;
+            justify-content: center;
+            width: 100%;
+          }
+
           #send-button {
             right: unset;
             opacity: unset;
@@ -314,7 +508,7 @@
             margin-left: 20px;
           }
         }
-        
+
         #default-messages,
         #bookmark-messages,
         #messages {
@@ -325,19 +519,25 @@
           border-radius: $bigBorderRadius;
           position: relative;
           bottom: 3px;
-          @include shadow;
-          
+          border: 1px solid #e0e0e0;
+
+          .message {
+            svg {
+              @include transformHover;
+            }
+          }
+
           .message {
             min-width: 200px;
             max-width: 35%;
-            
+
             svg {
               @include hover;
             }
           }
         }
       }
-      
+
       // Navbar
       #navbar {
         @media screen and (min-width: 1000px) {
@@ -349,11 +549,11 @@
           padding: 0;
           top: 50%;
           bottom: 50%;
-          
+
           #menu-items {
             background: transparent;
             width: auto;
-            
+
             #svg-wrapper {
               &:hover {
                 cursor: pointer;
@@ -361,7 +561,7 @@
                 transform: scale(1.1);
               }
             }
-            
+
             .menu-item {
               &:not(.add) {
                 display: none;
@@ -372,36 +572,10 @@
       }
     }
 
-    @media screen and (min-width: 1600px) {
-      .full-menu {
-        #full-menu {
-          gap: 10px;
-          .menu-item {
-            width: 23%;
-            height: 150px;
-          }
-        }
-      }
-
-      #bottom-card {
-        max-width: 40vw;
-        width: 40vw;
-
-        #relative-wrapper {
-          .buttons {
-            padding-bottom: 0;
-          }
-        }
-
-        &.full-menu {
-          .buttons {
-            background-color: transparent !important;
-          }
-        }
-      }
-    }
     .page-container {
+      height: unset;
       &:not(.home) {
+        align-self: stretch;
         @media screen and (max-width: 600px) {
           height: 100vh;
         }
@@ -412,42 +586,33 @@
         @media screen and (min-width: 1600px) {
           width: 50vw;
           max-width: 50vw;
-          
-          #navbar {
-            width: 50vw;
-          }
         }
       }
+    }
+  }
+  /*#endregion  1000PX APP CONTAINER*/
 
-      @media screen and (min-width: 1000px) {
-        &.calendar {
-          margin-right: 20px;
-        }
-        #instructions-wrapper {
-          width: 100%;
-          max-width: 100%;
-          height: 100%;
-          .instructions {
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            &.center {
-              text-align: center;
-              font-size: 14px;
-              left: unset;
-              right: unset;
-              width: unset;
-              top: unset;
-              bottom: unset;
-              transform: unset;
-              position: relative;
-            }
+  /*#region  1600PX APP CONTAINER*/
+  @media screen and (min-width: 1600px) {
+    #app-container {
+      #app-content-with-sidebar {
+        margin: 0 auto;
+        max-width: 50vw;
+      }
+
+      #bottom-card {
+        max-width: 20vw;
+      }
+
+      #static-calendar {
+        max-width: 50vw !important;
+        .MuiPickersLayout-contentWrapper {
+          * {
+            max-width: 26vw !important;
           }
         }
       }
     }
   }
+  /*#endregion  1600PX APP CONTAINER*/
 }

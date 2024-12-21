@@ -18,6 +18,8 @@ import { PiCalendarDotsDuotone, PiSwapDuotone, PiUserDuotone } from 'react-icons
 import { MdOutlineNotes } from 'react-icons/md'
 import { FaChildren } from 'react-icons/fa6'
 import { BiTimeFive } from 'react-icons/bi'
+import { Fade } from 'react-awesome-reveal'
+
 import {
   contains,
   displayAlert,
@@ -37,6 +39,7 @@ import {
 } from 'globalFunctions'
 import DateManager from '../../managers/dateManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
+import DomManager from '../../managers/domManager'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -120,7 +123,6 @@ export default function SwapRequests() {
 
   useEffect(() => {
     onTableChange().then((r) => r)
-    Manager.showPageContainer()
   }, [])
 
   return (
@@ -239,76 +241,79 @@ export default function SwapRequests() {
 
       {/* PAGE CONTAINER */}
       <div id="swap-requests" className={`${theme} page-container form`}>
-        <p className="screen-title">Swap Requests</p>
-        <>
+        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'swap-requests-fade-wrapper'}>
+          <div className="flex" id="screen-title-wrapper">
+            <p className="screen-title">Swap Requests </p>
+            {!DomManager.isMobile() && <IoAdd id={'add-new-button'} className={'swap-requests'} onClick={() => setShowCard(true)} />}
+          </div>
           <p className="text-screen-intro mb-15">A request for your child(ren) to stay with you during your co-parent's scheduled visitation time.</p>
           {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
-        </>
 
-        {/* LOOP REQUESTS */}
-        <div id="swap-requests-container">
-          {Manager.isValid(existingRequests) &&
-            existingRequests.map((request, index) => {
-              return (
-                <div
-                  onClick={() => {
-                    setShowDetails(true)
-                    setActiveRequest(request)
-                  }}
-                  key={index}
-                  id="row"
-                  className="request w-100 mb-10 flex-start">
-                  {/* REQUEST DATE */}
-                  <div id="primary-icon-wrapper" className="mr-10">
-                    <PiSwapDuotone id={'primary-row-icon'} />
-                  </div>
+          {/* LOOP REQUESTS */}
+          <div id="swap-requests-container">
+            {Manager.isValid(existingRequests) &&
+              existingRequests.map((request, index) => {
+                return (
+                  <div
+                    onClick={() => {
+                      setShowDetails(true)
+                      setActiveRequest(request)
+                    }}
+                    key={index}
+                    id="row"
+                    className="request w-100 mb-10 flex-start">
+                    {/* REQUEST DATE */}
+                    <div id="primary-icon-wrapper" className="mr-10">
+                      <PiSwapDuotone id={'primary-row-icon'} />
+                    </div>
 
-                  <div id="content" className={`${request?.reason?.length > 20 ? 'long-text' : ''}`}>
-                    {/* MULTIPLE */}
-                    {request.duration === SwapDurations.multiple && (
-                      <div className="flex">
-                        <p id="title" className="row-title">
-                          {moment(request.startDate).format('dddd, MMM Do')} to {moment(request.endDate).format('dddd, MMM Do')}
-                        </p>
-                        <span className={`${request.status} status`} id="request-status">
-                          {uppercaseFirstLetterOfAllWords(request.status)}
-                        </span>
-                      </div>
-                    )}
-                    {/* SINGLE */}
-                    <div className="flex">
-                      {request.duration === SwapDurations.single && moment(request.startDate).format('dddd, MMM Do') && (
-                        <>
+                    <div id="content" className={`${request?.reason?.length > 20 ? 'long-text' : ''}`}>
+                      {/* MULTIPLE */}
+                      {request.duration === SwapDurations.multiple && (
+                        <div className="flex">
                           <p id="title" className="row-title">
-                            {moment(request.startDate).format('dddd, MMM Do')}
+                            {moment(request.startDate).format('dddd, MMM Do')} to {moment(request.endDate).format('dddd, MMM Do')}
                           </p>
                           <span className={`${request.status} status`} id="request-status">
                             {uppercaseFirstLetterOfAllWords(request.status)}
                           </span>
-                        </>
+                        </div>
                       )}
-                      {/* HOURS */}
+                      {/* SINGLE */}
+                      <div className="flex">
+                        {request.duration === SwapDurations.single && moment(request.startDate).format('dddd, MMM Do') && (
+                          <>
+                            <p id="title" className="row-title">
+                              {moment(request.startDate).format('dddd, MMM Do')}
+                            </p>
+                            <span className={`${request.status} status`} id="request-status">
+                              {uppercaseFirstLetterOfAllWords(request.status)}
+                            </span>
+                          </>
+                        )}
+                        {/* HOURS */}
+                        {request.duration === SwapDurations.intra && (
+                          <>
+                            <p id="title" className="row-title">
+                              {moment(request.startDate).format('dddd, MMM Do')}
+                            </p>
+                            <span className={`${request.status} status`} id="request-status">
+                              {uppercaseFirstLetterOfAllWords(request.status)}
+                            </span>
+                          </>
+                        )}
+                      </div>
                       {request.duration === SwapDurations.intra && (
-                        <>
-                          <p id="title" className="row-title">
-                            {moment(request.startDate).format('dddd, MMM Do')}
-                          </p>
-                          <span className={`${request.status} status`} id="request-status">
-                            {uppercaseFirstLetterOfAllWords(request.status)}
-                          </span>
-                        </>
+                        <p id="subtitle">
+                          {request.fromHour.replace(' ', '')} to {request.toHour.replace(' ', '')}
+                        </p>
                       )}
                     </div>
-                    {request.duration === SwapDurations.intra && (
-                      <p id="subtitle">
-                        {request.fromHour.replace(' ', '')} to {request.toHour.replace(' ', '')}
-                      </p>
-                    )}
                   </div>
-                </div>
-              )
-            })}
-        </div>
+                )
+              })}
+          </div>
+        </Fade>
       </div>
       {!showCard && !showDetails && (
         <NavBar navbarClass={'swap-requests'}>

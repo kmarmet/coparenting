@@ -14,6 +14,7 @@ import { IoAdd } from 'react-icons/io5'
 import SecurityManager from '../../managers/securityManager'
 import { BiNavigation } from 'react-icons/bi'
 import { PiCarProfileDuotone, PiUserDuotone } from 'react-icons/pi'
+import { Fade } from 'react-awesome-reveal'
 import {
   contains,
   formatFileName,
@@ -33,6 +34,7 @@ import {
 import AlertManager from '../../managers/alertManager'
 import { MdOutlineNotes } from 'react-icons/md'
 import BottomCard from '../shared/bottomCard'
+import DomManager from '../../managers/domManager'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -107,7 +109,6 @@ export default function TransferRequests() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.transferChangeRequests), async (snapshot) => {
-      console.log(snapshot.val())
       await getSecuredRequests().then((r) => r)
       setTimeout(() => {
         addEventRowAnimation()
@@ -117,7 +118,6 @@ export default function TransferRequests() {
 
   useEffect(() => {
     onTableChange().then((r) => r)
-    Manager.showPageContainer()
   }, [])
 
   return (
@@ -218,56 +218,61 @@ export default function TransferRequests() {
       </BottomCard>
 
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
-        <p className="screen-title">Transfer Change Requests</p>
-        <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>
-        {existingRequests.length === 0 && (
-          <div id="instructions-wrapper">
-            <p className="instructions center">There are currently no requests</p>
+        <Fade direction={'up'} duration={1000} className={'transfer-requests-fade-wrapper'} triggerOnce={true}>
+          <div className="flex" id="screen-title-wrapper">
+            <p className="screen-title">Transfer Change Requests</p>
+            {!DomManager.isMobile() && <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />}
           </div>
-        )}
+          <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>
+          {existingRequests.length === 0 && (
+            <div id="instructions-wrapper">
+              <p className="instructions center">There are currently no requests</p>
+            </div>
+          )}
 
-        {existingRequests.length > 0 && <p id="page-title">All Requests</p>}
+          {existingRequests.length > 0 && <p id="page-title">All Requests</p>}
 
-        {/* LOOP REQUESTS */}
-        {!showNewRequestCard && (
-          <div id="all-transfer-requests-container" className="mt-15">
-            {Manager.isValid(existingRequests, true) &&
-              existingRequests.map((request, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="flex"
-                    id="row"
-                    onClick={() => {
-                      setActiveRequest(request)
-                      setTimeout(() => {
-                        setShowDetails(true)
-                      }, 300)
-                    }}>
-                    <div id="primary-icon-wrapper">
-                      <PiCarProfileDuotone id={'primary-row-icon'} />
-                    </div>
-                    <div data-request-id={request.id} className="request " id="content">
-                      {/* DATE */}
-                      <p id="title" className="flex date row-title">
-                        {DateManager.formatDate(request.date)}
-                        <span className={`${request.status} status`} id="request-status">
-                          {uppercaseFirstLetterOfAllWords(request.status)}
-                        </span>
-                      </p>
-                      {request?.recipientPhone === currentUser.phone && <p id="subtitle">From {formatNameFirstNameOnly(request?.createdBy)}</p>}
-                      {request?.recipientPhone !== currentUser.phone && (
-                        <p id="subtitle">
-                          Request Sent to{' '}
-                          {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === request?.recipientPhone)[0]?.name)}
+          {/* LOOP REQUESTS */}
+          {!showNewRequestCard && (
+            <div id="all-transfer-requests-container" className="mt-15">
+              {Manager.isValid(existingRequests, true) &&
+                existingRequests.map((request, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="flex"
+                      id="row"
+                      onClick={() => {
+                        setActiveRequest(request)
+                        setTimeout(() => {
+                          setShowDetails(true)
+                        }, 300)
+                      }}>
+                      <div id="primary-icon-wrapper">
+                        <PiCarProfileDuotone id={'primary-row-icon'} />
+                      </div>
+                      <div data-request-id={request.id} className="request " id="content">
+                        {/* DATE */}
+                        <p id="title" className="flex date row-title">
+                          {DateManager.formatDate(request.date)}
+                          <span className={`${request.status} status`} id="request-status">
+                            {uppercaseFirstLetterOfAllWords(request.status)}
+                          </span>
                         </p>
-                      )}
+                        {request?.recipientPhone === currentUser.phone && <p id="subtitle">From {formatNameFirstNameOnly(request?.createdBy)}</p>}
+                        {request?.recipientPhone !== currentUser.phone && (
+                          <p id="subtitle">
+                            Request Sent to{' '}
+                            {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === request?.recipientPhone)[0]?.name)}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
-          </div>
-        )}
+                  )
+                })}
+            </div>
+          )}
+        </Fade>
       </div>
 
       {!showNewRequestCard && !showRevisionCard && !showDetails && (

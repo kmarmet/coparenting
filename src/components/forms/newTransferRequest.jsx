@@ -206,16 +206,6 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
               dataPhone={currentUser?.coparents?.map((x) => x.phone)}
               checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
             />
-            <div className="buttons gap">
-              {moment(requestDate).format(DateFormats.dateForDb).replace('Invalid date', '').length > 0 && requestRecipientPhone.length > 0 && (
-                <button className="button card-button" onClick={submit}>
-                  Create Request
-                </button>
-              )}
-              <button className="button card-button cancel" onClick={resetForm}>
-                Cancel
-              </button>
-            </div>
           </div>
         </div>
       </div>

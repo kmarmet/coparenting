@@ -8,8 +8,9 @@ import SecurityManager from '../../managers/securityManager'
 import NewMemoryForm from '../forms/newMemoryForm'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
-import { HiOutlineSave } from 'react-icons/hi'
 import moment from 'moment'
+import { Fade } from 'react-awesome-reveal'
+
 import {
   capitalizeFirstWord,
   contains,
@@ -35,6 +36,7 @@ import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
+import DomManager from '../../managers/domManager'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -108,7 +110,10 @@ export default function Memories() {
       setTimeout(() => {
         setTimeout(() => {
           const parent = memoryImage.parentNode
-          parent.querySelector('.loading-memory-gif').remove()
+          const loadingGif = parent.querySelector('.loading-memory-gif')
+          if (loadingGif) {
+            loadingGif.remove()
+          }
           memoryImage.classList.add('active')
         }, 200 * i)
       }, 500)
@@ -118,7 +123,7 @@ export default function Memories() {
   const saveMemoryImage = (e) => {
     const memoryImage = e.target.parentNode.previousSibling
     if (Manager.isValid(memoryImage)) {
-      const src = memoryImage.getAttribute('data-src')
+      const src = memoryImage.querySelector('.memory-image').getAttribute('data-src')
       if (Manager.isValid(src)) {
         ImageManager.saveImageFromUrl(null, src)
       }
@@ -133,8 +138,6 @@ export default function Memories() {
 
   useEffect(() => {
     onTableChange().then((r) => r)
-
-    Manager.showPageContainer()
   }, [])
 
   return (
@@ -144,63 +147,70 @@ export default function Memories() {
 
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
-        <p className="screen-title">Memories</p>
-        <p id="happy-subtitle" className={`${theme} mb-10`}>
-          Upload photos of memories that are too good NOT to share <span className="material-icons heart">favorite</span>
-        </p>
-
-        {/* NO DATA FALLBACK TEXT */}
-        {memories && memories.length === 0 && <NoDataFallbackText text={'There are currently no memories'} />}
-
-        {/* GALLERY */}
-        <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
-          <>
-            {Manager.isValid(memories, true) &&
-              memories.map((imgObj, index) => {
-                return (
-                  <div key={index} className="memory">
-                    {/* TITLE AND DATE */}
-                    {imgObj?.title.length > 0 && (
-                      <div id="title-and-date">
-                        {/* TITLE */}
-                        <p className="title">{uppercaseFirstLetterOfAllWords(imgObj.title)}</p>
-
-                        {/* DATE */}
-                        {DateManager.dateIsValid(imgObj.memoryCaptureDate) && (
-                          <p id="date">{moment(imgObj.memoryCaptureDate).format(DateFormats.readableMonthAndDay)}</p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* IMAGE */}
-                    <div id="memory-image-wrapper">
-                      <img src={require('../../img/loading.gif')} className="loading-memory-gif" alt="" />
-                      <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}>
-                        {/* DELETE ICON */}
-                        <IoIosCloseCircle className={'delete-icon'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
-                      </div>
-                    </div>
-
-                    {/* NOTES */}
-                    <div id="below-image" className="flex">
-                      <p className="text">{capitalizeFirstWord(imgObj?.notes)}</p>
-
-                      {/* SAVE ICON */}
-                      <HiOutlineSave id={'save-icon'} onClick={(e) => saveMemoryImage(e)} />
-                    </div>
-                  </div>
-                )
-              })}
-          </>
-        </LightGallery>
-        {memories.length > 0 && (
-          <div id="disclaimer">
-            <p className="blue">
-              All images will be automatically (and permanently) deleted after 30 days from their creation date. Feel free to download them at any
-              time.
-            </p>
+        <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
+          <div className="flex" id="screen-title-wrapper">
+            <p className="screen-title">Memories</p>
+            {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />}
           </div>
-        )}
+          <p id="happy-subtitle" className={`${theme} mb-10`}>
+            Upload photos of memories that are too good NOT to share <span className="material-icons heart">favorite</span>
+          </p>
+
+          {/* NO DATA FALLBACK TEXT */}
+          {memories && memories.length === 0 && <NoDataFallbackText text={'There are currently no memories'} />}
+
+          {/* GALLERY */}
+          <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
+            <>
+              {Manager.isValid(memories, true) &&
+                memories.map((imgObj, index) => {
+                  return (
+                    <div key={index} className="memory">
+                      {/* TITLE AND DATE */}
+                      {imgObj?.title.length > 0 && (
+                        <div id="title-and-date">
+                          {/* TITLE */}
+                          <p className="title">{uppercaseFirstLetterOfAllWords(imgObj.title)}</p>
+
+                          {/* DATE */}
+                          {DateManager.dateIsValid(imgObj.memoryCaptureDate) && (
+                            <p id="date">{moment(imgObj.memoryCaptureDate).format(DateFormats.readableMonthAndDay)}</p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* IMAGE */}
+                      <div id="memory-image-wrapper">
+                        <img src={require('../../img/loading.gif')} className="loading-memory-gif" alt="" />
+                        <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}>
+                          {/* DELETE ICON */}
+                          <IoIosCloseCircle className={'delete-icon'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
+                        </div>
+                      </div>
+
+                      {/* NOTES */}
+                      <div id="below-image" className="flex">
+                        <p className="text">{capitalizeFirstWord(imgObj?.notes)}</p>
+
+                        {/* SAVE ICON */}
+                        <p onClick={(e) => saveMemoryImage(e)} id="download-text">
+                          DOWNLOAD
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
+            </>
+          </LightGallery>
+          {memories.length > 0 && (
+            <div id="disclaimer">
+              <p className="blue">
+                All images will be automatically (and permanently) deleted after 30 days from their creation date. Feel free to download them at any
+                time.
+              </p>
+            </div>
+          )}
+        </Fade>
       </div>
       {!showNewMemoryCard && (
         <NavBar navbarClass={'child-info'}>

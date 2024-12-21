@@ -232,11 +232,14 @@
       border-radius: $borderRadius;
       background: $mainBlue;
       animation: beat 2s infinite;
+      
+      @include hover;
     }
 
     .eye-icon {
       position: relative;
       bottom: 10px;
+      @include hover;
     }
     
     #contact-support-text {

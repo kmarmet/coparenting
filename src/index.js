@@ -104,7 +104,7 @@ root.render(
   <ErrorBoundary
     fallback={
       <div className="active error-boundary" id="error-screen">
-        <p id="screen-title" className="mb-15">
+        <p id="screen-title-wrapper" className="mb-15">
           Oops! It looks like we ran into an issue. But we can help!
         </p>
         <div id="text-container" className="mb-20">

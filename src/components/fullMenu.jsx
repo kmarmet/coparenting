@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
 import Manager from '@manager'
@@ -39,7 +39,6 @@ export default function FullMenu() {
   }
 
   const changeTheme = async (theme) => {
-    console.log(theme)
     await DB_UserScoped.updateUserRecord(currentUser?.phone, `settings/theme`, theme)
     window.location.reload()
   }
@@ -59,10 +58,6 @@ export default function FullMenu() {
         // An error happened.
       })
   }
-
-  useEffect(() => {
-    console.log(currentScreen)
-  }, [])
 
   return (
     <BottomCard

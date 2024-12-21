@@ -20,14 +20,12 @@ const DB = {
     notificationSubscribers: 'notificationSubscribers',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true) => {
-    let result
     if (isFromDb) {
       const records = await DB.getTable(arrayOrTable)
-      result = _.find(records, matchArray)
+      return _.find(records, matchArray)
     } else {
       return _.find(arrayOrTable, matchArray)
     }
-    return result
   },
   convertKeyObjectToArray: (keyObject) => {
     // console.log(keyObject)

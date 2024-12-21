@@ -239,11 +239,11 @@ export default function Login() {
               checkboxLabels={['Remember Me']}
               skipNameFormatting={true}
             />
-            <div className="flex w-100 mb-15 gap">
-              <button className="button default green w-50" onClick={signIn}>
+            <div className="flex w-100 mb-15 gap buttons">
+              <button className="button default green" onClick={signIn}>
                 Login <SlLogin />
               </button>
-              <button className="button default w-50 light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
+              <button className="button default light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
                 Sign Up <IoPersonAddOutline />
               </button>
             </div>

@@ -24,7 +24,7 @@ import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
 import { GiPartyPopper } from 'react-icons/gi'
 import DomManager from '../../managers/domManager'
-import DB_UserScoped from '@userScoped'
+import { Fade } from 'react-awesome-reveal'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -41,14 +41,6 @@ export default function EventCalendar() {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedNewEventDay, setSelectedNewEventDay] = useState(moment())
-
-  // const addNotifRecordToDatabase = async () => {
-  //   const _currentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-  //   if (Manager.isValid(_currentUser)) {
-  //     NotificationManager.addToDatabase(_currentUser).then((r) => r)
-  //   }
-  // }
-  // addNotifRecordToDatabase().then((r) => r)
 
   // GET EVENTS
   const getSecuredEvents = async (selectedDay, selectedMonth) => {
@@ -72,9 +64,7 @@ export default function EventCalendar() {
 
     // Filter out dupes by event title
     setExistingEvents(securedEvents)
-    setTimeout(() => {
-      addEventRowAnimation()
-    }, 100)
+    setState({ ...state, isLoading: false })
   }
 
   const addDayIndicators = async (events) => {
@@ -201,23 +191,12 @@ export default function EventCalendar() {
     })
   }
 
-  const addEventRowAnimation = () => {
-    document.querySelectorAll('.event-row').forEach((eventRow, i) => {
-      setTimeout(() => {
-        eventRow.classList.add('active')
-      }, 300 * i)
-    })
-  }
-
   const showAllHolidays = async () => {
     const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
     const _holidays = allEvents.filter((x) => x.isHoliday === true).filter((x) => !contains(x?.title.toLowerCase(), 'visitation'))
     setShowHolidaysCard(!showHolidaysCard)
     setExistingEvents(_holidays)
     setShowHolidays(true)
-    setTimeout(() => {
-      addEventRowAnimation()
-    }, 200)
   }
 
   const showVisitationHolidays = async () => {
@@ -239,9 +218,6 @@ export default function EventCalendar() {
     setExistingEvents(userVisitationHolidays)
     setShowHolidaysCard(!showHolidaysCard)
     setShowHolidays(true)
-    setTimeout(() => {
-      addEventRowAnimation()
-    }, 200)
   }
 
   const viewAllEvents = async () => {
@@ -272,18 +248,11 @@ export default function EventCalendar() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, `${DB.tables.calendarEvents}`), async (snapshot) => {
-      console.log('done with cal')
       await getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
     })
-    if (currentUser && currentUser.hasOwnProperty('email')) {
-      const _currentUser = await DB_UserScoped.getCurrentUser(currentUser?.email, 'email')
-      setState({ ...state, currentUser: _currentUser, theme: _currentUser?.settings?.theme, isLoading: false })
-    }
   }
 
-  {
-    /* ON SHOW HOLIDAYS CHANGE */
-  }
+  // SHOW HOLIDAYS
   useEffect(() => {
     if (DomManager.isMobile()) {
       if (showHolidays) {
@@ -300,6 +269,7 @@ export default function EventCalendar() {
 
   // ON PAGE LOAD
   useEffect(() => {
+    // Append Holidays/Search Cal Buttons
     const staticCalendar = document.querySelector('.MuiDialogActions-root')
     const holidaysButton = document.getElementById('holidays-button')
     const searchButton = document.getElementById('search-button')
@@ -315,11 +285,7 @@ export default function EventCalendar() {
       })
     }
 
-    if (Manager.isValid(currentUser)) {
-      onTableChange().then((r) => r)
-    }
-
-    Manager.showPageContainer('show')
+    onTableChange().then((r) => r)
   }, [])
 
   return (
@@ -369,7 +335,6 @@ export default function EventCalendar() {
               setExistingEvents(searchResults)
               setShowSearchCard(false)
               setTimeout(() => {
-                addEventRowAnimation()
                 const rows = document.querySelectorAll('.event-row')
 
                 if (rows) {
@@ -425,152 +390,157 @@ export default function EventCalendar() {
 
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme} `}>
-        {/* STATIC CALENDAR */}
-        <div id="static-calendar" className={theme}>
-          <StaticDatePicker
-            showDaysOutsideCurrentMonth={true}
-            defaultValue={moment(selectedNewEventDay)}
-            onMonthChange={async (month) => {
-              await getSecuredEvents(null, month)
-            }}
-            onChange={async (day) => {
-              setTimeout(async () => {
-                await getSecuredEvents(day)
-              }, 500)
-              setSelectedNewEventDay(day)
-            }}
-            slotProps={{
-              actionBar: {
-                actions: ['today'],
-              },
-            }}
-          />
-        </div>
+        <Fade direction={'up'} className={'page-container-fade-wrapper'} duration={1000} triggerOnce={true} cascade={true}>
+          {/* STATIC CALENDAR */}
+          <div id="static-calendar" className={theme}>
+            <StaticDatePicker
+              showDaysOutsideCurrentMonth={true}
+              defaultValue={moment(selectedNewEventDay)}
+              onMonthChange={async (month) => {
+                await getSecuredEvents(null, month)
+              }}
+              onChange={async (day) => {
+                setTimeout(async () => {
+                  await getSecuredEvents(day)
+                }, 500)
+                setSelectedNewEventDay(day)
+              }}
+              slotProps={{
+                actionBar: {
+                  actions: ['today'],
+                },
+              }}
+            />
+          </div>
 
-        {/* CONTENT WITH PADDING */}
-        <div className="with-padding">
-          {/* BELOW CALENDAR */}
-          {!showHolidays && !showSearchCard && (
-            <div id="below-calendar" className={`${theme} mt-10 flex`}>
-              {/* HOLIDAY BUTTON */}
-              <p id="holidays-button">Holidays</p>
+          {/* CONTENT WITH PADDING */}
+          <div className="with-padding">
+            {/* BELOW CALENDAR */}
+            {!showHolidays && !showSearchCard && (
+              <div id="below-calendar" className={`${theme} mt-10 flex`}>
+                {/* HOLIDAY BUTTON */}
+                <p id="holidays-button">Holidays</p>
 
-              {/* SEARCH BUTTON */}
-              <p id="search-button">Search</p>
-            </div>
-          )}
-          {/* MAP/LOOP EVENTS */}
-          <div className="events">
-            {!Manager.isValid(existingEvents, true) && <p id="no-events-text">No events on this day</p>}
-            {Manager.isValid(existingEvents, true) &&
-              existingEvents.map((event, index) => {
-                let readableReminderTimes = []
-                event?.reminderTimes?.forEach((time) => {
-                  if (time) {
-                    readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
-                  }
-                })
-                let eventType = 'standard'
-                if (event?.fromVisitationSchedule) {
-                  if (contains(formatNameFirstNameOnly(event?.createdBy)?.toLowerCase(), formatNameFirstNameOnly(currentUser?.name).toLowerCase())) {
-                    eventType = 'current-user-visitation'
-                  } else {
-                    eventType = 'coparent-visitation'
-                  }
-                }
-                return (
-                  <div key={index}>
-                    <div
-                      id="row"
-                      onClick={(e) => handleEventRowClick(e, event)}
-                      data-from-date={event?.startDate}
-                      className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType}`}>
-                      <div className="text flex space-between">
-                        {/* LEFT COLUMN */}
-                        {/* TITLE */}
-                        <div className="flex space-between" id="title-wrapper">
-                          <p className="title flex" id="title" data-event-id={event?.id}>
-                            {contains(eventType, 'coparent') && <span className="event-type-dot coparent"></span>}
-                            {contains(eventType, 'standard') && <span className="event-type-dot standard"></span>}
-                            {contains(eventType, 'current') && <span className="event-type-dot current-user-visitation"></span>}
-                            {!contains(eventType, 'current') && !contains(eventType, 'standard') && !contains(eventType, 'coparent') && (
-                              <span className="event-type-dot blank"></span>
-                            )}
-                            {CalendarManager.formatEventTitle(event?.title)}
-                          </p>
-                          {Manager.isValid(readableReminderTimes, true) && (
-                            <div className="flex reminders">
-                              <>
-                                <MdNotificationsActive className={'event-icon'} />
-                                <p
-                                  className="flex reminder-times"
-                                  dangerouslySetInnerHTML={{
-                                    __html: `${readableReminderTimes.join('|').replaceAll('|', '<span class="divider">|</span>').replaceAll(' minutes before', 'mins').replaceAll('At time of event', 'Event Time').replaceAll(' hour before', 'hr')}`,
-                                  }}></p>
-                              </>
-                            </div>
-                          )}
-                        </div>
-                        {/* DATE CONTAINER */}
-                        <div id="subtitle" className="flex space-between calendar">
-                          <div id="date-container">
-                            {/* FROM DATE */}
-                            {!contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
-                              <span className="start-date" id="subtitle">
-                                {moment(event?.startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
-                              </span>
-                            )}
-                            {/* TO WORD */}
-                            {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
-                              <span className="end-date" id="subtitle">
-                                &nbsp;to&nbsp;{' '}
-                              </span>
-                            )}
-                            {/* TO DATE */}
-                            {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
-                              <span id="subtitle">{moment(event?.endDate).format(DateFormats.readableDay)}</span>
-                            )}
-                            {/* ALL DAY */}
-                            {event &&
-                              !Manager.isValid(event?.startTime) &&
-                              (!Manager.isValid(event?.endDate) || event?.endDate.indexOf('Invalid') > -1) &&
-                              event?.endDate !== event?.startDate && (
-                                <span id="subtitle" className="end-date">
-                                  &nbsp;- ALL DAY
-                                </span>
+                {/* SEARCH BUTTON */}
+                <p id="search-button">Search</p>
+              </div>
+            )}
+            {/* MAP/LOOP EVENTS */}
+            <div className="events">
+              <Fade direction={'up'} className={'calendar-events-fade-wrapper'}>
+                {!Manager.isValid(existingEvents, true) && <p id="no-events-text">No events on this day</p>}
+                {Manager.isValid(existingEvents, true) &&
+                  existingEvents.map((event, index) => {
+                    let readableReminderTimes = []
+                    event?.reminderTimes?.forEach((time) => {
+                      if (time) {
+                        readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
+                      }
+                    })
+                    let eventType = 'standard'
+                    if (event?.fromVisitationSchedule) {
+                      if (
+                        contains(formatNameFirstNameOnly(event?.createdBy)?.toLowerCase(), formatNameFirstNameOnly(currentUser?.name).toLowerCase())
+                      ) {
+                        eventType = 'current-user-visitation'
+                      } else {
+                        eventType = 'coparent-visitation'
+                      }
+                    }
+                    return (
+                      <div
+                        key={index}
+                        id="row"
+                        onClick={(e) => handleEventRowClick(e, event)}
+                        data-from-date={event?.startDate}
+                        className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType} ${index === existingEvents.length - 2 ? 'last-child' : ''}`}>
+                        <div className="text flex space-between">
+                          {/* LEFT COLUMN */}
+                          {/* TITLE */}
+                          <div className="flex space-between" id="title-wrapper">
+                            <p className="title flex" id="title" data-event-id={event?.id}>
+                              {contains(eventType, 'coparent') && <span className="event-type-dot coparent"></span>}
+                              {contains(eventType, 'standard') && <span className="event-type-dot standard"></span>}
+                              {contains(eventType, 'current') && <span className="event-type-dot current-user-visitation"></span>}
+                              {!contains(eventType, 'current') && !contains(eventType, 'standard') && !contains(eventType, 'coparent') && (
+                                <span className="event-type-dot blank"></span>
                               )}
-                            {/* TIMES */}
-                            {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
-                              <span id="subtitle" className="from-time">
-                                <span className="at-symbol">&nbsp;@</span> {event?.startTime}
-                              </span>
-                            )}
-                            {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
-                              <span id="subtitle" className="to-time">
-                                &nbsp;-&nbsp;{event?.endTime}
-                              </span>
+                              {CalendarManager.formatEventTitle(event?.title)}
+                            </p>
+                            {Manager.isValid(readableReminderTimes, true) && (
+                              <div className="flex reminders">
+                                <>
+                                  <MdNotificationsActive className={'event-icon'} />
+                                  <p
+                                    className="flex reminder-times"
+                                    dangerouslySetInnerHTML={{
+                                      __html: `${readableReminderTimes.join('|').replaceAll('|', '<span class="divider">|</span>').replaceAll(' minutes before', 'mins').replaceAll('At time of event', 'Event Time').replaceAll(' hour before', 'hr')}`,
+                                    }}></p>
+                                </>
+                              </div>
                             )}
                           </div>
-                          {/* CHILDREN */}
-                          {event?.children && event?.children.length > 0 && (
-                            <div id="children">
-                              <div className="children flex">
-                                <FaChildren />
-                                <p
-                                  dangerouslySetInnerHTML={{
-                                    __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                                  }}></p>
-                              </div>
+                          {/* DATE CONTAINER */}
+                          <div id="subtitle" className="flex space-between calendar">
+                            <div id="date-container">
+                              {/* FROM DATE */}
+                              {!contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
+                                <span className="start-date" id="subtitle">
+                                  {moment(event?.startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
+                                </span>
+                              )}
+                              {/* TO WORD */}
+                              {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                                <span className="end-date" id="subtitle">
+                                  &nbsp;to&nbsp;{' '}
+                                </span>
+                              )}
+                              {/* TO DATE */}
+                              {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                                <span id="subtitle">{moment(event?.endDate).format(DateFormats.readableDay)}</span>
+                              )}
+                              {/* ALL DAY */}
+                              {event &&
+                                !Manager.isValid(event?.startTime) &&
+                                (!Manager.isValid(event?.endDate) || event?.endDate.indexOf('Invalid') > -1) &&
+                                event?.endDate !== event?.startDate && (
+                                  <span id="subtitle" className="end-date">
+                                    &nbsp;- ALL DAY
+                                  </span>
+                                )}
+                              {/* TIMES */}
+                              {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
+                                <span id="subtitle" className="from-time">
+                                  <span className="at-symbol">&nbsp;@</span> {event?.startTime}
+                                </span>
+                              )}
+                              {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
+                                <span id="subtitle" className="to-time">
+                                  &nbsp;-&nbsp;{event?.endTime}
+                                </span>
+                              )}
                             </div>
-                          )}
+                            {/* CHILDREN */}
+                            {event?.children && event?.children.length > 0 && (
+                              <div id="children">
+                                <div className="children flex">
+                                  <FaChildren />
+                                  <p
+                                    dangerouslySetInnerHTML={{
+                                      __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                                    }}></p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                )
-              })}
+                    )
+                  })}
+              </Fade>
+            </div>
           </div>
-        </div>
+        </Fade>
       </div>
 
       {/* DESKTOP SIDEBAR */}
@@ -597,7 +567,7 @@ export default function EventCalendar() {
           )}
 
           <InputWrapper
-            defaultValue="Find Events"
+            defaultValue="Find events"
             refreshKey={refreshKey}
             inputType={'input'}
             inputValue={searchQuery}

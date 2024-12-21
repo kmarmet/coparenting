@@ -106,7 +106,7 @@
   // CALENDAR ARROWS
   .MuiPickersArrowSwitcher-rightArrowIcon,
   .MuiPickersArrowSwitcher-leftArrowIcon {
-    opacity: 0.6 !important;
+    opacity: 0.4 !important;
     font-size: 30px !important;
   }
 
@@ -245,6 +245,13 @@
             color: $lightDarkGrey;
           }
         }
+        
+        .MuiAccordionSummary-expandIconWrapper {
+          
+          svg {
+            margin: 0 10px 0 0 !important;
+          }
+        }
 
         .MuiAccordionSummary-content {
           margin: 0 !important;
@@ -254,6 +261,7 @@
 
           &.Mui-expanded {
             font-weight: $fwBold !important;
+
           }
         }
       }
@@ -373,6 +381,11 @@
       justify-content: center;
       color: black;
       border-radius: $borderRadius !important;
+      
+      &:hover {
+        background: $lightIconBgBlue !important;
+        color: $mainBlue;
+      }
 
       &.weekend-day {
         opacity: 0.5;
@@ -474,6 +487,10 @@
     }
   }
   .MuiFormControl-root {
+    .MuiSvgIcon-root {
+      font-size: 28px !important;
+      opacity: .45 !important;
+    }
     &.css-1b5lkxe-MuiFormControl-root {
       .MuiOutlinedInput-root {
         [role='combobox'] {
@@ -862,7 +879,7 @@
 
   // Year selection
   .css-innj4t-MuiPickersYear-yearButton.Mui-selected {
-    background-color: $accent;
+    background-color: $mainBlue;
   }
 
   // Top time container

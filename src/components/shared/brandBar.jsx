@@ -8,7 +8,7 @@ export default function BrandBar() {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
   return (
-    <div id="brand-bar" className="flex">
+    <div id="brand-bar">
       <div id="content">
         <div id="left" onClick={() => setState({ ...state, currentScreen: ScreenNames.calendar })}>
           <img src={require('../../img/logo.png')} alt="Peaceful coParenting" id="logo" />

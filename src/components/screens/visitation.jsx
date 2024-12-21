@@ -5,6 +5,7 @@ import Autocomplete from 'react-google-autocomplete'
 import scheduleTypes from '@constants/scheduleTypes'
 import globalState from '../../context'
 import DB from '@db'
+import { Fade } from 'react-awesome-reveal'
 import CalendarEvent from '@models/calendarEvent'
 import Manager from '@manager'
 import Manger from '@manager'
@@ -438,7 +439,6 @@ export default function Visitation() {
 
   useEffect(() => {
     getCurrentVisitationSchedule().then((r) => r)
-    Manager.showPageContainer('show')
     setAllStates().then((r) => r)
   }, [])
 
@@ -599,104 +599,106 @@ export default function Visitation() {
 
       {/* PAGE CONTAINER */}
       <div id="visitation-container" className={`${theme} page-container form`}>
-        {/* SCREEN TITLE */}
-        <p className="screen-title">Visitation</p>
+        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'visitation-fade-wrapper'}>
+          {/* SCREEN TITLE */}
+          <p className="screen-title">Visitation</p>
 
-        {/* ALREADY HAS EXISTING SCHEDULE */}
-        {existingScheduleEvents.length > 0 && (
-          <>
-            <p>
-              You currently have a 50/50 visitation schedule added to your calendar. If you would like to modify the current schedule or switch to
-              another schedule, please delete the current schedule first.
-            </p>
-            <div className="buttons flex mt-15">
-              <button
-                className="button red default center mb-20"
-                onClick={() => {
-                  AlertManager.confirmAlert(
-                    'Are you sure you would like to permanently delete your current visitation schedule?',
-                    "I'm Sure",
-                    true,
-                    async () => {
-                      await deleteSchedule()
-                      AlertManager.successAlert('Event Deleted')
-                    }
-                  )
-                }}>
-                Delete Current Schedule
-              </button>
-            </div>
-          </>
-        )}
+          {/* ALREADY HAS EXISTING SCHEDULE */}
+          {existingScheduleEvents.length > 0 && (
+            <>
+              <p>
+                You currently have a 50/50 visitation schedule added to your calendar. If you would like to modify the current schedule or switch to
+                another schedule, please delete the current schedule first.
+              </p>
+              <div className="buttons flex mt-15">
+                <button
+                  className="button red default center mb-20"
+                  onClick={() => {
+                    AlertManager.confirmAlert(
+                      'Are you sure you would like to permanently delete your current visitation schedule?',
+                      "I'm Sure",
+                      true,
+                      async () => {
+                        await deleteSchedule()
+                        AlertManager.successAlert('Event Deleted')
+                      }
+                    )
+                  }}>
+                  Delete Current Schedule
+                </button>
+              </div>
+            </>
+          )}
 
-        {/* NO EXISTING SCHEDULE */}
-        {existingScheduleEvents.length === 0 && (
-          <div className="sections">
-            {/* VISITATION SCHEDULE */}
-            <div className="note-container mt-10 mb-15">
-              <Note
-                message={'When you choose a visitation schedule, it will be visible in the calendar for you and who you allow access to view it.'}
-              />
-            </div>
-
-            {/* SCHEDULE SELECTION */}
-            {shareWith.length > 0 && (
-              <div className="section visitation-schedule mt-10 mb-10">
-                <CheckboxGroup
-                  elClass="mt-10 gap-10"
-                  parentLabel={'Choose Visitation Schedule'}
-                  onCheck={handleScheduleTypeSelection}
-                  skipNameFormatting={true}
-                  checkboxLabels={['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']}
+          {/* NO EXISTING SCHEDULE */}
+          {existingScheduleEvents.length === 0 && (
+            <div className="sections">
+              {/* VISITATION SCHEDULE */}
+              <div className="note-container mt-10 mb-15">
+                <Note
+                  message={'When you choose a visitation schedule, it will be visible in the calendar for you and who you allow access to view it.'}
                 />
               </div>
-            )}
 
-            {/* SHARE WITH */}
-            <ShareWithCheckboxes
-              required={true}
-              shareWith={currentUser?.coparents?.map((x) => x.phone)}
-              onCheck={handleShareWithSelection}
-              icon={<ImEye />}
-              labelText={'Who is allowed to see it?'}
-              containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents?.map((x) => x.name)}
-            />
+              {/* SCHEDULE SELECTION */}
+              {shareWith.length > 0 && (
+                <div className="section visitation-schedule mt-10 mb-10">
+                  <CheckboxGroup
+                    elClass="mt-10 gap-10"
+                    parentLabel={'Choose Visitation Schedule'}
+                    onCheck={handleScheduleTypeSelection}
+                    skipNameFormatting={true}
+                    checkboxLabels={['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']}
+                  />
+                </div>
+              )}
 
-            {/* LOCATION */}
-            <InputWrapper wrapperClasses="mt-15 mb-15" inputType={'location'} labelText={'Preferred Transfer Location (with biological co-parent)'}>
-              <Autocomplete
-                defaultValue={currentUser?.defaultTransferLocation}
-                placeholder={''}
-                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                options={{
-                  types: ['geocode', 'establishment'],
-                  componentRestrictions: { country: 'usa' },
-                }}
-                className={`${theme}`}
-                onPlaceSelected={(place) => {
-                  updateDefaultTransferLocation(
-                    place.formatted_address,
-                    `https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`
-                  ).then((r) => AlertManager.successAlert('Preferred Transfer Location Set'))
-                }}
+              {/* SHARE WITH */}
+              <ShareWithCheckboxes
+                required={true}
+                shareWith={currentUser?.coparents?.map((x) => x.phone)}
+                onCheck={handleShareWithSelection}
+                icon={<ImEye />}
+                labelText={'Who is allowed to see it?'}
+                containerClass={'share-with-coparents'}
+                dataPhone={currentUser?.coparents?.map((x) => x.name)}
               />
-            </InputWrapper>
-          </div>
-        )}
-        {/* HOLIDAY SELECTION */}
-        <CheckboxGroup
-          parentLabel={'Select the holidays YOU have the child(ren) this year'}
-          elClass={'holiday-checkboxes gap-10'}
-          onCheck={handleHolidaySelection}
-          skipNameFormatting={true}
-          checkboxLabels={holidayLabels.map((x) => x.name).sort()}
-          dataDate={dataDates}
-        />
 
-        <button className="button default green center mt-30" onClick={() => setHolidaysInDatabase()}>
-          Update Holidays
-        </button>
+              {/* LOCATION */}
+              <InputWrapper wrapperClasses="mt-15 mb-15" inputType={'location'} labelText={'Preferred Transfer Location (with biological co-parent)'}>
+                <Autocomplete
+                  defaultValue={currentUser?.defaultTransferLocation}
+                  placeholder={''}
+                  apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                  options={{
+                    types: ['geocode', 'establishment'],
+                    componentRestrictions: { country: 'usa' },
+                  }}
+                  className={`${theme}`}
+                  onPlaceSelected={(place) => {
+                    updateDefaultTransferLocation(
+                      place.formatted_address,
+                      `https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`
+                    ).then((r) => AlertManager.successAlert('Preferred Transfer Location Set'))
+                  }}
+                />
+              </InputWrapper>
+            </div>
+          )}
+          {/* HOLIDAY SELECTION */}
+          <CheckboxGroup
+            parentLabel={'Select the holidays YOU have the child(ren) this year'}
+            elClass={'holiday-checkboxes gap-10'}
+            onCheck={handleHolidaySelection}
+            skipNameFormatting={true}
+            checkboxLabels={holidayLabels.map((x) => x.name).sort()}
+            dataDate={dataDates}
+          />
+
+          <button className="button default green center mt-30" onClick={() => setHolidaysInDatabase()}>
+            Update Holidays
+          </button>
+        </Fade>
       </div>
       {!showEveryOtherWeekendCard && !showCustomWeekendsCard && !showFiftyFiftyCard && <NavBar navbarClass={'visitation no-add-new-button'}></NavBar>}
     </>

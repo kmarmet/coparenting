@@ -5,6 +5,7 @@ import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone } fr
 import { VscSettings } from 'react-icons/vsc'
 import { TbGridDots } from 'react-icons/tb'
 import { BiFace } from 'react-icons/bi'
+import DomManager from '../managers/domManager'
 
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
@@ -46,9 +47,11 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
             )}
 
             {/* ADD NEW BUTTON */}
-            <div id="svg-wrapper" className={addOrClose}>
-              {children}
-            </div>
+            {DomManager.isMobile() && (
+              <div id="svg-wrapper" className={addOrClose}>
+                {children}
+              </div>
+            )}
 
             {/* CHILD INFO */}
             {currentUser && currentUser?.accountType === 'parent' && (

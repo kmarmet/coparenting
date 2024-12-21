@@ -4,14 +4,10 @@
 
 .light-gallery {
   .memory {
-    padding: 15px;
-    border-radius: $bigBorderRadius;
-    margin-bottom: 25px;
-    border: 1px solid $borderColor;
     position: relative;
     width: 100%;
-    background: $bestGreyForWhite;
-    
+    margin-bottom: 40px;
+
     .memory-image {
       width: 100% !important;
       position: relative;
@@ -20,17 +16,13 @@
         top: -10px;
         z-index: 1000;
         right: -10px;
-        color: $lightDarkGrey;
+        color: $red;
         background-color: white;
         font-size: 30px;
-        height: 30px;
-        width: 30px;
         border-radius: 100%;
       }
     }
   }
-
-
 
   #title-and-date {
     display: flex;
@@ -59,17 +51,18 @@
 
   #below-image {
     width: 100%;
-    gap: 10px;
     justify-content: space-between;
     align-items: flex-start;
-
-    #save-icon {
-      position: relative;
-      top: -3px;
+    
+    #download-text {
       color: $mainBlue;
-      display: inline;
-      font-size: 28px;
-      margin-bottom: auto;
+      font-size: 12px;
+      font-weight: $fwMedium;
+      border-bottom: 1px solid $mainBlue;
+      line-height: 1;
+      margin: 0;
+      padding: 0;
+      @include  transformHover;
     }
   }
 

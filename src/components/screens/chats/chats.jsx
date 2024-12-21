@@ -8,6 +8,8 @@ import DB_UserScoped from '@userScoped'
 import { BiDotsVerticalRounded, BiMessageRoundedDetail, BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
 import { IoNotificationsOffCircle } from 'react-icons/io5'
 import { HiMiniBellAlert } from 'react-icons/hi2'
+import { Fade } from 'react-awesome-reveal'
+
 import { IoMdCloseCircleOutline } from 'react-icons/io'
 import {
   contains,
@@ -88,7 +90,6 @@ const Chats = () => {
     if (currentUser?.accountType === 'parent') {
       getSecuredChats().then((r) => r)
     }
-    Manager.showPageContainer('show')
   }, [selectedCoparent])
 
   return (
@@ -141,114 +142,118 @@ const Chats = () => {
 
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
-        <p className="screen-title">Chats</p>
-        {/* THREAD ITEMS */}
-        {!showNewThreadForm &&
-          threads.length > 0 &&
-          threads.map((thread, index) => {
-            const coparent = thread?.members?.filter((x) => x.phone !== currentUser?.phone)[0]
-            const coparentMessages = Manager.convertToArray(thread.messages)?.filter((x) => x.sender === coparent.name)
-            const lastMessage = coparentMessages[coparentMessages?.length - 1]?.message
-            const threadIsMuted = thread?.mutedFor?.includes(currentUser.phone)
-            return (
-              <div
-                onClick={(e) => {
-                  e.stopPropagation()
-                  if (e.currentTarget.id === 'row') {
-                    openMessageThread(coparent.phone).then((r) => r)
-                  }
-                  console.log(e.currentTarget)
-                  if (e.target !== e.currentTarget) return
-                }}
-                data-thread-id={thread.id}
-                id="row"
-                key={index}>
-                {/* THREAD ITEM */}
-                <div className={`flex thread-item ${threadIsMuted ? 'muted' : ''}`}>
-                  {/* COPARENT NAME */}
-                  <div className="flex">
-                    <div id="user-initial-wrapper">
-                      <BiMessageRoundedDetail />
+        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'visitation-fade-wrapper'}>
+          <div className="flex" id="screen-title-wrapper">
+            <p className="screen-title">Chats </p>
+            {!DomManager.isMobile() && <BiSolidEdit id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
+          </div>
+          {/* THREAD ITEMS */}
+          {!showNewThreadForm &&
+            threads.length > 0 &&
+            threads.map((thread, index) => {
+              const coparent = thread?.members?.filter((x) => x.phone !== currentUser?.phone)[0]
+              const coparentMessages = Manager.convertToArray(thread.messages)?.filter((x) => x.sender === coparent.name)
+              const lastMessage = coparentMessages[coparentMessages?.length - 1]?.message
+              const threadIsMuted = thread?.mutedFor?.includes(currentUser.phone)
+              return (
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (e.currentTarget.id === 'row') {
+                      openMessageThread(coparent.phone).then((r) => r)
+                    }
+                    if (e.target !== e.currentTarget) return
+                  }}
+                  data-thread-id={thread.id}
+                  id="row"
+                  key={index}>
+                  {/* THREAD ITEM */}
+                  <div className={`flex thread-item ${threadIsMuted ? 'muted' : ''}`}>
+                    {/* COPARENT NAME */}
+                    <div className="flex">
+                      <div id="user-initial-wrapper">
+                        <BiMessageRoundedDetail />
+                      </div>
+                      <p data-coparent-phone={coparent.phone} className="coparent-name">
+                        {formatNameFirstNameOnly(coparent.name)}
+                        {/* Last Message */}
+                        <span className="last-message">{lastMessage}</span>
+                      </p>
                     </div>
-                    <p data-coparent-phone={coparent.phone} className="coparent-name">
-                      {formatNameFirstNameOnly(coparent.name)}
-                      {/* Last Message */}
-                      <span className="last-message">{lastMessage}</span>
-                    </p>
-                  </div>
 
-                  {threadActionToShow === thread.id && (
-                    <IoMdCloseCircleOutline
-                      id={'close-thread-actions-icon'}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        toggleThreadActions(thread.id)
-                      }}
-                    />
-                  )}
-                  {threadActionToShow !== thread.id && (
-                    <BiDotsVerticalRounded
-                      id={'edit-icon'}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        toggleThreadActions(thread.id)
-                      }}
-                    />
-                  )}
-                </div>
-                {/* THREAD ACTIONS */}
-                <div data-thread-id={thread.id} className={'flex thread-actions'}>
-                  {/* DELETE CHAT BUTTON */}
-                  <div id="archive-wrapper">
-                    <BiSolidMessageRoundedMinus
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        AlertManager.confirmAlert(
-                          'Are you sure you would like to delete this conversation? You can recover it later.',
-                          "I'm Sure",
-                          true,
-                          async (e) => {
-                            await archive(coparent)
-                          },
-                          () => {
-                            setThreadActionToShow(false)
-                          }
-                        )
-                      }}
-                      className={`delete-icon ${threadActionToShow ? 'active' : ''}`}
-                    />
-                    <span>DELETE</span>
-                  </div>
-
-                  {!threadIsMuted && (
-                    <div id="mute-wrapper">
-                      <IoNotificationsOffCircle
-                        onClick={async (e) => {
+                    {threadActionToShow === thread.id && (
+                      <IoMdCloseCircleOutline
+                        id={'close-thread-actions-icon'}
+                        onClick={(e) => {
                           e.stopPropagation()
-                          await toggleMute(coparent.phone, 'mute', thread.id)
+                          toggleThreadActions(thread.id)
                         }}
-                        className={'mute-icon '}
                       />
-                      <span>MUTE</span>
+                    )}
+                    {threadActionToShow !== thread.id && (
+                      <BiDotsVerticalRounded
+                        id={'edit-icon'}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleThreadActions(thread.id)
+                        }}
+                      />
+                    )}
+                  </div>
+                  {/* THREAD ACTIONS */}
+                  <div data-thread-id={thread.id} className={'flex thread-actions'}>
+                    {/* DELETE CHAT BUTTON */}
+                    <div id="archive-wrapper">
+                      <BiSolidMessageRoundedMinus
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          AlertManager.confirmAlert(
+                            'Are you sure you would like to delete this conversation? You can recover it later.',
+                            "I'm Sure",
+                            true,
+                            async (e) => {
+                              await archive(coparent)
+                            },
+                            () => {
+                              setThreadActionToShow(false)
+                            }
+                          )
+                        }}
+                        className={`delete-icon ${threadActionToShow ? 'active' : ''}`}
+                      />
+                      <span>DELETE</span>
                     </div>
-                  )}
-                  {/* UNMUTE BUTTON */}
-                  {threadIsMuted && (
-                    <div id="unmute-wrapper">
-                      <HiMiniBellAlert id={'unmute-icon'} onClick={() => toggleMute(coparent.phone, 'unmute', thread.id)} />
-                      <span>UNMUTE</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )
-          })}
 
-        {!showNewThreadForm && threads.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
+                    {!threadIsMuted && (
+                      <div id="mute-wrapper">
+                        <IoNotificationsOffCircle
+                          onClick={async (e) => {
+                            e.stopPropagation()
+                            await toggleMute(coparent.phone, 'mute', thread.id)
+                          }}
+                          className={'mute-icon '}
+                        />
+                        <span>MUTE</span>
+                      </div>
+                    )}
+                    {/* UNMUTE BUTTON */}
+                    {threadIsMuted && (
+                      <div id="unmute-wrapper">
+                        <HiMiniBellAlert id={'unmute-icon'} onClick={() => toggleMute(coparent.phone, 'unmute', thread.id)} />
+                        <span>UNMUTE</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+
+          {!showNewThreadForm && threads.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
+        </Fade>
       </div>
       {!showNewConvoCard && (
         <NavBar navbarClass={'calendar'}>
-          <BiSolidEdit id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />
+          {DomManager.isMobile() && <BiSolidEdit id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
         </NavBar>
       )}
     </>

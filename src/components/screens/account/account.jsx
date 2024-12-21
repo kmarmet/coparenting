@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import ScreenNames from '@screenNames'
 import globalState from '../../../context.js'
 import Manager from '@manager'
@@ -19,6 +19,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
+import { Fade } from 'react-awesome-reveal'
 // ICONS
 import { PiChatsCircleDuotone, PiHandWavingDuotone, PiUserCircleMinusDuotone } from 'react-icons/pi'
 import { MdOutlineContactMail, MdOutlineContactPhone, MdOutlinePassword } from 'react-icons/md'
@@ -180,10 +181,6 @@ export default function Account() {
     })
   }
 
-  useEffect(() => {
-    Manager.showPageContainer('show')
-  }, [])
-
   return (
     <>
       {/* UPDATE CARD */}
@@ -241,44 +238,46 @@ export default function Account() {
 
       {/* PAGE CONTAINER */}
       <div id="account-container" className={`${theme} page-container`}>
-        <p className="screen-title">Account</p>
-        <p id="user-name">
-          Hello {formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone className={'fs-24'} />
-        </p>
-        <div className="sections">
-          <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
-            <MdOutlinePassword className={'mr-10'} />
-            Reset Password
+        <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
+          <p className="screen-title">Account</p>
+          <p id="user-name">
+            Hello {formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone className={'fs-24'} />
           </p>
-          <p
-            onClick={() => {
-              setUpdateType('phone')
-              setShowUpdateCard(true)
-            }}
-            className="section">
-            <MdOutlineContactPhone className={'mr-10'} />
-            Update Phone Number
-          </p>
-          <p
-            className="section"
-            onClick={() => {
-              setUpdateType('email')
-              setShowUpdateCard(true)
-            }}>
-            <MdOutlineContactMail className={'mr-10'} />
-            Update Email Address
-          </p>
-          {currentUser && currentUser?.accountType === 'parent' && (
-            <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.chatRecovery })}>
-              <PiChatsCircleDuotone className={'mr-10'} />
-              Chat Recovery
+          <div className="sections">
+            <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
+              <MdOutlinePassword className={'mr-10'} />
+              Reset Password
             </p>
-          )}
-          <p className="section close-account" onClick={closeAccount}>
-            <PiUserCircleMinusDuotone className={'mr-10'} />
-            Close Account
-          </p>
-        </div>
+            <p
+              onClick={() => {
+                setUpdateType('phone')
+                setShowUpdateCard(true)
+              }}
+              className="section">
+              <MdOutlineContactPhone className={'mr-10'} />
+              Update Phone Number
+            </p>
+            <p
+              className="section"
+              onClick={() => {
+                setUpdateType('email')
+                setShowUpdateCard(true)
+              }}>
+              <MdOutlineContactMail className={'mr-10'} />
+              Update Email Address
+            </p>
+            {currentUser && currentUser?.accountType === 'parent' && (
+              <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.chatRecovery })}>
+                <PiChatsCircleDuotone className={'mr-10'} />
+                Chat Recovery
+              </p>
+            )}
+            <p className="section close-account" onClick={closeAccount}>
+              <PiUserCircleMinusDuotone className={'mr-10'} />
+              Close Account
+            </p>
+          </div>
+        </Fade>
       </div>
       {!showUpdateCard && !showLoginForm && <NavBar navbarClass={'account no-add-new-button'}></NavBar>}
     </>

@@ -16,6 +16,8 @@ import DateFormats from '../../../constants/dateFormats'
 import { PiBookmarkSimpleDuotone, PiBookmarksSimpleDuotone } from 'react-icons/pi'
 import { FaBookmark } from 'react-icons/fa'
 import ModelNames from '../../../models/modelNames'
+import { Fade } from 'react-awesome-reveal'
+
 import {
   contains,
   formatFileName,
@@ -141,7 +143,8 @@ const Conversation = () => {
     scrollToLatestMessage()
     messageInputValue.innerHTML = ''
     setMessageText('')
-    setRefreshKey(Manager.getUid())
+    // TODO MOBILE ONLY?
+    // setRefreshKey(Manager.getUid())
   }
 
   const viewBookmarks = async (e) => {
@@ -214,8 +217,7 @@ const Conversation = () => {
 
   useEffect(() => {
     onTableChange().then((r) => r)
-    scrollToLatestMessage()
-    Manager.showPageContainer('show')
+    // scrollToLatestMessage()
     const appContainer = document.querySelector('.App')
 
     if (appContainer) {
@@ -288,7 +290,7 @@ const Conversation = () => {
           <button className="card-button cancel">Close</button>
         </div>
       </BottomCard>
-      <div key={refreshKey} id="message-thread-container" className={`${theme}  conversation`}>
+      <div key={refreshKey} id="message-thread-container" className={`${theme} conversation`}>
         {/* TOP BAR */}
         {!showSearchInput && DomManager.isMobile() && (
           <div className="flex top-buttons">
@@ -313,25 +315,6 @@ const Conversation = () => {
                 id="close-icon"
               />
             </div>
-          </div>
-        )}
-
-        {/* DESKTOP SIDEBAR */}
-        {!DomManager.isMobile() && (
-          <div className="top-buttons">
-            <p id="user-name">{formatNameFirstNameOnly(messageRecipient.name)}</p>
-            <p id="find-messages" className="item" onClick={() => setShowSearchCard(true)}>
-              <TbMessageCircleSearch id="search-icon" /> Find Messages
-            </p>
-            <p id="view-bookmarks" className="item" onClick={(e) => viewBookmarks(e)}>
-              <PiBookmarksSimpleDuotone
-                id="conversation-bookmark-icon"
-                className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
-              />
-              {showBookmarks && <p>Hide Bookmarks</p>}
-              {!showBookmarks && bookmarks.length > 0 && <p>View Bookmarks</p>}
-              {bookmarks.length === 0 && !showBookmarks && <p>No Bookmarks</p>}
-            </p>
           </div>
         )}
 
@@ -391,64 +374,90 @@ const Conversation = () => {
           </div>
         )}
 
-        {/* DEFAULT MESSAGES */}
-        {!showBookmarks && searchResults.length === 0 && (
-          <div key={refreshKey}>
-            <div id="default-messages">
-              {Manager.isValid(messagesToLoop, true) &&
-                messagesToLoop.map((message, index) => {
-                  // Determine bookmark class
-                  const bookmarks = existingChat.bookmarks
-                  let isBookmarked = false
-                  if (bookmarks?.filter((x) => x.messageId === message.id).length > 0) {
-                    isBookmarked = true
-                  }
-                  let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mma')
-                  // Message Sent Today
-                  if (moment(message.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
-                    timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
-                  }
-                  return (
-                    <div key={index}>
-                      <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
-                        {message.message}
-                        {isBookmarked && <FaBookmark className={'bookmarked'} onClick={() => toggleMessageBookmark(message, true)} />}
-                        {!isBookmarked && <PiBookmarkSimpleDuotone onClick={(e) => toggleMessageBookmark(message, false)} />}
-                      </p>
-                      <span className={message.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
-                    </div>
-                  )
-                })}
-              <div id="last-message-anchor"></div>
-            </div>
-
-            {/* MESSAGE INPUT */}
-            <div className="form message-input-form">
-              {/* SEND BUTTON */}
-              <div
-                className={messageText.length > 1 ? 'flex has-value' : 'flex'}
-                id="message-input-container"
-                onClick={(e) => e.target.classList.add('has-value')}>
-                <ContentEditable classNames={'message-input'} onChange={handleMessageTyping} />
-                <button
-                  className={messageText.length > 1 ? 'filled' : 'outline'}
-                  onClick={async () => {
-                    const messageThreadContainer = document.getElementById('message-thread-container')
-                    const vh = window.innerHeight
-
-                    await sendMessage()
-                    setTimeout(() => {
-                      messageThreadContainer.style.height = `${vh - 200}px`
-                      messageThreadContainer.style.maxHeight = `${vh - 200}px`
-                    }, 300)
-                  }}
-                  id="send-button">
-                  Send
-                </button>
+        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'conversation-fade-wrapper'} triggerOnce={true}>
+          {/* DEFAULT MESSAGES */}
+          {!showBookmarks && searchResults.length === 0 && (
+            <>
+              <div id="default-messages">
+                {Manager.isValid(messagesToLoop, true) &&
+                  messagesToLoop.map((message, index) => {
+                    // Determine bookmark class
+                    const bookmarks = existingChat.bookmarks
+                    let isBookmarked = false
+                    if (bookmarks?.filter((x) => x.messageId === message.id).length > 0) {
+                      isBookmarked = true
+                    }
+                    let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mma')
+                    // Message Sent Today
+                    if (moment(message.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
+                      timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
+                    }
+                    return (
+                      <div key={index}>
+                        <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
+                          {message.message}
+                          {isBookmarked && <FaBookmark className={'bookmarked'} onClick={() => toggleMessageBookmark(message, true)} />}
+                          {!isBookmarked && <PiBookmarkSimpleDuotone onClick={(e) => toggleMessageBookmark(message, false)} />}
+                        </p>
+                        <span className={message.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
+                      </div>
+                    )
+                  })}
+                <div id="last-message-anchor"></div>
               </div>
+
+              {/* MESSAGE INPUT */}
+              <div className="form message-input-form">
+                {/* SEND BUTTON */}
+                <div
+                  className={messageText.length > 1 ? 'flex has-value' : 'flex'}
+                  id="message-input-container"
+                  onClick={(e) => e.target.classList.add('has-value')}>
+                  <ContentEditable classNames={'message-input'} onChange={handleMessageTyping} />
+                  <button
+                    className={messageText.length > 1 ? 'filled' : 'outline'}
+                    onClick={async () => {
+                      if (DomManager.isMobile()) {
+                        const messageThreadContainer = document.getElementById('message-thread-container')
+                        const vh = window.innerHeight
+
+                        await sendMessage()
+                        setTimeout(() => {
+                          messageThreadContainer.style.height = `${vh - 200}px`
+                          messageThreadContainer.style.maxHeight = `${vh - 200}px`
+                        }, 300)
+                      } else {
+                        await sendMessage()
+                      }
+                    }}
+                    id="send-button">
+                    Send
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </Fade>
+        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'conversation-sidebar-fade-wrapper'} triggerOnce={true}>
+          {/* DESKTOP SIDEBAR */}
+          {!DomManager.isMobile() && (
+            <div className="top-buttons">
+              <p id="user-name">{formatNameFirstNameOnly(messageRecipient.name)}</p>
+              <p id="find-messages" className="item" onClick={() => setShowSearchCard(true)}>
+                <TbMessageCircleSearch id="search-icon" /> Find Messages
+              </p>
+              <p id="view-bookmarks" className="item" onClick={(e) => viewBookmarks(e)}>
+                <PiBookmarksSimpleDuotone
+                  id="conversation-bookmark-icon"
+                  className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
+                />
+                {showBookmarks && <span>Hide Bookmarks</span>}
+                {!showBookmarks && bookmarks.length > 0 && <span>View Bookmarks</span>}
+                {bookmarks.length === 0 && !showBookmarks && <span>No Bookmarks</span>}
+              </p>
             </div>
-          </div>
-        )}
+          )}
+        </Fade>
       </div>
     </>
   )

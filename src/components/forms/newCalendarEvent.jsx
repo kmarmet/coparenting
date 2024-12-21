@@ -697,7 +697,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       onCheck={handleRepeatingSelection}
                       checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
                     />
-                    {repeatInterval && (
+                    {repeatInterval.length > 0 && (
                       <InputWrapper inputType={'date'}>
                         <Label text={'Month to End Repeating Events'} required={true} classes="mt-15 mb-0" />
                         <DatetimePicker

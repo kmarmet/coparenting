@@ -290,17 +290,6 @@ export default function NewSwapRequest({ showCard, hideCard }) {
             )}
 
             <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
-            {/* BUTTONS */}
-            <div className="buttons gap">
-              {requestRange.length > 0 && shareWith.length > 0 && recipientName.length > 0 && (
-                <button className="button card-button" onClick={submit}>
-                  Create Request
-                </button>
-              )}
-              <button className="button card-button cancel" onClick={resetForm}>
-                Cancel
-              </button>
-            </div>
           </div>
         </div>
       </BottomCard>

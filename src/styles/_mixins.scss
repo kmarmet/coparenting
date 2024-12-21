@@ -6,19 +6,20 @@
 // PAGE CONTAINER
 @mixin pageContainer {
   max-width: 100vw;
-  opacity: 0;
+//  opacity: 0;
   transition: all 0.5s ease-in-out;
   transition-timing-function: cubic-bezier(0.17, 0.67, 0.21, 0.95);
-  margin-top: 100vh;
+//  margin-top: 100vh;
   background: $lightBg;
   overflow: auto;
   overflow-x: hidden;
   height: 100%;
   padding: 15px 15px 200px 15px;
+  width: 100%;
 
   &.active {
-    opacity: 1;
-    margin: 0 auto;
+//    opacity: 1;
+//    margin: 0 auto;
     z-index: 1;
     &.conversation {
       padding-bottom: 0;
@@ -28,10 +29,9 @@
 
     &:not(.home):not(#login-container) {
       @media screen and (min-width: 1000px) {
-        width: 50vw;
-        margin-left: 0;
         border-radius: $bigBorderRadius;
         border: 1px solid #e0e0e0;
+        margin: 0 15px;
       }
     }
   }
@@ -133,10 +133,23 @@
   position: relative;
   flex-wrap: wrap;
   line-height: 1;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  height: 60px;
   justify-content: space-between;
   margin: 0 auto;
+  
+  &:hover {
+    background: $lightIconBgBlue;
+    cursor: pointer;
+    color: $mainBlue;
+    padding-top: 15px;
+    transition: all .2s ease-in-out;
+    padding-left: 10px;
+    border-radius: $borderRadius;
+    * {
+      color: $mainBlue;
+    }
+  }
+  
+  @include row;
 
   span {
     &:nth-child(2) {
@@ -386,9 +399,10 @@
     background-color: $mainBlue;
     color: white;
   }
+  @include hover;
 }
 @mixin defaultButton() {
-  border-radius: $borderRadius;
+  border-radius: 50px;
   padding: 10px 20px;
   display: flex;
   align-items: center;
@@ -921,7 +935,7 @@
 
 /*#region  COMPONENTS*/
 @mixin brandBar {
-  width: 100%;
+  width: 100vw;
   padding: 10px 0;
   background: white;
   margin-bottom: 15px;
@@ -929,6 +943,7 @@
   top: 0;
   z-index: 1000;
   border-bottom: 1px solid #e0e0e0;
+  height:80px;
 
   @media screen and (max-width: 800px) {
     display: none;
@@ -993,6 +1008,8 @@
     max-height: 10000px;
     transition: all 0.3s ease-in-out;
   }
+  
+  @include  hover;
 
   * {
     line-height: 1;
@@ -1248,6 +1265,8 @@
     margin: 0;
     font-size: 20px;
     border: 0;
+    
+    @include transformHover;
 
     &.pressed {
       border-radius: $borderRadius;
@@ -1415,6 +1434,8 @@
       width: 100%;
       #checkbox-container {
         width: 45%;
+        
+        @include  hover;
       }
     }
   }
@@ -1463,6 +1484,7 @@
   #checkbox-container,
   #standalone-checkbox-container,
   #share-with-checkbox-container {
+    @include  hover;
     &.flex {
       align-items: center;
       margin-bottom: 0;
@@ -2262,6 +2284,7 @@
       max-height: 25vh;
       min-height: 0;
     }
+    
   }
 
   /*#region  CARDS BY CLASS*/
@@ -2433,6 +2456,8 @@
         align-self: stretch;
         border-radius: 20px;
         width: calc(100% / 4);
+        
+        @include  hover;
 
         &.active {
           background-color: $mainBlue;
@@ -2830,19 +2855,18 @@
 
     @include centerHoriz;
   }
+  
+
 }
 /*#endregion  COMPONENTS*/
 
 /*#region  MENU*/
 @mixin sideNavbar {
   height: 100%;
-  width: 20vw;
-  margin-right: 20px;
-  margin-left: auto;
   display: flex;
   flex-direction: column;
-
   justify-content: space-between;
+  
   @media screen and (max-width: 800px) {
     display: none;
   }
@@ -2856,25 +2880,19 @@
   }
 
   #top {
-    height: 68%;
+    margin-bottom: 15px;
   }
 
   #bottom {
-    height: 30%;
     margin: 0;
-
-    .menu-item {
-      &.logout {
-        margin-bottom: 10px;
-      }
-    }
   }
 
   .menu-item {
     display: flex;
     margin-bottom: 15px;
     align-items: center;
-    opacity: 0.85;
+    opacity: 0.75;
+    transition: all .2s ease-in-out;
 
     &:last-child {
       margin-bottom: 0;
@@ -2882,9 +2900,10 @@
 
     &:hover {
       cursor: pointer;
-
+      padding-left: 15px;
       *:not(svg) {
         color: $mainBlue;
+        opacity: 1;
       }
     }
 
@@ -2893,25 +2912,18 @@
     }
 
     &.active {
-      background: $mainBlue;
-      border-radius: $borderRadius;
-      padding: 8px 5px;
+      padding: 0 5px;
       position: relative;
-      right: 3px;
-      
-      &:hover {
-        * {
-          color: white;
-        }
-      }
+      right: 5px;
 
       p,
       svg {
-        color: white;
+        color: $mainBlue;
         opacity: 1;
+        font-weight: $fwMediumBold;
       }
       svg {
-        margin-right: 10px;
+        margin-right: 18px;
       }
     }
 

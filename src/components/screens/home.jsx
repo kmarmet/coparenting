@@ -73,17 +73,12 @@ export default function Home() {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in.
-        setState({
-          ...state,
-          currentScreen: ScreenNames.calendar,
-          // userIsLoggedIn: true,
-          // isLoading: false,
-        })
       } else {
         // No user is signed in.
         setState({ ...state, isLoading: false })
       }
     })
+    // setState({ ...state, isLoading: true })
   }, [])
 
   return (

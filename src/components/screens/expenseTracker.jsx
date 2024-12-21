@@ -21,6 +21,7 @@ import LightGallery from 'lightgallery/react'
 import MenuItem from '@mui/material/MenuItem'
 import { FaChildren } from 'react-icons/fa6'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import { Fade } from 'react-awesome-reveal'
 
 import 'lightgallery/css/lightgallery.css'
 //noinspection JSUnresolvedVariable
@@ -54,6 +55,7 @@ import DatasetManager from '../../managers/datasetManager'
 import AlertManager from '../../managers/alertManager'
 import SelectDropdown from '../shared/selectDropdown'
 import InputWrapper from '../shared/inputWrapper'
+import DomManager from '../../managers/domManager'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -221,7 +223,6 @@ export default function ExpenseTracker() {
 
   useEffect(() => {
     onTableChange().then((r) => r)
-    Manager.showPageContainer()
   }, [])
 
   return (
@@ -262,10 +263,10 @@ export default function ExpenseTracker() {
             <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
             <div className="pills type">
               <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
-                Unpaid
+                UNPAID
               </div>
               <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
-                Paid
+                PAID
               </div>
             </div>
           </div>
@@ -561,79 +562,84 @@ export default function ExpenseTracker() {
 
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>
-        <p className="screen-title">Expense Tracker</p>
-        <p className={`${theme}  text-screen-intro`}>
-          Add expenses to be paid by your co-parent. If a new expense is created for you to pay, you will have the opportunity to approve or reject
-          it.
-        </p>
-        <p className="payment-options-link mb-15 mt-10" onClick={() => setShowPaymentOptionsCard(true)}>
-          Bill Payment & Money Transfer Options
-        </p>
-
-        {/* FILTER BUTTON */}
-        {!filterApplied && expenses.length > 0 && (
-          <button onClick={() => setShowFilterCard(true)} id="filter-button">
-            Filter <BsFilter />
-          </button>
-        )}
-
-        {/* CLEAR FILTER BUTTON */}
-        {filterApplied && (
-          <button onClick={async () => await getSecuredExpenses()} id="filter-button">
-            Clear Filter <MdOutlineFilterAltOff />
-          </button>
-        )}
-
-        {/* INSTRUCTIONS */}
-        {expenses.length === 0 && (
-          <div id="instructions-wrapper">
-            <p className="instructions center">
-              There are currently no expenses <PiConfettiDuotone className={'fs-22'} />
-            </p>
+        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'expense-tracker-fade-wrapper'}>
+          <div className="flex" id="screen-title-wrapper">
+            <p className="screen-title">Expense Tracker </p>
+            {!DomManager.isMobile() && <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />}
           </div>
-        )}
+          <p className={`${theme} text-screen-intro`}>
+            Add expenses to be paid by your co-parent. If a new expense is created for you to pay, you will have the opportunity to approve or reject
+            it.
+          </p>
+          <p className="payment-options-link mb-15 mt-10" onClick={() => setShowPaymentOptionsCard(true)}>
+            Bill Payment & Money Transfer Options
+          </p>
 
-        {/* LOOP EXPENSES */}
-        <div id="expenses-container">
-          {Manager.isValid(expenses, true) &&
-            expenses.map((expense, index) => {
-              return (
-                <div
-                  key={expense.id}
-                  className="mt-20"
-                  id="row"
-                  onClick={() => {
-                    setActiveExpense(expense)
-                    setShowDetails(!showDetails)
-                  }}>
-                  <div id="primary-icon-wrapper">
-                    {expense.paidStatus === 'unpaid' && <span className="amount">${expense.amount}</span>}
-                    {expense.paidStatus === 'paid' && <PiMoneyWavyDuotone id={'primary-row-icon'} />}
-                  </div>
-                  <div id="content" data-expense-id={expense.id} className={`expense wrap`}>
-                    {/* EXPENSE NAME */}
-                    <div id="name-wrapper" className="flex align-center">
-                      <p id="title" className="name row-title">
-                        {uppercaseFirstLetterOfAllWords(expense.name)}
-                      </p>
-                      <span className={`${expense.paidStatus} status`} id="request-status">
-                        {uppercaseFirstLetterOfAllWords(expense.paidStatus)}
-                      </span>
+          {/* FILTER BUTTON */}
+          {!filterApplied && expenses.length > 0 && (
+            <button onClick={() => setShowFilterCard(true)} id="filter-button">
+              Filter <BsFilter />
+            </button>
+          )}
+
+          {/* CLEAR FILTER BUTTON */}
+          {filterApplied && (
+            <button onClick={async () => await getSecuredExpenses()} id="filter-button">
+              Clear Filter <MdOutlineFilterAltOff />
+            </button>
+          )}
+
+          {/* INSTRUCTIONS */}
+          {expenses.length === 0 && (
+            <div id="instructions-wrapper">
+              <p className="instructions center">
+                There are currently no expenses <PiConfettiDuotone className={'fs-22'} />
+              </p>
+            </div>
+          )}
+
+          {/* LOOP EXPENSES */}
+          <div id="expenses-container">
+            {Manager.isValid(expenses, true) &&
+              expenses.map((expense, index) => {
+                return (
+                  <div
+                    key={expense.id}
+                    className="mt-20"
+                    id="row"
+                    onClick={() => {
+                      setActiveExpense(expense)
+                      setShowDetails(!showDetails)
+                    }}>
+                    <div id="primary-icon-wrapper">
+                      {expense.paidStatus === 'unpaid' && <span className="amount">${expense.amount}</span>}
+                      {expense.paidStatus === 'paid' && <PiMoneyWavyDuotone id={'primary-row-icon'} />}
                     </div>
+                    <div id="content" data-expense-id={expense.id} className={`expense wrap`}>
+                      {/* EXPENSE NAME */}
+                      <div id="name-wrapper" className="flex align-center">
+                        <p id="title" className="name row-title">
+                          {uppercaseFirstLetterOfAllWords(expense.name)}
+                        </p>
+                        <span className={`${expense.paidStatus} status`} id="request-status">
+                          {uppercaseFirstLetterOfAllWords(expense.paidStatus.toUpperCase())}
+                        </span>
+                      </div>
 
-                    {/* CATEGORY/AMOUNT */}
-                    {expense?.category?.length > 0 && (
-                      <p id="subtitle">
-                        Category:
-                        <span>{expense.category}</span>
-                      </p>
-                    )}
-                    {(!expense.category || expense?.category?.length === 0) && <p id="subtitle">No Category Selected</p>}
+                      {/* CATEGORY/AMOUNT */}
+                      {expense?.category?.length > 0 && (
+                        <p id="subtitle">
+                          Category:
+                          <span>{expense.category}</span>
+                        </p>
+                      )}
+                      {(!expense.category || expense?.category?.length === 0) && <p id="subtitle">No Category Selected</p>}
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-        </div>
+                )
+              })}
+          </div>
+        </Fade>
       </div>
       {!showNewExpenseCard && !showPaymentOptionsCard && !showFilterCard && !showDetails && (
         <NavBar navbarClass={'child-info'}>

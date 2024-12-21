@@ -76,7 +76,7 @@ export default NotificationManager =
       , 500
 
   getUserSubId: (currentUserPhoneOrEmail, phoneOrEmail = "email") ->
-    existingRecord = DB.find(DB.tables.notificationSubscribers, [phoneOrEmail, currentUserPhoneOrEmail], true)
+    existingRecord = await DB.find(DB.tables.notificationSubscribers, [phoneOrEmail, currentUserPhoneOrEmail], true)
     existingRecord?.subscriptionId
 
   deleteUser: (oneSignalId, subId) ->
@@ -154,7 +154,7 @@ export default NotificationManager =
       coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
       notificationsEnabled = coparent?.settings?.notificationsEnabled
       if notificationsEnabled
-        subId = await NotificationManager.getUserSubId(coparent)
+        subId = await NotificationManager.getUserSubId(coparent.phone, "phone")
         await NotificationManager.sendNotification(title, message, subId )
 
   assignExternalId: (currentUser) ->

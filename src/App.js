@@ -3,6 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvid
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import globalState from './context.js'
 import 'react-toggle/style.css'
+
 // Screens
 import Activity from './components/screens/activity'
 import EventCalendar from '@screens/calendar.jsx'
@@ -109,7 +110,6 @@ export default function App() {
 
   // ON PAGE LOAD
   useEffect(() => {
-    setState({ ...state, isLoading: true })
     // Error Boundary Test
     // throw new Error('Something went wrong')
     document.body.appendChild(myCanvas)
@@ -127,8 +127,15 @@ export default function App() {
         if (Manager.isValid(scopedCodes)) {
           await DB.deleteMultipleRows(DB.tables.parentPermissionCodes, scopedCodes, _currentUser)
         }
-        setState({ ...state, currentUser: _currentUser, theme: _currentUser?.settings?.theme, isLoading: false })
-        console.log('done')
+
+        // Update currentUser in state
+        setState({
+          ...state,
+          currentUser: _currentUser,
+          theme: _currentUser?.settings?.theme,
+          currentScreen: ScreenNames.calendar,
+          isLoading: true,
+        })
       } else {
         console.log('signed out or user doesn"t exist')
       }
@@ -146,6 +153,10 @@ export default function App() {
     }
   }, [menuIsOpen])
 
+  const fullscreenScreens = [ScreenNames.login, ScreenNames.home]
+  const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
+  const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div className={`${currentUser?.settings?.theme} App`} id="app-container">
@@ -159,18 +170,15 @@ export default function App() {
 
         <globalState.Provider value={stateToUpdate}>
           {/* FULL MENU */}
-          {userIsLoggedIn && <FullMenu />}
+          <FullMenu />
+
+          {/* TOP NAVBAR */}
+          {!screensToHideBrandbar.includes(currentScreen) && <BrandBar />}
 
           {/* SCREENS */}
-          <div className="flex" id="app-content-wrapper">
-            {/* TOP NAVBAR */}
+          <div id="app-content-with-sidebar" className={fullscreenScreens.includes(currentScreen) ? 'fullscreen' : ''}>
+            {!screensToHideSidebar.includes(currentScreen) && <SideNavbar />}
 
-            {currentScreen !== ScreenNames.home && currentScreen !== ScreenNames.login && (
-              <>
-                <BrandBar />
-                <SideNavbar />
-              </>
-            )}
             {/* ADMIN */}
             {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
 

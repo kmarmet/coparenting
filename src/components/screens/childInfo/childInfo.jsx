@@ -10,6 +10,8 @@ import General from '../childInfo/general'
 import Medical from '../childInfo/medical'
 import Schooling from '../childInfo/schooling'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
+import { BiFace, BiImageAdd } from 'react-icons/bi'
+import { Fade } from 'react-awesome-reveal'
 import {
   formatFileName,
   formatNameFirstNameOnly,
@@ -27,12 +29,12 @@ import {
 } from '../../../globalFunctions'
 import NewChildForm from './newChildForm'
 import ChildSelector from './childSelector'
-import { BiImageAdd } from 'react-icons/bi'
 import DB_UserScoped from '@userScoped'
 import { IoPersonAddOutline } from 'react-icons/io5'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
+import DomManager from '../../../managers/domManager'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
@@ -89,8 +91,6 @@ export default function ChildInfo() {
 
   useEffect(() => {
     onTableChange().then((r) => r)
-
-    Manager.showPageContainer('show')
   }, [])
 
   return (
@@ -119,71 +119,78 @@ export default function ChildInfo() {
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
-        <p className="screen-title">Child Info</p>
+        <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
+          <div className="flex" id="screen-title-wrapper">
+            <p className="screen-title">Child Info </p>
+            {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
+          </div>
 
-        {!Manager.isValid(currentUser?.children?.[0]) && currentUser?.children?.length <= 0 && (
-          <NoDataFallbackText
-            text={'No children have been added yet. In order to share events (and other details) with a child, you will need to add them here.'}
-          />
-        )}
+          {!Manager.isValid(currentUser?.children?.[0]) && currentUser?.children?.length <= 0 && (
+            <NoDataFallbackText
+              text={
+                'No children have been added yet. In order to share events with your children, or store information about them - you will need to add them here.'
+              }
+            />
+          )}
 
-        {/* PROFILE PIC */}
-        <div id="children-container">
-          <>
-            {activeInfoChild && activeInfoChild?.general && (
-              <>
-                {Manager.isValid(activeInfoChild?.general['profilePic']) && (
-                  <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
-                    <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
-                    <div className="after">
-                      <span className="material-icons-outlined">flip_camera_ios</span>
-                    </div>
-                  </div>
-                )}
-                {!Manager.isValid(activeInfoChild?.general['profilePic']) && (
-                  <div className="profile-pic-container no-image">
-                    <div className="after">
+          {/* PROFILE PIC */}
+          <div id="children-container">
+            <>
+              {activeInfoChild && activeInfoChild?.general && (
+                <>
+                  {Manager.isValid(activeInfoChild?.general['profilePic']) && (
+                    <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
                       <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
-                      <BiImageAdd />
+                      <div className="after">
+                        <span className="material-icons-outlined">flip_camera_ios</span>
+                      </div>
                     </div>
-                  </div>
+                  )}
+                  {!Manager.isValid(activeInfoChild?.general['profilePic']) && (
+                    <div className="profile-pic-container no-image">
+                      <div className="after">
+                        <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
+                        <BiImageAdd />
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+
+              <span className="child-name">{formatNameFirstNameOnly(activeInfoChild?.general?.name)}</span>
+            </>
+          </div>
+
+          {/* INFO */}
+          <>
+            <div id="child-info">
+              {activeInfoChild && (
+                <div className="form">
+                  <General activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                  <Medical activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                  <Schooling activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                  <Behavior activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                </div>
+              )}
+            </div>
+            {Manager.isValid(currentUser?.children, true) && (
+              <>
+                <button
+                  className="button default center green white-text mt-20"
+                  onClick={() => {
+                    setShowInfoCard(true)
+                  }}>
+                  Add Your Own Info <FaWandMagicSparkles />
+                </button>
+                {currentUser.children.length > 0 && (
+                  <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center">
+                    Different Child <BiFace className={'child-info'} />
+                  </button>
                 )}
               </>
             )}
-
-            <span className="child-name">{formatNameFirstNameOnly(activeInfoChild?.general?.name)}</span>
           </>
-        </div>
-
-        {/* INFO */}
-        <>
-          <div id="child-info">
-            {activeInfoChild && (
-              <div className="form">
-                <General activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-                <Medical activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-                <Schooling activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-                <Behavior activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-              </div>
-            )}
-          </div>
-          {Manager.isValid(currentUser?.children, true) && (
-            <>
-              <button
-                className="button default center green white-text mt-20"
-                onClick={() => {
-                  setShowInfoCard(true)
-                }}>
-                Add Your Own Info <FaWandMagicSparkles />
-              </button>
-              {currentUser.children.length > 0 && (
-                <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center">
-                  Different Child
-                </button>
-              )}
-            </>
-          )}
-        </>
+        </Fade>
       </div>
       {!showNewChildForm && !showSelectorCard && !showInfoCard && (
         <NavBar navbarClass={'child-info'}>

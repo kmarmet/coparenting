@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../context'
 import Manager from '@manager'
 import '@prototypes'
@@ -21,6 +21,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
+import { Fade } from 'react-awesome-reveal'
 
 import { MdOutlineAppShortcut, MdOutlineEmail } from 'react-icons/md'
 import { VscFeedback } from 'react-icons/vsc'
@@ -92,10 +93,6 @@ export default function ContactUs() {
     setShowFeedbackCard(false)
     resetFeedbackForm()
   }
-
-  useEffect(() => {
-    Manager.showPageContainer()
-  }, [])
 
   return (
     <>
@@ -183,22 +180,24 @@ export default function ContactUs() {
 
       {/* CONTACT US */}
       <div id="contact-us-container" className={`${theme} page-container form`}>
-        <p className="screen-title">Contact Us</p>
-        {/* SECTIONS */}
-        <div className="sections">
-          <p className="section" onClick={() => setShowFeatureRequestCard(true)}>
-            <MdOutlineAppShortcut />
-            Feature Request
-          </p>
-          <p className="section" onClick={() => setShowFeedbackCard(true)}>
-            <VscFeedback />
-            Send App Feedback
-          </p>
-          <p className="section" onClick={() => setShowSupportCard(true)}>
-            <MdOutlineEmail />
-            Contact Support
-          </p>
-        </div>
+        <Fade direction={'up'} duration={1000} className={'contact-us-fade-wrapper'} triggerOnce={true} cascade={true}>
+          <p className="screen-title">Contact Us</p>
+          {/* SECTIONS */}
+          <div className="sections">
+            <p className="section" onClick={() => setShowFeatureRequestCard(true)}>
+              <MdOutlineAppShortcut />
+              Feature Request
+            </p>
+            <p className="section" onClick={() => setShowFeedbackCard(true)}>
+              <VscFeedback />
+              Send App Feedback
+            </p>
+            <p className="section" onClick={() => setShowSupportCard(true)}>
+              <MdOutlineEmail />
+              Contact Support
+            </p>
+          </div>
+        </Fade>
       </div>
       {!showFeatureRequestCard && !showFeedbackCard && !showSupportCard && <NavBar navbarClass={'no-add-new-button'}></NavBar>}
     </>
