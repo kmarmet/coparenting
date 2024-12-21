@@ -4,13 +4,14 @@ var User;
 import Manager from "../managers/manager";
 
 export default User = class User {
-  constructor(name = '', email = '', phone = '', children = [], coparents = [], parentType = '', accountType = '', allowNotifications = '', id = Manager.getUid(), defaultTransferLocation = '', defaultTransferNavLink = '', notificationsEnabled = true, settings = {
+  constructor(name = '', email = '', phone = '', children = [], coparents = [], parentType = '', accountType = '', allowNotifications = '', id = Manager.getUid(), defaultTransferLocation = '', defaultTransferNavLink = '', settings = {
       theme: 'light'
     }, dailySummaries = {
       morningSentDate: '',
       eveningSentDate: '',
       morningReminderSummaryHour: '10am',
-      eveningReminderSummaryHour: '8pm'
+      eveningReminderSummaryHour: '8pm',
+      notificationsEnabled: true
     }) {
     this.name = name;
     this.email = email;
@@ -23,7 +24,6 @@ export default User = class User {
     this.id = id;
     this.defaultTransferLocation = defaultTransferLocation;
     this.defaultTransferNavLink = defaultTransferNavLink;
-    this.notificationsEnabled = notificationsEnabled;
     this.settings = settings;
     this.dailySummaries = dailySummaries;
   }

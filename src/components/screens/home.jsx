@@ -4,9 +4,8 @@ import ScreenNames from '@screenNames'
 import globalState from '../../context'
 import { Fade } from 'react-awesome-reveal'
 import { PiCalendarDotsDuotone, PiMoneyWavyDuotone } from 'react-icons/pi'
-import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool } from 'react-icons/ai'
+import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool, AiTwotoneUnlock } from 'react-icons/ai'
 import DomManager from '../../managers/domManager'
-import { SlLogin } from 'react-icons/sl'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import firebaseConfig from '../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
@@ -30,6 +29,7 @@ function LazyImage({ show, importedImage, imagesObjectPropName }) {
       setShowImage(true)
     }
   }, [show])
+
   return (
     <div className="img-wrapper" data-name={imagesObjectPropName}>
       {showImage && (
@@ -91,7 +91,7 @@ export default function Home() {
           {/*  Sign Up <IoPersonAddOutline />*/}
           {/*</button>*/}
           <button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
-            Log In <SlLogin />
+            Log In <AiTwotoneUnlock />
           </button>
         </div>
       </div>

@@ -229,7 +229,7 @@
       z-index: 10000;
       color: white;
       @include blueGlow();
-      border-radius: $borderRadius;
+      border-radius: 50px;
       background: $mainBlue;
       animation: beat 2s infinite;
       
@@ -337,12 +337,6 @@
           span {
             font-size: 25px;
             margin-left: 10px;
-          }
-        }
-
-        .button-group {
-          button {
-            margin: 0 10px 10px auto;
           }
         }
       }

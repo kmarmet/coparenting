@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
-import Manager from '@manager'
 import moment from 'moment'
 import DB_UserScoped from '@userScoped'
 import '@prototypes'
@@ -30,6 +29,7 @@ import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import Label from '../../shared/label'
+import DB from '@db'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
@@ -57,14 +57,18 @@ export default function Settings() {
   }
 
   const toggleNotifications = async (e) => {
-    await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    setState({ ...state, currentUser: updatedCurrentUser })
-  }
+    const subscriber = await DB.find(DB.tables.notificationSubscribers, ['phone', currentUser.phone], true)
+    const { oneSignalId, subscriptionId } = subscriber
+    console.log(oneSignalId)
+    // await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
+    // const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    // await NotificationManager.deleteUser(oneSignalId, subscriptionId)
+    // setState({ ...state, currentUser: updatedCurrentUser })
 
-  useEffect(() => {
-    Manager.showPageContainer()
-  }, [])
+    if (notificationsToggled === true) {
+      // AlertManager.oneButtonAlert('Enable Notifications', '')
+    }
+  }
 
   return (
     <>

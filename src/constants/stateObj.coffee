@@ -9,7 +9,7 @@ StateObj =
   activeInfoCoparent: [],
   docToView: ''
   firebaseUser: null,
-  isLoading: true
+  isLoading: false
   menuIsOpen: false
   messageToUser: null
   modalIsOpen: false

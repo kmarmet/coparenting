@@ -28,7 +28,7 @@ import { Fade } from 'react-awesome-reveal'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser } = state
+  const { theme, currentUser, userIsLoggedIn } = state
   const [existingEvents, setExistingEvents] = useState([])
   const [showHolidaysCard, setShowHolidaysCard] = useState(false)
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
@@ -41,6 +41,7 @@ export default function EventCalendar() {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedNewEventDay, setSelectedNewEventDay] = useState(moment())
+  const [loadingDisabled, setLoadingDisabled] = useState(false)
 
   // GET EVENTS
   const getSecuredEvents = async (selectedDay, selectedMonth) => {
@@ -64,7 +65,6 @@ export default function EventCalendar() {
 
     // Filter out dupes by event title
     setExistingEvents(securedEvents)
-    setState({ ...state, isLoading: false })
   }
 
   const addDayIndicators = async (events) => {
@@ -251,6 +251,14 @@ export default function EventCalendar() {
       await getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
     })
   }
+
+  useEffect(() => {
+    if (!loadingDisabled && currentUser.hasOwnProperty('email')) {
+      setState({ ...state, isLoading: false })
+      setLoadingDisabled(true)
+      getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
+    }
+  }, [currentUser])
 
   // SHOW HOLIDAYS
   useEffect(() => {

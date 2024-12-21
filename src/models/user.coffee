@@ -13,7 +13,6 @@ export default class User
     @id = Manager.getUid()
     @defaultTransferLocation = ''
     @defaultTransferNavLink = ''
-    @notificationsEnabled = true
     @settings = {
       theme: 'light'
     }
@@ -22,5 +21,6 @@ export default class User
       eveningSentDate: ''
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'
+      notificationsEnabled: true
     }
   ) ->

@@ -119,23 +119,30 @@ export default function App() {
       if (user) {
         const user = auth.currentUser
         const _currentUser = await DB_UserScoped.getCurrentUser(user.email, 'email')
+        const oneSignalInitialized = localStorage.getItem('oneSignalInitialized')
 
-        // Delete scoped permission codes if they exist
+        // Delete scoped permission codes if they exist and OneSignal not already initted
+        // if (!Manager.isValid(oneSignalInitialized) || oneSignalInitialized === 'false') {
+        //   localStorage.setItem('oneSignalInitialized', 'true')
+        // }
         NotificationManager.init(_currentUser)
         const permissionCodes = await DB.getTable(DB.tables.parentPermissionCodes)
         const scopedCodes = permissionCodes.filter((x) => x.parentPhone === _currentUser.phone || x.childPhone === _currentUser.phone)
+
         if (Manager.isValid(scopedCodes)) {
           await DB.deleteMultipleRows(DB.tables.parentPermissionCodes, scopedCodes, _currentUser)
         }
 
         // Update currentUser in state
-        setState({
-          ...state,
-          currentUser: _currentUser,
-          theme: _currentUser?.settings?.theme,
-          currentScreen: ScreenNames.calendar,
-          isLoading: true,
-        })
+        if (user.emailVerified) {
+          setState({
+            ...state,
+            currentUser: _currentUser,
+            theme: _currentUser?.settings?.theme,
+            currentScreen: ScreenNames.calendar,
+            userIsLoggedIn: true,
+          })
+        }
       } else {
         console.log('signed out or user doesn"t exist')
       }

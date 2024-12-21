@@ -118,7 +118,7 @@ export default function Registration() {
       newUser.phone = formatPhone(userPhone)
       newUser.coparents = coparents
       newUser.parentType = parentType
-      newUser.notificationsEnabled = true
+      newUser.settings.notificationsEnabled = true
       newUser.settings.theme = 'light'
       newUser.dailySummaries.eveningReminderSummaryHour = '8pm'
       newUser.dailySummaries.morningReminderSummaryHour = '10am'
@@ -163,7 +163,7 @@ export default function Registration() {
     childUser.accountType = 'child'
     childUser.parents = parents
     childUser.email = email
-    childUser.notificationsEnabled = true
+    childUser.settings.notificationsEnabled = true
     childUser.settings.theme = 'light'
     childUser.dailySummaries.eveningReminderSummaryHour = '8pm'
     childUser.dailySummaries.morningReminderSummaryHour = '10am'

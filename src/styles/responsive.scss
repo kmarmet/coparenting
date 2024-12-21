@@ -573,7 +573,6 @@
     }
 
     .page-container {
-      height: unset;
       &:not(.home) {
         align-self: stretch;
         @media screen and (max-width: 600px) {
@@ -615,4 +614,20 @@
     }
   }
   /*#endregion  1600PX APP CONTAINER*/
+  
+  /*#region  600PX PHONE CONTAINER*/
+  @media screen and (max-width: 600px) {
+    #login-container {
+      .form-container {
+        .form {
+          .buttons {
+            button {
+              width: 50%;
+            }
+          }
+        }
+      }
+    }
+  }
+  /*#endregion  600PX PHONE CONTAINER*/
 }
