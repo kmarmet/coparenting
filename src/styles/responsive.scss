@@ -75,7 +75,9 @@
 
           #forgot-password-link {
             max-width: 180px;
-            @include hover;
+            @media screen and (min-width: 650px) {
+              @include hover;
+            }
           }
 
           .buttons {
@@ -193,8 +195,10 @@
           }
 
           &:not(#new-event) {
-            &:hover {
-              color: $mainBlue;
+            @media screen and (min-width: 650px) {
+              &:hover {
+                color: $mainBlue;
+              }
             }
           }
 
@@ -215,24 +219,28 @@
       button {
         &.button {
           &.default {
-            &.default {
-              &:hover {
-                background: $mainBlue;
-                color: white;
-                border: unset;
-              }
-              &.green {
+            @media screen and (min-width: 650px) {
+              &.default {
                 &:hover {
-                  background: $green;
+                  background: $mainBlue;
                   color: white;
                   border: unset;
                 }
-              }
-              &.red {
-                &:hover {
-                  background: $red;
-                  color: white;
-                  border: unset;
+
+                &.green {
+                  &:hover {
+                    background: $green;
+                    color: white;
+                    border: unset;
+                  }
+                }
+
+                &.red {
+                  &:hover {
+                    background: $red;
+                    color: white;
+                    border: unset;
+                  }
                 }
               }
             }
@@ -268,9 +276,11 @@
             height: 150px;
             min-height: 0;
             border: 1px solid $bestGreyForWhite;
-            &:hover {
-              @include bestShadow;
-              border: unset;
+            @media screen and (min-width: 650px) {
+              &:hover {
+                @include bestShadow;
+                border: unset;
+              }
             }
 
             .delete-icon {
@@ -278,9 +288,11 @@
               height: unset;
               width: unset;
               color: $red;
-              &:hover {
-                @include bestShadow;
-                border: unset;
+              @media screen and (min-width: 650px) {
+                &:hover {
+                  @include bestShadow;
+                  border: unset;
+                }
               }
             }
           }
@@ -349,21 +361,23 @@
             #relative-wrapper {
               #holiday-card-buttons {
                 margin: 15px 0;
-
-                button {
-                  &#view-all-holidays-item {
-                    &:hover {
-                      background: $green;
-                      color: white;
-                    }
-                  }
-                  &#view-visitation-holidays-item {
-                    &:hover {
-                      background: $mainBlue;
-                      color: white;
-
-                      &.blue {
+                @media screen and (min-width: 650px) {
+                  button {
+                    &#view-all-holidays-item {
+                      &:hover {
+                        background: $green;
                         color: white;
+                      }
+                    }
+
+                    &#view-visitation-holidays-item {
+                      &:hover {
+                        background: $mainBlue;
+                        color: white;
+
+                        &.blue {
+                          color: white;
+                        }
                       }
                     }
                   }
@@ -377,13 +391,15 @@
           @include bestShadow;
           border-radius: $bigBorderRadius;
 
-          .close-icon {
-            @include hover;
-          }
-
-          #duration-options {
-            .duration-option {
+          @media screen and (min-width: 650px) {
+            .close-icon {
               @include hover;
+            }
+
+            #duration-options {
+              .duration-option {
+                @include hover;
+              }
             }
           }
 
@@ -396,17 +412,20 @@
               padding: 0;
               bottom: 0;
               margin: 0;
-              .card-button {
-                &:hover {
-                  cursor: pointer;
-                  background: $mainBlue;
-                  color: white;
-
-                  svg {
+              @media screen and (min-width: 650px) {
+                .card-button {
+                  &:hover {
+                    cursor: pointer;
+                    background: $mainBlue;
                     color: white;
+
+                    svg {
+                      color: white;
+                    }
                   }
-                }
-                &.submit {
+
+                  &.submit {
+                  }
                 }
               }
             }
@@ -417,7 +436,9 @@
       // CHATS
       #chats-container {
         .thread-item {
-          @include hover;
+          @media screen and (min-width: 650px) {
+            @include hover;
+          }
           .coparent-name {
             .last-message {
               padding-left: 10px;
@@ -433,6 +454,16 @@
         margin-left: 15px;
         height: calc(100vh - 100px);
         max-height: calc(100vh - 100px);
+        
+        .conversation-sidebar-fade-wrapper {
+          .sidebar-search-input {
+            &::placeholder {
+              font-size: 14px;
+              font-style: italic;
+              opacity: .6;
+            }
+          }
+        }
 
         .top-buttons {
           position: unset;
@@ -465,9 +496,11 @@
               }
             }
 
-            &:hover {
-              cursor: pointer;
-              color: $mainBlue;
+            @media screen and (min-width: 650px) {
+              &:hover {
+                cursor: pointer;
+                color: $mainBlue;
+              }
             }
 
             svg {
@@ -488,7 +521,7 @@
           border-radius: 0 0 $bigBorderRadius $bigBorderRadius;
 
           position: fixed;
-          bottom: 0;
+          bottom: 100px;
 
           .message-input {
             backdrop-filter: blur(20px);
@@ -523,7 +556,9 @@
 
           .message {
             svg {
-              @include transformHover;
+              @media screen and (min-width: 650px) {
+                @include transformHover;
+              }
             }
           }
 
@@ -532,7 +567,9 @@
             max-width: 35%;
 
             svg {
-              @include hover;
+              @media screen and (min-width: 650px) {
+                @include hover;
+              }
             }
           }
         }
@@ -555,10 +592,12 @@
             width: auto;
 
             #svg-wrapper {
-              &:hover {
-                cursor: pointer;
-                transition: all 0.3s ease-in-out;
-                transform: scale(1.1);
+              @media screen and (min-width: 650px) {
+                &:hover {
+                  cursor: pointer;
+                  transition: all 0.3s ease-in-out;
+                  transform: scale(1.1);
+                }
               }
             }
 
@@ -614,7 +653,7 @@
     }
   }
   /*#endregion  1600PX APP CONTAINER*/
-  
+
   /*#region  600PX PHONE CONTAINER*/
   @media screen and (max-width: 600px) {
     #login-container {

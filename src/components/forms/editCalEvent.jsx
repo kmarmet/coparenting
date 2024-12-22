@@ -548,7 +548,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
               </div>
             </div>
           )}
-          {/* WHO IS ALLOWED TO SEE IT? */}
+          {/* Share with */}
           {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
             <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}

@@ -4,7 +4,6 @@ import globalState from '../../../context.js'
 import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup.jsx'
 import InstallAppPopup from 'components/installAppPopup.jsx'
-import { IoPersonAddOutline } from 'react-icons/io5'
 import { browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
@@ -213,9 +212,9 @@ export default function Login() {
                 <button className="button default green" onClick={signIn}>
                   Login <SlLogin />
                 </button>
-                <button className="button default light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
-                  Sign Up <IoPersonAddOutline />
-                </button>
+                {/*<button className="button default light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
+                {/*  Sign Up <IoPersonAddOutline />*/}
+                {/*</button>*/}
               </div>
             </div>
 

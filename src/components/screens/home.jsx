@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { contains, formatNameFirstNameOnly } from '../../globalFunctions'
-import ScreenNames from '@screenNames'
 import globalState from '../../context'
 import { Fade } from 'react-awesome-reveal'
 import { PiCalendarDotsDuotone, PiMoneyWavyDuotone } from 'react-icons/pi'
-import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool, AiTwotoneUnlock } from 'react-icons/ai'
+import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool } from 'react-icons/ai'
 import DomManager from '../../managers/domManager'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import firebaseConfig from '../../firebaseConfig'
@@ -20,6 +19,7 @@ import TabletImage from '../../img/homepage/devices/tablet.png'
 import LaptopImage from '../../img/homepage/devices/laptop.png'
 import PhoneImage from '../../img/homepage/devices/phone.png'
 import Logo from '../../img/logo.png'
+import ScreenNames from '@screenNames'
 
 function LazyImage({ show, importedImage, imagesObjectPropName }) {
   const [showImage, setShowImage] = useState(false)
@@ -90,8 +90,11 @@ export default function Home() {
           {/*<button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
           {/*  Sign Up <IoPersonAddOutline />*/}
           {/*</button>*/}
+          {/*<button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>*/}
+          {/*  Log In <AiTwotoneUnlock />*/}
+          {/*</button>*/}
           <button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
-            Log In <AiTwotoneUnlock />
+            Get Started
           </button>
         </div>
       </div>

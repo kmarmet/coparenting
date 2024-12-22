@@ -337,7 +337,7 @@ const DB_UserScoped = {
       }
 
       if (record.hasOwnProperty('memoryCaptureDate')) {
-        await DB.deleteMultipleRows(DB.tables.memories, memories, currentUser)
+        // await DB.deleteMultipleRows(DB.tables.memories, memories, currentUser)
       }
 
       if (record.hasOwnProperty('suggestion')) {

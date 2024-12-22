@@ -30,6 +30,7 @@ import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import Label from '../../shared/label'
 import DB from '@db'
+import NotificationManager from '../../../managers/notificationManager.js'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
@@ -57,16 +58,18 @@ export default function Settings() {
   }
 
   const toggleNotifications = async (e) => {
+    setNotificationsToggled(!notificationsToggled)
     const subscriber = await DB.find(DB.tables.notificationSubscribers, ['phone', currentUser.phone], true)
     const { oneSignalId, subscriptionId } = subscriber
-    console.log(oneSignalId)
-    // await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
-    // const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    // await NotificationManager.deleteUser(oneSignalId, subscriptionId)
-    // setState({ ...state, currentUser: updatedCurrentUser })
+    await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
 
     if (notificationsToggled === true) {
-      // AlertManager.oneButtonAlert('Enable Notifications', '')
+      console.log('enabled')
+      await NotificationManager.enableNotifications(subscriptionId)
+    } else {
+      await NotificationManager.disableNotifications(subscriptionId)
     }
   }
 

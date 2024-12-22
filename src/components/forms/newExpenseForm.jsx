@@ -417,7 +417,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
               icon={<ImEye />}
               shareWith={currentUser?.coparents?.map((x) => x.phone)}
               onCheck={handleShareWithSelection}
-              labelText={'Who is allowed to see it?'}
+              labelText={'Share with'}
               containerClass={'share-with-coparents'}
               dataPhone={currentUser?.coparents?.map((x) => x.phone)}
               checkboxLabels={currentUser?.coparents?.map((x) => x.name)}

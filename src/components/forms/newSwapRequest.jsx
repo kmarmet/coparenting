@@ -262,7 +262,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                   required={true}
                   shareWith={currentUser?.coparents?.map((x) => x.phone)}
                   onCheck={handleShareWithSelection}
-                  labelText={'Who is allowed to see it?'}
+                  labelText={'Share with'}
                   containerClass={'share-with-coparents'}
                   dataPhone={currentUser?.coparents?.map((x) => x.phone)}
                 />

@@ -43,9 +43,7 @@
     #chats-hr {
       margin-top: 0;
     }
-    
 
-    
     hr {
       width: 80%;
       margin-right: auto;
@@ -309,15 +307,6 @@
     &.active {
       display: block;
     }
-
-    @media screen and (min-width: 800px) {
-      top: 100px;
-      position: relative;
-
-      .to {
-        text-align: right;
-      }
-    }
   }
 
   .flex {
@@ -482,7 +471,7 @@
           margin-right: auto;
           background-color: $mainBlue;
           color: white;
-          
+
           svg {
             color: white;
           }
@@ -656,7 +645,7 @@
           border-radius: 4px;
           background: $lightIconBgBlue;
           color: black;
-          
+
           &:after {
             content: '';
           }
@@ -666,7 +655,7 @@
           opacity: 0.5;
           color: black;
         }
-        
+
         &.has-value {
           &:after {
             content: '';

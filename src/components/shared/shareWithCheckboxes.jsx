@@ -50,7 +50,7 @@ export default function ShareWithCheckboxes({ onCheck, containerClass = '', chec
     <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass} mt-15 mb-15`}>
       <div className="flex">
         <RiShieldUserLine className={'fs-22 mr-5'} />
-        <Label text={'Who is allowed to see it?'} required={true} />
+        <Label text={'Share with'} required={true} />
       </div>
       <div className="flex" id="checkboxes">
         {Manager.isValid(shareWith, true) &&

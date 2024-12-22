@@ -538,7 +538,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </div>
           )}
 
-          {/* WHO IS ALLOWED TO SEE IT? */}
+          {/* Share with */}
           {Manager.isValid(currentUser?.coparents, true) && (
             <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}

@@ -152,16 +152,51 @@ export default NotificationManager = {
       return console.log("Notifications disabled for this user");
     }
   },
-  disableNotifications: function(subId) {
-    var myHeaders, options, url;
+  enableNotifications: function(subId) {
+    var myHeaders, options, raw, url;
     myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
     url = `https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}`;
+    raw = JSON.stringify({
+      "subscription": {
+        "type": "Web Push",
+        "enabled": true,
+        "notification_types": 1
+      }
+    });
     options = {
-      method: 'DELETE',
-      headers: myHeaders
+      method: 'PATCH',
+      headers: myHeaders,
+      body: raw
+    };
+    return fetch(url, options).then(function(res) {
+      return res.json();
+    }).then(function(json) {
+      return console.log(json);
+    }).catch(function(err) {
+      return console.error(err);
+    });
+  },
+  disableNotifications: function(subId) {
+    var myHeaders, options, raw, url;
+    myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
+    url = `https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}`;
+    raw = JSON.stringify({
+      "subscription": {
+        "type": "Web Push",
+        "enabled": false,
+        "notification_types": -31
+      }
+    });
+    options = {
+      method: 'PATCH',
+      headers: myHeaders,
+      body: raw
     };
     return fetch(url, options).then(function(res) {
       return res.json();
@@ -186,46 +221,7 @@ export default NotificationManager = {
       }
     }
     return results;
-  },
-  assignExternalId: function(currentUser) {
-    var subId;
-    subId = localStorage.getItem("subscriptionId");
-    return fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}/user/identity`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      body: JSON.stringify({
-        identity: {
-          'email': currentUser.email
-        }
-      })
-    });
   }
 };
-
-//    myHeaders = new Headers()
-//    myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
-//    myHeaders.append "Content-Type", "application/json"
-
-//    raw = JSON.stringify
-//      identity:
-//        external_id: currentUser.email
-//      type: "Web Push"
-
-//    requestOptions =
-//      method: "PATCH"
-//      headers: myHeaders
-//      body: raw
-//      redirect: "follow"
-
-//    subId = localStorage.getItem("subscriptionId")
-
-//    fetch "https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity", requestOptions
-//        .then (response) -> response.text()
-//        .then (result) ->
-//          console.log("Assign External ID Result", result)
-//          localStorage.removeItem('subscriptionId')
-//        .catch (error) -> console.error error
 
 //# sourceMappingURL=notificationManager.js.map

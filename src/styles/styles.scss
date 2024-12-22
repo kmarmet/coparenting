@@ -198,6 +198,10 @@
     align-self: stretch;
   }
   
+  &.conversation-fade-wrapper {
+    height: 100vh;
+  }
+  
   &.side-navbar-fade-wrapper, &.conversation-sidebar-fade-wrapper {
     width: 40%;
     

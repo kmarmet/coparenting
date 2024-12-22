@@ -659,7 +659,7 @@ export default function Visitation() {
                 shareWith={currentUser?.coparents?.map((x) => x.phone)}
                 onCheck={handleShareWithSelection}
                 icon={<ImEye />}
-                labelText={'Who is allowed to see it?'}
+                labelText={'Share with'}
                 containerClass={'share-with-coparents'}
                 dataPhone={currentUser?.coparents?.map((x) => x.name)}
               />

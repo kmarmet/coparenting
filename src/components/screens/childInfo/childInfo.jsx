@@ -55,11 +55,13 @@ export default function ChildInfo() {
     }
 
     // Upload -> Set child/general/profilePic
-    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, activeInfoChild.id, img, 'profilePic').then(async (url) => {
-      const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilePic', url)
-      setState({ ...state, isLoading: false })
-      setActiveInfoChild(updatedChild)
-    })
+    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, `${currentUser?.id}/${activeInfoChild?.id}`, img, 'profilePic').then(
+      async (url) => {
+        const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilePic', url)
+        setState({ ...state, isLoading: false })
+        setActiveInfoChild(updatedChild)
+      }
+    )
   }
 
   const chooseImage = async (e) => {

@@ -374,9 +374,9 @@ const Conversation = () => {
           </div>
         )}
 
-        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'conversation-fade-wrapper'} triggerOnce={true}>
-          {/* DEFAULT MESSAGES */}
-          {!showBookmarks && searchResults.length === 0 && (
+        {!showBookmarks && searchResults.length === 0 && (
+          <Fade direction={'up'} duration={1000} className={'conversation-fade-wrapper'} triggerOnce={true}>
+            {/* DEFAULT MESSAGES */}
             <>
               <div id="default-messages">
                 {Manager.isValid(messagesToLoop, true) &&
@@ -436,11 +436,11 @@ const Conversation = () => {
                 </div>
               </div>
             </>
-          )}
-        </Fade>
-        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'conversation-sidebar-fade-wrapper'} triggerOnce={true}>
-          {/* DESKTOP SIDEBAR */}
-          {!DomManager.isMobile() && (
+          </Fade>
+        )}
+        {!DomManager.isMobile() && (
+          <Fade direction={'up'} duration={1000} className={'conversation-sidebar-fade-wrapper'} triggerOnce={true}>
+            {/* DESKTOP SIDEBAR */}
             <div className="top-buttons">
               <p id="user-name">{formatNameFirstNameOnly(messageRecipient.name)}</p>
               <p id="find-messages" className="item" onClick={() => setShowSearchCard(true)}>
@@ -455,9 +455,27 @@ const Conversation = () => {
                 {!showBookmarks && bookmarks.length > 0 && <span>View Bookmarks</span>}
                 {bookmarks.length === 0 && !showBookmarks && <span>No Bookmarks</span>}
               </p>
+              <InputWrapper
+                defaultValue="Find a message..."
+                inputType={'input'}
+                onChange={async (e) => {
+                  const inputValue = e.target.value
+                  if (inputValue.length === 0) {
+                    setSearchResults([])
+                    await getExistingMessages()
+                  }
+                  if (inputValue.length > 2) {
+                    setSearchInputQuery(inputValue)
+                    const results = messagesToLoop.filter((x) => x.message.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+                    setBookmarks([])
+                    setSearchResults(results)
+                  }
+                }}
+                inputClasses="sidebar-search-input"
+              />
             </div>
-          )}
-        </Fade>
+          </Fade>
+        )}
       </div>
     </>
   )

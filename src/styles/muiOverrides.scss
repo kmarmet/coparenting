@@ -382,9 +382,11 @@
       color: black;
       border-radius: $borderRadius !important;
       
-      &:hover {
-        background: $lightIconBgBlue !important;
-        color: $mainBlue;
+      @media screen and (min-width: 650px) {
+        &:hover {
+          background: $lightIconBgBlue !important;
+          color: $mainBlue;
+        }
       }
 
       &.weekend-day {
