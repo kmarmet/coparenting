@@ -58,7 +58,7 @@ const Conversation = () => {
   const [messageText, setMessageText] = useState('')
   const [searchInputQuery, setSearchInputQuery] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-
+  const [readonly, setReadonly] = useState(false)
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
     AlertManager.successAlert('Message Copied!', false)
@@ -155,10 +155,17 @@ const Conversation = () => {
   }
 
   const getExistingMessages = async () => {
-    console.log(messageRecipient)
-    let scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient?.phone)
+    let scopedChatObject
+
+    // Coparent account closed
+    if (typeof messageRecipient === 'string') {
+      // messageRecipient = phone
+      setReadonly(true)
+      scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient)
+    } else {
+      scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient?.phone)
+    }
     let { chat } = scopedChatObject
-    // console.log(scopedChatObject)
     const bookmarkObjects = chat?.bookmarks?.filter((x) => x?.ownerPhone === currentUser?.phone) ?? []
     const bookmarkedMessageIds = bookmarkObjects?.map((x) => x.messageId) ?? []
     let bookmarkedMessages = []
@@ -282,16 +289,6 @@ const Conversation = () => {
           }}
           inputClasses="search-input"
         />
-        <div
-          className="buttons"
-          onClick={() => {
-            setShowSearchInput(false)
-            setShowSearchCard(false)
-            setSearchResults([])
-            scrollToLatestMessage()
-          }}>
-          <button className="card-button cancel">Close</button>
-        </div>
       </BottomCard>
       <div key={refreshKey} id="message-thread-container" className={`${theme} conversation`}>
         {/* TOP BAR */}
@@ -333,14 +330,12 @@ const Conversation = () => {
                   sender = formatNameFirstNameOnly(messageObj.sender)
                 }
                 return (
-                  <>
-                    <p key={index} className={messageObj.sender === currentUser?.name ? 'message from' : 'to message'}>
-                      {messageObj.message}
-                    </p>
+                  <div key={index}>
+                    <p className={messageObj.sender === currentUser?.name ? 'message from' : 'to message'}>{messageObj.message}</p>
                     <span className={messageObj.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                       From {sender} on&nbsp;{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
                     </span>
-                  </>
+                  </div>
                 )
               })}
           </div>
@@ -399,8 +394,12 @@ const Conversation = () => {
                       <div key={index}>
                         <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
                           {message.message}
-                          {isBookmarked && <FaBookmark className={'bookmarked'} onClick={() => toggleMessageBookmark(message, true)} />}
-                          {!isBookmarked && <PiBookmarkSimpleDuotone onClick={(e) => toggleMessageBookmark(message, false)} />}
+                          {!readonly && (
+                            <>
+                              {isBookmarked && <FaBookmark className={'bookmarked'} onClick={() => toggleMessageBookmark(message, true)} />}
+                              {!isBookmarked && <PiBookmarkSimpleDuotone onClick={(e) => toggleMessageBookmark(message, false)} />}
+                            </>
+                          )}
                         </p>
                         <span className={message.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
                       </div>
@@ -410,18 +409,20 @@ const Conversation = () => {
               </div>
 
               {/* MESSAGE INPUT */}
-              <div className="form message-input-form">
-                {/* SEND BUTTON */}
-                <div
-                  className={messageText.length > 1 ? 'flex has-value' : 'flex'}
-                  id="message-input-container"
-                  onClick={(e) => e.target.classList.add('has-value')}>
-                  <ContentEditable classNames={'message-input'} onChange={handleMessageTyping} />
-                  <button className={messageText.length > 1 ? 'filled' : 'outline'} onClick={async () => await sendMessage()} id="send-button">
-                    Send
-                  </button>
+              {!readonly && (
+                <div className="form message-input-form">
+                  {/* SEND BUTTON */}
+                  <div
+                    className={messageText.length > 1 ? 'flex has-value' : 'flex'}
+                    id="message-input-container"
+                    onClick={(e) => e.target.classList.add('has-value')}>
+                    <ContentEditable classNames={'message-input'} onChange={handleMessageTyping} />
+                    <button className={messageText.length > 1 ? 'filled' : 'outline'} onClick={async () => await sendMessage()} id="send-button">
+                      Send
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </>
           </Fade>
         )}

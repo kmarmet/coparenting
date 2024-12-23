@@ -141,8 +141,8 @@ export default function ChildInfo() {
               <>
                 {Manager.isValid(activeInfoChild?.general['profilePic']) && (
                   <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
-                    <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
                     <div className="after">
+                      <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
                       <span className="material-icons-outlined">flip_camera_ios</span>
                     </div>
                   </div>

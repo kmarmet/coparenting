@@ -48,9 +48,17 @@ const Chats = () => {
     let userCoparent = await DB_UserScoped.getCoparentByPhone(coparent?.phone, currentUser)
     if (!Manager.isValid(userCoparent)) {
       userCoparent = coparent
-      console.log(coparent)
+      AlertManager.oneButtonAlert(
+        'Co-Parent Account not Found',
+        'This co-parent may have closed their account, however, you can still view the messages',
+        null,
+        () => {
+          setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: userCoparent })
+        }
+      )
+    } else {
+      setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: userCoparent })
     }
-    setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: userCoparent })
   }
 
   const getSecuredChats = async () => {
@@ -116,7 +124,6 @@ const Chats = () => {
                   <p
                     className="coparent-name new-thread-coparent-name"
                     onClick={() => {
-                      console.log(coparent)
                       openMessageThread(coparent).then((r) => r)
                     }}>
                     {coparent.name}

@@ -2,11 +2,10 @@
 
 #external-overrides {
   #child-info-container {
-    
     .button {
       &.default {
         &.center {
-          min-width: 60%;
+          min-width: 50%;
         }
       }
     }
@@ -58,9 +57,9 @@
     }
 
     .profile-pic-container {
-      height: 125px;
-      width: 125px;
-      border-radius: 100%;
+      width: 100%;
+      border-radius: $borderRadius;
+      height: 250px;
       overflow: hidden;
       background-size: cover;
       margin-bottom: 5px;
@@ -69,16 +68,26 @@
       align-items: center;
       margin-top: 10px;
       -webkit-filter: blur(0px);
-      
+
       @include hover;
-      
+
       input {
         opacity: 0;
         display: block !important;
       }
 
       &.no-image {
-        background-color: white;
+        .after {
+          background: $bestGreyForWhite;
+          backdrop-filter: unset;
+
+          width: 100%;
+          right: unset;
+
+          svg {
+            font-size: 60px;
+          }
+        }
 
         p {
           font-weight: 500;
@@ -101,7 +110,7 @@
         position: absolute;
         z-index: 10;
       }
-      
+
       input {
         z-index: 100;
         position: relative;
@@ -115,21 +124,35 @@
 
       .after {
         position: absolute;
-        width: 100%;
-        display: flex;
+        right: -15px;
         z-index: 1;
-        justify-content: center;
-        align-items: center;
         @include centerHoriz;
         backdrop-filter: blur(3px);
-        bottom:0;
+        bottom: 10px;
+        margin-left: auto;
+        padding: 0;
+        width: 55px;
+        overflow: hidden;
+        background: rgba(18, 19, 15, 0.47);
+        border-radius: $borderRadius;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0;
+
+        input {
+          font-size: 5px;
+          padding: 10px;
+          width: 100%;
+          align-self: stretch;
+        }
 
         span {
           font-size: 16px !important;
           text-align: center;
           margin: 0 auto;
           display: block;
-          position: relative;
+          position: absolute;
         }
       }
     }
@@ -209,13 +232,12 @@
       background-color: transparent;
       border-radius: 0;
       border: 0;
-      padding: 0 10px 10px 10px;
       justify-content: center;
       flex-direction: column;
       align-items: center;
       display: flex;
-      margin: 10px 0 0 0;
       transition: all 0.3s ease-in-out;
+      margin-bottom: 15px;
 
       &.active {
         transition: all 0.3s ease-in-out;
@@ -237,9 +259,9 @@
       }
 
       .child-name {
-        font-size: 20px;
+        font-size: 24px;
         color: black;
-        font-weight: $fwRegular;
+        font-weight: $fwMediumBold;
         border: 0;
         font-optical-sizing: auto;
         font-style: normal;

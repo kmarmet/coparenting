@@ -37,7 +37,9 @@ export default function BottomCard({
       if (showCard && bottomCard) {
         body.style.position = 'fixed'
         bottomCard.classList.add(fadeInUp)
-        document.getElementById('page-overlay').classList.add('active')
+        if (showOverlay) {
+          document.getElementById('page-overlay').classList.add('active')
+        }
       } else {
         body.style.position = 'inherit'
         document.getElementById('page-overlay').classList.remove('active')
