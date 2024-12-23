@@ -10,7 +10,6 @@
         width: 100vw;
         max-width: 100vw;
       }
-      
     }
     /*#region  DEFAULTS*/
     .title {
@@ -441,6 +440,97 @@
           font-size: 18px;
           opacity: 0.7;
           font-style: italic;
+
+          b {
+            font-size: 18px;
+            color: $mainBlue;
+          }
+        }
+
+        // UNIQUE FEATURES
+        &.unique-features {
+          background: $bestGreyForWhite;
+          .flex {
+            gap: 10px;
+          }
+
+          #unique-features-title {
+            margin-bottom: 15px;
+            b {
+              font-size: 20px;
+            }
+          }
+          .feature {
+            background: white;
+            padding: 20px;
+            border-radius: $bigBorderRadius;
+            max-height: 500px;
+            margin-right: 10px;
+            overflow: auto;
+            mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+            border: 1px solid $iconGrey;
+
+            .feature-title {
+              font-weight: $fwMediumBold;
+              font-size: 18px;
+              position: sticky;
+              top: -20px;
+              background: white;
+              width: 100%;
+              opacity: 1;
+              margin: 0;
+              max-width: 100%;
+              z-index: 100;
+              color: $mainBlue;
+
+              b {
+                font-size: 18px;
+                color: $mainBlue;
+              }
+            }
+
+            .feature-subtitle {
+              text-align: left;
+              max-width: 100%;
+              margin: 0 0 10px 0;
+              font-size: 14px;
+              
+              b {
+                font-size: 14px;
+                color: $mainBlue;
+              }
+            }
+
+            ul {
+              padding: 0;
+              li:not(.list-title) {
+                margin-left: 25px;
+                margin-bottom: 8px;
+                font-size: 14px;
+
+                ul {
+                  li {
+                    margin-bottom: 0;
+                  }
+                }
+              }
+              li {
+                b  {
+                  font-size: 14px;
+                  color: $mainBlue;
+                }
+                i {
+                  font-size: 14px;
+                }
+                &.list-title {
+                  font-size: 14px;
+                  font-weight: $fwMediumBold;
+                  list-style-type: none;
+                  margin-bottom: 10px;
+                }
+              }
+            }
+          }
         }
       }
       .boxes {
@@ -578,6 +668,16 @@
           * {
             width: 100%;
             max-width: 100%;
+          }
+          &.unique-features {
+            * {
+                width: unset;
+                max-width: unset;
+              
+              &.feature {
+                max-width: calc(100vw - 50px);
+              }
+            }
           }
           @media screen and (max-width: 600px) {
             svg {

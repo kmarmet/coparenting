@@ -145,6 +145,11 @@
       transition: all 0.2s ease-in-out;
       padding-left: 10px;
       border-radius: $borderRadius;
+      
+//      &.MuiAccordionSummary-root {
+//        margin-bottom: 10px;
+//      }
+      
       * {
         color: $mainBlue;
       }

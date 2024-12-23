@@ -19,7 +19,6 @@
     .child-pill {
       text-align: center;
       display: inline-block;
-
       border-radius: 20px;
       padding: 3px 10px;
       margin-bottom: 8px;
@@ -57,17 +56,16 @@
     }
 
     .profile-pic-container {
-      width: 100%;
-      border-radius: $borderRadius;
-      height: 250px;
-      overflow: hidden;
+      height: 130px;
+      width: 130px;
+      border-radius: 100%;
       background-size: cover;
       margin-bottom: 5px;
       position: relative;
       display: flex;
       align-items: center;
       margin-top: 10px;
-      -webkit-filter: blur(0px);
+      border: 1px solid $bestGreyForWhite;
 
       @include hover;
 
@@ -80,7 +78,6 @@
         .after {
           background: $bestGreyForWhite;
           backdrop-filter: unset;
-
           width: 100%;
           right: unset;
 
@@ -100,17 +97,6 @@
         text-align: center;
       }
 
-      svg {
-        font-size: 30px;
-        color: $mainBlue;
-        opacity: 0.8;
-        margin: 0 auto;
-        display: block;
-        width: 100%;
-        position: absolute;
-        z-index: 10;
-      }
-
       input {
         z-index: 100;
         position: relative;
@@ -127,32 +113,34 @@
         right: -15px;
         z-index: 1;
         @include centerHoriz;
-        backdrop-filter: blur(3px);
-        bottom: 10px;
         margin-left: auto;
         padding: 0;
-        width: 55px;
+        width: 35px;
+        height: 35px;
         overflow: hidden;
-        background: rgba(18, 19, 15, 0.47);
-        border-radius: $borderRadius;
+        background: $lightIconBgBlue;
+        border-radius: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-right: 0;
+        bottom: -3px;
+        border: 1px solid white;
+
+        svg {
+          color: $mainBlue;
+          font-size: 18px;
+          margin: 0 auto;
+          display: block;
+          width: 100%;
+          opacity: 0.8;
+          position: absolute;
+          z-index: 10;
+        }
 
         input {
           font-size: 5px;
-          padding: 10px;
-          width: 100%;
           align-self: stretch;
-        }
-
-        span {
-          font-size: 16px !important;
-          text-align: center;
-          margin: 0 auto;
-          display: block;
-          position: absolute;
         }
       }
     }
@@ -314,6 +302,21 @@
         .info-section {
           transition: max-height 0.3s ease-in-out;
           max-width: calc(100vw - 30px);
+          
+          &:first-child {
+            padding-top: 10px;
+       
+          }
+          
+          @media screen and (min-width: 1000px) {
+            &:hover {
+              margin-bottom: 10px;
+              
+              span {
+                padding-left: 10px;
+              }
+            }
+          }
 
           &.active {
             .header {

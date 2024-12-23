@@ -9,7 +9,7 @@ import Behavior from '../childInfo/behavior'
 import General from '../childInfo/general'
 import Medical from '../childInfo/medical'
 import Schooling from '../childInfo/schooling'
-import { FaWandMagicSparkles } from 'react-icons/fa6'
+import { FaCameraRotate, FaWandMagicSparkles } from 'react-icons/fa6'
 import { BiFace, BiImageAdd } from 'react-icons/bi'
 import { Fade } from 'react-awesome-reveal'
 import {
@@ -143,7 +143,7 @@ export default function ChildInfo() {
                   <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
                     <div className="after">
                       <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
-                      <span className="material-icons-outlined">flip_camera_ios</span>
+                      <FaCameraRotate />
                     </div>
                   </div>
                 )}
@@ -180,7 +180,7 @@ export default function ChildInfo() {
                 Add Your Own Info <FaWandMagicSparkles />
               </button>
               {currentUser?.children?.length > 0 && (
-                <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center">
+                <button onClick={() => setShowSelectorCard(true)} className="button default mt-5 center">
                   Different Child <BiFace className={'child-info'} />
                 </button>
               )}

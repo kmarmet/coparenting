@@ -20,6 +20,8 @@ import LaptopImage from '../../img/homepage/devices/laptop.png'
 import PhoneImage from '../../img/homepage/devices/phone.png'
 import Logo from '../../img/logo.png'
 import ScreenNames from '@screenNames'
+import { CarouselProvider, Slide, Slider } from 'pure-react-carousel'
+import 'pure-react-carousel/dist/react-carousel.es.css'
 
 function LazyImage({ show, importedImage, imagesObjectPropName }) {
   const [showImage, setShowImage] = useState(false)
@@ -124,16 +126,30 @@ export default function Home() {
             <img src={ChildInfoImage} />
           </div>
         )}
+
         {DomManager.isMobile() && (
-          <div className="flex" id="images">
-            <div id="single-image">
-              <img src={CalendarImage} />
-            </div>
-            <div className="flex" id="double-images">
-              <img src={MemoriesImage} />
-              <img src={ChildInfoImage} />
-            </div>
-          </div>
+          <CarouselProvider
+            touchEnabled={true}
+            naturalSlideWidth={50}
+            naturalSlideHeight={125}
+            totalSlides={3}
+            dragEnabled={true}
+            isIntrinsicHeight={true}
+            infinite={true}
+            lockOnWindowScroll={true}
+            currentSlide={1}>
+            <Slider>
+              <Slide index={0}>
+                <img src={require('../../img/homepage/childInfo.png')} />
+              </Slide>
+              <Slide index={1}>
+                <img src={require('../../img/homepage/calendar.png')} />
+              </Slide>
+              <Slide index={2}>
+                <img src={require('../../img/homepage/memories.png')} />s
+              </Slide>
+            </Slider>
+          </CarouselProvider>
         )}
       </div>
       <div id="below-fold-intro-text" className="section">
@@ -145,7 +161,7 @@ export default function Home() {
       {/* BELOW FOLD */}
       <div id="below-fold-wrapper">
         {/* MAIN CONTENT */}
-        <Fade>
+        <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="flex boxes section">
             <div className="text-box">
               <PiCalendarDotsDuotone />
@@ -167,7 +183,321 @@ export default function Home() {
             </div>
           </div>
         </Fade>
-        <Fade>
+
+        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+          <div className="section full-width-box unique-features">
+            <p className="title">Why Us?</p>
+            <p className="text subtitle">
+              Peaceful Co-Parenting has the same functionality and features as other apps, but our app has <b>UNIQUE FEATURES</b>. These unique
+              features are <u>NOT</u> available in other co-parenting applications.
+            </p>
+            <p id="unique-features-title">
+              <b>Features Exclusive to Peaceful Co-Parenting</b>
+            </p>
+
+            <div className="flex">
+              {/* documents */}
+              <CarouselProvider
+                touchEnabled={true}
+                naturalSlideWidth={100}
+                naturalSlideHeight={125}
+                totalSlides={6}
+                dragEnabled={true}
+                isIntrinsicHeight={true}
+                infinite={true}
+                lockOnWindowScroll={true}
+                visibleSlides={DomManager.isMobile() ? 1 : 3}
+                currentSlide={1}>
+                <Slider>
+                  <Slide index={0}>
+                    <div className="feature">
+                      <p className="feature-title">Documents</p>
+                      <p className="feature-subtitle">
+                        Any co-parent has had to find and search through their separation agreement, medical records or other another document type to
+                        find something specific knows how frustrating and time consuming it can be.
+                      </p>
+                      <p className="feature-subtitle">
+                        With our app you can store documents with the support of both documents and images that are easily accessible at any time.
+                      </p>
+                      <ul>
+                        <li className="list-title">
+                          Document Search
+                          <ul>
+                            <li>Search for any phrase or word within the document</li>
+                            <li>
+                              This is incredibly helpful when trying to find your visitation for holidays or your financial responsibilities for your
+                              children
+                            </li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Table of Contents
+                          <ul>
+                            <li>
+                              Each section such as Physical Custody, Financial Obligations and Visitation will be clickable in the table of contents
+                              and will take you directly to that section
+                            </li>
+                            <li>
+                              This is incredibly helpful when trying to find your visitation for holidays or your financial responsibilities for your
+                              children
+                            </li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Upload document
+                          <ul>
+                            <li>Ability to upload either document OR image of a document</li>
+                            <li>If you upload an image, the text will be extracted from the document via magic</li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Sharing
+                          <ul>
+                            <li>You can store the documents for yourself or you can share any document with your co-parent</li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </Slide>
+                  <Slide index={1}>
+                    <div className="feature">
+                      <p className="feature-title">
+                        Available on <b>Any</b> Device
+                      </p>
+                      <p className="feature-subtitle">
+                        All other co-parenting applications are installed via an app store. This means that they can typically only be installed on
+                        certain devices and on certain operating systems (Apple, Android, .etc).
+                      </p>
+                      <p className="feature-subtitle">
+                        However, with Peaceful Co-Parenting <b>you can install our application on any device</b> (phone, tablet, computer, .etc) and
+                        any operating system (Android, Apple, .etc).
+                      </p>
+                      <ul>
+                        <li className="list-title">
+                          Simple (2-step) Installation
+                          <ul>
+                            <li>You do not have to us an app store to install the application</li>
+                            <li>
+                              Installation Steps
+                              <ul>
+                                <li>Visit the website</li>
+                                <li>Click the share button</li>
+                                <li>
+                                  Click <i>Add to Homescreen</i>
+                                </li>
+                              </ul>
+                            </li>
+                            <li>These steps are provided for Android, iOS (Apple) and Laptop/Desktop computers</li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Device Support
+                          <ul>
+                            <li>
+                              Because you do not need to utilize an app store, you can install our application on any device (phone, tablet, computer,
+                              .etc)
+                            </li>
+                            <li>If you use more than one device, all of your activity and date will be synced across all devices</li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Operating System Support
+                          <ul>
+                            <li>Whether you use a Windows, Mac, Android or Apple device, you can install our application on that device</li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Updates
+                          <ul>
+                            <li>All updates (feature additions, fixes, .etc) are done in the background, you don't have to do anything!</li>
+                            <li>Every time you open the application it will be fully updated</li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </Slide>
+                  <Slide index={2}>
+                    <div className="feature">
+                      <p className="feature-title">One Low Cost for All Features</p>
+                      <p className="feature-subtitle">
+                        Almost every co-parenting application have multiple tiers of pricing. You get very basic features for one price, and then they
+                        upsell (charge more) to access the more useful features. Not us!
+                      </p>
+                      <ul>
+                        <li className="list-title">
+                          Low Price
+                          <ul>
+                            <li>$4.99 per month</li>
+                            <li>
+                              For example: The OurFamilyWizard application costs $120 per year
+                              <ul>
+                                <li>
+                                  Peaceful Co-Parenting costs <b>HALF of THAT</b>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Access to ALL Features
+                          <ul>
+                            <li>
+                              For the price of a cup of coffee ($4.99) you get <b>ALL</b> features
+                              <ul>
+                                <li>Every co-parent needs access to all the resources and tools our application provides</li>
+                                <li>
+                                  Our goal is to make your co-parenting simple and peaceful, so{' '}
+                                  <b>we do not charge you more to access important features</b>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </Slide>
+                  <Slide index={3}>
+                    <div className="feature">
+                      <p className="feature-title">Everything in Realtime</p>
+                      <p className="feature-subtitle">
+                        Whether you are using the application or it is closed,{' '}
+                        <b>you will receive all updates, changes and notifications instantaneously.</b>
+                      </p>
+                      <ul>
+                        <li className="list-title">
+                          Notifications
+                          <ul>
+                            <li>
+                              As soon as a co-parent creates a calendar event, shares a medical record or sends you a message - you will immediately
+                              get a notification
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          If you make an update (add a child, update a calendar event, .etc) you will see the updates <b>automatically</b>
+                          <ul>
+                            <li>
+                              Because you do not need to utilize an app store, you can install our application on any device (phone, tablet, computer,
+                              .etc)
+                            </li>
+                            <li>If you use more than one device, all of your activity and date will be synced across all devices</li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Operating System Support
+                          <ul>
+                            <li>Whether you use a Windows, Mac, Android or Apple device, you can install our application on that device</li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Updates
+                          <ul>
+                            <li>All updates (feature additions, fixes, .etc) are done in the background, you don't have to do anything!</li>
+                            <li>Every time you open the application it will be fully updated</li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </Slide>
+                  <Slide index={4}>
+                    <div className="feature">
+                      <p className="feature-title">Multiple Co-Parent Support</p>
+                      <p className="feature-subtitle">
+                        We understand that you may have multiple co-parents from prior relationships or marriages. We have taken this into
+                        consideration and provide support for this dynamic.
+                      </p>
+                      <ul>
+                        <li className="list-title">
+                          Multiple Co-Parents
+                          <ul>
+                            <li>Add as many co-parents as you need to</li>
+                            <li>asily utilize all of our application's features for each co-parent</li>
+                            <li>When sharing important information, you can choose to share with individual co-parents or all at once</li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Children from More than One Parent
+                          <ul>
+                            <li>You can add an unlimited number of children to store information for or share updates about</li>
+                            <li>
+                              Any child (with a valid phone number) can create an account and also use our application
+                              <ul>
+                                <li>
+                                  If your child has their own account, they will have access to areas like the calendar to keep them in the loop
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </Slide>
+                  <Slide index={5}>
+                    <div className="feature">
+                      <p className="feature-title">Messaging</p>
+                      <p className="feature-subtitle">All other applications include messaging, but not with these features.</p>
+                      <ul>
+                        <li className="list-title">
+                          Archive Conversations
+                          <ul>
+                            <li>
+                              At any time you can delete/archive a conversation
+                              <ul>
+                                <li>If you need to (for court or reference) you can recover the conversation at any time</li>
+                              </ul>
+                            </li>
+                            <li>
+                              Search
+                              <ul>
+                                <li>
+                                  Enter more than three letters and you will see all messages send or received including the text you are searching
+                                  for
+                                </li>
+                              </ul>
+                            </li>
+                            <li>
+                              Bookmarking
+                              <ul>
+                                <li>
+                                  Bookmark any message at any time
+                                  <ul>
+                                    <li>You can view all bookmarks (saved messages) at any time with one button click</li>
+                                  </ul>
+                                </li>
+                              </ul>
+                            </li>
+                            <li>
+                              Message Copying
+                              <ul>
+                                <li>Longpress any message to copy it so you can paste it anywhere you would like</li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Children from More than One Parent
+                          <ul>
+                            <li>You can add an unlimited number of children to store information for or share updates about</li>
+                            <li>
+                              Any child (with a valid phone number) can create an account and also use our application
+                              <ul>
+                                <li>
+                                  If your child has their own account, they will have access to areas like the calendar to keep them in the loop
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </Slide>
+                </Slider>
+              </CarouselProvider>
+            </div>
+          </div>
+        </Fade>
+
+        <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div id="collaboration" className="section text-box flex">
             <FaWandMagicSparkles />
             <div className="text-wrapper">
@@ -188,7 +518,7 @@ export default function Home() {
             <LazyImage show={loadedImages.includes('menu')} importedImage={MenuImage} imagesObjectPropName={'menu'} />
           </div>
         </Fade>
-        <Fade>
+        <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div id="expenses-wrapper" className="section expenses">
             <PiMoneyWavyDuotone />
             <div className="text-wrapper">
@@ -203,7 +533,7 @@ export default function Home() {
           </div>
         </Fade>
 
-        <Fade>
+        <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="section text-box all-devices" id="all-devices">
             <TbSunMoon />
             <p className="title">Compatible & Accessible</p>
@@ -243,7 +573,7 @@ export default function Home() {
 
         {/* FOOTER WRAPPER */}
         <div id="footer-wrapper">
-          <Fade>
+          <Fade direction={'up'} duration={1000} triggerOnce={true}>
             <div className="box section security-and-privacy with-bg">
               <AiTwotoneSafetyCertificate />
               <p className="title">Security & Privacy</p>
@@ -259,7 +589,7 @@ export default function Home() {
             </div>
           </Fade>
         </div>
-        <Fade>
+        <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="flex" id="double">
             <div className="text-wrapper text-only box">
               <AiTwotoneTool />
