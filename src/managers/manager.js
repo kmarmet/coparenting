@@ -4,7 +4,6 @@ import '../prototypes'
 import { hasClass, uppercaseFirstLetterOfAllWords } from '../globalFunctions'
 import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
-import DomManager from './domManager'
 
 const Manager = {
   invalidInputs: (requiredInputs) => {
@@ -249,37 +248,41 @@ const Manager = {
   },
   handleCheckboxSelection: (element, onCheck, onCheckRemoval, canSelectAll = false) => {
     const clickedEl = element.currentTarget
-    const checkbox = clickedEl.querySelector('.box')
     const labels = clickedEl.closest('#checkbox-group').querySelectorAll(`[data-label]`)
 
-    if (DomManager.hasClass(checkbox, 'active')) {
+    // UNCHECK
+    if (clickedEl.classList.contains('active')) {
+      clickedEl.classList.remove('active')
       const label = clickedEl.dataset['label']
-      checkbox.classList.remove('active')
       if (onCheckRemoval) onCheckRemoval(label)
-    } else {
+    }
+    // CHECK
+    else {
       const label = clickedEl.dataset['label']
       if (canSelectAll === false) {
         labels.forEach((labelEl) => {
-          labelEl.querySelector('.box').classList.remove('active')
+          labelEl.classList.remove('active')
         })
       }
-      clickedEl.querySelector('.box').classList.add('active')
       if (onCheck) onCheck(label)
+
+      clickedEl.classList.add('active')
     }
   },
   handleShareWithSelection: (e, currentUser, shareWith) => {
     const clickedEl = e.currentTarget
-    const checkbox = clickedEl.querySelector('#share-with-checkbox-container .box')
     const selectedValue = clickedEl.getAttribute('data-phone')
-    // Uncheck
-    if (checkbox.classList.contains('active')) {
-      checkbox.classList.remove('active')
+    // UNCHECK
+    if (clickedEl.classList.contains('active')) {
+      clickedEl.classList.remove('active')
       if (shareWith.length > 0) {
         shareWith = shareWith.filter((x) => x !== selectedValue)
       }
     }
-    // On check
+
+    // CHECK
     else {
+      clickedEl.classList.add('active')
       if (currentUser?.accountType === 'parent') {
         currentUser?.coparents?.forEach((coparent) => {
           if (coparent?.phone === selectedValue) {
@@ -316,8 +319,8 @@ const Manager = {
           })
         }
       }
-      checkbox.classList.add('active')
     }
+
     return shareWith
   },
   setDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) => {

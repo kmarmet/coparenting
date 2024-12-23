@@ -72,13 +72,14 @@ export default function Home() {
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        // console.log(user)
         // User is signed in.
+        // setState({ ...state, isLoading: true })
       } else {
         // No user is signed in.
         setState({ ...state, isLoading: false })
       }
     })
-    // setState({ ...state, isLoading: true })
   }, [])
 
   return (

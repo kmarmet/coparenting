@@ -76,9 +76,15 @@ export default NotificationManager = {
         newSubscriber.id = Manager.getUid();
         newSubscriber.subscriptionId = subId;
         return fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}/user/identity`).then(async function(identity) {
-          var ref3, userIdentity;
+          var deleteKey, existingSubscriber, ref3, ref4, userIdentity;
           userIdentity = (await identity.json());
           newSubscriber.oneSignalId = userIdentity != null ? (ref3 = userIdentity.identity) != null ? ref3.onesignal_id : void 0 : void 0;
+          existingSubscriber = (await DB.find(DB.tables.notificationSubscribers, ["phone", NotificationManager != null ? (ref4 = NotificationManager.currentUser) != null ? ref4.phone : void 0 : void 0], true));
+          // If user already exists -> replace record
+          if (Manager.isValid(existingSubscriber)) {
+            deleteKey = (await DB.getSnapshotKey(`${DB.tables.notificationSubscribers}`, existingSubscriber, "id"));
+            await DB.deleteByPath(`${DB.tables.notificationSubscribers}/${deleteKey}`);
+          }
           return (await DB.add(`/${DB.tables.notificationSubscribers}`, newSubscriber));
         });
       }, 500);
@@ -120,8 +126,7 @@ export default NotificationManager = {
     currentUser = (await DB.find(DB.tables.users, ["phone", subIdRecord.phone]));
     notificationsEnabled = currentUser != null ? (ref = currentUser.settings) != null ? ref.notificationsEnabled : void 0 : void 0;
     if (notificationsEnabled) {
-      raw = JSON.stringify;
-      ({
+      raw = JSON.stringify({
         contents: {
           en: message
         },

@@ -114,6 +114,7 @@ export default function ReviseChildTransferChangeRequest({ hideCard, showCard, r
       refreshKey={refreshKey}
       title={'Revise Request'}
       showCard={showCard}
+      wrapperClass="new-transfer-revision"
       onClose={resetForm}>
       <div className="revise-transfer-wrapper">
         <div id="transfer-change-container" className={`${theme} form`}>

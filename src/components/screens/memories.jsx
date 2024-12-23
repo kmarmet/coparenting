@@ -144,6 +144,8 @@ export default function Memories() {
     <>
       {/* NEW MEMORY FORM */}
       <NewMemoryForm hideCard={(e) => setShowNewMemoryCard(false)} showCard={showNewMemoryCard} />
+      {/* NO DATA FALLBACK TEXT */}
+      {memories && memories.length === 0 && <NoDataFallbackText text={'There are currently no memories'} />}
 
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
@@ -155,9 +157,6 @@ export default function Memories() {
           <p id="happy-subtitle" className={`${theme} mb-10`}>
             Upload photos of memories that are too good NOT to share <span className="material-icons heart">favorite</span>
           </p>
-
-          {/* NO DATA FALLBACK TEXT */}
-          {memories && memories.length === 0 && <NoDataFallbackText text={'There are currently no memories'} />}
 
           {/* GALLERY */}
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>

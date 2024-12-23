@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import Manager from '@manager'
 import globalState from '../../../context.js'
 import 'rsuite/dist/rsuite.min.css'
-import ScreenNames from '@screenNames'
 import ChatManager from '@managers/chatManager.js'
 import DB_UserScoped from '@userScoped'
 import { BiDotsVerticalRounded, BiMessageRoundedDetail, BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
@@ -33,6 +32,7 @@ import NoDataFallbackText from '../../shared/noDataFallbackText'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
+import ScreenNames from '@screenNames'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -44,8 +44,12 @@ const Chats = () => {
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
   const [threadActionToShow, setThreadActionToShow] = useState(false)
 
-  const openMessageThread = async (coparentPhone) => {
-    const userCoparent = await DB_UserScoped.getCoparentByPhone(coparentPhone, currentUser)
+  const openMessageThread = async (coparent) => {
+    let userCoparent = await DB_UserScoped.getCoparentByPhone(coparent?.phone, currentUser)
+    if (!Manager.isValid(userCoparent)) {
+      userCoparent = coparent
+      console.log(coparent)
+    }
     setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: userCoparent })
   }
 
@@ -76,13 +80,14 @@ const Chats = () => {
 
   const toggleThreadActions = (threadId) => {
     const threadAction = document.querySelector(`.thread-actions[data-thread-id='${threadId}']`)
-
-    if (DomManager.hasClass(threadAction, 'active')) {
-      threadAction.classList.remove('active')
-      setThreadActionToShow(null)
-    } else {
-      setThreadActionToShow(threadId)
-      threadAction.classList.add('active')
+    if (Manager.isValid(threadAction)) {
+      if (hasClass(threadAction, 'active')) {
+        threadAction.classList.remove('active')
+        setThreadActionToShow(null)
+      } else {
+        setThreadActionToShow(threadId)
+        threadAction.classList.add('active')
+      }
     }
   }
 
@@ -98,6 +103,7 @@ const Chats = () => {
       <BottomCard
         hasSubmitButton={false}
         className="new-conversation"
+        wrapperClass="new-conversation"
         onClose={() => setShowNewConvoCard(false)}
         showCard={showNewConvoCard}
         title={'New Conversation'}>
@@ -110,12 +116,13 @@ const Chats = () => {
                   <p
                     className="coparent-name new-thread-coparent-name"
                     onClick={() => {
-                      openMessageThread(coparent.phone).then((r) => r)
+                      console.log(coparent)
+                      openMessageThread(coparent).then((r) => r)
                     }}>
                     {coparent.name}
                   </p>
                 )}
-                {activeThreadPhones.includes(coparent.phone) && <p>All available co-parents aleady have an open conversation with you. </p>}
+                {activeThreadPhones.includes(coparent.phone) && <p>All available co-parents already have an open conversation with you </p>}
               </div>
             )
           })}

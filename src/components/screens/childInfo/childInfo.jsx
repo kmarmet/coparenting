@@ -121,7 +121,7 @@ export default function ChildInfo() {
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
-        <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
+        <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Child Info </p>
             {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
@@ -137,61 +137,55 @@ export default function ChildInfo() {
 
           {/* PROFILE PIC */}
           <div id="children-container">
-            <>
-              {activeInfoChild && activeInfoChild?.general && (
-                <>
-                  {Manager.isValid(activeInfoChild?.general['profilePic']) && (
-                    <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
-                      <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
-                      <div className="after">
-                        <span className="material-icons-outlined">flip_camera_ios</span>
-                      </div>
-                    </div>
-                  )}
-                  {!Manager.isValid(activeInfoChild?.general['profilePic']) && (
-                    <div className="profile-pic-container no-image">
-                      <div className="after">
-                        <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
-                        <BiImageAdd />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-
-              <span className="child-name">{formatNameFirstNameOnly(activeInfoChild?.general?.name)}</span>
-            </>
-          </div>
-
-          {/* INFO */}
-          <>
-            <div id="child-info">
-              {activeInfoChild && (
-                <div className="form">
-                  <General activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-                  <Medical activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-                  <Schooling activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-                  <Behavior activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-                </div>
-              )}
-            </div>
-            {Manager.isValid(currentUser?.children, true) && (
+            {activeInfoChild && activeInfoChild?.general && (
               <>
-                <button
-                  className="button default center green white-text mt-20"
-                  onClick={() => {
-                    setShowInfoCard(true)
-                  }}>
-                  Add Your Own Info <FaWandMagicSparkles />
-                </button>
-                {currentUser.children.length > 0 && (
-                  <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center">
-                    Different Child <BiFace className={'child-info'} />
-                  </button>
+                {Manager.isValid(activeInfoChild?.general['profilePic']) && (
+                  <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
+                    <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
+                    <div className="after">
+                      <span className="material-icons-outlined">flip_camera_ios</span>
+                    </div>
+                  </div>
+                )}
+                {!Manager.isValid(activeInfoChild?.general['profilePic']) && (
+                  <div className="profile-pic-container no-image">
+                    <div className="after">
+                      <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
+                      <BiImageAdd />
+                    </div>
+                  </div>
                 )}
               </>
             )}
-          </>
+
+            <span className="child-name">{formatNameFirstNameOnly(activeInfoChild?.general?.name)}</span>
+          </div>
+
+          {/* INFO */}
+          <div id="child-info">
+            {activeInfoChild && (
+              <div className="form">
+                <General activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                <Medical activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                <Schooling activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                <Behavior activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+              </div>
+            )}
+          </div>
+
+          {/* BUTTONS */}
+          {Manager.isValid(currentUser?.children, true) && (
+            <div>
+              <button className="button default center green white-text mt-20" onClick={() => setShowInfoCard(true)}>
+                Add Your Own Info <FaWandMagicSparkles />
+              </button>
+              {currentUser?.children?.length > 0 && (
+                <button onClick={() => setShowSelectorCard(true)} className="button default mt-10 center">
+                  Different Child <BiFace className={'child-info'} />
+                </button>
+              )}
+            </div>
+          )}
         </Fade>
       </div>
       {!showNewChildForm && !showSelectorCard && !showInfoCard && (

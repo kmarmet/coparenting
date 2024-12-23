@@ -236,6 +236,7 @@ export default function ExpenseTracker() {
         refreshKey={refreshKey}
         hasSubmitButton={false}
         className="filter-card"
+        wrapperClass="filter-card"
         title={'Filter Expenses'}
         submitIcon={<BsFilter />}
         showCard={showFilterCard}
@@ -275,13 +276,13 @@ export default function ExpenseTracker() {
             <div className="pills category">
               {ExpenseCategories.sort().map((cat, index) => {
                 return (
-                  <>
+                  <div key={index}>
                     {categoriesInUse.includes(cat) && (
                       <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
                         {cat}
                       </div>
                     )}
-                  </>
+                  </div>
                 )
               })}
             </div>
@@ -303,6 +304,7 @@ export default function ExpenseTracker() {
               see which option works best for you."
           title={'Payment/Transfer Options'}
           className="payment-options-card"
+          wrapperClass="payment-options-card"
           onClose={() => setShowPaymentOptionsCard(false)}
           showCard={showPaymentOptionsCard}>
           <div id="payment-options-card">
@@ -416,6 +418,7 @@ export default function ExpenseTracker() {
         submitIcon={<MdPriceCheck className={'fs-22'} />}
         onSubmit={async () => await markAsPaid(activeExpense)}
         className="expense-tracker form"
+        wrapperClass="expense-tracker form"
         onClose={() => {
           setActiveExpense(null)
           setShowDetails(false)
@@ -560,6 +563,15 @@ export default function ExpenseTracker() {
         </div>
       </BottomCard>
 
+      {/* INSTRUCTIONS */}
+      {expenses.length === 0 && (
+        <div id="instructions-wrapper">
+          <p className="instructions center">
+            There are currently no expenses <PiConfettiDuotone className={'fs-22'} />
+          </p>
+        </div>
+      )}
+
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>
         <Fade direction={'up'} duration={1000} triggerOnce={true} className={'expense-tracker-fade-wrapper'}>
@@ -587,15 +599,6 @@ export default function ExpenseTracker() {
             <button onClick={async () => await getSecuredExpenses()} id="filter-button">
               Clear Filter <MdOutlineFilterAltOff />
             </button>
-          )}
-
-          {/* INSTRUCTIONS */}
-          {expenses.length === 0 && (
-            <div id="instructions-wrapper">
-              <p className="instructions center">
-                There are currently no expenses <PiConfettiDuotone className={'fs-22'} />
-              </p>
-            </div>
           )}
 
           {/* LOOP EXPENSES */}

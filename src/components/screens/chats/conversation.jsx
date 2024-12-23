@@ -155,9 +155,11 @@ const Conversation = () => {
   }
 
   const getExistingMessages = async () => {
-    let scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient.phone)
+    console.log(messageRecipient)
+    let scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient?.phone)
     let { chat } = scopedChatObject
-    const bookmarkObjects = chat?.bookmarks?.filter((x) => x.ownerPhone === currentUser?.phone) ?? []
+    // console.log(scopedChatObject)
+    const bookmarkObjects = chat?.bookmarks?.filter((x) => x?.ownerPhone === currentUser?.phone) ?? []
     const bookmarkedMessageIds = bookmarkObjects?.map((x) => x.messageId) ?? []
     let bookmarkedMessages = []
 
@@ -246,6 +248,7 @@ const Conversation = () => {
       <BottomCard
         title={'Search'}
         className="form conversation-search-card"
+        wrapperClass="conversation-search"
         submitText={'Search'}
         submitIcon={<TbMessageCircleSearch />}
         showCard={showSearchCard}
@@ -295,7 +298,7 @@ const Conversation = () => {
         {!showSearchInput && DomManager.isMobile() && (
           <div className="flex top-buttons">
             <div className="flex" id="user-info">
-              <p id="user-name">{formatNameFirstNameOnly(messageRecipient.name)}</p>
+              <p id="user-name">{formatNameFirstNameOnly(messageRecipient?.name)}</p>
             </div>
             <div id="right-side" className="flex">
               <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />
@@ -324,7 +327,7 @@ const Conversation = () => {
             {Manager.isValid(searchResults, true) &&
               searchResults.map((messageObj, index) => {
                 let sender
-                if (formatNameFirstNameOnly(messageObj.sender) === currentUser?.name.formatNameFirstNameOnly()) {
+                if (formatNameFirstNameOnly(messageObj.sender) === formatNameFirstNameOnly(currentUser?.name)) {
                   sender = 'ME'
                 } else {
                   sender = formatNameFirstNameOnly(messageObj.sender)
@@ -414,23 +417,7 @@ const Conversation = () => {
                   id="message-input-container"
                   onClick={(e) => e.target.classList.add('has-value')}>
                   <ContentEditable classNames={'message-input'} onChange={handleMessageTyping} />
-                  <button
-                    className={messageText.length > 1 ? 'filled' : 'outline'}
-                    onClick={async () => {
-                      if (DomManager.isMobile()) {
-                        const messageThreadContainer = document.getElementById('message-thread-container')
-                        const vh = window.innerHeight
-
-                        await sendMessage()
-                        setTimeout(() => {
-                          messageThreadContainer.style.height = `${vh - 200}px`
-                          messageThreadContainer.style.maxHeight = `${vh - 200}px`
-                        }, 300)
-                      } else {
-                        await sendMessage()
-                      }
-                    }}
-                    id="send-button">
+                  <button className={messageText.length > 1 ? 'filled' : 'outline'} onClick={async () => await sendMessage()} id="send-button">
                     Send
                   </button>
                 </div>

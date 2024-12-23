@@ -76,14 +76,16 @@ export default function Schooling({ activeChild, setActiveChild }) {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
               const value = prop.flat()[1]
               return (
-                <div key={index} className="flex input">
-                  <InputWrapper
-                    inputType={'input'}
-                    labelText={infoLabel}
-                    defaultValue={value}
-                    onChange={() => update('schooling', infoLabel, value)}
-                  />
-                  <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                <div key={index}>
+                  <div className="flex input">
+                    <InputWrapper
+                      inputType={'input'}
+                      labelText={infoLabel}
+                      defaultValue={value}
+                      onChange={() => update('schooling', infoLabel, value)}
+                    />
+                    <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                  </div>
                 </div>
               )
             })}

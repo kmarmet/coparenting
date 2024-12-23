@@ -170,7 +170,14 @@ export default function NewMemoryForm({ hideCard, showCard }) {
   }, [])
 
   return (
-    <BottomCard onSubmit={submit} refreshKey={resetKey} submitText={'Add Memory'} title={'New Memory'} onClose={resetForm} showCard={showCard}>
+    <BottomCard
+      onSubmit={submit}
+      wrapperClass="new-memory"
+      refreshKey={resetKey}
+      submitText={'Add Memory'}
+      title={'New Memory'}
+      onClose={resetForm}
+      showCard={showCard}>
       <div className="new-memory-wrapper">
         <div id="new-memory-form-container" className={`${theme} form`}>
           <div className="form">

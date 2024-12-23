@@ -35,6 +35,7 @@ import AlertManager from '../../managers/alertManager'
 import { MdOutlineNotes } from 'react-icons/md'
 import BottomCard from '../shared/bottomCard'
 import DomManager from '../../managers/domManager'
+import NoDataFallbackText from '../shared/noDataFallbackText'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -133,6 +134,7 @@ export default function TransferRequests() {
         hasDelete={formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) ? true : false}
         hasSubmitButton={formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) ? false : true}
         onSubmit={() => selectDecision(Decisions.approved)}
+        wrapperClass="transfer-change"
         className="transfer-change"
         onClose={() => setShowDetails(false)}
         showCard={showDetails}>
@@ -217,6 +219,8 @@ export default function TransferRequests() {
         </div>
       </BottomCard>
 
+      {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
+
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         <Fade direction={'up'} duration={1000} className={'transfer-requests-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
@@ -224,11 +228,6 @@ export default function TransferRequests() {
             {!DomManager.isMobile() && <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />}
           </div>
           <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>
-          {existingRequests.length === 0 && (
-            <div id="instructions-wrapper">
-              <p className="instructions center">There are currently no requests</p>
-            </div>
-          )}
 
           {existingRequests.length > 0 && <p id="page-title">All Requests</p>}
 

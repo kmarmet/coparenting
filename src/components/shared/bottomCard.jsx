@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import '../../prototypes'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
-import { useSwipeable } from 'react-swipeable'
 import { CgClose } from 'react-icons/cg'
 
 export default function BottomCard({
@@ -21,69 +20,79 @@ export default function BottomCard({
   hasDelete = false,
   hasSubmitButton = true,
   showOverlay = true,
+  wrapperClass = '',
 }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, alertType, formToShow } = state
   const isMobile = window.screen.width < 800
 
-  const handlers = useSwipeable({
-    onSwipedDown: (e) => {
-      onClose()
-    },
-    preventScrollOnSwipe: true,
-    delta: { down: 300 },
-  })
-
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
     const body = document.body
-    if (showCard) {
-      body.style.position = 'fixed'
-      if (showOverlay) {
+    if (wrapperClass.length > 0) {
+      const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
+      const fadeInUp = 'animate__fadeInUp'
+
+      // Toggle pageOverlay
+      if (showCard && bottomCard) {
+        body.style.position = 'fixed'
+        bottomCard.classList.add(fadeInUp)
         document.getElementById('page-overlay').classList.add('active')
-      }
-    } else {
-      body.style.position = 'inherit'
-      document.getElementById('page-overlay').classList.remove('active')
-    }
-    if (pageContainer) {
-      if (showCard) {
-        pageContainer.classList.add('disable-scroll')
-        document.getElementById('bottom-card').scrollTop = 0
       } else {
-        pageContainer.classList.remove('disable-scroll')
+        body.style.position = 'inherit'
+        document.getElementById('page-overlay').classList.remove('active')
+      }
+
+      // Disable scroll on page container
+      if (pageContainer) {
+        if (showCard && bottomCard) {
+          pageContainer.classList.add('disable-scroll')
+          bottomCard.scrollTop = 0
+        } else {
+          pageContainer.classList.remove('disable-scroll')
+        }
       }
     }
   }, [showCard])
 
-  const cardClasses = () => {
-    let classes = theme + ' ' + className
+  const hideCard = () => {
+    const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
+    const fadeOutDown = 'animate__fadeOutDown'
+    const fadeInUp = 'animate__fadeInUp'
 
-    if (showCard) {
-      classes += ' active '
-    }
-    return classes
+    bottomCard.classList.add(fadeOutDown)
+
+    setTimeout(() => {
+      bottomCard.classList.remove(fadeInUp)
+      bottomCard.classList.remove(fadeOutDown)
+    }, 500)
   }
 
   return (
-    <div key={refreshKey} id="bottom-card" className={`${cardClasses()} ${alertType} `}>
+    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} ${alertType} animate__animated`}>
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
-          <CgClose className="close-icon" onClick={onClose} />
+          <CgClose
+            className="close-icon"
+            onClick={() => {
+              onClose()
+              hideCard()
+            }}
+          />
         </div>
         <div id="content">
           {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
           {children}
         </div>
-        <div className={` flex buttons`}>
-          {hasSubmitButton && (
-            <button className={`button card-button submit ${submitButtonColor}`} onClick={onSubmit}>
-              {submitText} {submitIcon}
-            </button>
-          )}
-          {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
-        </div>
+      </div>
+      <div className={`flex buttons`}>
+        {hasSubmitButton && (
+          <button className={`button card-button submit ${submitButtonColor}`} onClick={onSubmit}>
+            {submitText} {submitIcon}
+          </button>
+        )}
+        {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
       </div>
     </div>
   )

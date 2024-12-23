@@ -78,6 +78,8 @@ export default function DocsList() {
   return (
     <>
       <UploadDocuments showCard={showCard} hideCard={() => setShowCard(false)} />
+      {docs.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
+
       <div id="doc-selection-container" className={`${theme} page-container`}>
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
@@ -86,7 +88,6 @@ export default function DocsList() {
           </div>
           <p className="mb-10">Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise.</p>
           <p className="mb-10">If the document type you tap is an image, the loading time may be a bit longer.</p>
-          {docs.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
 
           {!Manager.isValid(selectedDoc, false, true) && (
             <div className="sections">

@@ -117,6 +117,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       onSubmit={submit}
       submitText={name.length > 0 ? `Add ${uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
       title={'New Co-Parent'}
+      wrapperClass="new-coparent-card"
       showCard={showCard}
       submitIcon={<RiUserAddLine />}
       onClose={resetForm}>

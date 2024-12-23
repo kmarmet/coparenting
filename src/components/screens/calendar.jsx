@@ -304,6 +304,7 @@ export default function EventCalendar() {
         <BottomCard
           hasSubmitButton={false}
           className={`${theme} view-holidays`}
+          wrapperClass={`view-holidays`}
           onClose={viewAllEvents}
           showCard={showHolidaysCard}
           title={'View Holidays ✨'}>
@@ -322,6 +323,7 @@ export default function EventCalendar() {
           submitIcon={<LuCalendarSearch />}
           submitText={'Search'}
           className="form search-card"
+          wrapperClass="search-card"
           title={'Find Events'}
           onClose={async () => {
             Manager.scrollIntoView('#static-calendar')

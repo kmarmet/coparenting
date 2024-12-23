@@ -1185,16 +1185,15 @@
       height: 150px;
       padding: 10px;
       max-height: 150px;
+      border-radius: 15px;
     }
   }
-  
+
   input {
     &:focus {
+      border-radius: 50px;
       outline: none;
-      border: 1px solid $mainBlue;
-      background: rgba(153, 178, 255, 0.14);
-      border-radius: 4px;
-      padding: 10px;
+      padding: 8px 0 8px 20px;
     }
   }
 
@@ -1213,7 +1212,7 @@
 
     &:focus {
       border: 1px solid $mainBlue;
-      border-radius: 4px;
+      background: rgba(153, 178, 255, 0.14);
     }
   }
 
@@ -1464,6 +1463,7 @@
 
   #label-wrapper {
     width: 100%;
+    margin-bottom: 5px;
   }
 
   #parent-label-wrapper {
@@ -1475,24 +1475,14 @@
     }
   }
 
-  &.gap-5 {
-    //    gap: 5px;
-  }
-
-  &.gap-10 {
-    //    gap: 10px;
-  }
-
-  &.gap-15 {
-    //    gap: 15px;
-  }
 
   &.holiday-checkboxes {
     #checkboxes {
-      gap: 10px 0;
-    }
-    #checkbox-container {
-      width: 45%;
+      gap: 8px;
+      
+      @media screen and (max-width: 600px) {
+        gap: 10px 8px;
+      }
     }
   }
 
@@ -1500,44 +1490,37 @@
   #standalone-checkbox-container,
   #share-with-checkbox-container {
     @include hover;
+    transition: all 0.3s ease-in-out;
+    border-radius: 50px;
+    opacity: 0.85;
+
+    &.active {
+      opacity: 1;
+
+      .pill {
+        background: $lightIconBgBlue;
+        color: $mainBlue;
+        font-weight: $fwMediumBold;
+      }
+    }
+
     &.flex {
+      margin: 0;
+    }
+
+    .pill {
+      border: 1px solid $mainBlue;
+      color: $mainBlue;
+      border-radius: 50px;
+      min-width: 60px;
+      text-align: center;
+      line-height: 1;
+      padding: 5px 10px;
+      font-size: 12px;
+      display: flex;
       align-items: center;
-      margin-bottom: 0;
-
-      span {
-        color: $lightBlack;
-        font-weight: $fwRegular;
-        display: inline;
-        margin-left: 6px;
-        line-height: 1.4;
-      }
-
-      .box {
-        height: 16px;
-        width: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.5s ease-out;
-        border-radius: 100%;
-        min-width: 16px;
-        border: 1.5px solid $lightDarkGrey;
-
-        &.active {
-          transition: all 0.3s ease-out;
-          #inner-circle {
-            background-color: $mainBlue;
-          }
-        }
-
-        #inner-circle {
-          height: 14px;
-          width: 14px;
-          border: 3px solid white;
-          border-radius: 100%;
-          transition: all 0.3s ease-out;
-        }
-      }
+      justify-content: center;
+      align-self: stretch;
     }
   }
 }
@@ -2270,27 +2253,23 @@
 @mixin bottomCard {
   background-color: white;
   position: fixed;
-  z-index: -1;
   border-radius: 30px 30px 0 0;
-  bottom: -30vh;
-  transition: all 0.3s ease-in-out;
-  opacity: 0;
-  max-height: 0;
   overflow: auto;
-  min-height: 0;
-  height: 0;
+  height: auto;
   left: 0;
   width: 100vw;
+  max-height: 70vh;
+  min-height: 30vh;
+  bottom: -30vh;
+  z-index: -1;
+  box-shadow: rgba(0, 0, 0, 0.56) 0 2px 30px 14px;
+
+  &.animate__fadeInUp {
+    z-index: $maxZIndex;
+    bottom: 0;
+  }
 
   &.active {
-    min-height: 30vh;
-    max-height: 70vh;
-    height: auto;
-    opacity: 1;
-    bottom: 0;
-    z-index: $maxZIndex;
-    transition: all 0.4s ease-in-out;
-
     &.new-calendar-event,
     &.edit-calendar-event {
       min-height: 90vh;
@@ -2298,6 +2277,117 @@
     &.view-holidays {
       max-height: 25vh;
       min-height: 0;
+    }
+  }
+
+  // BUTTONS
+  .buttons {
+    position: sticky;
+    display: flex;
+    justify-content: center;
+    z-index: 10000;
+    border: 0;
+    padding: 0;
+    bottom: 0;
+    margin: 0 auto;
+    width: 100%;
+    background: white;
+    padding: 8px 0;
+
+    * {
+      line-height: 1;
+      align-self: center;
+    }
+
+    &.hide-bg {
+      background-color: transparent;
+    }
+
+    .delete-icon {
+      color: $red;
+      opacity: 0.8;
+      font-size: 29px;
+      margin-right: auto;
+    }
+
+    .card-button {
+      border-radius: 50px;
+      padding: 15px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      z-index: 10000;
+      position: relative;
+      width: 80%;
+      -ms-transform: none;
+      transform: none;
+      box-shadow: none;
+      left: inherit;
+      right: inherit;
+      bottom: 0;
+      border: 1px solid $green;
+      background-color: white;
+      justify-self: flex-start;
+      margin: 0 auto;
+      line-height: 1;
+      font-weight: $fwRegular;
+
+      svg {
+        color: white;
+        opacity: 1;
+        font-size: 20px;
+        margin-left: 8px;
+        display: flex;
+        justify-content: center;
+        align-self: center;
+        line-height: 1;
+      }
+
+      &.submit {
+        background-color: #edf2fd;
+        border: 0;
+        margin-right: auto;
+        left: 0;
+        color: $mainBlue;
+        font-weight: $fwBold;
+        font-size: 17px;
+
+        svg {
+          color: $mainBlue;
+        }
+      }
+
+      &.blue {
+        color: $mainBlue;
+        border: 1px solid $mainBlue;
+      }
+
+      &.delete,
+      &.red {
+        background-color: #ecf0f0;
+        border: 1px solid $red;
+        color: $red;
+
+        &.with-bg {
+          background: $red;
+          color: white;
+          boder: unset;
+        }
+      }
+
+      &.cancel {
+        border: 1px solid $lightDarkGrey;
+        color: $lightDarkGrey;
+      }
+    }
+
+    &.stack {
+      bottom: 30px;
+      gap: 8px;
+      .card-button {
+        width: 40%;
+      }
     }
   }
 
@@ -2694,118 +2784,6 @@
       }
     }
 
-    // BUTTONS
-    .buttons {
-      position: fixed;
-      left: inherit;
-      right: inherit;
-      bottom: -5px;
-      width: 100vw;
-      display: flex;
-      justify-content: center;
-      z-index: 10000;
-      border: 0;
-      background-color: white;
-      @include centerHoriz;
-      padding: 15px 20px 25px 15px;
-
-      * {
-        line-height: 1;
-        align-self: center;
-      }
-
-      &.hide-bg {
-        background-color: transparent;
-      }
-
-      .delete-icon {
-        color: $red;
-        opacity: 0.8;
-        font-size: 29px;
-        margin-left: 20px;
-      }
-
-      .card-button {
-        border-radius: 10px;
-        padding: 15px 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        z-index: 10000;
-        position: relative;
-        -ms-transform: none;
-        transform: none;
-        box-shadow: none;
-        left: inherit;
-        right: inherit;
-        bottom: 0;
-        border: 1px solid $green;
-        background-color: white;
-        justify-self: flex-start;
-        margin-right: auto;
-        line-height: 1;
-        font-weight: $fwRegular;
-
-        svg {
-          color: white;
-          opacity: 1;
-          font-size: 20px;
-          margin-left: 8px;
-          display: flex;
-          justify-content: center;
-          align-self: center;
-          line-height: 1;
-        }
-
-        &.submit {
-          background-color: #edf2fd;
-          border: 0;
-          margin-right: auto;
-          left: 0;
-          width: 100%;
-          color: $mainBlue;
-          font-weight: $fwBold;
-          font-size: 17px;
-
-          svg {
-            color: $mainBlue;
-          }
-        }
-
-        &.blue {
-          color: $mainBlue;
-          border: 1px solid $mainBlue;
-        }
-
-        &.delete,
-        &.red {
-          background-color: #ecf0f0;
-          border: 1px solid $red;
-          color: $red;
-
-          &.with-bg {
-            background: $red;
-            color: white;
-            boder: unset;
-          }
-        }
-
-        &.cancel {
-          border: 1px solid $lightDarkGrey;
-          color: $lightDarkGrey;
-        }
-      }
-
-      &.stack {
-        bottom: 30px;
-        gap: 8px;
-        .card-button {
-          width: 40%;
-        }
-      }
-    }
-
     .flex {
       margin-bottom: 8px;
 
@@ -2861,13 +2839,6 @@
         }
       }
     }
-  }
-
-  @media screen and (min-width: 800px) {
-    max-width: 50vw;
-    width: 30vw;
-
-    @include centerHoriz;
   }
 }
 /*#endregion  COMPONENTS*/

@@ -409,7 +409,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   }, [])
 
   return (
-    <div>
+    <>
       {/* FORM WRAPPER */}
       <BottomCard
         submitText={'Create Event'}
@@ -418,6 +418,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         onSubmit={submit}
         submitIcon={<FaRegCalendarCheck />}
         showCard={showCard}
+        wrapperClass="new-calendar-event"
         title={'Add New Event'}>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           {/* Event Length */}
@@ -780,6 +781,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
         </div>
       </BottomCard>
-    </div>
+    </>
   )
 }

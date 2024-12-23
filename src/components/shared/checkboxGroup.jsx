@@ -52,12 +52,9 @@ export default function CheckboxGroup({
                 data-phone={thisPhone ? thisPhone : ''}
                 data-label={label ? label : ''}
                 data-date={thisDate ? thisDate : ''}
-                className={`flex ${containerClass}`}
+                className={`flex ${containerClass} ${Manager.isValid(defaultLabels, true) && defaultLabels.includes(label) ? 'active' : ''}`}
                 onClick={(e) => onCheck(e)}>
-                <div className={`box ${Manager.isValid(defaultLabels, true) && defaultLabels.includes(label) ? 'active' : ''}`}>
-                  <div id="inner-circle"></div>
-                </div>
-                <span>{label}</span>
+                <span className="pill">{label}</span>
               </div>
             )
           })}

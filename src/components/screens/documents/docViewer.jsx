@@ -343,7 +343,13 @@ export default function DocViewer() {
         )}
       </div>
       {/* INPUT */}
-      <BottomCard hasSubmitButton={false} className="form search-card" showCard={showSearch} title={'Find Text'} onClose={closeSearch}>
+      <BottomCard
+        wrapperClass="doc-search-card"
+        hasSubmitButton={false}
+        className="form search-card"
+        showCard={showSearch}
+        title={'Find Text'}
+        onClose={closeSearch}>
         <div className="flex">
           <DebounceInput minLength={3} id="search-input" onChange={(e) => search(e.target.value)} debounceTimeout={500} />
           {/* SEARCH NAV */}
@@ -365,7 +371,13 @@ export default function DocViewer() {
 
       {/* TABLE OF CONTENTS */}
       {Manager.isValid(document.querySelectorAll('.header'), true) && (
-        <BottomCard hasSubmitButton={false} showCard={showCard} onClose={() => setShowCard(false)} className="toc" title={'Table of Contents'}>
+        <BottomCard
+          wrapperClass="toc-card"
+          hasSubmitButton={false}
+          showCard={showCard}
+          onClose={() => setShowCard(false)}
+          className="toc"
+          title={'Table of Contents'}>
           <div id="table-of-contents">
             <button
               id="toc-scroll-button"

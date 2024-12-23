@@ -141,6 +141,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
   return (
     <BottomCard
       className="upload-document-card"
+      wrapperClass="upload-document-bottom-card"
       onSubmit={upload}
       refreshKey={refreshKey}
       submitText={'Upload'}

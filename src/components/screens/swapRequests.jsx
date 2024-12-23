@@ -137,6 +137,7 @@ export default function SwapRequests() {
         title={'Request Details'}
         onSubmit={() => selectDecision(Decisions.approved)}
         className="swap-requests"
+        wrapperClass="swap-requests"
         onClose={() => {
           setShowDetails(false)
           setActiveRequest(null)
@@ -239,6 +240,8 @@ export default function SwapRequests() {
         </div>
       </BottomCard>
 
+      {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
+
       {/* PAGE CONTAINER */}
       <div id="swap-requests" className={`${theme} page-container form`}>
         <Fade direction={'up'} duration={1000} triggerOnce={true} className={'swap-requests-fade-wrapper'}>
@@ -247,7 +250,6 @@ export default function SwapRequests() {
             {!DomManager.isMobile() && <IoAdd id={'add-new-button'} className={'swap-requests'} onClick={() => setShowCard(true)} />}
           </div>
           <p className="text-screen-intro mb-15">A request for your child(ren) to stay with you during your co-parent's scheduled visitation time.</p>
-          {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
 
           {/* LOOP REQUESTS */}
           <div id="swap-requests-container">

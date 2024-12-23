@@ -198,6 +198,7 @@ export default function Account() {
           setResetKey(Manager.getUid())
           setShowUpdateCard(false)
         }}
+        wrapperClass="update-card"
         showCard={showUpdateCard}
         title={`Update your ${uppercaseFirstLetterOfAllWords(updateType)}`}>
         <div {...handlers} id="update-contact-info-container" className={`${theme}  form`}>
@@ -222,6 +223,7 @@ export default function Account() {
           setResetKey(Manager.getUid())
           setShowLoginForm(false)
         }}
+        wrapperClass="re-auth-card"
         submitButtonColor="red with-bg"
         submitText={'Close Account'}
         showCard={showLoginForm}

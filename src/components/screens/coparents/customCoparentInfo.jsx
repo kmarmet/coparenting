@@ -56,6 +56,7 @@ export default function CustomCoparentInfo({ hideCard, setActiveCoparent, active
       submitIcon={<FaWandMagicSparkles />}
       submitText={'Add'}
       onSubmit={add}
+      wrapperClass="custom-coparent-card"
       title={'Add Custom Info'}
       showCard={showCard}
       onClose={resetForm}>

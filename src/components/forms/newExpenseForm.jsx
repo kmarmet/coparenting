@@ -303,6 +303,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       submitText={'Create Expense'}
       title={'Add Expense'}
       className="new-expense-card"
+      wrapperClass="new-expense-card"
       showCard={showCard}
       onClose={resetForm}>
       <div className="expenses-wrapper">

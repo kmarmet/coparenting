@@ -96,7 +96,6 @@ const NewChildForm = ({ hideCard, showCard }) => {
   }
 
   useEffect(() => {
-    Manager.showPageContainer('show')
     getExistingChildren().then((r) => r)
   }, [])
 
@@ -106,6 +105,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
       submitText={`Add ${name.length > 0 ? name : 'Child'}`}
       onSubmit={submit}
       className="new-child-wrapper"
+      wrapperClass="new-child-card"
       title={'Add Child'}
       showCard={showCard}
       onClose={resetForm}>
@@ -131,7 +131,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
           </InputWrapper>
 
           {/* GENDER */}
-          <CheckboxGroup parentLabel={'Gender'} checkboxLabels={['Male', 'Female']} onCheck={handleGenderSelect} />
+          <CheckboxGroup parentLabel={'Gender'} required={true} checkboxLabels={['Male', 'Female']} onCheck={handleGenderSelect} />
         </div>
       </div>
     </BottomCard>

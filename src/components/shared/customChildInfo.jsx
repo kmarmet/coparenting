@@ -75,6 +75,7 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       onSubmit={add}
       submitText={'Add'}
       className="custom-child-info-wrapper"
+      wrapperClass="custom-child-info-card"
       onClose={resetForm}
       title={'Add Custom Info'}
       showCard={showCard}>

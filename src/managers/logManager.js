@@ -14,6 +14,7 @@ LogManager = {
       redirect: 'follow'
     };
     //fetch("https://peaceful-coparenting.app:5000/log?errorMessage=#{message}&messageType=#{type}&stackTrace=#{stackTrace}", requestOptions)
+    console.log(message);
     return fetch(`https://peaceful-coparenting.app:5000/log?errorMessage=${message}&messageType=${type}`, requestOptions);
   }
 };

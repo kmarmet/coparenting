@@ -324,6 +324,7 @@ export default function Registration() {
       {/* VERIFY YOUR PHONE */}
       <BottomCard
         hasSubmitButton={false}
+        wrapperClass="verify-phone"
         showCard={showVerificationCard}
         title={'Verify Your Phone'}
         subtitle="If you do not receive a code within 3 minutes, please tap the (X) button at the top right and tap Verify Phone again."

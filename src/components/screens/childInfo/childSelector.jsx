@@ -40,6 +40,7 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
       title={'Choose Child'}
       subtitle="Select which child you would like to view & edit"
       showCard={showCard}
+      wrapperClass="child-selector-card"
       className={`child-selector`}>
       <div className="flex gap wrap mt-15">
         {Manager.isValid(children, true) &&

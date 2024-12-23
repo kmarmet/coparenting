@@ -100,6 +100,7 @@ export default function ContactUs() {
       <BottomCard
         onSubmit={submitFeatureRequest}
         submitText={'Send Request'}
+        wrapperClass="feature-request"
         showCard={showFeatureRequestCard}
         onClose={() => setShowFeatureRequestCard(false)}
         title={'Request New Feature'}>
@@ -128,6 +129,7 @@ export default function ContactUs() {
       <BottomCard
         submitText={'Send Feedback'}
         className="feedback-wrapper"
+        wrapperClass="feedback-wrapper"
         title={'Give us your Feedback'}
         onSubmit={submitFeedback}
         showCard={showFeedbackCard}
@@ -151,6 +153,7 @@ export default function ContactUs() {
       <BottomCard
         submitText={'Send Support Request'}
         onSubmit={submitSupportRequest}
+        wrapperClass="support-wrapper"
         className="support-wrapper"
         title={'How can we Help?'}
         showCard={showSupportCard}

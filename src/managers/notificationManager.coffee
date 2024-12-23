@@ -72,6 +72,12 @@ export default NotificationManager =
           .then (identity) ->
             userIdentity = await identity.json()
             newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
+            existingSubscriber = await DB.find(DB.tables.notificationSubscribers, ["phone", NotificationManager?.currentUser?.phone], true)
+
+            # If user already exists -> replace record
+            if Manager.isValid(existingSubscriber)
+              deleteKey = await DB.getSnapshotKey("#{DB.tables.notificationSubscribers}", existingSubscriber, "id")
+              await DB.deleteByPath("#{DB.tables.notificationSubscribers}/#{deleteKey}")
             await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
       , 500
 
@@ -108,14 +114,14 @@ export default NotificationManager =
 
     if notificationsEnabled
       raw = JSON.stringify
-      contents:
-        en: message
-      headings:
-        en: title
-      target_channel: "push"
-      isAnyWeb: true
-      include_subscription_ids: [subId]
-      app_id: NotificationManager.appId
+        contents:
+          en: message
+        headings:
+          en: title
+        target_channel: "push"
+        isAnyWeb: true
+        include_subscription_ids: [subId]
+        app_id: NotificationManager.appId
 
       requestOptions =
         method: "POST"

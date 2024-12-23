@@ -141,7 +141,14 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
   }, [])
 
   return (
-    <BottomCard onSubmit={submit} submitText={'Send Request'} refreshKey={refreshKey} title={'New Request'} showCard={showCard} onClose={resetForm}>
+    <BottomCard
+      onSubmit={submit}
+      submitText={'Send Request'}
+      refreshKey={refreshKey}
+      wrapperClass="new-transfer-request"
+      title={'New Request'}
+      showCard={showCard}
+      onClose={resetForm}>
       <div className="transfer-request-wrapper">
         <div id="transfer-change-container" className={`${theme} form`}>
           <div className="form transfer-change">

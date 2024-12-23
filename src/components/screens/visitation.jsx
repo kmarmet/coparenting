@@ -366,7 +366,7 @@ export default function Visitation() {
           const allUserHolidays = allUserHolidayObjects.map((x) => x.name)
           if (allUserHolidays.includes(holidayLabel)) {
             // Set checkboxes active
-            holidayCheckboxesWrapper.querySelector(`[data-label="${holidayLabel}"]`).querySelector('.box').classList.add('active')
+            holidayCheckboxesWrapper.querySelector(`[data-label="${holidayLabel}"]`).classList.add('active')
           }
         }
       })
@@ -451,6 +451,7 @@ export default function Visitation() {
           onSubmit={addFiftyFiftyToCal}
           submitText={'Add Schedule'}
           className="form"
+          wrapperClass="add-fifty-fifty-schedule"
           title={'50/50 Visitation Schedule'}
           showCard={showFiftyFiftyCard}
           onClose={() => {
@@ -559,6 +560,7 @@ export default function Visitation() {
           submitText={'Add Schedule'}
           subtitle="Add every other weekend visitation schedule."
           className="form"
+          wrapperClass="add-every-other-weekend-schedule"
           onSubmit={addEveryOtherWeekendToCalendar}
           title={'Every other Weekend'}
           showCard={showEveryOtherWeekendCard}
@@ -572,6 +574,7 @@ export default function Visitation() {
         <BottomCard
           submitText={'Add Schedule'}
           className="form"
+          wrapperClass="add-weekends-schedule"
           title={'Custom Weekends Schedule'}
           showCard={showCustomWeekendsCard}
           onClose={() => setShowCustomWeekendsCard(false)}>

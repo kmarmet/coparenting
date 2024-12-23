@@ -164,6 +164,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
         submitText={'Add Request'}
         refreshKey={refreshKey}
         onSubmit={submit}
+        wrapperClass="new-swap-request"
         title={'New Swap Request'}
         showCard={showCard}
         onClose={resetForm}>

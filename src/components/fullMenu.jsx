@@ -4,6 +4,8 @@ import ScreenNames from '@screenNames'
 import Manager from '@manager'
 import AppManager from '@managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
+import { VscSettings } from 'react-icons/vsc'
+
 // ICONS
 import {
   PiCalendarDotsDuotone,
@@ -23,7 +25,6 @@ import { RiMailSendLine } from 'react-icons/ri'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
 import { BsPeople } from 'react-icons/bs'
 import { MdOutlineManageAccounts } from 'react-icons/md'
-import { FiSettings } from 'react-icons/fi'
 import { BiFace } from 'react-icons/bi'
 import BottomCard from './shared/bottomCard'
 
@@ -61,6 +62,7 @@ export default function FullMenu() {
 
   return (
     <BottomCard
+      wrapperClass="full-menu"
       title={'Menu'}
       className={`full-menu ${theme}`}
       onClose={() => setState({ ...state, menuIsOpen: false })}
@@ -177,7 +179,7 @@ export default function FullMenu() {
           className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
           onClick={() => changeCurrentScreen(ScreenNames.settings)}>
           {/*<span className="material-icons-round">settings</span>*/}
-          <FiSettings /> <p>Settings</p>
+          <VscSettings /> <p>Settings</p>
         </div>
 
         {/* CONTACT US */}

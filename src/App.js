@@ -56,6 +56,7 @@ import SideNavbar from './components/shared/sideNavbar'
 import DB_UserScoped from '@userScoped'
 import DB from '@db'
 import Manager from '@manager'
+import DomManager from './managers/domManager'
 
 export default function App() {
   // Initialize Firebase
@@ -105,6 +106,10 @@ export default function App() {
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
+    }
+    const allBottomCards = document.querySelectorAll('#bottom-card')
+    for (let bottomCard of allBottomCards) {
+      bottomCard.classList.remove('animate__fadeInUp')
     }
   }, [currentScreen])
 
@@ -184,7 +189,7 @@ export default function App() {
 
           {/* SCREENS */}
           <div id="app-content-with-sidebar" className={fullscreenScreens.includes(currentScreen) ? 'fullscreen' : ''}>
-            {!screensToHideSidebar.includes(currentScreen) && <SideNavbar />}
+            {!screensToHideSidebar.includes(currentScreen) && !DomManager.isMobile() && <SideNavbar />}
 
             {/* ADMIN */}
             {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}

@@ -442,7 +442,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       }}
       title={'Edit Event'}
       showCard={showCard}
-      className="edit-calendar-event">
+      className="edit-calendar-event"
+      wrapperClass="edit-calendar-event">
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
         <div className="content">
           {/* SINGLE DAY / MULTIPLE DAYS */}

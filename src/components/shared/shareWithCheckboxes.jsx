@@ -19,7 +19,8 @@ import {
   wordCount,
 } from '../../globalFunctions'
 import Label from './label'
-import { RiShieldUserLine } from 'react-icons/ri'
+import { FaUserShield } from 'react-icons/fa'
+import DB from '@db'
 
 export default function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', defaultPhones, labelText = '', icon = '' }) {
   const { state, setState } = useContext(globalState)
@@ -35,7 +36,16 @@ export default function ShareWithCheckboxes({ onCheck, containerClass = '', chec
       people = [...people, [...currentUser.parents]].filter((x) => x)
     }
     if (currentUser?.children?.length > 0) {
-      people = [...people, [...currentUser.children]].filter((x) => x)
+      let childrenAccounts = []
+      for (let child of currentUser?.children) {
+        if (child?.phone) {
+          const childAccount = await DB.find(DB.tables.users, ['phone', child?.phone], true)
+          if (Manager.isValid(childAccount)) {
+            childrenAccounts.push(child)
+          }
+        }
+      }
+      people = [...people, [...childrenAccounts]].filter((x) => x)
     }
     setShareWith(Manager.convertToArray(people).flat())
   }
@@ -49,7 +59,7 @@ export default function ShareWithCheckboxes({ onCheck, containerClass = '', chec
   return (
     <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass} mt-15 mb-15`}>
       <div className="flex">
-        <RiShieldUserLine className={'fs-22 mr-5'} />
+        <FaUserShield className={'fs-20 mr-5'} />
         <Label text={'Share with'} required={true} />
       </div>
       <div className="flex" id="checkboxes">
@@ -71,10 +81,7 @@ export default function ShareWithCheckboxes({ onCheck, containerClass = '', chec
                 data-phone={phone ? phone : ''}
                 className={`flex ${containerClass}`}
                 onClick={onCheck}>
-                <div className={`box ${Manager.isValid(defaultPhones, true) && defaultPhones.includes(user) ? 'active' : ''}`}>
-                  <div id="inner-circle"></div>
-                </div>
-                <span>{formatNameFirstNameOnly(name)}</span>
+                <span className="pill">{formatNameFirstNameOnly(name)}</span>
               </div>
             )
           })}
