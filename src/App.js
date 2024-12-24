@@ -138,6 +138,8 @@ export default function App() {
           await DB.deleteMultipleRows(DB.tables.parentPermissionCodes, scopedCodes, _currentUser)
         }
 
+        const activities = await DB.getTable(`${DB.tables.activities}/${_currentUser.phone}`)
+
         // Update currentUser in state
         if (user.emailVerified) {
           setState({
@@ -146,6 +148,7 @@ export default function App() {
             theme: _currentUser?.settings?.theme,
             currentScreen: ScreenNames.calendar,
             userIsLoggedIn: true,
+            activityCount: activities.length,
           })
         }
       } else {

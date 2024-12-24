@@ -252,7 +252,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
   const handleShareWithSelection = (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
-    console.log(shareWithNumbers)
     setEventShareWith(shareWithNumbers)
   }
 
@@ -405,7 +404,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       const screenHeight = window.screen.height
       multiDatePicker.style.top = `${screenHeight / 4}px`
     }
-    Manager.showPageContainer('show')
   }, [])
 
   return (

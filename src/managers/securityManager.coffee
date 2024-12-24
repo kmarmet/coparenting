@@ -35,6 +35,7 @@ SecurityManager =
           if !_.isEmpty(shareWith) and shareWith.includes(currentUser?.phone)
               returnRecords.push(event)
     return returnRecords
+
   getExpenses: (currentUser) ->
     returnRecords = []
     allExpenses = Manager.convertToArray(await DB.getTable(DB.tables.expenseTracker)).flat()

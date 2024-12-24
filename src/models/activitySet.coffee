@@ -1,12 +1,15 @@
+import DateFormats from "../constants/dateFormats"
+import moment from "moment"
+import ActivityPriority from "../models/activityPriority"
+
 export default class ActivitySet
   constructor: (
     @id = ''
-    @memoryCount = 0
-    @messageCount = 0
-    @swapRequestCount = 0
-    @transferRequestCount = 0
-    @expenseCount = 0
-    @eventCount = 0
-    @documentCount = 0
-    @unreadMessageCount = 0
+    @dateCreated = moment().format(DateFormats.fullDatetime)
+    @category = ''
+    @recipientPhone = ''
+    @creatorPhone = ''
+    @priority = ActivityPriority.Normal
+    @title = ''
+    @text = ''
   ) ->

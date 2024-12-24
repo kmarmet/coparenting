@@ -15,131 +15,54 @@
       align-items: center;
       flex-wrap: wrap;
 
-      .activity-card {
+      .activity-row {
+        margin-bottom: 15px;
+        border-bottom: 1px solid rgba(214, 219, 222, 0.45);
+        padding-bottom: 8px;
         width: 100%;
-        border-radius: $borderRadius;
-        padding: 8px 15px;
-        position: relative;
-        display: flex;
-        align-items: center;
-        opacity: 0;
-        transition: all .8s ease-in-out;
-        margin-top: 100vh;
         
-        &.active {
-          transition: all .8s ease-in-out;
-          opacity: 1;
-          margin-top: inherit;
-        }
-
-        /*#region  BgColors*/
-        &:first-child {
-        }
-
-        &.calendar {
-          background: #d3edf8;
-        }
-
-        &.documents {
-          background: #ffd0ff;
-        }
-
-        &.expenses {
-          background: #fff2c0;
-        }
-
-        &.memories {
-          background: #fcba94;
-        }
-
-        &.transfer-requests {
-          background: #d0e0ff;
-        }
-
-        &.swap-requests {
-          background: #e2d2fd;
-        }
-        /*#endregion  BgColors*/
-
-        .count-number {
-          font-size: 14px;
-          font-weight: 600;
-          display: flex;
-          background: transparent;
-          border: 1px solid $red;
-          color: $red;
-          align-items: center;
-          justify-content: center;
-          padding: 3px 0;
-          min-width: 40px;
-          border-radius: $bigBorderRadius;
-        }
-
-        .text {
-          text-align: left;
-        }
-        
-        .card-title {
-          font-size: 18px;
-          font-weight: bold;
-          text-align: center;
-        }
-        
-        svg {
-          margin-right: auto;
-          margin-left: 8px;
-        }
-
-        .tap-button {
-          font-size: 22px;
-          position: absolute;
-          bottom: 10px;
-          right: 10px;
-          color: $lightDarkGrey;
-          opacity: 0.8;
-        }
-
-        .view-button-wrapper {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          svg {
-            font-size: 18px;
-            margin-left: 5px;
-          }
-
-          .view-button {
-            background: transparent;
-            color: $lightBlack;
-            margin: 10px auto 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 500;
-            padding-bottom: 2px;
-            border-bottom: 1px solid $lightDarkGrey;
-            font-size: 14px;
+        // CATEGORIES
+        &.medical {
+          .card-title {
+            color: $red;
           }
         }
-
-        align-items: center;
-        justify-content: space-between;
-
-       
-        .svg-wrapper {
-          padding: 5px;
-          background-color: white;
-          border-radius: $borderRadius;
-          align-items: center;
-          justify-content: space-between;
-          display: flex;
-
-          svg {
-            font-size: 16px;
+        
+        &.expense {
+          .card-title {
             color: $green;
-            background: white;
           }
+        }
+        
+        .category {
+          font-size: 12px;
+          background: $bestGreyForWhite;
+          border-radius: 50px;
+          padding: 5px 12px;
+          margin-top: 5px;
+          margin-left: auto;
+          max-width: 80px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .card-title {
+          font-weight: $fwMediumBold;
+          line-height: 1;
+          justify-content: space-between;
+          align-items: flex-start;
+          width: 100%;
+          
+          .date {
+            opacity: 0.7;
+            font-size: 14px;
+            color: black;
+          }
+        }
+        .text {
+          margin: 0;
+          opacity: 0.7;
         }
       }
     }

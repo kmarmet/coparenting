@@ -5,6 +5,7 @@ import Manager from '@manager'
 import AppManager from '@managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
 import { VscSettings } from 'react-icons/vsc'
+import { RxActivityLog } from 'react-icons/rx'
 
 // ICONS
 import {
@@ -85,6 +86,14 @@ export default function FullMenu() {
           onClick={() => changeCurrentScreen(ScreenNames.calendar)}>
           <PiCalendarDotsDuotone />
           <p>Calendar</p>
+        </div>
+
+        {/* ACTIVITY */}
+        <div
+          className={`menu-item activity ${currentScreen === ScreenNames.activity ? 'active' : ''}`}
+          onClick={() => changeCurrentScreen(ScreenNames.activity)}>
+          <RxActivityLog />
+          <p>Activity</p>
         </div>
 
         {/* PARENTS ONLY */}

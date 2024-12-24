@@ -144,11 +144,11 @@ export default function Memories() {
     <>
       {/* NEW MEMORY FORM */}
       <NewMemoryForm hideCard={(e) => setShowNewMemoryCard(false)} showCard={showNewMemoryCard} />
-      {/* NO DATA FALLBACK TEXT */}
-      {memories && memories.length === 0 && <NoDataFallbackText text={'There are currently no memories'} />}
 
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
+        {/* NO DATA FALLBACK TEXT */}
+        {memories && memories.length === 0 && <NoDataFallbackText text={'There are currently no memories'} />}
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Memories</p>

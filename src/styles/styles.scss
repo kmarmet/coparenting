@@ -384,12 +384,6 @@
       color: $green;
     }
 
-    #share-with-checkbox-group {
-      svg {
-        position: relative;
-        bottom: 4px;
-      }
-    }
 
     #screen-title-wrapper {
       align-items: flex-start;
@@ -419,7 +413,7 @@
       flex-wrap: nowrap;
       overflow: hidden;
       position: relative;
-      height: 100vh;
+//      height: 100vh;
 
       @media screen and (max-width: 600px) {
         margin: 0;
@@ -449,8 +443,8 @@
         }
       }
       @media screen and (min-width: 1000px) {
-        width: 100vw;
-        max-width: 100vw;
+//        width: 100vw;
+//        max-width: 100vw;
         #home-screen-wrapper {
           #below-fold-wrapper,
           #above-fold-wrapper {

@@ -2,10 +2,10 @@ import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '@screenNames'
 import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone } from 'react-icons/pi'
-import { VscSettings } from 'react-icons/vsc'
 import { TbGridDots } from 'react-icons/tb'
 import { BiFace } from 'react-icons/bi'
 import DomManager from '../managers/domManager'
+import { RxActivityLog } from 'react-icons/rx'
 
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
@@ -71,9 +71,9 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
 
             {/* SETTINGS */}
             <div
-              onClick={() => changeCurrentScreen(ScreenNames.settings)}
-              className={`${currentScreen === ScreenNames.settings ? 'active menu-item settings' : 'menu-item settings'}`}>
-              <VscSettings />
+              onClick={() => changeCurrentScreen(ScreenNames.activity)}
+              className={`${currentScreen === ScreenNames.activity ? 'active menu-item activity' : 'menu-item activity'}`}>
+              <RxActivityLog />
             </div>
           </div>
         </div>

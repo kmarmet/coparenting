@@ -11,6 +11,10 @@ import NotificationSubscriber from "../models/notificationSubscriber";
 
 import DB_UserScoped from "../database/db_userScoped";
 
+import ActivityPriority from "../models/activityPriority";
+
+import ActivitySet from "../models/activitySet";
+
 export default NotificationManager = {
   currentUser: null,
   lineBreak: '\r\n',
@@ -117,45 +121,50 @@ export default NotificationManager = {
     return userIdentity;
   },
   sendNotification: async function(title, message, subId) {
-    var currentUser, myHeaders, notificationsEnabled, raw, ref, requestOptions, subIdRecord;
+    var myHeaders, newActivity, raw, recipient, requestOptions, subIdRecord;
     myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
     subIdRecord = (await DB.find(DB.tables.notificationSubscribers, ["subscriptionId", subId], true));
-    currentUser = (await DB.find(DB.tables.users, ["phone", subIdRecord.phone]));
-    notificationsEnabled = currentUser != null ? (ref = currentUser.settings) != null ? ref.notificationsEnabled : void 0 : void 0;
-    if (notificationsEnabled) {
-      raw = JSON.stringify({
-        contents: {
-          en: message
-        },
-        headings: {
-          en: title
-        },
-        target_channel: "push",
-        isAnyWeb: true,
-        include_subscription_ids: [subId],
-        app_id: NotificationManager.appId
-      });
-      requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        mode: "no-cors",
-        redirect: "follow"
-      };
-      return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
-        return response.text();
-      }).then(function(result) {
-        console.log(result);
-        return console.log(`Sent to ${subId}`);
-      }).catch(function(error) {
-        return console.error(error);
-      });
-    } else {
-      return console.log("Notifications disabled for this user");
-    }
+    recipient = (await DB.find(DB.tables.users, ["phone", subIdRecord.phone]));
+    raw = JSON.stringify({
+      contents: {
+        en: message
+      },
+      headings: {
+        en: title
+      },
+      target_channel: "push",
+      isAnyWeb: true,
+      include_subscription_ids: [subId],
+      app_id: NotificationManager.appId
+    });
+    requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      mode: "no-cors",
+      redirect: "follow"
+    };
+    // Add activity to database
+    newActivity = new ActivitySet();
+    newActivity.id = Manager.getUid();
+    newActivity.recipientPhone = subIdRecord.phone;
+    newActivity.creatorPhone = '';
+    newActivity.title = title;
+    newActivity.text = message;
+    newActivity.category = '';
+    newActivity.priority = ActivityPriority.Critical;
+    DB.add(`${DB.tables.activities}/${subIdRecord.phone}`, newActivity);
+    return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
+      return response.text();
+    }).then(function(result) {
+      console.log(result);
+      return console.log(`Sent to ${subId}`);
+    }).catch(function(error) {
+      return console.error(error);
+    });
   },
   enableNotifications: function(subId) {
     var myHeaders, options, raw, url;

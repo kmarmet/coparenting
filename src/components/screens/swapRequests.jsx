@@ -240,10 +240,9 @@ export default function SwapRequests() {
         </div>
       </BottomCard>
 
-      {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
-
       {/* PAGE CONTAINER */}
       <div id="swap-requests" className={`${theme} page-container form`}>
+        {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
         <Fade direction={'up'} duration={1000} triggerOnce={true} className={'swap-requests-fade-wrapper'}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Swap Requests </p>

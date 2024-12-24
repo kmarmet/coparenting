@@ -2,7 +2,6 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/src/api/pushAlert.js" />
         <item url="file://$PROJECT_DIR$/src/constants/allMenuItems.js" />
         <item url="file://$PROJECT_DIR$/src/constants/dateFormats.js" />
         <item url="file://$PROJECT_DIR$/src/constants/datetimePickerViews.js" />
@@ -35,6 +34,7 @@
         <item url="file://$PROJECT_DIR$/src/models/activitySet.js" />
         <item url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
         <item url="file://$PROJECT_DIR$/src/models/chatRecoveryRequest.js" />
+        <item url="file://$PROJECT_DIR$/src/models/child/activityPriority.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/child.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/general.js" />
@@ -57,7 +57,6 @@
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/src/api/pushAlert.js" />
       <root url="file://$PROJECT_DIR$/src/constants/allMenuItems.js" />
       <root url="file://$PROJECT_DIR$/src/constants/dateFormats.js" />
       <root url="file://$PROJECT_DIR$/src/constants/datetimePickerViews.js" />
@@ -109,6 +108,7 @@
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
       <root url="file://$PROJECT_DIR$/src/prototypes.js" />
+      <root url="file://$PROJECT_DIR$/src/models/activityPriority.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

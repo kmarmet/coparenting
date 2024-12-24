@@ -32,7 +32,7 @@ export default function BottomCard({
     if (wrapperClass.length > 0) {
       const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
       const fadeInUp = 'animate__fadeInUp'
-
+      const fadeOutDown = 'animate__fadeOutDown'
       // Toggle pageOverlay
       if (showCard && bottomCard) {
         body.style.position = 'fixed'
@@ -41,6 +41,12 @@ export default function BottomCard({
           document.getElementById('page-overlay').classList.add('active')
         }
       } else {
+        bottomCard.classList.add(fadeOutDown)
+
+        setTimeout(() => {
+          bottomCard.classList.remove(fadeInUp)
+          bottomCard.classList.remove(fadeOutDown)
+        }, 500)
         body.style.position = 'inherit'
         document.getElementById('page-overlay').classList.remove('active')
       }

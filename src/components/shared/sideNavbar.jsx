@@ -19,6 +19,7 @@ import {
   PiSwapDuotone,
   PiToolboxDuotone,
 } from 'react-icons/pi'
+import { RxActivityLog } from 'react-icons/rx'
 import DB_UserScoped from '@userScoped'
 import { RiMailSendLine } from 'react-icons/ri'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
@@ -30,7 +31,7 @@ import { Fade } from 'react-awesome-reveal'
 
 export default function SideNavbar() {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser, currentScreen } = state
+  const { theme, currentUser, currentScreen, activityCount } = state
 
   const auth = getAuth()
 
@@ -163,10 +164,20 @@ export default function SideNavbar() {
                 <BsPeople />
                 <p>Coparents</p>
               </div>
+
+              {/* ACTIVITY */}
+              <div
+                className={`menu-item activity ${currentScreen === ScreenNames.activity ? 'active' : ''}`}
+                onClick={() => changeCurrentScreen(ScreenNames.activity)}>
+                <RxActivityLog />
+                <p className="flex">Activity</p>
+                {activityCount > 0 && <span>{activityCount}</span>}
+              </div>
             </>
           )}
         </div>
 
+        {/* BOTTOM */}
         <div id="bottom">
           {/* ACCOUNT */}
           <div

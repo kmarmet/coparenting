@@ -3,6 +3,8 @@ import OneSignal from 'react-onesignal'
 import Manager from "./manager.js"
 import NotificationSubscriber from "../models/notificationSubscriber"
 import DB_UserScoped from "../database/db_userScoped"
+import ActivityPriority from "../models/activityPriority"
+import ActivitySet from "../models/activitySet"
 
 export default NotificationManager =
   currentUser: null
@@ -109,35 +111,43 @@ export default NotificationManager =
     myHeaders.append "Content-Type", "application/json"
     myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
     subIdRecord = await DB.find(DB.tables.notificationSubscribers, ["subscriptionId", subId], true)
-    currentUser = await DB.find(DB.tables.users, ["phone", subIdRecord.phone])
-    notificationsEnabled = currentUser?.settings?.notificationsEnabled
+    recipient = await DB.find(DB.tables.users, ["phone", subIdRecord.phone])
 
-    if notificationsEnabled
-      raw = JSON.stringify
-        contents:
-          en: message
-        headings:
-          en: title
-        target_channel: "push"
-        isAnyWeb: true
-        include_subscription_ids: [subId]
-        app_id: NotificationManager.appId
+    raw = JSON.stringify
+      contents:
+        en: message
+      headings:
+        en: title
+      target_channel: "push"
+      isAnyWeb: true
+      include_subscription_ids: [subId]
+      app_id: NotificationManager.appId
 
-      requestOptions =
-        method: "POST"
-        headers: myHeaders
-        body: raw
-        mode: "no-cors"
-        redirect: "follow"
+    requestOptions =
+      method: "POST"
+      headers: myHeaders
+      body: raw
+      mode: "no-cors"
+      redirect: "follow"
 
-      fetch "https://api.onesignal.com/notifications", requestOptions
-        .then (response) -> response.text()
-        .then (result) ->
-          console.log result
-          console.log("Sent to #{subId}")
-        .catch (error) -> console.error error
-    else
-      console.log("Notifications disabled for this user")
+    # Add activity to database
+    newActivity = new ActivitySet()
+    newActivity.id = Manager.getUid()
+    newActivity.recipientPhone = subIdRecord.phone
+    newActivity.creatorPhone = ''
+    newActivity.title = title
+    newActivity.text = message
+    newActivity.category = ''
+    newActivity.priority = ActivityPriority.Critical
+
+    DB.add "#{DB.tables.activities}/#{subIdRecord.phone}", newActivity
+
+    fetch "https://api.onesignal.com/notifications", requestOptions
+      .then (response) -> response.text()
+      .then (result) ->
+        console.log result
+        console.log("Sent to #{subId}")
+      .catch (error) -> console.error error
 
   enableNotifications: (subId) ->
     myHeaders = new Headers()

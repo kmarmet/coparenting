@@ -21,6 +21,7 @@ import {
 import Label from './label'
 import { FaUserShield } from 'react-icons/fa'
 import DB from '@db'
+import { FaCheck } from 'react-icons/fa6'
 
 export default function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', defaultPhones, labelText = '', icon = '' }) {
   const { state, setState } = useContext(globalState)
@@ -81,7 +82,9 @@ export default function ShareWithCheckboxes({ onCheck, containerClass = '', chec
                 data-phone={phone ? phone : ''}
                 className={`flex ${containerClass}`}
                 onClick={onCheck}>
-                <span className="pill">{formatNameFirstNameOnly(name)}</span>
+                <span className="pill">
+                  {formatNameFirstNameOnly(name)} <FaCheck />
+                </span>
               </div>
             )
           })}

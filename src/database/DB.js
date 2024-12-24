@@ -18,6 +18,7 @@ const DB = {
     memories: 'memories',
     parentPermissionCodes: 'parentPermissionCodes',
     notificationSubscribers: 'notificationSubscribers',
+    activities: 'activities',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true) => {
     if (isFromDb) {

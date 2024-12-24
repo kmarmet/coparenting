@@ -11,7 +11,7 @@ import moment from 'moment'
 import '../../prototypes.js'
 import { TbCalendarDollar } from 'react-icons/tb'
 import BottomCard from '../shared/bottomCard'
-import { PiBellSimpleRinging, PiClockCountdownDuotone, PiConfettiDuotone, PiMoneyWavyDuotone, PiUserDuotone } from 'react-icons/pi'
+import { PiBellSimpleRinging, PiClockCountdownDuotone, PiMoneyWavyDuotone, PiUserDuotone } from 'react-icons/pi'
 import { AiOutlineFileAdd } from 'react-icons/ai'
 import { MdOutlineFilterAltOff, MdOutlineNotes, MdPriceCheck } from 'react-icons/md'
 import SecurityManager from '../../managers/securityManager'
@@ -56,6 +56,7 @@ import AlertManager from '../../managers/alertManager'
 import SelectDropdown from '../shared/selectDropdown'
 import InputWrapper from '../shared/inputWrapper'
 import DomManager from '../../managers/domManager'
+import NoDataFallbackText from '../shared/noDataFallbackText'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -563,17 +564,9 @@ export default function ExpenseTracker() {
         </div>
       </BottomCard>
 
-      {/* INSTRUCTIONS */}
-      {expenses.length === 0 && (
-        <div id="instructions-wrapper">
-          <p className="instructions center">
-            There are currently no expenses <PiConfettiDuotone className={'fs-22'} />
-          </p>
-        </div>
-      )}
-
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>
+        {expenses.length === 0 && <NoDataFallbackText text={'There are currently no expenses'} />}
         <Fade direction={'up'} duration={1000} triggerOnce={true} className={'expense-tracker-fade-wrapper'}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Expense Tracker </p>

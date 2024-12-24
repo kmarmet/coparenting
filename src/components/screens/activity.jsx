@@ -1,7 +1,9 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
-import Manager from '@manager'
 import '@prototypes'
+import { Fade } from 'react-awesome-reveal'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
+
 import {
   contains,
   formatFileName,
@@ -18,99 +20,70 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../globalFunctions'
-import {
-  PiCalendarDotsDuotone,
-  PiCarProfileDuotone,
-  PiChatsCircleDuotone,
-  PiImagesSquareDuotone,
-  PiMoneyWavyDuotone,
-  PiSwapDuotone,
-} from 'react-icons/pi'
-import { HiOutlineDocumentText } from 'react-icons/hi2'
 import { IoCheckmarkDoneOutline } from 'react-icons/io5'
-import ScreenNames from '@screenNames'
+import DB from '@db'
+import Manager from '@manager'
+import DateFormats from '../../constants/dateFormats'
+import moment from 'moment'
+import NoDataFallbackText from '../shared/noDataFallbackText'
+import NavBar from '../navBar'
 
 export default function Activity() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, activitySet } = state
+  const [activities, setActivities] = useState([])
 
-  const addCardAnimation = () => {
-    document.querySelectorAll('.activity-card').forEach((card, i) => {
-      setTimeout(() => {
-        setTimeout(() => {
-          card.classList.add('active')
-        }, 250 * i)
-      }, 300)
+  const getActivities = async () => {
+    const all = await DB.getTable(`${DB.tables.activities}/${currentUser.phone}`)
+    setActivities(all)
+  }
+
+  const clearAll = async () => {
+    await DB.deleteByPath(`${DB.tables.activities}/${currentUser.phone}`)
+  }
+
+  const onTableChange = async () => {
+    const dbRef = ref(getDatabase())
+    onValue(child(dbRef, `${DB.tables.activities}/${currentUser.phone}`), async (snapshot) => {
+      await getActivities().then((r) => r)
     })
   }
 
   useEffect(() => {
-    Manager.showPageContainer()
-    addCardAnimation()
+    onTableChange().then((r) => r)
   }, [])
 
   return (
     <>
-      {/* CONTACT US */}
       <div id="activity-wrapper" className={`${theme} form page-container`}>
+        {activities.length === 0 && <NoDataFallbackText text={'No current activity'} />}
         <p className="screen-title">Activity</p>
-        <p className="intro-text mb-15">
-          New activity from every item that you should always be in the know about. Tap on a row to view the new activity for that item.
-        </p>
-        <div id="activity-cards" className="flex">
-          {/* MESSAGES */}
-          <div className="activity-card messages" onClick={() => setState({ ...state, currentScreen: ScreenNames.chats })}>
-            <p className="card-title">Messages</p>
-            <PiChatsCircleDuotone />
-            <p className="count-number">{activitySet?.unreadMessageCount}</p>
-          </div>
+        <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true} cascade={true}>
+          <p className="intro-text mb-15">Stay informed with all co-parenting and child-related updates and activity.</p>
+          <div id="activity-cards">
+            {Manager.isValid(activities, true) &&
+              activities.map((activity, index) => {
+                const { text, title, priority, category, dateCreated, creatorPhone } = activity
+                return (
+                  <div key={index} className={`activity-row row ${category}`}>
+                    <p className="card-title flex">
+                      {uppercaseFirstLetterOfAllWords(title)}{' '}
+                      <span className="date">{moment(dateCreated, DateFormats.fullDatetime).format(DateFormats.readableDatetime)}</span>
+                    </p>
 
-          {/* EXPENSES */}
-          <div className="activity-card expenses">
-            <p className="card-title">Expenses</p>
-            <PiMoneyWavyDuotone />
-            <p className="count-number">{activitySet?.expenseCount}</p>
+                    <p className="text">{text}</p>
+                  </div>
+                )
+              })}
           </div>
-
-          {/* CAL */}
-          <div className="activity-card calendar">
-            <p className="card-title">Calendar Events</p>
-            <PiCalendarDotsDuotone />
-            <p className="count-number">{activitySet?.eventCount}</p>
-          </div>
-
-          {/* SWAPS */}
-          <div className="activity-card swap-requests">
-            <p className="card-title">Swap Requests</p>
-            <PiSwapDuotone />
-            <p className="count-number">{activitySet?.swapRequestCount}</p>
-          </div>
-
-          {/* TRANSFER */}
-          <div className="activity-card transfer-requests">
-            <p className="card-title">Transfer Requests</p>
-            <PiCarProfileDuotone />
-            <p className="count-number">{activitySet?.transferRequestCount}</p>
-          </div>
-
-          {/* DOCUMENTS */}
-          <div className="documents activity-card">
-            <p className="card-title">Documents</p>
-            <HiOutlineDocumentText />
-            <p className="count-number">{activitySet?.documentCount}</p>
-          </div>
-
-          {/* MEMORIES */}
-          <div className="memories activity-card">
-            <p className="card-title">Memories</p>
-            <PiImagesSquareDuotone />
-            <p className="count-number">{activitySet?.memoryCount}</p>
-          </div>
-        </div>
-        <button className="clear-all button green center default p-5 mt-15">
-          Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
-        </button>
+          {activities.length > 0 && (
+            <button className="clear-all button green center default p-5 mt-15" onClick={clearAll}>
+              Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
+            </button>
+          )}
+        </Fade>
       </div>
+      <NavBar navbarClass={'activity no-add-new-button'}></NavBar>
     </>
   )
 }

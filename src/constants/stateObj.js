@@ -7,7 +7,7 @@ import ActivitySet from "../models/activitySet";
 
 StateObj = {
   activeInfoChild: null,
-  activitySet: new ActivitySet(),
+  activityCount: 0,
   currentScreen: ScreenNames.home,
   currentUser: {},
   activeInfoCoparent: [],
@@ -31,7 +31,7 @@ StateObj = {
   viewExpenseForm: false,
   viewSwapRequestForm: false,
   viewTransferRequestForm: false,
-  setActivitySet: function(set) {},
+  setActivityCount: function(count) {},
   setActiveInfoChild: function(child) {},
   setActiveInfoCoparent: function(coparent) {},
   setContactInfoToUpdateType: function() {},

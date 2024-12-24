@@ -219,9 +219,9 @@ export default function TransferRequests() {
         </div>
       </BottomCard>
 
-      {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
-
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
+        {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
+
         <Fade direction={'up'} duration={1000} className={'transfer-requests-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Transfer Change Requests</p>
