@@ -1454,7 +1454,6 @@
       #checkbox-container {
         width: 45%;
 
-        @include hover;
       }
     }
   }
@@ -1506,6 +1505,10 @@
         background: $lightIconBgBlue;
         color: $mainBlue;
         font-weight: $fwMediumBold;
+        
+        svg {
+          display: inline-block;
+        }
       }
     }
 
@@ -1526,6 +1529,12 @@
       align-items: center;
       justify-content: center;
       align-self: stretch;
+      
+      svg {
+        font-size: 16px;
+        margin-left: 5px;
+        display: none;
+      }
     }
   }
 }

@@ -2,6 +2,7 @@ import Manager from '@manager'
 import React, { useContext } from 'react'
 import globalState from '../../context'
 import { formatNameFirstNameOnly, stringHasNumbers } from '../../globalFunctions'
+import { FaCheck } from 'react-icons/fa6'
 
 export default function CheckboxGroup({
   checkboxLabels,
@@ -54,7 +55,10 @@ export default function CheckboxGroup({
                 data-date={thisDate ? thisDate : ''}
                 className={`flex ${containerClass} ${Manager.isValid(defaultLabels, true) && defaultLabels.includes(label) ? 'active' : ''}`}
                 onClick={(e) => onCheck(e)}>
-                <span className="pill">{label}</span>
+                <span className="pill">
+                  {label}
+                  <FaCheck />
+                </span>
               </div>
             )
           })}

@@ -620,6 +620,7 @@
     }
 
     .page-container {
+
       &:not(.home) {
         align-self: stretch;
         @media screen and (max-width: 600px) {
@@ -638,29 +639,6 @@
   }
   /*#endregion  1000PX APP CONTAINER*/
 
-  /*#region  1600PX APP CONTAINER*/
-  @media screen and (min-width: 1600px) {
-    #app-container {
-      #app-content-with-sidebar {
-        margin: 0 auto;
-        max-width: 50vw;
-      }
-
-      #bottom-card {
-        max-width: 20vw;
-      }
-
-      #static-calendar {
-        max-width: 50vw !important;
-        .MuiPickersLayout-contentWrapper {
-          * {
-            max-width: 26vw !important;
-          }
-        }
-      }
-    }
-  }
-  /*#endregion  1600PX APP CONTAINER*/
 
   /*#region  600PX PHONE CONTAINER*/
   @media screen and (max-width: 600px) {

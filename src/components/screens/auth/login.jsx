@@ -143,12 +143,11 @@ export default function Login() {
 
   const togglePersistence = (e) => {
     const clickedEl = e.currentTarget
-    const checkbox = clickedEl.querySelector('.box')
-    if (checkbox.classList.contains('active')) {
-      checkbox.classList.remove('active')
+    if (clickedEl.classList.contains('active')) {
+      clickedEl.classList.remove('active')
       setIsPersistent(false)
     } else {
-      checkbox.classList.add('active')
+      clickedEl.classList.add('active')
       setIsPersistent(true)
     }
   }

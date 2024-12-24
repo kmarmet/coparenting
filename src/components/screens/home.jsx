@@ -9,7 +9,6 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import firebaseConfig from '../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import { TbSunMoon } from 'react-icons/tb'
-import { FaWandMagicSparkles } from 'react-icons/fa6'
 import MemoriesImage from '../../img/homepage/memories.png'
 import ChildInfoImage from '../../img/homepage/childInfo.png'
 import CalendarImage from '../../img/homepage/calendar.png'
@@ -19,9 +18,12 @@ import TabletImage from '../../img/homepage/devices/tablet.png'
 import LaptopImage from '../../img/homepage/devices/laptop.png'
 import PhoneImage from '../../img/homepage/devices/phone.png'
 import Logo from '../../img/logo.png'
-import ScreenNames from '@screenNames'
 import { CarouselProvider, Slide, Slider } from 'pure-react-carousel'
 import 'pure-react-carousel/dist/react-carousel.es.css'
+import { MdOutlineStar } from 'react-icons/md'
+import { FaRegHandshake } from 'react-icons/fa'
+import { useLongPress } from 'use-long-press'
+import ScreenNames from '@screenNames'
 
 function LazyImage({ show, importedImage, imagesObjectPropName }) {
   const [showImage, setShowImage] = useState(false)
@@ -48,6 +50,10 @@ export default function Home() {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
   const [loadedImages, setLoadedImages] = useState([])
+
+  const bind = useLongPress((element) => {
+    setState({ ...state, currentScreen: ScreenNames.login })
+  })
 
   // Init Firebase
   const app = initializeApp(firebaseConfig)
@@ -88,7 +94,7 @@ export default function Home() {
     <div className="page-container home" id="home-screen-wrapper">
       {/* NAVBAR */}
       <div id="home-navbar" className="flex">
-        <img src={Logo} id="logo" />
+        <img src={Logo} id="logo" {...bind()} />
         <div id="login-buttons">
           {/*<button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
           {/*  Sign Up <IoPersonAddOutline />*/}
@@ -96,9 +102,10 @@ export default function Home() {
           {/*<button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>*/}
           {/*  Log In <AiTwotoneUnlock />*/}
           {/*</button>*/}
-          <button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
-            Get Started
-          </button>
+          {/*<button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>*/}
+          {/*  Get Started*/}
+          {/*</button>*/}
+          <p id="choose-peace-text">Choose Peace</p>
         </div>
       </div>
       {/* ABOVE FOLD */}
@@ -186,7 +193,9 @@ export default function Home() {
 
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="section full-width-box unique-features">
-            <p className="title">Why Us?</p>
+            <p className="title">
+              Why <span>Choose</span> <span>Peace</span>ful Co-Parenting?
+            </p>
             <p className="text subtitle">
               Peaceful Co-Parenting has the same functionality and features as other apps, but our app has <b>UNIQUE FEATURES</b>. These unique
               features are <u>NOT</u> available in other co-parenting applications.
@@ -196,25 +205,23 @@ export default function Home() {
             </p>
 
             <div className="flex">
-              {/* documents */}
               <CarouselProvider
-                touchEnabled={true}
                 naturalSlideWidth={100}
                 naturalSlideHeight={125}
-                totalSlides={6}
-                dragEnabled={true}
-                isIntrinsicHeight={true}
-                infinite={true}
+                totalSlides={7}
                 lockOnWindowScroll={true}
+                isIntrinsicHeight={true}
                 visibleSlides={DomManager.isMobile() ? 1 : 3}
                 currentSlide={1}>
                 <Slider>
                   <Slide index={0}>
                     <div className="feature">
-                      <p className="feature-title">Documents</p>
+                      <p className="feature-title">
+                        Document Viewing & Storage <MdOutlineStar className={'star'} />
+                      </p>
                       <p className="feature-subtitle">
-                        Any co-parent has had to find and search through their separation agreement, medical records or other another document type to
-                        find something specific knows how frustrating and time consuming it can be.
+                        Any co-parent that has had to find and search through their separation agreement, medical records or other another document
+                        type to find something specific knows how frustrating and time consuming it can be.
                       </p>
                       <p className="feature-subtitle">
                         With our app you can store documents with the support of both documents and images that are easily accessible at any time.
@@ -225,8 +232,8 @@ export default function Home() {
                           <ul>
                             <li>Search for any phrase or word within the document</li>
                             <li>
-                              This is incredibly helpful when trying to find your visitation for holidays or your financial responsibilities for your
-                              children
+                              This is incredibly helpful when trying to find your visitation for holidays, financial responsibilities for your
+                              children or anything else
                             </li>
                           </ul>
                         </li>
@@ -262,7 +269,8 @@ export default function Home() {
                   <Slide index={1}>
                     <div className="feature">
                       <p className="feature-title">
-                        Available on <b>Any</b> Device
+                        Available on&nbsp;<b>Any</b>&nbsp;Device
+                        <MdOutlineStar className={'star'} />
                       </p>
                       <p className="feature-subtitle">
                         All other co-parenting applications are installed via an app store. This means that they can typically only be installed on
@@ -318,14 +326,17 @@ export default function Home() {
                   </Slide>
                   <Slide index={2}>
                     <div className="feature">
-                      <p className="feature-title">One Low Cost for All Features</p>
+                      <p className="feature-title">
+                        One Subscription for All Features
+                        <MdOutlineStar className={'star'} />
+                      </p>
                       <p className="feature-subtitle">
                         Almost every co-parenting application have multiple tiers of pricing. You get very basic features for one price, and then they
                         upsell (charge more) to access the more useful features. Not us!
                       </p>
                       <ul>
                         <li className="list-title">
-                          Low Price
+                          Low Subscription Cost
                           <ul>
                             <li>$4.99 per month</li>
                             <li>
@@ -358,7 +369,10 @@ export default function Home() {
                   </Slide>
                   <Slide index={3}>
                     <div className="feature">
-                      <p className="feature-title">Everything in Realtime</p>
+                      <p className="feature-title">
+                        Everything in Realtime
+                        <MdOutlineStar className={'star'} />
+                      </p>
                       <p className="feature-subtitle">
                         Whether you are using the application or it is closed,{' '}
                         <b>you will receive all updates, changes and notifications instantaneously.</b>
@@ -401,7 +415,10 @@ export default function Home() {
                   </Slide>
                   <Slide index={4}>
                     <div className="feature">
-                      <p className="feature-title">Multiple Co-Parent Support</p>
+                      <p className="feature-title">
+                        Multiple Co-Parent Support
+                        <MdOutlineStar className={'star'} />
+                      </p>
                       <p className="feature-subtitle">
                         We understand that you may have multiple co-parents from prior relationships or marriages. We have taken this into
                         consideration and provide support for this dynamic.
@@ -411,7 +428,7 @@ export default function Home() {
                           Multiple Co-Parents
                           <ul>
                             <li>Add as many co-parents as you need to</li>
-                            <li>asily utilize all of our application's features for each co-parent</li>
+                            <li>Easily utilize all of our application's features for each co-parent</li>
                             <li>When sharing important information, you can choose to share with individual co-parents or all at once</li>
                           </ul>
                         </li>
@@ -434,7 +451,10 @@ export default function Home() {
                   </Slide>
                   <Slide index={5}>
                     <div className="feature">
-                      <p className="feature-title">Messaging</p>
+                      <p className="feature-title">
+                        Messaging
+                        <MdOutlineStar className={'star'} />
+                      </p>
                       <p className="feature-subtitle">All other applications include messaging, but not with these features.</p>
                       <ul>
                         <li className="list-title">
@@ -443,7 +463,7 @@ export default function Home() {
                             <li>
                               At any time you can delete/archive a conversation
                               <ul>
-                                <li>If you need to (for court or reference) you can recover the conversation at any time</li>
+                                <li>If you need to (for court or reference), you can recover the conversation at any time</li>
                               </ul>
                             </li>
                             <li>
@@ -491,15 +511,102 @@ export default function Home() {
                       </ul>
                     </div>
                   </Slide>
+                  <Slide index={6}>
+                    <div className="feature">
+                      <p className="feature-title">
+                        Support Team that Caters to You
+                        <MdOutlineStar className={'star'} />
+                      </p>
+                      <p className="feature-subtitle">
+                        Far too often when you reach out to a customer support team it can take days to get an answer, and then when you do get an
+                        answer it typically an answer that you can tell has been copied and pasted to many others in need of help.
+                      </p>
+
+                      <p className="feature-subtitle">
+                        No longer! We put <b>YOU</b> first.
+                      </p>
+                      <ul>
+                        <li className="list-title">
+                          Lightning Fast Response Time
+                          <ul>
+                            <li>
+                              You will have a reply from our response team <b>within hours</b> not days
+                            </li>
+                            <li>
+                              This includes
+                              <ul>
+                                <li>Technical issues encountered in the app</li>
+                                <li>Feature requests</li>
+                                <li>App feedback</li>
+                                <li>Anything else you would like to contact us about</li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          No hidden or extra cost for support
+                          <ul>
+                            <li>All support requests and feature addition requests are included in your subscription</li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          No Middleman
+                          <ul>
+                            <li>
+                              When you reach out to us for support, your request/concern will go <b>directly</b> to the technical/development team
+                              that will be working on handling the issue
+                              <ul>
+                                <li>Eliminates any unnecessary wait time for your concern/request</li>
+                                <li>
+                                  The technical team will be making the changes to resolve issues or add feature requests - so it makes sense to be
+                                  able to engage with them directly
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Feature Requests
+                          <ul>
+                            <li>
+                              If you would like to have a feature added to our app, let us know!
+                              <ul>
+                                <li>
+                                  We are more than happy to consider <b>all</b> feature requests
+                                  <ul>
+                                    <li>The goal is provide an all-in-one application that fits your needs exactly</li>
+                                  </ul>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                        <li className="list-title">
+                          Authentic Support from Real People
+                          <li>
+                            We promise to provide help that is 100% related to the concern/request you send us
+                            <ul>
+                              <li>No bots</li>
+                              <li>No 'canned' responses</li>
+                              <li>No vague responses that do not directly address your concern</li>
+                            </ul>
+                          </li>
+                        </li>
+                      </ul>
+                    </div>
+                  </Slide>
                 </Slider>
               </CarouselProvider>
             </div>
+            <p className="center mt-15" id="see-more-instructions">
+              Drag left to see more
+            </p>
           </div>
         </Fade>
 
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div id="collaboration" className="section text-box flex">
-            <FaWandMagicSparkles />
+            <FaRegHandshake />
             <div className="text-wrapper">
               <p className="title">Collaborate on Decisions that Matter Most</p>
               <p className="text subtitle">
@@ -518,6 +625,7 @@ export default function Home() {
             <LazyImage show={loadedImages.includes('menu')} importedImage={MenuImage} imagesObjectPropName={'menu'} />
           </div>
         </Fade>
+
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div id="expenses-wrapper" className="section expenses">
             <PiMoneyWavyDuotone />

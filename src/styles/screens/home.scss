@@ -31,6 +31,10 @@
 
       &.page-title {
         margin-top: 30px;
+
+        @media screen and (max-width: 600px) {
+          margin-top: 10px;
+        }
       }
 
       // EXPENSES
@@ -91,13 +95,16 @@
           }
           #subtitle,
           #title {
-            width: 100%;
-            line-height: 1.3;
+            width: 90%;
+          }
+          #subtitle {
+            line-height: 1.4;
           }
           #title {
             font-size: 35px;
             word-break: break-word;
             margin: 0;
+            line-height: 1.3;
           }
         }
       }
@@ -273,6 +280,15 @@
       opacity: 0.85;
       margin: 0;
       padding: 0;
+
+      &.star {
+        color: $gold;
+        font-size: 25px;
+        margin: 0 0 0 8px;
+        bottom: unset;
+        right: unset;
+        position: unset;
+      }
     }
 
     .flex {
@@ -344,6 +360,11 @@
     #home-navbar {
       justify-content: space-between;
       transition: all 0.3s ease-in-out;
+      
+      #choose-peace-text {
+        color: $mainBlue;
+        font-style: italic;
+      }
 
       svg {
         position: relative;
@@ -395,8 +416,7 @@
       @media screen and (max-width: 600px) {
         width: 100%;
         max-width: 100%;
-      }
-      p {
+        margin: 0;
       }
     }
     #below-fold-wrapper {
@@ -431,8 +451,14 @@
         .title {
           font-weight: $fwBold;
           font-size: 28px;
-          color: $mainBlue;
+
           padding-bottom: 20px;
+
+          span {
+            font-size: 28px;
+            font-weight: $fwBold;
+            color: $mainBlue;
+          }
         }
 
         .subtitle {
@@ -445,6 +471,10 @@
             font-size: 18px;
             color: $mainBlue;
           }
+
+          @media screen and (max-width: 600px) {
+            text-align: left;
+          }
         }
 
         // UNIQUE FEATURES
@@ -454,10 +484,18 @@
             gap: 10px;
           }
 
+          #see-more-instructions {
+            font-weight: $fwMediumBold;
+          }
+
           #unique-features-title {
             margin-bottom: 15px;
             b {
               font-size: 20px;
+            }
+
+            @media screen and (max-width: 600px) {
+              text-align: left;
             }
           }
           .feature {
@@ -467,8 +505,20 @@
             max-height: 500px;
             margin-right: 10px;
             overflow: auto;
-            mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 95%, transparent 100%);
             border: 1px solid $iconGrey;
+            align-self: stretch;
+
+            position: relative;
+
+            @media screen and (max-width: 600px) {
+              max-height: unset;
+              mask-image: unset;
+            }
+
+            @media screen and (min-width: 1000px) {
+              height: 100%;
+            }
 
             .feature-title {
               font-weight: $fwMediumBold;
@@ -482,6 +532,22 @@
               max-width: 100%;
               z-index: 100;
               color: $mainBlue;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              @media screen and (max-width: 600px) {
+                text-align: left;
+                left: 0;
+                position: unset;
+                margin: 0 auto 0 0;
+                justify-content: flex-start;
+
+                .star {
+                  position: relative;
+                  bottom: 2px;
+                }
+              }
 
               b {
                 font-size: 18px;
@@ -494,7 +560,7 @@
               max-width: 100%;
               margin: 0 0 10px 0;
               font-size: 14px;
-              
+
               b {
                 font-size: 14px;
                 color: $mainBlue;
@@ -515,7 +581,7 @@
                 }
               }
               li {
-                b  {
+                b {
                   font-size: 14px;
                   color: $mainBlue;
                 }
@@ -671,9 +737,9 @@
           }
           &.unique-features {
             * {
-                width: unset;
-                max-width: unset;
-              
+              width: unset;
+              max-width: unset;
+
               &.feature {
                 max-width: calc(100vw - 50px);
               }
