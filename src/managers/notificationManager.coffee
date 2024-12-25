@@ -127,7 +127,6 @@ export default NotificationManager =
       method: "POST"
       headers: myHeaders
       body: raw
-      mode: "no-cors"
       redirect: "follow"
 
     # Add activity to database
@@ -205,7 +204,5 @@ export default NotificationManager =
   sendToShareWith: (coparentPhones, currentUser, title, message) ->
     for phone in coparentPhones
       coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
-      notificationsEnabled = coparent?.settings?.notificationsEnabled
-      if notificationsEnabled
-        subId = await NotificationManager.getUserSubId(coparent.phone, "phone")
-        await NotificationManager.sendNotification(title, message, subId )
+      subId = await NotificationManager.getUserSubId(coparent.phone, "phone")
+      await NotificationManager.sendNotification(title, message, subId )

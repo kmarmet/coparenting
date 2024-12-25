@@ -144,7 +144,6 @@ export default NotificationManager = {
       method: "POST",
       headers: myHeaders,
       body: raw,
-      mode: "no-cors",
       redirect: "follow"
     };
     // Add activity to database
@@ -221,18 +220,13 @@ export default NotificationManager = {
     });
   },
   sendToShareWith: async function(coparentPhones, currentUser, title, message) {
-    var coparent, i, len, notificationsEnabled, phone, ref, results, subId;
+    var coparent, i, len, phone, results, subId;
     results = [];
     for (i = 0, len = coparentPhones.length; i < len; i++) {
       phone = coparentPhones[i];
       coparent = (await DB_UserScoped.getCoparentByPhone(phone, currentUser));
-      notificationsEnabled = coparent != null ? (ref = coparent.settings) != null ? ref.notificationsEnabled : void 0 : void 0;
-      if (notificationsEnabled) {
-        subId = (await NotificationManager.getUserSubId(coparent.phone, "phone"));
-        results.push((await NotificationManager.sendNotification(title, message, subId)));
-      } else {
-        results.push(void 0);
-      }
+      subId = (await NotificationManager.getUserSubId(coparent.phone, "phone"));
+      results.push((await NotificationManager.sendNotification(title, message, subId)));
     }
     return results;
   }

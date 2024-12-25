@@ -134,6 +134,8 @@ export default function App() {
         const permissionCodes = await DB.getTable(DB.tables.parentPermissionCodes)
         const scopedCodes = permissionCodes.filter((x) => x.parentPhone === _currentUser.phone || x.childPhone === _currentUser.phone)
 
+        const subId = await NotificationManager.getUserSubId(_currentUser.phone, 'phone')
+
         if (Manager.isValid(scopedCodes)) {
           await DB.deleteMultipleRows(DB.tables.parentPermissionCodes, scopedCodes, _currentUser)
         }

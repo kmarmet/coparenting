@@ -583,14 +583,16 @@ export default function Home() {
                         </li>
                         <li className="list-title">
                           Authentic Support from Real People
-                          <li>
-                            We promise to provide help that is 100% related to the concern/request you send us
-                            <ul>
-                              <li>No bots</li>
-                              <li>No 'canned' responses</li>
-                              <li>No vague responses that do not directly address your concern</li>
-                            </ul>
-                          </li>
+                          <ul>
+                            <li>
+                              We promise to provide help that is 100% related to the concern/request you send us
+                              <ul>
+                                <li>No bots</li>
+                                <li>No 'canned' responses</li>
+                                <li>No vague responses that do not directly address your concern</li>
+                              </ul>
+                            </li>
+                          </ul>
                         </li>
                       </ul>
                     </div>

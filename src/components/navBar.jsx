@@ -9,7 +9,7 @@ import { RxActivityLog } from 'react-icons/rx'
 
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, currentUser, menuIsOpen, theme, unreadMessageCount } = state
+  const { currentScreen, currentUser, menuIsOpen, theme, unreadMessageCount, activityCount } = state
 
   const changeCurrentScreen = async (screen) => {
     setState({
@@ -69,11 +69,12 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               <PiImagesSquareDuotone />
             </div>
 
-            {/* SETTINGS */}
+            {/* ACTIVITY */}
             <div
               onClick={() => changeCurrentScreen(ScreenNames.activity)}
               className={`${currentScreen === ScreenNames.activity ? 'active menu-item activity' : 'menu-item activity'}`}>
               <RxActivityLog />
+              {activityCount > 0 && <span className="count">{activityCount}</span>}
             </div>
           </div>
         </div>
