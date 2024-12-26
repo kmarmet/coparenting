@@ -1,6 +1,5 @@
 import DateFormats from "../constants/dateFormats"
 import moment from "moment"
-import ActivityPriority from "../models/activityPriority"
 
 export default class ActivitySet
   constructor: (
@@ -9,7 +8,6 @@ export default class ActivitySet
     @category = ''
     @recipientPhone = ''
     @creatorPhone = ''
-    @priority = ActivityPriority.Normal
     @title = ''
     @text = ''
   ) ->

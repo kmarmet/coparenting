@@ -53,9 +53,10 @@ import InputSuggestion from '../../models/inputSuggestion' // COMPONENT
 import _ from 'lodash'
 import FormNames from '../../models/formNames'
 import CalendarManager from '../../managers/calendarManager'
-import NotificationManager from '../../managers/notificationManager'
+import NotificationManager from '../../managers/notificationManager.js'
 import Label from '../shared/label'
 import DB_UserScoped from '@userScoped'
+import ActivityCategory from '../../models/activityCategory'
 
 // COMPONENT
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
@@ -219,12 +220,14 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       // Add single date
       if (addSingleEvent) {
         await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
-          NotificationManager.sendToShareWith(
+          await NotificationManager.sendToShareWith(
             eventShareWith,
             currentUser,
             'New Calendar Event',
             `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`
           )
+
+          await NotificationManager.sendNotification('New Calendar Event', 'New even on blah', '3307494534', currentUser, ActivityCategory.calendar)
 
           // Repeating Events
           if (navigator.setAppBadge) {

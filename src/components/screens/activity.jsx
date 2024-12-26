@@ -3,7 +3,11 @@ import globalState from '../../context'
 import '@prototypes'
 import { Fade } from 'react-awesome-reveal'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-import { FaCheck } from 'react-icons/fa6'
+import { FaCheck, FaChevronDown } from 'react-icons/fa6'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+
 import {
   contains,
   formatFileName,
@@ -36,7 +40,7 @@ export default function Activity() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, activitySet } = state
   const [activities, setActivities] = useState([])
-
+  const [legendIsExpanded, setLegendIsExpanded] = useState(false)
   const getActivities = async () => {
     const all = await DB.getTable(`${DB.tables.activities}/${currentUser.phone}`)
     const toReturn = DatasetManager.sortDates(all)
@@ -58,23 +62,41 @@ export default function Activity() {
     await DB.deleteByPath(`${DB.tables.activities}/${currentUser.phone}/${key}`)
   }
 
-  const getCategory = (title) => {
+  const getCategory = (activity) => {
+    const title = activity?.title?.toLowerCase()
+    const message = activity?.message?.toLowerCase()
     switch (true) {
-      case title.toLowerCase().indexOf('event') > -1:
-        return 'calendar'
-    }
-  }
+      case title?.indexOf('event') > -1 || message?.indexOf('event') > -1:
+        return {
+          screen: ScreenNames.calendar,
+          className: 'calendar',
+          category: ActivityCategory.calendar,
+        }
 
-  const changeScreen = (category) => {
-    switch (true) {
-      case category.toLowerCase().indexOf('calendar') > -1:
-        setState({ ...state, currentScreen: ScreenNames.calendar })
-        break
+      case title?.indexOf('medical') > -1:
+        return {
+          screen: ScreenNames.childInfo,
+          className: 'medical',
+          category: ActivityCategory.childInfo.medical,
+        }
+
+      case title?.indexOf('expense') > -1:
+        return {
+          screen: ScreenNames.expenseTracker,
+          className: 'expenses',
+          category: ActivityCategory.expenses,
+        }
 
       default:
-        return false
+        return {
+          screen: ScreenNames.activity,
+          className: 'normal',
+          category: 'normal',
+        }
     }
   }
+
+  const changeScreen = (screenName) => setState({ ...state, currentScreen: ScreenNames[screenName] })
 
   useEffect(() => {
     onTableChange().then((r) => r)
@@ -87,34 +109,48 @@ export default function Activity() {
       <div id="activity-wrapper" className={`${theme} form page-container`}>
         {activities.length === 0 && <NoDataFallbackText text={'No current activity'} />}
         <p className="screen-title">Activity</p>
-        <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true} cascade={true}>
+        <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
           <p className="intro-text mb-15">Stay informed with all co-parenting and child-related updates and activity.</p>
 
-          <div id="legend">
-            <p className="flex">
-              <span className="bar medical"></span>Child Info - Medical
-            </p>
-            <p className="flex">
-              <span className="bar expenses"></span>Expenses
-            </p>
-          </div>
+          <div className="flex">
+            <Accordion id={'legend'} expanded={legendIsExpanded}>
+              <AccordionSummary expandIcon={<FaChevronDown />}>
+                <p id="legend-title" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
+                  Legend
+                </p>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div className="flex">
+                  <div className="box medical"></div>
+                  <p>Child Info - Medical</p>
+                </div>
+                <div className="flex">
+                  <div className="box expenses"></div>
+                  <p>Expenses</p>
+                </div>
+              </AccordionDetails>
+            </Accordion>
 
-          {/* CLEAR ALL BUTTON */}
-          {activities.length > 0 && (
-            <button className="clear-all button green center default p-5 mt-15" onClick={clearAll}>
-              Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
-            </button>
-          )}
+            {/* CLEAR ALL BUTTON */}
+            {activities.length > 0 && (
+              <button className="clear-all button green center default" onClick={clearAll}>
+                Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
+              </button>
+            )}
+          </div>
 
           {/* LOOP ACTIVITIES */}
           <div id="activity-cards">
             {Manager.isValid(activities, true) &&
               activities.map((activity, index) => {
-                const { text, title, priority, category, dateCreated, creatorPhone, id } = activity
+                const { text, title, dateCreated, creatorPhone, id } = activity
+                const categoryObject = getCategory(activity)
+                const { screen, category, className } = categoryObject
+
                 return (
                   <div className="flex" id="row-wrapper">
-                    <div key={index} className={`activity-row row ${category}`} onClick={() => changeScreen(category)}>
-                      <p className={`card-title ${category}`}>
+                    <div className={`activity-row row ${className}`} onClick={() => changeScreen(screen)}>
+                      <p className={`card-title ${className}`}>
                         {criticalCategories.includes(category) && <PiSealWarningDuotone />} {uppercaseFirstLetterOfAllWords(title)}{' '}
                       </p>
                       <p className="text">{text}</p>

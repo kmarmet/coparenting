@@ -11,8 +11,6 @@ import NotificationSubscriber from "../models/notificationSubscriber";
 
 import DB_UserScoped from "../database/db_userScoped";
 
-import ActivityPriority from "../models/activityPriority";
-
 import ActivitySet from "../models/activitySet";
 
 export default NotificationManager = {
@@ -120,14 +118,14 @@ export default NotificationManager = {
     });
     return userIdentity;
   },
-  sendNotification: async function(title, message, subId) {
-    var myHeaders, newActivity, raw, recipient, requestOptions, subIdRecord;
+  sendNotification: async function(title, message, recipientPhone, currentUser = null, category = '', phone) {
+    var myHeaders, newActivity, raw, requestOptions, subId, subIdRecord;
     myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
-    subIdRecord = (await DB.find(DB.tables.notificationSubscribers, ["subscriptionId", subId], true));
-    recipient = (await DB.find(DB.tables.users, ["phone", subIdRecord.phone]));
+    subIdRecord = (await DB.find(DB.tables.notificationSubscribers, ["phone", recipientPhone], true));
+    subId = subIdRecord != null ? subIdRecord.subscriptionId : void 0;
     raw = JSON.stringify({
       contents: {
         en: message
@@ -149,13 +147,12 @@ export default NotificationManager = {
     // Add activity to database
     newActivity = new ActivitySet();
     newActivity.id = Manager.getUid();
-    newActivity.recipientPhone = subIdRecord.phone;
-    newActivity.creatorPhone = '';
+    newActivity.recipientPhone = recipientPhone;
+    newActivity.creatorPhone = currentUser != null ? currentUser.phone : void 0;
     newActivity.title = title;
     newActivity.text = message;
-    newActivity.category = '';
-    newActivity.priority = ActivityPriority.Critical;
-    DB.add(`${DB.tables.activities}/${subIdRecord.phone}`, newActivity);
+    newActivity.category = category;
+    DB.add(`${DB.tables.activities}/${recipientPhone}`, newActivity);
     return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
       return response.text();
     }).then(function(result) {

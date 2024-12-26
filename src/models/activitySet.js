@@ -5,16 +5,13 @@ import DateFormats from "../constants/dateFormats";
 
 import moment from "moment";
 
-import ActivityPriority from "../models/activityPriority";
-
 export default ActivitySet = class ActivitySet {
-  constructor(id = '', dateCreated = moment().format(DateFormats.fullDatetime), category = '', recipientPhone = '', creatorPhone = '', priority = ActivityPriority.Normal, title = '', text = '') {
+  constructor(id = '', dateCreated = moment().format(DateFormats.fullDatetime), category = '', recipientPhone = '', creatorPhone = '', title = '', text = '') {
     this.id = id;
     this.dateCreated = dateCreated;
     this.category = category;
     this.recipientPhone = recipientPhone;
     this.creatorPhone = creatorPhone;
-    this.priority = priority;
     this.title = title;
     this.text = text;
   }
