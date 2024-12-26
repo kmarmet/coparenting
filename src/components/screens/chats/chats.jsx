@@ -8,7 +8,7 @@ import { BiDotsVerticalRounded, BiMessageRoundedDetail, BiSolidEdit, BiSolidMess
 import { IoNotificationsOffCircle } from 'react-icons/io5'
 import { HiMiniBellAlert } from 'react-icons/hi2'
 import { Fade } from 'react-awesome-reveal'
-
+import { MdArchive } from 'react-icons/md'
 import { IoMdCloseCircleOutline } from 'react-icons/io'
 import {
   contains,
@@ -33,6 +33,7 @@ import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
 import ScreenNames from '@screenNames'
+import DB from '@db'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -45,15 +46,15 @@ const Chats = () => {
   const [threadActionToShow, setThreadActionToShow] = useState(false)
 
   const openMessageThread = async (coparent) => {
+    // Check if thread member (coparent) account exists in DB
     let userCoparent = await DB_UserScoped.getCoparentByPhone(coparent?.phone, currentUser)
     if (!Manager.isValid(userCoparent)) {
-      userCoparent = coparent
       AlertManager.oneButtonAlert(
         'Co-Parent Account not Found',
         'This co-parent may have closed their account, however, you can still view the messages',
         null,
         () => {
-          setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: userCoparent })
+          setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: coparent })
         }
       )
     } else {
@@ -72,9 +73,17 @@ const Chats = () => {
     setThreads(securedChats)
   }
 
-  const archive = async (coparent) => {
-    if (Manager.isValid(coparent)) {
+  const archiveOrDelete = async (coparent, archiveOrDelete) => {
+    if (Manager.isValid(coparent) && archiveOrDelete === 'archive') {
       await ChatManager.hideAndArchive(currentUser, coparent)
+      AlertManager.successAlert('Conversation Archived')
+      await getSecuredChats()
+      setSelectedCoparent(null)
+    } else {
+      const scopedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
+      const key = scopedChat.key
+      await DB.deleteByPath(`${DB.tables.chats}/${key}`)
+      AlertManager.successAlert('Conversation Deleted Permanently')
       await getSecuredChats()
       setSelectedCoparent(null)
     }
@@ -174,7 +183,7 @@ const Chats = () => {
                   onClick={(e) => {
                     e.stopPropagation()
                     if (e.currentTarget.id === 'row') {
-                      openMessageThread(coparent.phone).then((r) => r)
+                      openMessageThread(coparent).then((r) => r)
                     }
                     if (e.target !== e.currentTarget) return
                   }}
@@ -216,17 +225,38 @@ const Chats = () => {
                   </div>
                   {/* THREAD ACTIONS */}
                   <div data-thread-id={thread.id} className={'flex thread-actions'}>
-                    {/* DELETE CHAT BUTTON */}
+                    {/* ARCHIVE CHAT BUTTON */}
                     <div id="archive-wrapper">
+                      <MdArchive
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          AlertManager.confirmAlert(
+                            'Are you sure you would like to archive this conversation? You can recover it later.',
+                            "I'm Sure",
+                            true,
+                            async (e) => {
+                              await archiveOrDelete(coparent, 'archive')
+                            },
+                            () => {
+                              setThreadActionToShow(false)
+                            }
+                          )
+                        }}
+                        className={`archive-icon ${threadActionToShow ? 'active' : ''}`}
+                      />
+                      <span>ARCHIVE</span>
+                    </div>
+                    {/* DELETE CHAT BUTTON */}
+                    <div id="delete-wrapper">
                       <BiSolidMessageRoundedMinus
                         onClick={(e) => {
                           e.stopPropagation()
                           AlertManager.confirmAlert(
-                            'Are you sure you would like to delete this conversation? You can recover it later.',
+                            'Are you sure you would like to delete this conversation? It will be permanently removed.',
                             "I'm Sure",
                             true,
                             async (e) => {
-                              await archive(coparent)
+                              await archiveOrDelete(coparent, 'delete')
                             },
                             () => {
                               setThreadActionToShow(false)

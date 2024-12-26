@@ -33,7 +33,6 @@ const ChatManager = {
         const returnChat = securedChats.filter(
           (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(messageToUserPhone)
         )[0]
-        console.log(messageToUserPhone)
         const key = await DB.getSnapshotKey(DB.tables.chats, returnChat, 'id')
         resolve({
           chat: returnChat,

@@ -29,6 +29,8 @@ import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
 import DatasetManager from '../../managers/datasetManager'
 import ScreenNames from '@screenNames'
+import ActivityCategory from '../../models/activityCategory'
+import { PiSealWarningDuotone } from 'react-icons/pi'
 
 export default function Activity() {
   const { state, setState } = useContext(globalState)
@@ -65,14 +67,20 @@ export default function Activity() {
 
   const changeScreen = (category) => {
     switch (true) {
-      case category.toLowerCase().indexOf(category) > -1:
+      case category.toLowerCase().indexOf('calendar') > -1:
         setState({ ...state, currentScreen: ScreenNames.calendar })
+        break
+
+      default:
+        return false
     }
   }
 
   useEffect(() => {
     onTableChange().then((r) => r)
   }, [])
+
+  const criticalCategories = [ActivityCategory.expenses, ActivityCategory.childInfo.medical]
 
   return (
     <>
@@ -81,6 +89,15 @@ export default function Activity() {
         <p className="screen-title">Activity</p>
         <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true} cascade={true}>
           <p className="intro-text mb-15">Stay informed with all co-parenting and child-related updates and activity.</p>
+
+          <div id="legend">
+            <p className="flex">
+              <span className="bar medical"></span>Child Info - Medical
+            </p>
+            <p className="flex">
+              <span className="bar expenses"></span>Expenses
+            </p>
+          </div>
 
           {/* CLEAR ALL BUTTON */}
           {activities.length > 0 && (
@@ -96,8 +113,10 @@ export default function Activity() {
                 const { text, title, priority, category, dateCreated, creatorPhone, id } = activity
                 return (
                   <div className="flex" id="row-wrapper">
-                    <div key={index} className={`activity-row row ${getCategory(title)}`} onClick={() => changeScreen(category)}>
-                      <p className="card-title">{uppercaseFirstLetterOfAllWords(title)} </p>
+                    <div key={index} className={`activity-row row ${category}`} onClick={() => changeScreen(category)}>
+                      <p className={`card-title ${category}`}>
+                        {criticalCategories.includes(category) && <PiSealWarningDuotone />} {uppercaseFirstLetterOfAllWords(title)}{' '}
+                      </p>
                       <p className="text">{text}</p>
                       <p id="date">{moment(dateCreated, DateFormats.fullDatetime).format(DateFormats.readableDatetime)}</p>
                     </div>

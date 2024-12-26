@@ -140,6 +140,15 @@ export default function App() {
           await DB.deleteMultipleRows(DB.tables.parentPermissionCodes, scopedCodes, _currentUser)
         }
 
+        // Add TEST activity
+        // if (_currentUser && _currentUser.hasOwnProperty('phone')) {
+        //   const act = new ActivitySet()
+        //   act.category = ActivityCategory.chats
+        //   act.text = 'Some text'
+        //   act.title = 'some title'
+        //   await DB.add(`${DB.tables.activities}/${_currentUser.phone}`, act)
+        // }
+
         const activities = await DB.getTable(`${DB.tables.activities}/${_currentUser.phone}`)
 
         // Update currentUser in state

@@ -100,22 +100,12 @@
 
         #unmute-wrapper,
         #archive-wrapper,
-        #mute-wrapper {
+        #mute-wrapper, #delete-wrapper {
           display: flex;
           align-items: center;
           justify-content: center;
           flex-wrap: wrap;
-
-          &#archive-wrapper {
-            svg {
-              color: $red;
-            }
-          }
-
-          svg {
-            font-size: 32px;
-            color: $mainBlue;
-          }
+          
           span {
             width: 100%;
             text-align: center;
@@ -125,12 +115,20 @@
         }
 
         .delete-icon,
-        .mute-icon {
+        .mute-icon, .archive-icon {
           color: $red;
-          font-size: 32px;
+          font-size: 30px;
 
           &.mute-icon {
-            color: $accentBlue;
+            color: $mainBlue;
+          }
+          
+          &.delete-icon {
+            color: $red;
+          }
+          
+          &.archive-icon {
+            color: $gold;
           }
         }
       }

@@ -44,6 +44,7 @@ import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import DomManager from '../../../managers/domManager'
+import DB_UserScoped from '@userScoped'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -157,12 +158,12 @@ const Conversation = () => {
 
   const getExistingMessages = async () => {
     let scopedChatObject
+    let userCoparent = await DB_UserScoped.getCoparentByPhone(messageRecipient?.phone, currentUser)
 
     // Coparent account closed
-    if (typeof messageRecipient === 'string') {
-      // messageRecipient = phone
+    if (!Manager.isValid(userCoparent)) {
       setReadonly(true)
-      scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient)
+      scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient?.phone)
     } else {
       scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient?.phone)
     }
@@ -402,7 +403,7 @@ const Conversation = () => {
                             </>
                           )}
                         </p>
-                        <span className={message.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
+                        <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
                       </div>
                     )
                   })}
