@@ -31,6 +31,7 @@ import ObjectManager from '../../managers/objectManager'
 import AlertManager from '../../managers/alertManager'
 import ImageManager from '../../managers/imageManager'
 import SelectDropdown from '../shared/selectDropdown'
+import ActivityCategory from '../../models/activityCategory'
 
 export default function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -146,13 +147,18 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       }
 
       // Send notification
-      const subId = await NotificationManager.getUserSubId(payer.phone, 'phone')
-      if (subId) {
-        NotificationManager.sendNotification(`New Expense`, `${formatNameFirstNameOnly(currentUser?.name)} has created a new expense`, subId)
+      if (Manager.isValid(shareWith, true)) {
+        await NotificationManager.sendToShareWith(
+          shareWith,
+          currentUser,
+          `${formatNameFirstNameOnly(currentUser?.name)} has created a new expense`,
+          `${expenseName} - $${expenseAmount}`,
+          ActivityCategory.expenses
+        )
       }
 
       // Go back to expense screen
-      resetForm()
+      await resetForm()
     })
     AlertManager.successAlert(`${expenseName} Added`)
   }

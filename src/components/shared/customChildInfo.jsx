@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react'
 import globalState from '../../context'
 import Manager from '@manager'
 import DB_UserScoped from '@userScoped'
+import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import {
   contains,
   formatFileName,
@@ -19,28 +20,45 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '.././../globalFunctions'
+import moment from 'moment'
 import CheckboxGroup from './checkboxGroup'
 import Autocomplete from 'react-google-autocomplete'
 import InputWrapper from './inputWrapper'
 import Label from './label'
 import BottomCard from './bottomCard'
 import AlertManager from '../../managers/alertManager'
+import ShareWithCheckboxes from './shareWithCheckboxes'
+import NotificationManager from '../../managers/notificationManager.js'
+import ActivityCategory from '../../models/activityCategory'
+import DateFormats from '../../constants/dateFormats'
 
 export default function CustomChildInfo({ hideCard, showCard, setActiveChild, activeChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, theme } = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
   const [infoSection, setInfoSection] = useState('general')
   const [infoType, setInfoType] = useState('text')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [shareWith, setShareWith] = useState([])
 
   const add = async () => {
     if (title.length === 0 || value.length === 0) {
       AlertManager.throwError('Please fill/select required fields')
       return false
     }
-    const updatedChild = await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, toCamelCase(title), value)
+    const updatedChild = await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, toCamelCase(title), value, shareWith)
+
+    if (infoSection === 'medical' && Manager.isValid(shareWith, true)) {
+      await NotificationManager.sendToShareWith(
+        shareWith,
+        currentUser,
+        `Medical Info Updated for ${activeChild?.general.name}`,
+        `${title} - ${value}`,
+        ActivityCategory.childInfo.medical
+      )
+    }
+
     AlertManager.successAlert(`${uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`)
     resetForm()
     setActiveChild(updatedChild)
@@ -58,6 +76,11 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       },
       false
     )
+  }
+
+  const handleShareWithSelection = (e) => {
+    const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, shareWith)
+    setShareWith(shareWithNumbers)
   }
 
   const resetForm = () => {
@@ -97,12 +120,14 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
           </p>
         </div>
 
+        <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with (optional)" required={false} />
+
         {/* INFO TYPE */}
         <CheckboxGroup
           parentLabel="Type"
           required={true}
           defaultLabels={'Text'}
-          checkboxLabels={['Text', 'Location']}
+          checkboxLabels={['Text', 'Location', 'Date']}
           onCheck={handleInfoTypeSelection}
         />
 
@@ -114,9 +139,23 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
           </>
         )}
 
+        {infoType === 'date' && (
+          <div className="w-100">
+            <InputWrapper inputType={'input'} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
+            <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
+              <MobileDatePicker
+                className={`${theme} m-0 w-100 event-from-date mui-input`}
+                onAccept={(e) => {
+                  setValue(moment(e).format(DateFormats.dateForDb))
+                }}
+              />
+            </InputWrapper>
+          </div>
+        )}
+
         {infoType === 'location' && (
           <>
-            <InputWrapper inputType={'input'} labelText={'Title/Label'} required={true} />
+            <InputWrapper inputType={'input'} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
             <InputWrapper inputType={'location'} labelText={'Location'}>
               <Autocomplete
                 apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
@@ -125,10 +164,8 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
                   componentRestrictions: { country: 'usa' },
                 }}
                 onPlaceSelected={async (place) => {
-                  setTitle('address')
                   setValue(place.formatted_address)
                 }}
-                placeholder={Manager.isValid(activeChild?.general?.address) ? activeChild?.general?.address : 'Location'}
               />
             </InputWrapper>
           </>

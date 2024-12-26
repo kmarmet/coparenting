@@ -118,7 +118,7 @@ export default NotificationManager = {
     });
     return userIdentity;
   },
-  sendNotification: async function(title, message, recipientPhone, currentUser = null, category = '', phone) {
+  sendNotification: async function(title, message, recipientPhone, currentUser = null, category = '') {
     var myHeaders, newActivity, raw, requestOptions, subId, subIdRecord;
     myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
@@ -216,14 +216,23 @@ export default NotificationManager = {
       return console.error(err);
     });
   },
-  sendToShareWith: async function(coparentPhones, currentUser, title, message) {
-    var coparent, i, len, phone, results, subId;
+  sendToShareWith: async function(recipientPhones, currentUser, title, message, category = '') {
+    var coparent, i, len, newActivity, phone, results, subId;
     results = [];
-    for (i = 0, len = coparentPhones.length; i < len; i++) {
-      phone = coparentPhones[i];
+    for (i = 0, len = recipientPhones.length; i < len; i++) {
+      phone = recipientPhones[i];
       coparent = (await DB_UserScoped.getCoparentByPhone(phone, currentUser));
       subId = (await NotificationManager.getUserSubId(coparent.phone, "phone"));
-      results.push((await NotificationManager.sendNotification(title, message, subId)));
+      // Add activity to database
+      newActivity = new ActivitySet();
+      newActivity.id = Manager.getUid();
+      newActivity.recipientPhone = coparent != null ? coparent.phone : void 0;
+      newActivity.creatorPhone = currentUser != null ? currentUser.phone : void 0;
+      newActivity.title = title;
+      newActivity.text = message;
+      newActivity.category = category;
+      await DB.add(`${DB.tables.activities}/${coparent != null ? coparent.phone : void 0}`, newActivity);
+      results.push((await NotificationManager.sendNotification(title, message, coparent != null ? coparent.phone : void 0, currentUser, category)));
     }
     return results;
   }

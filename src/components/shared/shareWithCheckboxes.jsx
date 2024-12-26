@@ -23,7 +23,7 @@ import { FaUserShield } from 'react-icons/fa'
 import DB from '@db'
 import { FaCheck } from 'react-icons/fa6'
 
-export default function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', defaultPhones, labelText = '', icon = '' }) {
+export default function ShareWithCheckboxes({ onCheck, containerClass = '', checkboxGroupClass = '', required = true, labelText = '', icon = '' }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
   const [shareWith, setShareWith] = useState([])
@@ -61,7 +61,7 @@ export default function ShareWithCheckboxes({ onCheck, containerClass = '', chec
     <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass} mt-15 mb-15`}>
       <div className="flex">
         <FaUserShield className={'fs-20 mr-5'} />
-        <Label text={'Share with'} required={true} />
+        <Label text={`${labelText.length === 0 ? 'Share with' : labelText}`} required={required} />
       </div>
       <div className="flex" id="checkboxes">
         {Manager.isValid(shareWith, true) &&

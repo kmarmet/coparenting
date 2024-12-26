@@ -196,10 +196,25 @@ const DB_UserScoped = {
       })
     })
   },
-  addUserChildProp: async (currentUser, activeChild, infoSection, prop, value) => {
+  addUserChildProp: async (currentUser, activeChild, infoSection, prop, value, shareWith) => {
     const dbRef = ref(getDatabase())
     let key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/children/`, activeChild, 'id')
     if (key !== null) {
+      if (Manager.isValid(shareWith, true)) {
+        let sharedObject
+        if (Manager.isValid(activeChild.sharedObject)) {
+          sharedObject = {
+            props: [...activeChild.sharedObject.props, prop],
+            shareWith: shareWith,
+          }
+        } else {
+          sharedObject = {
+            props: [prop],
+            shareWith: shareWith,
+          }
+        }
+        await set(child(dbRef, `users/${currentUser?.phone}/children/${key}/sharedObject`), sharedObject)
+      }
       await set(child(dbRef, `users/${currentUser?.phone}/children/${key}/${infoSection}/${formatDbProp(prop)}`), `${value}`)
     }
     const returnChild = await DB.getTable(`users/${currentUser?.phone}/children/${key}`, true)

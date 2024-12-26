@@ -43,7 +43,7 @@ export default NotificationManager =
  with the
  request, you can communicate with #{recipientName} to come to an agreement on the request."
 
-      #  PRODUCTION
+#  PRODUCTION
   apiKey: 'os_v2_app_wjb2emrqojh2re4vwfdvavgfgfpm3s3xxaduhlnuiah2weksujvxpesz4fnbclq7b2dch2k3ixixovlaroxcredbec4ghwac4qpcjbi'
   appId: 'b243a232-3072-4fa8-9395-b1475054c531'
 
@@ -104,13 +104,14 @@ export default NotificationManager =
       .catch (error) -> console.error error
     userIdentity
 
-  sendNotification: (title, message, recipientPhone, currentUser = null,  category = '', phone) ->
+  sendNotification: (title, message, recipientPhone, currentUser = null,  category = '') ->
     myHeaders = new Headers()
     myHeaders.append "Accept", "application/json"
     myHeaders.append "Content-Type", "application/json"
     myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
     subIdRecord = await DB.find(DB.tables.notificationSubscribers, ["phone", recipientPhone], true)
     subId = subIdRecord?.subscriptionId
+
     raw = JSON.stringify
       contents:
         en: message
@@ -198,8 +199,18 @@ export default NotificationManager =
       .then (json) -> console.log json
       .catch (err) -> console.error err
 
-  sendToShareWith: (coparentPhones, currentUser, title, message) ->
-    for phone in coparentPhones
+  sendToShareWith: (recipientPhones, currentUser, title, message, category = '') ->
+    for phone in recipientPhones
       coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
       subId = await NotificationManager.getUserSubId(coparent.phone, "phone")
-      await NotificationManager.sendNotification(title, message, subId )
+      # Add activity to database
+      newActivity = new ActivitySet()
+      newActivity.id = Manager.getUid()
+      newActivity.recipientPhone = coparent?.phone
+      newActivity.creatorPhone = currentUser?.phone
+      newActivity.title = title
+      newActivity.text = message
+      newActivity.category = category
+
+      await DB.add "#{DB.tables.activities}/#{coparent?.phone}", newActivity
+      await NotificationManager.sendNotification(title, message, coparent?.phone, currentUser, category )

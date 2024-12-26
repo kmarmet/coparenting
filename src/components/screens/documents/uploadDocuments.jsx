@@ -4,7 +4,7 @@ import Manager from '@manager'
 import FirebaseStorage from '@firebaseStorage'
 import CheckboxGroup from '@shared/checkboxGroup'
 import Doc from '../../../models/doc'
-import NotificationManager from '@managers/notificationManager'
+import NotificationManager from '@managers/notificationManager.js'
 
 import {
   contains,
