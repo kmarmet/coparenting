@@ -161,9 +161,13 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         return false
       }
 
-      if (!Manager.isValid(eventShareWith, true)) {
-        AlertManager.throwError('Please select who you would like to share with event with')
-        return false
+      const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
+      if (validAccounts > 0) {
+        if (eventShareWith.length === 0) {
+          AlertManager.throwError('Please choose who you would like to share this event with')
+          return false
+        }
       }
       if (!eventFromDate || eventFromDate.length === 0) {
         AlertManager.throwError('Please select a date for this event')

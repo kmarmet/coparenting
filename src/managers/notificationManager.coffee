@@ -3,7 +3,7 @@ import OneSignal from 'react-onesignal'
 import Manager from "./manager.js"
 import NotificationSubscriber from "../models/notificationSubscriber"
 import DB_UserScoped from "../database/db_userScoped"
-import ActivitySet from "../models/activitySet"
+import ActivitySet from "../models/activity"
 
 export default NotificationManager =
   currentUser: null
@@ -111,7 +111,6 @@ export default NotificationManager =
     myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
     subIdRecord = await DB.find(DB.tables.notificationSubscribers, ["phone", recipientPhone], true)
     subId = subIdRecord?.subscriptionId
-    console.log(title, message, recipientPhone,)
 
     raw = JSON.stringify
       contents:
@@ -204,15 +203,4 @@ export default NotificationManager =
   sendToShareWith: (recipientPhones, currentUser, title, message, category = '') ->
     for phone in recipientPhones
       coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
-      subId = await NotificationManager.getUserSubId(coparent.phone, "phone")
-      # Add activity to database
-      newActivity = new ActivitySet()
-      newActivity.id = Manager.getUid()
-      newActivity.recipientPhone = coparent?.phone
-      newActivity.creatorPhone = currentUser?.phone
-      newActivity.title = title
-      newActivity.text = message
-      newActivity.category = category
-
-      await DB.add "#{DB.tables.activities}/#{coparent?.phone}", newActivity
       await NotificationManager.sendNotification(title, message, coparent?.phone, currentUser, category )

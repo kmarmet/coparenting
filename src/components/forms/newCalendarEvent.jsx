@@ -164,10 +164,22 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         return false
       }
 
-      const validation = DateManager.formValidation(eventTitle, eventShareWith, eventStartDate)
-      if (validation) {
-        AlertManager.throwError(validation)
+      if (eventTitle.length === 0) {
+        AlertManager.throwError('Please enter an event title')
         return false
+      }
+
+      if (!DateManager.dateIsValid(eventStartDate)) {
+        AlertManager.throwError('Please select an event date')
+        return false
+      }
+      const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
+      if (validAccounts > 0) {
+        if (eventShareWith.length === 0) {
+          AlertManager.throwError('Please choose who you would like to share this event with')
+          return false
+        }
       }
 
       if (eventReminderTimes.length > 0 && eventStartTime.length === 0) {
@@ -224,10 +236,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             eventShareWith,
             currentUser,
             'New Calendar Event',
-            `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`
+            `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`,
+            ActivityCategory.calendar
           )
-
-          await NotificationManager.sendNotification('New Calendar Event', 'New even on blah', '3307494534', currentUser, ActivityCategory.calendar)
 
           // Repeating Events
           if (navigator.setAppBadge) {

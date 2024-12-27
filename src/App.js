@@ -111,6 +111,7 @@ export default function App() {
     for (let bottomCard of allBottomCards) {
       bottomCard.classList.remove('animate__fadeInUp')
     }
+    console.log(currentUser)
   }, [currentScreen])
 
   // ON PAGE LOAD
@@ -142,7 +143,7 @@ export default function App() {
 
         // Add TEST activity
         // if (_currentUser && _currentUser.hasOwnProperty('phone')) {
-        //   const act = new ActivitySet()
+        //   const act = new Activity()
         //   act.category = ActivityCategory.chats
         //   act.text = 'Some text'
         //   act.title = 'some title'

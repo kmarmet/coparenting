@@ -39,6 +39,7 @@ import ObjectManager from '../../managers/objectManager'
 import ImageManager from '../../managers/imageManager'
 import AlertManager from '../../managers/alertManager'
 import DB_UserScoped from '@userScoped'
+import ActivityCategory from '../../models/activityCategory'
 
 export default function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -70,9 +71,20 @@ export default function NewMemoryForm({ hideCard, showCard }) {
   }
 
   const submit = async () => {
-    if (!Manager.isValid(shareWith, true)) {
-      AlertManager.throwError('Please select who can see this memory')
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+    if (validAccounts === 0) {
+      AlertManager.throwError(
+        'No co-parent to \n share memories with',
+        'You have not added any co-parents. Or, it is also possible they have closed their account.'
+      )
       return false
+    }
+
+    if (validAccounts > 0) {
+      if (shareWith.length === 0) {
+        AlertManager.throwError('Please choose who you would like to share this memory with')
+        return false
+      }
     }
 
     if (images !== undefined && images.length === 0) {
@@ -146,10 +158,12 @@ export default function NewMemoryForm({ hideCard, showCard }) {
           }
 
           // Send Notification
-          NotificationManager.sendToShareWith(
+          await NotificationManager.sendToShareWith(
             shareWith,
-            'Memories Await!',
-            `${formatNameFirstNameOnly(currentUser?.name)} has uploaded a new memory!`
+            currentUser,
+            `New Memory`,
+            `${formatNameFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
+            ActivityCategory.memories
           )
         })
         AppManager.setAppBadge(1)
@@ -218,19 +232,17 @@ export default function NewMemoryForm({ hideCard, showCard }) {
               labelText={'Image Description/Notes'}></InputWrapper>
 
             {/* UPLOAD BUTTON */}
-            {shareWith.length > 0 && (
-              <UploadInputs
-                onClose={hideCard}
-                containerClass={`${theme} new-memory-card`}
-                uploadType={'image'}
-                actualUploadButtonText={'Upload'}
-                getImages={(files) => {
-                  setImages(files)
-                }}
-                uploadButtonText={`Choose`}
-                upload={() => {}}
-              />
-            )}
+            <UploadInputs
+              onClose={hideCard}
+              containerClass={`${theme} new-memory-card`}
+              uploadType={'image'}
+              actualUploadButtonText={'Upload'}
+              getImages={(files) => {
+                setImages(files)
+              }}
+              uploadButtonText={`Choose`}
+              upload={() => {}}
+            />
           </div>
         </div>
       </div>

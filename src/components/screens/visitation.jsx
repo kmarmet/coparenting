@@ -100,9 +100,13 @@ export default function Visitation() {
       return false
     }
 
-    if (!Manager.isValid(shareWith, true)) {
-      AlertManager.throwError('Please set who can see the schedule')
-      return false
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
+    if (Manager.isValid(childAccounts, true) && currentUser?.coparents?.length > 0) {
+      if (shareWith.length === 0) {
+        AlertManager.throwError('Please choose who you would like to share this schedule with')
+        return false
+      }
     }
     // Set end date to the end of the year
     const endDate = moment([moment().year()]).endOf('year').format('MM-DD-YYYY')
@@ -139,13 +143,17 @@ export default function Visitation() {
 
   // Every Other Weekend
   const addEveryOtherWeekendToCalendar = async () => {
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
     if (firstEveryOtherWeekend.length === 0) {
       AlertManager.throwError('Please choose the Friday of the next weekend YOU have the child(ren)')
       return false
     }
-    if (!Manager.isValid(shareWith, true)) {
-      AlertManager.throwError('Please set who can see the schedule')
-      return false
+    if (Manager.isValid(childAccounts, true) && currentUser?.coparents?.length > 0) {
+      if (shareWith.length === 0) {
+        AlertManager.throwError('Please choose who you would like to share this schedule with')
+        return false
+      }
     }
     // Set end date to the end of the year
     let weekends = VisitationManager.getEveryOtherWeekend(moment(firstEveryOtherWeekend).format(DateFormats.dateForDb))
@@ -173,9 +181,13 @@ export default function Visitation() {
 
   // Every Weekend
   const addEveryWeekendToCalendar = async () => {
-    if (!Manager.isValid(shareWith, true)) {
-      AlertManager.throwError('Please set who can see the schedule')
-      return false
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
+    if (Manager.isValid(childAccounts, true) && currentUser?.coparents?.length > 0) {
+      if (shareWith.length === 0) {
+        AlertManager.throwError('Please choose who you would like to share this schedule with')
+        return false
+      }
     }
     // Set end date to the end of the year
     let weekends = VisitationManager.getEveryWeekend()
@@ -208,9 +220,13 @@ export default function Visitation() {
       return false
     }
 
-    if (shareWith.length === 0) {
-      AlertManager.throwError('Please choose who can see this visitation schedule')
-      return false
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
+    if (Manager.isValid(childAccounts, true) && currentUser?.coparents?.length > 0) {
+      if (shareWith.length === 0) {
+        AlertManager.throwError('Please choose who you would like to share this schedule with')
+        return false
+      }
     }
 
     let events = []

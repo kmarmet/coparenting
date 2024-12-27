@@ -48,6 +48,14 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
   }
 
   const submit = async () => {
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+    if (validAccounts === 0) {
+      AlertManager.throwError(
+        'No co-parent to \n assign requests to',
+        'You have not added any co-parents. Or, it is also possible they have closed their account.'
+      )
+      return false
+    }
     if (requestRecipientPhone.length === 0) {
       AlertManager.throwError('Please choose who to send the request to')
       return false
@@ -57,6 +65,11 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     } else if (requestDate.length === 0) {
       AlertManager.throwError('Please choose the day of the requested transfer change')
       return false
+    } else if (validAccounts > 0) {
+      if (shareWith.length === 0) {
+        AlertManager.throwError('Please choose who you would like to share this request with')
+        return false
+      }
     } else {
       const requestTimeIsValid = DateManager.dateIsValid(moment(requestTime, DateFormats.timeForDb).format(DateFormats.timeForDb))
       let newRequest = new TransferChangeRequest()

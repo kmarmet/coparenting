@@ -33,6 +33,8 @@ import ModelNames from '../../../models/modelNames'
 import ObjectManager from '../../../managers/objectManager'
 import DocumentsManager from '../../../managers/documentsManager'
 import { HiOutlineDocumentArrowUp } from 'react-icons/hi2'
+import ActivityCategory from '../../../models/activityCategory'
+import DB_UserScoped from '@userScoped'
 
 export default function UploadDocuments({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -60,10 +62,18 @@ export default function UploadDocuments({ hideCard, showCard }) {
       setState({ ...state, isLoading: false })
       return false
     }
-    if (!Manager.isValid(shareWith, true) || !Manager.isValid(docType)) {
-      AlertManager.throwError('Document Type and Who should see it? are required')
+    if (!Manager.isValid(docType)) {
+      AlertManager.throwError('Please choose a Document Type')
       setState({ ...state, isLoading: false })
       return false
+    }
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
+    if (Manager.isValid(childAccounts, true) && currentUser?.coparents?.length > 0) {
+      if (shareWith.length === 0) {
+        AlertManager.throwError('Please choose who you would like to share this schedule with')
+        return false
+      }
     }
     if (docType === 'document' && Object.entries(files).map((x) => !contains(x[1].name, '.docx'))[0]) {
       AlertManager.throwError('Uploaded file MUST be of type .docx')
@@ -113,7 +123,13 @@ export default function UploadDocuments({ hideCard, showCard }) {
           AlertManager.successAlert('Document Uploaded!')
 
           // Send Notification
-          NotificationManager.sendToShareWith(shareWith, 'New Document', `${currentUser} has uploaded a new document`)
+          await NotificationManager.sendToShareWith(
+            shareWith,
+            currentUser,
+            `New Document Uploaded`,
+            `${currentUser} has uploaded a new document`,
+            ActivityCategory.documents
+          )
         })
       })
   }

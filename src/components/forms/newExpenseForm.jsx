@@ -82,6 +82,15 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   }
 
   const submitNewExpense = async () => {
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
+    if (validAccounts === 0) {
+      AlertManager.throwError(
+        'No co-parent to \n assign expenses to',
+        'You have not added any co-parents. Or, it is also possible they have closed their account.'
+      )
+      return false
+    }
     if (payer.name.length === 0) {
       AlertManager.throwError('Please select will be paying the expense')
       return false
@@ -94,10 +103,14 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       AlertManager.throwError('Please add an expense expenseAmount')
       return false
     }
-    if (shareWith.length === 0) {
-      AlertManager.throwError('Please select who can view this expense')
-      return false
+
+    if (validAccounts > 0) {
+      if (shareWith.length === 0) {
+        AlertManager.throwError('Please choose who you would like to share this expense with')
+        return false
+      }
     }
+
     const newExpense = new Expense()
     newExpense.id = Manager.getUid()
     newExpense.name = expenseName

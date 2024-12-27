@@ -73,7 +73,23 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   }
 
   const submit = async () => {
-    const invalidInputs = Manager.invalidInputs([startDate, shareWith, recipientName])
+    const invalidInputs = Manager.invalidInputs([startDate, recipientName])
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
+    if (validAccounts === 0) {
+      AlertManager.throwError(
+        'No co-parent to \n assign requests to',
+        'You have not added any co-parents. Or, it is also possible they have closed their account.'
+      )
+      return false
+    }
+
+    if (validAccounts > 0) {
+      if (shareWith.length === 0) {
+        AlertManager.throwError('Please choose who you would like to share this request with')
+        return false
+      }
+    }
     if (invalidInputs.length > 0) {
       AlertManager.throwError('Please fill out required fields')
       return false

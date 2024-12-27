@@ -1,5 +1,5 @@
 import ScreenNames from "./screenNames"
-import ActivitySet from "../models/activitySet"
+import ActivitySet from "../models/activity"
 
 StateObj =
   activeInfoChild: null

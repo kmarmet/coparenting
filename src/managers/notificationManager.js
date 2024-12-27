@@ -11,7 +11,7 @@ import NotificationSubscriber from "../models/notificationSubscriber";
 
 import DB_UserScoped from "../database/db_userScoped";
 
-import ActivitySet from "../models/activitySet";
+import ActivitySet from "../models/activity";
 
 export default NotificationManager = {
   currentUser: null,
@@ -126,7 +126,6 @@ export default NotificationManager = {
     myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
     subIdRecord = (await DB.find(DB.tables.notificationSubscribers, ["phone", recipientPhone], true));
     subId = subIdRecord != null ? subIdRecord.subscriptionId : void 0;
-    console.log(title, message, recipientPhone);
     raw = JSON.stringify({
       contents: {
         en: message
@@ -219,21 +218,11 @@ export default NotificationManager = {
     });
   },
   sendToShareWith: async function(recipientPhones, currentUser, title, message, category = '') {
-    var coparent, i, len, newActivity, phone, results, subId;
+    var coparent, i, len, phone, results;
     results = [];
     for (i = 0, len = recipientPhones.length; i < len; i++) {
       phone = recipientPhones[i];
       coparent = (await DB_UserScoped.getCoparentByPhone(phone, currentUser));
-      subId = (await NotificationManager.getUserSubId(coparent.phone, "phone"));
-      // Add activity to database
-      newActivity = new ActivitySet();
-      newActivity.id = Manager.getUid();
-      newActivity.recipientPhone = coparent != null ? coparent.phone : void 0;
-      newActivity.creatorPhone = currentUser != null ? currentUser.phone : void 0;
-      newActivity.title = title;
-      newActivity.text = message;
-      newActivity.category = category;
-      await DB.add(`${DB.tables.activities}/${coparent != null ? coparent.phone : void 0}`, newActivity);
       results.push((await NotificationManager.sendNotification(title, message, coparent != null ? coparent.phone : void 0, currentUser, category)));
     }
     return results;

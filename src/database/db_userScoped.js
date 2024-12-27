@@ -26,6 +26,31 @@ import _ from 'lodash'
 
 const DB_UserScoped = {
   // GET
+  getChildAccounts: async (currentUser) => {
+    let childrenAccounts = []
+    for (let child of currentUser?.children) {
+      if (child?.phone) {
+        const childAccount = await DB.find(DB.tables.users, ['phone', child?.phone], true)
+        if (Manager.isValid(childAccount)) {
+          childrenAccounts.push(child)
+        }
+      }
+    }
+    return childrenAccounts
+  },
+  getValidAccountsForUser: async (currentUser) => {
+    const children = await DB_UserScoped.getChildAccounts(currentUser)
+    const coparents = []
+    for (let coparent of currentUser?.coparents) {
+      if (coparent?.phone) {
+        const coparentAccount = await DB.find(DB.tables.users, ['phone', coparent?.phone], true)
+        if (Manager.isValid(coparentAccount)) {
+          coparents.push(child)
+        }
+      }
+    }
+    return children.length + coparents.length
+  },
   getCurrentUser: async (currentUserPhoneOrEmail, phoneOrEmail = 'phone') => {
     return await DB.find(DB.tables.users, [phoneOrEmail, currentUserPhoneOrEmail], true)
   },
@@ -331,6 +356,7 @@ const DB_UserScoped = {
         await DB.deleteMultipleRows(DB.tables.suggestions, suggestions, currentUser)
       }
     }
+
     // DELETE ROOTED (users, archivedChat)
     await remove(child(dbRef, `${DB.tables.users}/${currentUser?.phone}`))
     await remove(child(dbRef, `${DB.tables.archivedChats}/${currentUser?.phone}`))

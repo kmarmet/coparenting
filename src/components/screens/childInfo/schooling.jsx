@@ -29,6 +29,7 @@ import Accordion from '@mui/material/Accordion'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
 import { IoCloseOutline, IoSchool } from 'react-icons/io5'
+import DB from '@db'
 
 export default function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -36,9 +37,19 @@ export default function Schooling({ activeChild, setActiveChild }) {
   const [schoolingValues, setSchoolingValues] = useState([])
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'schooling', formatDbProp(prop))
-    setSelectedChild()
-    setActiveChild(updatedChild)
+    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
+
+    // Delete Shared
+    const sharedProps = sharing?.map((x) => x?.prop)
+    if (Manager.isValid(sharedProps, true) && sharedProps.includes(prop.toLowerCase())) {
+      const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
+      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByPhone)
+      await setSelectedChild()
+    } else {
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'schooling', formatDbProp(prop))
+      await setSelectedChild()
+      setActiveChild(updatedChild)
+    }
   }
 
   const update = async (section, prop, value) => {
@@ -47,13 +58,26 @@ export default function Schooling({ activeChild, setActiveChild }) {
     setActiveChild(updatedChild)
   }
 
-  const setSelectedChild = () => {
+  const setSelectedChild = async () => {
+    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
+    let sharedValues = []
+    for (let obj of sharing) {
+      sharedValues.push([obj.prop, obj.value, obj.sharedByName])
+    }
     if (Manager.isValid(activeChild.schooling)) {
       // Set info
       let values = Object.entries(activeChild.schooling)
+
+      if (Manager.isValid(sharedValues, true)) {
+        values = [...values, ...sharedValues]
+      }
       setSchoolingValues(values)
     } else {
-      setSchoolingValues([])
+      if (sharedValues.length > 0) {
+        setSchoolingValues(sharedValues)
+      } else {
+        setSchoolingValues([])
+      }
     }
   }
 
@@ -80,7 +104,7 @@ export default function Schooling({ activeChild, setActiveChild }) {
                   <div className="flex input">
                     <InputWrapper
                       inputType={'input'}
-                      labelText={infoLabel}
+                      labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}
                       defaultValue={value}
                       onChange={() => update('schooling', infoLabel, value)}
                     />

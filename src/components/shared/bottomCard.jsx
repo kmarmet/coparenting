@@ -28,9 +28,10 @@ export default function BottomCard({
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
+    const pageOverlay = document.getElementById('page-overlay')
     const body = document.body
+    const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
     if (wrapperClass.length > 0) {
-      const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
       const fadeInUp = 'animate__fadeInUp'
       const fadeOutDown = 'animate__fadeOutDown'
       // Toggle pageOverlay
@@ -38,17 +39,23 @@ export default function BottomCard({
         body.style.position = 'fixed'
         bottomCard.classList.add(fadeInUp)
         if (showOverlay) {
-          document.getElementById('page-overlay').classList.add('active')
+          if (pageOverlay) {
+            pageOverlay.classList.add('active')
+          }
         }
       } else {
-        bottomCard.classList.add(fadeOutDown)
+        if (bottomCard) {
+          bottomCard.classList.add(fadeOutDown)
 
-        setTimeout(() => {
-          bottomCard.classList.remove(fadeInUp)
-          bottomCard.classList.remove(fadeOutDown)
-        }, 500)
+          setTimeout(() => {
+            bottomCard.classList.remove(fadeInUp)
+            bottomCard.classList.remove(fadeOutDown)
+          }, 500)
+        }
         body.style.position = 'inherit'
-        document.getElementById('page-overlay').classList.remove('active')
+        if (pageOverlay) {
+          pageOverlay.classList.remove('active')
+        }
       }
 
       // Disable scroll on page container

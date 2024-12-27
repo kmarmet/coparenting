@@ -29,7 +29,6 @@ import BottomCard from './bottomCard'
 import AlertManager from '../../managers/alertManager'
 import ShareWithCheckboxes from './shareWithCheckboxes'
 import NotificationManager from '../../managers/notificationManager.js'
-import ActivityCategory from '../../models/activityCategory'
 import DateFormats from '../../constants/dateFormats'
 
 export default function CustomChildInfo({ hideCard, showCard, setActiveChild, activeChild }) {
@@ -49,13 +48,13 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
     }
     const updatedChild = await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, toCamelCase(title), value, shareWith)
 
-    if (infoSection === 'medical' && Manager.isValid(shareWith, true)) {
+    if (Manager.isValid(shareWith, true)) {
       await NotificationManager.sendToShareWith(
         shareWith,
         currentUser,
-        `Medical Info Updated for ${activeChild?.general?.name}`,
+        `${uppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,
         `${title} - ${value}`,
-        ActivityCategory.childInfo.medical
+        infoSection
       )
     }
 
