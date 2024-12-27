@@ -86,6 +86,7 @@
     "livelyReload.port": 3000
   },
   "scripts": {
+    "testMode": "set PORT 3001 && npm run dev",
     "dev": "craco start",
     "deleteBuild": "del /S /F build",
     "preBuild": "cra-append-sw ./public/sw.js",

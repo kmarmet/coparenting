@@ -28,7 +28,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
-import { IoCloseOutline } from 'react-icons/io5'
+import { IoCloseOutline, IoSchool } from 'react-icons/io5'
 
 export default function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -63,11 +63,11 @@ export default function Schooling({ activeChild, setActiveChild }) {
 
   return (
     <div className="info-section section schooling">
-      <Accordion className={theme}>
+      <Accordion className={theme} disabled={Manager.isValid(activeChild?.schooling) ? false : true}>
         <AccordionSummary
           expandIcon={<FaChevronDown />}
           className={!Manager.isValid(activeChild.schooling) ? 'disabled header schooling' : 'header schooling'}>
-          <span className="material-icons-round">school</span>
+          <IoSchool className={'svg'} />
           Schooling {!Manager.isValid(activeChild.schooling) ? '- No Info' : ''}
         </AccordionSummary>
         <AccordionDetails>

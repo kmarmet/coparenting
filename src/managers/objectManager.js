@@ -78,6 +78,9 @@ ObjectManager = {
   },
   merge: function(objectWithValuesToKeep, objectWithValuesToAdd) {
     return _.assign(objectWithValuesToKeep, objectWithValuesToAdd);
+  },
+  isEmpty: function(obj) {
+    return _.isEmpty(obj);
   }
 };
 

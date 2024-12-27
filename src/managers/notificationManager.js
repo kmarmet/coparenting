@@ -126,6 +126,7 @@ export default NotificationManager = {
     myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
     subIdRecord = (await DB.find(DB.tables.notificationSubscribers, ["phone", recipientPhone], true));
     subId = subIdRecord != null ? subIdRecord.subscriptionId : void 0;
+    console.log(title, message, recipientPhone);
     raw = JSON.stringify({
       contents: {
         en: message
@@ -148,7 +149,8 @@ export default NotificationManager = {
     newActivity = new ActivitySet();
     newActivity.id = Manager.getUid();
     newActivity.recipientPhone = recipientPhone;
-    newActivity.creatorPhone = currentUser != null ? currentUser.phone : void 0;
+    newActivity.sharedByPhone = currentUser != null ? currentUser.phone : void 0;
+    newActivity.sharedByName = currentUser != null ? currentUser.name : void 0;
     newActivity.title = title;
     newActivity.text = message;
     newActivity.category = category;

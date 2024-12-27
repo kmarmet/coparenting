@@ -150,7 +150,6 @@ export default function App() {
         // }
 
         const activities = await DB.getTable(`${DB.tables.activities}/${_currentUser.phone}`)
-
         // Update currentUser in state
         if (user.emailVerified) {
           setState({

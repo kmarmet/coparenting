@@ -4,6 +4,7 @@ import '../prototypes'
 import { hasClass, uppercaseFirstLetterOfAllWords } from '../globalFunctions'
 import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
+import ObjectManager from './objectManager'
 
 const Manager = {
   invalidInputs: (requiredInputs) => {
@@ -183,21 +184,9 @@ const Manager = {
       if (!variable) {
         return false
       }
-      if (Object.keys(variable).length === 0) {
-        return false
-      }
-      for (let prop in variable) {
-        if (!prop) {
-          return false
-        }
 
-        if (variable[prop].length === 0) {
-          return false
-        }
-        // if (!variable[prop] || variable[prop] === undefined) {
-        //   console.log(variable, prop)
-        //   return false
-        // }
+      if (ObjectManager.isEmpty(variable)) {
+        return false
       }
     } else {
       if (!variable) {

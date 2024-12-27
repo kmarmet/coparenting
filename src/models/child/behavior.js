@@ -2,11 +2,7 @@
 var Behavior;
 
 export default Behavior = class Behavior {
-  constructor(counselorName = '', issues = '', phone = '') {
-    this.counselorName = counselorName;
-    this.issues = issues;
-    this.phone = phone;
-  }
+  constructor() {}
 
 };
 

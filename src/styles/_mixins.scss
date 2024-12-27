@@ -1445,12 +1445,12 @@
 @mixin checkboxGroup {
   padding: 0;
   display: block;
-  
+
   svg {
     position: relative;
     bottom: 4px;
   }
-  
+
   &.parent-type {
     #checkboxes {
       width: 100%;
@@ -2285,11 +2285,13 @@
   z-index: -1;
   box-shadow: rgba(0, 0, 0, 0.56) 0 2px 30px 14px;
 
+  // ANIMATION
   &.animate__fadeInUp {
     z-index: $maxZIndex;
     bottom: 0;
   }
 
+  // ACTIVE
   &.active {
     &.new-calendar-event,
     &.edit-calendar-event {
@@ -2535,9 +2537,53 @@
 
   // CHILD SELECTOR
   &.child-selector {
-    .child-name {
-      @include pillButton;
-      margin: 0;
+    #child-selector {
+      gap:  10px;
+      align-items: stretch;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      width: 100%;
+      
+      #children-container {
+        height: auto;
+        width: calc((100% / 3) - 10px);
+
+        .child-name {
+          text-align: center;
+          color: $mainBlue;
+          font-weight: $fwMediumBold;
+          padding-top: 5px;
+        }
+
+        .no-image {
+          width: 100%;
+          background: $lightIconBgBlue;
+          border-radius: $borderRadius;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 115px;
+          p {
+            font-size: 50px;
+            color: $mainBlue;
+          }
+        }
+
+        #profile-pic-wrapper {
+          width: 100%;
+          height: 115px;
+          background-size: cover;
+          position: relative;
+          display: flex;
+          align-items: center;
+          border-radius: 12px;
+          img {
+            width: 100%;
+            height: auto;
+            border-radius: $borderRadius;
+          }
+        }
+      }
     }
   }
 
@@ -2786,7 +2832,7 @@
       font-size: 18px;
       opacity: 0.85;
     }
-    
+
     #share-with-checkbox-group {
       .flex {
         margin-bottom: 0;
@@ -2944,9 +2990,9 @@
         color: $mainBlue;
         opacity: 1;
       }
-      
+
       span {
-        color:white;
+        color: white;
       }
     }
 
@@ -3009,7 +3055,8 @@
       &.visitation,
       &.chats,
       &.calendar,
-      &.admin, &.activity {
+      &.admin,
+      &.activity {
         border: 1px solid #557fff;
 
         * {
@@ -3265,14 +3312,14 @@
           font-size: 12px;
         }
       }
-      
+
       &.activity {
         svg {
           font-size: 26px;
         }
         .count {
           background: $red;
-          color:white;
+          color: white;
           display: flex;
           justify-content: center;
           align-items: center;

@@ -58,8 +58,10 @@ export default function Activity() {
   }
 
   const clearActivity = async (activity) => {
-    const key = await DB.getSnapshotKey(`${DB.tables.activities}/${currentUser.phone}`, activity, 'id')
-    await DB.deleteByPath(`${DB.tables.activities}/${currentUser.phone}/${key}`)
+    const key = await DB.getSnapshotKey(`${DB.tables.activities}/${currentUser?.phone}`, activity, 'id')
+    if (Manager.isValid(key)) {
+      await DB.deleteByPath(`${DB.tables.activities}/${currentUser?.phone}/${key}`)
+    }
   }
 
   const getCategory = (activity) => {
@@ -71,6 +73,13 @@ export default function Activity() {
           screen: ScreenNames.calendar,
           className: 'calendar',
           category: ActivityCategory.calendar,
+        }
+
+      case title?.indexOf('message') > -1 || message?.indexOf('message') > -1:
+        return {
+          screen: ScreenNames.chats,
+          className: 'chats',
+          category: ActivityCategory.chats,
         }
 
       case title?.indexOf('medical') > -1:

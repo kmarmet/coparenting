@@ -19,6 +19,7 @@ const DB = {
     parentPermissionCodes: 'parentPermissionCodes',
     notificationSubscribers: 'notificationSubscribers',
     activities: 'activities',
+    sharedChildInfo: 'sharedChildInfo',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true) => {
     if (isFromDb) {
@@ -36,7 +37,7 @@ const DB = {
       return []
     }
   },
-  getSnapshotKey: async (path, objectToCheck, propertyToCompare) =>
+  getSnapshotKey: async (path, objectToCheck, propertyToCompare = 'id') =>
     await new Promise(async (resolve) => {
       try {
         const dbRef = ref(getDatabase())

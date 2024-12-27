@@ -29,6 +29,8 @@ import { FaChevronDown } from 'react-icons/fa6'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
 import { IoCloseOutline } from 'react-icons/io5'
+import { FaBriefcaseMedical } from 'react-icons/fa'
+import DB from '@db'
 
 export default function Medical({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -36,9 +38,22 @@ export default function Medical({ activeChild, setActiveChild }) {
   const [medicalValues, setMedicalValues] = useState([])
 
   const deleteProp = async (prop) => {
-    const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', formatDbProp(prop))
-    setActiveChild(updatedChild)
-    setSelectedChild()
+    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
+
+    // Delete Shared
+    const sharedProps = sharing?.map((x) => x?.prop)
+    if (Manager.isValid(sharedProps, true) && sharedProps.includes(prop.toLowerCase())) {
+      const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
+      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByPhone)
+      await setSelectedChild()
+    }
+
+    // Delete NOT shared
+    else {
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', formatDbProp(prop))
+      setActiveChild(updatedChild)
+      await setSelectedChild()
+    }
   }
 
   const update = async (section, prop, value) => {
@@ -47,39 +62,53 @@ export default function Medical({ activeChild, setActiveChild }) {
     AlertManager.successAlert('Updated!')
   }
 
-  const setSelectedChild = () => {
+  const setSelectedChild = async () => {
+    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
+    let sharedValues = []
+    for (let obj of sharing) {
+      sharedValues.push([obj.prop, obj.value, obj.sharedByName])
+    }
     if (Manager.isValid(activeChild.medical)) {
       // Set info
       let values = Object.entries(activeChild.medical)
+
+      if (Manager.isValid(sharedValues, true)) {
+        values = [...values, ...sharedValues]
+      }
       setMedicalValues(values)
     } else {
-      setMedicalValues([])
+      if (sharedValues.length > 0) {
+        setMedicalValues(sharedValues)
+      } else {
+        setMedicalValues([])
+      }
     }
   }
 
   useEffect(() => {
-    setSelectedChild()
+    setSelectedChild().then((r) => r)
   }, [activeChild])
 
   return (
     <div className="info-section section medical">
-      <Accordion className={theme}>
+      <Accordion className={theme} disabled={!Manager.isValid(medicalValues, true) ? true : false}>
         <AccordionSummary
           expandIcon={<FaChevronDown />}
-          className={!Manager.isValid(activeChild.medical) ? 'disabled header medical' : 'header medical'}>
-          <span className="material-icons-round">medical_information</span> Medical {!Manager.isValid(activeChild.medical) ? '- No Info' : ''}
+          className={!Manager.isValid(medicalValues, true) ? 'disabled header medical' : 'header medical'}>
+          <FaBriefcaseMedical className={'svg medical'} /> Medical {!Manager.isValid(activeChild.medical) ? '- No Info' : ''}
         </AccordionSummary>
         <AccordionDetails>
           {Manager.isValid(medicalValues) &&
             medicalValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
               const value = prop[1]
+
               return (
                 <div key={index}>
                   <div className="flex input">
                     <InputWrapper
                       inputType={'input'}
-                      labelText={infoLabel}
+                      labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}
                       defaultValue={value}
                       value={value}
                       debounceTimeout={1000}

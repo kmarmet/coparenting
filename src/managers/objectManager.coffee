@@ -38,6 +38,8 @@ ObjectManager = {
     returnObject
   merge: (objectWithValuesToKeep, objectWithValuesToAdd) ->
     _.assign(objectWithValuesToKeep, objectWithValuesToAdd)
+  isEmpty: (obj) ->
+    _.isEmpty(obj)
 }
 
 export default ObjectManager

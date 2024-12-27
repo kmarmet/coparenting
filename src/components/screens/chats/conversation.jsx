@@ -45,6 +45,7 @@ import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import DomManager from '../../../managers/domManager'
 import DB_UserScoped from '@userScoped'
+import ActivityCategory from '../../../models/activityCategory'
 
 const Conversation = () => {
   const { state, setState } = useContext(globalState)
@@ -130,14 +131,26 @@ const Conversation = () => {
     }
 
     // Only send notification if coparent has chat UNmuted
-    const messageRecipientSubId = await NotificationManager.getUserSubId(messageRecipient.phone, 'phone')
     if (Manager.isValid(existingChat?.mutedFor, true)) {
       const coparentHasChatMuted = existingChat.mutedFor.filter((x) => x.ownerPhone === messageRecipient.phone).length > 0
+
       if (!coparentHasChatMuted) {
-        NotificationManager.sendNotification('New Message', `You have an unread conversation message 💬`, messageRecipientSubId)
+        NotificationManager.sendNotification(
+          'New Message',
+          `You have an unread conversation message 💬 from ${uppercaseFirstLetterOfAllWords(currentUser.name)}`,
+          messageRecipient?.phone,
+          currentUser,
+          ActivityCategory.chats
+        )
       }
     } else {
-      NotificationManager.sendNotification('New Message', `You have an unread conversation message 💬`, messageRecipientSubId)
+      NotificationManager.sendNotification(
+        'New Message',
+        `You have an unread conversation message 💬 from ${uppercaseFirstLetterOfAllWords(currentUser.name)}`,
+        messageRecipient?.phone,
+        currentUser,
+        ActivityCategory.chats
+      )
     }
 
     await getExistingMessages()

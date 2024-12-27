@@ -29,6 +29,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
+import { GiBrain } from 'react-icons/gi'
 
 export default function Behavior({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -59,11 +60,11 @@ export default function Behavior({ activeChild, setActiveChild }) {
 
   return (
     <div className="info-section section behavior">
-      <Accordion className={theme}>
+      <Accordion className={theme} disabled={Manager.isValid(activeChild?.behavior) ? false : true}>
         <AccordionSummary
           expandIcon={<FaChevronDown />}
           className={!Manager.isValid(activeChild.behavior) ? 'disabled header behavior' : 'header behavior'}>
-          <span className="material-icons-round">psychology</span> Behavior {!Manager.isValid(activeChild.behavior) ? '- No Info' : ''}
+          <GiBrain className={'svg'} /> Behavior {!Manager.isValid(activeChild.behavior) ? '- No Info' : ''}
         </AccordionSummary>
         <AccordionDetails>
           {behaviorValues &&

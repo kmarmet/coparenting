@@ -111,6 +111,7 @@ export default NotificationManager =
     myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
     subIdRecord = await DB.find(DB.tables.notificationSubscribers, ["phone", recipientPhone], true)
     subId = subIdRecord?.subscriptionId
+    console.log(title, message, recipientPhone,)
 
     raw = JSON.stringify
       contents:
@@ -132,7 +133,8 @@ export default NotificationManager =
     newActivity = new ActivitySet()
     newActivity.id = Manager.getUid()
     newActivity.recipientPhone = recipientPhone
-    newActivity.creatorPhone = currentUser?.phone
+    newActivity.sharedByPhone = currentUser?.phone
+    newActivity.sharedByName = currentUser?.name
     newActivity.title = title
     newActivity.text = message
     newActivity.category = category

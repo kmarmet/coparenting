@@ -51,28 +51,6 @@ const DB_UserScoped = {
         })
     })
   },
-  getAllUserRecords: (tableName, currentUser, objectName) => {
-    return new Promise((resolve, reject) => {
-      DB.getRecordsByUser(tableName, currentUser, objectName)
-        .then((currentUserRecord) => {
-          if (!Array.isArray(currentUserRecord)) {
-            currentUserRecord = Manager.convertToArray(currentUserRecord)
-            currentUserRecord = currentUserRecord.map((x) => {
-              x.canDelete = true
-              return x
-            })
-          }
-          if (currentUserRecord !== undefined) {
-            resolve(currentUserRecord)
-          } else {
-            resolve([])
-          }
-        })
-        .catch((error) => {
-          //
-        })
-    })
-  },
   getPropFromUserRecord: (tableName, currentUser, propPath) =>
     new Promise(async (resolve) => {
       const dbRef = ref(getDatabase())
@@ -81,14 +59,6 @@ const DB_UserScoped = {
         resolve(propValue || [])
       })
     }),
-  getUser: async (tableName, phoneNumber) => {
-    const dbRef = ref(getDatabase())
-    let tableData = []
-    await get(child(dbRef, `${tableName}/${phoneNumber}`)).then((snapshot) => {
-      tableData = snapshot.val()
-    })
-    return tableData
-  },
   getUserFromName: async (userName) => {
     let user
     await DB.getTable(DB.tables.users).then((users) => {
@@ -201,19 +171,20 @@ const DB_UserScoped = {
     let key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/children/`, activeChild, 'id')
     if (key !== null) {
       if (Manager.isValid(shareWith, true)) {
-        let sharedObject
-        if (Manager.isValid(activeChild.sharedObject)) {
+        for (let userNumber of shareWith) {
+          const shareWithSet = await DB.getTable(`${DB.tables.sharedChildInfo}/${userNumber}`)
+          let sharedObject
           sharedObject = {
-            props: [...activeChild.sharedObject.props, prop],
-            shareWith: shareWith,
+            prop: prop,
+            infoSection: infoSection,
+            childName: activeChild?.general?.name,
+            sharedByName: currentUser?.name,
+            sharedByPhone: currentUser?.phone,
+            id: Manager.getUid(),
+            value: value,
           }
-        } else {
-          sharedObject = {
-            props: [prop],
-            shareWith: shareWith,
-          }
+          await set(child(dbRef, `${DB.tables.sharedChildInfo}/${userNumber}`), [...shareWithSet, sharedObject])
         }
-        await set(child(dbRef, `users/${currentUser?.phone}/children/${key}/sharedObject`), sharedObject)
       }
       await set(child(dbRef, `users/${currentUser?.phone}/children/${key}/${infoSection}/${formatDbProp(prop)}`), `${value}`)
     }
@@ -363,6 +334,18 @@ const DB_UserScoped = {
     // DELETE ROOTED (users, archivedChat)
     await remove(child(dbRef, `${DB.tables.users}/${currentUser?.phone}`))
     await remove(child(dbRef, `${DB.tables.archivedChats}/${currentUser?.phone}`))
+  },
+  deleteSharedChildInfoProp: async (currentUser, sharedRecordProp, prop, sharedByPhone) => {
+    const dbRef = ref(getDatabase())
+    const found = await DB.find(sharedRecordProp, ['prop', prop.toLowerCase()], false)
+
+    if (Manager.isValid(found) && found.hasOwnProperty('sharedByPhone') && found.sharedByPhone === sharedByPhone) {
+      const deleteKey = await DB.getSnapshotKey(`${DB.tables.sharedChildInfo}/${currentUser.phone}`, found)
+
+      if (Manager.isValid(deleteKey)) {
+        await remove(child(dbRef, `${DB.tables.sharedChildInfo}/${currentUser.phone}/${deleteKey}`))
+      }
+    }
   },
 
   // MISC.

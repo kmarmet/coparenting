@@ -12,16 +12,13 @@ import Schooling from './schooling';
 import Behavior from './behavior';
 
 export default Child = class Child {
-  constructor(id = Manager.getUid(), general = new General(), medical = new Medical(), schooling = new Schooling(), behavior = new Behavior(), sharedObject = {
-      shareWith: [],
-      props: []
-    }) {
+  constructor(id = Manager.getUid(), general = new General(), medical = new Medical(), schooling = new Schooling(), behavior = new Behavior(), sharing = []) {
     this.id = id;
     this.general = general;
     this.medical = medical;
     this.schooling = schooling;
     this.behavior = behavior;
-    this.sharedObject = sharedObject;
+    this.sharing = sharing;
   }
 
 };

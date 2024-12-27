@@ -37,21 +37,28 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
     <BottomCard
       hasSubmitButton={false}
       onClose={hideCard}
-      title={'Choose Child'}
-      subtitle="Select which child you would like to view & edit"
+      title={'View Another Child'}
+      subtitle="Select which child you would like to view and/or edit"
       showCard={showCard}
       wrapperClass="child-selector-card"
       className={`child-selector`}>
-      <div className="flex gap wrap mt-15">
+      <div className="flex mt-15" id="child-selector">
         {Manager.isValid(children, true) &&
           children.map((child, index) => {
             return (
-              <p
-                className={`child-name pill ${child?.general?.name === activeInfoChild?.general?.name ? 'active' : ''}`}
-                key={index}
-                onClick={(e) => setActiveChild(child)}>
-                {formatNameFirstNameOnly(child?.general?.name)}
-              </p>
+              <div key={index} id="children-container" onClick={(e) => setActiveChild(child)}>
+                {Manager.isValid(child?.general['profilePic']) && (
+                  <div id="profile-pic-wrapper" style={{ backgroundImage: `url(${child?.general['profilePic']})` }}></div>
+                )}
+                {!Manager.isValid(child?.general['profilePic']) && (
+                  <div className="profile-pic-container no-image">
+                    <p>{child?.general?.name[0]}</p>
+                  </div>
+                )}
+                <p className={`child-name ${child?.general?.name === child?.general?.name ? 'active' : ''}`}>
+                  {formatNameFirstNameOnly(child?.general?.name)}
+                </p>
+              </div>
             )
           })}
       </div>

@@ -31,6 +31,7 @@ import Autocomplete from 'react-google-autocomplete'
 import { FaChevronDown } from 'react-icons/fa6'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
+import { MdContactEmergency } from 'react-icons/md'
 
 function General({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -69,7 +70,7 @@ function General({ activeChild, setActiveChild }) {
         <AccordionSummary
           expandIcon={<FaChevronDown />}
           className={!Manager.isValid(activeChild.general) ? 'disabled header general' : 'header general'}>
-          <span className="material-icons-round">perm_contact_calendar</span>
+          <MdContactEmergency className={'svg'} />
           General
         </AccordionSummary>
         <AccordionDetails>

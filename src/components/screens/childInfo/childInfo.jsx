@@ -179,9 +179,9 @@ export default function ChildInfo() {
               <button className="button default center green white-text mt-20" onClick={() => setShowInfoCard(true)}>
                 Add Your Own Info <FaWandMagicSparkles />
               </button>
-              {currentUser?.children?.length > 0 && (
+              {currentUser?.children?.length > 1 && (
                 <button onClick={() => setShowSelectorCard(true)} className="button default mt-5 center">
-                  Different Child <BiFace className={'child-info'} />
+                  View Another Child <BiFace className={'child-info'} />
                 </button>
               )}
             </div>

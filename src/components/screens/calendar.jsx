@@ -252,9 +252,18 @@ export default function EventCalendar() {
     })
   }
 
+  const onActivityChange = async () => {
+    const dbRef = ref(getDatabase())
+    onValue(child(dbRef, `${DB.tables.activities}/${currentUser?.phone}`), async (snapshot) => {
+      const activities = Manager.convertToArray(snapshot.val())
+      setState({ ...state, activityCount: activities.length, isLoading: false })
+    })
+  }
+
   useEffect(() => {
     if (!loadingDisabled && currentUser.hasOwnProperty('email')) {
-      setState({ ...state, isLoading: false })
+      onActivityChange().then((r) => r)
+      // setState({ ...state, isLoading: false })
       setLoadingDisabled(true)
       getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
     }

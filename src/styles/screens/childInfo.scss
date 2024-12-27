@@ -1,6 +1,23 @@
 @import '../mixins';
 
 #external-overrides {
+  .info-section {
+    .MuiAccordion-root {
+      .MuiAccordion-heading  {
+        .MuiButtonBase-root  {
+          .svg {
+            font-size: 28px !important;
+            
+            &.medical {
+              font-size: 26px !important;
+              position: relative;
+              bottom: 2px;
+            }
+          }
+        }
+      }
+    }
+  }
   #child-info-container {
     .button {
       &.default {
@@ -247,9 +264,9 @@
       }
 
       .child-name {
-        font-size: 24px;
+        font-size: 22px;
         color: black;
-        font-weight: $fwMediumBold;
+        font-weight: $fwMedium;
         border: 0;
         font-optical-sizing: auto;
         font-style: normal;
@@ -302,6 +319,8 @@
         .info-section {
           transition: max-height 0.3s ease-in-out;
           max-width: calc(100vw - 30px);
+          margin-bottom: 10px;
+          overflow: hidden;
           
           &:first-child {
             padding-top: 10px;
@@ -345,6 +364,7 @@
           overflow: hidden;
           height: 45px;
           align-items: center;
+          margin-bottom: 0;
 
           &.disabled {
             opacity: 0.5;
@@ -374,8 +394,8 @@
             }
           }
 
-          span {
-            font-size: 30px;
+          .svg {
+            font-size: 36px;
             margin-left: 0;
             margin-right: 10px;
           }

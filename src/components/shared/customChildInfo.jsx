@@ -53,7 +53,7 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       await NotificationManager.sendToShareWith(
         shareWith,
         currentUser,
-        `Medical Info Updated for ${activeChild?.general.name}`,
+        `Medical Info Updated for ${activeChild?.general?.name}`,
         `${title} - ${value}`,
         ActivityCategory.childInfo.medical
       )
