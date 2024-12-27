@@ -28,11 +28,13 @@ const DB_UserScoped = {
   // GET
   getChildAccounts: async (currentUser) => {
     let childrenAccounts = []
-    for (let child of currentUser?.children) {
-      if (child?.phone) {
-        const childAccount = await DB.find(DB.tables.users, ['phone', child?.phone], true)
-        if (Manager.isValid(childAccount)) {
-          childrenAccounts.push(child)
+    if (Manager.isValid(currentUser?.children, true)) {
+      for (let child of currentUser?.children) {
+        if (child?.phone) {
+          const childAccount = await DB.find(DB.tables.users, ['phone', child?.phone], true)
+          if (Manager.isValid(childAccount)) {
+            childrenAccounts.push(child)
+          }
         }
       }
     }
@@ -154,6 +156,7 @@ const DB_UserScoped = {
   },
   addUserChild: async (currentUser, newChild) => {
     const dbRef = ref(getDatabase())
+    console.log(newChild)
     const currentChildren = await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'children')
     await set(child(dbRef, `users/${currentUser?.phone}/children`), [...currentChildren, newChild])
   },

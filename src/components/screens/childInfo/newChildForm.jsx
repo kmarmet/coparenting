@@ -1,5 +1,5 @@
 import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import DB from '@db'
 import globalState from '../../../context'
 import Manager from '@manager'
@@ -31,6 +31,10 @@ import InputWrapper from '../../shared/inputWrapper'
 import BottomCard from '../../shared/bottomCard'
 import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
+import UploadInputs from '../../shared/uploadInputs'
+import ImageManager from '../../../managers/imageManager'
+import FirebaseStorage from '@firebaseStorage'
+import Label from '../../shared/label'
 
 const NewChildForm = ({ hideCard, showCard }) => {
   const { state, setState } = useContext(globalState)
@@ -44,6 +48,8 @@ const NewChildForm = ({ hideCard, showCard }) => {
   const [gender, setGender] = useState('male')
   const [dateOfBirth, setDateOfBirth] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [profilePic, setProfilePic] = useState(null)
+  const inputFile = useRef(null)
 
   const resetForm = async () => {
     Manager.resetForm('new-child-wrapper')
@@ -61,21 +67,35 @@ const NewChildForm = ({ hideCard, showCard }) => {
       AlertManager.throwError('Please fill out required fields')
       return false
     } else {
+      const id = Manager.getUid()
+      const _profilePic = await ImageManager.compressImage(profilePic)
       const newChild = new Child()
       const general = new General()
+      newChild.id = id
       general.address = address
       general.phone = phoneNumber
       general.name = name
       general.gender = gender
       general.dateOfBirth = dateOfBirth
       newChild.general = general
-      console.log(newChild)
-      const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.child)
-      console.log(cleanChild)
-      await DB_UserScoped.addUserChild(currentUser, cleanChild)
+      newChild.general.profilePic = ''
+
       AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
 
-      resetForm()
+      // Add profile pic
+      if (Manager.isValid(_profilePic)) {
+        await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, `${currentUser?.id}/${id}`, _profilePic, 'profilePic').then(
+          async (url) => {
+            newChild.general.profilePic = url
+          }
+        )
+      }
+      const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.child)
+
+      // Add child to DB
+      await DB_UserScoped.addUserChild(currentUser, cleanChild)
+
+      await resetForm()
     }
   }
 
@@ -124,6 +144,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
                 types: ['geocode', 'establishment'],
                 componentRestrictions: { country: 'usa' },
               }}
+              placeholder={'Home Address'}
               onPlaceSelected={(place) => {
                 setAddress(place.formatted_address)
               }}
@@ -132,6 +153,21 @@ const NewChildForm = ({ hideCard, showCard }) => {
 
           {/* GENDER */}
           <CheckboxGroup parentLabel={'Gender'} required={true} checkboxLabels={['Male', 'Female']} onCheck={handleGenderSelect} />
+
+          <Label text={'Image of Child'}></Label>
+
+          {/* UPLOAD BUTTON */}
+          <UploadInputs
+            onClose={hideCard}
+            containerClass={`${theme} new-child-card`}
+            uploadType={'image'}
+            actualUploadButtonText={'Upload'}
+            getImages={(files) => {
+              setProfilePic(files[0])
+            }}
+            uploadButtonText={`Choose`}
+            upload={() => {}}
+          />
         </div>
       </div>
     </BottomCard>

@@ -46,27 +46,26 @@ export default function ChildInfo() {
   const [activeInfoChild, setActiveInfoChild] = useState(null)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
 
-  const uploadProfilePic = async (img) => {
-    setState({ ...state, isLoading: true })
-    const imgFiles = document.getElementById('upload-input').files
+  const uploadProfilePic = async () => {
+    // setState({ ...state, isLoading: true })
+    const imgFiles = document.getElementById('upload-image-input').files
+
     if (imgFiles.length === 0) {
       AlertManager.throwError('Please choose an image')
       return false
     }
 
     // Upload -> Set child/general/profilePic
-    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, `${currentUser?.id}/${activeInfoChild?.id}`, img, 'profilePic').then(
-      async (url) => {
-        const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilePic', url)
-        setState({ ...state, isLoading: false })
-        setActiveInfoChild(updatedChild)
-      }
-    )
-  }
-
-  const chooseImage = async (e) => {
-    const img = document.querySelector('#upload-input').files[0]
-    await uploadProfilePic(img)
+    await FirebaseStorage.upload(
+      FirebaseStorage.directories.profilePics,
+      `${currentUser?.id}/${activeInfoChild?.id}`,
+      imgFiles[0],
+      'profilePic'
+    ).then(async (url) => {
+      const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilePic', url)
+      setState({ ...state, isLoading: false })
+      setActiveInfoChild(updatedChild)
+    })
   }
 
   const onTableChange = async () => {
@@ -142,7 +141,7 @@ export default function ChildInfo() {
                 {Manager.isValid(activeInfoChild?.general['profilePic']) && (
                   <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
                     <div className="after">
-                      <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
+                      <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
                       <FaCameraRotate />
                     </div>
                   </div>
@@ -150,7 +149,7 @@ export default function ChildInfo() {
                 {!Manager.isValid(activeInfoChild?.general['profilePic']) && (
                   <div className="profile-pic-container no-image">
                     <div className="after">
-                      <input ref={imgRef} type="file" id="upload-input" accept="image/*" onChange={(e) => chooseImage(e)} />
+                      <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
                       <BiImageAdd />
                     </div>
                   </div>

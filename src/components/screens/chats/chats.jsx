@@ -4,7 +4,7 @@ import globalState from '../../../context.js'
 import 'rsuite/dist/rsuite.min.css'
 import ChatManager from '@managers/chatManager.js'
 import DB_UserScoped from '@userScoped'
-import { BiDotsVerticalRounded, BiMessageRoundedDetail, BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
+import { BiDotsVerticalRounded, BiMessageRoundedAdd, BiMessageRoundedDetail, BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
 import { IoNotificationsOffCircle } from 'react-icons/io5'
 import { HiMiniBellAlert } from 'react-icons/hi2'
 import { Fade } from 'react-awesome-reveal'
@@ -98,7 +98,7 @@ const Chats = () => {
   const toggleThreadActions = (threadId) => {
     const threadAction = document.querySelector(`.thread-actions[data-thread-id='${threadId}']`)
     if (Manager.isValid(threadAction)) {
-      if (hasClass(threadAction, 'active')) {
+      if (threadAction.classList.contains('active')) {
         threadAction.classList.remove('active')
         setThreadActionToShow(null)
       } else {
@@ -128,36 +128,41 @@ const Chats = () => {
           Manager.isValid(currentUser?.coparents, true) &&
           currentUser?.coparents?.map((coparent, index) => {
             return (
-              <div key={index}>
-                {!activeThreadPhones.includes(coparent.phone) && (
-                  <p
-                    className="coparent-name new-thread-coparent-name"
-                    onClick={() => {
-                      openMessageThread(coparent).then((r) => r)
-                    }}>
-                    {coparent.name}
-                  </p>
+              <div key={index} className="flex" id="users-wrapper">
+                {!activeThreadPhones.includes(coparent?.phone) && (
+                  <div className="user-wrapper">
+                    <BiMessageRoundedAdd />
+                    <p
+                      className="coparent-name new-thread-coparent-name"
+                      onClick={() => {
+                        openMessageThread(coparent).then((r) => r)
+                      }}>
+                      {getFirstWord(coparent?.name)}
+                    </p>
+                  </div>
                 )}
-                {activeThreadPhones.includes(coparent.phone) && <p>All available co-parents already have an open conversation with you </p>}
+                {activeThreadPhones.includes(coparent?.phone) && <p>All available co-parents already have an open conversation with you </p>}
               </div>
             )
           })}
         {currentUser?.accountType === 'child' &&
           Manager.isValid(currentUser?.parents, true) &&
           currentUser?.parents?.map((parent, index) => {
-            console.log(parent)
             return (
-              <div key={index}>
-                {!activeThreadPhones.includes(parent.phone) && (
-                  <p
-                    className="coparent-name new-thread-coparent-name"
-                    onClick={() => {
-                      openMessageThread(parent.phone).then((r) => r)
-                    }}>
-                    {parent.name}
-                  </p>
+              <div key={index} className="flex" id="users-wrapper">
+                {!activeThreadPhones.includes(parent?.phone) && (
+                  <div className="user-wrapper">
+                    <BiMessageRoundedAdd />
+                    <p
+                      className="coparent-name new-thread-coparent-name"
+                      onClick={() => {
+                        openMessageThread(parent?.phone).then((r) => r)
+                      }}>
+                      {parent?.name}
+                    </p>
+                  </div>
                 )}
-                {activeThreadPhones.includes(parent.phone) && <p>All available co-parents aleady have an open conversation with you. </p>}
+                {activeThreadPhones.includes(parent?.phone) && <p>All available co-parents already have an open conversation with you. </p>}
               </div>
             )
           })}
@@ -239,6 +244,8 @@ const Chats = () => {
                             },
                             () => {
                               setThreadActionToShow(false)
+                              const threadAction = document.querySelector(`.thread-actions[data-thread-id='${thread.id}']`)
+                              threadAction.classList.remove('active')
                             }
                           )
                         }}
@@ -260,6 +267,8 @@ const Chats = () => {
                             },
                             () => {
                               setThreadActionToShow(false)
+                              const threadAction = document.querySelector(`.thread-actions[data-thread-id='${thread.id}']`)
+                              threadAction.classList.remove('active')
                             }
                           )
                         }}
@@ -297,7 +306,7 @@ const Chats = () => {
       </div>
       {!showNewConvoCard && (
         <NavBar navbarClass={'calendar'}>
-          {DomManager.isMobile() && <BiSolidEdit id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
+          {DomManager.isMobile() && <BiMessageRoundedAdd id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
         </NavBar>
       )}
     </>

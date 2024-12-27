@@ -17,7 +17,7 @@ import { PiBookmarkSimpleDuotone, PiBookmarksSimpleDuotone } from 'react-icons/p
 import { FaBookmark } from 'react-icons/fa'
 import ModelNames from '../../../models/modelNames'
 import { Fade } from 'react-awesome-reveal'
-
+import { IoChevronBack } from 'react-icons/io5'
 import {
   contains,
   formatFileName,
@@ -36,7 +36,6 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
-import { CgClose } from 'react-icons/cg'
 import { TbMessageCircleSearch } from 'react-icons/tb'
 import ContentEditable from '../../shared/contentEditable'
 import { useLongPress } from 'use-long-press'
@@ -309,7 +308,14 @@ const Conversation = () => {
         {/* TOP BAR */}
         {!showSearchInput && DomManager.isMobile() && (
           <div className="flex top-buttons">
-            <div className="flex" id="user-info">
+            <div
+              className="flex"
+              id="user-info"
+              onClick={() => {
+                setState({ ...state, currentScreen: ScreenNames.chats })
+                Manager.showPageContainer('show')
+              }}>
+              <IoChevronBack />
               <p id="user-name">{formatNameFirstNameOnly(messageRecipient?.name)}</p>
             </div>
             <div id="right-side" className="flex">
@@ -321,14 +327,6 @@ const Conversation = () => {
                   onClick={(e) => viewBookmarks(e)}
                 />
               )}
-              <CgClose
-                onClick={() => {
-                  setState({ ...state, currentScreen: ScreenNames.chats })
-                  Manager.showPageContainer('show')
-                }}
-                className="material-icons"
-                id="close-icon"
-              />
             </div>
           </div>
         )}

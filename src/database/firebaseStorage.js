@@ -144,17 +144,13 @@ const FirebaseStorage = {
         })
     }),
   upload: async (imgDirectory, id, img, imgName) => {
-    let returnUrl
     const storage = getStorage()
-    console.log(img)
-    console.log(`${imgDirectory}/${id}/${imgName}/`)
+    // console.log(img)
+    // console.log(`${imgDirectory}/${id}/${imgName}/`)
     const storageRef = ref(storage, `${imgDirectory}/${id}/${imgName}/`)
     await uploadBytes(storageRef, img)
-    await getDownloadURL(ref(storage, `${imgDirectory}/${id}/${imgName}/`)).then((url) => {
-      returnUrl = url
-    })
-
-    return returnUrl
+    const returnUrl = await getDownloadURL(ref(storage, `${imgDirectory}/${id}/${imgName}/`))
+    return await returnUrl
   },
   addProfilePic: (imgDirectory, storageKey, img) =>
     new Promise(async (resolve) => {

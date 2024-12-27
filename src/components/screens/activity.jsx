@@ -157,7 +157,7 @@ export default function Activity() {
                 const { screen, category, className } = categoryObject
 
                 return (
-                  <div className="flex" id="row-wrapper">
+                  <div key={index} className="flex" id="row-wrapper">
                     <div className={`activity-row row ${className}`} onClick={() => changeScreen(screen)}>
                       <p className={`card-title ${className}`}>
                         {criticalCategories.includes(category) && <PiSealWarningDuotone />} {uppercaseFirstLetterOfAllWords(title)}{' '}

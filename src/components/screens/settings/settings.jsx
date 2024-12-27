@@ -39,6 +39,7 @@ export default function Settings() {
   const [morningSummaryTime, setMorningSummaryTime] = useState('')
   const [eveningSummaryTime, setEveningSummaryTime] = useState('')
   const [notificationsToggled, setNotificationsToggled] = useState(0)
+
   const submitCalendarSettings = async () => {
     if (DateManager.dateIsValid(morningSummaryTime)) {
       await DB_UserScoped.updateUserRecord(
@@ -66,7 +67,6 @@ export default function Settings() {
     setState({ ...state, currentUser: updatedCurrentUser })
 
     if (notificationsToggled === true) {
-      console.log('enabled')
       await NotificationManager.enableNotifications(subscriptionId)
     } else {
       await NotificationManager.disableNotifications(subscriptionId)

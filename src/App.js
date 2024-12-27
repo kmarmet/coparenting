@@ -102,6 +102,11 @@ export default function App() {
     })
   }
 
+  const updateCurrentUser = async () => {
+    const _currentUser = await DB_UserScoped.getCurrentUser(currentUser?.email, 'email')
+    setState({ ...state, currentUser: _currentUser, isLoading: false })
+  }
+
   // CLEAR APP BADGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
@@ -111,7 +116,9 @@ export default function App() {
     for (let bottomCard of allBottomCards) {
       bottomCard.classList.remove('animate__fadeInUp')
     }
-    console.log(currentUser)
+    if (Manager.isValid(currentUser, false, true) && currentScreen !== ScreenNames.calendar) {
+      updateCurrentUser().then((r) => r)
+    }
   }, [currentScreen])
 
   // ON PAGE LOAD

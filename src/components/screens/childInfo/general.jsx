@@ -106,38 +106,40 @@ function General({ activeChild, setActiveChild }) {
               const value = prop[1]
               return (
                 <div key={index}>
-                  <div className="flex input">
-                    {contains(infoLabel.toLowerCase(), 'address') && (
-                      <InputWrapper
-                        inputType={'location'}
-                        defaultValue={value}
-                        labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}>
-                        <Autocomplete
-                          apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                          options={{
-                            types: ['geocode', 'establishment'],
-                            componentRestrictions: { country: 'usa' },
+                  {prop[0] !== 'profilePic' && (
+                    <div className="flex input">
+                      {contains(infoLabel.toLowerCase(), 'address') && (
+                        <InputWrapper
+                          inputType={'location'}
+                          defaultValue={value}
+                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}>
+                          <Autocomplete
+                            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                            options={{
+                              types: ['geocode', 'establishment'],
+                              componentRestrictions: { country: 'usa' },
+                            }}
+                            onPlaceSelected={async (place) => {
+                              await update('general', 'address', place.formatted_address, false)
+                            }}
+                            placeholder={Manager.isValid(activeChild?.general?.address) ? activeChild?.general?.address : 'Location'}
+                          />
+                        </InputWrapper>
+                      )}
+                      {!contains(infoLabel.toLowerCase(), 'address') && (
+                        <InputWrapper
+                          inputType={'input'}
+                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}
+                          defaultValue={value}
+                          onChange={async (e) => {
+                            const inputValue = e.target.value
+                            await update('general', infoLabel, inputValue)
                           }}
-                          onPlaceSelected={async (place) => {
-                            await update('general', 'address', place.formatted_address, false)
-                          }}
-                          placeholder={Manager.isValid(activeChild?.general?.address) ? activeChild?.general?.address : 'Location'}
                         />
-                      </InputWrapper>
-                    )}
-                    {!contains(infoLabel.toLowerCase(), 'address') && (
-                      <InputWrapper
-                        inputType={'input'}
-                        labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}
-                        defaultValue={value}
-                        onChange={async (e) => {
-                          const inputValue = e.target.value
-                          await update('general', infoLabel, inputValue)
-                        }}
-                      />
-                    )}
-                    {infoLabel.toLowerCase() !== 'name' && <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />}
-                  </div>
+                      )}
+                      {infoLabel.toLowerCase() !== 'name' && <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />}
+                    </div>
+                  )}
                 </div>
               )
             })}

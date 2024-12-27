@@ -101,14 +101,17 @@ export default function BottomCard({
           {children}
         </div>
       </div>
-      <div className={`flex buttons`}>
-        {hasSubmitButton && (
-          <button className={`button card-button submit ${submitButtonColor}`} onClick={onSubmit}>
-            {submitText} {submitIcon}
-          </button>
-        )}
-        {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
-      </div>
+      {hasSubmitButton ||
+        (hasDelete && (
+          <div className={`flex buttons`}>
+            {hasSubmitButton && (
+              <button className={`button card-button submit ${submitButtonColor}`} onClick={onSubmit}>
+                {submitText} {submitIcon}
+              </button>
+            )}
+            {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
+          </div>
+        ))}
     </div>
   )
 }

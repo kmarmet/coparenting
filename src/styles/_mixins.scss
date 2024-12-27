@@ -2538,12 +2538,12 @@
   // CHILD SELECTOR
   &.child-selector {
     #child-selector {
-      gap:  10px;
+      gap: 10px;
       align-items: stretch;
       flex-wrap: wrap;
       justify-content: space-between;
       width: 100%;
-      
+
       #children-container {
         height: auto;
         width: calc((100% / 3) - 10px);
@@ -2681,6 +2681,38 @@
   &.new-conversation {
     .coparent-name {
       font-size: 18px;
+    }
+    #content {
+      display: flex;
+      gap: 10px;
+      #users-wrapper {
+        width: calc(100% / 3.5);
+        .user-wrapper {
+          position: relative;
+          background: $lightIconBgBlue;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
+          padding: 10px;
+          border-radius: $bigBorderRadius;
+
+          svg {
+            font-size: 40px;
+            height: unset;
+            width: unset;
+            color: $mainBlue;
+          }
+          p {
+            color: $mainBlue;
+            height: unset;
+            width: 100%;
+            font-size: 20px;
+            text-align: center;
+            font-weight: $fwMediumBold;
+          }
+        }
+      }
     }
   }
 
