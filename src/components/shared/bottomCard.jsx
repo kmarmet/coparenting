@@ -26,11 +26,26 @@ export default function BottomCard({
   const { currentUser, theme, alertType, formToShow } = state
   const isMobile = window.screen.width < 800
 
+  const hideCard = () => {
+    const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
+    const fadeOutDown = 'animate__fadeOutDown'
+    const fadeInUp = 'animate__fadeInUp'
+
+    bottomCard.classList.add(fadeOutDown)
+
+    setTimeout(() => {
+      bottomCard.classList.remove(fadeInUp)
+      bottomCard.classList.remove(fadeOutDown)
+    }, 500)
+  }
+
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
     const pageOverlay = document.getElementById('page-overlay')
     const body = document.body
     const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
+    const checkboxContainer = document.getElementById('share-with-checkbox-container')
+
     if (wrapperClass.length > 0) {
       const fadeInUp = 'animate__fadeInUp'
       const fadeOutDown = 'animate__fadeOutDown'
@@ -38,6 +53,10 @@ export default function BottomCard({
       if (showCard && bottomCard) {
         body.style.position = 'fixed'
         bottomCard.classList.add(fadeInUp)
+
+        if (checkboxContainer) {
+          checkboxContainer.classList.remove('active')
+        }
         if (showOverlay) {
           if (pageOverlay) {
             pageOverlay.classList.add('active')
@@ -70,21 +89,8 @@ export default function BottomCard({
     }
   }, [showCard])
 
-  const hideCard = () => {
-    const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
-    const fadeOutDown = 'animate__fadeOutDown'
-    const fadeInUp = 'animate__fadeInUp'
-
-    bottomCard.classList.add(fadeOutDown)
-
-    setTimeout(() => {
-      bottomCard.classList.remove(fadeInUp)
-      bottomCard.classList.remove(fadeOutDown)
-    }, 500)
-  }
-
   return (
-    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} ${alertType} animate__animated`}>
+    <div key={refreshKey} id="bottom-card" className={`${theme} ${wrapperClass} ${className} ${alertType} animate__animated`}>
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
@@ -101,17 +107,16 @@ export default function BottomCard({
           {children}
         </div>
       </div>
-      {hasSubmitButton ||
-        (hasDelete && (
-          <div className={`flex buttons`}>
-            {hasSubmitButton && (
-              <button className={`button card-button submit ${submitButtonColor}`} onClick={onSubmit}>
-                {submitText} {submitIcon}
-              </button>
-            )}
-            {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
-          </div>
-        ))}
+      {(hasSubmitButton || hasDelete) && (
+        <div className={`flex buttons`}>
+          {hasSubmitButton && (
+            <button className={`button card-button submit ${submitButtonColor}`} onClick={onSubmit}>
+              {submitText} {submitIcon}
+            </button>
+          )}
+          {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
+        </div>
+      )}
     </div>
   )
 }

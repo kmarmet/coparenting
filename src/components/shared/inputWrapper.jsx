@@ -43,41 +43,72 @@ function InputWrapper({
 
   return (
     <div
-      key={refreshKey}
       id="input-wrapper"
       className={`${wrapperClasses} ${inputType} ${defaultValue.length > 0 || (noInputTypes.includes(inputType) && inputType !== 'location') ? 'mb-15' : ''} input-container`}>
       {!noInputTypes.includes(inputType) && (
         <>
           {defaultValue.length > 0 && <Label text={labelText} />}
-          <DebounceInput
-            value={inputValue}
-            element={inputType}
-            minLength={2}
-            className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
-            placeholder={getPlaceholder()}
-            onChange={onChange}
-            debounceTimeout={800}
-            type={inputValueType}
-            onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
-          />
+          {defaultValue.length > 0 && (
+            <DebounceInput
+              key={refreshKey}
+              value={defaultValue}
+              element={inputType}
+              minLength={2}
+              className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
+              onChange={onChange}
+              debounceTimeout={800}
+              type={inputValueType}
+              onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
+            />
+          )}
+          {defaultValue.length === 0 && (
+            <DebounceInput
+              key={refreshKey}
+              element={inputType}
+              minLength={2}
+              className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
+              onChange={onChange}
+              debounceTimeout={800}
+              type={inputValueType}
+              placeholder={getPlaceholder()}
+              onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
+            />
+          )}
         </>
       )}
       {noInputTypes.includes(inputType) && (
         <div className={`w-100`}>
           {inputType === 'date' && <Label classes={`date-label`} text={getPlaceholder()} />}
+          {inputType === 'location' && defaultValue.length > 0 && <Label classes={`date-label`} text={'Location'} />}
           {children}
         </div>
       )}
       {inputType === 'textarea' && (
         <>
           {defaultValue.length > 0 && <Label text={labelText} />}
-          <textarea
-            onClick={(e) => e.target.scrollIntoView()}
-            onChange={onChange}
-            className={inputClasses}
-            placeholder={getPlaceholder()}
-            cols="30"
-            rows="10"></textarea>
+          {defaultValue.length > 0 && (
+            <textarea
+              onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
+              onChange={onChange}
+              className={inputClasses}
+              placeholder={getPlaceholder()}
+              value={defaultValue}
+              cols="30"
+              key={refreshKey}
+              rows="10"
+            />
+          )}
+          {defaultValue.length === 0 && (
+            <textarea
+              onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
+              onChange={onChange}
+              className={inputClasses}
+              placeholder={getPlaceholder()}
+              cols="30"
+              key={refreshKey}
+              rows="10"
+            />
+          )}
         </>
       )}
     </div>

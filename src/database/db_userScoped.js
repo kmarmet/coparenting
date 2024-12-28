@@ -43,11 +43,13 @@ const DB_UserScoped = {
   getValidAccountsForUser: async (currentUser) => {
     const children = await DB_UserScoped.getChildAccounts(currentUser)
     const coparents = []
-    for (let coparent of currentUser?.coparents) {
-      if (coparent?.phone) {
-        const coparentAccount = await DB.find(DB.tables.users, ['phone', coparent?.phone], true)
-        if (Manager.isValid(coparentAccount)) {
-          coparents.push(child)
+    if (Manager.isValid(currentUser?.coparents, true)) {
+      for (let coparent of currentUser?.coparents) {
+        if (coparent?.phone) {
+          const coparentAccount = await DB.find(DB.tables.users, ['phone', coparent?.phone], true)
+          if (Manager.isValid(coparentAccount)) {
+            coparents.push(child)
+          }
         }
       }
     }

@@ -61,15 +61,15 @@ export getPositionOfWordInText = (word, text) ->
   returnObj
 
 export uppercaseFirstLetterOfAllWords = (input) ->
-  words = input.toString()
+  words = input?.toString()
   if words and words != undefined
-    if words.indexOf('-') > -1
+    if words?.indexOf('-') > -1
       words = input.replace(/-/g, ' ').split(' ')
     else
-      words = words.split(' ')
-    words = words.filter (x) -> x.length > 0
-    words = words.map (word) -> word[0].toUpperCase() + word.substr(1)
-    words = words.join(' ') if words.length > 0
+      words = words?.split(' ')
+    words = words?.filter (x) -> x.length > 0
+    words = words?.map (word) -> word[0].toUpperCase() + word.substr(1)
+    words = words?.join(' ') if words?.length > 0
   words
 
 export spaceBetweenWords = (input) ->

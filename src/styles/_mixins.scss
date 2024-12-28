@@ -1338,22 +1338,33 @@
   &.calendar {
     display: flex;
     align-items: center;
+    gap: 10px;
     .duration-option {
-      padding: 5px 10px 5px 5px;
-      margin-right: 10px;
-
-      p {
-        position: relative;
-        top: 1.5px;
+      padding: 8px 15px;
+      border: 1px solid $bestGreyForWhite;
+      min-width: 85px;
+      border-radius: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      &.active {
+        background: $lightBorder;
+        
+        p {
+          font-weight: $fwMedium;
+          opacity: .9;
+        }
       }
 
-      svg {
-        margin-right: 5px;
-        font-size: 22px;
-
-        &.single-day-icon {
-          font-size: 20px;
-        }
+      p {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: $lightDarkGrey;
+        opacity: 1;
+        text-align: center;
+        line-height: 1;
       }
     }
   }
@@ -1373,24 +1384,23 @@
     color: $lightDarkGrey;
     background-color: transparent;
     text-align: center;
-    text-transform: uppercase;
     transition: all 0.3s ease-in-out;
     border: 0;
     display: flex;
+    padding: 0;
 
     &.active {
       span,
       svg,
       p {
-        color: rgba(45, 104, 255, 0.71);
         line-height: 1;
+        color: black;
         opacity: 1;
         font-weight: $fwBold;
-        transform: scale(1.1);
       }
       svg {
         position: relative;
-        right: 5px;
+        right: 0;
       }
     }
 
@@ -1402,6 +1412,8 @@
       display: flex;
       align-items: center;
       color: $lightDarkGrey;
+      position: relative;
+      top: 1px;
     }
   }
 }
@@ -2334,7 +2346,7 @@
 
     .card-button {
       border-radius: 50px;
-      padding: 15px 0;
+      padding: 12px 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2414,6 +2426,59 @@
   }
 
   /*#region  CARDS BY CLASS*/
+  // EDIT CALENDAR EVENT
+  &.edit-calendar-event {
+    #relative-wrapper {
+      textarea {
+        height: 150px;
+        max-height: 150px;
+        border-radius: 15px;
+      }
+      #details {
+        .flex {
+          gap: 10px;
+          align-items: center;
+        }
+        #children {
+          .divider {
+            padding: 0 5px;
+            color: $lightBorder;
+          }
+        }
+        .nav-detail {
+          display: flex;
+          align-items: center;
+          svg {
+            font-size: 20px;
+          }
+        }
+      }
+      #view-switcher {
+        &.flex {
+          gap: 15px;
+          margin-bottom: 20px;
+          p {
+            padding: 0;
+            margin: 0;
+            
+            &.pill {
+              opacity: .7;
+              text-align: center;
+              transition: all .3s ease-in-out;
+              
+              &.active {
+                border-bottom: 1px solid $mainBlue;
+                font-weight: $fwMedium;
+                color: $mainBlue;
+                opacity: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   // TRANSFER
   &.transfer-change,
   &.expense-tracker,

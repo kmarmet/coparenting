@@ -605,7 +605,7 @@ export default function ExpenseTracker() {
                     id="row"
                     onClick={() => {
                       setActiveExpense(expense)
-                      setShowDetails(!showDetails)
+                      setShowDetails(true)
                     }}>
                     <div id="primary-icon-wrapper">
                       {expense.paidStatus === 'unpaid' && <span className="amount">${expense.amount}</span>}

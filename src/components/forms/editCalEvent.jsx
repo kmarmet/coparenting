@@ -18,6 +18,7 @@ import Toggle from 'react-toggle'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
+import { BiSolidNavigation } from 'react-icons/bi'
 import 'react-toggle/style.css'
 import {
   contains,
@@ -38,8 +39,6 @@ import {
 } from '../../globalFunctions'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
-import { IoTodayOutline } from 'react-icons/io5'
-import { HiOutlineCalendarDays } from 'react-icons/hi2'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import DateManager from '../../managers/dateManager'
@@ -81,6 +80,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const [defaultStartTime, setDefaultStartTime] = useState(moment())
   const [defaultEndTime, setDefaultEndTime] = useState(moment())
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [view, setView] = useState('details')
 
   const resetForm = async () => {
     Manager.resetForm('edit-event-form')
@@ -348,7 +348,11 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     if (Manager.isValid(event?.children, true)) {
       document.querySelectorAll('.include-children-checkbox-container').forEach((container) => {
         if (event?.children.includes(container.getAttribute('data-phone'))) {
-          container.querySelector('.box').classList.add('active')
+          const box = container.querySelector('.box')
+
+          if (box) {
+            box.classList.add('active')
+          }
           checkboxClasses.push('.children-toggle')
           setIncludeChildren(true)
         }
@@ -366,7 +370,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     }
 
     // Repeating
-    if (Manager.isValid(event?.repeatInterval) && event?.repeatInterval.length > 0) {
+    if (Manager.isValid(event?.repeatInterval) && !Manager.isEmpty(event?.repeatInterval.length)) {
       Manager.setDefaultCheckboxes('repeating', event, 'repeatInterval', false).then((r) => r)
     }
   }
@@ -437,283 +441,376 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           AlertManager.successAlert('Event Deleted')
         })
       }}
-      hasDelete={true}
+      hasDelete={view === 'edit'}
       onSubmit={submit}
       submitText={'Done Editing'}
-      onClose={() => {
+      hasSubmitButton={view === 'edit'}
+      onClose={async () => {
         onClose(moment(event.startDate))
-        resetForm()
+        await resetForm()
       }}
       title={'Edit Event'}
       showCard={showCard}
       className="edit-calendar-event"
       wrapperClass="edit-calendar-event">
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
-        <div className="content">
-          {/* SINGLE DAY / MULTIPLE DAYS */}
-          <div id="duration-options" className="action-pills calendar">
-            <div className={`duration-option  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
-              <IoTodayOutline className={'single-day-icon'} />
-              <p>Single Day</p>
-            </div>
-            <div className={`duration-option  ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
-              <HiOutlineCalendarDays className={'multiple-day-icon'} />
-              <p>Multiple Days</p>
-            </div>
-          </div>
-
-          {/* TITLE */}
-          <div className="title-suggestion-wrapper">
-            <InputWrapper
-              inputType={'input'}
-              labelText={'Title'}
-              defaultValue={eventTitle}
-              required={true}
-              onChange={async (e) => {
-                const inputValue = e.target.value
-                if (inputValue.length > 1) {
-                  setEventTitle(inputValue)
-                }
-              }}
-            />
-          </div>
-          {/* DATE */}
-          <div className="flex" id={'date-input-container'}>
-            {eventLength === EventLengths.single && (
-              <>
-                <div className="w-100">
-                  <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
-                    <MobileDatePicker
-                      onOpen={addThemeToDatePickers}
-                      value={moment(event?.startDate)}
-                      className={`${theme} m-0 w-100 event-from-date mui-input`}
-                      onAccept={(e) => {
-                        setEventFromDate(e)
-                      }}
-                    />
-                  </InputWrapper>
-                </div>
-              </>
-            )}
-
-            {/* DATE RANGE */}
-            {eventLength === EventLengths.multiple && (
-              <>
-                <div>
-                  <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
-                    <MobileDateRangePicker
-                      className={'w-100'}
-                      onOpen={addThemeToDatePickers}
-                      onOpen={() => Manager.hideKeyboard('date-range-input')}
-                      onAccept={(dateArray) => {
-                        if (Manager.isValid(dateArray, true)) {
-                          setEventFromDate(moment(dateArray[0]).format('MM/DD/YYYY'))
-                          setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
-                          setEventIsDateRange(true)
-                        }
-                      }}
-                      slots={{ field: SingleInputDateRangeField }}
-                      name="allowedRange"
-                    />
-                  </InputWrapper>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* EVENT START/END TIME */}
-          {!isAllDay && (
-            <div className="flex gap">
-              {/* START TIME */}
-              <div>
-                <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker
-                    onOpen={addThemeToDatePickers}
-                    format={'h:mma'}
-                    value={moment(eventStartTime, 'hh:mma')}
-                    minutesStep={5}
-                    className={`${theme} m-0`}
-                    onAccept={(e) => setEventStartTime(e)}
-                  />
-                </InputWrapper>
-              </div>
-
-              {/* END TIME */}
-              <div>
-                <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker
-                    onOpen={addThemeToDatePickers}
-                    format={'h:mma'}
-                    value={moment(defaultEndTime, 'hh:mma')}
-                    minutesStep={5}
-                    className={`${theme} m-0`}
-                    onAccept={(e) => setEventEndTime(e)}
-                  />
-                </InputWrapper>
-              </div>
-            </div>
-          )}
-          {/* Share with */}
-          {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
-            <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
-          )}
-          {/* ALL DAY / HAS END DATE */}
-          <div className="flex all-day-toggle">
-            <p>All Day</p>
-            <Toggle
-              icons={{
-                unchecked: null,
-              }}
-              className={'ml-auto'}
-              onChange={(e) => setIsAllDay(!!e.target.checked)}
-            />
-          </div>
-
-          {/* REMINDER */}
-          {!isAllDay && (
-            <>
-              <Accordion expanded={showReminders} id={'checkboxes'}>
-                <AccordionSummary>
-                  <div className="flex reminder-times-toggle">
-                    <p>Remind Me</p>
-                    <Toggle
-                      icons={{
-                        checked: <span className="material-icons-round">notifications</span>,
-                        unchecked: null,
-                      }}
-                      className={'ml-auto reminder-toggle'}
-                      onChange={(e) => setShowReminders(!showReminders)}
-                    />
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <CheckboxGroup
-                    elClass={`${theme} `}
-                    containerClass={'reminder-times'}
-                    defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
-                    skipNameFormatting={true}
-                    dataPhone={
-                      currentUser?.accountType === 'parent' ? currentUser?.coparents?.map((x) => x.phone) : currentUser?.parents?.map((x) => x.phone)
-                    }
-                    checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
-                    onCheck={handleReminderSelection}
-                  />
-                </AccordionDetails>
-              </Accordion>
-            </>
-          )}
-
-          {/* IS VISITATION? */}
-          <div className="flex visitation-toggle">
-            <p>Visitation Event</p>
-            <Toggle
-              icons={{
-                unchecked: null,
-              }}
-              className={'ml-auto'}
-              onChange={(e) => setIsVisitation(!!e.target.checked)}
-            />
-          </div>
-          {/* REMIND COPARENTS */}
-          {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
-            <div className="share-with-container">
-              <Accordion expanded={showCoparentsToRemind} id={'checkboxes'}>
-                <AccordionSummary>
-                  <div className="flex">
-                    <p>Remind Co-parent(s)</p>
-                    <Toggle
-                      icons={{
-                        checked: <span className="material-icons-round">person</span>,
-                        unchecked: null,
-                      }}
-                      className={'ml-auto reminder-toggle'}
-                      onChange={(e) => setShowCoparentsToRemind(!showCoparentsToRemind)}
-                    />
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {currentUser?.accountType === 'parent' && (
-                    <CheckboxGroup
-                      elClass={`${theme} `}
-                      dataPhone={currentUser?.coparents?.map((x) => x.phone)}
-                      checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
-                      onCheck={handleRemindOthersSelection}
-                    />
-                  )}
-                  {currentUser?.accountType === 'child' && (
-                    <CheckboxGroup
-                      elClass={`${theme} `}
-                      dataPhone={currentUser?.parents?.map((x) => x.phone)}
-                      checkboxLabels={currentUser?.parents?.map((x) => x.name)}
-                      onCheck={handleRemindOthersSelection}
-                    />
-                  )}
-                </AccordionDetails>
-              </Accordion>
-            </div>
-          )}
-
-          {/* INCLUDING WHICH CHILDREN */}
-          {currentUser?.accountType === 'parent' && (
-            <Accordion expanded={includeChildren} id={'checkboxes'}>
-              <AccordionSummary>
-                <div className="flex children-toggle">
-                  <p>Include Children</p>
-                  <Toggle
-                    icons={{
-                      checked: <span className="material-icons-round">face</span>,
-                      unchecked: null,
-                    }}
-                    className={'ml-auto'}
-                    onChange={(e) => setIncludeChildren(!includeChildren)}
-                  />
-                </div>
-              </AccordionSummary>
-              <AccordionDetails>
-                <div id="include-children-checkbox-container">
-                  <CheckboxGroup
-                    containerClass={'include-children-checkbox-container'}
-                    checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
-                    onCheck={handleChildSelection}
-                  />
-                </div>
-              </AccordionDetails>
-            </Accordion>
-          )}
+        <div id="view-switcher" className="flex">
+          <p className={view === 'details' ? 'pill active' : 'pill'} onClick={() => setView('details')}>
+            Details
+          </p>
+          <p className={view === 'edit' ? 'pill active' : 'pill'} onClick={() => setView('edit')}>
+            Edit
+          </p>
         </div>
 
-        {/* URL/WEBSITE */}
-        <InputWrapper
-          defaultValue={eventWebsiteUrl}
-          labelText={'URL/Website'}
-          required={false}
-          inputType={'input'}
-          inputClasses="mt-15"
-          onChange={(e) => setEventWebsiteUrl(e.target.value)}></InputWrapper>
+        {view === 'details' && (
+          <div id="details">
+            <div className="flex">
+              <b>Title:</b>
+              <p>{uppercaseFirstLetterOfAllWords(event?.title)}</p>
+            </div>
+            {!event?.isDateRange && Manager.isEmpty(event?.endDate.length) && (
+              <div className="flex">
+                <b>Date:</b>
+                <p>{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</p>
+              </div>
+            )}
+            {event?.isDateRange && !Manager.isEmpty(event?.endDate) && (
+              <>
+                <b>Dates</b>
+                <p>
+                  {moment(event?.startDate).format(DateFormats.readableMonthAndDay)} to
+                  {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
+                </p>
+              </>
+            )}
+            {!Manager.isEmpty(event?.startTime) && !Manager.isEmpty(event?.endTime) && (
+              <div className="flex">
+                <b>Time:</b>
+                <p>
+                  {event?.startTime} to {event?.endTime}
+                </p>
+              </div>
+            )}
+            {!Manager.isEmpty(event?.startTime) && Manager.isEmpty(event?.endTime) && (
+              <div className="flex">
+                <b>Time:</b>
+                <p>{event?.startTime}</p>
+              </div>
+            )}
+            {!Manager.isEmpty(event?.children) && (
+              <div id="children">
+                <b>Children</b>
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                  }}></p>
+              </div>
+            )}
+            {!Manager.isEmpty(event?.websiteUrl) && (
+              <div className="flex">
+                <b>Website:</b>
+                <a href={event?.websiteUrl} target="_blank">
+                  {event?.websiteUrl}
+                </a>
+              </div>
+            )}
+            {!Manager.isEmpty(event?.notes) && (
+              <>
+                <b>Notes</b>
+                <p>{event?.notes}</p>
+              </>
+            )}
+            {!Manager.isEmpty(event?.directionsLink) && (
+              <>
+                <b>Location</b>
+                <p className="mb-10">{event?.location}</p>
+              </>
+            )}
+            {!Manager.isEmpty(event?.location) && (
+              <a className="nav-detail" href={event?.directionsLink} target="_blank">
+                <BiSolidNavigation /> Nav
+              </a>
+            )}
+            {event?.repeatInterval.length > 0 && (
+              <div className="flex">
+                <b>Repeat Interval:</b>
+                <p>{uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</p>
+              </div>
+            )}
+          </div>
+        )}
 
-        {/* LOCATION/ADDRESS */}
-        <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
-          <Autocomplete
-            placeholder={'Location'}
-            defaultValue={event?.location}
-            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-            options={{
-              types: ['geocode', 'establishment'],
-              componentRestrictions: { country: 'usa' },
-            }}
-            onPlaceSelected={(place) => {
-              setEventLocation(place.formatted_address)
-            }}
-          />
-        </InputWrapper>
+        {view === 'edit' && (
+          <>
+            <div className="content">
+              {/* SINGLE DAY / MULTIPLE DAYS */}
+              <div id="duration-options" className="action-pills calendar">
+                <div className={`duration-option  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
+                  <p>Single Day</p>
+                </div>
+                <div
+                  className={`duration-option  ${eventLength === 'multiple' ? 'active' : ''}`}
+                  onClick={() => setEventLength(EventLengths.multiple)}>
+                  <p>Multiple Days</p>
+                </div>
+              </div>
 
-        {/* NOTES */}
-        <InputWrapper
-          defaultValue={event?.notes}
-          labelText={'Notes'}
-          required={false}
-          inputType={'textarea'}
-          onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
+              {/* TITLE */}
+              <div className="title-suggestion-wrapper">
+                <InputWrapper
+                  inputType={'input'}
+                  labelText={'Title'}
+                  defaultValue={eventTitle}
+                  required={true}
+                  onChange={async (e) => {
+                    const inputValue = e.target.value
+                    if (inputValue.length > 1) {
+                      setEventTitle(inputValue)
+                    }
+                  }}
+                />
+              </div>
+              {/* DATE */}
+              <div className="flex" id={'date-input-container'}>
+                {eventLength === EventLengths.single && (
+                  <>
+                    <div className="w-100">
+                      <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
+                        <MobileDatePicker
+                          onOpen={addThemeToDatePickers}
+                          value={moment(event?.startDate)}
+                          className={`${theme} m-0 w-100 event-from-date mui-input`}
+                          onAccept={(e) => {
+                            setEventFromDate(e)
+                          }}
+                        />
+                      </InputWrapper>
+                    </div>
+                  </>
+                )}
+
+                {/* DATE RANGE */}
+                {eventLength === EventLengths.multiple && (
+                  <div className="w-100">
+                    <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
+                      <MobileDateRangePicker
+                        className={'w-100'}
+                        onOpen={addThemeToDatePickers}
+                        onOpen={() => Manager.hideKeyboard('date-range-input')}
+                        onAccept={(dateArray) => {
+                          if (Manager.isValid(dateArray, true)) {
+                            setEventFromDate(moment(dateArray[0]).format('MM/DD/YYYY'))
+                            setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
+                            setEventIsDateRange(true)
+                          }
+                        }}
+                        slots={{ field: SingleInputDateRangeField }}
+                        name="allowedRange"
+                      />
+                    </InputWrapper>
+                  </div>
+                )}
+              </div>
+
+              {/* EVENT START/END TIME */}
+              {!isAllDay && (
+                <div className="flex gap">
+                  {/* START TIME */}
+                  <div>
+                    <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
+                      <MobileTimePicker
+                        onOpen={addThemeToDatePickers}
+                        format={'h:mma'}
+                        value={moment(eventStartTime, 'hh:mma')}
+                        minutesStep={5}
+                        className={`${theme} m-0`}
+                        onAccept={(e) => setEventStartTime(e)}
+                      />
+                    </InputWrapper>
+                  </div>
+
+                  {/* END TIME */}
+                  <div>
+                    <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
+                      <MobileTimePicker
+                        onOpen={addThemeToDatePickers}
+                        format={'h:mma'}
+                        value={moment(defaultEndTime, 'hh:mma')}
+                        minutesStep={5}
+                        className={`${theme} m-0`}
+                        onAccept={(e) => setEventEndTime(e)}
+                      />
+                    </InputWrapper>
+                  </div>
+                </div>
+              )}
+              {/* Share with */}
+              {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
+                <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
+              )}
+              {/* ALL DAY / HAS END DATE */}
+              <div className="flex all-day-toggle">
+                <p>All Day</p>
+                <Toggle
+                  icons={{
+                    unchecked: null,
+                  }}
+                  className={'ml-auto'}
+                  onChange={(e) => setIsAllDay(!!e.target.checked)}
+                />
+              </div>
+
+              {/* REMINDER */}
+              {!isAllDay && (
+                <>
+                  <Accordion expanded={showReminders} id={'checkboxes'}>
+                    <AccordionSummary>
+                      <div className="flex reminder-times-toggle">
+                        <p>Remind Me</p>
+                        <Toggle
+                          icons={{
+                            checked: <span className="material-icons-round">notifications</span>,
+                            unchecked: null,
+                          }}
+                          className={'ml-auto reminder-toggle'}
+                          onChange={(e) => setShowReminders(!showReminders)}
+                        />
+                      </div>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <CheckboxGroup
+                        elClass={`${theme} `}
+                        containerClass={'reminder-times'}
+                        defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
+                        skipNameFormatting={true}
+                        dataPhone={
+                          currentUser?.accountType === 'parent'
+                            ? currentUser?.coparents?.map((x) => x.phone)
+                            : currentUser?.parents?.map((x) => x.phone)
+                        }
+                        checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                        onCheck={handleReminderSelection}
+                      />
+                    </AccordionDetails>
+                  </Accordion>
+                </>
+              )}
+
+              {/* IS VISITATION? */}
+              <div className="flex visitation-toggle">
+                <p>Visitation Event</p>
+                <Toggle
+                  icons={{
+                    unchecked: null,
+                  }}
+                  className={'ml-auto'}
+                  onChange={(e) => setIsVisitation(!!e.target.checked)}
+                />
+              </div>
+              {/* REMIND COPARENTS */}
+              {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
+                <div className="share-with-container">
+                  <Accordion expanded={showCoparentsToRemind} id={'checkboxes'}>
+                    <AccordionSummary>
+                      <div className="flex">
+                        <p>Remind Co-parent(s)</p>
+                        <Toggle
+                          icons={{
+                            checked: <span className="material-icons-round">person</span>,
+                            unchecked: null,
+                          }}
+                          className={'ml-auto reminder-toggle'}
+                          onChange={(e) => setShowCoparentsToRemind(!showCoparentsToRemind)}
+                        />
+                      </div>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      {currentUser?.accountType === 'parent' && (
+                        <CheckboxGroup
+                          elClass={`${theme} `}
+                          dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+                          checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
+                          onCheck={handleRemindOthersSelection}
+                        />
+                      )}
+                      {currentUser?.accountType === 'child' && (
+                        <CheckboxGroup
+                          elClass={`${theme} `}
+                          dataPhone={currentUser?.parents?.map((x) => x.phone)}
+                          checkboxLabels={currentUser?.parents?.map((x) => x.name)}
+                          onCheck={handleRemindOthersSelection}
+                        />
+                      )}
+                    </AccordionDetails>
+                  </Accordion>
+                </div>
+              )}
+
+              {/* INCLUDING WHICH CHILDREN */}
+              {currentUser?.accountType === 'parent' && (
+                <Accordion expanded={includeChildren} id={'checkboxes'}>
+                  <AccordionSummary>
+                    <div className="flex children-toggle">
+                      <p>Include Children</p>
+                      <Toggle
+                        icons={{
+                          checked: <span className="material-icons-round">face</span>,
+                          unchecked: null,
+                        }}
+                        className={'ml-auto'}
+                        onChange={(e) => setIncludeChildren(!includeChildren)}
+                      />
+                    </div>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <div id="include-children-checkbox-container">
+                      <CheckboxGroup
+                        containerClass={'include-children-checkbox-container'}
+                        checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
+                        onCheck={handleChildSelection}
+                      />
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+              )}
+            </div>
+
+            {/* URL/WEBSITE */}
+            <InputWrapper
+              defaultValue={event?.websiteUrl}
+              labelText={'URL/Website'}
+              required={false}
+              inputType={'input'}
+              onChange={(e) => setEventWebsiteUrl(e.target.value)}
+            />
+
+            {/* LOCATION/ADDRESS */}
+            <InputWrapper defaultValue={event?.location} labelText={'Location'} required={false} inputType={'location'}>
+              <Autocomplete
+                placeholder={'Location'}
+                defaultValue={event?.location}
+                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                options={{
+                  types: ['geocode', 'establishment'],
+                  componentRestrictions: { country: 'usa' },
+                }}
+                onPlaceSelected={(place) => {
+                  setEventLocation(place.formatted_address)
+                }}
+              />
+            </InputWrapper>
+
+            {/* NOTES */}
+            <InputWrapper
+              defaultValue={event?.notes}
+              labelText={'Notes'}
+              required={false}
+              inputType={'textarea'}
+              onChange={(e) => setEventNotes(e.target.value)}
+            />
+          </>
+        )}
       </div>
     </BottomCard>
   )

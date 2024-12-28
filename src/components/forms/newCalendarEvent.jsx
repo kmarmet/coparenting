@@ -23,8 +23,6 @@ import ModelNames from '../../models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import BottomCard from '../shared/bottomCard'
-import { IoTodayOutline } from 'react-icons/io5'
-import { HiOutlineCalendarDays } from 'react-icons/hi2'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -138,10 +136,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     if (isVisitation) {
       newEvent.title = `${formatNameFirstNameOnly(currentUser?.name)}'s Visitation`
     }
-    newEvent.startDate = DateManager.dateIsValid(eventStartDate) ? moment(eventStartDate).format(DateFormats.dateForDb) : ''
-    newEvent.endDate = DateManager.dateIsValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
-    newEvent.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
-    newEvent.endTime = DateManager.dateIsValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
+    newEvent.startDate = !Manager.isEmpty(eventStartDate) ? moment(eventStartDate).format(DateFormats.dateForDb) : ''
+    newEvent.endDate = !Manager.isEmpty(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
+    newEvent.startTime = !Manager.isEmpty(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
+    newEvent.endTime = !Manager.isEmpty(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
     // Not Required
     newEvent.id = Manager.getUid()
     newEvent.directionsLink = !_.isEmpty(eventLocation) ? Manager.getDirectionsLink(eventLocation) : ''
@@ -159,30 +157,30 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
     if (Manager.isValid(newEvent)) {
       // Repeating Events Validation
-      if (repeatingEndDate.length === 0 && repeatInterval.length > 0) {
+      if (Manager.isEmpty(repeatingEndDate) && !Manager.isEmpty(repeatInterval)) {
         AlertManager.throwError('If you have chosen to repeat this event, please select an end month')
         return false
       }
 
-      if (eventTitle.length === 0) {
+      if (Manager.isEmpty(eventTitle)) {
         AlertManager.throwError('Please enter an event title')
         return false
       }
 
-      if (!DateManager.dateIsValid(eventStartDate)) {
+      if (Manager.isEmpty(eventStartDate)) {
         AlertManager.throwError('Please select an event date')
         return false
       }
       const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
       if (validAccounts > 0) {
-        if (eventShareWith.length === 0) {
+        if (Manager.isEmpty(eventShareWith)) {
           AlertManager.throwError('Please choose who you would like to share this event with')
           return false
         }
       }
 
-      if (eventReminderTimes.length > 0 && eventStartTime.length === 0) {
+      if (!Manager.isEmpty(eventReminderTimes) && Manager.isEmpty(eventStartTime)) {
         AlertManager.throwError('If you set reminder times, please also uncheck All Day and add a start time')
         return false
       }
@@ -351,7 +349,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     }
 
     // CLONED DATES
-    if (clonedDates.length > 0) {
+    if (!Manager.isEmpty(clonedDates)) {
       datesToIterate = clonedDates
       // Add initial start date
       datesToIterate.push(new Date(eventStartDate))
@@ -362,8 +360,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       // Required
       dateObject.title = eventTitle
       dateObject.id = Manager.getUid()
-      dateObject.startDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
-      dateObject.endDate = DateManager.dateIsValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
+      dateObject.startDate = !Manager.isEmpty(date) ? moment(date).format(DateFormats.dateForDb) : ''
+      dateObject.endDate = !Manager.isEmpty(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
       // Not Required
       dateObject.directionsLink = eventLocation
       dateObject.location = eventLocation
@@ -372,17 +370,18 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       dateObject.createdBy = currentUser?.name
       dateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat()
       dateObject.notes = eventNotes
+      dateObject.isRepeating = !Manager.isEmpty(repeatingEndDate)
+      dateObject.isDateRange = eventIsDateRange
       dateObject.websiteUrl = eventWebsite
-      dateObject.startTime = DateManager.dateIsValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
-      dateObject.endTime = DateManager.dateIsValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
+      dateObject.startTime = !Manager.isEmpty(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
+      dateObject.endTime = !Manager.isEmpty(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
       dateObject.reminderTimes = eventReminderTimes
-      dateObject.endDate = ''
-      dateObject.repeatInterval = ''
+      dateObject.repeatInterval = repeatInterval
       dateObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
       datesToPush.push(dateObject)
     })
 
-    if (clonedDates.length > 0) {
+    if (!Manager.isEmpty(clonedDates)) {
       // Reset Multidate Picker
       const multidatePicker = document.querySelector('.multidate-picker')
       if (multidatePicker) {
@@ -436,11 +435,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {/* Event Length */}
           <div id="duration-options" className="action-pills calendar">
             <div className={`duration-option  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
-              <IoTodayOutline className={'single-day-icon'} />
               <p>Single Day</p>
             </div>
             <div className={`duration-option  ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
-              <HiOutlineCalendarDays className={'multiple-day-icon'} />
               <p>Multiple Days</p>
             </div>
           </div>
@@ -449,11 +446,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           <div className="title-suggestion-wrapper">
             {/* TITLE */}
             <InputWrapper
-              refreshKey={refreshKey}
               inputClasses="event-title-input"
               inputType={'input'}
               labelText={'Title'}
               defaultValue={eventTitle}
+              refreshKey={refreshKey}
               required={true}
               inputValue={eventTitle}
               onChange={async (e) => {
@@ -494,10 +491,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 <div className="w-100">
                   <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
                     <MobileDatePicker
+                      key={refreshKey}
                       onOpen={addThemeToDatePickers}
                       value={moment(selectedNewEventDay)}
                       className={`${theme} m-0 w-100 event-from-date mui-input`}
                       onAccept={(e) => {
+                        console.log(e)
                         setEventStartDate(e)
                       }}
                     />
@@ -511,18 +510,21 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {eventLength === EventLengths.multiple && (
             <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
               <MobileDateRangePicker
-                onOpen={addThemeToDatePickers}
                 className={'w-100'}
-                onOpen={() => Manager.hideKeyboard('date-range-input')}
+                onOpen={() => {
+                  Manager.hideKeyboard('date-range-input')
+                  addThemeToDatePickers()
+                }}
                 onAccept={(dateArray) => {
                   if (Manager.isValid(dateArray, true)) {
-                    setEventStartDate(moment(dateArray[0]).format('MM/DD/YYYY'))
-                    setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
+                    setEventStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
+                    setEventEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
                     setEventIsDateRange(true)
                   }
                 }}
                 slots={{ field: SingleInputDateRangeField }}
                 name="allowedRange"
+                key={refreshKey}
               />
             </InputWrapper>
           )}
@@ -532,7 +534,13 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             <div className={'flex gap event-times-wrapper'}>
               <div>
                 <InputWrapper wrapperClasses="higher-label" labelText={'Start Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker onOpen={addThemeToDatePickers} minutesStep={5} className={`${theme}`} onAccept={(e) => setEventStartTime(e)} />
+                  <MobileTimePicker
+                    key={refreshKey}
+                    onOpen={addThemeToDatePickers}
+                    minutesStep={5}
+                    className={`${theme}`}
+                    onAccept={(e) => setEventStartTime(e)}
+                  />
                 </InputWrapper>
               </div>
               <span>&nbsp;to&nbsp;</span>
@@ -541,6 +549,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   <MobileTimePicker
                     onOpen={addThemeToDatePickers}
                     format={'h:mma'}
+                    key={refreshKey}
                     defaultValue={null}
                     minutesStep={5}
                     className={`${theme} `}
@@ -558,19 +567,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {Manager.isValid(currentUser?.parents, true) && (
             <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
-          {/* ALL DAY / HAS END DATE */}
-          <div className="share-with-container">
-            <div className="flex">
-              <p>All Day</p>
-              <Toggle
-                icons={{
-                  unchecked: null,
-                }}
-                className={'ml-auto reminder-toggle'}
-                onChange={(e) => setIsAllDay(!isAllDay)}
-              />
-            </div>
-          </div>
 
           {/* REMINDER */}
           {!isAllDay && (
@@ -658,7 +654,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           )}
 
           {/* INCLUDING WHICH CHILDREN */}
-          {Manager.isValid(currentUser?.children !== undefined, true) && (
+          {Manager.isValid(currentUser?.children, true) && (
             <div className="share-with-container">
               <Accordion id={'checkboxes'} expanded={includeChildren}>
                 <AccordionSummary>
@@ -710,7 +706,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       onCheck={handleRepeatingSelection}
                       checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
                     />
-                    {repeatInterval.length > 0 && (
+                    {!Manager.isEmpty(repeatInterval) && (
                       <InputWrapper inputType={'date'}>
                         <Label text={'Month to End Repeating Events'} required={true} classes="mt-15 mb-0" />
                         <DatetimePicker
@@ -749,6 +745,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       className={`${theme} multidate-picker`}
                       placement="auto"
                       placeholder={null}
+                      key={refreshKey}
                       label=""
                       onOpen={() => Manager.hideKeyboard()}
                       onChange={(e) => setClonedDates(e)}
@@ -762,9 +759,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {/* URL/WEBSITE */}
           <InputWrapper
             wrapperClasses="mt-15"
-            refreshKey={refreshKey}
             labelText={'Website'}
             required={false}
+            refreshKey={refreshKey}
             inputType={'input'}
             inputValueType="url"
             onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
@@ -773,6 +770,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           <InputWrapper refreshKey={refreshKey} labelText={'Location'} required={false} inputType={'location'}>
             <Autocomplete
               placeholder={'Location'}
+              key={refreshKey}
               apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
               options={{
                 types: ['geocode', 'establishment'],
@@ -786,8 +784,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
           {/* NOTES */}
           <InputWrapper
-            refreshKey={refreshKey}
             labelText={'Notes'}
+            refreshKey={refreshKey}
             required={false}
             inputType={'textarea'}
             onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>

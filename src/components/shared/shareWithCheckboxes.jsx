@@ -19,7 +19,6 @@ import {
   wordCount,
 } from '../../globalFunctions'
 import Label from './label'
-import { FaUserShield } from 'react-icons/fa'
 import DB from '@db'
 import { FaCheck } from 'react-icons/fa6'
 
@@ -69,7 +68,6 @@ export default function ShareWithCheckboxes({ onCheck, containerClass = '', chec
       {Manager.isValid(shareWith, true) && (
         <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass} mt-15 mb-15`}>
           <div className="flex">
-            <FaUserShield className={'fs-20 mr-5'} />
             <Label text={`${labelText.length === 0 ? 'Share with' : labelText}`} required={required} />
           </div>
           <div className="flex" id="checkboxes">

@@ -88,21 +88,21 @@ export var getPositionOfWordInText = function(word, text) {
 
 export var uppercaseFirstLetterOfAllWords = function(input) {
   var words;
-  words = input.toString();
+  words = input != null ? input.toString() : void 0;
   if (words && words !== void 0) {
-    if (words.indexOf('-') > -1) {
+    if ((words != null ? words.indexOf('-') : void 0) > -1) {
       words = input.replace(/-/g, ' ').split(' ');
     } else {
-      words = words.split(' ');
+      words = words != null ? words.split(' ') : void 0;
     }
-    words = words.filter(function(x) {
+    words = words != null ? words.filter(function(x) {
       return x.length > 0;
-    });
-    words = words.map(function(word) {
+    }) : void 0;
+    words = words != null ? words.map(function(word) {
       return word[0].toUpperCase() + word.substr(1);
-    });
-    if (words.length > 0) {
-      words = words.join(' ');
+    }) : void 0;
+    if ((words != null ? words.length : void 0) > 0) {
+      words = words != null ? words.join(' ') : void 0;
     }
   }
   return words;

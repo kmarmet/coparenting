@@ -10,7 +10,6 @@ import BottomCard from 'components/shared/bottomCard'
 import DateFormats from '../../constants/dateFormats'
 import { LuCalendarSearch } from 'react-icons/lu'
 import SecurityManager from '../../managers/securityManager'
-import { FaChildren } from 'react-icons/fa6'
 import { PiCalendarPlusDuotone, PiCalendarXDuotone } from 'react-icons/pi'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 import AlertManager from '../../managers/alertManager'
@@ -539,18 +538,6 @@ export default function EventCalendar() {
                                 </span>
                               )}
                             </div>
-                            {/* CHILDREN */}
-                            {event?.children && event?.children.length > 0 && (
-                              <div id="children">
-                                <div className="children flex">
-                                  <FaChildren />
-                                  <p
-                                    dangerouslySetInnerHTML={{
-                                      __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                                    }}></p>
-                                </div>
-                              </div>
-                            )}
                           </div>
                         </div>
                       </div>

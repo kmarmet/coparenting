@@ -224,13 +224,12 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   }
 
   const handlePayerSelection = async (e) => {
+    const checkboxContainer = e.target.closest('#checkbox-container')
     Manager.handleCheckboxSelection(
       e,
       async (e) => {
-        const activeCoparentEl = document.querySelector('#checkbox-container.active')
-        const coparentPhone = activeCoparentEl.getAttribute('data-phone')
+        const coparentPhone = checkboxContainer.getAttribute('data-phone')
         const coparent = currentUser?.coparents?.filter((x) => x.phone === coparentPhone)[0]
-        console.log(coparent)
         const coparentName = coparent.name
         setPayer({
           phone: coparentPhone,
@@ -423,7 +422,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
               dataPhone={currentUser?.coparents?.map((x) => x.phone)}
               checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
               onCheck={(e) => {
-                const checkbox = e.target.closest('#checkbox-container')
+                const checkbox = e.target
                 document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
                 checkbox.classList.add('active')
                 handlePayerSelection(e).then((r) => r)

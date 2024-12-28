@@ -21,6 +21,7 @@ export default function CheckboxGroup({
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
   const [validAccounts, setValidAccounts] = useState(0)
+
   const getValidAccounts = async () => {
     const accounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
     setValidAccounts(accounts)
@@ -31,7 +32,7 @@ export default function CheckboxGroup({
 
   return (
     <>
-      {validAccounts.length > 0 && (
+      {validAccounts > 0 && (
         <div id="checkbox-group" className={`${theme} ${elClass}`}>
           {parentLabel.length > 0 && (
             <div id="parent-label-wrapper">

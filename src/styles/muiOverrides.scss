@@ -398,12 +398,12 @@
       }
       &.Mui-selected {
         background-color: $lightIconBgBlue;
-        height: 40px !important;
-        width: 50px !important;
+        height: 42px !important;
+        width: 45px !important;
         margin-top: 3px !important;
-        border: 1px solid $mainBlue;
         color: $mainBlue !important;
         font-weight: $fwMediumBold !important;
+        border-radius: 100% !important;
         .dot-wrapper {
           top: -3px;
         }
@@ -428,7 +428,7 @@
     width: 100vw;
     display: flex;
     align-items: center;
-    gap: 10px !important;
+    gap: 15px !important;
     position: relative;
     z-index: 100000;
     padding: 0 0 10px 0;
@@ -441,14 +441,12 @@
       text-transform: uppercase;
       margin: 0;
       font-size: 12px !important;
-      border: 1px solid $mainBlue !important;
-      border-radius: 5px !important;
-      padding: 5px 8px;
+      border-bottom: 1px solid $mainBlue !important;
+      padding: 3px 8px !important;
       line-height: 1 !important;
-      width: 83px !important;
       text-align: center;
       position: relative;
-      background: $lightBlue;
+      border-radius: 0 !important;
 
       &:before {
         content: '' !important;
@@ -547,9 +545,8 @@
         color: $mainBlue !important;
         background-color: transparent;
         &:nth-child(2) {
-          border: 1px solid $green !important;
-          background-color: $green;
-          color: white !important;
+          border-bottom: 1px solid $green !important;
+          color: $green !important;
         }
       }
     }

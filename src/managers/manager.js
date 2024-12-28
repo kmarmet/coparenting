@@ -4,9 +4,11 @@ import '../prototypes'
 import { hasClass, uppercaseFirstLetterOfAllWords } from '../globalFunctions'
 import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
-import ObjectManager from './objectManager'
 
 const Manager = {
+  isEmpty: (variable) => {
+    return _.isEmpty(variable)
+  },
   invalidInputs: (requiredInputs) => {
     const invalidInputs = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length == 0)
     if (invalidInputs.length > 0) {
@@ -185,14 +187,14 @@ const Manager = {
         return false
       }
 
-      if (ObjectManager.isEmpty(variable)) {
+      if (Manager.isEmpty(variable)) {
         return false
       }
     } else {
       if (!variable) {
         return false
       } else {
-        if ((checkArrayLength && variable.length <= 0) || (checkArrayLength && variable.length === 0)) {
+        if ((checkArrayLength && variable.length <= 0) || (checkArrayLength && Manager.isEmpty(variable))) {
           return false
         }
       }
