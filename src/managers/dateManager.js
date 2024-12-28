@@ -81,7 +81,7 @@ const DateManager = {
   getWeeksUntilEndOfYear: () => {
     const endOfYear = moment([moment().format('yyyy')])
       .endOf('year')
-      .format('MM/DD/yyyy')
+      .format(DateFormats.monthAndYear)
 
     const weeksLeftMs = moment(endOfYear, 'MM-DD-YYYY', 'weeks').diff(moment())
     const mil = weeksLeftMs
@@ -89,7 +89,7 @@ const DateManager = {
     return weeks
   },
   msToDate: (ms) => {
-    return moment(ms, 'x').format('MM/DD/yyyy')
+    return moment(ms, 'x').format(DateFormats.monthAndYear)
   },
   getDaysInRange: (startDate, endDate) => {
     let a = moment(startDate)
@@ -103,7 +103,7 @@ const DateManager = {
   getDaysUntilEndOfYear: () => {
     const endOfYear = moment([moment().format('yyyy')])
       .endOf('year')
-      .format('MM/DD/yyyy')
+      .format(DateFormats.monthAndYear)
     const daysLeftMs = moment(endOfYear, 'MM-DD-YYYY', 'days').diff(moment())
     let duration = moment.duration(daysLeftMs, 'milliseconds')
     let daysLeft = duration.asDays()
@@ -118,67 +118,59 @@ const DateManager = {
       if (hasReachedEndDate) {
         break
       }
-      dailyEvents.push(moment(nextDay).format('MM/DD/yyyy'))
+      dailyEvents.push(moment(nextDay).format(DateFormats.monthAndYear))
     }
     return dailyEvents
   },
   getDailyDates: (startDate, endDate) => {
-    const daysLeft = DateManager.getDaysUntilEndOfYear()
+    const durationInDays = DateManager.getDuration('days', startDate, endDate)
     let dailyEvents = []
-    for (let i = 1; i <= daysLeft; i++) {
-      let newWeek = moment(startDate).add(i * 1, 'days')
-      let month = moment(newWeek).format('MM')
-      const hasReachedEndDate = moment(month).isSameOrAfter(moment(endDate).format('MM'))
-      if (hasReachedEndDate) {
-        break
+
+    for (let i = 0; i <= durationInDays; i++) {
+      let newDay = moment(startDate).add(i, 'days')
+      const hasReachedEndDate = moment(newDay).isSameOrAfter(endDate)
+      if (!hasReachedEndDate) {
+        dailyEvents.push(newDay.format(DateFormats.monthAndYear))
       }
-      dailyEvents.push(moment(newWeek).format('MM/DD/yyyy'))
     }
     return dailyEvents
   },
   getMonthlyDates: (startDate, endDate) => {
-    const monthsLeft = DateManager.getMonthsUntilEndOfYear()
+    const durationInDays = DateManager.getDuration('days', startDate, endDate)
     let monthlyEvents = []
-    for (let i = 1; i <= monthsLeft; i++) {
-      let newMonth = moment(startDate).add(i * 1, 'months')
-      let month = moment(newMonth).format('MM')
-      const hasReachedEndDate = moment(month).isSameOrAfter(moment(endDate).format('MM'))
-      if (hasReachedEndDate) {
-        break
+    for (let i = 1; i <= durationInDays; i++) {
+      let newMonth = moment(startDate).add(i, 'month')
+      const hasReachedEndDate = moment(newMonth).isSameOrAfter(moment(endDate))
+      if (!hasReachedEndDate) {
+        monthlyEvents.push(moment(newMonth).format('MM/DD/yyyy'))
       }
-      monthlyEvents.push(moment(newMonth).format('MM/DD/yyyy'))
     }
     return monthlyEvents
   },
   getBiweeklyDates: (startDate, endDate) => {
     let biweeklyEvents = []
-    const weeksLeft = DateManager.getWeeksUntilEndOfYear()
-    for (let i = 1; i <= weeksLeft; i++) {
-      if (i % 2 === 0) {
-        let newWeek = moment(startDate).add(i, 'weeks')
-        let month = moment(newWeek).format('MM')
-        const hasReachedEndDate = moment(month).isSameOrAfter(moment(endDate).format('MM'))
-        if (hasReachedEndDate) {
-          break
-        }
-        biweeklyEvents.push(newWeek.format('MM/DD/yyyy'))
+    const durationInDays = DateManager.getDuration('days', startDate, endDate)
+    const weeksLeft = Math.floor(durationInDays / 7)
+    for (let i = 0; i <= weeksLeft; i++) {
+      let newWeek = moment(startDate).add(i, 'weeks')
+      const hasReachedEndDate = moment(newWeek).isAfter(endDate)
+      if (i % 2 === 0 && !hasReachedEndDate) {
+        biweeklyEvents.push(newWeek.format(DateFormats.monthAndYear))
       }
     }
+    console.log(biweeklyEvents)
     return biweeklyEvents
   },
-  getWeeklyDates: (startDate, endMonth) => {
-    const daysLeft = DateManager.getDaysUntilEndOfYear(endMonth)
+  getWeeklyDates: (startDate, endDate) => {
+    const durationInDays = DateManager.getDuration('days', startDate, endDate)
     let weeklyEvents = []
-    const weeksLeft = daysLeft / 7
 
-    for (let i = 1; i <= weeksLeft; i++) {
+    for (let i = 0; i <= durationInDays; i++) {
       let newWeek = moment(startDate).add(i, 'week')
-      const endDate = `${moment(startDate).format('MM/DD')}/${moment(endMonth)}${moment(startDate).format('yyyy')}`
-      const hasReachedEndDate = moment(newWeek).isSameOrAfter(moment(endDate))
-      if (hasReachedEndDate) {
-        break
+      const hasReachedEndDate = moment(newWeek).isAfter(endDate)
+      if (!hasReachedEndDate) {
+        weeklyEvents.push(newWeek.format(DateFormats.monthAndYear))
       }
-      weeklyEvents.push(moment(newWeek).format('MM/DD/yyyy'))
     }
     return weeklyEvents
   },
@@ -281,7 +273,7 @@ const DateManager = {
       }
       newEvent.id = Manager.getUid()
       newEvent.holidayName = holiday.name
-      newEvent.startDate = moment(holiday.date).format('MM/DD/yyyy')
+      newEvent.startDate = moment(holiday.date).format(DateFormats.monthAndYear)
       newEvent.isHoliday = true
       newEvent.visibleToAll = true
       newEvent = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)

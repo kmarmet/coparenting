@@ -75,7 +75,7 @@ export default function EventCalendar() {
     // Loop through all calendar UI days
     document.querySelectorAll('.MuiPickersDay-root').forEach((day) => {
       const dayAsMs = day.getAttribute('data-timestamp')
-      let formattedDay = DateManager.msToDate(dayAsMs)
+      let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DateFormats.dateForDb)
       const dayHasEvent = events.filter((x) => x?.startDate === formattedDay || x?.endDate === formattedDay).length > 0
       const paycheckStrings = ['payday', 'paycheck', 'pay', 'salary', 'paid']
 
@@ -264,7 +264,6 @@ export default function EventCalendar() {
       onActivityChange().then((r) => r)
       // setState({ ...state, isLoading: false })
       setLoadingDisabled(true)
-      getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
     }
   }, [currentUser])
 

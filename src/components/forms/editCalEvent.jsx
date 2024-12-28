@@ -47,6 +47,7 @@ import ObjectManager from '../../managers/objectManager'
 import DatasetManager from '../../managers/datasetManager'
 import AlertManager from '../../managers/alertManager'
 import DB_UserScoped from '@userScoped'
+import ActivityCategory from '../../models/activityCategory'
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
@@ -213,6 +214,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
         if (eventIsDateRange) {
           const dates = DateManager.getDateRangeDates(eventToEdit.startDate, eventEndDate)
+          const evts = await DB.getTable(DB.tables.calendarEvents)
+          const filtered = evts.filter((x) => x.title === event.title && x.isDateRange === true)
           await CalendarManager.addMultipleCalEvents(currentUser, dates)
         }
 
@@ -234,11 +237,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
   const afterUpdateCallback = async () => {
     // Share with Notifications
-    for (const phone of eventShareWith) {
-      const coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
-      const subId = await NotificationManager.getUserSubId(coparent.phone, 'phone')
-      NotificationManager.sendNotification('Event Updated', `${eventTitle} has been updated`, subId)
-    }
+    NotificationManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventTitle} has been updated`, ActivityCategory.calendar)
 
     if (navigator.setAppBadge) {
       await navigator.setAppBadge(1)
@@ -323,7 +322,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setEventShareWith(event?.shareWith)
     setDefaultEndTime(DateManager.dateIsValid(event?.endTime) ? moment(event?.endTime, 'hh:mma') : null)
     setDefaultStartTime(DateManager.dateIsValid(event?.startTime) ? moment(event?.startTime, 'hh:mma') : null)
-
+    setView('details')
     const checkboxClasses = []
 
     // Reminder Toggle
@@ -380,7 +379,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
     if (eventCount === 1) {
       await DB.delete(DB.tables.calendarEvents, event?.id)
-      resetForm()
+      await resetForm()
     } else {
       let clonedEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
       if (Manager.isValid(clonedEvents, true)) {
@@ -388,15 +387,12 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         for (const event of clonedEvents) {
           await CalendarManager.deleteEvent(DB.tables.calendarEvents, event.id)
         }
-        resetForm()
+        await resetForm()
       }
     }
   }
 
-  const getEventCount = () => {
-    const eventCount = allEvents.filter((x) => x.title === eventTitle).length
-    return eventCount
-  }
+  const getEventCount = () => allEvents.filter((x) => x.title === eventTitle).length
 
   const setLocalConfirmMessage = () => {
     let message = 'Are you sure you want to delete this event?'
@@ -596,8 +592,11 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                     <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
                       <MobileDateRangePicker
                         className={'w-100'}
-                        onOpen={addThemeToDatePickers}
-                        onOpen={() => Manager.hideKeyboard('date-range-input')}
+                        onOpen={() => {
+                          Manager.hideKeyboard('date-range-input')
+                          addThemeToDatePickers()
+                        }}
+                        defaultValue={[moment(event?.startDate), moment(event?.endDate)]}
                         onAccept={(dateArray) => {
                           if (Manager.isValid(dateArray, true)) {
                             setEventFromDate(moment(dateArray[0]).format('MM/DD/YYYY'))
