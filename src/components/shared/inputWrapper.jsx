@@ -13,21 +13,9 @@ function InputWrapper({
   inputClasses = '',
   refreshKey,
   inputValueType = 'text',
-  inputValue = '',
+  placeholder = '',
 }) {
   const noInputTypes = ['location', 'textarea', 'date']
-
-  const getPlaceholder = () => {
-    let text = defaultValue
-    if (defaultValue.length === 0) {
-      text = labelText
-    }
-    if (required) {
-      text += '*'
-    }
-
-    return text
-  }
 
   useEffect(() => {
     const inputWrapper = document.getElementById('input-wrapper')
@@ -44,72 +32,40 @@ function InputWrapper({
   return (
     <div
       id="input-wrapper"
-      className={`${wrapperClasses} ${inputType} ${defaultValue.length > 0 || (noInputTypes.includes(inputType) && inputType !== 'location') ? 'mb-15' : ''} input-container`}>
+      //TODO fix spacing/margin
+      className={`${wrapperClasses} ${inputType}  input-container`}>
+      <Label text={`${labelText}`} required={required} />
       {!noInputTypes.includes(inputType) && (
         <>
-          {defaultValue.length > 0 && <Label text={labelText} />}
-          {defaultValue.length > 0 && (
-            <DebounceInput
-              key={refreshKey}
-              value={defaultValue}
-              element={inputType}
-              minLength={2}
-              className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
-              onChange={onChange}
-              debounceTimeout={800}
-              type={inputValueType}
-              onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
-            />
-          )}
-          {defaultValue.length === 0 && (
-            <DebounceInput
-              key={refreshKey}
-              element={inputType}
-              minLength={2}
-              className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
-              onChange={onChange}
-              debounceTimeout={800}
-              type={inputValueType}
-              placeholder={getPlaceholder()}
-              onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
-            />
-          )}
+          {/* LABEL */}
+          <DebounceInput
+            value={defaultValue}
+            element={inputType}
+            minLength={2}
+            placeholder={placeholder}
+            className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
+            onChange={onChange}
+            debounceTimeout={800}
+            key={refreshKey}
+            type={inputValueType}
+            onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
+          />
         </>
       )}
-      {noInputTypes.includes(inputType) && (
-        <div className={`w-100`}>
-          {inputType === 'date' && <Label classes={`date-label`} text={getPlaceholder()} />}
-          {inputType === 'location' && defaultValue.length > 0 && <Label classes={`date-label`} text={'Location'} />}
-          {children}
-        </div>
-      )}
+
+      {/* DATE/LOCATION */}
+      {noInputTypes.includes(inputType) && <div className={`w-100`}>{children}</div>}
+
+      {/* TEXTAREA */}
       {inputType === 'textarea' && (
-        <>
-          {defaultValue.length > 0 && <Label text={labelText} />}
-          {defaultValue.length > 0 && (
-            <textarea
-              onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
-              onChange={onChange}
-              className={inputClasses}
-              placeholder={getPlaceholder()}
-              value={defaultValue}
-              cols="30"
-              key={refreshKey}
-              rows="10"
-            />
-          )}
-          {defaultValue.length === 0 && (
-            <textarea
-              onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
-              onChange={onChange}
-              className={inputClasses}
-              placeholder={getPlaceholder()}
-              cols="30"
-              key={refreshKey}
-              rows="10"
-            />
-          )}
-        </>
+        <textarea
+          onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
+          onChange={onChange}
+          className={inputClasses}
+          cols="30"
+          key={refreshKey}
+          rows="10"
+        />
       )}
     </div>
   )

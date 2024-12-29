@@ -4,6 +4,7 @@ import globalState from '../../context'
 import { formatNameFirstNameOnly, stringHasNumbers } from '../../globalFunctions'
 import { FaCheck } from 'react-icons/fa6'
 import DB_UserScoped from '@userScoped'
+import ScreenNames from '@screenNames'
 
 export default function CheckboxGroup({
   checkboxLabels,
@@ -14,25 +15,29 @@ export default function CheckboxGroup({
   dataDate,
   skipNameFormatting = false,
   defaultLabels,
-  labelText = '',
   required = false,
   parentLabel = '',
 }) {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser } = state
-  const [validAccounts, setValidAccounts] = useState(0)
-
-  const getValidAccounts = async () => {
-    const accounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-    setValidAccounts(accounts)
+  const { theme, currentUser, currentScreen } = state
+  const [showCheckboxes, setShowCheckboxes] = useState(false)
+  const setCheckboxVisibility = async () => {
+    const numberOfValidAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+    if (numberOfValidAccounts > 0) {
+      setShowCheckboxes(true)
+    } else {
+      if (currentScreen === ScreenNames.login || currentScreen === ScreenNames.registration) {
+        setShowCheckboxes(true)
+      }
+    }
   }
   useEffect(() => {
-    getValidAccounts().then((r) => r)
+    setCheckboxVisibility().then((r) => r)
   }, [])
 
   return (
     <>
-      {validAccounts > 0 && (
+      {showCheckboxes > 0 && (
         <div id="checkbox-group" className={`${theme} ${elClass}`}>
           {parentLabel.length > 0 && (
             <div id="parent-label-wrapper">

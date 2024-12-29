@@ -372,9 +372,11 @@
         @include defaultButton;
       }
 
-      &:hover {
-        transform: scale(1.1);
-        transition: all 0.3s ease-in-out;
+      @media screen and (min-width: 1000px) {
+        &:hover {
+          transform: scale(1.1);
+          transition: all 0.3s ease-in-out;
+        }
       }
     }
     /*#endregion MIXINS */
@@ -593,8 +595,8 @@
       font-weight: 900;
       font-style: italic;
     }
-    .title-suggestion-dropdown-wrapper {
-      @include inputSugguestionDropdown;
+    .title-suggestion-wrapper {
+      @include inputSuggestionDropdown;
     }
     .material-icons {
       font-family: 'Material Icons';

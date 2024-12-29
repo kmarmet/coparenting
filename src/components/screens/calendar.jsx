@@ -50,6 +50,7 @@ export default function EventCalendar() {
     })
 
     setAllEventsFromDb(securedEvents)
+
     if (selectedDay) {
       securedEvents = securedEvents.filter((x) => x.startDate === moment(selectedDay).format(DateFormats.dateForDb))
     } else {
@@ -61,8 +62,6 @@ export default function EventCalendar() {
 
     // ADD DAY INDICATORS
     await addDayIndicators(eventsToAddDotsTo)
-
-    // Filter out dupes by event title
     setExistingEvents(securedEvents)
   }
 
@@ -260,9 +259,8 @@ export default function EventCalendar() {
   }
 
   useEffect(() => {
-    if (!loadingDisabled && currentUser.hasOwnProperty('email')) {
+    if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
       onActivityChange().then((r) => r)
-      // setState({ ...state, isLoading: false })
       setLoadingDisabled(true)
     }
   }, [currentUser])

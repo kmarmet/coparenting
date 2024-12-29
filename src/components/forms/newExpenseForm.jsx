@@ -204,9 +204,8 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   }
 
   const handleChildSelection = (e) => {
-    const clickedEl = e.currentTarget
-    const checkbox = clickedEl.querySelector('.box')
-    const selectedValue = clickedEl.getAttribute('data-label')
+    const checkbox = e.currentTarget
+    const selectedValue = checkbox.getAttribute('data-label')
     if (checkbox.classList.contains('active')) {
       checkbox.classList.remove('active')
       if (expenseChildren.length > 0) {

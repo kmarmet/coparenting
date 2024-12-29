@@ -57,6 +57,7 @@ import SelectDropdown from '../shared/selectDropdown'
 import InputWrapper from '../shared/inputWrapper'
 import DomManager from '../../managers/domManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
+import ActivityCategory from '../../models/activityCategory'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -140,11 +141,10 @@ export default function ExpenseTracker() {
   }
 
   const sendReminder = async (expense) => {
-    const subId = await NotificationManager.getUserSubId(expense?.payer?.phone, 'phone')
     const message = `This is a reminder to pay the ${expense.name} expense.  ${
       Manager.isValid(expense.dueDate) ? 'Due date is: ' + expense.dueDate : ''
     }`
-    NotificationManager.sendNotification(`Expense Reminder`, message, subId)
+    NotificationManager.sendNotification(`Expense Reminder`, message, expense?.payer?.phone, currentUser, ActivityCategory.expenses)
     AlertManager.successAlert('Reminder Sent')
   }
 
@@ -417,9 +417,9 @@ export default function ExpenseTracker() {
         submitText={'Paid'}
         title={`${uppercaseFirstLetterOfAllWords(activeExpense?.name || '')} Details`}
         submitIcon={<MdPriceCheck className={'fs-22'} />}
-        onSubmit={async () => await markAsPaid(activeExpense)}
+        onSubmit={() => markAsPaid(activeExpense)}
         className="expense-tracker form"
-        wrapperClass="expense-tracker form"
+        wrapperClass="expense-tracker"
         onClose={() => {
           setActiveExpense(null)
           setShowDetails(false)

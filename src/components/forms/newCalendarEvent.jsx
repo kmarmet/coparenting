@@ -52,7 +52,6 @@ import _ from 'lodash'
 import FormNames from '../../models/formNames'
 import CalendarManager from '../../managers/calendarManager'
 import NotificationManager from '../../managers/notificationManager.js'
-import Label from '../shared/label'
 import DB_UserScoped from '@userScoped'
 import ActivityCategory from '../../models/activityCategory'
 
@@ -399,7 +398,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const addThemeToDatePickers = () => {
     setTimeout(() => {
       const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      datetimeParent.classList.add(currentUser?.settings?.theme)
+      if (datetimeParent) {
+        datetimeParent.classList.add(currentUser?.settings?.theme)
+      }
     }, 100)
   }
 
@@ -410,12 +411,17 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   }, [selectedNewEventDay])
 
   useEffect(() => {
+    // Date Picker Stuff
     const multiDatePicker = document.querySelector('.rs-picker-popup.rs-picker-popup-date')
     const multiDateInput = document.querySelector('.rs-input')
     if (multiDatePicker && multiDateInput) {
       multiDateInput.onBlur()
       const screenHeight = window.screen.height
       multiDatePicker.style.top = `${screenHeight / 4}px`
+    }
+    const pickers = document.querySelectorAll('.MuiInputBase-input')
+    if (pickers) {
+      pickers.forEach((x) => (x.value = ''))
     }
   }, [])
 
@@ -443,66 +449,64 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           </div>
 
           {/* CALENDAR FORM */}
-          <div className="title-suggestion-wrapper">
-            {/* TITLE */}
-            <InputWrapper
-              inputClasses="event-title-input"
-              inputType={'input'}
-              labelText={'Title'}
-              defaultValue={eventTitle}
-              refreshKey={refreshKey}
-              required={true}
-              inputValue={eventTitle}
-              onChange={async (e) => {
-                const inputValue = e.target.value
-                if (inputValue.length > 1) {
-                  const dbSuggestions = await SecurityManager.getInputSuggestions(currentUser)
+          {/* TITLE */}
+          <InputWrapper
+            inputClasses="event-title-input"
+            inputType={'input'}
+            labelText={'Name of Event'}
+            defaultValue={eventTitle}
+            refreshKey={refreshKey}
+            required={true}
+            inputValue={eventTitle}
+            onChange={async (e) => {
+              const inputValue = e.target.value
+              if (inputValue.length > 1) {
+                const dbSuggestions = await SecurityManager.getInputSuggestions(currentUser)
 
-                  if (Manager.isValid(dbSuggestions, true)) {
-                    const matching = dbSuggestions.filter(
-                      (x) =>
-                        x.formName === 'calendar' &&
-                        x.ownerPhone === currentUser?.phone &&
-                        contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
-                    )
-                    setInputSuggestions(DatasetManager.getUniqueArray(matching, true))
-                  }
-                } else {
-                  setInputSuggestions([])
+                if (Manager.isValid(dbSuggestions, true)) {
+                  const matching = dbSuggestions.filter(
+                    (x) =>
+                      x.formName === 'calendar' &&
+                      x.ownerPhone === currentUser?.phone &&
+                      contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
+                  )
+                  setInputSuggestions(DatasetManager.getUniqueArray(matching, true))
                 }
-                setEventTitle(inputValue)
-              }}
-            />
-            <InputSuggestionWrapper
-              suggestions={inputSuggestions}
-              setSuggestions={() => setInputSuggestions([])}
-              onClick={(e) => {
-                const suggestion = e.target.textContent
-                setEventTitle(suggestion)
+              } else {
                 setInputSuggestions([])
-              }}
-            />
-          </div>
+              }
+              setEventTitle(inputValue)
+            }}
+          />
+
+          {/* SUGGESTIONS DROPDOWN */}
+          {!Manager.isEmpty(eventTitle) && (
+            <div className="title-suggestion-wrapper">
+              <InputSuggestionWrapper
+                suggestions={inputSuggestions}
+                setSuggestions={() => setInputSuggestions([])}
+                onClick={(e) => {
+                  const suggestion = e.target.textContent
+                  setEventTitle(suggestion)
+                  setInputSuggestions([])
+                }}
+              />
+            </div>
+          )}
 
           {/* FROM DATE */}
-          <div className="flex gap mb-15">
+          <div className="flex gap">
             {eventLength === EventLengths.single && (
-              <>
-                <div className="w-100">
-                  <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
-                    <MobileDatePicker
-                      key={refreshKey}
-                      onOpen={addThemeToDatePickers}
-                      value={moment(selectedNewEventDay)}
-                      className={`${theme} m-0 w-100 event-from-date mui-input`}
-                      onAccept={(e) => {
-                        console.log(e)
-                        setEventStartDate(e)
-                      }}
-                    />
-                  </InputWrapper>
-                </div>
-              </>
+              <InputWrapper labelText={'Date'} inputType={'date'} required={true}>
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  value={moment(selectedNewEventDay)}
+                  className={`${theme} m-0 w-100 event-from-date mui-input`}
+                  onAccept={(e) => {
+                    setEventStartDate(e)
+                  }}
+                />
+              </InputWrapper>
             )}
           </div>
 
@@ -524,39 +528,33 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 }}
                 slots={{ field: SingleInputDateRangeField }}
                 name="allowedRange"
-                key={refreshKey}
               />
             </InputWrapper>
           )}
 
           {/* EVENT WITH TIME */}
           {!isAllDay && (
-            <div className={'flex gap event-times-wrapper'}>
-              <div>
-                <InputWrapper wrapperClasses="higher-label" labelText={'Start Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker
-                    key={refreshKey}
-                    onOpen={addThemeToDatePickers}
-                    minutesStep={5}
-                    className={`${theme}`}
-                    onAccept={(e) => setEventStartTime(e)}
-                  />
-                </InputWrapper>
-              </div>
-              <span>&nbsp;to&nbsp;</span>
-              <div>
-                <InputWrapper wrapperClasses="higher-label" labelText={'End Time'} required={false} inputType={'date'}>
-                  <MobileTimePicker
-                    onOpen={addThemeToDatePickers}
-                    format={'h:mma'}
-                    key={refreshKey}
-                    defaultValue={null}
-                    minutesStep={5}
-                    className={`${theme} `}
-                    onAccept={(e) => setEventEndTime(e)}
-                  />
-                </InputWrapper>
-              </div>
+            <div className={'flex  event-times-wrapper'}>
+              <MobileTimePicker
+                onOpen={addThemeToDatePickers}
+                minutesStep={5}
+                format={'h:mma'}
+                label={'Start Time'}
+                className={`${theme} w-50`}
+                value={moment(eventStartTime)}
+                disablePast={true}
+                onAccept={(e) => setEventStartTime(e)}
+              />
+              <MobileTimePicker
+                onOpen={addThemeToDatePickers}
+                format={'h:mma'}
+                disablePast={true}
+                minutesStep={5}
+                label={'End Time'}
+                className={`${theme} w-50`}
+                MuiFormLabel-root
+                onAccept={(e) => setEventEndTime(e)}
+              />
             </div>
           )}
 
@@ -614,45 +612,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </div>
           </div>
 
-          {/* REMIND COPARENTS*/}
-          {Manager.isValid(currentUser?.coparents, true) && (
-            <div className="share-with-container">
-              <Accordion id={'checkboxes'} expanded={showCoparentReminderToggle}>
-                <AccordionSummary>
-                  <div className="flex">
-                    <p>Remind Co-parent(s)</p>
-                    <Toggle
-                      icons={{
-                        checked: <span className="material-icons-round">person</span>,
-                        unchecked: null,
-                      }}
-                      className={'ml-auto reminder-toggle'}
-                      onChange={(e) => setShowCoparentReminderToggle(showCoparentReminderToggle === true ? false : true)}
-                    />
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {currentUser?.accountType === 'parent' && (
-                    <CheckboxGroup
-                      elClass={`${theme} `}
-                      dataPhone={currentUser?.coparents?.map((x) => x?.phone)}
-                      checkboxLabels={currentUser?.coparents?.map((x) => x?.name)}
-                      onCheck={handleCoparentsToRemindSelection}
-                    />
-                  )}
-                  {currentUser?.accountType === 'child' && (
-                    <CheckboxGroup
-                      elClass={`${theme} `}
-                      dataPhone={currentUser?.parents?.map((x) => x?.phone)}
-                      checkboxLabels={currentUser?.parents?.map((x) => x?.name)}
-                      onCheck={handleCoparentsToRemindSelection}
-                    />
-                  )}
-                </AccordionDetails>
-              </Accordion>
-            </div>
-          )}
-
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.isValid(currentUser?.children, true) && (
             <div className="share-with-container">
@@ -707,8 +666,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
                     />
                     {!Manager.isEmpty(repeatInterval) && (
-                      <InputWrapper inputType={'date'}>
-                        <Label text={'Month to End Repeating Events'} required={true} classes="mt-15 mb-0" />
+                      <InputWrapper inputType={'date'} labelText={'Month to End Repeating Events'} required={true}>
                         <DatetimePicker
                           className={`mt-0 w-100`}
                           format={DateFormats.readableMonth}
@@ -745,7 +703,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       className={`${theme} multidate-picker`}
                       placement="auto"
                       placeholder={null}
-                      key={refreshKey}
                       label=""
                       onOpen={() => Manager.hideKeyboard()}
                       onChange={(e) => setClonedDates(e)}
@@ -769,8 +726,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {/* LOCATION/ADDRESS */}
           <InputWrapper refreshKey={refreshKey} labelText={'Location'} required={false} inputType={'location'}>
             <Autocomplete
-              placeholder={'Location'}
-              key={refreshKey}
               apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
               options={{
                 types: ['geocode', 'establishment'],
@@ -779,6 +734,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               onPlaceSelected={(place) => {
                 setEventLocation(place.formatted_address)
               }}
+              placeholder={''}
             />
           </InputWrapper>
 

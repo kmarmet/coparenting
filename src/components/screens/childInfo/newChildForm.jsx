@@ -68,7 +68,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
       return false
     } else {
       const id = Manager.getUid()
-      const _profilePic = await ImageManager.compressImage(profilePic)
+      let _profilePic = profilePic
       const newChild = new Child()
       const general = new General()
       newChild.id = id
@@ -84,6 +84,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
 
       // Add profile pic
       if (Manager.isValid(_profilePic)) {
+        _profilePic = await ImageManager.compressImage(profilePic)
         await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, `${currentUser?.id}/${id}`, _profilePic, 'profilePic').then(
           async (url) => {
             newChild.general.profilePic = url

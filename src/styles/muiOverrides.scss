@@ -124,6 +124,11 @@
 
     .MuiDateRangeCalendar-monthContainer {
       width: 100%;
+      
+      .MuiPickersDay-today {
+        color: $mainBlue !important;
+        opacity: 1 !important;
+      }
     }
 
     .MuiDayCalendar-header {
@@ -245,9 +250,8 @@
             color: $lightDarkGrey;
           }
         }
-        
+
         .MuiAccordionSummary-expandIconWrapper {
-          
           svg {
             margin: 0 10px 0 0 !important;
           }
@@ -261,7 +265,6 @@
 
           &.Mui-expanded {
             font-weight: $fwBold !important;
-
           }
         }
       }
@@ -381,7 +384,7 @@
       justify-content: center;
       color: black;
       border-radius: $borderRadius !important;
-      
+
       @media screen and (min-width: 650px) {
         &:hover {
           background: $lightIconBgBlue !important;
@@ -397,15 +400,13 @@
         }
       }
       &.Mui-selected {
-        background-color: $lightIconBgBlue;
-        height: 40px !important;
-        width: 42px !important;
-        margin-top: 3px !important;
+        background-color: transparent;
+        transform: scale(1.3);
+        transition: all .2s ease-in-out !important;
         color: $mainBlue !important;
         font-weight: $fwMediumBold !important;
-        border-radius: 100% !important;
         .dot-wrapper {
-          top: -3px;
+          top: -10px;
         }
       }
     }
@@ -487,9 +488,25 @@
     }
   }
   .MuiFormControl-root {
+    border-bottom: 1px solid #e3e8ee;
+    //    max-height: 20px !important;
+    .MuiInputLabel-root {
+      //      padding-bottom: 5px;
+      //      opacity: .7 !important;
+      //      font-weight: 400 !important;
+      //      font-style: italic !important;
+      //      border-bottom: 1px solid #e3e8ee;
+      font-size: 16px !important;
+      font-weight: 500 !important;
+      opacity: 1 !important;
+      margin: 0 !important;
+      letter-spacing: 0.4px !important;
+      line-height: 1.3 !important;
+      color: rgba(0, 0, 0, 0.8) !important;
+    }
     .MuiSvgIcon-root {
       font-size: 28px !important;
-      opacity: .45 !important;
+      opacity: 0.45 !important;
     }
     &.css-1b5lkxe-MuiFormControl-root {
       .MuiOutlinedInput-root {
@@ -508,6 +525,7 @@
     border-radius: 30px;
     width: 95vw !important;
     @include bestShadow;
+    
 
     &[role='dialog'] {
       .MuiPickersLayout-root {
@@ -518,6 +536,11 @@
         [aria-colindex='1'],
         [aria-colindex='7'] {
           opacity: 0.5 !important;
+            
+            &.MuiPickersDay-today {
+              color: $mainBlue !important;
+              opacity: 1 !important;
+            }
 
           &.Mui-selected {
             opacity: 1 !important;

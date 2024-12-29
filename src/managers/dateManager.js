@@ -88,8 +88,30 @@ const DateManager = {
     const weeks = Math.floor(mil / (1000 * 7 * 24 * 60 * 60))
     return weeks
   },
+  getMomentFormat: (date) => {
+    // Date only
+    if (date.indexOf('/') > -1 && date.indexOf(':') === -1) {
+      return DateFormats.dateForDb
+    } else if (date.indexOf('/') === -1 && date.indexOf(':') > -1) {
+      return DateFormats.timeForDb
+    }
+    if (date.indexOf('/') > -1 && date.indexOf(':') > -1) {
+      return DateFormats.fullDatetime
+    }
+  },
   msToDate: (ms) => {
     return moment(ms, 'x').format(DateFormats.monthAndYear)
+  },
+  isValidDate: (date) => {
+    if (!Manager.isValid(date)) {
+      return false
+    }
+    const format = DateManager.getMomentFormat(date)
+    const asMoment = moment(date, format).format(format)
+    if (asMoment.contains('Invalid')) {
+      return false
+    }
+    return asMoment.length !== 0
   },
   getDaysInRange: (startDate, endDate) => {
     let a = moment(startDate)

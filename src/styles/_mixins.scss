@@ -1162,8 +1162,8 @@
   label {
     font-size: 16px;
     font-weight: $fwMedium;
-    opacity: 0.85;
-    color: black;
+    opacity: 1;
+    color: rgba(0, 0, 0, 0.8);
     margin: 0;
     letter-spacing: 0.4px;
     line-height: 1.3;
@@ -1176,7 +1176,7 @@
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 25px;
 
   textarea {
     max-height: 30px;
@@ -1195,7 +1195,7 @@
     &:focus {
       border-radius: 50px;
       outline: none;
-      padding: 8px 0 8px 20px;
+      padding: 8px;
     }
   }
 
@@ -1207,14 +1207,14 @@
     font-weight: 400;
     caret-color: black;
     transition: all 0.2s ease-in-out;
-    margin-bottom: 10px;
     border: 0;
     border-radius: 0;
     border-bottom: 1px solid $iconGrey;
 
     &:focus {
-      border: 1px solid $mainBlue;
+      border-bottom: 1px solid $mainBlue;
       background: rgba(153, 178, 255, 0.14);
+      border-radius: 0;
     }
   }
 
@@ -1228,30 +1228,44 @@
     }
   }
 }
-@mixin inputSugguestionDropdown {
+@mixin inputSuggestionDropdown {
   transition: all 0.3s ease-in-out;
-  height: 0;
+  opacity: 1;
+  overflow: hidden;
 
-  &.active {
-    height: auto;
-    opacity: 1;
+  #title-suggestion-dropdown {
+    background: $bestGreyForWhite;
+    border-radius: $borderRadius;
+    .MuiPaper-root {
+      max-width: 100% !important;
+      background: transparent;
 
-    .suggestions {
-      padding: 10px;
-    }
-    .material-icons-round {
-      display: block;
+      .MuiAccordionDetails-root {
+        padding: 15px;
+      }
     }
   }
-  .material-icons-round {
-    font-size: 30px;
-    margin: 0 0 0 10px;
-    color: $blue;
-    display: none;
+
+  .MuiAccordion-heading {
+    height: 0;
   }
   .suggestions {
-    width: 90%;
-    border-radius: 0 0 $borderRadius $borderRadius;
+    padding: 0;
+    width: 100%;
+
+    p {
+      background: $bestGreyForWhite;
+      margin-bottom: 10px;
+      margin-top: 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid $lightDarkGrey;
+    }
+  }
+  svg {
+    opacity: 0.6;
+    font-size: 22px;
+    margin: 20px auto 0 auto;
+    display: block;
   }
 }
 @mixin numpad {
@@ -1338,22 +1352,21 @@
   &.calendar {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
     .duration-option {
-      padding: 8px 15px;
-      border: 1px solid $bestGreyForWhite;
-      min-width: 85px;
-      border-radius: 50px;
       display: flex;
       justify-content: center;
       align-items: center;
-      
+      padding-bottom: 5px;
       &.active {
-        background: $lightBorder;
-        
+        border-bottom: 1px solid $mainBlue;
+        font-weight: $fwMedium;
+        color: $mainBlue;
+        opacity: 1;
+
         p {
           font-weight: $fwMedium;
-          opacity: .9;
+          color: $mainBlue;
         }
       }
 
@@ -1361,10 +1374,13 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        color: $lightDarkGrey;
         opacity: 1;
+        margin: 0;
+        padding: 0;
+        font-weight: $fwMedium;
         text-align: center;
         line-height: 1;
+        color: rgba(0, 0, 0, 0.38);
       }
     }
   }
@@ -1509,20 +1525,26 @@
     @include hover;
     transition: all 0.3s ease-in-out;
     border-radius: 50px;
-    opacity: 0.85;
+    //    opacity: 0.85;
 
     &.active {
       opacity: 1;
-
+      transition: all 0.3s ease-in-out;
       .pill {
-        background: $lightIconBgBlue;
-        color: $mainBlue;
+        background: rgba(231, 233, 238, 0.78);
+        color: rgba(0, 0, 0, 0.65);
         font-weight: $fwMediumBold;
+        border: 0;
         display: flex;
         align-items: center;
+        line-height: 1;
+        padding: 7px 10px;
+        transition: all 0.3s ease-in-out;
+
         svg {
-          display: inline-block;
+          width: auto;
           position: unset;
+          transition: all 0.3s ease-in-out;
         }
       }
     }
@@ -1532,11 +1554,12 @@
     }
 
     .pill {
-      border: 1px solid $mainBlue;
-      color: $mainBlue;
+      border: 1px solid rgba(0, 0, 0, 0.38);
+      color: rgba(0, 0, 0, 0.38);
       border-radius: 50px;
       min-width: 60px;
       text-align: center;
+      font-weight: $fwMedium;
       line-height: 1;
       padding: 5px 10px;
       font-size: 12px;
@@ -1548,11 +1571,13 @@
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
+      transition: all 0.3s ease-in-out;
 
       svg {
-        font-size: 14px;
+        font-size: 12px;
         margin-left: 5px;
-        display: none;
+        width: 0;
+        transition: all 0.3s ease-in-out;
       }
     }
   }
@@ -2290,17 +2315,21 @@
   overflow: auto;
   height: auto;
   left: 0;
-  width: 100vw;
+
   max-height: 70vh;
-  min-height: 30vh;
+
   bottom: -30vh;
   z-index: -1;
-  box-shadow: rgba(0, 0, 0, 0.56) 0 2px 30px 14px;
+  opacity: 0;
 
   // ANIMATION
   &.animate__fadeInUp {
     z-index: $maxZIndex;
     bottom: 0;
+    opacity: 1;
+    min-height: 30vh;
+    width: 100vw;
+    box-shadow: rgba(0, 0, 0, 0.56) 0 2px 30px 14px;
   }
 
   // ACTIVE
@@ -2313,6 +2342,10 @@
       max-height: 25vh;
       min-height: 0;
     }
+  }
+
+  #large-title {
+    color: $mainBlue;
   }
 
   // BUTTONS
@@ -2380,8 +2413,8 @@
 
       &.submit {
         background-color: #edf2fd;
-        border: 1px solid $mainBlue;
         margin-right: auto;
+        border: 0;
         left: 0;
         color: $mainBlue;
         font-weight: $fwBold;
@@ -2426,6 +2459,18 @@
   }
 
   /*#region  CARDS BY CLASS*/
+  // NEW CALENDAR EVENT
+  &.new-calendar-event {
+    #relative-wrapper {
+      .flex {
+        &.event-times-wrapper {
+          margin-bottom: 25px;
+          gap: 0 20px;
+        }
+      }
+    }
+  }
+
   // EDIT CALENDAR EVENT
   &.edit-calendar-event {
     #relative-wrapper {
@@ -2460,12 +2505,12 @@
           p {
             padding: 0;
             margin: 0;
-            
+
             &.pill {
-              opacity: .7;
+              opacity: 0.7;
               text-align: center;
-              transition: all .3s ease-in-out;
-              
+              transition: all 0.3s ease-in-out;
+
               &.active {
                 border-bottom: 1px solid $mainBlue;
                 font-weight: $fwMedium;
@@ -2606,7 +2651,6 @@
       gap: 10px;
       align-items: stretch;
       flex-wrap: wrap;
-      justify-content: space-between;
       width: 100%;
 
       #children-container {

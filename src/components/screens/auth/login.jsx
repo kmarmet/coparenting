@@ -98,7 +98,6 @@ export default function Login() {
 
     // Not Persistent
     else {
-      console.log('here')
       setState({ ...state, isLoading: false })
       await firebaseSignIn()
     }
@@ -120,7 +119,7 @@ export default function Login() {
           setState({ ...state, isLoading: false })
         }
 
-        // Email Verified
+        // EMAIL IS VERIFIED
         else {
           setState({
             ...state,
@@ -185,10 +184,17 @@ export default function Login() {
           <div className="flex form-container">
             <div className="form w-80">
               {/* EMAIL */}
-              <InputWrapper inputValueType="email" required={true} labelText={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
+              <InputWrapper
+                placeholder="Email address"
+                inputValueType="email"
+                required={true}
+                labelText={'Email Address'}
+                onChange={(e) => setEmail(e.target.value)}
+              />
               {/* PASSWORD */}
               <div className="flex inputs">
                 <InputWrapper
+                  placeholder="Password"
                   inputValueType={viewPassword ? 'text' : 'password'}
                   required={true}
                   labelText={'Password'}
