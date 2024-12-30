@@ -24,6 +24,7 @@ import { MdOutlineStar } from 'react-icons/md'
 import { FaRegHandshake } from 'react-icons/fa'
 import { useLongPress } from 'use-long-press'
 import ScreenNames from '@screenNames'
+import Manager from '@manager'
 
 function LazyImage({ show, importedImage, imagesObjectPropName }) {
   const [showImage, setShowImage] = useState(false)
@@ -58,6 +59,26 @@ export default function Home() {
   // Init Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
+
+  const toggleFeature = (feature) => {
+    const featureName = feature.currentTarget.dataset.name
+    const clickedFeatureElement = document.querySelector(`[data-name='${featureName}']`)
+    const allFeatureElements = document.querySelectorAll(`[data-name]`)
+
+    if (clickedFeatureElement) {
+      if (clickedFeatureElement.classList.contains('active')) {
+        clickedFeatureElement.classList.remove('active')
+      } else {
+        if (Manager.isValid(allFeatureElements, true)) {
+          for (let _feature of allFeatureElements) {
+            _feature.classList.remove('active')
+          }
+        }
+        clickedFeatureElement.classList.add('active')
+        clickedFeatureElement.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      }
+    }
+  }
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
@@ -202,407 +223,328 @@ export default function Home() {
             </p>
             <p id="unique-features-title">
               <b>Features Exclusive to Peaceful Co-Parenting</b>
+              <br />
+              <span>Tap any feature to see exactly how it will improve your co-parenting experience. Tap again to close the feature's details.</span>
             </p>
 
-            <div className="flex">
-              <CarouselProvider
-                naturalSlideWidth={100}
-                naturalSlideHeight={125}
-                totalSlides={7}
-                lockOnWindowScroll={true}
-                isIntrinsicHeight={true}
-                visibleSlides={DomManager.isMobile() ? 1 : 3}
-                currentSlide={1}>
-                <Slider>
-                  <Slide index={0}>
-                    <div className="feature">
-                      <p className="feature-title">
-                        Document Viewing & Storage <MdOutlineStar className={'star'} />
-                      </p>
-                      <p className="feature-subtitle">
-                        Any co-parent that has had to find and search through their separation agreement, medical records or other another document
-                        type to find something specific knows how frustrating and time consuming it can be.
-                      </p>
-                      <p className="feature-subtitle">
-                        With our app you can store documents with the support of both documents and images that are easily accessible at any time.
-                      </p>
+            <div className="flex" id="feature-grid">
+              <div className="feature" data-name={'any-device'} onClick={(e) => toggleFeature(e)}>
+                <p className="feature-title">
+                  Available on&nbsp;<b>Any</b>&nbsp;Device
+                </p>
+                <MdOutlineStar className={'star'} />
+                <p className="feature-subtitle">
+                  All other co-parenting applications are installed via an app store. This means that they can typically only be installed on certain
+                  devices and on certain operating systems (Apple, Android, .etc).
+                </p>
+                <p className="feature-subtitle">
+                  However, with Peaceful Co-Parenting <b>you can install our application on any device</b> (phone, tablet, computer, .etc) and any
+                  operating system (Android, Apple, .etc).
+                </p>
+                <div className="content">
+                  <ul>
+                    <li className="list-title">
+                      Simple (2-step) Installation
                       <ul>
-                        <li className="list-title">
-                          Document Search
+                        <li>You do not have to us an app store to install the application</li>
+                        <li>
+                          Installation Steps
                           <ul>
-                            <li>Search for any phrase or word within the document</li>
+                            <li>Visit the website</li>
+                            <li>Click the share button</li>
                             <li>
-                              This is incredibly helpful when trying to find your visitation for holidays, financial responsibilities for your
-                              children or anything else
+                              Click <i>Add to Homescreen</i>
                             </li>
                           </ul>
                         </li>
-                        <li className="list-title">
-                          Table of Contents
-                          <ul>
-                            <li>
-                              Each section such as Physical Custody, Financial Obligations and Visitation will be clickable in the table of contents
-                              and will take you directly to that section
-                            </li>
-                            <li>
-                              This is incredibly helpful when trying to find your visitation for holidays or your financial responsibilities for your
-                              children
-                            </li>
-                          </ul>
-                        </li>
-                        <li className="list-title">
-                          Upload document
-                          <ul>
-                            <li>Ability to upload either document OR image of a document</li>
-                            <li>If you upload an image, the text will be extracted from the document via magic</li>
-                          </ul>
-                        </li>
-                        <li className="list-title">
-                          Sharing
-                          <ul>
-                            <li>You can store the documents for yourself or you can share any document with your co-parent</li>
-                          </ul>
-                        </li>
+                        <li>These steps are provided for Android, iOS (Apple) and Laptop/Desktop computers</li>
                       </ul>
-                    </div>
-                  </Slide>
-                  <Slide index={1}>
-                    <div className="feature">
-                      <p className="feature-title">
-                        Available on&nbsp;<b>Any</b>&nbsp;Device
-                        <MdOutlineStar className={'star'} />
-                      </p>
-                      <p className="feature-subtitle">
-                        All other co-parenting applications are installed via an app store. This means that they can typically only be installed on
-                        certain devices and on certain operating systems (Apple, Android, .etc).
-                      </p>
-                      <p className="feature-subtitle">
-                        However, with Peaceful Co-Parenting <b>you can install our application on any device</b> (phone, tablet, computer, .etc) and
-                        any operating system (Android, Apple, .etc).
-                      </p>
+                    </li>
+                    <li className="list-title">
+                      Device Support
                       <ul>
-                        <li className="list-title">
-                          Simple (2-step) Installation
-                          <ul>
-                            <li>You do not have to us an app store to install the application</li>
-                            <li>
-                              Installation Steps
-                              <ul>
-                                <li>Visit the website</li>
-                                <li>Click the share button</li>
-                                <li>
-                                  Click <i>Add to Homescreen</i>
-                                </li>
-                              </ul>
-                            </li>
-                            <li>These steps are provided for Android, iOS (Apple) and Laptop/Desktop computers</li>
-                          </ul>
+                        <li>
+                          Because you do not need to utilize an app store, you can install our application on any device (phone, tablet, computer,
+                          .etc)
                         </li>
-                        <li className="list-title">
-                          Device Support
-                          <ul>
-                            <li>
-                              Because you do not need to utilize an app store, you can install our application on any device (phone, tablet, computer,
-                              .etc)
-                            </li>
-                            <li>If you use more than one device, all of your activity and date will be synced across all devices</li>
-                          </ul>
-                        </li>
-                        <li className="list-title">
-                          Operating System Support
-                          <ul>
-                            <li>Whether you use a Windows, Mac, Android or Apple device, you can install our application on that device</li>
-                          </ul>
-                        </li>
-                        <li className="list-title">
-                          Updates
-                          <ul>
-                            <li>All updates (feature additions, fixes, .etc) are done in the background, you don't have to do anything!</li>
-                            <li>Every time you open the application it will be fully updated</li>
-                          </ul>
-                        </li>
+                        <li>If you use more than one device, all of your activity and date will be synced across all devices</li>
                       </ul>
-                    </div>
-                  </Slide>
-                  <Slide index={2}>
-                    <div className="feature">
-                      <p className="feature-title">
-                        One Subscription for All Features
-                        <MdOutlineStar className={'star'} />
-                      </p>
-                      <p className="feature-subtitle">
-                        Almost every co-parenting application have multiple tiers of pricing. You get very basic features for one price, and then they
-                        upsell (charge more) to access the more useful features. Not us!
-                      </p>
+                    </li>
+                    <li className="list-title">
+                      Operating System Support
                       <ul>
-                        <li className="list-title">
-                          Low Subscription Cost
+                        <li>Whether you use a Windows, Mac, Android or Apple device, you can install our application on that device</li>
+                      </ul>
+                    </li>
+                    <li className="list-title">
+                      Updates
+                      <ul>
+                        <li>All updates (feature additions, fixes, .etc) are done in the background, you don't have to do anything!</li>
+                        <li>Every time you open the application it will be fully updated</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'one-subscription'}>
+                <p className="feature-title">One Subscription for All Features</p>
+                <MdOutlineStar className={'star'} />
+                <p className="feature-subtitle">
+                  Almost every co-parenting application have multiple tiers of pricing. You get very basic features for one price, and then they
+                  upsell (charge more) to access the more useful features. Not us!
+                </p>
+                <div className="content">
+                  <ul>
+                    <li className="list-title">
+                      Low Subscription Cost
+                      <ul>
+                        <li>$4.99 per month</li>
+                        <li>
+                          For example: The OurFamilyWizard application costs $120 per year
                           <ul>
-                            <li>$4.99 per month</li>
                             <li>
-                              For example: The OurFamilyWizard application costs $120 per year
-                              <ul>
-                                <li>
-                                  Peaceful Co-Parenting costs <b>HALF of THAT</b>
-                                </li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
-                        <li className="list-title">
-                          Access to ALL Features
-                          <ul>
-                            <li>
-                              For the price of a cup of coffee ($4.99) you get <b>ALL</b> features
-                              <ul>
-                                <li>Every co-parent needs access to all the resources and tools our application provides</li>
-                                <li>
-                                  Our goal is to make your co-parenting simple and peaceful, so{' '}
-                                  <b>we do not charge you more to access important features</b>
-                                </li>
-                              </ul>
+                              Peaceful Co-Parenting costs <b>HALF of THAT</b>
                             </li>
                           </ul>
                         </li>
                       </ul>
-                    </div>
-                  </Slide>
-                  <Slide index={3}>
-                    <div className="feature">
-                      <p className="feature-title">
-                        Everything in Realtime
-                        <MdOutlineStar className={'star'} />
-                      </p>
-                      <p className="feature-subtitle">
-                        Whether you are using the application or it is closed,{' '}
-                        <b>you will receive all updates, changes and notifications instantaneously.</b>
-                      </p>
+                    </li>
+                    <li className="list-title">
+                      Access to ALL Features
                       <ul>
-                        <li className="list-title">
-                          Notifications
+                        <li>
+                          For the price of a cup of coffee ($4.99) you get <b>ALL</b> features
+                          <ul>
+                            <li>Every co-parent needs access to all the resources and tools our application provides</li>
+                            <li>
+                              Our goal is to make your co-parenting simple and peaceful, so{' '}
+                              <b>we do not charge you more to access important features</b>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'realtime'}>
+                <p className="feature-title">Everything in Realtime</p>
+                <MdOutlineStar className={'star'} />
+                <p className="feature-subtitle">
+                  Whether you are using the application or it is closed,{' '}
+                  <b>you will receive all updates, changes and notifications instantaneously.</b>
+                </p>
+                <div className="content">
+                  <ul>
+                    <li className="list-title">
+                      Notifications
+                      <ul>
+                        <li>
+                          As soon as a co-parent creates a calendar event, shares a medical record or sends you a message - you will immediately get a
+                          notification
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      If you make an update (add a child, update a calendar event, .etc) you will see the updates <b>automatically</b>
+                      <ul>
+                        <li>
+                          Because you do not need to utilize an app store, you can install our application on any device (phone, tablet, computer,
+                          .etc)
+                        </li>
+                        <li>If you use more than one device, all of your activity and date will be synced across all devices</li>
+                      </ul>
+                    </li>
+                    <li className="list-title">
+                      Operating System Support
+                      <ul>
+                        <li>Whether you use a Windows, Mac, Android or Apple device, you can install our application on that device</li>
+                      </ul>
+                    </li>
+                    <li className="list-title">
+                      Updates
+                      <ul>
+                        <li>All updates (feature additions, fixes, .etc) are done in the background, you don't have to do anything!</li>
+                        <li>Every time you open the application it will be fully updated</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'multiple-coparents'}>
+                <p className="feature-title">Multiple Co-Parent Support</p>
+                <MdOutlineStar className={'star'} />
+                <p className="feature-subtitle">
+                  We understand that you may have multiple co-parents from prior relationships or marriages. We have taken this into consideration and
+                  provide support for this dynamic.
+                </p>
+                <div className="content">
+                  <ul>
+                    <li className="list-title">
+                      Multiple Co-Parents
+                      <ul>
+                        <li>Add as many co-parents as you need to</li>
+                        <li>Easily utilize all of our application's features for each co-parent</li>
+                        <li>When sharing important information, you can choose to share with individual co-parents or all at once</li>
+                      </ul>
+                    </li>
+                    <li className="list-title">
+                      Children from More than One Parent
+                      <ul>
+                        <li>You can add an unlimited number of children to store information for or share updates about</li>
+                        <li>
+                          Any child (with a valid phone number) can create an account and also use our application
+                          <ul>
+                            <li>If your child has their own account, they will have access to areas like the calendar to keep them in the loop</li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'messaging'}>
+                <p className="feature-title">Messaging</p>
+                <MdOutlineStar className={'star'} />
+                <p className="feature-subtitle">All other applications include messaging, but not with these features.</p>
+                <div className="content">
+                  <ul>
+                    <li className="list-title">
+                      Archive Conversations
+                      <ul>
+                        <li>
+                          At any time you can delete/archive a conversation
+                          <ul>
+                            <li>If you need to (for court or reference), you can recover the conversation at any time</li>
+                          </ul>
+                        </li>
+                        <li>
+                          Search
                           <ul>
                             <li>
-                              As soon as a co-parent creates a calendar event, shares a medical record or sends you a message - you will immediately
-                              get a notification
+                              Enter more than three letters and you will see all messages send or received including the text you are searching for
                             </li>
                           </ul>
                         </li>
                         <li>
-                          If you make an update (add a child, update a calendar event, .etc) you will see the updates <b>automatically</b>
+                          Bookmarking
                           <ul>
                             <li>
-                              Because you do not need to utilize an app store, you can install our application on any device (phone, tablet, computer,
-                              .etc)
+                              Bookmark any message at any time
+                              <ul>
+                                <li>You can view all bookmarks (saved messages) at any time with one button click</li>
+                              </ul>
                             </li>
-                            <li>If you use more than one device, all of your activity and date will be synced across all devices</li>
                           </ul>
                         </li>
-                        <li className="list-title">
-                          Operating System Support
+                        <li>
+                          Message Copying
                           <ul>
-                            <li>Whether you use a Windows, Mac, Android or Apple device, you can install our application on that device</li>
-                          </ul>
-                        </li>
-                        <li className="list-title">
-                          Updates
-                          <ul>
-                            <li>All updates (feature additions, fixes, .etc) are done in the background, you don't have to do anything!</li>
-                            <li>Every time you open the application it will be fully updated</li>
+                            <li>Long-press any message to copy it so you can paste it anywhere you would like</li>
                           </ul>
                         </li>
                       </ul>
-                    </div>
-                  </Slide>
-                  <Slide index={4}>
-                    <div className="feature">
-                      <p className="feature-title">
-                        Multiple Co-Parent Support
-                        <MdOutlineStar className={'star'} />
-                      </p>
-                      <p className="feature-subtitle">
-                        We understand that you may have multiple co-parents from prior relationships or marriages. We have taken this into
-                        consideration and provide support for this dynamic.
-                      </p>
+                    </li>
+                    <li className="list-title">
+                      Children from More than One Parent
                       <ul>
-                        <li className="list-title">
-                          Multiple Co-Parents
+                        <li>You can add an unlimited number of children to store information for or share updates about</li>
+                        <li>
+                          Any child (with a valid phone number) can create an account and also use our application
                           <ul>
-                            <li>Add as many co-parents as you need to</li>
-                            <li>Easily utilize all of our application's features for each co-parent</li>
-                            <li>When sharing important information, you can choose to share with individual co-parents or all at once</li>
-                          </ul>
-                        </li>
-                        <li className="list-title">
-                          Children from More than One Parent
-                          <ul>
-                            <li>You can add an unlimited number of children to store information for or share updates about</li>
-                            <li>
-                              Any child (with a valid phone number) can create an account and also use our application
-                              <ul>
-                                <li>
-                                  If your child has their own account, they will have access to areas like the calendar to keep them in the loop
-                                </li>
-                              </ul>
-                            </li>
+                            <li>If your child has their own account, they will have access to areas like the calendar to keep them in the loop</li>
                           </ul>
                         </li>
                       </ul>
-                    </div>
-                  </Slide>
-                  <Slide index={5}>
-                    <div className="feature">
-                      <p className="feature-title">
-                        Messaging
-                        <MdOutlineStar className={'star'} />
-                      </p>
-                      <p className="feature-subtitle">All other applications include messaging, but not with these features.</p>
-                      <ul>
-                        <li className="list-title">
-                          Archive Conversations
-                          <ul>
-                            <li>
-                              At any time you can delete/archive a conversation
-                              <ul>
-                                <li>If you need to (for court or reference), you can recover the conversation at any time</li>
-                              </ul>
-                            </li>
-                            <li>
-                              Search
-                              <ul>
-                                <li>
-                                  Enter more than three letters and you will see all messages send or received including the text you are searching
-                                  for
-                                </li>
-                              </ul>
-                            </li>
-                            <li>
-                              Bookmarking
-                              <ul>
-                                <li>
-                                  Bookmark any message at any time
-                                  <ul>
-                                    <li>You can view all bookmarks (saved messages) at any time with one button click</li>
-                                  </ul>
-                                </li>
-                              </ul>
-                            </li>
-                            <li>
-                              Message Copying
-                              <ul>
-                                <li>Longpress any message to copy it so you can paste it anywhere you would like</li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
-                        <li className="list-title">
-                          Children from More than One Parent
-                          <ul>
-                            <li>You can add an unlimited number of children to store information for or share updates about</li>
-                            <li>
-                              Any child (with a valid phone number) can create an account and also use our application
-                              <ul>
-                                <li>
-                                  If your child has their own account, they will have access to areas like the calendar to keep them in the loop
-                                </li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </div>
-                  </Slide>
-                  <Slide index={6}>
-                    <div className="feature">
-                      <p className="feature-title">
-                        Support Team that Caters to You
-                        <MdOutlineStar className={'star'} />
-                      </p>
-                      <p className="feature-subtitle">
-                        Far too often when you reach out to a customer support team it can take days to get an answer, and then when you do get an
-                        answer it typically an answer that you can tell has been copied and pasted to many others in need of help.
-                      </p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'support'}>
+                <p className="feature-title">Support Team that Caters to You</p>
+                <MdOutlineStar className={'star'} />
+                <p className="feature-subtitle">
+                  Far too often when you reach out to a customer support team it can take days to get an answer, and then when you do get an answer it
+                  typically an answer that you can tell has been copied and pasted to many others in need of help.
+                </p>
 
-                      <p className="feature-subtitle">
-                        No longer! We put <b>YOU</b> first.
-                      </p>
+                <p className="feature-subtitle">
+                  No longer! We put <b>YOU</b> first.
+                </p>
+                <div className="content">
+                  <ul>
+                    <li className="list-title">
+                      Lightning Fast Response Time
                       <ul>
-                        <li className="list-title">
-                          Lightning Fast Response Time
+                        <li>
+                          You will have a reply from our response team <b>within hours</b> not days
+                        </li>
+                        <li>
+                          This includes
                           <ul>
-                            <li>
-                              You will have a reply from our response team <b>within hours</b> not days
-                            </li>
-                            <li>
-                              This includes
-                              <ul>
-                                <li>Technical issues encountered in the app</li>
-                                <li>Feature requests</li>
-                                <li>App feedback</li>
-                                <li>Anything else you would like to contact us about</li>
-                              </ul>
-                            </li>
+                            <li>Technical issues encountered in the app</li>
+                            <li>Feature requests</li>
+                            <li>App feedback</li>
+                            <li>Anything else you would like to contact us about</li>
                           </ul>
                         </li>
-                        <li className="list-title">
-                          No hidden or extra cost for support
+                      </ul>
+                    </li>
+                    <li className="list-title">
+                      No hidden or extra cost for support
+                      <ul>
+                        <li>All support requests and feature addition requests are included in your subscription</li>
+                      </ul>
+                    </li>
+                    <li className="list-title">
+                      No Middleman
+                      <ul>
+                        <li>
+                          When you reach out to us for support, your request/concern will go <b>directly</b> to the technical/development team that
+                          will be working on handling the issue
                           <ul>
-                            <li>All support requests and feature addition requests are included in your subscription</li>
-                          </ul>
-                        </li>
-                        <li className="list-title">
-                          No Middleman
-                          <ul>
+                            <li>Eliminates any unnecessary wait time for your concern/request</li>
                             <li>
-                              When you reach out to us for support, your request/concern will go <b>directly</b> to the technical/development team
-                              that will be working on handling the issue
-                              <ul>
-                                <li>Eliminates any unnecessary wait time for your concern/request</li>
-                                <li>
-                                  The technical team will be making the changes to resolve issues or add feature requests - so it makes sense to be
-                                  able to engage with them directly
-                                </li>
-                              </ul>
+                              The technical team will be making the changes to resolve issues or add feature requests - so it makes sense to be able
+                              to engage with them directly
                             </li>
                           </ul>
                         </li>
-                        <li className="list-title">
-                          Feature Requests
+                      </ul>
+                    </li>
+                    <li className="list-title">
+                      Feature Requests
+                      <ul>
+                        <li>
+                          If you would like to have a feature added to our app, let us know!
                           <ul>
                             <li>
-                              If you would like to have a feature added to our app, let us know!
+                              We are more than happy to consider <b>all</b> feature requests
                               <ul>
-                                <li>
-                                  We are more than happy to consider <b>all</b> feature requests
-                                  <ul>
-                                    <li>The goal is provide an all-in-one application that fits your needs exactly</li>
-                                  </ul>
-                                </li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
-                        <li className="list-title">
-                          Authentic Support from Real People
-                          <ul>
-                            <li>
-                              We promise to provide help that is 100% related to the concern/request you send us
-                              <ul>
-                                <li>No bots</li>
-                                <li>No 'canned' responses</li>
-                                <li>No vague responses that do not directly address your concern</li>
+                                <li>The goal is provide an all-in-one application that fits your needs exactly</li>
                               </ul>
                             </li>
                           </ul>
                         </li>
                       </ul>
-                    </div>
-                  </Slide>
-                </Slider>
-              </CarouselProvider>
+                    </li>
+                    <li className="list-title">
+                      Authentic Support from Real People
+                      <ul>
+                        <li>
+                          We promise to provide help that is 100% related to the concern/request you send us
+                          <ul>
+                            <li>No bots</li>
+                            <li>No 'canned' responses</li>
+                            <li>No vague responses that do not directly address your concern</li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
-            <p className="center mt-15" id="see-more-instructions">
-              Drag left to see more
-            </p>
           </div>
         </Fade>
 

@@ -642,6 +642,22 @@
 
   /*#region  600PX PHONE CONTAINER*/
   @media screen and (max-width: 600px) {
+    #home-screen-wrapper {
+      #below-fold-wrapper {
+        .full-width-box {
+          &.unique-features {
+            #feature-grid {
+              display: block;
+              
+              .feature {
+                width: 100%;
+                margin-bottom: 10px;
+              }
+            }
+          }
+        }
+      }
+    }
     #login-container {
       .form-container {
         .form {

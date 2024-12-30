@@ -483,6 +483,120 @@
           .flex {
             gap: 10px;
           }
+          
+          #feature-grid {
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            .feature {
+              background: white;
+              padding: 20px;
+              border-radius: $bigBorderRadius;
+              overflow: hidden;
+              border: 1px solid $iconGrey;
+              align-self: stretch;
+              width: calc((100% / 2) - 5px);
+              position: relative;
+              
+              .star {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                z-index: 100;
+              }
+              
+              .content {
+                max-height: 0;
+                opacity: 0;
+                transition: all .3s ease-in-out;
+              }
+              
+              .feature-title {
+                font-weight: $fwMediumBold;
+                font-size: 18px;
+                position: sticky;
+                top: -20px;
+                background: white;
+                width: 100%;
+                opacity: 1;
+                margin: 0;
+                max-width: 100%;
+                z-index: 100;
+                color: $mainBlue;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                
+                @media screen and (max-width: 600px) {
+                  text-align: left;
+                  left: 0;
+                  position: unset;
+                  margin: 0 auto 0 0;
+                  justify-content: flex-start;
+                  
+                  .star {
+                    position: relative;
+                    bottom: 2px;
+                  }
+                }
+                
+                b {
+                  font-size: 18px;
+                  color: $mainBlue;
+                }
+              }
+              
+              .feature-subtitle {
+                text-align: left;
+                max-width: 100%;
+                margin: 0 0 10px 0;
+                font-size: 14px;
+                
+                b {
+                  font-size: 14px;
+                  color: $mainBlue;
+                }
+              }
+              
+              ul {
+                padding: 0;
+                li:not(.list-title) {
+                  margin-left: 25px;
+                  margin-bottom: 8px;
+                  font-size: 14px;
+                  
+                  ul {
+                    li {
+                      margin-bottom: 0;
+                    }
+                  }
+                }
+                li {
+                  b {
+                    font-size: 14px;
+                    color: $mainBlue;
+                  }
+                  i {
+                    font-size: 14px;
+                  }
+                  &.list-title {
+                    font-size: 14px;
+                    font-weight: $fwMediumBold;
+                    list-style-type: none;
+                    margin-bottom: 10px;
+                  }
+                }
+              }
+              
+              &.active {
+                width: 100%;
+                .content {
+                  max-height: 1500px;
+                  opacity: 1;
+                }
+              }
+            }
+          }
 
           #see-more-instructions {
             font-weight: $fwMediumBold;
@@ -493,110 +607,17 @@
             b {
               font-size: 20px;
             }
-
-            @media screen and (max-width: 600px) {
-              text-align: left;
-            }
-          }
-          .feature {
-            background: white;
-            padding: 20px;
-            border-radius: $bigBorderRadius;
-            max-height: 500px;
-            margin-right: 10px;
-            overflow: auto;
-            mask-image: linear-gradient(to bottom, black 95%, transparent 100%);
-            border: 1px solid $iconGrey;
-            align-self: stretch;
-
-            position: relative;
-
-            @media screen and (max-width: 600px) {
-              max-height: unset;
-              mask-image: unset;
-            }
-
-            @media screen and (min-width: 1000px) {
-              height: 100%;
-            }
-
-            .feature-title {
-              font-weight: $fwMediumBold;
-              font-size: 18px;
-              position: sticky;
-              top: -20px;
-              background: white;
-              width: 100%;
-              opacity: 1;
-              margin: 0;
-              max-width: 100%;
-              z-index: 100;
-              color: $mainBlue;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-
-              @media screen and (max-width: 600px) {
-                text-align: left;
-                left: 0;
-                position: unset;
-                margin: 0 auto 0 0;
-                justify-content: flex-start;
-
-                .star {
-                  position: relative;
-                  bottom: 2px;
-                }
-              }
-
-              b {
-                font-size: 18px;
-                color: $mainBlue;
-              }
-            }
-
-            .feature-subtitle {
-              text-align: left;
-              max-width: 100%;
-              margin: 0 0 10px 0;
+            
+            span {
               font-size: 14px;
-
-              b {
-                font-size: 14px;
-                color: $mainBlue;
-              }
+              opacity: .7;
             }
 
-            ul {
-              padding: 0;
-              li:not(.list-title) {
-                margin-left: 25px;
-                margin-bottom: 8px;
-                font-size: 14px;
-
-                ul {
-                  li {
-                    margin-bottom: 0;
-                  }
-                }
-              }
-              li {
-                b {
-                  font-size: 14px;
-                  color: $mainBlue;
-                }
-                i {
-                  font-size: 14px;
-                }
-                &.list-title {
-                  font-size: 14px;
-                  font-weight: $fwMediumBold;
-                  list-style-type: none;
-                  margin-bottom: 10px;
-                }
-              }
+            @media screen and (max-width: 600px) {
+              text-align: left;
             }
           }
+     
         }
       }
       .boxes {
