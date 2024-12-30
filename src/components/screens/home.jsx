@@ -345,27 +345,17 @@ export default function Home() {
                         </li>
                       </ul>
                     </li>
-                    <li>
-                      If you make an update (add a child, update a calendar event, .etc) you will see the updates <b>automatically</b>
+                    <li className="list-title">
+                      Application, Activity & Data
                       <ul>
+                        <li>
+                          If you make an update (add a child, update a calendar event, .etc) you will see the updates <b>automatically</b>
+                        </li>
                         <li>
                           Because you do not need to utilize an app store, you can install our application on any device (phone, tablet, computer,
                           .etc)
                         </li>
                         <li>If you use more than one device, all of your activity and date will be synced across all devices</li>
-                      </ul>
-                    </li>
-                    <li className="list-title">
-                      Operating System Support
-                      <ul>
-                        <li>Whether you use a Windows, Mac, Android or Apple device, you can install our application on that device</li>
-                      </ul>
-                    </li>
-                    <li className="list-title">
-                      Updates
-                      <ul>
-                        <li>All updates (feature additions, fixes, .etc) are done in the background, you don't have to do anything!</li>
-                        <li>Every time you open the application it will be fully updated</li>
                       </ul>
                     </li>
                   </ul>
