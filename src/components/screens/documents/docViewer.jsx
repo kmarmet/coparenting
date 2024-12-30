@@ -6,6 +6,8 @@ import DocumentConversionManager from '@managers/documentConversionManager'
 import Manager from '@manager'
 import BottomCard from '../../shared/bottomCard'
 import { DebounceInput } from 'react-debounce-input'
+import reactStringReplace from 'react-string-replace'
+
 import {
   contains,
   formatFileName,
@@ -39,7 +41,7 @@ export default function DocViewer() {
   const [searchResultsIndex, setSearchResultsIndex] = useState(1)
   const [showSearch, setShowSearch] = useState(false)
   const [searchResultsCount, setSearchResultsCount] = useState(0)
-
+  const [textWithHeaders, setTextWithHeaders] = useState('')
   const scrollToHeader = (header) => {
     closeSearch()
     const firstChar = header.slice(0, 1)
@@ -260,7 +262,45 @@ export default function DocViewer() {
       }
     })
     setTocHeaders(newHeaderArray.sort())
-    setState({ ...state, isLoading: false })
+  }
+
+  const wrapTextInHeader = (text) => {
+    let result = reactStringReplace(text, 'Thanksgiving Day', (match, i) => (
+      <span className="header" key={match + i}>
+        {match}
+      </span>
+    ))
+    const toReplace = DocumentConversionManager.textHeaders
+    for (let _string of toReplace) {
+      result = reactStringReplace(result, _string.toLocaleLowerCase(), (match, i) => (
+        <span className="header" key={match + i}>
+          {match}
+        </span>
+      ))
+    }
+
+    // for (let header of DocumentConversionManager.textHeaders) {
+    //   const indexOf = text.toLowerCase().indexOf(header.toLowerCase())
+    //   const extractedString = text.substring(indexOf, indexOf + header.length)
+    //   if (indexOf > -1) {
+    //     stringArray.push(extractedString)
+    //   }
+    // }
+    // stringArray = DatasetManager.getUniqueArray(stringArray, true)
+    // let counter = 0
+    // let seenCounters = []
+    // for (let _string of stringArray) {
+    //   result = reactStringReplace(result, _string.toLocaleLowerCase(), (match, i) => (
+    //     <span className="header" key={counter}>
+    //       {`${match}${counter}`}
+    //     </span>
+    //   ))
+    //   counter++
+    //   seenCounters.push(counter)
+    //   console.log(result)
+    // }
+    // setTextWithHeaders(result)
+    return result
   }
 
   // Get/Append Image
@@ -280,7 +320,6 @@ export default function DocViewer() {
     const relevantDoc = await DB.find(DB.tables.documents, ['name', docToView.name], true)
     if (!Manager.isValid(relevantDoc)) {
       setState({ ...state, isLoading: false })
-      console.log('rel')
       return false
     }
     let docOwner = await DB.find(DB.tables.users, ['phone', relevantDoc.uploadedBy], true)
@@ -298,19 +337,24 @@ export default function DocViewer() {
     }
     const imageResult = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, firebasePathId, docToView.name)
     if (imageResult.status === 'success') {
-      await DocumentConversionManager.imageToTextAndAppend(imageResult.imageUrl, document.querySelector('#text-container')).finally(() => {
-        Manager.showPageContainer('show')
-      })
+      // await DocumentConversionManager.imageToTextAndAppend(imageResult.imageUrl, document.querySelector('#text-container')).finally(() => {
+      //   Manager.showPageContainer('show')
+      // })
+      const text = await DocumentConversionManager.imageToTextAndAppend(imageResult.imageUrl)
+
+      // wrapTextInHeader(text)
+      setTextWithHeaders(text)
       // Filter TOC
       const spanHeaders = document.querySelectorAll('.header')
-      let newHeaderArray = []
-      spanHeaders.forEach((header) => {
-        const text = header.textContent.replaceAll(' ', '-')
-        if (newHeaderArray.indexOf(text) === -1) {
-          newHeaderArray.push(text)
-        }
-      })
-      setTocHeaders(newHeaderArray)
+      // let newHeaderArray = []
+      // spanHeaders.forEach((header) => {
+      //   const text = header.textContent.replaceAll(' ', '-')
+      //   if (newHeaderArray.indexOf(text) === -1) {
+      //     newHeaderArray.push(text)
+      //   }
+      // })
+      // setTocHeaders(newHeaderArray)
+      setState({ ...state, isLoading: false })
     } else {
       AlertManager.throwError('No Document Found')
     }
@@ -320,7 +364,7 @@ export default function DocViewer() {
   // Show search icon when text is loaded
   useEffect(() => {
     if (Manager.isValid(tocHeaders, true)) {
-      setState({ ...state, isLoading: false })
+      // setState({ ...state, isLoading: false })
     }
   }, [tocHeaders])
 
@@ -418,6 +462,11 @@ export default function DocViewer() {
       )}
 
       <div id="documents-container" className={`${theme} page-container form`}>
+        {/*{textWithHeaders}*/}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: `${textWithHeaders}`,
+          }}></div>
         <div id="text-container"></div>
       </div>
       {!showSearch && !showCard && (

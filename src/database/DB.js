@@ -21,7 +21,15 @@ const DB = {
     activities: 'activities',
     sharedChildInfo: 'sharedChildInfo',
   },
-  find: async (arrayOrTable, matchArray, isFromDb = true) => {
+  find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
+    if (filterFunction) {
+      if (isFromDb) {
+        const records = await DB.getTable(arrayOrTable)
+        return _.find(records, filterFunction)
+      } else {
+        return _.find(arrayOrTable, filterFunction)
+      }
+    }
     if (isFromDb) {
       const records = await DB.getTable(arrayOrTable)
       return _.find(records, matchArray)
@@ -131,7 +139,7 @@ const DB = {
   delete: async (path, id) => {
     const dbRef = ref(getDatabase())
     let tableRecords = await DB.getTable(path)
-    let rowToDelete = _.find(tableRecords, ['id', id])
+    let rowToDelete = _.find(tableRecords, ['id', id], false)
     if (Manager.isValid(tableRecords, true)) {
       const deleteKey = await DB.getSnapshotKey(path, rowToDelete, 'id')
       if (Manager.isValid(deleteKey)) {

@@ -440,12 +440,16 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           {/* Event Length */}
           <div id="duration-options" className="action-pills calendar">
-            <div className={`duration-option  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
-              <p>Single Day</p>
-            </div>
-            <div className={`duration-option  ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
-              <p>Multiple Days</p>
-            </div>
+            <p
+              className={`underlined-section-title  ${eventLength === 'single' ? 'active' : ''}`}
+              onClick={() => setEventLength(EventLengths.single)}>
+              Single Day
+            </p>
+            <p
+              className={`underlined-section-title  ${eventLength === 'multiple' ? 'active' : ''}`}
+              onClick={() => setEventLength(EventLengths.multiple)}>
+              Multiple Days
+            </p>
           </div>
 
           {/* CALENDAR FORM */}
@@ -542,13 +546,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 label={'Start Time'}
                 className={`${theme} w-50`}
                 value={moment(eventStartTime)}
-                disablePast={true}
                 onAccept={(e) => setEventStartTime(e)}
               />
               <MobileTimePicker
                 onOpen={addThemeToDatePickers}
                 format={'h:mma'}
-                disablePast={true}
                 minutesStep={5}
                 label={'End Time'}
                 className={`${theme} w-50`}

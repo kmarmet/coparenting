@@ -16,7 +16,6 @@ import AlertManager from '../../managers/alertManager'
 import { CgClose } from 'react-icons/cg'
 import { contains, formatNameFirstNameOnly } from '../../globalFunctions'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-import { MdNotificationsActive } from 'react-icons/md'
 import NewCalendarEvent from '../forms/newCalendarEvent'
 import EditCalEvent from '../forms/editCalEvent'
 import NavBar from '../navBar'
@@ -24,6 +23,10 @@ import InputWrapper from '../shared/inputWrapper'
 import { GiPartyPopper } from 'react-icons/gi'
 import DomManager from '../../managers/domManager'
 import { Fade } from 'react-awesome-reveal'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import { TfiClose } from 'react-icons/tfi'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -41,6 +44,7 @@ export default function EventCalendar() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedNewEventDay, setSelectedNewEventDay] = useState(moment())
   const [loadingDisabled, setLoadingDisabled] = useState(false)
+  const [showLegend, setShowLegend] = useState(false)
 
   // GET EVENTS
   const getSecuredEvents = async (selectedDay, selectedMonth) => {
@@ -218,9 +222,12 @@ export default function EventCalendar() {
     setShowHolidays(true)
   }
 
-  const viewAllEvents = async () => {
+  const viewAllEvents = () => {
     setShowHolidaysCard(false)
+    setSearchQuery('')
     setShowSearchCard(false)
+    getSecuredEvents(moment().format(DateFormats.dateForDb).toString()).then((r) => r)
+    Manager.scrollIntoView('#static-calendar')
   }
 
   const handleEventRowClick = async (e, event) => {
@@ -286,10 +293,15 @@ export default function EventCalendar() {
     const staticCalendar = document.querySelector('.MuiDialogActions-root')
     const holidaysButton = document.getElementById('holidays-button')
     const searchButton = document.getElementById('search-button')
-    if (staticCalendar && holidaysButton && searchButton) {
+    const legendButtonWrapper = document.getElementById('legend-wrapper')
+    if (staticCalendar && holidaysButton && searchButton && legendButtonWrapper) {
       staticCalendar.prepend(holidaysButton)
       staticCalendar.prepend(searchButton)
+      staticCalendar.prepend(legendButtonWrapper)
 
+      legendButtonWrapper.addEventListener('click', () => {
+        setShowLegend(true)
+      })
       holidaysButton.addEventListener('click', () => {
         setShowHolidaysCard(!showHolidaysCard)
       })
@@ -330,13 +342,8 @@ export default function EventCalendar() {
           className="form search-card"
           wrapperClass="search-card"
           title={'Find Events'}
-          onClose={async () => {
-            Manager.scrollIntoView('#static-calendar')
-            await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-            setShowSearchCard(false)
-            setRefreshKey(Manager.getUid())
-            setSearchQuery('')
-          }}
+          onClose={viewAllEvents}
+          showCard={showSearchCard}
           onSubmit={() => {
             if (searchQuery.length === 0) {
               AlertManager.throwError('Please enter a search value')
@@ -357,13 +364,11 @@ export default function EventCalendar() {
                 }
               }, 400)
             }
-          }}
-          showCard={showSearchCard}>
+          }}>
           <div className={'mb-5 flex form search-card'} id="search-container">
             <InputWrapper
-              defaultValue="Enter event name..."
+              placeholder="Enter event name..."
               refreshKey={refreshKey}
-              inputType={'input'}
               inputValue={searchQuery}
               onChange={async (e) => {
                 const inputValue = e.target.value
@@ -428,11 +433,36 @@ export default function EventCalendar() {
             />
           </div>
 
+          {/* LEGEND */}
+          <Accordion expanded={showLegend} id={'calendar-legend'} className={showLegend ? 'open' : 'closed'}>
+            <AccordionSummary className={showLegend ? 'open' : 'closed'}>
+              {showLegend && <TfiClose onClick={() => setShowLegend(false)} />}
+            </AccordionSummary>
+            <AccordionDetails>
+              <p className="flex currentUser">
+                <span className="dot in-legend currentUser"></span> Your Events
+              </p>
+              <p className="flex coparent">
+                <span className="dot coparent in-legend"></span> Co-Parent/Child Events
+              </p>
+              <p className="flex standard">
+                <span className="dot in-legend standard"></span> Standard Events
+              </p>
+            </AccordionDetails>
+          </Accordion>
+
           {/* CONTENT WITH PADDING */}
           <div className="with-padding">
             {/* BELOW CALENDAR */}
             {!showHolidays && !showSearchCard && (
               <div id="below-calendar" className={`${theme} mt-10 flex`}>
+                {/* LEGEND BUTTON */}
+                <div className="flex" id="legend-wrapper" onClick={() => setShowLegend(true)}>
+                  <span className="dot currentUser"></span>
+                  <span className="dot coparent"></span>
+                  <span className="dot standard"></span>
+                  <p id="legend-button">Legend</p>
+                </div>
                 {/* HOLIDAY BUTTON */}
                 <p id="holidays-button">Holidays</p>
 
@@ -482,18 +512,6 @@ export default function EventCalendar() {
                               )}
                               {CalendarManager.formatEventTitle(event?.title)}
                             </p>
-                            {Manager.isValid(readableReminderTimes, true) && (
-                              <div className="flex reminders">
-                                <>
-                                  <MdNotificationsActive className={'event-icon'} />
-                                  <p
-                                    className="flex reminder-times"
-                                    dangerouslySetInnerHTML={{
-                                      __html: `${readableReminderTimes.join('|').replaceAll('|', '<span class="divider">|</span>').replaceAll(' minutes before', 'mins').replaceAll('At time of event', 'Event Time').replaceAll(' hour before', 'hr')}`,
-                                    }}></p>
-                                </>
-                              </div>
-                            )}
                           </div>
                           {/* DATE CONTAINER */}
                           <div id="subtitle" className="flex space-between calendar">

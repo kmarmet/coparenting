@@ -3,8 +3,15 @@ var Expense;
 
 import Manager from "../managers/manager";
 
+import moment from "moment";
+
+import DateFormats from "../constants/dateFormats";
+
 export default Expense = class Expense {
-  constructor(id = '', name = '', imageName = '', shareWith = [], amount = '', dateAdded = Manager.getCurrentDate(), paidStatus = 'unpaid', children = [], dueDate, ownerPhone, notes, recipientName, repeating = false, category = '', payer = '') {
+  constructor(id = Manager.getUid(), name = '', imageName = '', shareWith = [], amount = 0, dateAdded = moment().format(DateFormats.dateForDb), paidStatus = 'unpaid', children = [], dueDate = '', ownerPhone = '', notes = '', recipientName = '', repeating = false, category = '', payer = {
+      phone: '',
+      name: ''
+    }) {
     this.id = id;
     this.name = name;
     this.imageName = imageName;

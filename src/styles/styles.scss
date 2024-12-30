@@ -386,7 +386,10 @@
       color: $green;
     }
 
-
+    .views-wrapper {
+      @include viewsWrapper;
+    }
+    
     #screen-title-wrapper {
       align-items: flex-start;
 

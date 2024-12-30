@@ -9,7 +9,7 @@ import NotificationManager from 'managers/notificationManager'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import DateFormats from '../../constants/dateFormats'
 import moment from 'moment'
-import Memory from '../../models/memory'
+import Memory from '../../models/memory.js'
 import {
   contains,
   formatFileName,
@@ -34,7 +34,6 @@ import ModelNames from '../../models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import BottomCard from '../shared/bottomCard'
-import DateManager from '../../managers/dateManager'
 import ObjectManager from '../../managers/objectManager'
 import ImageManager from '../../managers/imageManager'
 import AlertManager from '../../managers/alertManager'
@@ -44,30 +43,22 @@ import ActivityCategory from '../../models/activityCategory'
 export default function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, navbarButton, updateKey, theme } = state
-  const [shareWith, setShareWith] = useState([])
-  const [memoryNotes, setMemoryNotes] = useState('')
   const [images, setImages] = useState([])
-  const [memoryTitle, setMemoryTitle] = useState('')
-  const [memoryDate, setMemoryDate] = useState('')
   const [resetKey, setResetKey] = useState(Manager.getUid())
+  const [newMemory, setNewMemory] = useState(new Memory())
   const inputFile = useRef(null)
 
   const resetForm = async () => {
     Manager.resetForm('new-memory-wrapper')
-    setMemoryNotes('')
-    setImages([])
-    setMemoryTitle('')
-    setMemoryDate('')
-    setState({ ...state, isLoading: false })
-    hideCard()
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    setState({ ...state, currentUser: updatedCurrentUser })
+    setState({ ...state, currentUser: updatedCurrentUser, isLoading: false })
     setResetKey(Manager.getUid())
+    hideCard()
   }
 
   const handleShareWithSelection = async (e) => {
-    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
-    setShareWith(updated)
+    const updated = await Manager.handleShareWithSelection(e, currentUser, newMemory.shareWith)
+    setNewMemory((prevMemory) => ({ ...prevMemory, shareWith: updated }))
   }
 
   const submit = async () => {
@@ -81,7 +72,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
     }
 
     if (validAccounts > 0) {
-      if (shareWith.length === 0) {
+      if (newMemory.shareWith.length === 0) {
         AlertManager.throwError('Please choose who you would like to share this memory with')
         return false
       }
@@ -122,9 +113,6 @@ export default function NewMemoryForm({ hideCard, showCard }) {
       return false
     }
 
-    MyConfetti.fire()
-    hideCard()
-
     // Upload Image
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.id, localImages)
       .then(() => {
@@ -139,19 +127,11 @@ export default function NewMemoryForm({ hideCard, showCard }) {
           // Add to user memories object
           for (const url of urls) {
             const imageName = FirebaseStorage.getImageNameFromUrl(url)
-
-            const newMemory = new Memory()
-            newMemory.notes = memoryNotes
-            newMemory.id = Manager.getUid()
-            newMemory.url = url
-            newMemory.memoryCaptureDate = DateManager.dateIsValid(memoryDate) ? moment(memoryDate).format(DateFormats.dateForDb) : ''
-            newMemory.memoryName = Manager.isValid(imageName) && imageName.length > 0 ? imageName : ''
-            newMemory.title = memoryTitle
-            newMemory.shareWith = shareWith
-            newMemory.creationDate = moment().format(DateFormats.dateForDb)
-            newMemory.ownerPhone = currentUser?.phone
-
             const cleanedObject = ObjectManager.cleanObject(newMemory, ModelNames.memory)
+
+            cleanedObject.url = url
+            cleanedObject.memoryName = imageName
+            cleanedObject.ownerPhone = currentUser?.phone
 
             // Add to Database
             await DB.add(`${DB.tables.memories}`, cleanedObject)
@@ -159,7 +139,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
 
           // Send Notification
           await NotificationManager.sendToShareWith(
-            shareWith,
+            newMemory.shareWith,
             currentUser,
             `New Memory`,
             `${formatNameFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
@@ -168,6 +148,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
         })
         AppManager.setAppBadge(1)
         await resetForm()
+        MyConfetti.fire()
       })
   }
 
@@ -209,9 +190,8 @@ export default function NewMemoryForm({ hideCard, showCard }) {
             <InputWrapper
               refreshKey={resetKey}
               inputType={'input'}
-              defaultValue="Title"
               labelText={'Title'}
-              onChange={(e) => setMemoryTitle(e.target.value)}></InputWrapper>
+              onChange={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, title: e.target.value }))}></InputWrapper>
 
             {/* DATE */}
             <InputWrapper labelText={'Memory Capture Date'} inputType={'date'}>
@@ -219,14 +199,14 @@ export default function NewMemoryForm({ hideCard, showCard }) {
                 onOpen={addThemeToDatePickers}
                 value={moment()}
                 className={`${theme} m-0 w-100 mui-input`}
-                onAccept={(e) => setMemoryDate(e)}
+                onAccept={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, memoryCaptureDate: moment(e).format(DateFormats.dateForDb) }))}
               />
             </InputWrapper>
 
             {/* NOTES */}
             <InputWrapper
               refreshKey={resetKey}
-              onChange={(e) => setMemoryNotes(e.target.value)}
+              onChange={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, notes: e.target.value }))}
               inputType={'textarea'}
               defaultValue="Image Description/Notes"
               labelText={'Image Description/Notes'}></InputWrapper>

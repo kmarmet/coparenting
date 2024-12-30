@@ -1,13 +1,29 @@
 @import '../mixins';
 
 #external-overrides {
-
+  #documents-container {
+    .header {
+      width: 100%;
+      display: block;
+      font-weight: $fwMediumBold;
+      margin: 20px 0 5px 0;
+      line-height: 1.3;
+      font-size: 20px;
+      text-transform: capitalize;
+      background-color: $lightIconBgBlue;
+      color: $mainBlue;
+      border-radius: 5px;
+      padding: 12px 0;
+      justify-content: center;
+      text-align: center;
+    }
+  }
   #bottom-actions {
     padding-top: 10px;
     position: fixed;
     bottom: 80px;
     z-index: 1000;
-    @include  centerHoriz;
+    @include centerHoriz;
     #toc-button,
     #search-button {
       position: fixed;
@@ -26,7 +42,7 @@
         width: 50vw;
         @include centerHoriz;
         background-color: $green;
-        color:white;
+        color: white;
         @include shadow;
       }
       &#search-button {
@@ -58,7 +74,6 @@
 
   #documents-container,
   #doc-selection-container {
-    
     &#documents-container {
       #bottom-card {
         bottom: -75vh;
@@ -70,11 +85,10 @@
       #text-container {
         max-height: 90vh;
         overflow-x: hidden;
-        
-        p {
 
+        p {
           &.low-opacity {
-            opacity: .5;
+            opacity: 0.5;
           }
         }
 
@@ -90,7 +104,6 @@
     }
 
     .add-document-text {
-      
       display: flex;
       align-items: center;
       margin-bottom: 10px;
@@ -111,10 +124,10 @@
       p {
         font-size: 20px;
       }
-      
+
       .row {
         @include row;
-        
+
         .checkbox {
           @include extraClickableSpace;
           position: relative;
@@ -125,20 +138,20 @@
             transform: none;
           }
         }
-        
+
         .doc-type {
           width: 100%;
           padding-top: 5px;
           p {
             font-size: 15px;
-            opacity: .7;
+            opacity: 0.7;
           }
           svg {
             font-size: 18px;
             margin-right: 8px;
           }
         }
-        
+
         .section {
           @include lineItem;
           justify-content: flex-start;
@@ -151,43 +164,42 @@
           &.notifications {
             flex-wrap: nowrap;
             justify-content: space-between;
-            
+
             span {
               line-height: 1.2;
               justify-self: flex-start;
               margin-right: auto;
               margin-left: 0;
-              
+
               &.accent {
                 margin-right: 20px;
               }
             }
-            
+
             #checkbox-group {
               display: flex;
               flex-wrap: nowrap;
               margin: 0 0 0 10px;
-              
+
               .flex {
                 width: auto;
-                
+
                 &:last-child {
                   margin: 0;
                 }
               }
             }
           }
-          
+
           span {
             font-size: 18px;
             opacity: 0.8;
             color: white;
-            
+
             &:nth-child(2) {
               font-size: 16px;
               margin-right: 20px;
               opacity: 0.5;
-              
             }
           }
         }
@@ -203,7 +215,7 @@
     .instructions {
       &.gallery {
         margin-bottom: 10px;
-        
+
         margin-top: 0;
       }
     }
@@ -232,7 +244,6 @@
           display: none;
 
           &.image-name {
-            
             font-size: 14px;
             width: 100%;
             border-bottom: 0;
@@ -286,7 +297,6 @@
     }
 
     p {
-      
       line-height: 1.3;
       font-weight: 400;
       font-size: 16px;
@@ -348,13 +358,12 @@
         font-size: 20px;
         text-transform: capitalize;
         background-color: $mainBlue;
-        color:white;
+        color: white;
         border-radius: 5px;
         display: flex;
         padding: 12px 0;
         justify-content: center;
         text-align: center;
-        
 
         strong {
           font-weight: bold;
@@ -461,13 +470,12 @@
       border-radius: 100%;
       bottom: 120px;
       right: 20px;
-      
+
       z-index: 1;
       font-size: 45px;
     }
 
     #toc-icon {
-      
       font-size: 40px;
       position: fixed;
       right: 0;
@@ -506,7 +514,6 @@
       }
 
       h4 {
-        
         width: 100%;
         font-size: 20px;
         display: flex;
@@ -516,7 +523,7 @@
       .toc-header {
         font-weight: 400;
         font-size: 15px;
-        
+
         background-color: transparent;
         border-radius: 0;
         width: 100%;

@@ -636,7 +636,6 @@
     }
   }
 }
-
 @mixin transformHover {
   @media screen and (min-width: 650px) {
     &:hover {
@@ -941,6 +940,29 @@
 /*#endregion  POSITIONING*/
 
 /*#region  COMPONENTS*/
+@mixin viewsWrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 15px;
+  
+  * {
+    line-height: 1;
+  }
+
+  .view {
+    padding-bottom: 3px;
+    font-size: 14px;
+    margin: 0;
+    &.active {
+      border-bottom: 1px solid #557fff;
+      font-weight: 500;
+      color: #557fff;
+      opacity: 1;
+    }
+  }
+}
+
 @mixin brandBar {
   width: 100vw;
   padding: 10px 0;
@@ -1489,7 +1511,7 @@
   }
 
   #checkboxes {
-    gap: 0 10px;
+    gap: 0 8px;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -2529,7 +2551,6 @@
   &.expense-tracker,
   &.swap-requests {
     &.expense-tracker {
-      min-height: 90vh;
       #expense-image {
         height: 100px;
         width: 100px;
@@ -2541,6 +2562,17 @@
           border: 1px solid $borderColor;
         }
       }
+      #row {
+        margin-bottom: 10px;
+
+        b {
+          font-size: 16px;
+        }
+
+        #title {
+          font-size: 16px;
+        }
+      }
     }
     #row {
       border: 0;
@@ -2550,7 +2582,6 @@
     #title {
       font-weight: $fwRegular;
       line-height: 1.2;
-      font-size: 18px;
     }
     #primary-icon-wrapper {
       height: 35px;
@@ -2569,7 +2600,6 @@
         display: flex;
         align-items: center;
         padding: 5px 10px;
-        border-radius: $borderRadius;
         background-color: transparent;
         min-width: 30%;
         justify-content: center;
@@ -2582,8 +2612,7 @@
         }
         &.red {
           border: 1px solid $red;
-          background-color: $red;
-          color: white;
+          color: $red;
         }
         &.blue {
           border: 1px solid $mainBlue;
@@ -2714,44 +2743,26 @@
 
   // CUSTOM CHILD INFO
   &.custom-child-info-wrapper {
+    #checkbox-group {
+      margin-bottom: 15px;
+    }
     #info-type {
       display: flex;
       align-items: center;
-      background-color: $bestGreyForWhite;
       border-radius: 20px;
       margin-bottom: 20px;
+      gap: 10px;
+      margin-top: 10px;
 
       * {
         line-height: 1;
         margin: 0;
-        padding: 0;
       }
 
       .item {
-        align-items: center;
-        justify-content: center;
-        color: $lightDarkGrey;
-        background-color: transparent;
-        text-align: center;
-        text-transform: uppercase;
         transition: all 0.3s ease-in-out;
-        border: 0;
-        padding: 10px;
-        display: flex;
-        font-size: 14px;
-        align-self: stretch;
-        border-radius: 20px;
-        width: calc(100% / 4);
-
         @include hover;
-
-        &.active {
-          background-color: $mainBlue;
-          width: 50%;
-          color: white;
-          line-height: 1;
-          opacity: 1;
-        }
+        width: calc(100% / 4);
       }
     }
   }

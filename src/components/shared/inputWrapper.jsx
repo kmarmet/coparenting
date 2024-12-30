@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 import Label from './label'
+import Manager from '@manager'
 
 function InputWrapper({
   wrapperClasses = '',
   children,
   labelText,
-  inputType,
+  inputType = 'input',
   required,
   onChange,
   defaultValue = '',
@@ -34,7 +35,7 @@ function InputWrapper({
       id="input-wrapper"
       //TODO fix spacing/margin
       className={`${wrapperClasses} ${inputType}  input-container`}>
-      <Label text={`${labelText}`} required={required} />
+      {!Manager.isEmpty(labelText) && <Label text={`${labelText}`} required={required} />}
       {!noInputTypes.includes(inputType) && (
         <>
           {/* LABEL */}
@@ -63,6 +64,7 @@ function InputWrapper({
           onChange={onChange}
           className={inputClasses}
           cols="30"
+          defaultValue={defaultValue}
           key={refreshKey}
           rows="10"
         />

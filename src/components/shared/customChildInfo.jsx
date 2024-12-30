@@ -24,7 +24,6 @@ import moment from 'moment'
 import CheckboxGroup from './checkboxGroup'
 import Autocomplete from 'react-google-autocomplete'
 import InputWrapper from './inputWrapper'
-import Label from './label'
 import BottomCard from './bottomCard'
 import AlertManager from '../../managers/alertManager'
 import ShareWithCheckboxes from './shareWithCheckboxes'
@@ -103,18 +102,25 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       showCard={showCard}>
       <div className="form">
         {/* INFO SECTIONS */}
-        <Label text={'Section'} required={true} />
         <div className="flex" id="info-type">
-          <p onClick={() => setInfoSection('general')} className={infoSection === 'general' ? 'active item' : 'item'}>
+          <p
+            onClick={() => setInfoSection('general')}
+            className={infoSection === 'general' ? 'active item underlined-section-title' : 'item underlined-section-title'}>
             General
           </p>
-          <p onClick={() => setInfoSection('medical')} className={infoSection === 'medical' ? 'active item' : 'item'}>
+          <p
+            onClick={() => setInfoSection('medical')}
+            className={infoSection === 'medical' ? 'active item underlined-section-title' : 'item underlined-section-title'}>
             Medical
           </p>
-          <p onClick={() => setInfoSection('schooling')} className={infoSection === 'schooling' ? 'active item' : 'item'}>
+          <p
+            onClick={() => setInfoSection('schooling')}
+            className={infoSection === 'schooling' ? 'active item underlined-section-title' : 'item underlined-section-title'}>
             Schooling
           </p>
-          <p onClick={() => setInfoSection('behavior')} className={infoSection === 'behavior' ? 'active item' : 'item'}>
+          <p
+            onClick={() => setInfoSection('behavior')}
+            className={infoSection === 'behavior' ? 'active item underlined-section-title' : 'item underlined-section-title'}>
             Behavior
           </p>
         </div>

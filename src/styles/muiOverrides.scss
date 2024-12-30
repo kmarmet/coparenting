@@ -124,7 +124,7 @@
 
     .MuiDateRangeCalendar-monthContainer {
       width: 100%;
-      
+
       .MuiPickersDay-today {
         color: $mainBlue !important;
         opacity: 1 !important;
@@ -289,7 +289,7 @@
     }
 
     .current-user-visitation-dot {
-      background-color: $mainBlue;
+      background-color: $currentUserOrange;
     }
 
     .coparent-visitation-dot {
@@ -402,7 +402,7 @@
       &.Mui-selected {
         background-color: transparent;
         transform: scale(1.3);
-        transition: all .2s ease-in-out !important;
+        transition: all 0.2s ease-in-out !important;
         color: $mainBlue !important;
         font-weight: $fwMediumBold !important;
         .dot-wrapper {
@@ -411,6 +411,97 @@
       }
     }
   }
+
+  #legend-wrapper,
+  #calendar-legend {
+    gap: 3px;
+
+    &#legend-wrapper {
+      border-bottom: 1px solid $mainBlue;
+
+      #legend-button {
+        border: 0 !important;
+        padding-left: 3px !important;
+        width: auto !important;
+      }
+    }
+
+    &#calendar-legend {
+      border-radius: $borderRadius !important;
+      background: #f5f5f8;
+      margin: 0 auto !important;
+      position: relative;
+
+      &.open {
+        padding: 20px 0 20px 10px !important;
+      }
+      
+      .MuiButtonBase-root {
+        width: auto !important;
+        margin-left: auto !important;
+        margin-bottom: 15px !important;
+        margin-top: 15px !important;
+        padding: 0 !important;
+        height: unset !important;
+        min-height: unset !important;
+        opacity: .75;
+        position: absolute;
+        top: -5px;
+        right: 0;
+        z-index: 1000;
+        
+        svg {
+          font-size: 15px !important;
+        }
+      }
+    }
+
+    .closed {
+      display: none !important;
+    }
+    .open {
+      display: block !important;
+    }
+    
+    p {
+      &.coparent {
+        color: $coparentPurple;
+      }
+      &.standard {
+        color: $green;
+      }
+      
+      &.currentUser {
+        color: $currentUserOrange;
+      }
+    }
+
+
+    .dot {
+      background: red;
+      height: 5px;
+      width: 5px;
+      border-radius: 100%;
+
+      &.in-legend {
+        margin-right: 10px;
+        display: block;
+      }
+
+      &.coparent {
+        background: $coparentPurple;
+      }
+
+      &.standard {
+        background: $green;
+      }
+
+      &.currentUser {
+        background: $currentUserOrange;
+      }
+    }
+  }
+
   .MuiPickersLayout-root {
     background: $lightBg !important;
     margin: 0 !important;
@@ -449,14 +540,14 @@
       position: relative;
       border-radius: 0 !important;
 
-      &:before {
-        content: '' !important;
-        left: -20px !important;
-        right: -20px !important;
-        bottom: -20px !important;
-        top: -20px !important;
-        position: absolute !important;
-      }
+      //      &:before {
+      //        content: '' !important;
+      //        left: -20px !important;
+      //        right: -20px !important;
+      //        bottom: -20px !important;
+      //        top: -20px !important;
+      //        position: absolute !important;
+      //      }
     }
 
     .divider {
@@ -525,7 +616,6 @@
     border-radius: 30px;
     width: 95vw !important;
     @include bestShadow;
-    
 
     &[role='dialog'] {
       .MuiPickersLayout-root {
@@ -536,11 +626,11 @@
         [aria-colindex='1'],
         [aria-colindex='7'] {
           opacity: 0.5 !important;
-            
-            &.MuiPickersDay-today {
-              color: $mainBlue !important;
-              opacity: 1 !important;
-            }
+
+          &.MuiPickersDay-today {
+            color: $mainBlue !important;
+            opacity: 1 !important;
+          }
 
           &.Mui-selected {
             opacity: 1 !important;

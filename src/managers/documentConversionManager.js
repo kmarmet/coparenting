@@ -1,6 +1,8 @@
 import Manager from '@manager'
 import { createWorker } from 'tesseract.js'
 import FirebaseStorage from '@firebaseStorage'
+import reactStringReplace from 'react-string-replace'
+
 import {
   contains,
   displayAlert,
@@ -30,7 +32,7 @@ const DocumentConversionManager = {
     'assets',
     'debts',
     'equitable-distribution-release',
-    'dower-curtesy-and-homestead-release',
+    'dower-courtesy-and-homestead-release',
     'between',
     'background',
     'living-separate-and-apart',
@@ -105,14 +107,96 @@ const DocumentConversionManager = {
     'additional-support',
     'deferred',
     'dependents',
+    'thanksgiving-day',
   ],
-  documentApiUrl: () => {
-    if (window.location.hostname === 'localhost') {
-      return 'https://localhost:5000/document/getdoctext'
-    } else {
-      return 'https://pcp-node.netlify.app/.netlify/functions/app/'
-    }
-  },
+  textHeaders: [
+    'thanksgiving day',
+    'thanksgiving weekend',
+    'christmas day',
+    "new year's day",
+    "new year's eve",
+    'christmas break',
+    'exchanges and transportation',
+    'income tax exemptions',
+    'child support',
+    'spousal maintenance',
+    'matrimonial home',
+    'assets',
+    'debts',
+    'equitable distribution release',
+    'dower courtesy and homestead release',
+    'background',
+    'living separate and apart',
+    'interference',
+    'children',
+    'child custody',
+    'estate and testamentary disposition',
+    'pension release',
+    'general release',
+    'general provisions',
+    'acknowledgement',
+    'division of property',
+    'real estate',
+    'household goods and furnishings',
+    'motor vehicles',
+    'financial accounts',
+    'incomes taxes',
+    'definitions',
+    'the distribution',
+    'mutual releases indemnification and litigation',
+    'custody and visitation',
+    'spousal support',
+    'the family residence',
+    'retirement benefits',
+    'husbands separate property',
+    'wifes separate property',
+    'severability and enforceability',
+    'law applicable',
+    'introductory provisions',
+    'property',
+    'purpose of agreement',
+    'week one',
+    'week two',
+    'holiday parenting time',
+    'the parties',
+    'the marriage',
+    'separation date',
+    'armed forces',
+    'name change',
+    'minor children',
+    'financial disclosure',
+    'health insurance',
+    'marital home',
+    'husbands"s property',
+    'wife"s liabilities debts',
+    'payment to balance division',
+    'ground for legal separation',
+    'assets disclosure',
+    'other property provisions',
+    'liabilities disclosure',
+    'undisclosed gifts',
+    'future liabilities',
+    'release of liabilities and claims',
+    'status of temporary orders',
+    'waiver of rights on death of other spouse',
+    'reconciliation',
+    'modification by subsequent agreement',
+    'attorney fees to enforce or modify agreement',
+    'cooperation in implementation',
+    'effective date',
+    'court action',
+    'severability',
+    'additional terms & conditions',
+    'future children',
+    'parenting time',
+    'parenting visitation',
+    'physical custody',
+    'notice of change of residence',
+    'previous court actions',
+    'additional support',
+    'deferred',
+    'dependents',
+  ],
   docToHtml: async (fileName, currentUserId) => {
     const myHeaders = new Headers()
     myHeaders.append('Access-Control-Allow-Origin', '*')
@@ -136,6 +220,26 @@ const DocumentConversionManager = {
         .catch((error) => console.error(error))
     }
     return returnHtml
+  },
+  wrapTextInHeader: (text) => {
+    const asArray = text.split(' ')
+    let result = reactStringReplace(text, 'Thanksgiving', (match, i) => (
+      <span className="header" key={match + i}>
+        {match}
+      </span>
+    ))
+
+    for (let _string of asArray) {
+      if (DocumentConversionManager.textHeaders.includes(_string.toLowerCase())) {
+        result = reactStringReplace(result, _string.toLocaleLowerCase(), (match, i) => (
+          <span className="header" key={match + i}>
+            {match}
+          </span>
+        ))
+      }
+    }
+
+    return result
   },
   hasNumbers: (str) => {
     var regex = /\d/g
@@ -161,38 +265,63 @@ const DocumentConversionManager = {
     return text
   },
   imageToTextAndAppend: async (imagePath, textContainer) => {
+    let returnText = ''
     const worker = await createWorker()
     await worker.recognize(imagePath).then((result) => {
       let confidence = result.confidence
       const { data } = result
       const { symbols, lines, paragraphs } = data
+      let allText = []
+      for (let par of paragraphs) {
+        allText.push(par.text)
+      }
+      console.log(allText)
+      //let textWithHeaders = DocumentConversionManager.wrapTextInHeader(allText[0])
+      returnText = reactStringReplace(result, allText[0].toLocaleLowerCase(), (match, i) => (
+        <span className="header" key={match + i}>
+          {match}
+        </span>
+      ))
+      for (let line of lines) {
+        returnText = reactStringReplace(result, line.text.toLocaleLowerCase(), (match, i) => (
+          <span className="header" key={match + i}>
+            {match}
+          </span>
+        ))
+        // if (line.text.indexOf('Halloween') > -1) {
+        //   const wordPosition = getPositionOfWordInText('Halloween', line.text)
+        //   const { start, end } = wordPosition
+        //   console.log(start, end)
+        //   if (start > -1 && start > 0) {
+        //     console.log(start, end)
+        //     // console.log(line.text.substring(start, end))
+        //   }
+        //   line.text = `<span className="sub-header">${line.text}</span>`
+        // }
+      }
 
-      // for (let line of lines) {
-      //   if (line.text.indexOf('Halloween') > -1) {
-      //     const wordPosition = getPositionOfWordInText('Halloween', line.text)
-      //     const { start, end } = wordPosition
-      //     console.log(start, end)
-      //     if (start > -1 && start > 0) {
-      //       console.log(start, end)
-      //       // console.log(line.text.substring(start, end))
-      //     }
-      //     line.text = `<span className="sub-header">${line.text}</span>`
+      //returnText = allText[0]
+
+      // const parEl = document.createElement('p')
+      // // par.text = DocumentConversionManager.formatDocHeaders(par.text)
+      //
+      // parEl.innerHTML = allText[0]
+      // textContainer.appendChild(parEl)
+
+      // paragraphs.forEach((par) => {
+      //   if (DocumentConversionManager.hasNumbers(par.text) && par.text.trim().split(/\s+/).length <= 10) {
+      //     par.text = `<span className="sub-header">${par.text}</span>`
       //   }
-      // }
-
-      paragraphs.forEach((par) => {
-        if (DocumentConversionManager.hasNumbers(par.text) && par.text.trim().split(/\s+/).length <= 10) {
-          par.text = `<span className="sub-header">${par.text}</span>`
-        }
-
-        const parEl = document.createElement('p')
-        par.text = DocumentConversionManager.formatDocHeaders(par.text)
-
-        parEl.innerHTML = par.text
-        textContainer.appendChild(parEl)
-      })
+      //
+      //   const parEl = document.createElement('p')
+      //   par.text = DocumentConversionManager.formatDocHeaders(par.text)
+      //
+      //   parEl.innerHTML = par.text
+      //   textContainer.appendChild(parEl)
+      // })
     })
     await worker.terminate()
+    return returnText
   },
   addHeaderClass: (el) => {
     let strong = el.querySelector('strong')

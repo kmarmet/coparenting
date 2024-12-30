@@ -35,6 +35,8 @@ import DocumentsManager from '../../../managers/documentsManager'
 import { HiOutlineDocumentArrowUp } from 'react-icons/hi2'
 import ActivityCategory from '../../../models/activityCategory'
 import DB_UserScoped from '@userScoped'
+import InputWrapper from '../../shared/inputWrapper'
+import DB from '@db'
 
 export default function UploadDocuments({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -42,7 +44,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
   const [shareWith, setShareWith] = useState([])
   const [docType, setDocType] = useState(null)
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-
+  const [docName, setDocName] = useState('')
   const resetForm = () => {
     hideCard()
     Manager.resetForm('upload-doc-wrapper')
@@ -69,7 +71,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     }
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
-    if (Manager.isValid(childAccounts, true) && currentUser?.coparents?.length > 0) {
+    if (Manager.isValid(validAccounts, true) && currentUser?.coparents?.length > 0) {
       if (shareWith.length === 0) {
         AlertManager.throwError('Please choose who you would like to share this schedule with')
         return false
@@ -83,7 +85,13 @@ export default function UploadDocuments({ hideCard, showCard }) {
 
     // Check for existing document
     const securedDocuments = await SecurityManager.getDocuments(currentUser)
-    const existingDocument = securedDocuments.filter((x) => x.memoryName === image.name)[0]
+    // const existingDocument = securedDocuments.filter((x) => x.memoryName === image.name)[0]
+    const existingDocument = await DB.find(securedDocuments, null, false, (doc) => {
+      if (doc.name === docName && doc.ownerPhone === currentUser.phone) {
+        return true
+      }
+    })
+
     if (existingDocument) {
       // error
       AlertManager.throwError('Document has already been uploaded')
@@ -94,8 +102,10 @@ export default function UploadDocuments({ hideCard, showCard }) {
     let localImages = []
 
     if (docType === 'image') {
-      for (let img of files) {
-        localImages.push(await ImageManager.compressImage(img))
+      if (!Manager.isEmpty(files)) {
+        for (let img of files) {
+          localImages.push(await ImageManager.compressImage(img))
+        }
       }
       files = localImages
     }
@@ -111,11 +121,10 @@ export default function UploadDocuments({ hideCard, showCard }) {
           for (const url of urls) {
             const newDocument = new Doc()
             newDocument.url = url
-            newDocument.uploadedBy = currentUser?.phone
-            newDocument.id = Manager.getUid()
+            newDocument.ownerPhone = currentUser?.phone
             newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
             newDocument.type = docType
-            newDocument.name = FirebaseStorage.getImageNameFromUrl(url)
+            newDocument.name = docName
             const cleanedDoc = ObjectManager.cleanObject(newDocument, ModelNames.doc)
             await DocumentsManager.addDocumentToDocumentsTable(cleanedDoc)
           }
@@ -126,8 +135,8 @@ export default function UploadDocuments({ hideCard, showCard }) {
           await NotificationManager.sendToShareWith(
             shareWith,
             currentUser,
-            `New Document Uploaded`,
-            `${currentUser} has uploaded a new document`,
+            `New Document`,
+            `${formatNameFirstNameOnly(currentUser.name)} has uploaded a new document`,
             ActivityCategory.documents
           )
         })
@@ -179,6 +188,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
           {/* FORM */}
           <div className="form">
             <>
+              <InputWrapper labelText={'Document Name'} onChange={(e) => setDocName(e.target.value)} />
               <CheckboxGroup parentLabel={'Document Type'} required={true} checkboxLabels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
               <ShareWithCheckboxes onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
             </>

@@ -31,10 +31,8 @@
         <item url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/userMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
-        <item url="file://$PROJECT_DIR$/src/models/activitySet.js" />
         <item url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
         <item url="file://$PROJECT_DIR$/src/models/chatRecoveryRequest.js" />
-        <item url="file://$PROJECT_DIR$/src/models/child/activityPriority.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/child.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/general.js" />
@@ -42,6 +40,7 @@
         <item url="file://$PROJECT_DIR$/src/models/conversationMessageBookmark.js" />
         <item url="file://$PROJECT_DIR$/src/models/conversationThread.js" />
         <item url="file://$PROJECT_DIR$/src/models/coparent.js" />
+        <item url="file://$PROJECT_DIR$/src/models/doc.js" />
         <item url="file://$PROJECT_DIR$/src/models/expense.js" />
         <item url="file://$PROJECT_DIR$/src/models/formNames.js" />
         <item url="file://$PROJECT_DIR$/src/models/inputSuggestion.js" />
@@ -86,7 +85,6 @@
       <root url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/userMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
-      <root url="file://$PROJECT_DIR$/src/models/activitySet.js" />
       <root url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
       <root url="file://$PROJECT_DIR$/src/models/chatRecoveryRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/child/child.js" />
@@ -96,6 +94,7 @@
       <root url="file://$PROJECT_DIR$/src/models/conversationMessageBookmark.js" />
       <root url="file://$PROJECT_DIR$/src/models/conversationThread.js" />
       <root url="file://$PROJECT_DIR$/src/models/coparent.js" />
+      <root url="file://$PROJECT_DIR$/src/models/doc.js" />
       <root url="file://$PROJECT_DIR$/src/models/expense.js" />
       <root url="file://$PROJECT_DIR$/src/models/formNames.js" />
       <root url="file://$PROJECT_DIR$/src/models/inputSuggestion.js" />
@@ -108,7 +107,6 @@
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
       <root url="file://$PROJECT_DIR$/src/prototypes.js" />
-      <root url="file://$PROJECT_DIR$/src/models/activityPriority.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

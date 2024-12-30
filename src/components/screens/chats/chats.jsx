@@ -138,7 +138,7 @@ const Chats = () => {
                         onClick={() => {
                           openMessageThread(coparent).then((r) => r)
                         }}>
-                        {getFirstWord(coparent?.name)}
+                        {formatNameFirstNameOnly(coparent?.name)}
                       </p>
                     </div>
                   </div>

@@ -388,7 +388,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           </>
 
           {/* EXPENSE TYPE */}
-          <SelectDropdown wrapperClasses={'mb-15'} selectValue={expenseCategory} onChange={handleCategorySelection} labelText={'Expense Type'}>
+          <SelectDropdown wrapperClasses={'mb-15'} selectValue={expenseCategory} onChange={handleCategorySelection} labelText={'Category'}>
             {ExpenseCategories.map((type, index) => {
               return (
                 <MenuItem key={index} value={type}>
