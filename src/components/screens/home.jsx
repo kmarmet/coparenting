@@ -435,18 +435,6 @@ export default function Home() {
                         </li>
                       </ul>
                     </li>
-                    <li className="list-title">
-                      Children from More than One Parent
-                      <ul>
-                        <li>You can add an unlimited number of children to store information for or share updates about</li>
-                        <li>
-                          Any child (with a valid phone number) can create an account and also use our application
-                          <ul>
-                            <li>If your child has their own account, they will have access to areas like the calendar to keep them in the loop</li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
                   </ul>
                 </div>
               </div>
@@ -565,7 +553,7 @@ export default function Home() {
             <PiMoneyWavyDuotone />
             <div className="text-wrapper">
               <p className="title">Track Expenses and Share Responsibilities</p>
-              <p className="subtitle">Transparency in Shared Financial Responsibilities</p>
+              <p className="text subtitle">Transparency in Shared Financial Responsibilities</p>
               <p className="text">
                 Manage shared expenses like childcare, education, and extracurricular costs with our expense tracking feature, making it easy to split
                 costs and avoid conflicts over money.
@@ -619,7 +607,7 @@ export default function Home() {
             <div className="box section security-and-privacy with-bg">
               <AiTwotoneSafetyCertificate />
               <p className="title">Security & Privacy</p>
-              <p className="subtitle">Transparency in Shared Financial Responsibilities</p>
+              <p className="text subtitle">Transparency in Shared Financial Responsibilities</p>
               <p className="text">
                 <b>Custom Sharing: </b> Keep control over what co-parents see by selecting the "share with" checkbox for events, expenses , and
                 important information.

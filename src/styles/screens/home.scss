@@ -16,12 +16,23 @@
       font-size: 28px;
       line-height: 1.2;
       font-weight: $fwBold;
+
+      @media screen and (max-width: 600px) {
+        text-align: left;
+        font-size: 22px;
+      }
     }
 
     .subtitle {
-      font-size: 18px;
       opacity: 0.7;
       padding-bottom: 15px;
+    }
+    
+    .text-wrapper {
+      .subtitle {
+        opacity: 0.7;
+        font-style: italic;
+      }
     }
 
     .section {
@@ -223,8 +234,9 @@
       // COLLABORATION
       &#collaboration {
         border: 0;
-        justify-content: center;
+        justify-content: space-between;
         width: 100%;
+        
         background-image: linear-gradient(
           45deg,
           hsl(260deg 100% 66%) 3%,
@@ -235,17 +247,17 @@
           hsl(184deg 74% 64%) 100%
         );
         gap: 20px;
-        width: 100%;
         @include shadow;
 
         .text-wrapper {
-          width: 45%;
+          max-width: 60%;
           p {
             color: white;
           }
+          
         }
         .img-wrapper {
-          width: 20%;
+          min-width: 25%;
           img {
             width: 100%;
             height: auto;
@@ -259,6 +271,7 @@
           display: block;
           .text-wrapper {
             width: 100%;
+            max-width: 100%;
           }
 
           .img-wrapper {
@@ -314,6 +327,11 @@
         background: #f5f7fa;
         border: 0;
       }
+      &.text-box {
+        .text-box-main-text {
+          opacity: 0.75;
+        }
+      }
     }
     /*#endregion  DEFAULTS*/
     #above-fold-wrapper {
@@ -360,10 +378,11 @@
     #home-navbar {
       justify-content: space-between;
       transition: all 0.3s ease-in-out;
-      
+
       #choose-peace-text {
         color: $mainBlue;
         font-style: italic;
+        font-weight: $fwMedium;
       }
 
       svg {
@@ -434,13 +453,12 @@
 
       .full-width-box {
         background: rgba(130, 159, 250, 0.3);
-        padding: 50px 30px;
+        padding: 30px;
         width: 100%;
         border-radius: $bigBorderRadius;
 
         p {
           text-align: center;
-          max-width: 70%;
           margin: 0 auto;
 
           @media screen and (max-width: 600px) {
@@ -451,13 +469,23 @@
         .title {
           font-weight: $fwBold;
           font-size: 28px;
-
           padding-bottom: 20px;
 
           span {
             font-size: 28px;
             font-weight: $fwBold;
             color: $mainBlue;
+          }
+
+          @media screen and (max-width: 600px) {
+            text-align: left;
+            font-size: 22px;
+            padding-bottom: 10px;
+
+            span {
+              text-align: left;
+              font-size: 22px;
+            }
           }
         }
 
@@ -474,22 +502,24 @@
 
           @media screen and (max-width: 600px) {
             text-align: left;
+            font-size: 16px;
           }
         }
 
         // UNIQUE FEATURES
         &.unique-features {
-          background: $bestGreyForWhite;
+          background: white;
+          border: 1px solid #d6d6d7;
+
           .flex {
             gap: 10px;
           }
-          
+
           #feature-grid {
             flex-wrap: wrap;
             justify-content: center;
             align-items: stretch;
             .feature {
-              background: white;
               padding: 20px;
               border-radius: $bigBorderRadius;
               overflow: hidden;
@@ -497,26 +527,24 @@
               align-self: stretch;
               width: calc((100% / 2) - 5px);
               position: relative;
-              
+              background: #f5f7fa;
               .star {
                 position: absolute;
                 top: 8px;
                 right: 8px;
                 z-index: 100;
               }
-              
+
               .content {
                 max-height: 0;
                 opacity: 0;
-                transition: all .3s ease-in-out;
+                transition: all 0.3s ease-in-out;
               }
-              
+
               .feature-title {
                 font-weight: $fwMediumBold;
                 font-size: 18px;
-                position: sticky;
-                top: -20px;
-                background: white;
+                background: transparent;
                 width: 100%;
                 opacity: 1;
                 margin: 0;
@@ -526,45 +554,45 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                
+
                 @media screen and (max-width: 600px) {
                   text-align: left;
                   left: 0;
                   position: unset;
                   margin: 0 auto 0 0;
                   justify-content: flex-start;
-                  
+
                   .star {
                     position: relative;
                     bottom: 2px;
                   }
                 }
-                
+
                 b {
                   font-size: 18px;
                   color: $mainBlue;
                 }
               }
-              
+
               .feature-subtitle {
                 text-align: left;
                 max-width: 100%;
                 margin: 0 0 10px 0;
                 font-size: 14px;
-                
+
                 b {
                   font-size: 14px;
                   color: $mainBlue;
                 }
               }
-              
+
               ul {
                 padding: 0;
                 li:not(.list-title) {
                   margin-left: 25px;
                   margin-bottom: 8px;
                   font-size: 14px;
-                  
+
                   ul {
                     li {
                       margin-bottom: 0;
@@ -587,7 +615,7 @@
                   }
                 }
               }
-              
+
               &.active {
                 width: 100%;
                 .content {
@@ -607,17 +635,16 @@
             b {
               font-size: 20px;
             }
-            
+
             span {
               font-size: 14px;
-              opacity: .7;
+              opacity: 0.7;
             }
 
             @media screen and (max-width: 600px) {
               text-align: left;
             }
           }
-     
         }
       }
       .boxes {
@@ -644,12 +671,17 @@
             font-size: 28px;
             line-height: 1.2;
             font-weight: $fwBold;
+
+            @media screen and (max-width: 600px) {
+              text-align: left;
+              font-size: 24px;
+            }
           }
 
           .text-box-subtitle {
-            font-size: 18px;
-            opacity: 0.7;
+            opacity: 1;
             padding-bottom: 15px;
+            font-style: italic;
           }
         }
 
@@ -698,6 +730,7 @@
 
               @media screen and (max-width: 600px) {
                 width: 100%;
+                margin: 0;
                 max-width: 100%;
               }
             }
@@ -750,7 +783,7 @@
           }
         }
         .full-width-box {
-          padding: 20px 10px;
+          padding: 20px;
 
           * {
             width: 100%;
