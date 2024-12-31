@@ -69,7 +69,7 @@ export default function Home() {
       if (clickedFeatureElement.classList.contains('active')) {
         clickedFeatureElement.classList.remove('active')
       } else {
-        if (Manager.isValid(allFeatureElements, true)) {
+        if (Manager.isValid(allFeatureElements)) {
           for (let _feature of allFeatureElements) {
             _feature.classList.remove('active')
           }

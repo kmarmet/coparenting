@@ -120,7 +120,7 @@ const Conversation = () => {
 
     let updatedMessages = existingChat?.messages
 
-    if (Manager.isValid(updatedMessages, true)) {
+    if (Manager.isValid(updatedMessages)) {
       if (!Array.isArray(updatedMessages)) {
         updatedMessages = Manager.convertToArray(updatedMessages)
       }
@@ -130,7 +130,7 @@ const Conversation = () => {
     }
 
     // Only send notification if coparent has chat UNmuted
-    if (Manager.isValid(existingChat?.mutedFor, true)) {
+    if (Manager.isValid(existingChat?.mutedFor)) {
       const coparentHasChatMuted = existingChat.mutedFor.filter((x) => x.ownerPhone === messageRecipient.phone).length > 0
 
       if (!coparentHasChatMuted) {
@@ -184,7 +184,7 @@ const Conversation = () => {
     const bookmarkedMessageIds = bookmarkObjects?.map((x) => x.messageId) ?? []
     let bookmarkedMessages = []
 
-    if (Manager.isValid(bookmarkObjects, true)) {
+    if (Manager.isValid(bookmarkObjects)) {
       bookmarkedMessages = chat?.messages?.filter((x) => bookmarkedMessageIds?.includes(x.id))
     }
     const messages = Manager.convertToArray(chat?.messages) || []
@@ -334,7 +334,7 @@ const Conversation = () => {
         {/* SEARCH RESULTS */}
         {bookmarks.length === 0 && searchResults.length > 0 && (
           <div id="messages" className="search-results">
-            {Manager.isValid(searchResults, true) &&
+            {Manager.isValid(searchResults) &&
               searchResults.map((messageObj, index) => {
                 let sender
                 if (formatNameFirstNameOnly(messageObj.sender) === formatNameFirstNameOnly(currentUser?.name)) {
@@ -355,7 +355,7 @@ const Conversation = () => {
         )}
 
         {/* BOOKMARKED MESSAGES */}
-        {Manager.isValid(bookmarks, true) && showBookmarks && (
+        {Manager.isValid(bookmarks) && showBookmarks && (
           <div id="bookmark-messages" className="bookmark-results">
             {bookmarks.map((bookmark, index) => {
               let sender
@@ -390,7 +390,7 @@ const Conversation = () => {
             {/* DEFAULT MESSAGES */}
             <>
               <div id="default-messages">
-                {Manager.isValid(messagesToLoop, true) &&
+                {Manager.isValid(messagesToLoop) &&
                   messagesToLoop.map((message, index) => {
                     // Determine bookmark class
                     const bookmarks = existingChat.bookmarks

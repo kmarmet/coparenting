@@ -6,12 +6,6 @@ import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
 
 const Manager = {
-  isValidAndNotEmpty: (variable) => {
-    if (variable.contains('Invalid')) {
-      return true
-    }
-    return _.isEmpty(variable)
-  },
   invalidInputs: (requiredInputs) => {
     const invalidInputs = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length == 0)
     if (invalidInputs.length > 0) {
@@ -184,9 +178,18 @@ const Manager = {
     console.log(errors)
     return errors.length
   },
-  isValid: (variable, checkArrayLength, validateObject, checkStringLength) => {
-    if (_.isEmpty(variable)) {
-      return false
+  isValid: (variable, checkStringLength = false) => {
+    // Check variable -> do not check for empty string
+    if (_.isEmpty(variable) && !checkStringLength) {
+      if (_.isEmpty(variable)) {
+        return false
+      }
+    }
+    // Check variable -> including empty string
+    else {
+      if (_.isEmpty(variable)) {
+        return false
+      }
     }
     return !(typeof variable === 'string' && variable.indexOf('Invalid') > -1)
   },

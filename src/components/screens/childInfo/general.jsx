@@ -44,7 +44,7 @@ function General({ activeChild, setActiveChild }) {
 
     // Delete Shared
     const sharedProps = sharing?.map((x) => x?.prop)
-    if (Manager.isValid(sharedProps, true) && sharedProps.includes(prop.toLowerCase())) {
+    if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
       const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByPhone)
       await setSelectedChild()
@@ -65,7 +65,7 @@ function General({ activeChild, setActiveChild }) {
       // Set info
       let values = Object.entries(activeChild.general)
 
-      if (Manager.isValid(sharedValues, true)) {
+      if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
       setGeneralValues(values)
@@ -100,7 +100,7 @@ function General({ activeChild, setActiveChild }) {
           General
         </AccordionSummary>
         <AccordionDetails>
-          {Manager.isValid(generalValues, true) &&
+          {Manager.isValid(generalValues) &&
             generalValues.map((prop, index) => {
               const infoLabel = formatInfoLabel(prop[0])
               const value = prop[1]

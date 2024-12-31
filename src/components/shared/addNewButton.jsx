@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React from 'react'
 import Manager from '@manager'
 
 export default function AddNewButton({ onClick, icon, scopedClass }) {
   return (
     <button
-      className={
-        Manager.isValid(scopedClass, false, false, true) ? `add-new-button button bottom green ${scopedClass}` : 'add-new-button button bottom green'
-      }
+      className={Manager.isValid(scopedClass) ? `add-new-button button bottom green ${scopedClass}` : 'add-new-button button bottom green'}
       onClick={(e) => {
         onClick()
         e.target.parentNode.classList.remove('close')

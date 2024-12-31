@@ -39,61 +39,61 @@ SecurityManager =
   getExpenses: (currentUser) ->
     returnRecords = []
     allExpenses = Manager.convertToArray(await DB.getTable(DB.tables.expenseTracker)).flat()
-    if Manager.isValid(allExpenses,true)
+    if Manager.isValid(allExpenses)
       for expense in allExpenses
         shareWith = expense.shareWith
         if (expense.ownerPhone == currentUser?.phone)
           returnRecords.push(expense)
-        if Manager.isValid(shareWith, true)
+        if Manager.isValid(shareWith)
           if shareWith.includes(currentUser?.phone)
             returnRecords.push(expense)
     return returnRecords
   getSwapRequests: (currentUser) ->
     returnRecords = []
     allRequests = Manager.convertToArray(await DB.getTable(DB.tables.swapRequests)).flat()
-    if Manager.isValid(allRequests,true)
+    if Manager.isValid(allRequests)
       for request in allRequests
         shareWith = request.shareWith
         if (request.ownerPhone == currentUser?.phone)
           returnRecords.push(request)
-        if Manager.isValid(shareWith, true)
+        if Manager.isValid(shareWith)
           if shareWith.includes(currentUser?.phone)
             returnRecords.push(request)
     return returnRecords
   getTransferChangeRequests: (currentUser) ->
     returnRecords = []
     allRequests = Manager.convertToArray(await DB.getTable(DB.tables.transferChangeRequests)).flat()
-    if Manager.isValid(allRequests,true)
+    if Manager.isValid(allRequests)
       for request in allRequests
         shareWith = request.shareWith
         if (request.ownerPhone == currentUser?.phone)
           returnRecords.push(request)
-        if Manager.isValid(shareWith, true)
+        if Manager.isValid(shareWith)
           if shareWith.includes(currentUser?.phone)
             returnRecords.push(request)
     return returnRecords.flat()
   getDocuments: (currentUser) ->
     returnRecords = []
     allDocs = Manager.convertToArray(await DB.getTable(DB.tables.documents)).flat()
-    if Manager.isValid(allDocs,true)
+    if Manager.isValid(allDocs)
       for doc in allDocs
         shareWith = doc.shareWith
         if (doc.phone == currentUser?.phone)
           returnRecords.push(doc)
         if (doc.phone == currentUser?.phone)
           returnRecords.push(doc)
-        if Manager.isValid(shareWith, true)
+        if Manager.isValid(shareWith)
             returnRecords.push(doc)
     return returnRecords.flat()
   getMemories: (currentUser) ->
     returnRecords = []
     allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}")).flat()
-    if Manager.isValid(allMemories,true)
+    if Manager.isValid(allMemories)
       for memory in allMemories
         shareWith = memory.shareWith
         if (memory.ownerPhone == currentUser?.phone)
           returnRecords.push(memory)
-        if Manager.isValid(shareWith, true)
+        if Manager.isValid(shareWith)
           if shareWith.includes(currentUser?.phone)
             returnRecords.push(memory)
     return returnRecords.flat()
@@ -109,7 +109,7 @@ SecurityManager =
   getInputSuggestions: (currentUser) ->
     returnRecords = []
     suggestions = Manager.convertToArray(await DB.getTable(DB.tables.suggestions)).flat()
-    if Manager.isValid(suggestions,true)
+    if Manager.isValid(suggestions)
       for suggestion in suggestions
         if suggestion.ownerPhone == currentUser?.phone
           returnRecords.push(suggestion)
@@ -118,10 +118,10 @@ SecurityManager =
     chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}")).flat()
     securedChats = []
     # User does not have a chat with root access by phone
-    if Manager.isValid(chats, true)
+    if Manager.isValid(chats)
       for chat in chats.flat()
         # Do not push if chat is hidden
-        if !Manager.isValid(chat.hideFrom, true) or !chat.hideFrom.includes(currentUser.phone)
+        if !Manager.isValid(chat.hideFrom) or !chat.hideFrom.includes(currentUser.phone)
             members = chat?.members?.map (x) -> x.phone
             if currentUser?.phone in members
               securedChats.push(chat)
@@ -130,7 +130,7 @@ SecurityManager =
     allChats = await DB.getTable('chats')
     activeChats = []
     allChatsFlattened = allChats.flat()
-    if Manager.isValid(allChatsFlattened, true)
+    if Manager.isValid(allChatsFlattened)
       for chat in allChatsFlattened
         members = chat.members.map (x) -> x.phone
         if currentUser?.phone in members

@@ -105,7 +105,7 @@ export default function Coparents() {
           {/* COPARENT ICONS CONTAINER */}
           <div id="coparent-container">
             {selectedCoparentDataArray &&
-              Manager.isValid(userCoparents, true) &&
+              Manager.isValid(userCoparents) &&
               userCoparents.map((coparent, index) => {
                 const coparentPhone = selectedCoparentDataArray.filter((x) => contains(x, 'phone'))[0][1]
                 return (
@@ -132,7 +132,7 @@ export default function Coparents() {
           <div id="coparent-info">
             <div className="form">
               {/* ITERATE COPARENT INFO */}
-              {Manager.isValid(selectedCoparentDataArray, true) &&
+              {Manager.isValid(selectedCoparentDataArray) &&
                 selectedCoparentDataArray.map((propArray, index) => {
                   let infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(propArray[0])))
                   infoLabel = formatTitleWords(infoLabel)

@@ -42,7 +42,7 @@ export default function Behavior({ activeChild, setActiveChild }) {
 
     // Delete Shared
     const sharedProps = sharing?.map((x) => x?.prop)
-    if (Manager.isValid(sharedProps, true) && sharedProps.includes(prop.toLowerCase())) {
+    if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
       const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByPhone)
       await setSelectedChild()
@@ -68,7 +68,7 @@ export default function Behavior({ activeChild, setActiveChild }) {
       // Set info
       let values = Object.entries(activeChild.behavior)
 
-      if (Manager.isValid(sharedValues, true)) {
+      if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
       setBehaviorValues(values)

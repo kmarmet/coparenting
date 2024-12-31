@@ -288,11 +288,11 @@
       border-radius: 100%;
     }
 
-    .current-user-visitation-dot {
+    .current-user-visitation-dot, .current-user-event-dot {
       background-color: $currentUserOrange;
     }
 
-    .coparent-visitation-dot {
+    .coparent-visitation-dot, .coparent-event-dot {
       background-color: $coparentPurple;
     }
 

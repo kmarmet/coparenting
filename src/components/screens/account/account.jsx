@@ -85,7 +85,7 @@ export default function Account() {
 
   const updateUserEmail = async () => {
     AlertManager.successAlert('Email has been updated!')
-    if (!Manager.isValid(email, false, false, true)) {
+    if (!Manager.isValid(email)) {
       AlertManager.throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'number' : 'Address'}`)
       return false
     }
@@ -114,7 +114,7 @@ export default function Account() {
   }
 
   const updateUserPhone = async () => {
-    if (!Manager.isValid(phone, false, false, true)) {
+    if (!Manager.isValid(phone)) {
       AlertManager.throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} Number`)
       return false
     }

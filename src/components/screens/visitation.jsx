@@ -95,14 +95,14 @@ export default function Visitation() {
 
   // Specific Weekends
   const addSpecificWeekendsToCalendar = async () => {
-    if (!Manager.isValid(defaultSelectedWeekends, true) || !Manager.isValid(fifthWeekendSelection)) {
+    if (!Manager.isValid(defaultSelectedWeekends) || !Manager.isValid(fifthWeekendSelection)) {
       AlertManager.throwError('Please choose default weekends and a five-month weekend')
       return false
     }
 
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
-    if (Manager.isValid(childAccounts, true) && currentUser?.coparents?.length > 0) {
+    if (validAccounts > 0 && currentUser?.coparents?.length > 0) {
       if (shareWith.length === 0) {
         AlertManager.throwError('Please choose who you would like to share this schedule with')
         return false
@@ -149,7 +149,7 @@ export default function Visitation() {
       AlertManager.throwError('Please choose the Friday of the next weekend YOU have the child(ren)')
       return false
     }
-    if (Manager.isValid(childAccounts, true) && currentUser?.coparents?.length > 0) {
+    if (validAccounts > 0 && currentUser?.coparents?.length > 0) {
       if (shareWith.length === 0) {
         AlertManager.throwError('Please choose who you would like to share this schedule with')
         return false
@@ -183,7 +183,7 @@ export default function Visitation() {
   const addEveryWeekendToCalendar = async () => {
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
-    if (Manager.isValid(childAccounts, true) && currentUser?.coparents?.length > 0) {
+    if (validAccounts > 0 && currentUser?.coparents?.length > 0) {
       if (shareWith.length === 0) {
         AlertManager.throwError('Please choose who you would like to share this schedule with')
         return false
@@ -222,7 +222,7 @@ export default function Visitation() {
 
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
-    if (Manager.isValid(childAccounts, true) && currentUser?.coparents?.length > 0) {
+    if (validAccounts > 0 && currentUser?.coparents?.length > 0) {
       if (shareWith.length === 0) {
         AlertManager.throwError('Please choose who you would like to share this schedule with')
         return false
@@ -267,7 +267,7 @@ export default function Visitation() {
   // SET HOLIDAYS IN DATABASE
   const setHolidaysInDatabase = async () => {
     // Holidays
-    if (Manager.isValid(selectedHolidayDates, true)) {
+    if (Manager.isValid(selectedHolidayDates)) {
       let events = []
       selectedHolidayDates.forEach((holidayDateString) => {
         const dateObject = new CalendarEvent()
@@ -363,7 +363,7 @@ export default function Visitation() {
     const _holidays = await VisitationManager.getVisitationHolidays()
     const userEvents = await SecurityManager.getCalendarEvents(currentUser)
     let userHolidays = []
-    if (Manager.isValid(userEvents, true)) {
+    if (Manager.isValid(userEvents)) {
       userHolidays = userEvents.filter((x) => x.ownerPhone === currentUser?.phone && x.fromVisitationSchedule === true && x.isHoliday === true)
     }
     return {

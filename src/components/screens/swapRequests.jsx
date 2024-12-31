@@ -376,7 +376,7 @@ export default function SwapRequests() {
               </InputWrapper>
 
               {/* INCLUDE CHILDREN */}
-              {Manager.isValid(currentUser?.children, true) && (
+              {Manager.isValid(currentUser?.children) && (
                 <div className="share-with-container ">
                   <div className="flex">
                     <p>Include Child(ren)</p>

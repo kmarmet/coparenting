@@ -48,7 +48,7 @@ export default function Memories() {
 
   const getSecuredMemories = async () => {
     let all = await SecurityManager.getMemories(currentUser)
-    if (Manager.isValid(all, true)) {
+    if (Manager.isValid(all)) {
       // setState({ ...state, isLoading: true })
       let validImages = []
       for (const memory of all) {
@@ -65,7 +65,7 @@ export default function Memories() {
       }
       validImages = validImages.filter((x) => x)
       if (currentUser) {
-        if (Manager.isValid(validImages, true)) {
+        if (Manager.isValid(validImages)) {
           setMemories(validImages)
           setTimeout(() => {
             setState({ ...state, isLoading: false })
@@ -161,7 +161,7 @@ export default function Memories() {
           {/* GALLERY */}
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
             <>
-              {Manager.isValid(memories, true) &&
+              {Manager.isValid(memories) &&
                 memories.map((imgObj, index) => {
                   return (
                     <div key={index} className="memory">

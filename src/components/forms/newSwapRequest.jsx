@@ -245,7 +245,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                   onOpen={addThemeToDatePickers}
                   className={'w-100'}
                   onAccept={(dateArray) => {
-                    if (Manager.isValid(dateArray, true)) {
+                    if (Manager.isValid(dateArray)) {
                       setStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
                       setEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
                     }
@@ -286,7 +286,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
             />
 
             {/* INCLUDE CHILDREN */}
-            {Manager.isValid(currentUser?.children, true) && (
+            {Manager.isValid(currentUser?.children) && (
               <div className="share-with-container ">
                 <div className="flex">
                   <p>Include Child(ren)</p>

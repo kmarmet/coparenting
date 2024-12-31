@@ -70,24 +70,30 @@ export default function EventCalendar() {
   }
 
   const addDayIndicators = async (events) => {
+    const paycheckStrings = ['payday', 'paycheck', 'pay', 'salary', 'paid']
     // Remove existing icons/dots before adding them again
     document.querySelectorAll('.dot-wrapper').forEach((wrapper) => wrapper.remove())
     document.querySelectorAll('.payday-emoji').forEach((emoji) => emoji.remove())
     document.querySelectorAll('.holiday-emoji').forEach((emoji) => emoji.remove())
 
     // Loop through all calendar UI days
-    document.querySelectorAll('.MuiPickersDay-root').forEach((day) => {
+    const days = document.querySelectorAll('.MuiPickersDay-root')
+    for (const day of days) {
       const dayAsMs = day.getAttribute('data-timestamp')
       let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DateFormats.dateForDb)
-      const dayHasEvent = events.filter((x) => x?.startDate === formattedDay || x?.endDate === formattedDay).length > 0
-      const paycheckStrings = ['payday', 'paycheck', 'pay', 'salary', 'paid']
+      const dayEvent = await DB.find(events, ['startDate', formattedDay], false)
+
+      if (!dayEvent) {
+        continue
+      }
+      const daysEvents = events.filter((x) => x.startDate === formattedDay)
 
       // Apply weekend day class
       const dayOfWeek = moment(formattedDay).isoWeekday()
       if (dayOfWeek === 6 || dayOfWeek === 7) {
         day.classList.add('weekend-day')
       }
-      if (dayHasEvent) {
+      if (dayEvent.startDate === formattedDay) {
         const dotWrapper = document.createElement('span')
         dotWrapper.classList.add('dot-wrapper')
 
@@ -154,33 +160,33 @@ export default function EventCalendar() {
           day.append(payDayIcon)
         }
 
-        // VISITATION DOT
-        const currentUserName = formatNameFirstNameOnly(currentUser?.name)
-        if (
-          events.filter((x) => x.startDate === formattedDay && x.fromVisitationSchedule === true && contains(x?.title, currentUserName)).length > 0
-        ) {
-          const visitationDot = document.createElement('span')
-          visitationDot.classList.add('current-user-visitation-dot')
-          visitationDot.classList.add('dot')
-          dotWrapper.append(visitationDot)
-        }
-        // STANDARD EVENT DOT
-        if (events.filter((x) => x.startDate === formattedDay && !x.fromVisitationSchedule).length > 0) {
-          const standardEventDot = document.createElement('span')
-          standardEventDot.classList.add('standard-event-dot')
-          standardEventDot.classList.add('dot')
-          dotWrapper.append(standardEventDot)
+        // ADD DOTS
+        let alreadyAdded = []
+        for (let _event of daysEvents) {
+          const eventType = getRowDotColor(_event)
+
+          if (!alreadyAdded.includes(eventType)) {
+            if (eventType === 'standard-dot') {
+              const standardEventDot = document.createElement('span')
+              standardEventDot.classList.add('standard-event-dot', 'dot')
+              dotWrapper.append(standardEventDot)
+              alreadyAdded.push(eventType)
+            }
+            if (eventType === 'current-user-dot') {
+              const currentUserDot = document.createElement('span')
+              currentUserDot.classList.add('current-user-event-dot', 'dot')
+              dotWrapper.append(currentUserDot)
+              alreadyAdded.push(eventType)
+            }
+            if (eventType === 'coparent-dot') {
+              const coparentDot = document.createElement('span')
+              coparentDot.classList.add('coparent-event-dot', 'dot')
+              dotWrapper.append(coparentDot)
+              alreadyAdded.push(eventType)
+            }
+          }
         }
 
-        // COPARENT EVENT DOT
-        if (
-          events.filter((x) => x.startDate === formattedDay && x.fromVisitationSchedule === true && !contains(x?.title, currentUserName)).length > 0
-        ) {
-          const visitationDot = document.createElement('span')
-          visitationDot.classList.add('coparent-visitation-dot')
-          visitationDot.classList.add('dot')
-          dotWrapper.append(visitationDot)
-        }
         day.append(dotWrapper)
       } else {
         // Add margin top spacer
@@ -190,7 +196,7 @@ export default function EventCalendar() {
           day.append(invisibleDots)
         }
       }
-    })
+    }
   }
 
   const showAllHolidays = async () => {
@@ -313,6 +319,21 @@ export default function EventCalendar() {
     onTableChange().then((r) => r)
   }, [])
 
+  const getRowDotColor = (event) => {
+    const isCurrentUserDot = event.ownerPhone === currentUser?.phone
+    if (event.isHoliday && !event.fromVisitationSchedule) {
+      return 'standard-dot'
+    }
+    if (isCurrentUserDot) {
+      return 'current-user-dot'
+    }
+    if (!isCurrentUserDot) {
+      return 'coparent-dot'
+    }
+
+    return 'standard-dot'
+  }
+
   return (
     <>
       {/* CARDS */}
@@ -350,7 +371,7 @@ export default function EventCalendar() {
               return false
             }
 
-            if (!Manager.isValid(searchResults, true)) {
+            if (!Manager.isValid(searchResults)) {
               AlertManager.throwError('No results found')
               return false
             } else {
@@ -375,7 +396,7 @@ export default function EventCalendar() {
                 if (inputValue.length > 3) {
                   setSearchQuery(inputValue)
                   let results = []
-                  if (Manager.isValid(allEventsFromDb, true)) {
+                  if (Manager.isValid(allEventsFromDb)) {
                     results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
                   }
                   if (results.length > 0) {
@@ -440,13 +461,13 @@ export default function EventCalendar() {
             </AccordionSummary>
             <AccordionDetails>
               <p className="flex currentUser">
-                <span className="dot in-legend currentUser"></span> Your Events
+                <span className="dot in-legend currentUser"></span> Your Event
               </p>
               <p className="flex coparent">
-                <span className="dot coparent in-legend"></span> Co-Parent/Child Events
+                <span className="dot coparent in-legend"></span> Co-Parent/Child Event
               </p>
               <p className="flex standard">
-                <span className="dot in-legend standard"></span> Standard Events
+                <span className="dot in-legend standard"></span> Holiday
               </p>
             </AccordionDetails>
           </Accordion>
@@ -473,8 +494,8 @@ export default function EventCalendar() {
             {/* MAP/LOOP EVENTS */}
             <div className="events">
               <Fade direction={'up'} className={'calendar-events-fade-wrapper'}>
-                {!Manager.isValid(existingEvents, true) && <p id="no-events-text">No events on this day</p>}
-                {Manager.isValid(existingEvents, true) &&
+                {!Manager.isValid(existingEvents) && <p id="no-events-text">No events on this day</p>}
+                {Manager.isValid(existingEvents) &&
                   existingEvents.map((event, index) => {
                     let readableReminderTimes = []
                     event?.reminderTimes?.forEach((time) => {
@@ -482,16 +503,7 @@ export default function EventCalendar() {
                         readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
                       }
                     })
-                    let eventType = 'standard'
-                    if (event?.fromVisitationSchedule) {
-                      if (
-                        contains(formatNameFirstNameOnly(event?.createdBy)?.toLowerCase(), formatNameFirstNameOnly(currentUser?.name).toLowerCase())
-                      ) {
-                        eventType = 'current-user-visitation'
-                      } else {
-                        eventType = 'coparent-visitation'
-                      }
-                    }
+                    let eventType = getRowDotColor(event)
                     return (
                       <div
                         key={index}
@@ -504,12 +516,7 @@ export default function EventCalendar() {
                           {/* TITLE */}
                           <div className="flex space-between" id="title-wrapper">
                             <p className="title flex" id="title" data-event-id={event?.id}>
-                              {contains(eventType, 'coparent') && <span className="event-type-dot coparent"></span>}
-                              {contains(eventType, 'standard') && <span className="event-type-dot standard"></span>}
-                              {contains(eventType, 'current') && <span className="event-type-dot current-user-visitation"></span>}
-                              {!contains(eventType, 'current') && !contains(eventType, 'standard') && !contains(eventType, 'coparent') && (
-                                <span className="event-type-dot blank"></span>
-                              )}
+                              <span className={`${eventType} event-type-dot`}></span>
                               {CalendarManager.formatEventTitle(event?.title)}
                             </p>
                           </div>
@@ -597,7 +604,7 @@ export default function EventCalendar() {
               if (inputValue.length > 3) {
                 setSearchQuery(inputValue)
                 let results = []
-                if (Manager.isValid(allEventsFromDb, true)) {
+                if (Manager.isValid(allEventsFromDb)) {
                   results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
                 }
                 if (results.length > 0) {

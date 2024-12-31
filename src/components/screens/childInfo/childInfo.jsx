@@ -73,7 +73,7 @@ export default function ChildInfo() {
 
     onValue(child(dbRef, `${DB.tables.users}/${currentUser?.phone}/children`), async (snapshot) => {
       const kiddos = Manager.convertToArray(snapshot.val())
-      if (Manager.isValid(kiddos, true)) {
+      if (Manager.isValid(kiddos)) {
         if (!activeInfoChild) {
           setActiveInfoChild(kiddos[0])
         } else {
@@ -173,7 +173,7 @@ export default function ChildInfo() {
           </div>
 
           {/* BUTTONS */}
-          {Manager.isValid(currentUser?.children, true) && (
+          {Manager.isValid(currentUser?.children) && (
             <div>
               <button className="button default center green white-text mt-20" onClick={() => setShowInfoCard(true)}>
                 Add Your Own Info <FaWandMagicSparkles />

@@ -125,7 +125,7 @@ const Chats = () => {
         showCard={showNewConvoCard}
         title={'New Conversation'}>
         {currentUser?.accountType === 'parent' &&
-          Manager.isValid(currentUser?.coparents, true) &&
+          Manager.isValid(currentUser?.coparents) &&
           currentUser?.coparents?.map((coparent, index) => {
             return (
               <>
@@ -148,7 +148,7 @@ const Chats = () => {
             )
           })}
         {currentUser?.accountType === 'child' &&
-          Manager.isValid(currentUser?.parents, true) &&
+          Manager.isValid(currentUser?.parents) &&
           currentUser?.parents?.map((parent, index) => {
             return (
               <div key={index} className="flex" id="users-wrapper">

@@ -140,7 +140,7 @@ export default function ExpenseTracker() {
       existing = existing.filter((x) => x.name === expense.name)
 
       // Delete in Firebase Storage
-      if (Manager.isValid(expense) && Manager.isValid(expense.imageName, null, null, true)) {
+      if (Manager.isValid(expense) && Manager.isValid(expense.imageName)) {
         await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser?.id, expense.imageName, expense)
       }
 
@@ -148,7 +148,7 @@ export default function ExpenseTracker() {
       if (existing.length > 1) {
         AlertManager.confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, async () => {
           let existingMultipleExpenses = existing.filter((x) => x.name === expense.name && x.repeating === true)
-          if (Manager.isValid(existingMultipleExpenses, true)) {
+          if (Manager.isValid(existingMultipleExpenses)) {
             await DB.deleteMultipleRows(DB.tables.expenseTracker, existingMultipleExpenses)
             AlertManager.successAlert(`All ${expense.name} expenses have been deleted`)
           }
@@ -526,7 +526,7 @@ export default function ExpenseTracker() {
               )}
 
               {/* CHILDREN */}
-              {Manager.isValid(activeExpense?.children?.length, true) && (
+              {Manager.isValid(activeExpense?.children) && (
                 <div className="flex flex-start" id="row">
                   <p
                     id="title"
@@ -671,7 +671,7 @@ export default function ExpenseTracker() {
 
           {/* LOOP EXPENSES */}
           <div id="expenses-container">
-            {Manager.isValid(expenses, true) &&
+            {Manager.isValid(expenses) &&
               expenses.map((expense, index) => {
                 return (
                   <div

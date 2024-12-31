@@ -42,7 +42,7 @@ export default DocumentsManager = {
     for (i = 0, len = toDelete.length; i < len; i++) {
       docId = toDelete[i];
       docs = DatasetManager.getValidArray((await DB.getTable(DB.tables.documents)));
-      if (Manager.isValid(docs, true)) {
+      if (Manager.isValid(docs)) {
         results.push((await (async function() {
           var j, len1, results1;
           results1 = [];

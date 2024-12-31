@@ -150,7 +150,7 @@ export default function Activity() {
 
           {/* LOOP ACTIVITIES */}
           <div id="activity-cards">
-            {Manager.isValid(activities, true) &&
+            {Manager.isValid(activities) &&
               activities.map((activity, index) => {
                 const { text, title, dateCreated, creatorPhone, id } = activity
                 const categoryObject = getCategory(activity)

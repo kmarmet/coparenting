@@ -35,7 +35,7 @@ export default AppManager =
   deleteExpiredCalendarEvents: ->
     events = await DB.getTable(DB.tables.calendarEvents)
     events = Manager.convertToArray(events) unless Array.isArray(events)
-    if Manager.isValid(events, true)
+    if Manager.isValid(events)
       events = events.filter (x) -> x?
       for event in events when Manager.isValid(event)
         daysPassed = DateManager.getDuration('days', moment(), event.startDate)

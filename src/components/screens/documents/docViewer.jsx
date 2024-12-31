@@ -148,7 +148,7 @@ export default function DocViewer() {
     setSearchResultsIndex(0)
     setShowSearch(false)
     allHeaders = Array.from(allHeaders)
-    if (Manager.isValid(allHeaders, true)) {
+    if (Manager.isValid(allHeaders)) {
       allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
     }
   }
@@ -160,13 +160,13 @@ export default function DocViewer() {
     const textContainer = document.getElementById('text-container')
 
     const coparentDocsObjects = await SecurityManager.getDocuments(currentUser)
-    if (!Manager.isValid(coparentDocsObjects, true)) {
+    if (!Manager.isValid(coparentDocsObjects)) {
       setState({ ...state, isLoading: false })
       return false
     }
 
     const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
-    if (!Manager.isValid(coparentsFromObject, true)) {
+    if (!Manager.isValid(coparentsFromObject)) {
       setState({ ...state, isLoading: false })
       return false
     }
@@ -306,14 +306,14 @@ export default function DocViewer() {
   // Get/Append Image
   const getImage = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)
-    if (!Manager.isValid(allDocs, true)) {
+    if (!Manager.isValid(allDocs)) {
       setState({ ...state, isLoading: false })
       return false
     }
 
     const coparentsFromObject = allDocs.map((x) => x.coparent)
 
-    if (!Manager.isValid(coparentsFromObject, true)) {
+    if (!Manager.isValid(coparentsFromObject)) {
       setState({ ...state, isLoading: false })
       return false
     }
@@ -363,7 +363,7 @@ export default function DocViewer() {
 
   // Show search icon when text is loaded
   useEffect(() => {
-    if (Manager.isValid(tocHeaders, true)) {
+    if (Manager.isValid(tocHeaders)) {
       // setState({ ...state, isLoading: false })
     }
   }, [tocHeaders])
@@ -429,7 +429,7 @@ export default function DocViewer() {
               onClick={() => {
                 setShowCard(false)
                 let allHeaders = document.querySelectorAll('.header')
-                if (Manager.isValid(allHeaders, true)) {
+                if (Manager.isValid(allHeaders)) {
                   allHeaders = Array.from(allHeaders)
                   allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
                 }

@@ -47,7 +47,7 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
     }
     const updatedChild = await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, toCamelCase(title), value, shareWith)
 
-    if (Manager.isValid(shareWith, true)) {
+    if (Manager.isValid(shareWith)) {
       await NotificationManager.sendToShareWith(
         shareWith,
         currentUser,

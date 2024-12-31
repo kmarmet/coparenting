@@ -71,7 +71,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     }
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
-    if (Manager.isValid(validAccounts, true) && currentUser?.coparents?.length > 0) {
+    if (validAccounts > 0 && currentUser?.coparents?.length > 0) {
       if (shareWith.length === 0) {
         AlertManager.throwError('Please choose who you would like to share this schedule with')
         return false

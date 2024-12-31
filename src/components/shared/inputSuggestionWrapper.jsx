@@ -24,7 +24,7 @@ export default function InputSuggestionWrapper({ suggestions = [], onClick, onCl
         <AccordionSummary className={'invisible-accordion-header'}></AccordionSummary>
         <AccordionDetails>
           <div className="suggestions">
-            {Manager.isValid(suggestions, true) &&
+            {Manager.isValid(suggestions) &&
               suggestions.map((suggestion, index) => {
                 return (
                   <p key={index} onClick={onClick}>

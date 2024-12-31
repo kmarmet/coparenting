@@ -24,7 +24,7 @@ export default DocumentsManager =
   deleteDocsWithIds: (toDelete, currentUser, callback = () => {}) ->
     for docId in toDelete
       docs = DatasetManager.getValidArray(await DB.getTable(DB.tables.documents))
-      if Manager.isValid(docs, true)
+      if Manager.isValid(docs)
         for thisDoc in docs
           if thisDoc.id == docId
             await DB.delete(DB.tables.documents, docId)

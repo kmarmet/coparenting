@@ -43,7 +43,7 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
       wrapperClass="child-selector-card"
       className={`child-selector`}>
       <div className="flex mt-15" id="child-selector">
-        {Manager.isValid(children, true) &&
+        {Manager.isValid(children) &&
           children.map((child, index) => {
             return (
               <div key={index} id="children-container" onClick={(e) => setActiveChild(child)}>

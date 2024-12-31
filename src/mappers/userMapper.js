@@ -9,7 +9,7 @@ UserMapper = {
   childrenToChildAccounts: async function(children) {
     var child, childAccounts, i, len, ref, thisChild;
     childAccounts = [];
-    if (Manager.isValid(children, true)) {
+    if (Manager.isValid(children)) {
       for (i = 0, len = children.length; i < len; i++) {
         child = children[i];
         thisChild = (await DB.find(DB.tables.users, ["phone", child != null ? (ref = child.general) != null ? ref.phone : void 0 : void 0], true));

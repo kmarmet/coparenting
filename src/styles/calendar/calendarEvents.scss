@@ -136,11 +136,14 @@
                 align-self: flex-start;
                 position: relative;
                 top: 3px;
-                &.standard {
+                &.standard-dot {
                   background: $lightGreen;
                 }
-                &.coparent {
+                &.coparent-dot {
                   background: $coparentPurple;
+                }
+                &.current-user-dot {
+                  background: $currentUserOrange;
                 }
                 &.current-user-visitation {
                   background: $accentBlue;

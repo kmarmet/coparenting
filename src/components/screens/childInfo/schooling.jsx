@@ -41,7 +41,7 @@ export default function Schooling({ activeChild, setActiveChild }) {
 
     // Delete Shared
     const sharedProps = sharing?.map((x) => x?.prop)
-    if (Manager.isValid(sharedProps, true) && sharedProps.includes(prop.toLowerCase())) {
+    if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
       const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByPhone)
       await setSelectedChild()
@@ -68,7 +68,7 @@ export default function Schooling({ activeChild, setActiveChild }) {
       // Set info
       let values = Object.entries(activeChild.schooling)
 
-      if (Manager.isValid(sharedValues, true)) {
+      if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
       setSchoolingValues(values)
@@ -95,7 +95,7 @@ export default function Schooling({ activeChild, setActiveChild }) {
           Schooling {!Manager.isValid(activeChild.schooling) ? '- No Info' : ''}
         </AccordionSummary>
         <AccordionDetails>
-          {Manager.isValid(schoolingValues, true) &&
+          {Manager.isValid(schoolingValues) &&
             schoolingValues.map((prop, index) => {
               const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
               const value = prop.flat()[1]

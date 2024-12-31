@@ -5,7 +5,7 @@ export default function Table({ headers, rows }) {
   return (
     <div id="table-wrapper">
       <div id="headers" className="flex">
-        {Manager.isValid(headers, true) &&
+        {Manager.isValid(headers) &&
           headers.map((header, index) => {
             return <span>{header}</span>
           })}

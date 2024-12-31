@@ -4,7 +4,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../context'
 import DB from '@db'
-import CalendarEvent from '@models/calendarEvent'
 import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import NotificationManager from '@managers/notificationManager.js'
@@ -118,10 +117,9 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     const dbRef = ref(getDatabase())
 
     // Set new event values
-    const eventToEdit = new CalendarEvent()
+    const eventToEdit = { ...event }
 
     // Required
-    eventToEdit.id = event?.id
     eventToEdit.title = eventTitle
     eventToEdit.reminderTimes = eventReminderTimes
     eventToEdit.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat() || []
@@ -146,8 +144,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       eventToEdit.title += ' 🎂'
     }
     eventToEdit.websiteUrl = eventWebsiteUrl
-    eventToEdit.repeatInterval = event?.repeatInterval
-    eventToEdit.fromVisitationSchedule = isVisitation ? true : false
+    eventToEdit.fromVisitationSchedule = isVisitation
     eventToEdit.morningSummaryReminderSent = false
     eventToEdit.eveningSummaryReminderSent = false
     eventToEdit.sentReminders = []
@@ -186,7 +183,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         })
 
         // Add cloned dates
-        if (Manager.isValid(clonedDatesToSubmit, true)) {
+        if (Manager.isValid(clonedDatesToSubmit)) {
           await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
         }
 
@@ -196,7 +193,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         }
 
         // Add repeating dates
-        if (Manager.isValid(repeatingDatesToSubmit, true)) {
+        if (Manager.isValid(repeatingDatesToSubmit)) {
           await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
         }
       }
@@ -216,12 +213,12 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         }
 
         // Add cloned dates
-        if (Manager.isValid(clonedDatesToSubmit, true)) {
+        if (Manager.isValid(clonedDatesToSubmit)) {
           await CalendarManager.addMultipleCalEvents(DatasetManager.getUniqueArray(clonedDatesToSubmit, true))
         }
 
         // Add repeating dates
-        if (Manager.isValid(repeatingDatesToSubmit, true)) {
+        if (Manager.isValid(repeatingDatesToSubmit)) {
           await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
         }
       }
@@ -284,27 +281,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     )
   }
 
-  const handleRemindOthersSelection = (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      (e) => {
-        console.log(coparentsToRemind)
-        if (coparentsToRemind?.length === 0) {
-          setCoparentsToRemind([e])
-        } else {
-          if (!coparentsToRemind?.includes(e)) {
-            setCoparentsToRemind([...coparentsToRemind, e])
-          }
-        }
-      },
-      (e) => {
-        let filtered = coparentsToRemind?.filter((x) => x !== e)
-        setCoparentsToRemind(filtered)
-      },
-      true
-    )
-  }
-
   const setDefaultValues = () => {
     setEventTitle(event?.title)
     setEventFromDate(event?.startDate)
@@ -319,8 +295,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setDefaultStartTime(DateManager.isValidDate(event?.startTime) ? moment(event?.startTime, 'hh:mma') : '')
     setView('details')
     setIsDateRange(event?.isDateRange)
-    setIncludeChildren(Manager.isValid(event?.children, true) ? event?.children : [])
-    setShowReminders(Manager.isValid(event?.reminderTimes, true) ? event?.reminderTimes : [])
+    setIncludeChildren(Manager.isValid(event?.children))
+    setShowReminders(Manager.isValid(event?.reminderTimes))
 
     // Repeating
     if (Manager.isValid(event?.repeatInterval)) {
@@ -336,7 +312,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       await resetForm()
     } else {
       let clonedEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
-      if (Manager.isValid(clonedEvents, true)) {
+      if (Manager.isValid(clonedEvents)) {
         clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
         for (const event of clonedEvents) {
           await CalendarManager.deleteEvent(DB.tables.calendarEvents, event.id)
@@ -564,7 +540,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                         }}
                         defaultValue={[moment(event?.startDate), moment(event?.endDate)]}
                         onAccept={(dateArray) => {
-                          if (Manager.isValid(dateArray, true)) {
+                          if (Manager.isValid(dateArray)) {
                             setEventFromDate(moment(dateArray[0]).format('MM/DD/YYYY'))
                             setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
                             setEventIsDateRange(true)
@@ -609,7 +585,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                 </div>
               </div>
               {/* Share with */}
-              {Manager.isValid(currentUser?.coparents, true) && currentUser?.accountType === 'parent' && (
+              {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
                 <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
               )}
               {/* ALL DAY / HAS END DATE */}
@@ -637,7 +613,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                             checked: <span className="material-icons-round">notifications</span>,
                             unchecked: null,
                           }}
-                          defaultChecked={Manager.isValid(event?.reminderTimes, true)}
+                          defaultChecked={Manager.isValid(event?.reminderTimes)}
                           className={'ml-auto reminder-toggle'}
                           onChange={(e) => setShowReminders(!showReminders)}
                         />
@@ -686,7 +662,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                           checked: <span className="material-icons-round">face</span>,
                           unchecked: null,
                         }}
-                        defaultChecked={Manager.isValid(event?.children, true)}
+                        defaultChecked={Manager.isValid(event?.children)}
                         className={'ml-auto'}
                         onChange={(e) => setIncludeChildren(!includeChildren)}
                       />

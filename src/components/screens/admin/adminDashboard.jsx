@@ -315,7 +315,7 @@ export default function AdminDashboard() {
               Get Chat Requests
             </button>
           </div>
-          {Manager.isValid(chatRequests, true) &&
+          {Manager.isValid(chatRequests) &&
             chatRequests.map((request, index) => {
               return (
                 <div key={index} className="data-ui">
@@ -332,7 +332,7 @@ export default function AdminDashboard() {
                     <b className="prop">Members</b>
                   </p>
                   <div className="data-subset">
-                    {Manager.isValid(request.members, true) &&
+                    {Manager.isValid(request.members) &&
                       request.members.map((member, memberIndex) => {
                         return (
                           <div key={memberIndex}>

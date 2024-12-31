@@ -271,7 +271,7 @@ export default function TransferRequests() {
               )}
 
               {Manager.isValid(activeRequest?.location) && (
-                <a className="nav-detail" href={activeRequest?.directionsLink} target="_blank" rel="noreferrer">
+                <a className="nav-detail" href={Manager.getDirectionsLink(activeRequest?.location)} target="_blank" rel="noreferrer">
                   <BiSolidNavigation /> Nav
                 </a>
               )}
@@ -384,7 +384,7 @@ export default function TransferRequests() {
           {/* LOOP REQUESTS */}
           {!showNewRequestCard && (
             <div id="all-transfer-requests-container" className="mt-15">
-              {Manager.isValid(existingRequests, true) &&
+              {Manager.isValid(existingRequests) &&
                 existingRequests.map((request, index) => {
                   return (
                     <div

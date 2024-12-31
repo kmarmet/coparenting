@@ -42,7 +42,7 @@ export default function Medical({ activeChild, setActiveChild }) {
 
     // Delete Shared
     const sharedProps = sharing?.map((x) => x?.prop)
-    if (Manager.isValid(sharedProps, true) && sharedProps.includes(prop.toLowerCase())) {
+    if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
       const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByPhone)
       await setSelectedChild()
@@ -72,7 +72,7 @@ export default function Medical({ activeChild, setActiveChild }) {
       // Set info
       let values = Object.entries(activeChild.medical)
 
-      if (Manager.isValid(sharedValues, true)) {
+      if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
       setMedicalValues(values)
@@ -91,10 +91,8 @@ export default function Medical({ activeChild, setActiveChild }) {
 
   return (
     <div className="info-section section medical">
-      <Accordion className={theme} disabled={!Manager.isValid(medicalValues, true) ? true : false}>
-        <AccordionSummary
-          expandIcon={<FaChevronDown />}
-          className={!Manager.isValid(medicalValues, true) ? 'disabled header medical' : 'header medical'}>
+      <Accordion className={theme} disabled={!Manager.isValid(medicalValues)}>
+        <AccordionSummary expandIcon={<FaChevronDown />} className={!Manager.isValid(medicalValues) ? 'disabled header medical' : 'header medical'}>
           <FaBriefcaseMedical className={'svg medical'} /> Medical {!Manager.isValid(activeChild.medical) ? '- No Info' : ''}
         </AccordionSummary>
         <AccordionDetails>

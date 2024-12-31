@@ -1083,7 +1083,8 @@
     align-items: center;
     line-height: 1;
 
-    &.paid, &.approved {
+    &.paid,
+    &.approved {
       background-color: $lightestGreen;
       color: $green;
       border: 1px solid $green;
@@ -1095,7 +1096,8 @@
       border: 1px solid $orange;
     }
 
-    &.unpaid, &.rejected {
+    &.unpaid,
+    &.rejected {
       background-color: $bgRed;
       color: $red;
       border: 1px solid $red;
@@ -1193,7 +1195,7 @@
   label {
     font-size: 16px;
     font-weight: $fwMedium;
-    opacity: .85;
+    opacity: 0.85;
     color: black;
     margin: 0;
     letter-spacing: 0.4px;
@@ -1208,7 +1210,7 @@
   align-items: flex-start;
   width: 100%;
   margin-bottom: 20px;
-  
+
   #label-wrapper {
     * {
       line-height: 1;
@@ -1216,7 +1218,6 @@
     label {
       display: flex;
       align-items: center;
-      
     }
   }
 
@@ -1241,6 +1242,8 @@
     }
   }
 
+
+
   input,
   textarea {
     display: block;
@@ -1251,13 +1254,23 @@
     transition: all 0.2s ease-in-out;
     border: 0;
     border-radius: 0;
-    border-bottom: 1px solid $iconGrey;
+    border-bottom: 1px solid $lightBorder;
 
     &:focus {
+      border: 0;
       border-bottom: 1px solid $mainBlue;
       background: rgba(153, 178, 255, 0.14);
       border-radius: 0;
     }
+  }
+  
+  textarea {
+    border: unset;
+    border: 1px solid $iconGrey;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 5px;
+    min-height: 100px;
   }
 
   &.active {
@@ -1515,6 +1528,7 @@
 @mixin checkboxGroup {
   padding: 0;
   display: block;
+  margin-bottom: 10px;
 
   svg {
     position: relative;
@@ -1531,7 +1545,7 @@
   }
 
   #checkboxes {
-    gap: 0 8px;
+    gap: 5px 8px;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -1539,7 +1553,6 @@
 
   #label-wrapper {
     width: 100%;
-    margin-bottom: 5px;
   }
 
   #parent-label-wrapper {
@@ -1574,7 +1587,7 @@
       transition: all 0.3s ease-in-out;
       .pill {
         background: rgba(231, 233, 238, 0.78);
-        color: rgba(0, 0, 0, 0.65);
+        color: rgba(0, 0, 0, 0.8);
         font-weight: $fwMediumBold;
         border: 0;
         display: flex;
@@ -1597,7 +1610,7 @@
 
     .pill {
       border: 1px solid rgba(0, 0, 0, 0.38);
-      color: rgba(0, 0, 0, 0.38);
+      color: rgba(0, 0, 0, 0.58);
       border-radius: 50px;
       min-width: 60px;
       text-align: center;
@@ -2389,7 +2402,7 @@
   #large-title {
     color: $mainBlue;
   }
-  
+
   .nav-detail {
     display: flex;
     align-items: center;
@@ -2427,7 +2440,7 @@
       font-size: 29px;
       margin: 0 auto;
     }
-    
+
     .card-button {
       border-radius: 50px;
       padding: 12px 0;
@@ -2528,7 +2541,6 @@
       textarea {
         height: 150px;
         max-height: 150px;
-        border-radius: 15px;
       }
       #details {
         .flex {
@@ -2541,7 +2553,6 @@
             color: $lightBorder;
           }
         }
-
       }
     }
   }

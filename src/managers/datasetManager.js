@@ -11,7 +11,7 @@ import Manager from "./manager";
 
 DatasetManager = {
   getValidArray: function(arr) {
-    if (Manager.isValid(arr, true)) {
+    if (Manager.isValid(arr)) {
       return arr.filter(function(x) {
         return x;
       });

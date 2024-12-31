@@ -92,6 +92,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [suggestionRefreshKey, setSuggestionRefreshKey] = useState(Manager.getUid())
 
   const resetForm = async () => {
+    hideCard()
     Manager.resetForm('new-event-form')
     setEventLength(EventLengths.single)
     setEventStartDate('')
@@ -122,7 +123,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     setSuggestionRefreshKey(Manager.getUid())
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
     setState({ ...state, currentUser: updatedCurrentUser })
-    hideCard()
   }
 
   const submit = async () => {
@@ -135,10 +135,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     if (isVisitation) {
       newEvent.title = `${formatNameFirstNameOnly(currentUser?.name)}'s Visitation`
     }
-    newEvent.startDate = !Manager.isValid(eventStartDate) ? moment(eventStartDate).format(DateFormats.dateForDb) : ''
-    newEvent.endDate = !Manager.isValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
-    newEvent.startTime = !Manager.isValid(eventStartTime) ? moment(eventStartTime).format(DateFormats.timeForDb) : ''
-    newEvent.endTime = !Manager.isValid(eventEndTime) ? moment(eventEndTime).format(DateFormats.timeForDb) : ''
+    newEvent.startDate = Manager.isValid(eventStartDate) ? moment(eventStartDate).format(DateFormats.dateForDb) : ''
+    newEvent.endDate = Manager.isValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
+    newEvent.startTime = Manager.isValid(eventStartTime) ? moment(eventStartTime).format(DateFormats.timeForDb) : ''
+    newEvent.endTime = Manager.isValid(eventEndTime) ? moment(eventEndTime).format(DateFormats.timeForDb) : ''
     // Not Required
     newEvent.id = Manager.getUid()
     newEvent.directionsLink = !_.isEmpty(eventLocation) ? Manager.getDirectionsLink(eventLocation) : ''
@@ -161,33 +161,31 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         return false
       }
 
-      if (Manager.isValid(eventTitle)) {
+      if (!Manager.isValid(eventTitle)) {
         AlertManager.throwError('Please enter an event title')
         return false
       }
 
-      if (Manager.isValid(eventStartDate)) {
+      if (!Manager.isValid(eventStartDate)) {
         AlertManager.throwError('Please select an event date')
         return false
       }
       const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
       if (validAccounts > 0) {
-        if (Manager.isValid(eventShareWith)) {
+        if (!Manager.isValid(eventShareWith)) {
           AlertManager.throwError('Please choose who you would like to share this event with')
           return false
         }
       }
 
-      if (!Manager.isValid(eventReminderTimes) && Manager.isValid(eventStartTime)) {
-        AlertManager.throwError('If you set reminder times, please also uncheck All Day and add a start time')
-        return false
-      }
+      hideCard()
+      MyConfetti.fire()
 
       // Insert Suggestion
       const alreadyExists =
         _.filter(inputSuggestions, (row) => {
-          return row.suggestion === newEvent.title && row.ownerPhone === currentUser?.phone
+          return row.suggestion.toLowerCase() === newEvent.title.toLowerCase() && row.ownerPhone === currentUser?.phone
         }).length > 0
 
       if (!alreadyExists) {
@@ -195,12 +193,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         newSuggestion.ownerPhone = currentUser?.phone
         newSuggestion.formName = FormNames.calendar
         newSuggestion.suggestion = newEvent.title
-        newSuggestion.id = Manager.getUid()
         await DB.addSuggestion(newSuggestion)
       }
 
       const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
-      MyConfetti.fire()
 
       // Determine if you add 1 or more events
       let addSingleEvent = true
@@ -213,7 +209,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       }
 
       // Add cloned dates
-      if (Manager.isValid(clonedDates, true)) {
+      if (Manager.isValid(clonedDates)) {
         addSingleEvent = false
         const clonedDatesList = createEventList()
         await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesList)
@@ -463,7 +459,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               if (inputValue.length > 1) {
                 const dbSuggestions = await SecurityManager.getInputSuggestions(currentUser)
 
-                if (Manager.isValid(dbSuggestions, true)) {
+                if (Manager.isValid(dbSuggestions)) {
                   const matching = dbSuggestions.filter(
                     (x) =>
                       x.formName === 'calendar' &&
@@ -480,7 +476,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           />
 
           {/* SUGGESTIONS DROPDOWN */}
-          {!Manager.isValid(eventTitle) && (
+          {Manager.isValid(eventTitle) && (
             <div className="title-suggestion-wrapper">
               <InputSuggestionWrapper
                 suggestions={inputSuggestions}
@@ -520,7 +516,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   addThemeToDatePickers()
                 }}
                 onAccept={(dateArray) => {
-                  if (Manager.isValid(dateArray, true)) {
+                  if (Manager.isValid(dateArray)) {
                     setEventStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
                     setEventEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
                     setEventIsDateRange(true)
@@ -557,10 +553,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           )}
 
           {/* Share with */}
-          {Manager.isValid(currentUser?.coparents, true) && (
+          {Manager.isValid(currentUser?.coparents) && (
             <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
-          {Manager.isValid(currentUser?.parents, true) && (
+          {Manager.isValid(currentUser?.parents) && (
             <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
 
@@ -611,7 +607,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           </div>
 
           {/* INCLUDING WHICH CHILDREN */}
-          {Manager.isValid(currentUser?.children, true) && (
+          {Manager.isValid(currentUser?.children) && (
             <div className="share-with-container">
               <Accordion id={'checkboxes'} expanded={includeChildren}>
                 <AccordionSummary>

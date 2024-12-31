@@ -89,9 +89,9 @@ export default function DocsList() {
           <p className="mb-10">Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise.</p>
           <p className="mb-10">If the document type you tap is an image, the loading time may be a bit longer.</p>
 
-          {!Manager.isValid(selectedDoc, false, true) && (
+          {!Manager.isValid(selectedDoc) && (
             <div className="sections">
-              {Manager.isValid(docs, true) &&
+              {Manager.isValid(docs) &&
                 docs.map((doc, index) => {
                   const fileType = getFileExtension(doc.name).contains('docx') ? 'Document' : 'Image'
                   return (

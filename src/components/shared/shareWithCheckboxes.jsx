@@ -29,13 +29,13 @@ export default function ShareWithCheckboxes({ onCheck, containerClass = '', chec
 
   const setShareWithUsers = async () => {
     let people = []
-    if (Manager.isValid(currentUser?.coparents, true)) {
+    if (Manager.isValid(currentUser?.coparents)) {
       people = [...people, [...currentUser.coparents]].filter((x) => x)
     }
-    if (Manager.isValid(currentUser?.parents, true)) {
+    if (Manager.isValid(currentUser?.parents)) {
       people = [...people, [...currentUser.parents]].filter((x) => x)
     }
-    if (Manager.isValid(currentUser?.children, true) > 0) {
+    if (Manager.isValid(currentUser?.children) > 0) {
       let childrenAccounts = []
       for (let child of currentUser?.children) {
         if (child?.phone) {
@@ -65,13 +65,13 @@ export default function ShareWithCheckboxes({ onCheck, containerClass = '', chec
 
   return (
     <>
-      {Manager.isValid(shareWith, true) && (
-        <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass} mt-15 mb-15`}>
+      {Manager.isValid(shareWith) && (
+        <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass}`}>
           <div className="flex">
             <Label text={`${labelText.length === 0 ? 'Share with' : labelText}`} required={required} />
           </div>
           <div className="flex" id="checkboxes">
-            {Manager.isValid(shareWith, true) &&
+            {Manager.isValid(shareWith) &&
               shareWith?.map((user, index) => {
                 let name = user?.name
                 let phone = user.phone

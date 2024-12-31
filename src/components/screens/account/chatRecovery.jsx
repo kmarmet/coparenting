@@ -80,7 +80,7 @@ function ChatRecovery() {
     let archivedChats = await DB.getTable(`${DB.tables.archivedChats}/${currentUser?.phone}`)
     archivedChats = archivedChats.filter((r) => r)
 
-    if (Manager.isValid(archivedChats, true)) {
+    if (Manager.isValid(archivedChats)) {
       for (let chat of archivedChats) {
         const memberPhones = chat?.members?.map((x) => x.phone)
         if (memberPhones?.includes(currentUser?.phone) && memberPhones?.includes(coparentPhone)) {
@@ -280,7 +280,7 @@ function ChatRecovery() {
           {/* HTML TO READABLE TEXT */}
           <label className="mb-5">Below is the entire conversation</label>
           <div id="readable-html-wrapper">
-            {Manager.isValid(convoMessages, true) &&
+            {Manager.isValid(convoMessages) &&
               convoMessages.map((message, index) => {
                 return (
                   <div className="convo-message" key={index}>

@@ -160,7 +160,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       }
 
       // Send notification
-      if (Manager.isValid(shareWith, true)) {
+      if (Manager.isValid(shareWith)) {
         await NotificationManager.sendToShareWith(
           shareWith,
           currentUser,
@@ -180,7 +180,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     let expensesToPush = []
     let datesToRepeat = CalendarMapper.repeatingEvents(repeatInterval, expenseDueDate, repeatingEndDate)
 
-    if (Manager.isValid(datesToRepeat, true)) {
+    if (Manager.isValid(datesToRepeat)) {
       datesToRepeat.forEach((date) => {
         const newExpense = new Expense()
         newExpense.id = Manager.getUid()

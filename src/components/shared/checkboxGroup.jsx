@@ -46,7 +46,7 @@ export default function CheckboxGroup({
             </div>
           )}
           <div id="checkboxes">
-            {Manager.isValid(checkboxLabels, true) &&
+            {Manager.isValid(checkboxLabels) &&
               checkboxLabels.map((label, index) => {
                 let thisPhone = checkboxLabels[index]
                 let thisDate = null
@@ -71,7 +71,7 @@ export default function CheckboxGroup({
                     data-phone={thisPhone ? thisPhone : ''}
                     data-label={label ? label : ''}
                     data-date={thisDate ? thisDate : ''}
-                    className={`flex ${containerClass} ${Manager.isValid(defaultLabels, true) && defaultLabels.includes(label) ? 'active' : ''}`}
+                    className={`flex mb-0 ${containerClass} ${Manager.isValid(defaultLabels) && defaultLabels.includes(label) ? 'active' : ''}`}
                     onClick={(e) => onCheck(e)}>
                     <span className="pill">
                       {label}

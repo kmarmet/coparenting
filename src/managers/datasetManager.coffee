@@ -5,7 +5,7 @@ import Manager from "./manager"
 
 DatasetManager = {
   getValidArray: (arr) ->
-    if Manager.isValid(arr, true)
+    if Manager.isValid(arr)
       arr.filter (x) -> x
   getNestedObject: (table, objectPath) ->
     dataset = await DB.getTable(table)

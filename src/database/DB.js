@@ -103,7 +103,7 @@ const DB = {
       const dbRef = ref(getDatabase())
       let tableData = []
       tableData = await DB.getTable(path)
-      if (Manager.isValid(tableData, true)) {
+      if (Manager.isValid(tableData)) {
         if (tableData.length > 0) {
           tableData = [...tableData, data].filter((item) => item)
         } else {
@@ -155,7 +155,7 @@ const DB = {
     rows = Manager.convertToArray(rows)
     let dbRef = ref(getDatabase())
     let idToDelete
-    if (Manager.isValid(rows, true)) {
+    if (Manager.isValid(rows)) {
       for (let row of rows) {
         idToDelete = await DB.getSnapshotKey(table, row, 'id')
         console.log(`${table} | ID to delete: ${idToDelete}`)

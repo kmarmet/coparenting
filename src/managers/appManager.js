@@ -63,7 +63,7 @@ export default AppManager = {
     if (!Array.isArray(events)) {
       events = Manager.convertToArray(events);
     }
-    if (Manager.isValid(events, true)) {
+    if (Manager.isValid(events)) {
       events = events.filter(function(x) {
         return x != null;
       });

@@ -115,7 +115,7 @@ export default function App() {
     for (let bottomCard of allBottomCards) {
       bottomCard.classList.remove('animate__fadeInUp')
     }
-    if (Manager.isValid(currentUser, false, true) && currentScreen !== ScreenNames.calendar) {
+    if (Manager.isValid(currentUser) && currentScreen !== ScreenNames.calendar) {
       updateCurrentUser().then((r) => r)
     }
   }, [currentScreen])
