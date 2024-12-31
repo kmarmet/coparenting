@@ -52,6 +52,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [responseDueDate, setResponseDueDate] = useState('')
 
   const resetForm = async () => {
     Manager.resetForm('swap-request-wrapper')
@@ -75,7 +76,6 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   const submit = async () => {
     const invalidInputs = Manager.invalidInputs([startDate, recipientName])
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign requests to',
@@ -85,7 +85,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     }
 
     if (validAccounts > 0) {
-      if (shareWith.length === 0) {
+      if (!Manager.isValid(shareWith)) {
         AlertManager.throwError('Please choose who you would like to share this request with')
         return false
       }
@@ -95,16 +95,16 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       return false
     } else {
       let newRequest = new SwapRequest()
-      newRequest.id = Manager.getUid()
+
       newRequest.children = requestChildren
       newRequest.startDate = startDate
       newRequest.endDate = endDate
       newRequest.reason = requestReason
       newRequest.duration = swapDuration
       newRequest.fromHour = requestFromHour
+      newRequest.responseDueDate = responseDueDate
       newRequest.toHour = requestToHour
       newRequest.ownerPhone = currentUser?.phone
-      newRequest.createdBy = currentUser?.name
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
       newRequest.recipientPhone = currentUser?.coparents?.filter((x) => contains(x?.name, recipientName))[0]?.phone || ''
 
@@ -130,15 +130,14 @@ export default function NewSwapRequest({ showCard, hideCard }) {
 
   const handleChildSelection = (e) => {
     const clickedEl = e.currentTarget
-    const checkbox = clickedEl.querySelector('.box')
     const selectedValue = clickedEl.getAttribute('data-label')
-    if (checkbox.classList.contains('active')) {
-      checkbox.classList.remove('active')
+    if (clickedEl.classList.contains('active')) {
+      clickedEl.classList.remove('active')
       if (requestChildren.length > 0) {
         setRequestChildren(requestChildren.filter((x) => x !== selectedValue))
       }
     } else {
-      checkbox.classList.add('active')
+      clickedEl.classList.add('active')
       setRequestChildren([...requestChildren, selectedValue])
     }
   }
@@ -186,21 +185,16 @@ export default function NewSwapRequest({ showCard, hideCard }) {
         onClose={resetForm}>
         <div id="new-swap-request-container" className={`${theme} form`}>
           {/* DURATION OPTIONS */}
-          <div id="duration-options" className="swap-request action-pills">
-            <div className={`duration-option ${swapDuration === 'single' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.single)}>
-              {swapDuration === 'single' && <span className="material-icons-round">event</span>}
-              <p>Day</p>
-            </div>
-            <div
-              className={`duration-option ${swapDuration === 'multiple' ? 'active' : ''}`}
-              onClick={() => changeSwapDuration(SwapDurations.multiple)}>
-              {swapDuration === 'multiple' && <span className="material-icons-round">date_range</span>}
-              <p>Days</p>
-            </div>
-            <div className={`duration-option ${swapDuration === 'intraday' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.intra)}>
-              {swapDuration === 'intraday' && <span className="material-icons-round ">schedule</span>}
-              <p>Hours</p>
-            </div>
+          <div className="views-wrapper">
+            <p className={`view ${swapDuration === 'single' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.single)}>
+              Day
+            </p>
+            <p className={`view ${swapDuration === 'multiple' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.multiple)}>
+              Days
+            </p>
+            <p className={`view ${swapDuration === 'intraday' ? 'active' : ''}`} onClick={() => changeSwapDuration(SwapDurations.intra)}>
+              Hours
+            </p>
           </div>
           {/* FORM */}
           <div id="request-form" className="form single">
@@ -262,29 +256,34 @@ export default function NewSwapRequest({ showCard, hideCard }) {
               </InputWrapper>
             )}
 
-            {currentUser && (
-              <>
-                {/* SEND REQUEST TO */}
-                <CheckboxGroup
-                  required={true}
-                  parentLabel={'Who are you sending the request to?'}
-                  dataPhone={currentUser?.coparents?.map((x) => x.phone)}
-                  checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
-                  onCheck={handleRecipientSelection}
-                />
+            {/* RESPONSE DUE DATE */}
+            <InputWrapper inputType={'date'} labelText={'Respond by'}>
+              <MobileDatePicker
+                onOpen={addThemeToDatePickers}
+                className={`${theme}  w-100`}
+                onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+              />
+            </InputWrapper>
 
-                {/* WHO SHOULD SEE IT? */}
-                <ShareWithCheckboxes
-                  icon={<ImEye />}
-                  required={true}
-                  shareWith={currentUser?.coparents?.map((x) => x.phone)}
-                  onCheck={handleShareWithSelection}
-                  labelText={'Share with'}
-                  containerClass={'share-with-coparents'}
-                  dataPhone={currentUser?.coparents?.map((x) => x.phone)}
-                />
-              </>
-            )}
+            {/* SEND REQUEST TO */}
+            <CheckboxGroup
+              required={true}
+              parentLabel={'Who are you sending the request to?'}
+              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+              checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
+              onCheck={handleRecipientSelection}
+            />
+
+            {/* WHO SHOULD SEE IT? */}
+            <ShareWithCheckboxes
+              icon={<ImEye />}
+              required={true}
+              shareWith={currentUser?.coparents?.map((x) => x.phone)}
+              onCheck={handleShareWithSelection}
+              labelText={'Share with'}
+              containerClass={'share-with-coparents'}
+              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+            />
 
             {/* INCLUDE CHILDREN */}
             {Manager.isValid(currentUser?.children, true) && (

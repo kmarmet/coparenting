@@ -19,6 +19,8 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { BiSolidNavigation } from 'react-icons/bi'
 import 'react-toggle/style.css'
+import { Fade } from 'react-awesome-reveal'
+
 import {
   contains,
   formatFileName,
@@ -151,7 +153,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     eventToEdit.sentReminders = []
 
     if (Manager.isValid(eventToEdit)) {
-      if (!eventTitle || eventTitle.length === 0) {
+      if (!Manager.isValid(eventTitle)) {
         AlertManager.throwError('Event title is required')
         return false
       }
@@ -159,12 +161,12 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
       if (validAccounts > 0) {
-        if (eventShareWith.length === 0) {
+        if (!Manager.isValid(eventShareWith)) {
           AlertManager.throwError('Please choose who you would like to share this event with')
           return false
         }
       }
-      if (!eventFromDate || eventFromDate.length === 0) {
+      if (!Manager.isValid(eventFromDate)) {
         AlertManager.throwError('Please select a date for this event')
         return false
       }
@@ -313,15 +315,15 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setEventEndTime(event?.endTime)
     setEventNotes(event?.notes)
     setEventShareWith(event?.shareWith)
-    setDefaultEndTime(DateManager.isValidDate(event?.endTime) ? moment(event?.endTime, 'hh:mma') : null)
-    setDefaultStartTime(DateManager.isValidDate(event?.startTime) ? moment(event?.startTime, 'hh:mma') : null)
+    setDefaultEndTime(DateManager.isValidDate(event?.endTime) ? moment(event?.endTime, 'hh:mma') : '')
+    setDefaultStartTime(DateManager.isValidDate(event?.startTime) ? moment(event?.startTime, 'hh:mma') : '')
     setView('details')
     setIsDateRange(event?.isDateRange)
-    setIncludeChildren(Manager.isValid(event?.children, true))
-    setShowReminders(Manager.isValid(event?.reminderTimes, true))
+    setIncludeChildren(Manager.isValid(event?.children, true) ? event?.children : [])
+    setShowReminders(Manager.isValid(event?.reminderTimes, true) ? event?.reminderTimes : [])
 
     // Repeating
-    if (Manager.isValid(event?.repeatInterval) && !Manager.isEmpty(event?.repeatInterval.length)) {
+    if (Manager.isValid(event?.repeatInterval)) {
       Manager.setDefaultCheckboxes('repeating', event, 'repeatInterval', false).then((r) => r)
     }
   }
@@ -412,95 +414,97 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       className="edit-calendar-event"
       wrapperClass="edit-calendar-event">
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
-        <div id="view-switcher" className="flex">
-          <p className={view === 'details' ? 'pill active' : 'pill'} onClick={() => setView('details')}>
+        <div className="views-wrapper flex">
+          <p className={view === 'details' ? 'view active' : 'view'} onClick={() => setView('details')}>
             Details
           </p>
-          <p className={view === 'edit' ? 'pill active' : 'pill'} onClick={() => setView('edit')}>
+          <p className={view === 'edit' ? 'view active' : 'view'} onClick={() => setView('edit')}>
             Edit
           </p>
         </div>
 
         {view === 'details' && (
-          <div id="details">
-            <div className="flex">
-              <b>Title:</b>
-              <p>{uppercaseFirstLetterOfAllWords(event?.title)}</p>
-            </div>
-            {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
+          <Fade direction={'up'} duration={600} triggerOnce={true}>
+            <div id="details">
               <div className="flex">
-                <b>Date:</b>
-                <p>{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</p>
+                <b>Title:</b>
+                <p>{uppercaseFirstLetterOfAllWords(event?.title)}</p>
               </div>
-            )}
-            {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
-              <>
-                <b>Dates</b>
-                <p>
-                  {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}&nbsp;to&nbsp;
-                  {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
-                </p>
-              </>
-            )}
-            {DateManager.isValidDate(event?.startTime) && DateManager.isValidDate(event?.endTime) && (
-              <div className="flex">
-                <b>Time:</b>
-                <p>
-                  {event?.startTime} to {event?.endTime}
-                </p>
-              </div>
-            )}
-            {DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime) && (
-              <div className="flex">
-                <b>Time:</b>
-                <p>{event?.startTime}</p>
-              </div>
-            )}
-            {!Manager.isEmpty(event?.children) && (
-              <div id="children">
-                <b>Children</b>
-                <p
-                  dangerouslySetInnerHTML={{
-                    __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                  }}></p>
-              </div>
-            )}
-            {!Manager.isEmpty(event?.websiteUrl) && (
-              <div className="flex">
-                <b>Website:</b>
-                <a href={event?.websiteUrl} target="_blank">
-                  {event?.websiteUrl}
+              {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
+                <div className="flex">
+                  <b>Date:</b>
+                  <p>{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</p>
+                </div>
+              )}
+              {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
+                <>
+                  <b>Dates</b>
+                  <p>
+                    {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}&nbsp;to&nbsp;
+                    {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
+                  </p>
+                </>
+              )}
+              {DateManager.isValidDate(event?.startTime) && DateManager.isValidDate(event?.endTime) && (
+                <div className="flex">
+                  <b>Time:</b>
+                  <p>
+                    {event?.startTime} to {event?.endTime}
+                  </p>
+                </div>
+              )}
+              {DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime) && (
+                <div className="flex">
+                  <b>Time:</b>
+                  <p>{event?.startTime}</p>
+                </div>
+              )}
+              {Manager.isValid(event?.children) && (
+                <div id="children">
+                  <b>Children</b>
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                    }}></p>
+                </div>
+              )}
+              {Manager.isValid(event?.websiteUrl) && (
+                <div className="flex">
+                  <b>Website:</b>
+                  <a href={event?.websiteUrl} target="_blank">
+                    {event?.websiteUrl}
+                  </a>
+                </div>
+              )}
+              {Manager.isValid(event?.notes) && (
+                <>
+                  <b>Notes</b>
+                  <p>{event?.notes}</p>
+                </>
+              )}
+              {Manager.isValid(event?.location) && (
+                <>
+                  <b>Location</b>
+                  <p className="mb-10">{event?.location}</p>
+                </>
+              )}
+              {Manager.isValid(event?.location) && (
+                <a className="nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
+                  <BiSolidNavigation /> Nav
                 </a>
-              </div>
-            )}
-            {!Manager.isEmpty(event?.notes) && (
-              <>
-                <b>Notes</b>
-                <p>{event?.notes}</p>
-              </>
-            )}
-            {!Manager.isEmpty(event?.location) && (
-              <>
-                <b>Location</b>
-                <p className="mb-10">{event?.location}</p>
-              </>
-            )}
-            {!Manager.isEmpty(event?.location) && (
-              <a className="nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
-                <BiSolidNavigation /> Nav
-              </a>
-            )}
-            {!Manager.isEmpty(event?.repeatInterval) && (
-              <div className="flex">
-                <b>Repeat Interval:</b>
-                <p>{uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</p>
-              </div>
-            )}
-          </div>
+              )}
+              {Manager.isValid(event?.repeatInterval) && (
+                <div className="flex">
+                  <b>Repeat Interval:</b>
+                  <p>{uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</p>
+                </div>
+              )}
+            </div>
+          </Fade>
         )}
 
         {view === 'edit' && (
-          <>
+          <Fade direction={'up'} duration={600} triggerOnce={true}>
             <div className="content">
               {/* SINGLE DAY / MULTIPLE DAYS */}
               {/*<div id="duration-options" className="action-pills calendar">*/}
@@ -735,7 +739,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
               inputType={'textarea'}
               onChange={(e) => setEventNotes(e.target.value)}
             />
-          </>
+          </Fade>
         )}
       </div>
     </BottomCard>

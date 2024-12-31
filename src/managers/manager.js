@@ -6,7 +6,10 @@ import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
 
 const Manager = {
-  isEmpty: (variable) => {
+  isValidAndNotEmpty: (variable) => {
+    if (variable.contains('Invalid')) {
+      return true
+    }
     return _.isEmpty(variable)
   },
   invalidInputs: (requiredInputs) => {
@@ -182,24 +185,10 @@ const Manager = {
     return errors.length
   },
   isValid: (variable, checkArrayLength, validateObject, checkStringLength) => {
-    if (validateObject && typeof variable === 'object') {
-      if (!variable) {
-        return false
-      }
-
-      if (Manager.isEmpty(variable)) {
-        return false
-      }
-    } else {
-      if (!variable) {
-        return false
-      } else {
-        if ((checkArrayLength && variable.length <= 0) || (checkArrayLength && Manager.isEmpty(variable))) {
-          return false
-        }
-      }
+    if (_.isEmpty(variable)) {
+      return false
     }
-    return true
+    return !(typeof variable === 'string' && variable.indexOf('Invalid') > -1)
   },
   isIos: () => {
     return (

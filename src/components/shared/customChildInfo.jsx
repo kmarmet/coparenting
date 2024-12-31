@@ -102,25 +102,17 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       showCard={showCard}>
       <div className="form">
         {/* INFO SECTIONS */}
-        <div className="flex" id="info-type">
-          <p
-            onClick={() => setInfoSection('general')}
-            className={infoSection === 'general' ? 'active item underlined-section-title' : 'item underlined-section-title'}>
+        <div className="flex views-wrapper" id="info-type">
+          <p onClick={() => setInfoSection('general')} className={infoSection === 'general' ? 'active item view' : 'item view'}>
             General
           </p>
-          <p
-            onClick={() => setInfoSection('medical')}
-            className={infoSection === 'medical' ? 'active item underlined-section-title' : 'item underlined-section-title'}>
+          <p onClick={() => setInfoSection('medical')} className={infoSection === 'medical' ? 'active item view' : 'item view'}>
             Medical
           </p>
-          <p
-            onClick={() => setInfoSection('schooling')}
-            className={infoSection === 'schooling' ? 'active item underlined-section-title' : 'item underlined-section-title'}>
+          <p onClick={() => setInfoSection('schooling')} className={infoSection === 'schooling' ? 'active item view' : 'item view'}>
             Schooling
           </p>
-          <p
-            onClick={() => setInfoSection('behavior')}
-            className={infoSection === 'behavior' ? 'active item underlined-section-title' : 'item underlined-section-title'}>
+          <p onClick={() => setInfoSection('behavior')} className={infoSection === 'behavior' ? 'active item view' : 'item view'}>
             Behavior
           </p>
         </div>

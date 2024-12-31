@@ -35,7 +35,7 @@ function InputWrapper({
       id="input-wrapper"
       //TODO fix spacing/margin
       className={`${wrapperClasses} ${inputType}  input-container`}>
-      {!Manager.isEmpty(labelText) && <Label text={`${labelText}`} required={required} />}
+      {Manager.isValid(labelText) && <Label text={`${labelText}`} required={required} />}
       {!noInputTypes.includes(inputType) && (
         <>
           {/* LABEL */}

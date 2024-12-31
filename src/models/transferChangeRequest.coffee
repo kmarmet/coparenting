@@ -1,17 +1,16 @@
+import Manager from "../managers/manager"
+
 export default class TransferChangeRequest
   constructor: (
-    @id = ''
+    @id = Manager.getUid()
     @date = ''
     @time = ''
     @ownerPhone = ''
     @location = ''
-    @createdBy = ''
     @directionsLink = ''
     @shareWith = []
     @reason = ''
     @recipientPhone = ''
+    @responseDueDate = ''
     @preferredTransferLocation = ''
   ) ->
-
-
-

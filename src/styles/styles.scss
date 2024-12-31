@@ -289,7 +289,9 @@
     }
 
     b {
-      font-weight: bold;
+      font-weight: $fwBold;
+      color: black;
+      opacity: .85;
     }
     /*#endregion ELEMENT DEFAULTS*/
 

@@ -8,13 +8,16 @@ import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
 import NotificationManager from '@managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
 import DateManager from 'managers/dateManager.js'
-import ReviseChildTransferChangeRequest from '../forms/reviseTransferRequest'
 import NavBar from '../navBar'
 import { IoAdd } from 'react-icons/io5'
 import SecurityManager from '../../managers/securityManager'
-import { BiNavigation } from 'react-icons/bi'
-import { PiCarProfileDuotone, PiUserDuotone } from 'react-icons/pi'
+import { PiCarProfileDuotone, PiCheckBold } from 'react-icons/pi'
 import { Fade } from 'react-awesome-reveal'
+import { BiSolidNavigation } from 'react-icons/bi'
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
+import moment from 'moment'
+import Autocomplete from 'react-google-autocomplete'
+
 import {
   contains,
   formatFileName,
@@ -32,10 +35,14 @@ import {
   wordCount,
 } from 'globalFunctions'
 import AlertManager from '../../managers/alertManager'
-import { MdOutlineNotes } from 'react-icons/md'
 import BottomCard from '../shared/bottomCard'
 import DomManager from '../../managers/domManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
+import ActivityCategory from '../../models/activityCategory'
+import DateFormats from '../../constants/dateFormats'
+import InputWrapper from '../shared/inputWrapper'
+import ObjectManager from '../../managers/objectManager'
+import ModelNames from '../../models/modelNames'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -45,21 +52,55 @@ const Decisions = {
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, navbarButton } = state
+  const { currentUser, theme } = state
   const [existingRequests, setExistingRequests] = useState([])
   const [rejectionReason, setRejectionReason] = useState('')
-  const [recipients, setRecipients] = useState([])
   const [showNewRequestCard, setShowNewRequestCard] = useState(false)
-  const [showRevisionCard, setShowRevisionCard] = useState(false)
-  const [requestToRevise, setRequestToRevise] = useState(null)
   const [activeRequest, setActiveRequest] = useState(null)
   const [showDetails, setShowDetails] = useState(false)
+  const [view, setView] = useState('details')
+  const [requestTime, setRequestTime] = useState('')
+  const [requestLocation, setRequestLocation] = useState('')
+  const [requestDate, setRequestDate] = useState('')
+  const [responseDueDate, setResponseDueDate] = useState('')
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+
+  const resetForm = async () => {
+    Manager.resetForm('edit-event-form')
+    setRequestTime('')
+    setRequestLocation('')
+    setRequestDate('')
+    setResponseDueDate('')
+    setRefreshKey(Manager.getUid())
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
+  }
+
+  const update = async () => {
+    // Fill -> overwrite
+    let updatedRequest = { ...activeRequest }
+    updatedRequest.time = requestTime
+    updatedRequest.location = requestLocation
+    updatedRequest.directionsLink = Manager.getDirectionsLink(requestLocation)
+    updatedRequest.date = requestDate
+    updatedRequest.reason = rejectionReason
+    updatedRequest.responseDueDate = responseDueDate
+
+    if (Manager.isValid(responseDueDate)) {
+      updatedRequest.responseDueDate = moment(responseDueDate).format(DateFormats.dateForDb)
+    }
+    const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.transferChangeRequest)
+    await DB.delete(DB.tables.transferChangeRequests, activeRequest.id)
+    await DB.add(`${DB.tables.transferChangeRequests}`, cleanedRequest).then(async () => {
+      await getSecuredRequests()
+      setActiveRequest(updatedRequest)
+      setShowDetails(false)
+      await resetForm()
+    })
+  }
 
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
-    let allUsers = Manager.convertToArray(await DB.getTable(DB.tables.users))
-    const found = allUsers.filter((y) => allRequests.filter((x) => x.recipientPhone === y.phone).length > 0)
-    setRecipients(found)
     setExistingRequests(allRequests)
   }
 
@@ -83,39 +124,59 @@ export default function TransferRequests() {
     const recipientName = recipient.name
     // Rejected
     if (decision === Decisions.rejected) {
+      await DB.updateRecord(DB.tables.transferChangeRequests, activeRequest, 'status', 'rejected', 'id')
       await DB.updateRecord(DB.tables.transferChangeRequests, activeRequest, 'reason', rejectionReason, 'id')
       const notifMessage = NotificationManager.templates.transferRequestRejection(activeRequest, recipientName)
-      NotificationManager.sendNotification('Transfer Change Request Decision', notifMessage, ownerSubId)
-      await deleteRequest('rejected')
+      NotificationManager.sendNotification(
+        'Transfer Request Decision',
+        notifMessage,
+        activeRequest?.ownerPhone,
+        currentUser,
+        ActivityCategory.transferRequest
+      )
       setShowDetails(false)
     }
 
     // Approved
     if (decision === Decisions.approved) {
+      await DB.updateRecord(DB.tables.transferChangeRequests, activeRequest, 'status', 'approved', 'id')
       const notifMessage = NotificationManager.templates.transferRequestApproval(activeRequest, recipientName)
       NotificationManager.sendNotification('Transfer Change Request Decision', notifMessage, ownerSubId)
-      await DB.delete(DB.tables.transferChangeRequests, activeRequest.id)
       setShowDetails(false)
+      NotificationManager.sendNotification(
+        'Transfer Request Decision',
+        notifMessage,
+        activeRequest?.ownerPhone,
+        currentUser,
+        ActivityCategory.transferRequest
+      )
     }
-  }
-
-  const addEventRowAnimation = () => {
-    document.querySelectorAll('.request').forEach((request, i) => {
-      setTimeout(() => {
-        request.classList.add('active')
-      }, 200 * i)
-    })
   }
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.transferChangeRequests), async (snapshot) => {
       await getSecuredRequests().then((r) => r)
-      setTimeout(() => {
-        addEventRowAnimation()
-      }, 600)
     })
   }
+
+  const setDefaults = () => {
+    setRequestTime(activeRequest?.time)
+    setRequestLocation(activeRequest?.location)
+    setRequestDate(activeRequest?.date)
+  }
+  const addThemeToDatePickers = () => {
+    setTimeout(() => {
+      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
+      datetimeParent.classList.add(currentUser?.settings?.theme)
+    }, 100)
+  }
+
+  useEffect(() => {
+    if (activeRequest) {
+      setDefaults()
+    }
+  }, [activeRequest])
 
   useEffect(() => {
     onTableChange().then((r) => r)
@@ -124,98 +185,187 @@ export default function TransferRequests() {
   return (
     <>
       <NewTransferChangeRequest showCard={showNewRequestCard} hideCard={() => setShowNewRequestCard(false)} />
-      <ReviseChildTransferChangeRequest revisionRequest={requestToRevise} showCard={showRevisionCard} hideCard={() => setShowRevisionCard(false)} />
 
       {/* DETAILS CARD */}
       <BottomCard
+        refreshKey={refreshKey}
         submitText={'Approve'}
         onDelete={() => deleteRequest('deleted')}
         title={'Request Details'}
-        hasDelete={formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) ? true : false}
-        hasSubmitButton={formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) ? false : true}
+        hasDelete={activeRequest?.ownerPhone === currentUser?.phone && view === 'edit'}
+        hasSubmitButton={activeRequest?.ownerPhone !== currentUser?.phone}
         onSubmit={() => selectDecision(Decisions.approved)}
         wrapperClass="transfer-change"
+        submitIcon={<PiCheckBold />}
         className="transfer-change"
         onClose={() => setShowDetails(false)}
         showCard={showDetails}>
         <div id="details" className={`content ${activeRequest?.reason.length > 20 ? 'long-text' : ''}`}>
-          <div id="row" className="flex-start mb-20">
-            <div id="primary-icon-wrapper">
-              <PiUserDuotone id="primary-row-icon" />
-            </div>
-            {/* SENT TO */}
-            {activeRequest?.recipientPhone === currentUser.phone && <p id="title">From {formatNameFirstNameOnly(activeRequest?.createdBy)}</p>}
-            {activeRequest?.recipientPhone !== currentUser.phone && (
-              <p id="title">
-                Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
-              </p>
-            )}
-          </div>
-          {/* TIME */}
-          {activeRequest?.time && activeRequest?.time.length > 0 && (
-            <p className="time label info-row">
-              <span className="material-icons-outlined mr-5">schedule</span>
-              {activeRequest?.time}
+          <div className="views-wrapper">
+            <p onClick={() => setView('details')} className={view === 'details' ? 'view active' : 'view'}>
+              Details
             </p>
-          )}
-
-          {/* LOCATION */}
-          {activeRequest?.location && activeRequest?.location.length > 0 && (
-            <div className="flex mb-20 flex-start" id="row">
-              <div id="primary-icon-wrapper">
-                <BiNavigation id={'primary-row-icon'} />
-              </div>
-              <div className="two-column">
-                <p id="title" className="mr-auto">
-                  Location
-                </p>
-                <a
-                  target="_blank"
-                  href={
-                    Manager.isIos() ? `http://maps.apple.com/?daddr=${encodeURIComponent(activeRequest?.location)}` : activeRequest?.directionsLink
-                  }>
-                  {activeRequest?.location}
-                </a>
-              </div>
-            </div>
-          )}
-
-          {/* REASON */}
-          {activeRequest?.reason && activeRequest?.reason.length > 0 && (
-            <div className="flex mb-20" id="row">
-              <div id="primary-icon-wrapper">
-                <MdOutlineNotes id={'primary-row-icon'} />
-              </div>
-              <div className="two-column">
-                <p id="title" className="mr-auto">
-                  Reason
-                </p>
-                <p className="reason-text">{activeRequest?.reason}</p>
-              </div>
-            </div>
-          )}
-          {/* BUTTONS */}
-          <div className="action-buttons">
-            {formatNameFirstNameOnly(activeRequest?.createdBy) !== formatNameFirstNameOnly(currentUser?.name) && (
-              <button
-                className="red"
-                data-request-id={activeRequest?.id}
-                onClick={async (e) => {
-                  AlertManager.inputAlert(
-                    'Rejection Reason',
-                    'Please enter a rejection reason',
-                    async () => {
-                      await selectDecision(Decisions.rejected)
-                    },
-                    true,
-                    true,
-                    'textarea'
-                  )
-                }}>
-                Reject
-              </button>
-            )}
+            <p onClick={() => setView('edit')} className={view === 'edit' ? 'view active' : 'view'}>
+              Edit
+            </p>
           </div>
+          {view === 'details' && (
+            <>
+              {/* TRANSFER DATE */}
+              {Manager.isValid(activeRequest?.date) && (
+                <div className="flex flex-start" id="row">
+                  <p id="title">
+                    <b>Transfer Date: </b>
+                    {DateManager.formatDate(activeRequest?.date)}
+                  </p>
+                </div>
+              )}
+
+              {/* RESPOND BY */}
+              {Manager.isValid(activeRequest?.responseDueDate) && (
+                <div className="flex" id="row">
+                  {!Manager.isValid(activeRequest?.endDate) && (
+                    <p id="title" className="mr-auto">
+                      <b>Respond by: </b>
+                      {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
+                      {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                    </p>
+                  )}
+                  {Manager.isValid(activeRequest?.endDate) && (
+                    <p id="title">
+                      <b>Respond by:</b>
+                      {DateManager.formatDate(activeRequest?.responseDueDate)}&nbsp;to&nbsp;{DateManager.formatDate(activeRequest?.endDate)}
+                      {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* TIME */}
+              {Manager.isValid(activeRequest?.time) && (
+                <div className="flex" id="row">
+                  <p id="title" className="mr-auto">
+                    <b>Time: </b>
+                    {activeRequest?.time}
+                  </p>
+                </div>
+              )}
+
+              {/* STATUS */}
+              <div className="flex flex-start" id="row">
+                <p id="title">
+                  <b>Status: </b>
+                  {uppercaseFirstLetterOfAllWords(activeRequest?.status)}
+                </p>
+              </div>
+
+              {/* LOCATION */}
+              {Manager.isValid(activeRequest?.location) && (
+                <div className="flex flex-start" id="row">
+                  <p id="title" className="mr-auto">
+                    <b>Location</b>
+                    <br />
+                    {activeRequest?.location}
+                  </p>
+                </div>
+              )}
+
+              {Manager.isValid(activeRequest?.location) && (
+                <a className="nav-detail" href={activeRequest?.directionsLink} target="_blank" rel="noreferrer">
+                  <BiSolidNavigation /> Nav
+                </a>
+              )}
+
+              {/* REASON */}
+              {Manager.isValid(activeRequest?.reason) && (
+                <div className="flex" id="row">
+                  <p id="title" className="mr-auto">
+                    <b>Reason</b>
+                    <br />
+                    {activeRequest?.reason}
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+
+          {view === 'edit' && (
+            <>
+              {/* DATE */}
+              <InputWrapper inputType={'date'} labelText={'Date'}>
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  className={`${theme}  mt-0 w-100`}
+                  defaultValue={moment(activeRequest?.date)}
+                  onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
+                />
+              </InputWrapper>
+
+              {/* TIME */}
+              <InputWrapper inputType={'date'} labelText={'Time'}>
+                <MobileTimePicker
+                  onOpen={addThemeToDatePickers}
+                  defaultValue={moment(activeRequest?.time, DateFormats.timeForDb)}
+                  className={`${theme}  mt-0 w-100`}
+                  onChange={(e) => setRequestTime(moment(e).format(DateFormats.timeForDb))}
+                />
+              </InputWrapper>
+
+              {/*  NEW LOCATION*/}
+              <InputWrapper inputType={'location'} labelText={'Location'}>
+                <Autocomplete
+                  placeholder={currentUser?.defaultTransferLocation}
+                  apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                  options={{
+                    types: ['geocode', 'establishment'],
+                    componentRestrictions: { country: 'usa' },
+                  }}
+                  className=""
+                  onPlaceSelected={(place) => {
+                    setRequestLocation(place.formatted_address)
+                  }}
+                />
+              </InputWrapper>
+              {/* RESPONSE DUE DATE */}
+              <InputWrapper inputType={'date'} labelText={'Respond by'}>
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  className={`${theme}  w-100`}
+                  defaultValue={moment(activeRequest?.responseDueDate)}
+                  onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+                />
+              </InputWrapper>
+
+              {/* BUTTONS */}
+              <div className="card-buttons">
+                <>
+                  <button className="button default submit center mt-15 mb-10" data-request-id={activeRequest?.id} onClick={update}>
+                    Update Request
+                  </button>
+                  {activeRequest?.ownerPhone !== currentUser?.phone && (
+                    <button
+                      className="button default red center mt-5"
+                      data-request-id={activeRequest?.id}
+                      onClick={async (e) => {
+                        AlertManager.inputAlert(
+                          'Rejection Reason',
+                          'Please enter a rejection reason.',
+                          (e) => {
+                            setRejectionReason(e.value)
+                            selectDecision(Decisions.rejected)
+                          },
+                          true,
+                          true,
+                          'textarea'
+                        )
+                      }}>
+                      Reject Request
+                    </button>
+                  )}
+                </>
+              </div>
+            </>
+          )}
         </div>
       </BottomCard>
 
@@ -274,7 +424,7 @@ export default function TransferRequests() {
         </Fade>
       </div>
 
-      {!showNewRequestCard && !showRevisionCard && !showDetails && (
+      {!showNewRequestCard && !showDetails && (
         <NavBar navbarClass={'transfer-requests'}>
           <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />
         </NavBar>

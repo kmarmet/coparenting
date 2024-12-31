@@ -56,7 +56,6 @@ import InputWrapper from '../shared/inputWrapper'
 import DomManager from '../../managers/domManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import ActivityCategory from '../../models/activityCategory'
-import Expense from '../../models/expense'
 import ObjectManager from '../../managers/objectManager'
 import ModelNames from '../../models/modelNames'
 
@@ -93,7 +92,8 @@ export default function ExpenseTracker() {
   const [name, setName] = useState('')
 
   const update = async () => {
-    let updatedExpense = new Expense()
+    // Fill/overwrite
+    let updatedExpense = { ...activeExpense }
     updatedExpense.category = category
     updatedExpense.amount = amount.toString()
     updatedExpense.payer = payer
@@ -107,7 +107,7 @@ export default function ExpenseTracker() {
     updatedExpense.name = name
     updatedExpense.ownerPhone = currentUser?.phone
 
-    if (!Manager.isEmpty(dueDate)) {
+    if (!Manager.isValid(dueDate)) {
       updatedExpense.dueDate = moment(dueDate).format(DateFormats.dateForDb)
     }
     const cleanedExpense = ObjectManager.cleanObject(updatedExpense, ModelNames.expense)

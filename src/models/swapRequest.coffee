@@ -1,11 +1,14 @@
+import Manager from "../managers/manager"
+import DateFormats from "../constants/dateFormats"
+import moment from "moment"
+
 export default class SwapRequest
   constructor: (
-    @id = ''
+    @id = Manager.getUid(),
     @startDate = ''
     @shareWith = []
-    @createdBy = ''
     @endDate = ''
-    @dateAdded = ''
+    @dateAdded = moment().format(DateFormats.dateForDb)
     @recipientPhone = ''
     @reason = ''
     @duration = ''
@@ -15,4 +18,5 @@ export default class SwapRequest
     @toHour = ''
     @status = 'pending'
     @range = []
+    @responseDueDate = ''
   ) ->

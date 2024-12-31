@@ -102,7 +102,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     let localImages = []
 
     if (docType === 'image') {
-      if (!Manager.isEmpty(files)) {
+      if (!Manager.isValid(files)) {
         for (let img of files) {
           localImages.push(await ImageManager.compressImage(img))
         }

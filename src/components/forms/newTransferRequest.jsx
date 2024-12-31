@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../context'
 import Manager from '@manager'
 import Autocomplete from 'react-google-autocomplete'
@@ -20,7 +20,7 @@ import AlertManager from '../../managers/alertManager'
 
 export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow } = state
+  const { currentUser, theme } = state
   const [requestReason, setRequestReason] = useState('')
   const [shareWith, setShareWith] = useState([])
   const [requestTime, setRequestTime] = useState('')
@@ -30,6 +30,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const [requestRecipientPhone, setRequestRecipientPhone] = useState('')
   const [preferredLocation, setPreferredLocation] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [responseDueDate, setResponseDueDate] = useState('')
 
   const resetForm = async () => {
     Manager.resetForm('transfer-request-wrapper')
@@ -56,56 +57,57 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
       )
       return false
     }
-    if (requestRecipientPhone.length === 0) {
+    if (!Manager.isValid(requestRecipientPhone)) {
       AlertManager.throwError('Please choose who to send the request to')
       return false
-    } else if (requestLocation.length === 0 && requestTime.length === 0) {
+    }
+    if (!Manager.isValid(requestLocation) && !Manager.isValid(requestTime)) {
       AlertManager.throwError('Please choose a new location or time')
       return false
-    } else if (requestDate.length === 0) {
+    }
+    if (!Manager.isValid(requestDate)) {
       AlertManager.throwError('Please choose the day of the requested transfer change')
       return false
-    } else if (validAccounts > 0) {
-      if (shareWith.length === 0) {
+    }
+    if (validAccounts > 0) {
+      if (!Manager.isValid(shareWith)) {
         AlertManager.throwError('Please choose who you would like to share this request with')
         return false
       }
-    } else {
-      const requestTimeIsValid = DateManager.dateIsValid(moment(requestTime, DateFormats.timeForDb).format(DateFormats.timeForDb))
-      let newRequest = new TransferChangeRequest()
-      newRequest.id = Manager.getUid()
-      newRequest.reason = requestReason
-      newRequest.ownerPhone = currentUser?.phone
-      newRequest.createdBy = currentUser?.name
-      newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
-      newRequest.time = requestTimeIsValid ? requestTime : ''
-      newRequest.location = requestLocation
-      newRequest.date = moment(requestDate).format(DateFormats.dateForDb)
-      newRequest.directionsLink = directionsLink
-      newRequest.recipientPhone = requestRecipientPhone
-      newRequest.status = 'pending'
-      newRequest.preferredTransferLocation = requestLocation
-
-      if (preferredLocation.length > 0) {
-        const coparent = currentUser?.coparents.filter((x) => x.phone === requestRecipientPhone)[0]
-        const key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/coparents`, coparent, 'id')
-        await DB_UserScoped.updateUserRecord(currentUser?.phone, `coparents/${key}/preferredTransferLocation`, requestLocation)
-      }
-
-      // Notify
-      const subId = await NotificationManager.getUserSubId(requestRecipientPhone, 'phone')
-      NotificationManager.sendNotification(
-        `Transfer Change Request`,
-        `${formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
-        subId
-      )
-
-      // // Add record
-      await DB.add(DB.tables.transferChangeRequests, newRequest)
-      AlertManager.successAlert('Transfer Change Request Sent')
-
-      resetForm()
     }
+    const requestTimeIsValid = DateManager.dateIsValid(moment(requestTime, DateFormats.timeForDb).format(DateFormats.timeForDb))
+    let newRequest = new TransferChangeRequest()
+    newRequest.reason = requestReason
+    newRequest.ownerPhone = currentUser?.phone
+    newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
+    newRequest.time = requestTimeIsValid ? requestTime : ''
+    newRequest.location = requestLocation
+    newRequest.date = moment(requestDate).format(DateFormats.dateForDb)
+    newRequest.directionsLink = directionsLink
+    newRequest.recipientPhone = requestRecipientPhone
+    newRequest.status = 'pending'
+    newRequest.preferredTransferLocation = requestLocation
+    newRequest.responseDueDate = responseDueDate
+
+    if (preferredLocation.length > 0) {
+      const coparent = currentUser?.coparents.filter((x) => x.phone === requestRecipientPhone)[0]
+      const key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/coparents`, coparent, 'id')
+      await DB_UserScoped.updateUserRecord(currentUser?.phone, `coparents/${key}/preferredTransferLocation`, requestLocation)
+    }
+
+    // Notify
+    const subId = await NotificationManager.getUserSubId(requestRecipientPhone, 'phone')
+    NotificationManager.sendNotification(
+      `Transfer Change Request`,
+      `${formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
+      subId
+    )
+
+    // // Add record
+    await DB.add(DB.tables.transferChangeRequests, newRequest)
+    AlertManager.successAlert('Transfer Change Request Sent')
+
+    await resetForm()
   }
 
   const handleShareWithSelection = async (e) => {
@@ -149,10 +151,6 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     }, 100)
   }
 
-  useEffect(() => {
-    Manager.showPageContainer('show')
-  }, [])
-
   return (
     <BottomCard
       onSubmit={submit}
@@ -182,6 +180,15 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
               </InputWrapper>
             </div>
 
+            {/* RESPONSE DUE DATE */}
+            <InputWrapper inputType={'date'} labelText={'Respond by'}>
+              <MobileDatePicker
+                onOpen={addThemeToDatePickers}
+                className={`${theme}  w-100`}
+                onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+              />
+            </InputWrapper>
+
             {/*  NEW LOCATION*/}
             <InputWrapper inputType={'location'} labelText={'New Location'}>
               <Autocomplete
@@ -201,6 +208,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
             <CheckboxGroup
               skipNameFormatting={true}
+              containerClass={'mb-15'}
               dataPhone={currentUser?.coparents?.map((x) => x.phone)}
               checkboxLabels={['Set as Preferred Transfer Location']}
               onCheck={handlePreferredLocation}

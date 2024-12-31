@@ -14,12 +14,10 @@ import { IoAdd } from 'react-icons/io5'
 import NavBar from '../navBar'
 import AlertManager from '../../managers/alertManager'
 import BottomCard from '../shared/bottomCard'
-import { PiCalendarDotsDuotone, PiSwapDuotone, PiUserDuotone } from 'react-icons/pi'
-import { MdOutlineNotes } from 'react-icons/md'
-import { FaChildren } from 'react-icons/fa6'
-import { BiTimeFive } from 'react-icons/bi'
+import { PiCheckBold, PiSwapDuotone } from 'react-icons/pi'
 import { Fade } from 'react-awesome-reveal'
-
+import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import Toggle from 'react-toggle'
 import {
   contains,
   displayAlert,
@@ -40,6 +38,12 @@ import {
 import DateManager from '../../managers/dateManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import DomManager from '../../managers/domManager'
+import InputWrapper from '../shared/inputWrapper'
+import DateFormats from '../../constants/dateFormats'
+import CheckboxGroup from '../shared/checkboxGroup'
+import ObjectManager from '../../managers/objectManager'
+import ModelNames from '../../models/modelNames'
+import ActivityCategory from '../../models/activityCategory'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -53,9 +57,50 @@ export default function SwapRequests() {
   const { currentUser, theme } = state
   const [rejectionReason, setRejectionReason] = useState('')
   const [showCard, setShowCard] = useState(false)
-  const [showReviseCard, setShowReviseCard] = useState(false)
   const [activeRequest, setActiveRequest] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
+  const [view, setView] = useState('details')
+  const [reason, setReason] = useState('')
+  const [requestChildren, setRequestChildren] = useState([])
+  const [swapDuration, setSwapDuration] = useState('single')
+  const [includeChildren, setIncludeChildren] = useState(false)
+  const [startDate, setStartDate] = useState('')
+  const [createdBy, setCreatedBy] = useState('')
+  const [responseDueDate, setResponseDueDate] = useState('')
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [status, setStatus] = useState('pending')
+
+  const resetForm = async () => {
+    Manager.resetForm('swap-request-wrapper')
+    setRequestChildren([])
+    setSwapDuration('single')
+    setIncludeChildren(false)
+    setStartDate('')
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    setState({ ...state, currentUser: updatedCurrentUser })
+    setRefreshKey(Manager.getUid())
+  }
+
+  const update = async () => {
+    // Fill -> overwrite
+    let updatedRequest = { ...activeRequest }
+    updatedRequest.startDate = startDate
+    updatedRequest.responseDueDate = responseDueDate
+    updatedRequest.children = requestChildren
+    updatedRequest.reason = reason
+
+    if (Manager.isValid(responseDueDate)) {
+      updatedRequest.responseDueDate = moment(responseDueDate).format(DateFormats.dateForDb)
+    }
+    const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.swapRequest)
+    await DB.delete(DB.tables.swapRequests, activeRequest.id)
+    await DB.add(`${DB.tables.swapRequests}`, cleanedRequest).then(async () => {
+      await getSecuredRequests()
+      setActiveRequest(updatedRequest)
+      setShowDetails(false)
+      await resetForm()
+    })
+  }
 
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getSwapRequests(currentUser).then((r) => r)
@@ -63,43 +108,86 @@ export default function SwapRequests() {
   }
 
   const selectDecision = async (decision) => {
-    const ownerSubId = await NotificationManager.getUserSubId(activeRequest.ownerPhone, 'phone')
     const recipient = await DB_UserScoped.getCoparentByPhone(activeRequest.recipientPhone, currentUser)
     const recipientName = recipient.name
     // Rejected
     if (decision === Decisions.rejected) {
       await DB.updateRecord(DB.tables.swapRequests, activeRequest, 'reason', rejectionReason, 'id')
+      await DB.updateRecord(DB.tables.swapRequests, activeRequest, 'status', 'rejected', 'id')
       const notifMessage = NotificationManager.templates.swapRequestRejection(activeRequest, recipientName)
-      NotificationManager.sendNotification('Swap Request Decision', notifMessage, ownerSubId)
-      await deleteRequest('rejected')
+      NotificationManager.sendNotification(
+        'Swap Request Decision',
+        notifMessage,
+        activeRequest?.ownerPhone,
+        currentUser,
+        ActivityCategory.swapRequest
+      )
+      setStatus('rejected')
       setShowDetails(false)
     }
 
     // Approved
     if (decision === Decisions.approved) {
       const notifMessage = NotificationManager.templates.swapRequestApproval(activeRequest, recipientName)
-      NotificationManager.sendNotification('Swap Request Decision', notifMessage, ownerSubId)
-      await DB.delete(DB.tables.swapRequests, activeRequest.id)
+      await DB.updateRecord(DB.tables.swapRequests, activeRequest, 'status', 'approved', 'id')
+      NotificationManager.sendNotification(
+        'Swap Request Decision',
+        notifMessage,
+        activeRequest?.ownerPhone,
+        currentUser,
+        ActivityCategory.swapRequest
+      )
+      setStatus('approved')
       setShowDetails(false)
     }
   }
 
-  const addEventRowAnimation = () => {
-    document.querySelectorAll('.request').forEach((request, i) => {
-      setTimeout(() => {
-        request.classList.add('active')
-      }, 200 * i)
-    })
+  const setCurrentRequest = async (request) => {
+    const coparent = await DB_UserScoped.getCoparentByPhone(request.ownerPhone, currentUser)
+    setCreatedBy(formatNameFirstNameOnly(coparent.name))
+    setShowDetails(true)
+    setActiveRequest(request)
   }
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
       await getSecuredRequests().then((r) => r)
-      setTimeout(() => {
-        addEventRowAnimation()
-      }, 600)
     })
+  }
+
+  const addThemeToDatePickers = () => {
+    setTimeout(() => {
+      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
+      datetimeParent.classList.add(currentUser?.settings?.theme)
+    }, 100)
+  }
+
+  const setDefaults = () => {
+    setReason(activeRequest?.reason)
+    setRequestChildren(activeRequest?.children)
+    setSwapDuration(activeRequest?.duration)
+    setStartDate(activeRequest?.startDate)
+    setStatus(activeRequest?.status)
+  }
+
+  const handleChildSelection = (e) => {
+    const clickedEl = e.currentTarget
+    const selectedValue = clickedEl.getAttribute('data-label')
+    if (clickedEl.classList.contains('active')) {
+      clickedEl.classList.remove('active')
+      if (requestChildren.length > 0) {
+        setRequestChildren(requestChildren.filter((x) => x !== selectedValue))
+      }
+    } else {
+      clickedEl.classList.add('active')
+
+      if (Manager.isValid(requestChildren)) {
+        setRequestChildren([...requestChildren, selectedValue])
+      } else {
+        setRequestChildren([selectedValue])
+      }
+    }
   }
 
   const deleteRequest = async (action = 'deleted') => {
@@ -110,7 +198,7 @@ export default function SwapRequests() {
         setShowDetails(false)
       })
     } else {
-      if (formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name)) {
+      if (activeRequest?.ownerPhone === currentUser?.phone) {
         await DB.delete(DB.tables.swapRequests, activeRequest?.id)
         AlertManager.successAlert(`Swap Request has been deleted.`)
       } else {
@@ -122,6 +210,12 @@ export default function SwapRequests() {
   }
 
   useEffect(() => {
+    if (activeRequest) {
+      setDefaults()
+    }
+  }, [activeRequest])
+
+  useEffect(() => {
     onTableChange().then((r) => r)
   }, [])
 
@@ -131,9 +225,10 @@ export default function SwapRequests() {
       {/* DETAILS CARD */}
       <BottomCard
         onDelete={deleteRequest}
-        hasDelete={formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) ? true : false}
-        hasSubmitButton={formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) ? false : true}
+        hasDelete={activeRequest?.ownerPhone === currentUser?.phone && view === 'edit'}
+        hasSubmitButton={activeRequest?.ownerPhone !== currentUser?.phone}
         submitText={'Approve'}
+        submitIcon={<PiCheckBold />}
         title={'Request Details'}
         onSubmit={() => selectDecision(Decisions.approved)}
         className="swap-requests"
@@ -144,99 +239,192 @@ export default function SwapRequests() {
         }}
         showCard={showDetails}>
         <div id="details" className={`content ${activeRequest?.reason?.length > 20 ? 'long-text' : ''}`}>
-          {/* DUE DATE */}
-          {activeRequest?.startDate && activeRequest?.startDate?.length > 0 && (
-            <div className="flex flex-start mb-15" id="row">
-              <div id="primary-icon-wrapper">
-                <PiCalendarDotsDuotone id="primary-row-icon" />
-              </div>
-              {activeRequest?.endDate.length === 0 && <p id="title">{DateManager.formatDate(activeRequest?.startDate)}</p>}
-              {activeRequest?.endDate?.length > 0 && (
-                <p id="title">
-                  {DateManager.formatDate(activeRequest?.startDate)}&nbsp;to&nbsp;{DateManager.formatDate(activeRequest?.endDate)}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* TIME */}
-          {activeRequest?.fromHour && activeRequest?.fromHour?.length > 0 && (
-            <div id="row" className="flex-start mb-15">
-              <div id="primary-icon-wrapper">
-                <BiTimeFive id={'primary-row-icon'} />
-              </div>
-              <div className="flex mb-0">
-                <p id="title" className="fromHour ">
-                  {activeRequest?.fromHour}
-                </p>
-                <span id="title">&nbsp;to&nbsp;</span>
-                <p id="title" className="toHour ">
-                  {activeRequest?.toHour}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* SENT TO */}
-          <div id="row" className="flex-start mb-15">
-            <div id="primary-icon-wrapper">
-              <PiUserDuotone id="primary-row-icon" />
-            </div>
-            {formatNameFirstNameOnly(activeRequest?.createdBy) !== formatNameFirstNameOnly(currentUser?.name) && (
-              <p id="title">From {formatNameFirstNameOnly(activeRequest.createdBy)}</p>
-            )}
-            {formatNameFirstNameOnly(activeRequest?.createdBy) === formatNameFirstNameOnly(currentUser?.name) && (
-              <p id="title">
-                Request Sent to {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
-              </p>
-            )}
+          <div className="views-wrapper">
+            <p onClick={() => setView('details')} className={view === 'details' ? 'view active' : 'view'}>
+              Details
+            </p>
+            <p onClick={() => setView('edit')} className={view === 'edit' ? 'view active' : 'view'}>
+              Edit
+            </p>
           </div>
-
-          {/* REASON */}
-          {activeRequest?.reason && activeRequest?.reason.length > 0 && (
-            <div className="flex mb-20 flex-start" id="row">
-              <div id="primary-icon-wrapper">
-                <MdOutlineNotes id={'primary-row-icon'} />
-              </div>
-              <div className="flex flex-start two-column mb-0">
-                <p id="title" className="w-100">
-                  Reason
-                </p>
-                <p className="reason-text">{activeRequest?.reason}</p>
-              </div>
-            </div>
-          )}
-
-          {/* CHILDREN */}
-          <div id="children">
-            {activeRequest?.children && activeRequest?.children.length > 0 && (
-              <div className="mb-20 flex flex-start" id="row">
-                <div id="primary-icon-wrapper">
-                  <FaChildren id={'primary-row-icon'} />
+          {/* DETAILS */}
+          {view === 'details' && (
+            <Fade direction={'up'} duration={600} triggerOnce={true}>
+              {/* SWAP DATE */}
+              {Manager.isValid(activeRequest?.startDate) && (
+                <div className="flex flex-start" id="row">
+                  <p id="title">
+                    <b>Swap Date: </b>
+                    {DateManager.formatDate(activeRequest?.startDate)}
+                  </p>
                 </div>
-                <p
-                  id="title"
-                  dangerouslySetInnerHTML={{
-                    __html: `${activeRequest?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                  }}></p>
+              )}
+
+              {/* CREATED BY */}
+              <div id="row" className="flex-start">
+                <div className="flex mb-0">
+                  <p id="title" className="fromHour">
+                    <b>Created by: </b>
+                    {createdBy}
+                  </p>
+                </div>
               </div>
-            )}
-          </div>
-          {/* BUTTONS */}
-          <div className="action-buttons">
-            {formatNameFirstNameOnly(activeRequest?.createdBy) !== formatNameFirstNameOnly(currentUser?.name) && (
-              <button
-                className="red"
-                data-request-id={activeRequest?.id}
-                onClick={async (e) => {
-                  AlertManager.inputAlert('Rejection Reason', 'Please enter a rejection reason.', () => {
-                    selectDecision(Decisions.rejected)
-                  })
-                }}>
-                Reject
-              </button>
-            )}
-          </div>
+
+              {/* STATUS */}
+              <div className="flex flex-start" id="row">
+                <p id="title">
+                  <b>Status: </b>
+                  {uppercaseFirstLetterOfAllWords(activeRequest?.status)}
+                </p>
+              </div>
+
+              {/* RESPOND BY */}
+              {Manager.isValid(activeRequest?.responseDueDate) && (
+                <div className="flex flex-start" id="row">
+                  {!Manager.isValid(activeRequest?.endDate) && (
+                    <p id="title">
+                      <b>Respond by: </b>
+                      {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
+                      {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                    </p>
+                  )}
+                  {Manager.isValid(activeRequest?.endDate) && (
+                    <p id="title">
+                      <b>Respond by:</b>
+                      {DateManager.formatDate(activeRequest?.responseDueDate)}&nbsp;to&nbsp;{DateManager.formatDate(activeRequest?.endDate)}
+                      {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* TIME */}
+              {activeRequest?.fromHour && activeRequest?.fromHour?.length > 0 && (
+                <div id="row" className="flex-start">
+                  <div className="flex mb-0">
+                    <p id="title" className="fromHour">
+                      <b>Start time: </b>
+                      {activeRequest?.fromHour}
+                    </p>
+                    <span id="title">&nbsp;to&nbsp;</span>
+                    <p id="title" className="toHour">
+                      <b>End time: </b>
+                      {activeRequest?.toHour}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* SENT TO */}
+              <div id="row" className="flex-start">
+                {activeRequest?.ownerPhone === currentUser?.phone && (
+                  <p id="title">
+                    <b>Sent to: </b>
+                    {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
+                  </p>
+                )}
+              </div>
+
+              {/* REASON */}
+              {Manager.isValid(activeRequest?.reason) && (
+                <div className="flex flex-start" id="row">
+                  <p id="title">
+                    <b>Reason </b>
+                    <br />
+                    {activeRequest?.reason}
+                  </p>
+                </div>
+              )}
+              {/* CHILDREN */}
+              {Manager.isValid(activeRequest?.children) && (
+                <div className="flex flex-start two-column" id="row">
+                  <p id="title" className="w-100">
+                    <b>Children</b>
+                    <br />
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: `${activeRequest?.children?.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                      }}></span>
+                  </p>
+                </div>
+              )}
+            </Fade>
+          )}
+
+          {view === 'edit' && (
+            <Fade direction={'up'} duration={600} triggerOnce={true}>
+              {/* SINGLE DATE */}
+              {swapDuration === SwapDurations.single && (
+                <InputWrapper inputType={'date'} labelText={'Date'}>
+                  <MobileDatePicker
+                    defaultValue={moment(activeRequest?.startDate)}
+                    onOpen={addThemeToDatePickers}
+                    className={`${theme} w-100`}
+                    onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
+                  />
+                </InputWrapper>
+              )}
+
+              {/* RESPONSE DUE DATE */}
+              <InputWrapper inputType={'date'} labelText={'Respond by'}>
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  className={`${theme}  w-100`}
+                  defaultValue={moment(activeRequest?.responseDueDate)}
+                  onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+                />
+              </InputWrapper>
+
+              {/* INCLUDE CHILDREN */}
+              {Manager.isValid(currentUser?.children, true) && (
+                <div className="share-with-container ">
+                  <div className="flex">
+                    <p>Include Child(ren)</p>
+                    <Toggle
+                      icons={{
+                        checked: <span className="material-icons-round">face</span>,
+                        unchecked: null,
+                      }}
+                      className={'ml-auto reminder-toggle'}
+                      onChange={(e) => setIncludeChildren(!includeChildren)}
+                    />
+                  </div>
+                  {includeChildren && (
+                    <CheckboxGroup checkboxLabels={currentUser?.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+                  )}
+                </div>
+              )}
+
+              {/* BUTTONS */}
+              <div className="card-buttons">
+                <>
+                  <button className="button default submit center mt-15 mb-10" data-request-id={activeRequest?.id} onClick={update}>
+                    Update Request
+                  </button>
+                  {activeRequest?.ownerPhone !== currentUser?.phone && (
+                    <button
+                      className="button default red center mt-5"
+                      data-request-id={activeRequest?.id}
+                      onClick={async (e) => {
+                        AlertManager.inputAlert(
+                          'Rejection Reason',
+                          'Please enter a rejection reason.',
+                          (e) => {
+                            setRejectionReason(e.value)
+                            selectDecision(Decisions.rejected)
+                          },
+                          true,
+                          true,
+                          'textarea'
+                        )
+                      }}>
+                      Reject Request
+                    </button>
+                  )}
+                </>
+              </div>
+            </Fade>
+          )}
         </div>
       </BottomCard>
 
@@ -248,21 +436,14 @@ export default function SwapRequests() {
             <p className="screen-title">Swap Requests </p>
             {!DomManager.isMobile() && <IoAdd id={'add-new-button'} className={'swap-requests'} onClick={() => setShowCard(true)} />}
           </div>
-          <p className="text-screen-intro mb-15">A request for your child(ren) to stay with you during your co-parent's scheduled visitation time.</p>
+          <p className="text-screen-intro">A request for your child(ren) to stay with you during your co-parent's scheduled visitation time.</p>
 
           {/* LOOP REQUESTS */}
           <div id="swap-requests-container">
             {Manager.isValid(existingRequests) &&
               existingRequests.map((request, index) => {
                 return (
-                  <div
-                    onClick={() => {
-                      setShowDetails(true)
-                      setActiveRequest(request)
-                    }}
-                    key={index}
-                    id="row"
-                    className="request w-100 mb-10 flex-start">
+                  <div onClick={() => setCurrentRequest(request)} key={index} id="row" className="request w-100 mb-10 flex-start">
                     {/* REQUEST DATE */}
                     <div id="primary-icon-wrapper" className="mr-10">
                       <PiSwapDuotone id={'primary-row-icon'} />

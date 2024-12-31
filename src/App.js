@@ -36,7 +36,6 @@ import NewCoparentForm from 'components/screens/coparents/newCoparentForm.jsx'
 import ChildSelector from 'components/screens/childInfo/childSelector.jsx'
 import Loading from './components/shared/loading'
 import DocViewer from './components/screens/documents/docViewer'
-import ReviseChildTransferChangeRequest from './components/forms/reviseTransferRequest'
 import emailjs from '@emailjs/browser'
 import './globalFunctions'
 import StateObj from './constants/stateObj'
@@ -221,7 +220,6 @@ export default function App() {
 
             {/* UPDATE/EDIT */}
             {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}
-            {currentScreen === ScreenNames.reviseTransferRequest && <ReviseChildTransferChangeRequest />}
 
             {/* DOCUMENTS */}
             {currentScreen === ScreenNames.docsList && <DocsList />}

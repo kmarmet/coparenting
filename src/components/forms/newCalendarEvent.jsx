@@ -135,10 +135,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     if (isVisitation) {
       newEvent.title = `${formatNameFirstNameOnly(currentUser?.name)}'s Visitation`
     }
-    newEvent.startDate = !Manager.isEmpty(eventStartDate) ? moment(eventStartDate).format(DateFormats.dateForDb) : ''
-    newEvent.endDate = !Manager.isEmpty(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
-    newEvent.startTime = !Manager.isEmpty(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
-    newEvent.endTime = !Manager.isEmpty(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
+    newEvent.startDate = !Manager.isValid(eventStartDate) ? moment(eventStartDate).format(DateFormats.dateForDb) : ''
+    newEvent.endDate = !Manager.isValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
+    newEvent.startTime = !Manager.isValid(eventStartTime) ? moment(eventStartTime).format(DateFormats.timeForDb) : ''
+    newEvent.endTime = !Manager.isValid(eventEndTime) ? moment(eventEndTime).format(DateFormats.timeForDb) : ''
     // Not Required
     newEvent.id = Manager.getUid()
     newEvent.directionsLink = !_.isEmpty(eventLocation) ? Manager.getDirectionsLink(eventLocation) : ''
@@ -156,30 +156,30 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
     if (Manager.isValid(newEvent)) {
       // Repeating Events Validation
-      if (Manager.isEmpty(repeatingEndDate) && !Manager.isEmpty(repeatInterval)) {
+      if (Manager.isValid(repeatingEndDate) && !Manager.isValid(repeatInterval)) {
         AlertManager.throwError('If you have chosen to repeat this event, please select an end month')
         return false
       }
 
-      if (Manager.isEmpty(eventTitle)) {
+      if (Manager.isValid(eventTitle)) {
         AlertManager.throwError('Please enter an event title')
         return false
       }
 
-      if (Manager.isEmpty(eventStartDate)) {
+      if (Manager.isValid(eventStartDate)) {
         AlertManager.throwError('Please select an event date')
         return false
       }
       const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
       if (validAccounts > 0) {
-        if (Manager.isEmpty(eventShareWith)) {
+        if (Manager.isValid(eventShareWith)) {
           AlertManager.throwError('Please choose who you would like to share this event with')
           return false
         }
       }
 
-      if (!Manager.isEmpty(eventReminderTimes) && Manager.isEmpty(eventStartTime)) {
+      if (!Manager.isValid(eventReminderTimes) && Manager.isValid(eventStartTime)) {
         AlertManager.throwError('If you set reminder times, please also uncheck All Day and add a start time')
         return false
       }
@@ -348,7 +348,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     }
 
     // CLONED DATES
-    if (!Manager.isEmpty(clonedDates)) {
+    if (!Manager.isValid(clonedDates)) {
       datesToIterate = clonedDates
       // Add initial start date
       datesToIterate.push(new Date(eventStartDate))
@@ -359,8 +359,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       // Required
       dateObject.title = eventTitle
       dateObject.id = Manager.getUid()
-      dateObject.startDate = !Manager.isEmpty(date) ? moment(date).format(DateFormats.dateForDb) : ''
-      dateObject.endDate = !Manager.isEmpty(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
+      dateObject.startDate = !Manager.isValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
+      dateObject.endDate = !Manager.isValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
       // Not Required
       dateObject.directionsLink = eventLocation
       dateObject.location = eventLocation
@@ -369,18 +369,18 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       dateObject.createdBy = currentUser?.name
       dateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat()
       dateObject.notes = eventNotes
-      dateObject.isRepeating = !Manager.isEmpty(repeatingEndDate)
+      dateObject.isRepeating = !Manager.isValid(repeatingEndDate)
       dateObject.isDateRange = eventIsDateRange
       dateObject.websiteUrl = eventWebsite
-      dateObject.startTime = !Manager.isEmpty(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
-      dateObject.endTime = !Manager.isEmpty(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
+      dateObject.startTime = !Manager.isValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
+      dateObject.endTime = !Manager.isValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
       dateObject.reminderTimes = eventReminderTimes
       dateObject.repeatInterval = repeatInterval
       dateObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
       datesToPush.push(dateObject)
     })
 
-    if (!Manager.isEmpty(clonedDates)) {
+    if (!Manager.isValid(clonedDates)) {
       // Reset Multidate Picker
       const multidatePicker = document.querySelector('.multidate-picker')
       if (multidatePicker) {
@@ -439,15 +439,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         title={'Add New Event'}>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           {/* Event Length */}
-          <div id="duration-options" className="action-pills calendar">
-            <p
-              className={`underlined-section-title  ${eventLength === 'single' ? 'active' : ''}`}
-              onClick={() => setEventLength(EventLengths.single)}>
+          <div className="calendar views-wrapper">
+            <p className={`view  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
               Single Day
             </p>
-            <p
-              className={`underlined-section-title  ${eventLength === 'multiple' ? 'active' : ''}`}
-              onClick={() => setEventLength(EventLengths.multiple)}>
+            <p className={`view  ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
               Multiple Days
             </p>
           </div>
@@ -484,7 +480,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           />
 
           {/* SUGGESTIONS DROPDOWN */}
-          {!Manager.isEmpty(eventTitle) && (
+          {!Manager.isValid(eventTitle) && (
             <div className="title-suggestion-wrapper">
               <InputSuggestionWrapper
                 suggestions={inputSuggestions}
@@ -667,7 +663,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       onCheck={handleRepeatingSelection}
                       checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
                     />
-                    {!Manager.isEmpty(repeatInterval) && (
+                    {!Manager.isValid(repeatInterval) && (
                       <InputWrapper inputType={'date'} labelText={'Month to End Repeating Events'} required={true}>
                         <DatetimePicker
                           className={`mt-0 w-100`}
