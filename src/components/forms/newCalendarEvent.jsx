@@ -170,14 +170,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         AlertManager.throwError('Please select an event date')
         return false
       }
-      const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-
-      if (validAccounts > 0) {
-        if (!Manager.isValid(eventShareWith)) {
-          AlertManager.throwError('Please choose who you would like to share this event with')
-          return false
-        }
-      }
 
       hideCard()
       MyConfetti.fire()
@@ -260,20 +252,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const handleShareWithSelection = (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
     setEventShareWith(shareWithNumbers)
-  }
-
-  const handleCoparentsToRemindSelection = async (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      (e) => {
-        setCoparentsToRemind([...coparentsToRemind, e])
-      },
-      (e) => {
-        let filtered = coparentsToRemind.filter((x) => x !== e)
-        setCoparentsToRemind(filtered)
-      },
-      true
-    )
   }
 
   const handleReminderSelection = (e) => {
@@ -554,10 +532,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
           {/* Share with */}
           {Manager.isValid(currentUser?.coparents) && (
-            <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
+            <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
           {Manager.isValid(currentUser?.parents) && (
-            <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
+            <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
 
           {/* REMINDER */}

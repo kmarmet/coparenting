@@ -100,14 +100,6 @@ export default function Visitation() {
       return false
     }
 
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-
-    if (validAccounts > 0 && currentUser?.coparents?.length > 0) {
-      if (shareWith.length === 0) {
-        AlertManager.throwError('Please choose who you would like to share this schedule with')
-        return false
-      }
-    }
     // Set end date to the end of the year
     const endDate = moment([moment().year()]).endOf('year').format('MM-DD-YYYY')
     let weekends = VisitationManager.getSpecificWeekends(scheduleTypes.variableWeekends, endDate, defaultSelectedWeekends, fifthWeekendSelection)
@@ -181,14 +173,6 @@ export default function Visitation() {
 
   // Every Weekend
   const addEveryWeekendToCalendar = async () => {
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-
-    if (validAccounts > 0 && currentUser?.coparents?.length > 0) {
-      if (shareWith.length === 0) {
-        AlertManager.throwError('Please choose who you would like to share this schedule with')
-        return false
-      }
-    }
     // Set end date to the end of the year
     let weekends = VisitationManager.getEveryWeekend()
     let events = []
@@ -218,15 +202,6 @@ export default function Visitation() {
     if (firstFFPeriodEnd.length === 0 || firstFFPeriodStart.length === 0 || secondFFPeriodEnd.length === 0 || secondFFPeriodStart.length === 0) {
       AlertManager.throwError('Both schedule ranges are required')
       return false
-    }
-
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-
-    if (validAccounts > 0 && currentUser?.coparents?.length > 0) {
-      if (shareWith.length === 0) {
-        AlertManager.throwError('Please choose who you would like to share this schedule with')
-        return false
-      }
     }
 
     let events = []
@@ -354,8 +329,12 @@ export default function Visitation() {
       e,
       async (e) => {
         setScheduleType(VisitationMapper.formattedScheduleTypes(e))
+        setShowCustomWeekendsCard(showCustomWeekendsCard)
       },
-      (e) => {}
+      (e) => {
+        setScheduleType('')
+        setShowCustomWeekendsCard(!showCustomWeekendsCard)
+      }
     )
   }
 
@@ -423,6 +402,18 @@ export default function Visitation() {
     }, 100)
   }
 
+  const removeScheduleTypeActiveClass = () => {
+    const checkboxWrapper = document.querySelector('.schedule-type-checkboxes')
+    if (Manager.isValid(checkboxWrapper)) {
+      const checkboxes = checkboxWrapper.querySelectorAll('#checkbox-container')
+      if (Manager.isValid(checkboxes)) {
+        for (let checkbox of checkboxes) {
+          checkbox.classList.remove('active')
+        }
+      }
+    }
+  }
+
   // On Schedule Type Change
   useEffect(() => {
     if (scheduleType === ScheduleTypes.fiftyFifty) {
@@ -450,6 +441,10 @@ export default function Visitation() {
       AlertManager.confirmAlert('Are you sure you would like to add an Every Weekend visitation schedule?', "I'm Sure", true, async () => {
         await addEveryWeekendToCalendar()
       })
+    }
+
+    if (scheduleType === '') {
+      removeScheduleTypeActiveClass()
     }
   }, [scheduleType])
 
@@ -580,7 +575,10 @@ export default function Visitation() {
           onSubmit={addEveryOtherWeekendToCalendar}
           title={'Every other Weekend'}
           showCard={showEveryOtherWeekendCard}
-          onClose={() => setShowEveryOtherWeekendCard(false)}>
+          onClose={() => {
+            setShowEveryOtherWeekendCard(false)
+            setScheduleType('')
+          }}>
           <InputWrapper wrapperClasses="mt-15" labelText={'Friday of the next weekend you have your child(ren)'} required={true} inputType={'date'}>
             <MobileDatePicker onOpen={addThemeToDatePickers} onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100`} />
           </InputWrapper>
@@ -590,10 +588,15 @@ export default function Visitation() {
         <BottomCard
           submitText={'Add Schedule'}
           className="form"
+          onSubmit={addSpecificWeekendsToCalendar}
+          hasSubmitButton={Manager.isValid(defaultSelectedWeekends)}
           wrapperClass="add-weekends-schedule"
           title={'Custom Weekends Schedule'}
           showCard={showCustomWeekendsCard}
-          onClose={() => setShowCustomWeekendsCard(false)}>
+          onClose={() => {
+            setShowCustomWeekendsCard(false)
+            setScheduleType('')
+          }}>
           <>
             <CheckboxGroup
               parentLabel={'Weekend YOU will have the child(ren)'}
@@ -640,7 +643,8 @@ export default function Visitation() {
                       async () => {
                         await deleteSchedule()
                         AlertManager.successAlert('Event Deleted')
-                      }
+                      },
+                      setScheduleType('')
                     )
                   }}>
                   Delete Current Schedule
@@ -660,21 +664,19 @@ export default function Visitation() {
               </div>
 
               {/* SCHEDULE SELECTION */}
-              {shareWith.length > 0 && (
-                <div className="section visitation-schedule mt-10 mb-10">
-                  <CheckboxGroup
-                    elClass="mt-10 gap-10"
-                    parentLabel={'Choose Visitation Schedule'}
-                    onCheck={handleScheduleTypeSelection}
-                    skipNameFormatting={true}
-                    checkboxLabels={['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']}
-                  />
-                </div>
-              )}
+              <div className="section visitation-schedule mt-10 mb-10">
+                <CheckboxGroup
+                  elClass="mt-10 schedule-type-checkboxes gap-10"
+                  parentLabel={'Choose Visitation Schedule'}
+                  onCheck={handleScheduleTypeSelection}
+                  skipNameFormatting={true}
+                  checkboxLabels={['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']}
+                />
+              </div>
 
               {/* SHARE WITH */}
               <ShareWithCheckboxes
-                required={true}
+                required={false}
                 shareWith={currentUser?.coparents?.map((x) => x.phone)}
                 onCheck={handleShareWithSelection}
                 icon={<ImEye />}

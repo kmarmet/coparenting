@@ -86,6 +86,8 @@
           margin: 0 10px 0 15px;
           position: relative;
           bottom: 5px;
+          
+          @include hover;
 
           svg {
             color: white;

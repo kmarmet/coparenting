@@ -17,6 +17,19 @@ DomManager = {
   isMobile: function() {
     return window.screen.width < 800;
   },
+  tapOrClick: function(isUppercase = false) {
+    if (!isUppercase) {
+      if (DomManager.isMobile()) {
+        return "tap";
+      }
+      return "click";
+    } else {
+      if (DomManager.isMobile()) {
+        return "Tap";
+      }
+      return "Click";
+    }
+  },
   debounce: function(callback, delay) {
     var executedFunction, timeout;
     timeout = null;

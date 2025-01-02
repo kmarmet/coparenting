@@ -291,7 +291,7 @@
     b {
       font-weight: $fwBold;
       color: black;
-      opacity: .85;
+      opacity: 0.85;
     }
     /*#endregion ELEMENT DEFAULTS*/
 
@@ -391,7 +391,7 @@
     .views-wrapper {
       @include viewsWrapper;
     }
-    
+
     #screen-title-wrapper {
       align-items: flex-start;
 
@@ -412,15 +412,24 @@
     }
 
     #app-content-with-sidebar {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
       margin: 0 15px;
       max-width: 100vw;
-      flex-wrap: nowrap;
-      overflow: hidden;
       position: relative;
-//      height: 100vh;
+      gap: 15px;
+      overflow: auto;
+      max-height: 1000px;
+      height: 100vh;
+
+      &.logged-in {
+        flex-wrap: nowrap;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        
+        @media screen and (min-width: 1000px) {
+          max-height: calc(100vh - 110px);
+        }
+      }
 
       @media screen and (max-width: 600px) {
         margin: 0;
@@ -450,11 +459,8 @@
         }
       }
       @media screen and (min-width: 1000px) {
-//        width: 100vw;
-//        max-width: 100vw;
         #home-screen-wrapper {
-          #below-fold-wrapper,
-          #above-fold-wrapper {
+          #below-fold-wrapper {
             width: calc(70vw - 80px);
             max-width: calc(70vw - 80px);
           }
@@ -462,6 +468,7 @@
         .home {
           width: 70vw;
           max-width: 100vw;
+          margin: 0 auto;
         }
       }
       @media screen and (max-width: 1100px) {

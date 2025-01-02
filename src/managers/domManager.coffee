@@ -11,6 +11,13 @@ DomManager = {
 
   isMobile: () -> window.screen.width < 800
 
+  tapOrClick: (isUppercase = false) ->
+    if !isUppercase
+      if DomManager.isMobile() then return "tap"
+      return "click"
+    else
+      if DomManager.isMobile() then return "Tap"
+      return "Click"
   debounce: (callback, delay) ->
     timeout = null
 

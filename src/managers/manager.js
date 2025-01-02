@@ -98,6 +98,9 @@ const Manager = {
     }
     return userObjectsToReturn.flat()
   },
+  contains: (variable, stringToCheckFor) => {
+    return _.includes(variable, stringToCheckFor)
+  },
   showPageContainer: () => {
     const interval = setInterval(() => {
       const pageContainer = document.querySelector('.page-container')
@@ -312,10 +315,7 @@ const Manager = {
       let repeatingEvents = await DB.getTable(DB.tables.calendarEvents)
       repeatingEvents = repeatingEvents.filter((x) => x.title === eventTitle)
       const repeatInterval = object['repeatInterval']
-      document
-        .querySelector(`[data-label='${uppercaseFirstLetterOfAllWords(repeatInterval)}']`)
-        .querySelector('.box')
-        .classList.add('active')
+      document.querySelector(`[data-label='${uppercaseFirstLetterOfAllWords(repeatInterval)}']`).classList.add('active')
       return repeatingEvents
     }
     // Share With

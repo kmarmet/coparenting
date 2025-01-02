@@ -48,8 +48,20 @@
   /*#region  1000PX APP CONTAINER*/
   #app-container {
     @media screen and (min-width: 1000px) {
-      .page-container {
+      .page-container:not(.home):not(.login) {
         padding: 20px 20px 200px 20px;
+        max-height: calc(100vh - 110px);
+        border: 1px solid $desktopBorderColor;
+        border-radius: $bigBorderRadius;
+      }
+      .page-container {
+        &.home {
+          overflow: hidden;
+          height: auto;
+        }
+        &.login {
+          margin: 0 auto;
+        }
       }
       // LOGIN SCREEN
       #app-content-with-sidebar {
@@ -154,6 +166,8 @@
 
       // CALENDAR
       #calendar-container {
+        border: 1px solid $desktopBorderColor;
+        border-radius: $bigBorderRadius;
         .events {
           max-height: 20vh;
         }
@@ -162,11 +176,80 @@
         background: white;
         padding: 20px;
         border-radius: $bigBorderRadius;
-        border: 1px solid #e0e0e0;
+        border: 1px solid $desktopBorderColor;
         width: 40%;
 
         @media screen and (max-width: 600px) {
           display: none;
+        }
+
+        #desktop-legend-wrapper {
+          margin-bottom: 15px;
+
+          #legend-row {
+            transition: all 0.3s ease-in-out;
+
+            &:hover {
+              opacity: 1;
+              color: $mainBlue;
+              padding-left: 15px;
+              cursor: pointer;
+              
+              label {
+                color: $mainBlue;
+                opacity: 1;
+                cursor: pointer;
+              }
+            }
+            svg {
+              font-size: 22px;
+              margin-right: 17px;
+            }
+
+            label {
+              opacity: 0.85;
+              font-weight: $fwRegular;
+            }
+          }
+
+          .flex {
+            align-items: center;
+
+            &.currentUser {
+              margin-top: 5px;
+            }
+          }
+
+          #legend-content {
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+            transform: scale(0);
+            max-height: 0;
+
+            &.active {
+              max-height: 500px;
+              margin-top: 10px;
+              opacity: 1;
+              transform: scale(1);
+            }
+
+            p {
+              font-size: 14px;
+              margin-top: 0;
+              opacity: 1;
+              text-align: center;
+              justify-content: center;
+              &.currentUser {
+                color: $currentUserOrange;
+              }
+              &.coparent {
+                color: $coparentPurple;
+              }
+              &.standard {
+                color: $green;
+              }
+            }
+          }
         }
 
         input {
@@ -183,8 +266,14 @@
           display: flex;
           align-items: center;
           opacity: 0.85;
-          @include transformHover;
+          transition: all 0.3s ease-in-out;
 
+          &:hover {
+            opacity: 1;
+            color: $mainBlue;
+            padding-left: 15px;
+            cursor: pointer;
+          }
           * {
             line-height: 1;
           }
@@ -212,7 +301,11 @@
 
       // SECTION
       .section {
-        @include hover;
+        &.unique-features {
+          .feature {
+            @include hover;
+          }
+        }
       }
 
       // BUTTONS
@@ -367,23 +460,23 @@
                     cursor: pointer;
                     background: $mainBlue;
                     color: white;
-                    
+
                     svg {
                       color: white;
                     }
                   }
-                  
+
                   &.submit {
                   }
                 }
               }
             }
           }
-          
+
           &.animate__fadeInUp {
             bottom: unset;
           }
-          
+
           &.active {
             min-height: unset;
             max-height: unset;
@@ -426,13 +519,12 @@
           }
         }
         @media screen and (min-width: 800px) {
-        
         }
         @media screen and (min-width: 650px) {
           .close-icon {
             @include hover;
           }
-          
+
           #duration-options {
             .duration-option {
               @include hover;
@@ -462,13 +554,13 @@
         margin-left: 15px;
         height: calc(100vh - 100px);
         max-height: calc(100vh - 100px);
-        
+
         .conversation-sidebar-fade-wrapper {
           .sidebar-search-input {
             &::placeholder {
               font-size: 14px;
               font-style: italic;
-              opacity: .6;
+              opacity: 0.6;
             }
           }
         }
@@ -480,7 +572,11 @@
           margin-left: 20px;
           width: 20vw;
           border-radius: $bigBorderRadius;
-          border: 1px solid #e0e0e0;
+          border: 1px solid $desktopBorderColor;
+          
+          #input-wrapper {
+            padding:0;
+          }
 
           #user-name {
             color: $mainBlue;
@@ -519,15 +615,14 @@
           }
         }
 
-        .form {
+        .form:not(.input-container) {
           width: 100%;
           display: flex;
           justify-content: center;
-          border-left: 1px solid #e0e0e0;
-          border-right: 1px solid #e0e0e0;
-          border-bottom: 1px solid #e0e0e0;
+          border-left: 1px solid $desktopBorderColor;
+          border-right: 1px solid $desktopBorderColor;
+          border-bottom: 1px solid $desktopBorderColor;
           border-radius: 0 0 $bigBorderRadius $bigBorderRadius;
-
           position: fixed;
           bottom: 100px;
 
@@ -560,7 +655,7 @@
           border-radius: $bigBorderRadius;
           position: relative;
           bottom: 3px;
-          border: 1px solid #e0e0e0;
+          border: 1px solid $desktopBorderColor;
 
           .message {
             svg {
@@ -620,7 +715,6 @@
     }
 
     .page-container {
-
       &:not(.home) {
         align-self: stretch;
         @media screen and (max-width: 600px) {
@@ -639,7 +733,6 @@
   }
   /*#endregion  1000PX APP CONTAINER*/
 
-
   /*#region  600PX PHONE CONTAINER*/
   @media screen and (max-width: 600px) {
     #home-screen-wrapper {
@@ -648,7 +741,7 @@
           &.unique-features {
             #feature-grid {
               display: block;
-              
+
               .feature {
                 width: 100%;
                 margin-bottom: 10px;

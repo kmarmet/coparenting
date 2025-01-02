@@ -201,6 +201,7 @@ export default NotificationManager =
       .catch (err) -> console.error err
 
   sendToShareWith: (recipientPhones, currentUser, title, message, category = '') ->
-    for phone in recipientPhones
-      coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
-      await NotificationManager.sendNotification(title, message, coparent?.phone, currentUser, category )
+    if Manager.isValid(recipientPhones)
+      for phone in recipientPhones
+        coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
+        await NotificationManager.sendNotification(title, message, coparent?.phone, currentUser, category )

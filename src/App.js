@@ -66,6 +66,10 @@ export default function App() {
   const { userIsLoggedIn, firebaseUser, setFirebaseUser } = state
   const myCanvas = document.createElement('canvas')
 
+  const fullscreenScreens = [ScreenNames.login, ScreenNames.home, ScreenNames.registration]
+  const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
+  const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
+
   emailjs.init({
     publicKey: 'khikD1NoIHmBPlckL',
     // Do not allow headless browsers
@@ -184,10 +188,6 @@ export default function App() {
       deleteMenuAnimation()
     }
   }, [menuIsOpen])
-
-  const fullscreenScreens = [ScreenNames.login, ScreenNames.home]
-  const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
-  const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>

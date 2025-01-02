@@ -51,6 +51,7 @@ import LogManager from '../../../managers/logManager'
 import { TbDeviceMobileMessage } from 'react-icons/tb'
 import DateFormats from '../../../constants/dateFormats'
 import moment from 'moment'
+import DomManager from '../../../managers/domManager'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -384,7 +385,7 @@ export default function Registration() {
               installed as well.
             </p>
             <p>
-              Click <b>Install App</b> button below to read the extremely fast installation steps.
+              {DomManager.tapOrClick(true)} <b>Install App</b> button below to read the extremely fast installation steps.
             </p>
             {/* INSTALL BUTTON */}
             <p

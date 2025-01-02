@@ -4,7 +4,6 @@ import DateManager from '@managers/dateManager'
 import Manager from '@manager'
 import moment from 'moment'
 import globalState from '../../context'
-import CalendarMapper from 'mappers/calMapper'
 import CalendarManager from 'managers/calendarManager'
 import BottomCard from 'components/shared/bottomCard'
 import DateFormats from '../../constants/dateFormats'
@@ -27,6 +26,8 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { TfiClose } from 'react-icons/tfi'
+import Label from '../shared/label'
+import { HiOutlineColorSwatch } from 'react-icons/hi'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -45,7 +46,7 @@ export default function EventCalendar() {
   const [selectedNewEventDay, setSelectedNewEventDay] = useState(moment())
   const [loadingDisabled, setLoadingDisabled] = useState(false)
   const [showLegend, setShowLegend] = useState(false)
-
+  const [showDesktopLegend, setShowDesktopLegend] = useState(false)
   // GET EVENTS
   const getSecuredEvents = async (selectedDay, selectedMonth) => {
     let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
@@ -83,7 +84,13 @@ export default function EventCalendar() {
       let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DateFormats.dateForDb)
       const dayEvent = await DB.find(events, ['startDate', formattedDay], false)
 
+      // APPEND INVISIBLE DOTS AND SKIP DAY WITHOUT EVENT
       if (!dayEvent) {
+        const invisibleDots = document.createElement('span')
+        invisibleDots.classList.add('invisible-dots')
+        if (day.innerHTML.indexOf('invisible') === -1) {
+          day.append(invisibleDots)
+        }
         continue
       }
       const daysEvents = events.filter((x) => x.startDate === formattedDay)
@@ -93,6 +100,8 @@ export default function EventCalendar() {
       if (dayOfWeek === 6 || dayOfWeek === 7) {
         day.classList.add('weekend-day')
       }
+
+      // APPEND DOTS/EMOJIS
       if (dayEvent.startDate === formattedDay) {
         const dotWrapper = document.createElement('span')
         dotWrapper.classList.add('dot-wrapper')
@@ -162,38 +171,33 @@ export default function EventCalendar() {
 
         // ADD DOTS
         let alreadyAdded = []
-        for (let _event of daysEvents) {
-          const eventType = getRowDotColor(_event)
+        const existingDayWrapper = day.querySelector('.dot-wrapper')
+        if (!Manager.isValid(existingDayWrapper)) {
+          for (let _event of daysEvents) {
+            const eventType = getRowDotColor(_event)
 
-          if (!alreadyAdded.includes(eventType)) {
-            if (eventType === 'standard-dot') {
-              const standardEventDot = document.createElement('span')
-              standardEventDot.classList.add('standard-event-dot', 'dot')
-              dotWrapper.append(standardEventDot)
-              alreadyAdded.push(eventType)
-            }
-            if (eventType === 'current-user-dot') {
-              const currentUserDot = document.createElement('span')
-              currentUserDot.classList.add('current-user-event-dot', 'dot')
-              dotWrapper.append(currentUserDot)
-              alreadyAdded.push(eventType)
-            }
-            if (eventType === 'coparent-dot') {
-              const coparentDot = document.createElement('span')
-              coparentDot.classList.add('coparent-event-dot', 'dot')
-              dotWrapper.append(coparentDot)
-              alreadyAdded.push(eventType)
+            if (!alreadyAdded.includes(eventType)) {
+              if (eventType === 'standard-dot') {
+                const standardEventDot = document.createElement('span')
+                standardEventDot.classList.add('standard-event-dot', 'dot')
+                dotWrapper.append(standardEventDot)
+                alreadyAdded.push(eventType)
+              }
+              if (eventType === 'current-user-dot') {
+                const currentUserDot = document.createElement('span')
+                currentUserDot.classList.add('current-user-event-dot', 'dot')
+                dotWrapper.append(currentUserDot)
+                alreadyAdded.push(eventType)
+              }
+              if (eventType === 'coparent-dot') {
+                const coparentDot = document.createElement('span')
+                coparentDot.classList.add('coparent-event-dot', 'dot')
+                dotWrapper.append(coparentDot)
+                alreadyAdded.push(eventType)
+              }
             }
           }
-        }
-
-        day.append(dotWrapper)
-      } else {
-        // Add margin top spacer
-        const invisibleDots = document.createElement('span')
-        invisibleDots.classList.add('invisible-dots')
-        if (day.innerHTML.indexOf('invisible') === -1) {
-          day.append(invisibleDots)
+          day.append(dotWrapper)
         }
       }
     }
@@ -236,24 +240,12 @@ export default function EventCalendar() {
     Manager.scrollIntoView('#static-calendar')
   }
 
-  const handleEventRowClick = async (e, event) => {
-    if (e.currentTarget.id === 'more-button') {
+  const handleEventRowClick = async (clickedEvent) => {
+    if (clickedEvent.isHoliday) {
       return false
     }
-    if (event.isHoliday) {
-      return false
-    }
-    const shouldShowEditCard = !event?.isHoliday && e.target.tagName !== 'A' && e.target.id !== 'more-button'
-    const hasEditAccess = event.ownerPhone === currentUser?.phone
-    if (shouldShowEditCard && hasEditAccess) {
-      setEventToEdit(event)
-      setShowEditCard(true)
-    } else {
-      if (!hasEditAccess) {
-        const owner = await Manager.getNamesFromPhone([event.ownerPhone])
-        AlertManager.oneButtonAlert('Cannot Edit', `${owner[0].name} is the creator of this event, please ask them to edit it.`, 'warning')
-      }
-    }
+    setEventToEdit(clickedEvent)
+    setShowEditCard(true)
   }
 
   const onTableChange = async () => {
@@ -275,6 +267,10 @@ export default function EventCalendar() {
     if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
       onActivityChange().then((r) => r)
       setLoadingDisabled(true)
+      const appContentWithSidebar = document.getElementById('app-content-with-sidebar')
+      if (appContentWithSidebar) {
+        appContentWithSidebar.classList.add('logged-in')
+      }
     }
   }, [currentUser])
 
@@ -419,14 +415,7 @@ export default function EventCalendar() {
         <NewCalendarEvent selectedNewEventDay={selectedNewEventDay} showCard={showNewEventCard} hideCard={() => setShowNewEventCard(false)} />
 
         {/* EDIT EVENT */}
-        <EditCalEvent
-          showCard={showEditCard}
-          onClose={async (editDay) => {
-            await getSecuredEvents(moment(editDay).format(DateFormats.dateForDb).toString())
-            setShowEditCard(false)
-          }}
-          event={eventToEdit}
-        />
+        <EditCalEvent showCard={showEditCard} onClose={async (editDay) => setShowEditCard(false)} event={eventToEdit} />
       </>
 
       {/* PAGE CONTAINER */}
@@ -497,18 +486,12 @@ export default function EventCalendar() {
                 {!Manager.isValid(existingEvents) && <p id="no-events-text">No events on this day</p>}
                 {Manager.isValid(existingEvents) &&
                   existingEvents.map((event, index) => {
-                    let readableReminderTimes = []
-                    event?.reminderTimes?.forEach((time) => {
-                      if (time) {
-                        readableReminderTimes.push(`<span>${CalendarMapper.readableReminderBeforeTimeframes(time)}</span>`)
-                      }
-                    })
                     let eventType = getRowDotColor(event)
                     return (
                       <div
                         key={index}
                         id="row"
-                        onClick={(e) => handleEventRowClick(e, event)}
+                        onClick={(e) => handleEventRowClick(event)}
                         data-from-date={event?.startDate}
                         className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${eventType} ${index === existingEvents.length - 2 ? 'last-child' : ''}`}>
                         <div className="text flex space-between">
@@ -594,8 +577,27 @@ export default function EventCalendar() {
             </p>
           )}
 
+          {/* DESKTOP LEGEND WRAPPER */}
+          <div id="desktop-legend-wrapper">
+            <div className="flex" id="legend-row" onClick={() => setShowDesktopLegend(!showDesktopLegend)}>
+              <HiOutlineColorSwatch />
+              <Label text={'Legend'} />
+            </div>
+            <div id="legend-content" className={showDesktopLegend ? 'active' : ''}>
+              <p className="flex currentUser">
+                <span className="dot in-legend currentUser"></span> Your Event
+              </p>
+              <p className="flex coparent">
+                <span className="dot coparent in-legend"></span> Co-Parent/Child Event
+              </p>
+              <p className="flex standard">
+                <span className="dot in-legend standard"></span> Holiday
+              </p>
+            </div>
+          </div>
+
           <InputWrapper
-            defaultValue="Find events"
+            placeholder="Find events..."
             refreshKey={refreshKey}
             inputType={'input'}
             inputValue={searchQuery}

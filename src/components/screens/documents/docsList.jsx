@@ -87,7 +87,7 @@ export default function DocsList() {
             {!DomManager.isMobile() && <GrDocumentUpload id={'add-new-button'} onClick={() => setShowCard(true)} />}
           </div>
           <p className="mb-10">Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise.</p>
-          <p className="mb-10">If the document type you tap is an image, the loading time may be a bit longer.</p>
+          <p className="mb-10">If the document type you {DomManager.tapOrClick(false)} is an image, the loading time may be a bit longer.</p>
 
           {!Manager.isValid(selectedDoc) && (
             <div className="sections">

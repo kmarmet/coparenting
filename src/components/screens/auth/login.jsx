@@ -31,6 +31,7 @@ import {
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import { SlLogin } from 'react-icons/sl'
+import DomManager from '../../../managers/domManager'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
@@ -67,7 +68,7 @@ export default function Login() {
             if (!user.emailVerified) {
               AlertManager.oneButtonAlert(
                 'Email Address Verification Needed',
-                `For security purposes, we need to verify ${user.email}. Please click the link sent to your email and login.`,
+                `For security purposes, we need to verify ${user.email}. Please ${DomManager.tapOrClick()} the link sent to your email and login.`,
                 'info',
                 () => {}
               )
@@ -90,7 +91,7 @@ export default function Login() {
             console.error('Sign in error:', error.message)
             if (contains(error.message, 'wrong-password')) {
               console.log('found')
-              AlertManager.throwError(`Incorrect Password`, 'Please tap Reset Password below')
+              AlertManager.throwError(`Incorrect Password`, `Please ${DomManager.tapOrClick(true)} Reset Password below`)
             }
           })
       })
@@ -111,7 +112,7 @@ export default function Login() {
         if (!user.emailVerified) {
           AlertManager.oneButtonAlert(
             'Email Address Verification Needed',
-            `For security purposes, we need to verify ${user.email}. Please click the link sent to your email and then login.`,
+            `For security purposes, we need to verify ${user.email}. Please ${DomManager.tapOrClick()} the link sent to your email and then login.`,
             'info',
             () => {}
           )
@@ -133,9 +134,12 @@ export default function Login() {
         setState({ ...state, isLoading: false })
         console.error('Sign in error:', error.message)
         if (contains(error.message, 'user-not-found')) {
-          AlertManager.throwError(`No account with email ${email} found.`, 'If you have forgotten your password, please tap Reset Password')
+          AlertManager.throwError(
+            `No account with email ${email} found.`,
+            `If you have forgotten your password, please ${DomManager.tapOrClick()} Reset Password`
+          )
         } else {
-          AlertManager.throwError(`Incorrect password`, 'Please tap Reset Password.')
+          AlertManager.throwError(`Incorrect password`, `Please ${DomManager.tapOrClick()} Reset Password.`)
         }
       })
   }
@@ -159,7 +163,12 @@ export default function Login() {
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`page-container form login`}>
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
-          <img className="ml-auto mr-auto" src={require('../../../img/logo.png')} alt="Peaceful coParenting" />
+          <img
+            onClick={() => setState({ ...state, currentScreen: ScreenNames.home })}
+            className="ml-auto mr-auto"
+            src={require('../../../img/logo.png')}
+            alt="Peaceful coParenting"
+          />
           {/* QUOTE CONTAINER */}
           <div id="quote-container">
             <p id="quote">
@@ -184,17 +193,10 @@ export default function Login() {
           <div className="flex form-container">
             <div className="form w-80">
               {/* EMAIL */}
-              <InputWrapper
-                placeholder="Email address"
-                inputValueType="email"
-                required={true}
-                labelText={'Email Address'}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <InputWrapper inputValueType="email" required={true} labelText={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
               {/* PASSWORD */}
               <div className="flex inputs">
                 <InputWrapper
-                  placeholder="Password"
                   inputValueType={viewPassword ? 'text' : 'password'}
                   required={true}
                   labelText={'Password'}

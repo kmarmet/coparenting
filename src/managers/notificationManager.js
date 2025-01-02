@@ -219,13 +219,15 @@ export default NotificationManager = {
   },
   sendToShareWith: async function(recipientPhones, currentUser, title, message, category = '') {
     var coparent, i, len, phone, results;
-    results = [];
-    for (i = 0, len = recipientPhones.length; i < len; i++) {
-      phone = recipientPhones[i];
-      coparent = (await DB_UserScoped.getCoparentByPhone(phone, currentUser));
-      results.push((await NotificationManager.sendNotification(title, message, coparent != null ? coparent.phone : void 0, currentUser, category)));
+    if (Manager.isValid(recipientPhones)) {
+      results = [];
+      for (i = 0, len = recipientPhones.length; i < len; i++) {
+        phone = recipientPhones[i];
+        coparent = (await DB_UserScoped.getCoparentByPhone(phone, currentUser));
+        results.push((await NotificationManager.sendNotification(title, message, coparent != null ? coparent.phone : void 0, currentUser, category)));
+      }
+      return results;
     }
-    return results;
   }
 };
 

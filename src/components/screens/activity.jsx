@@ -162,7 +162,7 @@ export default function Activity() {
                       <p className={`card-title ${className}`}>
                         {criticalCategories.includes(category) && <PiSealWarningDuotone />} {uppercaseFirstLetterOfAllWords(title)}{' '}
                       </p>
-                      <p className="text">{text}</p>
+                      <p className="text">{uppercaseFirstLetterOfAllWords(text)}</p>
                       <p id="date">{moment(dateCreated, DateFormats.fullDatetime).format(DateFormats.readableDatetime)}</p>
                     </div>
                     <div id="svg-wrapper" onClick={() => clearActivity(activity)}>

@@ -2,6 +2,112 @@
 @import '../palette';
 @import '../mixins';
 #external-overrides {
+  #above-fold-wrapper {
+    margin: 0 auto;
+    width: 100vw;
+    height: 100vh;
+    mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+
+//    overflow: hidden;
+    * {
+      text-align: center;
+      line-height: 1;
+    }
+    
+    #title {
+      font-size: 50px;
+      font-weight: $fwBold;
+      
+      @media screen and (max-width: 600px) {
+        font-size: 40px;
+      }
+    }
+    #subtitle {
+      font-size: 22px;
+      opacity: 0.7;
+      padding-top: 5px;
+    }
+    
+    #images {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 25px;
+      overflow: hidden;
+      img {
+        max-width: 330px;
+        height: auto;
+        
+        &:first-child {
+          position: relative;
+          top: 50px;
+        }
+        &:last-child {
+          position: relative;
+          top: 50px;
+        }
+      }
+    }
+  }
+  #home-navbar {
+    justify-content: space-between;
+    transition: all 0.3s ease-in-out;
+    padding:  20px;
+    #choose-peace-text {
+      color: $mainBlue;
+      font-style: italic;
+      font-weight: $fwMedium;
+      line-height: 1.4;
+      
+      span {
+        font-style: italic;
+        font-weight: $fwMedium;
+        color: $coparentPurple;
+      }
+    }
+    
+    svg {
+      position: relative;
+      font-size: 16px;
+      top: unset;
+      bottom: unset;
+      right: unset;
+      left: unset;
+      margin-left: 5px;
+    }
+    
+    #logo {
+      height: 100px;
+      width: auto;
+      @media screen and (max-width: 600px) {
+        height: 75px;
+      }
+    }
+    
+    #login-buttons {
+      display: flex;
+      gap: 15px;
+      
+      button {
+        &#register-button {
+          color: $mainBlue;
+          border: 1px solid $mainBlue;
+        }
+        &#login-button {
+        }
+      }
+      
+      @media screen and (max-width: 600px) {
+        gap: 5px;
+        
+        button {
+          font-size: 14px;
+          width: auto;
+          min-height: 0;
+        }
+      }
+    }
+  }
   #home-screen-wrapper {
     &.page-container {
       height: 100vh;
@@ -10,6 +116,9 @@
         width: 100vw;
         max-width: 100vw;
       }
+    }
+    b {
+      opacity: 1;
     }
     /*#region  DEFAULTS*/
     .title {
@@ -149,6 +258,10 @@
               text-align: left;
               justify-self: flex-start;
               color: white;
+              
+              b {
+                color:white;
+              }
             }
 
             span {
@@ -334,103 +447,13 @@
       }
     }
     /*#endregion  DEFAULTS*/
-    #above-fold-wrapper {
-      margin: 0 auto;
-      * {
-        text-align: center;
-        line-height: 1;
-      }
 
-      #title {
-        font-size: 50px;
-        font-weight: $fwBold;
 
-        @media screen and (max-width: 600px) {
-          font-size: 40px;
-        }
-      }
-      #subtitle {
-        font-size: 22px;
-        opacity: 0.7;
-        padding-top: 5px;
-      }
 
-      #images {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        img {
-          max-width: 330px;
-          height: auto;
-
-          &:first-child {
-            position: relative;
-            top: 50px;
-          }
-          &:last-child {
-            position: relative;
-            top: 50px;
-          }
-        }
-      }
-    }
-
-    #home-navbar {
-      justify-content: space-between;
-      transition: all 0.3s ease-in-out;
-
-      #choose-peace-text {
-        color: $mainBlue;
-        font-style: italic;
-        font-weight: $fwMedium;
-      }
-
-      svg {
-        position: relative;
-        font-size: 16px;
-        top: unset;
-        bottom: unset;
-        right: unset;
-        left: unset;
-        margin-left: 5px;
-      }
-
-      #logo {
-        height: 100px;
-        width: auto;
-        @media screen and (max-width: 600px) {
-          height: 75px;
-        }
-      }
-
-      #login-buttons {
-        display: flex;
-        gap: 15px;
-
-        button {
-          &#register-button {
-            color: $mainBlue;
-            border: 1px solid $mainBlue;
-          }
-          &#login-button {
-          }
-        }
-
-        @media screen and (max-width: 600px) {
-          gap: 5px;
-
-          button {
-            font-size: 14px;
-            width: auto;
-            min-height: 0;
-          }
-        }
-      }
-    }
     #below-fold-intro-text {
       text-align: center;
-      width: 40vw;
-      margin: 100px auto 30px auto;
+      width: 50vw;
+      margin: 20px auto 0 auto;
       display: block;
       @media screen and (max-width: 600px) {
         width: 100%;
@@ -582,7 +605,7 @@
 
                 b {
                   font-size: 14px;
-                  color: $mainBlue;
+                  color: $coparentPurple;
                 }
               }
 

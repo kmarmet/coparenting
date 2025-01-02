@@ -82,7 +82,9 @@ export default function Settings() {
           <Label text={'Calendar'} labelId="medium-title" />
           <div className="calendar-settings mb-10 form">
             <div className="section summary mb-10 gap-10">
-              <p className="pb-10">The morning and evening summary hours are when you will receive the event summaries for the day and next day.</p>
+              <p className="pb-10">
+                The morning and evening summary hours are when you will receive the event summaries for the current day and next day.
+              </p>
               {/* MORNING SUMMARY */}
               <InputWrapper labelText={'Morning Hour'} inputType={'date'}>
                 <MobileTimePicker className={`${theme} w-100`} views={['hours']} onAccept={(e) => setMorningSummaryTime(e)} />

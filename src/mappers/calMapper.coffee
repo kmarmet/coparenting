@@ -1,26 +1,27 @@
 import ReminderTimes from 'constants/reminderTimes'
 import DateManager from 'managers/dateManager'
 import moment from "moment"
+import Manager from "../managers/manager"
 
 CalendarMapper =
   reminderTimes: (timeframe) ->
-    if timeframe.indexOf('hour') > -1
+    if Manager.contains(timeframe,'hour')
       return ReminderTimes.hour
-    if timeframe.indexOf('30') > -1
+    if Manager.contains(timeframe,'30')
       return ReminderTimes.halfHour
-    if timeframe.indexOf('5') > -1
+    if Manager.contains(timeframe,'5')
       return ReminderTimes.fiveMinutes
-    if timeframe.indexOf('event') > -1
+    if Manager.contains(timeframe,'event')
       return ReminderTimes.timeOfEvent
 
   readableReminderBeforeTimeframes: (timeframe) ->
-    if timeframe.indexOf('hour') > -1
+    if Manager.contains(timeframe,'hour', false)
       return  '1 hour before'
-    if timeframe.indexOf('halfHour') > -1
+    if Manager.contains(timeframe,'halfHour', false)
       return  '30 minutes before'
-    if timeframe.indexOf('fiveMinutes') > -1
+    if Manager.contains(timeframe,'fiveMinutes', false)
       return  '5 minutes before'
-    if timeframe.indexOf('timeOfEvent') > -1
+    if Manager.contains(timeframe,'timeOfEvent', false)
       return  'At time of event'
 
   readableRepeatIntervals: (selectedInterval) ->

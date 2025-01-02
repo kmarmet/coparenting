@@ -439,14 +439,12 @@ const Conversation = () => {
             </>
           </Fade>
         )}
+
+        {/* DESKTOP SIDEBAR */}
         {!DomManager.isMobile() && (
           <Fade direction={'up'} duration={1000} className={'conversation-sidebar-fade-wrapper'} triggerOnce={true}>
-            {/* DESKTOP SIDEBAR */}
             <div className="top-buttons">
               <p id="user-name">{formatNameFirstNameOnly(messageRecipient.name)}</p>
-              <p id="find-messages" className="item" onClick={() => setShowSearchCard(true)}>
-                <TbMessageCircleSearch id="search-icon" /> Find Messages
-              </p>
               <p id="view-bookmarks" className="item" onClick={(e) => viewBookmarks(e)}>
                 <PiBookmarksSimpleDuotone
                   id="conversation-bookmark-icon"
@@ -457,7 +455,7 @@ const Conversation = () => {
                 {bookmarks.length === 0 && !showBookmarks && <span>No Bookmarks</span>}
               </p>
               <InputWrapper
-                defaultValue="Find a message..."
+                placeholder="Find a message..."
                 inputType={'input'}
                 onChange={async (e) => {
                   const inputValue = e.target.value

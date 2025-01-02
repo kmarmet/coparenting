@@ -193,7 +193,9 @@ const DB = {
     await get(child(dbRef, path)).then((snapshot) => {
       tableData = snapshot.val()
     })
-    return returnObject ? tableData : Manager.convertToArray(tableData)
+    let tableAsArray = Manager.convertToArray(tableData)
+    tableAsArray = tableAsArray.filter((x) => x)
+    return returnObject ? tableData : tableAsArray
   },
   updateByPath: (path, newValue) => {
     const dbRef = ref(getDatabase())
@@ -203,18 +205,19 @@ const DB = {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }
   },
-  updateRecord: async (tableName, recordToUpdate, prop, value, identifier) => {
+  updateRecord: async (tableName, recordToUpdate, prop, value, propUid) => {
     const dbRef = ref(getDatabase())
     const tableRecords = Manager.convertToArray(await DB.getTable(tableName))
     let toUpdate
-    if (identifier && identifier !== undefined) {
-      toUpdate = tableRecords.filter((x) => x[identifier] === recordToUpdate[identifier])[0]
+    if (propUid) {
+      toUpdate = tableRecords.filter((x) => x[propUid] === recordToUpdate[propUid])[0]
     } else {
       toUpdate = tableRecords.filter((x) => x.id === recordToUpdate.id)[0]
     }
+    console.log(toUpdate, prop)
     toUpdate[prop] = value
     try {
-      set(child(dbRef, tableName), tableRecords)
+      // set(child(dbRef, tableName), tableRecords)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }

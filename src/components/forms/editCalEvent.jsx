@@ -112,6 +112,120 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setState({ ...state, currentUser: updatedCurrentUser })
   }
 
+  const nonOwnerSubmit = async () => {
+    const dbRef = ref(getDatabase())
+
+    // Fill/overwrite
+    // Required
+    const updatedEvent = { ...event }
+    updatedEvent.id = Manager.getUid()
+    updatedEvent.title = eventTitle
+    updatedEvent.reminderTimes = eventReminderTimes
+    updatedEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat() || []
+    updatedEvent.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
+    updatedEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
+
+    if (!isAllDay) {
+      updatedEvent.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
+      updatedEvent.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
+    }
+
+    // Not Required
+    updatedEvent.ownerPhone = currentUser?.phone
+    updatedEvent.createdBy = currentUser?.name
+    updatedEvent.notes = eventNotes
+    updatedEvent.reminderTimes = eventReminderTimes || []
+    updatedEvent.children = eventChildren
+    updatedEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
+    updatedEvent.location = eventLocation
+
+    // Add birthday cake
+    if (updatedEvent.title.toLowerCase().indexOf('birthday') > -1) {
+      updatedEvent.title += ' 🎂'
+    }
+    updatedEvent.websiteUrl = eventWebsiteUrl
+    updatedEvent.fromVisitationSchedule = isVisitation
+    updatedEvent.morningSummaryReminderSent = false
+    updatedEvent.eveningSummaryReminderSent = false
+    updatedEvent.sentReminders = []
+
+    if (Manager.isValid(updatedEvent)) {
+      if (!Manager.isValid(eventTitle)) {
+        AlertManager.throwError('Event title is required')
+        return false
+      }
+
+      if (!Manager.isValid(eventFromDate)) {
+        AlertManager.throwError('Please select a date for this event')
+        return false
+      }
+
+      const cleanedObject = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
+      const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
+      const eventCount = allEvents.filter((x) => x.title === eventTitle).length
+
+      // Cloned Events
+      if (eventCount > 1) {
+        // Get record key
+        const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
+
+        // Update DB
+        await set(child(dbRef, `${DB.tables.calendarEvents}/${key}`), cleanedObject).finally(async () => {
+          await afterUpdateCallback()
+        })
+
+        // Add cloned dates
+        if (Manager.isValid(clonedDatesToSubmit)) {
+          await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+        }
+
+        if (eventIsDateRange) {
+          const dates = DateManager.getDateRangeDates(updatedEvent.startDate, eventEndDate)
+          await CalendarManager.addMultipleCalEvents(currentUser, dates)
+        }
+
+        // Add repeating dates
+        if (Manager.isValid(repeatingDatesToSubmit)) {
+          await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+        }
+      }
+
+      // Update Single Event
+      else {
+        const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
+        await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, cleanedObject).then(async (result) => {
+          await afterUpdateCallback()
+        })
+
+        if (eventIsDateRange) {
+          const dates = DateManager.getDateRangeDates(updatedEvent.startDate, eventEndDate)
+          await CalendarManager.addMultipleCalEvents(currentUser, dates)
+        }
+
+        // Add cloned dates
+        if (Manager.isValid(clonedDatesToSubmit)) {
+          await CalendarManager.addMultipleCalEvents(DatasetManager.getUniqueArray(clonedDatesToSubmit, true))
+        }
+
+        // Add repeating dates
+        if (Manager.isValid(repeatingDatesToSubmit)) {
+          await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
+        }
+      }
+    }
+    if (Manager.isValid(event?.shareWith)) {
+      event.shareWith = event.shareWith.filter((x) => x !== currentUser.phone)
+      const key = await DB.getSnapshotKey(`${DB.tables.calendarEvents}`, event, 'id')
+      await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, event)
+    }
+
+    const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
+    await DB.add(`${DB.tables.calendarEvents}`, cleanedEvent).then(async () => {
+      AlertManager.successAlert('Event Updated')
+      await resetForm()
+    })
+  }
+
   // SUBMIT
   const submit = async () => {
     const dbRef = ref(getDatabase())
@@ -131,7 +245,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     }
 
     // Not Required
-    eventToEdit.ownerPhone = currentUser?.phone
+    eventToEdit.ownerPhone = event.ownerPhone === currentUser?.phone ? currentUser.phone : event.ownerPhone
     eventToEdit.createdBy = currentUser?.name
     eventToEdit.notes = eventNotes
     eventToEdit.reminderTimes = eventReminderTimes || []
@@ -155,14 +269,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         return false
       }
 
-      const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-
-      if (validAccounts > 0) {
-        if (!Manager.isValid(eventShareWith)) {
-          AlertManager.throwError('Please choose who you would like to share this event with')
-          return false
-        }
-      }
       if (!Manager.isValid(eventFromDate)) {
         AlertManager.throwError('Please select a date for this event')
         return false
@@ -377,8 +483,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           AlertManager.successAlert('Event Deleted')
         })
       }}
-      hasDelete={view === 'edit'}
-      onSubmit={submit}
+      hasDelete={view === 'edit' && currentUser?.phone === event?.ownerPhone}
+      onSubmit={currentUser?.phone === event?.ownerPhone ? submit : nonOwnerSubmit}
       submitText={'Done Editing'}
       hasSubmitButton={view === 'edit'}
       onClose={async () => {
@@ -433,6 +539,18 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                 <div className="flex">
                   <b>Time:</b>
                   <p>{event?.startTime}</p>
+                </div>
+              )}
+              {Manager.isValid(event?.reminderTimes) && (
+                <div id="reminders">
+                  <b>Reminders</b>
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: `${event?.reminderTimes
+                        .map((x) => CalMapper.readableReminderBeforeTimeframes(x))
+                        .join('|')
+                        .replaceAll('|', '<span class="divider">|</span>')}`,
+                    }}></p>
                 </div>
               )}
               {Manager.isValid(event?.children) && (
@@ -586,7 +704,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
               </div>
               {/* Share with */}
               {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
-                <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
+                <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
               )}
               {/* ALL DAY / HAS END DATE */}
               <div className={!DateManager.isValidDate(event?.startTime) ? 'flex all-day-toggle default-checked' : 'flex all-day-toggle'}>
@@ -694,8 +812,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
             {/* LOCATION/ADDRESS */}
             <InputWrapper defaultValue={event?.location} labelText={'Location'} required={false} inputType={'location'}>
               <Autocomplete
-                placeholder={'Location'}
-                defaultValue={event?.location}
+                defaultValue={Manager.isValid(event?.location, true) ? event?.location : ''}
                 apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
                 options={{
                   types: ['geocode', 'establishment'],

@@ -128,9 +128,9 @@ const Chats = () => {
           Manager.isValid(currentUser?.coparents) &&
           currentUser?.coparents?.map((coparent, index) => {
             return (
-              <>
+              <div key={index}>
                 {!activeThreadPhones.includes(coparent?.phone) && (
-                  <div key={index} className="flex" id="users-wrapper">
+                  <div className="flex" id="users-wrapper">
                     <div className="user-wrapper">
                       <BiMessageRoundedAdd />
                       <p
@@ -144,7 +144,7 @@ const Chats = () => {
                   </div>
                 )}
                 {activeThreadPhones.includes(coparent?.phone) && <p>All available co-parents already have an open conversation with you </p>}
-              </>
+              </div>
             )
           })}
         {currentUser?.accountType === 'child' &&

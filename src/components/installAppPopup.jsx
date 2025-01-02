@@ -9,6 +9,7 @@ import { TbDeviceDesktopDown } from 'react-icons/tb'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
+import DomManager from '../managers/domManager'
 
 export default function InstallAppPopup() {
   const { state, setState } = useContext(globalState)
@@ -41,14 +42,14 @@ export default function InstallAppPopup() {
                 <div className="flex">
                   <span className="step-number">1.</span>
                   <p>
-                    Tap the Share button <span className="material-icons round">ios_share</span> in the menu bar
+                    {DomManager.tapOrClick(true)} the Share button <span className="material-icons round">ios_share</span> in the menu bar
                   </p>
                 </div>
 
                 <div className="flex">
                   <span className="step-number">2.</span>
                   <p>
-                    Scroll and tap <span className="emphasize">Add to Home Screen</span>
+                    Scroll and <span className="emphasize">Add to Home Screen</span>
                   </p>
                 </div>
 
@@ -76,7 +77,7 @@ export default function InstallAppPopup() {
           </AccordionSummary>
           <AccordionDetails expanded={expandAndroidAccordion.toString()}>
             <div className="os-container android">
-              <p className="while-viewing">While viewing the website in Chrome (in browser's default browser)...</p>
+              <p className="while-viewing">While viewing the website in Chrome (in default web browser)...</p>
               <div className="flex steps">
                 <div className="flex">
                   <span className="step-number">1.</span>
@@ -104,6 +105,7 @@ export default function InstallAppPopup() {
           </AccordionDetails>
         </Accordion>
 
+        {/* DESKTOP */}
         <Accordion id={'pc'}>
           <AccordionSummary>
             <p className="accordion-header mb-5 desktop" onClick={(e) => setExpandDesktopAccordion(!expandDesktopAccordion)}>
@@ -112,12 +114,12 @@ export default function InstallAppPopup() {
           </AccordionSummary>
           <AccordionDetails expanded={expandDesktopAccordion.toString()}>
             <div className="os-container apple">
-              <p className="while-viewing">While viewing the website (in browser's default browser)...</p>
+              <p className="while-viewing">While viewing the website (in default web browser)...</p>
               <div className="flex steps">
                 <img src={require('../img/desktop-installation.png')} alt="" />
                 <div className="flex mt-15">
                   <span className="step-number">1.</span>
-                  <p>Tap the installation button in the address bar</p>
+                  <p>Click the installation button in the address bar</p>
                 </div>
 
                 <div className="flex">
