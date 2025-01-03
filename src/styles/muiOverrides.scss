@@ -289,7 +289,7 @@
     }
 
     .current-user-visitation-dot, .current-user-event-dot {
-      background-color: $currentUserOrange;
+      background-color: $currentUserGreen;
     }
 
     .coparent-visitation-dot, .coparent-event-dot {
@@ -297,7 +297,7 @@
     }
 
     .standard-event-dot {
-      background-color: $green;
+      background-color: #F88379;
     }
   }
   .invisible-dots {
@@ -473,11 +473,11 @@
         color: $coparentPurple;
       }
       &.standard {
-        color: $green;
+        color: #F88379;
       }
       
       &.currentUser {
-        color: $currentUserOrange;
+        color: $currentUserGreen;
       }
     }
 
@@ -498,11 +498,11 @@
       }
 
       &.standard {
-        background: $green;
+        background: #F88379;
       }
 
       &.currentUser {
-        background: $currentUserOrange;
+        background: $currentUserGreen;
       }
     }
   }

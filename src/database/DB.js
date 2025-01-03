@@ -22,6 +22,7 @@ const DB = {
     chats: 'chats',
     chatRecoveryRequests: 'chatRecoveryRequests',
     chatMessages: 'chatMessages',
+    sharedEventIds: 'sharedEventIds',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
     if (filterFunction) {

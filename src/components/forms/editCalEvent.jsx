@@ -192,10 +192,10 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
       // Update Single Event
       else {
-        const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
-        await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, cleanedObject).then(async (result) => {
-          await afterUpdateCallback()
-        })
+        const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}/${Manager.isValid(event.shareWith) ? 'sharedEvents' : 'events'}`
+        const key = await DB.getSnapshotKey(dbPath, event, 'id')
+        await DB.updateEntireRecord(`${dbPath}/${key}`, cleanedObject)
+        await afterUpdateCallback()
 
         if (eventIsDateRange) {
           const dates = DateManager.getDateRangeDates(updatedEvent.startDate, eventEndDate)
@@ -213,17 +213,19 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         }
       }
     }
-    if (Manager.isValid(event?.shareWith)) {
-      event.shareWith = event.shareWith.filter((x) => x !== currentUser.phone)
-      const key = await DB.getSnapshotKey(`${DB.tables.calendarEvents}`, event, 'id')
-      await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, event)
-    }
 
+    // TODO move from sharedEvents to events
+    // if (Manager.isValid(event?.shareWith)) {
+    //   event.shareWith = event.shareWith.filter((x) => x !== currentUser.phone)
+    //   const key = await DB.getSnapshotKey(`${DB.tables.calendarEvents}`, event, 'id')
+    //   await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, event)
+    // }
+    const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}/${Manager.isValid(event.shareWith) ? 'sharedEvents' : 'events'}`
     const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
-    await DB.add(`${DB.tables.calendarEvents}`, cleanedEvent).then(async () => {
-      AlertManager.successAlert('Event Updated')
-      await resetForm()
-    })
+    // TODO this is inserting a duplicate -> prevent that
+    await DB.add(dbPath, cleanedEvent)
+    AlertManager.successAlert('Event Updated')
+    await resetForm()
   }
 
   // SUBMIT
@@ -265,7 +267,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
     if (Manager.isValid(eventToEdit)) {
       if (!Manager.isValid(eventTitle)) {
-        AlertManager.throwError('Event title is required')
+        AlertManager.throwError('Name of event is required')
         return false
       }
 
@@ -284,48 +286,46 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
 
         // Update DB
-        await set(child(dbRef, `${DB.tables.calendarEvents}/${key}`), cleanedObject).finally(async () => {
-          await afterUpdateCallback()
-        })
+        // await set(child(dbRef, `${DB.tables.calendarEvents}/${key}`), cleanedObject).finally(async () => {
+        //   await afterUpdateCallback()
+        // })
 
         // Add cloned dates
         if (Manager.isValid(clonedDatesToSubmit)) {
-          await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+          // await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
         }
 
         if (eventIsDateRange) {
           const dates = DateManager.getDateRangeDates(eventToEdit.startDate, eventEndDate)
-          await CalendarManager.addMultipleCalEvents(currentUser, dates)
+          // await CalendarManager.addMultipleCalEvents(currentUser, dates)
         }
 
         // Add repeating dates
         if (Manager.isValid(repeatingDatesToSubmit)) {
-          await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+          // await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
         }
       }
 
       // Update Single Event
       else {
-        const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
-        await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, cleanedObject).then(async (result) => {
-          await afterUpdateCallback()
-        })
+        const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}/${Manager.isValid(event.shareWith) ? 'sharedEvents' : 'events'}`
+        const key = await DB.getSnapshotKey(dbPath, event, 'id')
+        await DB.updateEntireRecord(`${dbPath}/${key}`, cleanedObject)
+        await afterUpdateCallback()
 
         if (eventIsDateRange) {
           const dates = DateManager.getDateRangeDates(eventToEdit.startDate, eventEndDate)
-          const evts = await DB.getTable(DB.tables.calendarEvents)
-          const filtered = evts.filter((x) => x.title === event.title && x.isDateRange === true)
-          await CalendarManager.addMultipleCalEvents(currentUser, dates)
+          // await CalendarManager.addMultipleCalEvents(currentUser, dates)
         }
 
         // Add cloned dates
         if (Manager.isValid(clonedDatesToSubmit)) {
-          await CalendarManager.addMultipleCalEvents(DatasetManager.getUniqueArray(clonedDatesToSubmit, true))
+          // await CalendarManager.addMultipleCalEvents(DatasetManager.getUniqueArray(clonedDatesToSubmit, true))
         }
 
         // Add repeating dates
         if (Manager.isValid(repeatingDatesToSubmit)) {
-          await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
+          // await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
         }
       }
     }
@@ -414,15 +414,15 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
     if (eventCount === 1) {
-      await DB.delete(DB.tables.calendarEvents, event?.id)
+      const isShared = Manager.isValid(event?.shareWith)
+      await CalendarManager.deleteEvent(currentUser, isShared ? 'sharedEvents' : 'events', event?.id)
       await resetForm()
     } else {
-      let clonedEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
+      const isShared = Manager.isValid(event?.shareWith)
+      let clonedEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/${isShared ? 'sharedEvents' : 'events'}`)
       if (Manager.isValid(clonedEvents)) {
         clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
-        for (const event of clonedEvents) {
-          await CalendarManager.deleteEvent(DB.tables.calendarEvents, event.id)
-        }
+        await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser, isShared ? 'sharedEvents' : 'events')
         await resetForm()
       }
     }

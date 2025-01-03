@@ -50,7 +50,7 @@ import DatasetManager from '../../managers/datasetManager'
 import InputSuggestion from '../../models/inputSuggestion' // COMPONENT
 import _ from 'lodash'
 import FormNames from '../../models/formNames'
-import CalendarManager from '../../managers/calendarManager'
+import CalendarManager from '../../managers/calendarManager.js'
 import NotificationManager from '../../managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
 import ActivityCategory from '../../models/activityCategory'
@@ -206,7 +206,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         const clonedDatesList = createEventList()
         await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesList)
       }
-
       // Repeating
       if (eventIsRepeating) {
         addSingleEvent = false
@@ -216,21 +215,23 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
       // Add single date
       if (addSingleEvent) {
-        await CalendarManager.addCalendarEvent(cleanedObject).finally(async () => {
-          await NotificationManager.sendToShareWith(
-            eventShareWith,
-            currentUser,
-            'New Calendar Event',
-            `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`,
-            ActivityCategory.calendar
-          )
-
-          // Repeating Events
-          if (navigator.setAppBadge) {
-            await navigator.setAppBadge(1)
-          }
-        })
+        // Add to shared
+        if (Manager.isValid(eventShareWith)) {
+          await CalendarManager.addSharedEvent(currentUser, cleanedObject)
+        }
+        // Not shared
+        else {
+          await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
+        }
+        await NotificationManager.sendToShareWith(
+          eventShareWith,
+          currentUser,
+          'New Calendar Event',
+          `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`,
+          ActivityCategory.calendar
+        )
       }
+      await navigator.setAppBadge(1)
       await resetForm()
     }
   }
@@ -322,7 +323,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     }
 
     // CLONED DATES
-    if (!Manager.isValid(clonedDates)) {
+    if (Manager.isValid(clonedDates)) {
       datesToIterate = clonedDates
       // Add initial start date
       datesToIterate.push(new Date(eventStartDate))
@@ -333,21 +334,26 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       // Required
       dateObject.title = eventTitle
       dateObject.id = Manager.getUid()
-      dateObject.startDate = !Manager.isValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
-      dateObject.endDate = !Manager.isValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
+      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
+      dateObject.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
+
       // Not Required
       dateObject.directionsLink = eventLocation
       dateObject.location = eventLocation
       dateObject.children = eventChildren
       dateObject.ownerPhone = currentUser?.phone
       dateObject.createdBy = currentUser?.name
-      dateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat()
+      dateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
       dateObject.notes = eventNotes
-      dateObject.isRepeating = !Manager.isValid(repeatingEndDate)
+      dateObject.isRepeating = Manager.isValid(repeatingEndDate)
       dateObject.isDateRange = eventIsDateRange
       dateObject.websiteUrl = eventWebsite
-      dateObject.startTime = !Manager.isValid(eventStartTime) ? eventStartTime.format(DateFormats.timeForDb) : ''
-      dateObject.endTime = !Manager.isValid(eventEndTime) ? eventEndTime.format(DateFormats.timeForDb) : ''
+      if (Manager.isValid(eventStartTime)) {
+        dateObject.startTime = eventStartTime.format(DateFormats.timeForDb)
+      }
+      if (Manager.isValid(eventEndTime)) {
+        dateObject.endTime = eventEndTime.format(DateFormats.timeForDb)
+      }
       dateObject.reminderTimes = eventReminderTimes
       dateObject.repeatInterval = repeatInterval
       dateObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
@@ -365,7 +371,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         }
       }
     }
-
     return datesToPush
   }
 
@@ -635,9 +640,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     <CheckboxGroup
                       elClass={`${theme} `}
                       onCheck={handleRepeatingSelection}
+                      defaultLabels={[]}
                       checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
                     />
-                    {!Manager.isValid(repeatInterval) && (
+                    {Manager.isValid(repeatInterval) && (
                       <InputWrapper inputType={'date'} labelText={'Month to End Repeating Events'} required={true}>
                         <DatetimePicker
                           className={`mt-0 w-100`}

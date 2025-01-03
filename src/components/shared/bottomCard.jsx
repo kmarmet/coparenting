@@ -23,8 +23,7 @@ export default function BottomCard({
   wrapperClass = '',
 }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, alertType, formToShow } = state
-  const isMobile = window.screen.width < 800
+  const { currentUser, theme } = state
 
   const hideCard = () => {
     const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
@@ -90,7 +89,7 @@ export default function BottomCard({
   }, [showCard])
 
   return (
-    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} ${alertType} animate__animated`}>
+    <div key={refreshKey} id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>

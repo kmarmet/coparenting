@@ -23,17 +23,28 @@ import _ from "lodash"
 SecurityManager =
   getCalendarEvents: (currentUser) ->
     returnRecords = []
-    allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents)).flat()
-    if !_.isEmpty(allEvents)
+    coparentAndChildSharedEvents = []
+    allEvents = Manager.convertToArray(await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}")).flat()
+
+    for coparent in currentUser.coparents
+      theirSharedEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{coparent.phone}/sharedEvents")
+      coparentAndChildSharedEvents.push(_.flattenDeep([...theirSharedEvents]))
+
+    coparentAndChildSharedEvents = _.flattenDeep(coparentAndChildSharedEvents);
+
+    if Manager.isValid(coparentAndChildSharedEvents)
+      for event in coparentAndChildSharedEvents
+       if Manager.isValid(event?.shareWith)
+         if event.shareWith.includes(currentUser.phone)
+          returnRecords.push(event)
+
+    if Manager.isValid(allEvents)
       for event in allEvents
         if event.isHoliday and event.visibleToAll
           returnRecords.push(event)
-        shareWith = event.shareWith
-        if DateManager.dateIsValid(event.startDate)
+        if DateManager.isValidDate(event.startDate)
           if (event.ownerPhone == currentUser?.phone)
             returnRecords.push(event)
-          if !_.isEmpty(shareWith) and shareWith.includes(currentUser?.phone)
-              returnRecords.push(event)
     return returnRecords
 
   getExpenses: (currentUser) ->

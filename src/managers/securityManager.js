@@ -29,21 +29,35 @@ import _ from "lodash";
 
 SecurityManager = {
   getCalendarEvents: async function(currentUser) {
-    var allEvents, event, i, len, returnRecords, shareWith;
+    var allEvents, coparent, coparentAndChildSharedEvents, event, i, j, k, len, len1, len2, ref, returnRecords, theirSharedEvents;
     returnRecords = [];
-    allEvents = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents))).flat();
-    if (!_.isEmpty(allEvents)) {
-      for (i = 0, len = allEvents.length; i < len; i++) {
-        event = allEvents[i];
+    coparentAndChildSharedEvents = [];
+    allEvents = Manager.convertToArray((await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`))).flat();
+    ref = currentUser.coparents;
+    for (i = 0, len = ref.length; i < len; i++) {
+      coparent = ref[i];
+      theirSharedEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${coparent.phone}/sharedEvents`));
+      coparentAndChildSharedEvents.push(_.flattenDeep([...theirSharedEvents]));
+    }
+    coparentAndChildSharedEvents = _.flattenDeep(coparentAndChildSharedEvents);
+    if (Manager.isValid(coparentAndChildSharedEvents)) {
+      for (j = 0, len1 = coparentAndChildSharedEvents.length; j < len1; j++) {
+        event = coparentAndChildSharedEvents[j];
+        if (Manager.isValid(event != null ? event.shareWith : void 0)) {
+          if (event.shareWith.includes(currentUser.phone)) {
+            returnRecords.push(event);
+          }
+        }
+      }
+    }
+    if (Manager.isValid(allEvents)) {
+      for (k = 0, len2 = allEvents.length; k < len2; k++) {
+        event = allEvents[k];
         if (event.isHoliday && event.visibleToAll) {
           returnRecords.push(event);
         }
-        shareWith = event.shareWith;
-        if (DateManager.dateIsValid(event.startDate)) {
+        if (DateManager.isValidDate(event.startDate)) {
           if (event.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
-            returnRecords.push(event);
-          }
-          if (!_.isEmpty(shareWith) && shareWith.includes(currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(event);
           }
         }

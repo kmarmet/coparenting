@@ -30,12 +30,10 @@ import {
   wordCount
 } from "../globalFunctions";
 
-import DatasetManager from "./datasetManager";
-
 import LogManager from "./logManager";
 
 export default CalendarManager = {
-  formatEventTitle: (title) => {
+  formatEventTitle: function(title) {
     if (title && title.length > 0) {
       title = uppercaseFirstLetterOfAllWords(title);
       title = formatTitleWords(title);
@@ -43,16 +41,22 @@ export default CalendarManager = {
     }
   },
   addMultipleCalEvents: async function(currentUser, newEvents) {
-    var currentEvents, dbRef, error, merged;
-    dbRef = ref(getDatabase());
-    currentEvents = (await DB.getTable(DB.tables.calendarEvents));
-    if (!Array.isArray(newEvents)) {
-      newEvents = [newEvents];
+    var currentEvents, dbRef, error, eventsAreShared, eventsOrSharedEvents, eventsWithShareWith, toAdd;
+    eventsAreShared = false;
+    eventsWithShareWith = newEvents.filter(function(x) {
+      return Manager.isValid(x.shareWith);
+    });
+    if (eventsWithShareWith.length > 0) {
+      eventsAreShared = true;
     }
-    newEvents = DatasetManager.getUniqueArrayByProp(newEvents, "startDate", "startDate");
-    merged = DatasetManager.mergeMultiple([currentEvents, newEvents]);
+    eventsOrSharedEvents = eventsAreShared ? "sharedEvents" : "events";
+    dbRef = ref(getDatabase());
+    currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/${eventsOrSharedEvents}`));
+    console.log(currentEvents);
+    console.log(newEvents);
+    toAdd = [...currentEvents, ...newEvents];
     try {
-      return (await set(child(dbRef, `${DB.tables.calendarEvents}`), merged));
+      return (await set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/${eventsOrSharedEvents}`), toAdd));
     } catch (error1) {
       error = error1;
       return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
@@ -72,47 +76,65 @@ export default CalendarManager = {
       return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
     }
   },
-  addCalendarEvent: async function(data) {
-    var currentEvents, dbRef, error;
+  addCalendarEvent: async function(currentUser, newEvent) {
+    var currentEvents, dbRef, error, toAdd;
     dbRef = ref(getDatabase());
-    currentEvents = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents)));
+    currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/events`));
     currentEvents = currentEvents.filter(function(n) {
       return n;
     });
+    toAdd = [];
     try {
-      return set(child(dbRef, `${DB.tables.calendarEvents}`), [...currentEvents, data]);
+      if (Manager.isValid(currentEvents)) {
+        toAdd = [...currentEvents, newEvent];
+      } else {
+        toAdd = [newEvent];
+      }
+      return set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/events`), toAdd);
     } catch (error1) {
       error = error1;
       return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
     }
   },
-  deleteMultipleEvents: async function(events, currentUser) {
-    var dbRef, holiday, i, idToDelete, len, results, tableRecords, userHolidays;
+  addSharedEvent: async function(currentUser, newEvent) {
+    var currentEvents, dbRef, error;
     dbRef = ref(getDatabase());
-    tableRecords = Manager.convertToArray((await DB.getTable(DB.tables.calendarEvents)));
-    userHolidays = tableRecords.filter((x) => {
-      return x.phone === currentUser.phone && x.isHoliday === true;
+    currentEvents = Manager.convertToArray((await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/sharedEvents`)));
+    currentEvents = currentEvents.filter(function(n) {
+      return n;
     });
+    try {
+      return set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/sharedEvents`), [...currentEvents, newEvent]);
+    } catch (error1) {
+      error = error1;
+      return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
+    }
+  },
+  deleteMultipleEvents: async function(events, currentUser, eventParentName = "events") {
+    var dbRef, i, idToDelete, len, record, results, tableRecords;
+    console.log(`${DB.tables.calendarEvents}/${currentUser.phone}/${eventParentName}`);
+    dbRef = ref(getDatabase());
+    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/${eventParentName}`));
     results = [];
-    for (i = 0, len = userHolidays.length; i < len; i++) {
-      holiday = userHolidays[i];
-      idToDelete = (await DB.getSnapshotKey(DB.tables.calendarEvents, holiday, 'id'));
-      results.push((await remove(child(dbRef, `${DB.tables.calendarEvents}/${idToDelete}/`))));
+    for (i = 0, len = tableRecords.length; i < len; i++) {
+      record = tableRecords[i];
+      idToDelete = (await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${currentUser.phone}/${eventParentName}`, record, 'id'));
+      results.push((await remove(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/${eventParentName}/${idToDelete}`))));
     }
     return results;
   },
-  deleteEvent: async function(tableName, id) {
+  deleteEvent: async function(currentUser, eventParentName = "events", id) {
     var dbRef, error, i, idToDelete, len, record, results, tableRecords;
     dbRef = ref(getDatabase());
     idToDelete = null;
-    tableRecords = Manager.convertToArray((await DB.getTable(tableName)));
+    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/${eventParentName}`));
     results = [];
     for (i = 0, len = tableRecords.length; i < len; i++) {
       record = tableRecords[i];
       if ((record != null ? record.id : void 0) === id) {
-        idToDelete = (await DB.getSnapshotKey(tableName, record, 'id'));
+        idToDelete = (await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${currentUser.phone}/${eventParentName}`, record, 'id'));
         try {
-          results.push(remove(child(dbRef, `${tableName}/${idToDelete}/`)));
+          results.push(remove(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/${eventParentName}/${idToDelete}`)));
         } catch (error1) {
           error = error1;
           results.push(LogManager.log(error.message, LogManager.logTypes.error, error.stack));

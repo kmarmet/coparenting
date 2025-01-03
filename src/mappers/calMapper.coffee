@@ -47,7 +47,6 @@ CalendarMapper =
       datesToRepeat = DateManager.getBiweeklyDates(eventStartDate, repeatingEndDate)
     if repeatInterval is 'monthly'
       datesToRepeat = DateManager.getMonthlyDates(eventStartDate, repeatingEndDate)
-
     return datesToRepeat
 
   holidayNameToDate: (name) ->

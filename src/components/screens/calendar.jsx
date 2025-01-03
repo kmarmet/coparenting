@@ -250,7 +250,7 @@ export default function EventCalendar() {
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.calendarEvents}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}`), async (snapshot) => {
       await getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
     })
   }
@@ -453,7 +453,7 @@ export default function EventCalendar() {
                 <span className="dot in-legend currentUser"></span> Your Event
               </p>
               <p className="flex coparent">
-                <span className="dot coparent in-legend"></span> Co-Parent/Child Event
+                <span className="dot coparent in-legend"></span> Shared Event
               </p>
               <p className="flex standard">
                 <span className="dot in-legend standard"></span> Holiday

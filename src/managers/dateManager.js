@@ -81,7 +81,7 @@ const DateManager = {
   getWeeksUntilEndOfYear: () => {
     const endOfYear = moment([moment().format('yyyy')])
       .endOf('year')
-      .format(DateFormats.monthAndYear)
+      .format(DateFormats.dateForDb)
 
     const weeksLeftMs = moment(endOfYear, 'MM-DD-YYYY', 'weeks').diff(moment())
     const mil = weeksLeftMs
@@ -100,7 +100,7 @@ const DateManager = {
     }
   },
   msToDate: (ms) => {
-    return moment(ms, 'x').format(DateFormats.monthAndYear)
+    return moment(ms, 'x').format(DateFormats.dateForDb)
   },
   isValidDate: (date) => {
     if (!Manager.isValid(date)) {
@@ -125,7 +125,7 @@ const DateManager = {
   getDaysUntilEndOfYear: () => {
     const endOfYear = moment([moment().format('yyyy')])
       .endOf('year')
-      .format(DateFormats.monthAndYear)
+      .format(DateFormats.dateForDb)
     const daysLeftMs = moment(endOfYear, 'MM-DD-YYYY', 'days').diff(moment())
     let duration = moment.duration(daysLeftMs, 'milliseconds')
     let daysLeft = duration.asDays()
@@ -140,7 +140,7 @@ const DateManager = {
       if (hasReachedEndDate) {
         break
       }
-      dailyEvents.push(moment(nextDay).format(DateFormats.monthAndYear))
+      dailyEvents.push(moment(nextDay).format(DateFormats.dateForDb))
     }
     return dailyEvents
   },
@@ -152,7 +152,7 @@ const DateManager = {
       let newDay = moment(startDate).add(i, 'days')
       const hasReachedEndDate = moment(newDay).isSameOrAfter(endDate)
       if (!hasReachedEndDate) {
-        dailyEvents.push(newDay.format(DateFormats.monthAndYear))
+        dailyEvents.push(newDay.format(DateFormats.dateForDb))
       }
     }
     return dailyEvents
@@ -177,7 +177,7 @@ const DateManager = {
       let newWeek = moment(startDate).add(i, 'weeks')
       const hasReachedEndDate = moment(newWeek).isAfter(endDate)
       if (i % 2 === 0 && !hasReachedEndDate) {
-        biweeklyEvents.push(newWeek.format(DateFormats.monthAndYear))
+        biweeklyEvents.push(newWeek.format(DateFormats.dateForDb))
       }
     }
     console.log(biweeklyEvents)
@@ -191,7 +191,7 @@ const DateManager = {
       let newWeek = moment(startDate).add(i, 'week')
       const hasReachedEndDate = moment(newWeek).isAfter(endDate)
       if (!hasReachedEndDate) {
-        weeklyEvents.push(newWeek.format(DateFormats.monthAndYear))
+        weeklyEvents.push(moment(newWeek).format(DateFormats.dateForDb))
       }
     }
     return weeklyEvents
@@ -295,7 +295,7 @@ const DateManager = {
       }
       newEvent.id = Manager.getUid()
       newEvent.holidayName = holiday.name
-      newEvent.startDate = moment(holiday.date).format(DateFormats.monthAndYear)
+      newEvent.startDate = moment(holiday.date).format(DateFormats.dateForDb)
       newEvent.isHoliday = true
       newEvent.visibleToAll = true
       newEvent = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
