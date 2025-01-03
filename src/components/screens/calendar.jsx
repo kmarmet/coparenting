@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import DB from '@db'
-import DateManager from '@managers/dateManager'
+import DateManager from '@managers/dateManager.js'
 import Manager from '@manager'
 import moment from 'moment'
 import globalState from '../../context'
@@ -47,110 +47,108 @@ export default function EventCalendar() {
   const [loadingDisabled, setLoadingDisabled] = useState(false)
   const [showLegend, setShowLegend] = useState(false)
   const [showDesktopLegend, setShowDesktopLegend] = useState(false)
+  const [activeMonth, setActiveMonth] = useState('')
+  const [holidays, setHolidays] = useState([])
   // GET EVENTS
   const getSecuredEvents = async (selectedDay, selectedMonth) => {
     let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
+    let allEvents = securedEvents
+    let holidays = await DB.getTable(DB.tables.holidayEvents)
     const eventsToAddDotsTo = securedEvents.sort((a, b) => {
       return a.startTime + b.startTime
     })
-
     setAllEventsFromDb(securedEvents)
-
     if (selectedDay) {
       securedEvents = securedEvents.filter((x) => x.startDate === moment(selectedDay).format(DateFormats.dateForDb))
+      holidays = holidays.filter((x) => moment(x.startDate).format(DateFormats.dateForDb) === moment(selectedDay).format(DateFormats.dateForDb))
     } else {
+      holidays = holidays.filter((x) => x.startDate === moment().format(DateFormats.dateForDb))
       securedEvents = securedEvents.filter((x) => x.startDate === moment().format(DateFormats.dateForDb))
     }
-
     // Sort
     securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
-
+    securedEvents = [...securedEvents, ...holidays]
     // ADD DAY INDICATORS
-    await addDayIndicators(eventsToAddDotsTo)
+    addDayIndicators([...allEvents, ...holidays])
     setExistingEvents(securedEvents)
   }
 
-  const addDayIndicators = async (events) => {
+  const addDayIndicators = (events) => {
     const paycheckStrings = ['payday', 'paycheck', 'pay', 'salary', 'paid']
     // Remove existing icons/dots before adding them again
     document.querySelectorAll('.dot-wrapper').forEach((wrapper) => wrapper.remove())
     document.querySelectorAll('.payday-emoji').forEach((emoji) => emoji.remove())
     document.querySelectorAll('.holiday-emoji').forEach((emoji) => emoji.remove())
-
-    // Loop through all calendar UI days
-    const days = document.querySelectorAll('.MuiPickersDay-root')
-    for (const day of days) {
-      const dayAsMs = day.getAttribute('data-timestamp')
+    // Iterate static calendar day elements
+    const dayElements = document.querySelectorAll('.MuiPickersDay-root')
+    for (const dayElement of dayElements) {
+      const dayAsMs = dayElement.dataset.timestamp
       let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DateFormats.dateForDb)
-      const dayEvent = await DB.find(events, ['startDate', formattedDay], false)
+      let dayEvent = getEventFromDate(formattedDay, events)
 
       // APPEND INVISIBLE DOTS AND SKIP DAY WITHOUT EVENT
       if (!dayEvent) {
         const invisibleDots = document.createElement('span')
         invisibleDots.classList.add('invisible-dots')
-        if (day.innerHTML.indexOf('invisible') === -1) {
-          day.append(invisibleDots)
+        if (dayElement.innerHTML.indexOf('invisible') === -1) {
+          dayElement.append(invisibleDots)
         }
         continue
       }
-      const daysEvents = events.filter((x) => x.startDate === formattedDay)
 
       // Apply weekend day class
       const dayOfWeek = moment(formattedDay).isoWeekday()
-      if (dayOfWeek === 6 || dayOfWeek === 7) {
-        day.classList.add('weekend-day')
-      }
 
+      if (dayOfWeek === 6 || dayOfWeek === 7) {
+        dayElement.classList.add('weekend-day')
+      }
       // APPEND DOTS/EMOJIS
-      if (dayEvent.startDate === formattedDay) {
+      if (dayEvent?.startDate === formattedDay) {
         const dotWrapper = document.createElement('span')
         dotWrapper.classList.add('dot-wrapper')
-
-        // HOLIDAYS
-        if (events.filter((x) => x.startDate === formattedDay && x.isHoliday === true).length > 0) {
-          let holidayDate = moment(formattedDay).format('MM/DD')
-
-          const hoildayEmoji = document.createElement('span')
-          hoildayEmoji.classList.add('holiday-emoji')
+        if (dayEvent?.isHoliday) {
+          const holidayEmoji = document.createElement('span')
+          holidayEmoji.classList.add('holiday-emoji')
           switch (true) {
-            case holidayDate === '01/01':
-              hoildayEmoji.innerText = '🥳'
+            case moment(dayEvent.startDate).format('MM/DD') === '01/01':
+              holidayEmoji.innerText = '🥳'
               break
-            case holidayDate === '04/20':
-              hoildayEmoji.innerText = '🐇'
+            case moment(dayEvent.startDate).format('MM/DD') === '04/20':
+              holidayEmoji.innerText = '🐇'
               break
-            case holidayDate === '05/26':
-              hoildayEmoji.innerText = '🎖️'
+            case moment(dayEvent.startDate).format('MM/DD') === '05/26':
+              holidayEmoji.innerText = '🎖️'
               break
-            case holidayDate === '05/11':
-              hoildayEmoji.innerText = '👩‍👧‍👦'
+            case moment(dayEvent.startDate).format('MM/DD') === '05/11':
+              holidayEmoji.innerText = '👩‍👧‍👦'
               break
-            case holidayDate === '06/15':
-              hoildayEmoji.innerText = '👨‍👧‍👦'
+            case moment(dayEvent.startDate).format('MM/DD') === '06/15':
+              holidayEmoji.innerText = '👨‍👧‍👦'
               break
-            case holidayDate === '07/04':
-              hoildayEmoji.innerText = '🎇'
+            case moment(dayEvent.startDate).format('MM/DD') === '07/04':
+              holidayEmoji.innerText = '🎇'
               break
-            case holidayDate === '11/28':
-              hoildayEmoji.innerText = '🦃'
+            case moment(dayEvent.startDate).format('MM/DD') === '11/28':
+              holidayEmoji.innerText = '🦃'
               break
-            case holidayDate === '10/31':
-              hoildayEmoji.innerText = '🎃'
+            case moment(dayEvent.startDate).format('MM/DD') === '10/31':
+              holidayEmoji.innerText = '🎃'
               break
-            case holidayDate === '12/25':
-              hoildayEmoji.innerText = '🎄'
+            case moment(dayEvent.startDate).format('MM/DD') === '12/25':
+              holidayEmoji.innerText = '🎄'
               break
-            case holidayDate === '12/24':
-              hoildayEmoji.innerText = '🎄'
+            case moment(dayEvent.startDate).format('MM/DD') === '12/24':
+              holidayEmoji.innerText = '🎄'
               break
-            case holidayDate === '12/31':
-              hoildayEmoji.innerText = '🥳'
+            case moment(dayEvent.startDate).format('MM/DD') === '12/31':
+              holidayEmoji.innerText = '🥳'
               break
             default:
-              hoildayEmoji.innerText = '✨'
+              holidayEmoji.innerText = '✨'
           }
-          day.append(hoildayEmoji)
+          dayElement.append(holidayEmoji)
         }
+        // HOLIDAYS
 
         // PAYDAY ICON
         const showPaydayEmoji = (title) => {
@@ -166,38 +164,28 @@ export default function EventCalendar() {
           const payDayIcon = document.createElement('span')
           payDayIcon.classList.add('payday-emoji')
           payDayIcon.innerText = '$'
-          day.append(payDayIcon)
+          dayElement.append(payDayIcon)
         }
-
         // ADD DOTS
-        let alreadyAdded = []
-        const existingDayWrapper = day.querySelector('.dot-wrapper')
-        if (!Manager.isValid(existingDayWrapper)) {
-          for (let _event of daysEvents) {
-            const eventType = getRowDotColor(_event)
-
-            if (!alreadyAdded.includes(eventType)) {
-              if (eventType === 'standard-dot') {
-                const standardEventDot = document.createElement('span')
-                standardEventDot.classList.add('standard-event-dot', 'dot')
-                dotWrapper.append(standardEventDot)
-                alreadyAdded.push(eventType)
-              }
-              if (eventType === 'current-user-dot') {
-                const currentUserDot = document.createElement('span')
-                currentUserDot.classList.add('current-user-event-dot', 'dot')
-                dotWrapper.append(currentUserDot)
-                alreadyAdded.push(eventType)
-              }
-              if (eventType === 'coparent-dot') {
-                const coparentDot = document.createElement('span')
-                coparentDot.classList.add('coparent-event-dot', 'dot')
-                dotWrapper.append(coparentDot)
-                alreadyAdded.push(eventType)
-              }
-            }
+        const dot = dayElement.querySelector('.dot')
+        const eventType = getRowDotColor(formattedDay)
+        if (!Manager.isValid(dot)) {
+          if (eventType === 'standard-dot') {
+            const standardEventDot = document.createElement('span')
+            standardEventDot.classList.add('standard-event-dot', 'dot')
+            dotWrapper.append(standardEventDot)
           }
-          day.append(dotWrapper)
+          if (eventType === 'current-user-dot') {
+            const currentUserDot = document.createElement('span')
+            currentUserDot.classList.add('current-user-event-dot', 'dot')
+            dotWrapper.append(currentUserDot)
+          }
+          if (eventType === 'coparent-dot') {
+            const coparentDot = document.createElement('span')
+            coparentDot.classList.add('coparent-event-dot', 'dot')
+            dotWrapper.append(coparentDot)
+          }
+          dayElement.append(dotWrapper)
         }
       }
     }
@@ -250,9 +238,12 @@ export default function EventCalendar() {
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/events`), async (snapshot) => {
       await getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
     })
+    // onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/sharedEvents`), async (snapshot) => {
+    //   await getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
+    // })
   }
 
   const onActivityChange = async () => {
@@ -261,6 +252,11 @@ export default function EventCalendar() {
       const activities = Manager.convertToArray(snapshot.val())
       setState({ ...state, activityCount: activities.length, isLoading: false })
     })
+  }
+
+  const setHolidaysState = async () => {
+    const holidaysState = await DB.getTable(DB.tables.holidayEvents)
+    setHolidays(holidaysState)
   }
 
   useEffect(() => {
@@ -312,22 +308,31 @@ export default function EventCalendar() {
       })
     }
 
+    setHolidaysState().then((r) => r)
     onTableChange().then((r) => r)
   }, [])
 
-  const getRowDotColor = (event) => {
-    const isCurrentUserDot = event.ownerPhone === currentUser?.phone
-    if (event.isHoliday && !event.fromVisitationSchedule) {
-      return 'standard-dot'
-    }
-    if (isCurrentUserDot) {
-      return 'current-user-dot'
-    }
-    if (!isCurrentUserDot) {
-      return 'coparent-dot'
+  const getRowDotColor = (dayDate) => {
+    const dayEvent = allEventsFromDb.filter((x) => x.startDate === dayDate)[0]
+    if (Manager.isValid(dayEvent)) {
+      const isCurrentUserDot = dayEvent?.ownerPhone === currentUser?.phone
+      if (dayEvent?.isHoliday && !dayEvent.fromVisitationSchedule) {
+        return 'standard-dot'
+      }
+      if (isCurrentUserDot) {
+        return 'current-user-dot'
+      }
+      if (!isCurrentUserDot) {
+        return 'coparent-dot'
+      }
     }
 
     return 'standard-dot'
+  }
+
+  const getEventFromDate = (dayDate, events) => {
+    const arr = [...events, ...holidays]
+    return arr.filter((x) => x.startDate === dayDate)[0]
   }
 
   return (
@@ -427,7 +432,10 @@ export default function EventCalendar() {
               showDaysOutsideCurrentMonth={true}
               defaultValue={moment(selectedNewEventDay)}
               onMonthChange={async (month) => {
-                await getSecuredEvents(null, month)
+                setActiveMonth(month)
+                setTimeout(async () => {
+                  await getSecuredEvents(null, month)
+                }, 500)
               }}
               onChange={async (day) => {
                 setTimeout(async () => {
@@ -486,7 +494,7 @@ export default function EventCalendar() {
                 {!Manager.isValid(existingEvents) && <p id="no-events-text">No events on this day</p>}
                 {Manager.isValid(existingEvents) &&
                   existingEvents.map((event, index) => {
-                    let eventType = getRowDotColor(event)
+                    let eventType = getRowDotColor(event.startDate)
                     return (
                       <div
                         key={index}
@@ -506,8 +514,13 @@ export default function EventCalendar() {
                           {/* DATE CONTAINER */}
                           <div id="subtitle" className="flex space-between calendar">
                             <div id="date-container">
+                              {Manager.isValid(searchResults) && (
+                                <span className="start-date" id="subtitle">
+                                  {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}
+                                </span>
+                              )}
                               {/* FROM DATE */}
-                              {!contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
+                              {!Manager.isValid(searchResults) && !contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
                                 <span className="start-date" id="subtitle">
                                   {moment(event?.startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
                                 </span>

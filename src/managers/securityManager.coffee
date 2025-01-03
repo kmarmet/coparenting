@@ -24,7 +24,9 @@ SecurityManager =
   getCalendarEvents: (currentUser) ->
     returnRecords = []
     coparentAndChildSharedEvents = []
-    allEvents = Manager.convertToArray(await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}")).flat()
+    events = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/events")
+    sharedEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/sharedEvents")
+    allEvents = [events..., sharedEvents...]
 
     for coparent in currentUser.coparents
       theirSharedEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{coparent.phone}/sharedEvents")
@@ -40,7 +42,7 @@ SecurityManager =
 
     if Manager.isValid(allEvents)
       for event in allEvents
-        if event.isHoliday and event.visibleToAll
+        if event.isHoliday
           returnRecords.push(event)
         if DateManager.isValidDate(event.startDate)
           if (event.ownerPhone == currentUser?.phone)

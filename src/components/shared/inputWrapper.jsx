@@ -31,14 +31,10 @@ function InputWrapper({
   }, [])
 
   return (
-    <div
-      id="input-wrapper"
-      //TODO fix spacing/margin
-      className={`${wrapperClasses} ${inputType}  input-container form`}>
+    <div id="input-wrapper" className={`${wrapperClasses} ${inputType}  input-container form`}>
       {Manager.isValid(labelText) && <Label text={`${labelText}`} required={required} />}
       {!noInputTypes.includes(inputType) && (
         <>
-          {/* LABEL */}
           <DebounceInput
             value={defaultValue}
             element={inputType}
@@ -49,6 +45,8 @@ function InputWrapper({
             debounceTimeout={800}
             key={refreshKey}
             type={inputValueType}
+            pattern={inputValueType === 'tel' ? '[0-9]{3} [0-9]{3} [0-9]{4}' : ''}
+            maxLength={inputValueType === 'tel' ? 12 : 100}
             onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
           />
         </>

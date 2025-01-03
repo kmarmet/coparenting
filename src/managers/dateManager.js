@@ -1,9 +1,8 @@
 import moment from 'moment'
-import DB from '@db'
 import Manager from '@manager'
 import CalendarEvent from '@models/calendarEvent'
 import DateFormats from '@constants/dateFormats'
-import CalendarManager from './calendarManager'
+import CalendarManager from './calendarManager.js'
 import {
   contains,
   displayAlert,
@@ -68,10 +67,10 @@ const DateManager = {
           sortOrder = direction === 'asc' ? 1 : -1
         return a < b ? -sortOrder : a > b ? sortOrder : 0
       }
-    const sortedByDate = events.sort(nestedSort(datePropertyName, null, 'asc'))
-    const sortedByDateAndTime = events.sort(nestedSort(timePropertyName, null, 'asc'))
-    const combined = Manager.getUniqueArray(sortedByDate.concat(sortedByDateAndTime))
-    return combined
+    // const sortedByDate = events.sort(nestedSort(datePropertyName, null, 'asc'))
+    // const sortedByDateAndTime = events.sort(nestedSort(timePropertyName, null, 'asc'))
+    // const combined = DatasetManager.getUniqueArray([...sortedByDate, ...sortedByDateAndTime], true)
+    return sorted
   },
   sortByTime: (events) => {
     const sorted = events.sort((a, b) => moment(a.startTime).diff(moment(b.startTime)))
@@ -256,9 +255,7 @@ const DateManager = {
       return !!contains(title, holidayName)
     }
 
-    console.log(holidays)
-
-    // SET EMOJIS
+    // SET EMOJIS / CREATE EVENT SET
     for (const holiday of holidays) {
       let newEvent = new CalendarEvent()
       // Required
@@ -301,7 +298,6 @@ const DateManager = {
       newEvent = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
       holidayEvents.push(newEvent)
     }
-    // holidayEvents = holidayEvents.filter((value, index, self) => index === self.findIndex((t) => t.startDate === value.startDate))
     await CalendarManager.setHolidays(holidayEvents)
   },
   dateIsValid: (inputDate, format = DateFormats.dateForDb) => {
@@ -324,12 +320,7 @@ const DateManager = {
 
   // DELETE
   deleteAllHolidays: async () => {
-    const allEvents = await DB.getTable(DB.tables.calendarEvents)
-    for (let event of allEvents) {
-      if (event?.isHoliday) {
-        await DB.delete(DB.tables.calendarEvents, event.id)
-      }
-    }
+    await CalendarManager.deleteAllHolidayEvents()
   },
 }
 

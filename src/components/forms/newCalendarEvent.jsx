@@ -27,6 +27,8 @@ import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputD
 import AlertManager from '../../managers/alertManager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
+import validator from 'validator'
+
 import AccordionDetails from '@mui/material/AccordionDetails'
 import {
   contains,
@@ -81,6 +83,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [coparentsToRemind, setCoparentsToRemind] = useState([])
   const [eventIsRepeating, setEventIsRepeating] = useState(false)
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
+  const [eventPhone, setEventPhone] = useState('')
   // COMPONENT STATE
   const [isAllDay, setIsAllDay] = useState(false)
   const [showCloneInput, setShowCloneInput] = useState(false)
@@ -154,6 +157,15 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     newEvent.repeatInterval = repeatInterval
     newEvent.fromVisitationSchedule = isVisitation
 
+    if (Manager.isValid(eventPhone, true)) {
+      if (!validator.isMobilePhone(eventPhone)) {
+        AlertManager.throwError('Phone number is not valid')
+        return false
+      }
+    } else {
+      newEvent.phone = eventPhone
+    }
+
     if (Manager.isValid(newEvent)) {
       // Repeating Events Validation
       if (Manager.isValid(repeatingEndDate) && !Manager.isValid(repeatInterval)) {
@@ -213,7 +225,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         await CalendarManager.addMultipleCalEvents(currentUser, repeatingDates)
       }
 
-      // Add single date
+      // SINGLE DATA --------------------------------------------------------------------------------------------------
       if (addSingleEvent) {
         // Add to shared
         if (Manager.isValid(eventShareWith)) {
@@ -343,6 +355,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       dateObject.children = eventChildren
       dateObject.ownerPhone = currentUser?.phone
       dateObject.createdBy = currentUser?.name
+      dateObject.phone = eventPhone
       dateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
       dateObject.notes = eventNotes
       dateObject.isRepeating = Manager.isValid(repeatingEndDate)
@@ -715,6 +728,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               placeholder={''}
             />
           </InputWrapper>
+
+          {/* PHONE */}
+          <InputWrapper inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
 
           {/* NOTES */}
           <InputWrapper

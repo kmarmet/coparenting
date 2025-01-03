@@ -3,9 +3,9 @@ import DateManager from './dateManager'
 import Manager from '@manager'
 import DB from '@db'
 import DateFormats from '../constants/dateFormats'
-import { child, getDatabase, ref, set } from 'firebase/database'
 import DatasetManager from './datasetManager'
 import LogManager from './logManager'
+import CalendarManager from './calendarManager.js'
 
 const VisitationManager = {
   weekendMapper: (input) => {
@@ -224,12 +224,10 @@ const VisitationManager = {
     return Manager.getUniqueArray(visitationHolidays).flat()
   },
   setVisitationHolidays: async (currentUser, holidays) => {
-    const dbRef = ref(getDatabase())
     await VisitationManager.deleteAllHolidaysForUser(currentUser)
     holidays = DatasetManager.getUniqueArrayByProp(holidays, 'startDate', 'holidayName')
-    const currentEvents = await DB.getTable(DB.tables.calendarEvents)
     try {
-      await set(child(dbRef, `${DB.tables.calendarEvents}`), [...currentEvents, ...holidays])
+      await CalendarManager.addMultipleCalEvents(currentUser, holidays)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }
@@ -317,40 +315,22 @@ const VisitationManager = {
     // Combine arrays
     return [...formattedFirstPeriodArray, ...formattedSecondPeriodArray, ...formattedThirdPeriodArray].sort()
   },
-  deleteSchedule: async (scheduleEvents) => {
-    for (const event of scheduleEvents) {
-      try {
-        await DB.delete(DB.tables.calendarEvents, event.id)
-      } catch (error) {
-        LogManager.log(error.message, LogManager.logTypes.error, error.stack)
-      }
-    }
+  deleteSchedule: async (currentUser, scheduleEvents) => {
+    await CalendarManager.deleteMultipleEvents(currentUser, scheduleEvents, 'sharedEvents')
   },
   deleteAllHolidaysForUser: async (currentUser) => {
-    const allEvents = await DB.getTable(DB.tables.calendarEvents)
+    const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}/sharedEvents`
+    const allEvents = await DB.getTable(dbPath)
     for (let event of allEvents) {
       if (event?.isHoliday && event?.ownerPhone === currentUser.phone) {
-        await DB.delete(DB.tables.calendarEvents, event.id)
+        await DB.delete(dbPath, event.id)
       }
     }
   },
-  addVisitationSchedule: async (vScheduleEvents) => {
-    const dbRef = ref(getDatabase())
-    let currentEvents = await DB.getTable(DB.tables.calendarEvents)
-    if (!Array.isArray(currentEvents)) {
-      currentEvents = []
-    }
-    // Delete Existing
-    currentEvents.forEach((event) => {
-      vScheduleEvents.forEach(async (newEvent) => {
-        if (event.startDate === newEvent.startDate && event.title === newEvent.title) {
-          await DB.delete(DB.tables.calendarEvents, event.id)
-        }
-      })
-    })
-    const eventsToAdd = [...currentEvents, [...vScheduleEvents]].filter((x) => x !== undefined).flat()
+  addVisitationSchedule: async (currentUser, vScheduleEvents) => {
+    await CalendarManager.deleteMultipleEvents(vScheduleEvents, currentUser, 'sharedEvents')
     try {
-      set(child(dbRef, `${DB.tables.calendarEvents}`), eventsToAdd)
+      await CalendarManager.addMultipleCalEvents(currentUser, vScheduleEvents)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }

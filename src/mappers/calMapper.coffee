@@ -2,8 +2,16 @@ import ReminderTimes from 'constants/reminderTimes'
 import DateManager from 'managers/dateManager'
 import moment from "moment"
 import Manager from "../managers/manager"
+import DB from "../database/DB"
 
 CalendarMapper =
+  currentUserEventPath: (currentUser, event) ->
+    console.log(currentUser)
+    if Manager.isValid(event?.shareWith)
+      return "#{DB.tables.calendarEvents}/#{currentUser.phone}/sharedEvents"
+    else
+      return "#{DB.tables.calendarEvents}/#{currentUser.phone}/events"
+
   reminderTimes: (timeframe) ->
     if Manager.contains(timeframe,'hour')
       return ReminderTimes.hour

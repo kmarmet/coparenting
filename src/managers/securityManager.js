@@ -29,10 +29,12 @@ import _ from "lodash";
 
 SecurityManager = {
   getCalendarEvents: async function(currentUser) {
-    var allEvents, coparent, coparentAndChildSharedEvents, event, i, j, k, len, len1, len2, ref, returnRecords, theirSharedEvents;
+    var allEvents, coparent, coparentAndChildSharedEvents, event, events, i, j, k, len, len1, len2, ref, returnRecords, sharedEvents, theirSharedEvents;
     returnRecords = [];
     coparentAndChildSharedEvents = [];
-    allEvents = Manager.convertToArray((await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`))).flat();
+    events = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/events`));
+    sharedEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/sharedEvents`));
+    allEvents = [...events, ...sharedEvents];
     ref = currentUser.coparents;
     for (i = 0, len = ref.length; i < len; i++) {
       coparent = ref[i];
@@ -53,7 +55,7 @@ SecurityManager = {
     if (Manager.isValid(allEvents)) {
       for (k = 0, len2 = allEvents.length; k < len2; k++) {
         event = allEvents[k];
-        if (event.isHoliday && event.visibleToAll) {
+        if (event.isHoliday) {
           returnRecords.push(event);
         }
         if (DateManager.isValidDate(event.startDate)) {

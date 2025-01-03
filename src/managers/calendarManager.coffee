@@ -17,6 +17,7 @@ import {
   wordCount
 } from "../globalFunctions"
 import LogManager from "./logManager"
+import CalendarMapper from "../mappers/calMapper"
 
 export default CalendarManager =
   formatEventTitle: (title) ->
@@ -24,34 +25,32 @@ export default CalendarManager =
       title = uppercaseFirstLetterOfAllWords(title)
       title = formatTitleWords(title)
       return title
+
+  getAllEventsForUser: (currentUser) ->
+    all = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}")
+    console.log(all)
+
   addMultipleCalEvents: (currentUser, newEvents) ->
-    eventsAreShared = false
-    eventsWithShareWith = newEvents.filter (x) -> Manager.isValid(x.shareWith)
-    if eventsWithShareWith.length > 0
-      eventsAreShared = true
-    eventsOrSharedEvents = if eventsAreShared then "sharedEvents" else "events"
     dbRef = ref(getDatabase())
-    currentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventsOrSharedEvents}")
-    console.log(currentEvents)
-    console.log(newEvents)
+    currentEvents = await DB.getTable(CalendarMapper.currentUserEventPath(currentUser, newEvents[0]))
     toAdd = [currentEvents..., newEvents...]
     try
-      await set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventsOrSharedEvents}"), toAdd)
+      await set(child(dbRef, CalendarMapper.currentUserEventPath(currentUser, newEvents[0])), toAdd)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
   setHolidays: (holidays) ->
     dbRef = ref(getDatabase())
-    currentEvents = await DB.getTable(DB.tables.calendarEvents)
+    currentEvents = await DB.getTable(DB.tables.holidayEvents)
     eventsToAdd = [currentEvents..., holidays...].filter((x) -> x?).flat()
     try
-      await set(child(dbRef, "#{DB.tables.calendarEvents}"), eventsToAdd)
+      await set(child(dbRef, "#{DB.tables.holidayEvents}"), eventsToAdd)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
   addCalendarEvent: (currentUser, newEvent) ->
     dbRef = ref(getDatabase())
-    currentEvents =  await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/events")
+    currentEvents =  await DB.getTable(CalendarMapper.currentUserEventPath(currentUser, newEvent))
     currentEvents = currentEvents.filter (n) -> n
     toAdd = []
     try
@@ -59,7 +58,7 @@ export default CalendarManager =
         toAdd = [currentEvents..., newEvent]
       else
         toAdd = [newEvent]
-      set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/events"), toAdd)
+      set(child(dbRef, CalendarMapper.currentUserEventPath(currentUser, newEvent)), toAdd)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
@@ -73,12 +72,18 @@ export default CalendarManager =
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
   deleteMultipleEvents: (events, currentUser, eventParentName = "events") ->
-    console.log("#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventParentName}")
     dbRef = ref(getDatabase())
     tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventParentName}")
     for record in tableRecords
       idToDelete = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventParentName}", record, 'id')
       await remove(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventParentName}/#{idToDelete}"))
+
+  deleteAllHolidayEvents: () ->
+    dbRef = ref(getDatabase())
+    tableRecords = await DB.getTable("#{DB.tables.holidayEvents}")
+    for record in tableRecords
+      idToDelete = await DB.getSnapshotKey("#{DB.tables.holidayEvents}", record, 'id')
+      await remove(child(dbRef, "#{DB.tables.holidayEvents}/#{idToDelete}"))
 
   deleteEvent: (currentUser, eventParentName = "events", id) ->
     dbRef = ref(getDatabase())

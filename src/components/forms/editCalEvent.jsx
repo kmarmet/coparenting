@@ -570,6 +570,14 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   </a>
                 </div>
               )}
+              {Manager.isValid(event?.phone) && (
+                <div className="flex">
+                  <b>Phone:</b>
+                  <a href={`tel:${event?.phone}`} target="_blank">
+                    {event?.phone}
+                  </a>
+                </div>
+              )}
               {Manager.isValid(event?.notes) && (
                 <>
                   <b>Notes</b>

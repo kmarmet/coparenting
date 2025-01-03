@@ -11,6 +11,7 @@ export default class CalendarEvent
     @children = []
     @location = ''
     @title = ''
+    @phone = ''
     @createdBy = ''
     @reminderTimes = []
     @coparentsToRemindPhones = []
