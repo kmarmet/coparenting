@@ -20,38 +20,34 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../globalFunctions'
-import ConversationMessageBookmark from '../models/conversationMessageBookmark'
+import ChatBookmark from '../models/chat/chatBookmark'
 import LogManager from './logManager'
 import DB_UserScoped from '@userScoped'
-import DatasetManager from './datasetManager'
 
 const ChatManager = {
-  getScopedChat: async (currentUser, messageToUserPhone) =>
-    await new Promise(async (resolve, reject) => {
-      try {
-        const securedChats = await SecurityManager.getChats(currentUser)
-        const returnChat = securedChats.filter(
-          (x) => x.members.map((x) => x.phone).includes(currentUser.phone) && x.members.map((x) => x.phone).includes(messageToUserPhone)
-        )[0]
-        const key = await DB.getSnapshotKey(DB.tables.chats, returnChat, 'id')
-        resolve({
-          chat: returnChat,
-          key: key,
-        })
-      } catch (error) {
-        LogManager.log(error.message, LogManager.logTypes.error)
-      }
-    }),
-  hideAndArchive: async (currentUser, coparent) => {
-    const securedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
-    const { chat, key, hideFrom } = securedChat
-    if (Manager.isValid(securedChat?.hideFrom, true)) {
-      securedChat.hideFrom = [...hideFrom, currentUser.phone]
-    } else {
-      securedChat.hideFrom = [currentUser.phone]
-    }
+  getScopedChat: async (currentUser, messageToUserPhone) => {
     try {
-      await DB_UserScoped.updateByPath(`${DB.tables.chats}/${key}/hideFrom`, securedChat.hideFrom)
+      const securedChats = await SecurityManager.getChats(currentUser)
+      const chatToReturn = await DB.find(securedChats, null, false, (chat) => {
+        const members = chat.members
+        const memberPhones = members.map((x) => x.phone)
+        if (memberPhones.includes(currentUser.phone) && memberPhones.includes(messageToUserPhone)) {
+          return chat
+        }
+      })
+      return chatToReturn
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error)
+    }
+  },
+  getMessages: async (chatId) => {
+    return await DB.getTable(`${DB.tables.chatMessages}/${chatId}`)
+  },
+  archiveChat: async (currentUser, coparent) => {
+    const securedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
+    const key = await DB.getSnapshotKey(`${DB.tables.chats}/${currentUser.phone}`, securedChat, 'id')
+    try {
+      await DB.deleteByPath(`${DB.tables.chats}/${currentUser.phone}/${key}`)
       await DB.add(`${DB.tables.archivedChats}/${currentUser.phone}`, securedChat)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
@@ -59,57 +55,42 @@ const ChatManager = {
   },
   toggleMute: async (currentUser, coparentPhone, muteOrUnmute = 'mute') => {
     const securedChat = await ChatManager.getScopedChat(currentUser, coparentPhone)
-    const { chat, key, hideFrom } = securedChat
-    if (Manager.isValid(securedChat?.mutedFor, true)) {
-      if (muteOrUnmute === 'mute') {
-        securedChat.mutedFor = [...securedChat.mutedFor, currentUser.phone]
-      } else {
-        securedChat.mutedFor = securedChat.mutedFor.filter((x) => x !== currentUser.phone)
-      }
-    } else {
-      if (muteOrUnmute === 'mute') {
-        securedChat.mutedFor = [currentUser.phone]
-      }
-    }
-    // Get flat/unique
-    securedChat.mutedFor = DatasetManager.getUniqueArray(securedChat.mutedFor, true)
-    console.log(securedChat.mutedFor)
+    const key = await DB.getSnapshotKey(`${DB.tables.chats}/${currentUser.phone}`, securedChat, 'id')
+    let isMuted = muteOrUnmute === 'mute'
     try {
-      await DB_UserScoped.updateByPath(`${DB.tables.chats}/${key}/mutedFor`, securedChat.mutedFor)
+      await DB_UserScoped.updateByPath(`${DB.tables.chats}/${currentUser.phone}/${key}/isMuted`, isMuted)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }
   },
-  toggleMessageBookmark: async (currentUser, messageToUser, messageId) => {
+  getBookmarks: async (chatId) => {
+    const existingBookmarks = await DB.getTable(`${DB.tables.chatBookmarks}/${chatId}`)
+
+    return existingBookmarks ?? []
+  },
+  toggleMessageBookmark: async (currentUser, messageToUser, messageId, chatId) => {
     const dbRef = ref(getDatabase())
+    const existingBookmarks = await DB.getTable(`${DB.tables.chatBookmarks}/${chatId}`)
+    let toAdd = []
 
-    let scopedChatObject = await ChatManager.getScopedChat(currentUser, messageToUser.phone)
-    const { key, chat } = scopedChatObject
-    const { bookmarks } = chat
+    const newBookmark = new ChatBookmark()
+    newBookmark.ownerPhone = currentUser.phone
+    newBookmark.messageId = messageId
 
-    // Check for already existing bookmark
-    const bookmarkAlreadyExists = bookmarks?.filter((x) => x.messageId === messageId).length > 0
-    // Set bookmarks property if it is not defined
-    if (!Manager.isValid(chat.bookmarks)) {
-      chat.bookmarks = []
-    }
-
-    // Add Bookmark
-    if (!bookmarkAlreadyExists) {
-      // Create Bookmark
-      const newBookmark = new ConversationMessageBookmark()
-      newBookmark.ownerPhone = currentUser.phone
-      newBookmark.messageId = messageId
-      chat.bookmarks = [...chat.bookmarks, newBookmark]
-    }
-
-    // Remove Bookmark
-    else {
-      chat.bookmarks = chat.bookmarks.filter((x) => x.messageId !== messageId)
+    // Bookmarks exist already
+    if (Manager.isValid(existingBookmarks)) {
+      const existingBookmark = await DB.find(existingBookmarks, ['messageId', messageId], false)
+      if (Manager.isValid(existingBookmark)) {
+        toAdd = existingBookmarks.filter((x) => x.messageId !== messageId)
+      } else {
+        toAdd = [...existingBookmarks, newBookmark]
+      }
+    } else {
+      toAdd = [newBookmark]
     }
 
     try {
-      await set(child(dbRef, `${DB.tables.chats}/${key}`), chat).catch((error) => {})
+      await set(child(dbRef, `${DB.tables.chatBookmarks}/${chatId}`), toAdd).catch((error) => {})
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }
@@ -135,13 +116,30 @@ const ChatManager = {
       set(child(dbRef, `chats/${chatKey}/messages`), Manager.getUniqueArray(allMessages).flat())
     }
   },
-  addConvoOrMessageByPath: async (path, data, convoOrMessage) => {
+  addChat: async (path, chat) => {
     const dbRef = ref(getDatabase())
-    if (!Array.isArray(data)) {
-      data = [data]
+    const currentChats = await DB.getTable(path)
+    let toAdd
+    if (Manager.isValid(currentChats)) {
+      toAdd = [...currentChats, chat]
+    } else {
+      toAdd = [chat]
     }
-    const currentConversations = await DB.getTable(path)
-    const toAdd = [...currentConversations, [...data]].filter((x) => x !== undefined).flat()
+    try {
+      set(child(dbRef, path), toAdd).catch((error) => {})
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error)
+    }
+  },
+  addChatMessage: async (path, message) => {
+    const dbRef = ref(getDatabase())
+    const currentMessages = await DB.getTable(path)
+    let toAdd = []
+    if (Manager.isValid(currentMessages)) {
+      toAdd = [...currentMessages, message]
+    } else {
+      toAdd = [message]
+    }
     try {
       set(child(dbRef, path), toAdd).catch((error) => {})
     } catch (error) {

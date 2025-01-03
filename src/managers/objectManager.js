@@ -19,15 +19,19 @@ import User from "../models/user";
 
 import Coparent from "../models/coparent";
 
-import ConversationThread from "../models/conversationThread";
+import ConversationThread from "../models/chat/chatThread";
 
-import ConversationMessage from "../models/conversationMessage";
+import ConversationMessage from "../models/chat/chatMessage";
 
 import ChildUser from "../models/child/childUser";
 
 import Doc from "../models/doc";
 
 import Child from "../models/child/child";
+
+import ChatThread from "../models/chat/chatThread";
+
+import ChatMessage from "../models/chat/chatMessage";
 
 ObjectManager = {
   cleanObject: function(object, modelName) {
@@ -50,10 +54,10 @@ ObjectManager = {
           return new User();
         case ModelNames.coparent:
           return new Coparent();
-        case ModelNames.conversationThread:
-          return new ConversationThread();
-        case ModelNames.conversationMessage:
-          return new ConversationMessage();
+        case ModelNames.chatThread:
+          return new ChatThread();
+        case ModelNames.chatMessage:
+          return new ChatMessage();
         case ModelNames.childUser:
           return new ChildUser();
         case ModelNames.child:

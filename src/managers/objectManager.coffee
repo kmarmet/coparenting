@@ -7,11 +7,13 @@ import SwapRequest from "../models/swapRequest"
 import InputSuggestion from "../models/inputSuggestion"
 import User from "../models/user"
 import Coparent from "../models/coparent"
-import ConversationThread from "../models/conversationThread"
-import ConversationMessage from "../models/conversationMessage"
+import ConversationThread from "../models/chat/chatThread"
+import ConversationMessage from "../models/chat/chatMessage"
 import ChildUser from "../models/child/childUser"
 import Doc from "../models/doc"
 import Child from "../models/child/child"
+import ChatThread from "../models/chat/chatThread"
+import ChatMessage from "../models/chat/chatMessage"
 
 ObjectManager = {
   cleanObject: (object, modelName) ->
@@ -24,8 +26,8 @@ ObjectManager = {
       when ModelNames.inputSuggestion then new InputSuggestion()
       when ModelNames.user then new User()
       when ModelNames.coparent then new Coparent()
-      when ModelNames.conversationThread then new ConversationThread()
-      when ModelNames.conversationMessage then new ConversationMessage()
+      when ModelNames.chatThread then new ChatThread()
+      when ModelNames.chatMessage then new ChatMessage()
       when ModelNames.childUser then new ChildUser()
       when ModelNames.child then new Child()
       when ModelNames.doc then new Doc()

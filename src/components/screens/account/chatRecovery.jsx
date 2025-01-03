@@ -10,7 +10,7 @@ import CheckboxGroup from 'components/shared/checkboxGroup'
 import '../../../prototypes'
 import DateFormats from '../../../constants/dateFormats'
 import domtoimage from 'dom-to-image'
-import ChatRecoveryRequest from '../../../models/chatRecoveryRequest'
+import ChatRecoveryRequest from '../../../models/chat/chatRecoveryRequest'
 import ImageManager from '../../../managers/imageManager'
 import {
   contains,
@@ -134,7 +134,7 @@ function ChatRecovery() {
     }
   }
 
-  const saveImageLocal = () => ImageManager.saveImageFromUrl('#image-wrapper', convoImageUrl, 'Chat Recovery Conversation')
+  const saveImageLocal = () => ImageManager.saveImageFromUrl('#image-wrapper', convoImageUrl, 'Chat Recovery Chat')
 
   const handleMessageTypeSelection = async (e) => {
     Manager.handleCheckboxSelection(
@@ -189,7 +189,7 @@ function ChatRecovery() {
                   inputType={'input'}
                   inputValueType="number"
                   required={true}
-                  labelText={'Phone Number of Conversation Co-parent'}
+                  labelText={'Phone Number of Chat Co-parent'}
                   onChange={async (e) => {
                     const inputValue = e.target.value
                     if (inputValue.length > 1) {

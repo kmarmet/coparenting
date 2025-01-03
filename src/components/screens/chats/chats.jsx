@@ -8,7 +8,6 @@ import { BiDotsVerticalRounded, BiMessageRoundedAdd, BiMessageRoundedDetail, BiS
 import { IoNotificationsOffCircle } from 'react-icons/io5'
 import { HiMiniBellAlert } from 'react-icons/hi2'
 import { Fade } from 'react-awesome-reveal'
-import { MdArchive } from 'react-icons/md'
 import { IoMdCloseCircleOutline } from 'react-icons/io'
 import {
   contains,
@@ -33,15 +32,14 @@ import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
 import ScreenNames from '@screenNames'
-import DB from '@db'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [showNewThreadForm, setShowNewThreadForm] = useState(false)
-  const [threads, setThreads] = useState([])
+  const [chats, setChats] = useState([])
   const [selectedCoparent, setSelectedCoparent] = useState(null)
-  const [activeThreadPhones, setActiveThreadPhones] = useState([])
+  const [activeChatPhones, setActiveChatPhones] = useState([])
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
   const [threadActionToShow, setThreadActionToShow] = useState(false)
 
@@ -64,26 +62,26 @@ const Chats = () => {
 
   const getSecuredChats = async () => {
     let securedChats = await SecurityManager.getChats(currentUser)
-    let threadPhones = []
+    let chatPhones = []
     for (let chat of securedChats) {
-      const threadMemberPhones = chat.members.map((x) => x.phone)
-      threadMemberPhones.forEach((phone) => threadPhones.push(phone))
+      const chatMemberPhones = chat.members.map((x) => x.phone)
+      const hideFrom = chat?.hideFrom
+      if (Manager.isValid(hideFrom)) {
+        if (!hideFrom.includes(currentUser.phone)) {
+          chatMemberPhones.push(currentUser.phone)
+        }
+      } else {
+        chatMemberPhones.push(currentUser.phone)
+      }
     }
-    setActiveThreadPhones(threadPhones)
-    setThreads(securedChats)
+    setActiveChatPhones(chatPhones)
+    setChats(securedChats)
   }
 
-  const archiveOrDelete = async (coparent, archiveOrDelete) => {
-    if (Manager.isValid(coparent) && archiveOrDelete === 'archive') {
-      await ChatManager.hideAndArchive(currentUser, coparent)
-      AlertManager.successAlert('Conversation Archived')
-      await getSecuredChats()
-      setSelectedCoparent(null)
-    } else {
-      const scopedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
-      const key = scopedChat.key
-      await DB.deleteByPath(`${DB.tables.chats}/${key}`)
-      AlertManager.successAlert('Conversation Deleted Permanently')
+  const archiveChat = async (coparent) => {
+    if (Manager.isValid(coparent)) {
+      await ChatManager.archiveChat(currentUser, coparent)
+      AlertManager.successAlert('Chat Archived')
       await getSecuredChats()
       setSelectedCoparent(null)
     }
@@ -123,13 +121,13 @@ const Chats = () => {
         wrapperClass="new-conversation"
         onClose={() => setShowNewConvoCard(false)}
         showCard={showNewConvoCard}
-        title={'New Conversation'}>
+        title={'New Chat'}>
         {currentUser?.accountType === 'parent' &&
           Manager.isValid(currentUser?.coparents) &&
           currentUser?.coparents?.map((coparent, index) => {
             return (
               <div key={index}>
-                {!activeThreadPhones.includes(coparent?.phone) && (
+                {!activeChatPhones.includes(coparent?.phone) && (
                   <div className="flex" id="users-wrapper">
                     <div className="user-wrapper">
                       <BiMessageRoundedAdd />
@@ -143,7 +141,7 @@ const Chats = () => {
                     </div>
                   </div>
                 )}
-                {activeThreadPhones.includes(coparent?.phone) && <p>All available co-parents already have an open conversation with you </p>}
+                {activeChatPhones.includes(coparent?.phone) && <p>All available co-parents already have an open conversation with you </p>}
               </div>
             )
           })}
@@ -152,7 +150,7 @@ const Chats = () => {
           currentUser?.parents?.map((parent, index) => {
             return (
               <div key={index} className="flex" id="users-wrapper">
-                {!activeThreadPhones.includes(parent?.phone) && (
+                {!activeChatPhones.includes(parent?.phone) && (
                   <div className="user-wrapper">
                     <BiMessageRoundedAdd />
                     <p
@@ -164,7 +162,7 @@ const Chats = () => {
                     </p>
                   </div>
                 )}
-                {activeThreadPhones.includes(parent?.phone) && <p>All available co-parents already have an open conversation with you. </p>}
+                {activeChatPhones.includes(parent?.phone) && <p>All available co-parents already have an open conversation with you. </p>}
               </div>
             )
           })}
@@ -172,6 +170,7 @@ const Chats = () => {
 
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
+        {!showNewThreadForm && chats.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
         <Fade direction={'up'} duration={1000} triggerOnce={true} className={'visitation-fade-wrapper'}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Chats </p>
@@ -179,12 +178,11 @@ const Chats = () => {
           </div>
           {/* THREAD ITEMS */}
           {!showNewThreadForm &&
-            threads.length > 0 &&
-            threads.map((thread, index) => {
+            chats.length > 0 &&
+            chats.map((thread, index) => {
               const coparent = thread?.members?.filter((x) => x.phone !== currentUser?.phone)[0]
               const coparentMessages = Manager.convertToArray(thread.messages)?.filter((x) => x.sender === coparent.name)
               const lastMessage = coparentMessages[coparentMessages?.length - 1]?.message
-              const threadIsMuted = thread?.mutedFor?.includes(currentUser.phone)
               return (
                 <div
                   onClick={(e) => {
@@ -196,9 +194,10 @@ const Chats = () => {
                   }}
                   data-thread-id={thread.id}
                   id="row"
+                  className={activeChatPhones.includes(currentUser?.phone) ? '' : 'hidden'}
                   key={index}>
                   {/* THREAD ITEM */}
-                  <div className={`flex thread-item ${threadIsMuted ? 'muted' : ''}`}>
+                  <div className={`flex thread-item ${thread.isMuted ? 'muted' : ''}`}>
                     {/* COPARENT NAME */}
                     <div className="flex">
                       <div id="user-initial-wrapper">
@@ -232,40 +231,17 @@ const Chats = () => {
                   </div>
                   {/* THREAD ACTIONS */}
                   <div data-thread-id={thread.id} className={'flex thread-actions'}>
-                    {/* ARCHIVE CHAT BUTTON */}
-                    <div id="archive-wrapper">
-                      <MdArchive
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          AlertManager.confirmAlert(
-                            'Are you sure you would like to archive this conversation? You can recover it later.',
-                            "I'm Sure",
-                            true,
-                            async (e) => {
-                              await archiveOrDelete(coparent, 'archive')
-                            },
-                            () => {
-                              setThreadActionToShow(false)
-                              const threadAction = document.querySelector(`.thread-actions[data-thread-id='${thread.id}']`)
-                              threadAction.classList.remove('active')
-                            }
-                          )
-                        }}
-                        className={`archive-icon ${threadActionToShow ? 'active' : ''}`}
-                      />
-                      <span>ARCHIVE</span>
-                    </div>
                     {/* DELETE CHAT BUTTON */}
                     <div id="delete-wrapper">
                       <BiSolidMessageRoundedMinus
                         onClick={(e) => {
                           e.stopPropagation()
                           AlertManager.confirmAlert(
-                            'Are you sure you would like to delete this conversation? It will be permanently removed.',
+                            'Once deleted, you can visit Account -> Chat Recovery to recover the messages. Are you sure?',
                             "I'm Sure",
                             true,
                             async (e) => {
-                              await archiveOrDelete(coparent, 'delete')
+                              await archiveChat(coparent)
                             },
                             () => {
                               setThreadActionToShow(false)
@@ -279,7 +255,7 @@ const Chats = () => {
                       <span>DELETE</span>
                     </div>
 
-                    {!threadIsMuted && (
+                    {!thread.isMuted && (
                       <div id="mute-wrapper">
                         <IoNotificationsOffCircle
                           onClick={async (e) => {
@@ -292,7 +268,7 @@ const Chats = () => {
                       </div>
                     )}
                     {/* UNMUTE BUTTON */}
-                    {threadIsMuted && (
+                    {thread.isMuted && (
                       <div id="unmute-wrapper">
                         <HiMiniBellAlert id={'unmute-icon'} onClick={() => toggleMute(coparent.phone, 'unmute', thread.id)} />
                         <span>UNMUTE</span>
@@ -302,8 +278,6 @@ const Chats = () => {
                 </div>
               )
             })}
-
-          {!showNewThreadForm && threads.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
         </Fade>
       </div>
       {!showNewConvoCard && (

@@ -5,8 +5,7 @@ import 'rsuite/dist/rsuite.min.css'
 import ScreenNames from '@screenNames'
 import globalState from '../../../context.js'
 import DB from '@db'
-import ConversationMessage from '../../../models/conversationMessage'
-import ConversationThread from '../../../models/conversationThread'
+import ChatMessage from '../../../models/chat/chatMessage'
 import Manager from '@manager'
 import NotificationManager from '@managers/notificationManager.js'
 import AppManager from '@managers/appManager.js'
@@ -43,10 +42,10 @@ import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import DomManager from '../../../managers/domManager'
-import DB_UserScoped from '@userScoped'
 import ActivityCategory from '../../../models/activityCategory'
+import ChatThread from '../../../models/chat/chatThread'
 
-const Conversation = () => {
+const Chat = () => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, messageRecipient } = state
   const [existingChat, setExistingChat] = useState(null)
@@ -60,15 +59,16 @@ const Conversation = () => {
   const [searchInputQuery, setSearchInputQuery] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [readonly, setReadonly] = useState(false)
-
+  const [shouldCreateNewChat, setShouldCreateNewChat] = useState(false)
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
     AlertManager.successAlert('Message Copied!', false)
   })
 
   const toggleMessageBookmark = async (messageObject, isBookmarked) => {
-    const { id } = messageObject
-    await ChatManager.toggleMessageBookmark(currentUser, messageRecipient, id)
+    await ChatManager.toggleMessageBookmark(currentUser, messageRecipient, messageObject.id, existingChat?.id).finally(async () => {
+      await getExistingMessages()
+    })
   }
 
   const sendMessage = async () => {
@@ -80,69 +80,64 @@ const Conversation = () => {
       return false
     }
 
-    // Fill models
-    const conversation = new ConversationThread()
-    const conversationMessage = new ConversationMessage()
+    const chat = new ChatThread()
+    const chatMessage = new ChatMessage()
+    //messages should get pushed to chatMessages/primaryKey
+    const uid = Manager.getUid()
 
-    // Messages
-    conversationMessage.id = Manager.getUid()
-    conversationMessage.timestamp = moment().format('MM/DD/yyyy hh:mma')
-    conversationMessage.sender = currentUser?.name
-    conversationMessage.recipient = messageRecipient.name
-    conversationMessage.message = messageText
-    conversationMessage.readState = 'delivered'
-    conversationMessage.notificationSent = false
-    conversationMessage.bookmarked = false
-    const cleanMessage = ObjectManager.cleanObject(conversationMessage, ModelNames.conversationMessage)
+    // Chat
+    const memberTwo = {
+      name: currentUser.name,
+      phone: currentUser.phone,
+      id: currentUser.id,
+    }
+    const memberOne = {
+      name: messageRecipient.name,
+      id: messageRecipient.id,
+      phone: messageRecipient.phone,
+    }
+    chat.id = uid
+    chat.members = [memberOne, memberTwo]
+    chat.creationTimestamp = moment().format(DateFormats.fullDatetime)
+    chat.isMuted = false
+    chat.ownerPhone = currentUser?.phone
 
-    // Thread
-    const { name, id, phone } = messageRecipient
-    const { name: crName, id: crId, phone: crPhone } = currentUser
-    const memberTwo = { name: crName, id: crId, phone: crPhone }
-    const memberOne = { name, id, phone }
-    conversation.id = Manager.getUid()
-    conversation.members = [memberOne, memberTwo]
-    conversation.timestamp = moment().format('MM/DD/yyyy hh:mma')
-    conversation.muteFor = []
-    conversation.hideFrom = []
-    conversation.messages = [cleanMessage]
-    conversation.threadOwner = currentUser?.phone
-    const cleanThread = ObjectManager.cleanObject(conversation, ModelNames.conversationThread)
+    const cleanedChat = ObjectManager.cleanObject(chat, ModelNames.chatThread)
+    let cleanedRecipientChat = { ...cleanedChat }
+    cleanedRecipientChat.ownerPhone = messageRecipient.phone
+
+    // Message
+    chatMessage.id = Manager.getUid()
+    chatMessage.timestamp = moment().format(DateFormats.fullDatetime)
+    chatMessage.sender = currentUser?.name
+    chatMessage.recipient = messageRecipient.name
+    chatMessage.message = messageText
+    chatMessage.readState = 'delivered'
+    chatMessage.notificationSent = false
+
+    const cleanMessage = ObjectManager.cleanObject(chatMessage, ModelNames.chatMessage)
+
+    // ADD TO DATABASE
     // Existing chat
     if (Manager.isValid(existingChat)) {
-      const chatKey = await DB.getSnapshotKey(`${DB.tables.chats}`, existingChat, 'id')
-      await ChatManager.addConvoOrMessageByPath(`${DB.tables.chats}/${chatKey}/messages`, cleanThread.messages[0])
+      // If other member has archived their chat -> create a new chat for them
+      if (shouldCreateNewChat) {
+        cleanedRecipientChat.id = existingChat.id
+        await ChatManager.addChat(`${DB.tables.chats}/${messageRecipient.phone}`, cleanedRecipientChat)
+      }
+      await ChatManager.addChatMessage(`${DB.tables.chatMessages}/${existingChat.id}`, cleanMessage)
     }
-    // Create new chat (if one doesn't exist between members)
+    // Create new chat (for each member, if one doesn't exist between members)
     else {
-      await ChatManager.addConvoOrMessageByPath(`${DB.tables.chats}`, cleanThread)
+      await ChatManager.addChat(`${DB.tables.chats}/${currentUser.phone}`, cleanedChat)
+      await ChatManager.addChat(`${DB.tables.chats}/${messageRecipient.phone}`, cleanedRecipientChat)
+      await ChatManager.addChatMessage(`${DB.tables.chatMessages}/${uid}`, cleanMessage)
     }
 
-    let updatedMessages = existingChat?.messages
+    // Only send notification if co-parent has chat UN-muted
+    let secondMemberChat = await ChatManager.getScopedChat(messageRecipient, currentUser?.phone)
 
-    if (Manager.isValid(updatedMessages)) {
-      if (!Array.isArray(updatedMessages)) {
-        updatedMessages = Manager.convertToArray(updatedMessages)
-      }
-      setMessagesToLoop([...updatedMessages, cleanThread.messages[0]])
-    } else {
-      setMessagesToLoop([])
-    }
-
-    // Only send notification if coparent has chat UNmuted
-    if (Manager.isValid(existingChat?.mutedFor)) {
-      const coparentHasChatMuted = existingChat.mutedFor.filter((x) => x.ownerPhone === messageRecipient.phone).length > 0
-
-      if (!coparentHasChatMuted) {
-        NotificationManager.sendNotification(
-          'New Message',
-          `You have an unread conversation message 💬 from ${uppercaseFirstLetterOfAllWords(currentUser.name)}`,
-          messageRecipient?.phone,
-          currentUser,
-          ActivityCategory.chats
-        )
-      }
-    } else {
+    if (!secondMemberChat.isMuted) {
       NotificationManager.sendNotification(
         'New Message',
         `You have an unread conversation message 💬 from ${uppercaseFirstLetterOfAllWords(currentUser.name)}`,
@@ -154,14 +149,13 @@ const Conversation = () => {
 
     await getExistingMessages()
     AppManager.setAppBadge(1)
-    scrollToLatestMessage()
     messageInputValue.innerHTML = ''
     setMessageText('')
     // TODO MOBILE ONLY?
     // setRefreshKey(Manager.getUid())
   }
 
-  const viewBookmarks = async (e) => {
+  const viewBookmarks = (e) => {
     if (bookmarks.length > 0) {
       setShowBookmarks(!showBookmarks)
       scrollToLatestMessage()
@@ -169,46 +163,41 @@ const Conversation = () => {
   }
 
   const getExistingMessages = async () => {
-    let scopedChatObject
-    let userCoparent = await DB_UserScoped.getCoparentByPhone(messageRecipient?.phone, currentUser)
+    let chat = await ChatManager.getScopedChat(currentUser, messageRecipient?.phone)
+    let secondMemberChat = await ChatManager.getScopedChat(messageRecipient, currentUser?.phone)
 
-    // Coparent account closed
-    if (!Manager.isValid(userCoparent)) {
+    if (!Manager.isValid(secondMemberChat)) {
+      setShouldCreateNewChat(true)
+    }
+
+    let bookmarkRecords = await ChatManager.getBookmarks(chat?.id)
+    let bookmarkedRecordIds = bookmarkRecords.map((x) => x.messageId)
+    let messages = []
+
+    // Co-parent account closed
+    if (!Manager.isValid(messageRecipient)) {
       setReadonly(true)
-      scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient?.phone)
-    } else {
-      scopedChatObject = await ChatManager.getScopedChat(currentUser, messageRecipient?.phone)
     }
-    let { chat } = scopedChatObject
-    const bookmarkObjects = chat?.bookmarks?.filter((x) => x?.ownerPhone === currentUser?.phone) ?? []
-    const bookmarkedMessageIds = bookmarkObjects?.map((x) => x.messageId) ?? []
-    let bookmarkedMessages = []
 
-    if (Manager.isValid(bookmarkObjects)) {
-      bookmarkedMessages = chat?.messages?.filter((x) => bookmarkedMessageIds?.includes(x.id))
-    }
-    const messages = Manager.convertToArray(chat?.messages) || []
-
-    if (messages.length > 0) {
-      if (!bookmarkObjects || bookmarkObjects?.length === 0) {
-        setShowBookmarks(false)
-        const bookmarkIcon = document.querySelector('.bookmark-icon')
-        if (bookmarkIcon) {
-          bookmarkIcon.classList.remove('active')
-        }
-      }
-      setBookmarks(bookmarkedMessages)
-      setMessagesToLoop(messages.flat())
+    // Set chat/messages
+    if (Manager.isValid(chat)) {
       setExistingChat(chat)
-      await ChatManager.markMessagesRead(currentUser, messageRecipient, chat)
-    } else {
-      setMessagesToLoop([])
-      setExistingChat(null)
+      messages = await ChatManager.getMessages(chat.id)
+      if (Manager.isValid(messages)) {
+        setMessagesToLoop(messages)
+      }
     }
-    setTimeout(() => {
-      setState({ ...state, unreadMessageCount: 0, showNavbar: false, currentScreen: ScreenNames.conversation })
-    }, 1000)
-    // Mark read
+
+    // Set bookmarks
+    if (Manager.isValid(bookmarkRecords)) {
+      let bookmarksToLoop = messages.filter((x) => bookmarkedRecordIds.includes(x.id))
+
+      setBookmarks(bookmarksToLoop)
+    } else {
+      setShowBookmarks(false)
+      setBookmarks([])
+    }
+    setState({ ...state, isLoading: false })
     scrollToLatestMessage()
   }
 
@@ -223,7 +212,7 @@ const Conversation = () => {
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.chats}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.chats}/${currentUser?.phone}`), async (snapshot) => {
       await getExistingMessages().then((r) => r)
     })
   }
@@ -239,6 +228,7 @@ const Conversation = () => {
   }
 
   useEffect(() => {
+    setState({ ...state, isLoading: true })
     onTableChange().then((r) => r)
     // scrollToLatestMessage()
     const appContainer = document.querySelector('.App')
@@ -294,7 +284,7 @@ const Conversation = () => {
           setRefreshKey(Manager.getUid())
         }}>
         <InputWrapper
-          defaultValue="Find a message..."
+          placeholder="Find a message..."
           inputType={'input'}
           onChange={(e) => {
             if (e.target.value.length > 2) {
@@ -324,7 +314,7 @@ const Conversation = () => {
                 <PiBookmarksSimpleDuotone
                   id="conversation-bookmark-icon"
                   className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
-                  onClick={(e) => viewBookmarks(e)}
+                  onClick={viewBookmarks}
                 />
               )}
             </div>
@@ -364,17 +354,11 @@ const Conversation = () => {
               } else {
                 sender = formatNameFirstNameOnly(bookmark.sender)
               }
-              // Determine bookmark class
-              const bookmarks = existingChat.bookmarks
-              let isBookmarked = false
-              if (bookmarks?.filter((x) => x.messageId === bookmark.id).length > 0) {
-                isBookmarked = true
-              }
               return (
                 <div key={index}>
                   <p className={bookmark.sender === currentUser?.name ? 'message from' : 'to message'}>
                     {bookmark.message}
-                    <FaBookmark className={isBookmarked ? 'bookmarked' : ''} onClick={(e) => toggleMessageBookmark(bookmark, true)} />
+                    <FaBookmark className={'bookmarked'} onClick={(e) => toggleMessageBookmark(bookmark)} />
                   </p>
                   <span className={bookmark.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                     From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
@@ -385,17 +369,16 @@ const Conversation = () => {
           </div>
         )}
 
+        {/* LOOP MESSAGES */}
         {!showBookmarks && searchResults.length === 0 && (
           <Fade direction={'up'} duration={1000} className={'conversation-fade-wrapper'} triggerOnce={true}>
-            {/* DEFAULT MESSAGES */}
             <>
               <div id="default-messages">
                 {Manager.isValid(messagesToLoop) &&
                   messagesToLoop.map((message, index) => {
                     // Determine bookmark class
-                    const bookmarks = existingChat.bookmarks
                     let isBookmarked = false
-                    if (bookmarks?.filter((x) => x.messageId === message.id).length > 0) {
+                    if (bookmarks?.filter((x) => x.id === message.id).length > 0) {
                       isBookmarked = true
                     }
                     let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mma')
@@ -480,4 +463,4 @@ const Conversation = () => {
   )
 }
 
-export default Conversation
+export default Chat

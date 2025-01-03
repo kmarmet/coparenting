@@ -10,10 +10,9 @@ ModelNames = {
   swapRequest: 'swapRequest',
   inputSuggestion: 'inputSuggestion',
   user: "user",
-  conversationMessage: 'conversationMessage',
   transferChangeRequest: 'transferChangeRequest',
-  conversationMessage: "conversationMessage",
-  conversationThread: "conversationThread",
+  chatMessage: "chatMessage",
+  chatThread: "chatThread",
   childUser: 'childUser',
   doc: 'doc',
   child: 'child'
