@@ -181,8 +181,6 @@ const Chats = () => {
             chats.length > 0 &&
             chats.map((thread, index) => {
               const coparent = thread?.members?.filter((x) => x.phone !== currentUser?.phone)[0]
-              const coparentMessages = Manager.convertToArray(thread.messages)?.filter((x) => x.sender === coparent.name)
-              const lastMessage = coparentMessages[coparentMessages?.length - 1]?.message
               return (
                 <div
                   onClick={(e) => {
@@ -194,10 +192,10 @@ const Chats = () => {
                   }}
                   data-thread-id={thread.id}
                   id="row"
-                  className={activeChatPhones.includes(currentUser?.phone) ? '' : 'hidden'}
+                  className="chats"
                   key={index}>
                   {/* THREAD ITEM */}
-                  <div className={`flex thread-item ${thread.isMuted ? 'muted' : ''}`}>
+                  <div className={`flex thread-item`}>
                     {/* COPARENT NAME */}
                     <div className="flex">
                       <div id="user-initial-wrapper">
@@ -205,8 +203,6 @@ const Chats = () => {
                       </div>
                       <p data-coparent-phone={coparent.phone} className="coparent-name">
                         {formatNameFirstNameOnly(coparent.name)}
-                        {/* Last Message */}
-                        <span className="last-message">{lastMessage}</span>
                       </p>
                     </div>
 

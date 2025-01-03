@@ -1013,6 +1013,10 @@
     max-height: 10000px;
     transition: all 0.3s ease-in-out;
   }
+  
+  &.chats {
+    padding-bottom: 8px;
+  }
 
   @include hover;
 
