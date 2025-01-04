@@ -13,7 +13,6 @@ import DB from "../database/DB";
 
 CalendarMapper = {
   currentUserEventPath: function(currentUser, event) {
-    console.log(currentUser);
     if (Manager.isValid(event != null ? event.shareWith : void 0)) {
       return `${DB.tables.calendarEvents}/${currentUser.phone}/sharedEvents`;
     } else {

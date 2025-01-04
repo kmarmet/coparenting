@@ -136,13 +136,13 @@
                 align-self: flex-start;
                 position: relative;
                 top: 3px;
-                &.standard-dot {
-                  background: $lightGreen;
+                &.holiday-event-dot {
+                  background: $orange;
                 }
-                &.coparent-dot {
+                &.coparent-event-dot {
                   background: $coparentPurple;
                 }
-                &.current-user-dot {
+                &.current-user-event-dot {
                   background: $currentUserGreen;
                 }
                 &.current-user-visitation {

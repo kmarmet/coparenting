@@ -145,8 +145,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     }
     updatedEvent.websiteUrl = eventWebsiteUrl
     updatedEvent.fromVisitationSchedule = isVisitation
-    updatedEvent.morningSummaryReminderSent = false
-    updatedEvent.eveningSummaryReminderSent = false
     updatedEvent.sentReminders = []
 
     if (Manager.isValid(updatedEvent)) {
@@ -230,8 +228,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
   // SUBMIT
   const submit = async () => {
-    const dbRef = ref(getDatabase())
-
     // Set new event values
     const eventToEdit = { ...event }
 
@@ -241,6 +237,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     eventToEdit.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat() || []
     eventToEdit.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
     eventToEdit.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
+
     if (!isAllDay) {
       eventToEdit.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
       eventToEdit.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
