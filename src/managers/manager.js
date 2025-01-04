@@ -259,9 +259,10 @@ const Manager = {
     const clickedEl = e.currentTarget
     const selectedValue = clickedEl.getAttribute('data-phone')
     // UNCHECK
+    console.log(shareWith)
     if (clickedEl.classList.contains('active')) {
       clickedEl.classList.remove('active')
-      if (shareWith.length > 0) {
+      if (Manager.isValid(shareWith)) {
         shareWith = shareWith.filter((x) => x !== selectedValue)
       }
     }

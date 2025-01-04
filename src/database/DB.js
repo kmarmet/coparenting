@@ -55,6 +55,7 @@ const DB = {
         const dbRef = ref(getDatabase())
         await get(child(dbRef, path)).then((snapshot) => {
           if (snapshot.exists()) {
+            console.log(propertyToCompare)
             let row = _.findKey(snapshot.val(), [propertyToCompare, objectToCheck[propertyToCompare]])
             // console.log(row)
             resolve(row)
@@ -63,6 +64,8 @@ const DB = {
             //     resolve(event.key)
             //   }
             // })
+          } else {
+            console.log('getSnapshotKey: snapshot does not exist. Check path')
           }
         })
       } catch (error) {

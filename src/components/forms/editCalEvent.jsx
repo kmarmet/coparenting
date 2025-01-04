@@ -11,7 +11,7 @@ import CalendarMapper from '../../mappers/calMapper'
 import CalMapper from '../../mappers/calMapper'
 import DateFormats from '../../constants/dateFormats'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
-import CalendarManager from '../../managers/calendarManager'
+import CalendarManager from '../../managers/calendarManager.js'
 import Toggle from 'react-toggle'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -81,6 +81,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [view, setView] = useState('details')
   const [isDateRange, setIsDateRange] = useState(false)
+  const [shareWithNames, setShareWithNames] = useState([])
   const resetForm = async () => {
     Manager.resetForm('edit-event-form')
     setEventFromDate('')
@@ -161,14 +162,15 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       const cleanedObject = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
       const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
       const eventCount = allEvents.filter((x) => x.title === eventTitle).length
+      const dbPath = CalendarMapper.currentUserEventPath(currentUser, cleanedObject)
 
       // Cloned Events
       if (eventCount > 1) {
         // Get record key
-        const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
+        const key = await DB.getSnapshotKey(dbPath, event, 'id')
 
         // Update DB
-        await set(child(dbRef, `${DB.tables.calendarEvents}/${key}`), cleanedObject).finally(async () => {
+        await set(child(dbRef, `${dbPath}/${key}`), cleanedObject).finally(async () => {
           await afterUpdateCallback()
         })
 
@@ -190,9 +192,9 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
       // Update Single Event
       else {
-        const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}/${Manager.isValid(event.shareWith) ? 'sharedEvents' : 'events'}`
-        const key = await DB.getSnapshotKey(dbPath, event, 'id')
-        await DB.updateEntireRecord(`${dbPath}/${key}`, cleanedObject)
+        // If event is shared with you AND you are not the owner of the event
+        const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
+        await editNonOwnerEvent(dbPath, cleanedEvent)
         await afterUpdateCallback()
 
         if (eventIsDateRange) {
@@ -212,18 +214,27 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       }
     }
 
-    // TODO move from sharedEvents to events
-    // if (Manager.isValid(event?.shareWith)) {
-    //   event.shareWith = event.shareWith.filter((x) => x !== currentUser.phone)
-    //   const key = await DB.getSnapshotKey(`${DB.tables.calendarEvents}`, event, 'id')
-    //   await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${key}`, event)
-    // }
-    const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}/${Manager.isValid(event.shareWith) ? 'sharedEvents' : 'events'}`
-    const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
-    // TODO this is inserting a duplicate -> prevent that
-    await DB.add(dbPath, cleanedEvent)
     AlertManager.successAlert('Event Updated')
     await resetForm()
+  }
+
+  const editNonOwnerEvent = async (dbPath, newEvent) => {
+    if (Manager.isValid(event?.shareWith)) {
+      // Add cloned event for currentUser
+      if (Manager.contains(dbPath, 'shared')) {
+        await CalendarManager.addSharedEvent(currentUser, newEvent)
+      } else {
+        await CalendarManager.addCalendarEvent(currentUser, newEvent)
+      }
+
+      // Remove from original owner sharedEvents table
+      await DB.delete(`${DB.tables.calendarEvents}/${event.ownerPhone}/sharedEvents`, event.id)
+
+      // Remove from original event shareWith
+      // event.shareWith = event.shareWith.filter((x) => x !== currentUser.phone)
+      // const key = await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${event.ownerPhone}/sharedEvents`, event, 'id')
+      // await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${event.ownerPhone}/sharedEvents/${key}`, event)
+    }
   }
 
   // SUBMIT
@@ -234,7 +245,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     // Required
     eventToEdit.title = eventTitle
     eventToEdit.reminderTimes = eventReminderTimes
-    eventToEdit.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat() || []
+    eventToEdit.shareWith = eventShareWith
     eventToEdit.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
     eventToEdit.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
 
@@ -261,7 +272,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     eventToEdit.morningSummaryReminderSent = false
     eventToEdit.eveningSummaryReminderSent = false
     eventToEdit.sentReminders = []
-
     if (Manager.isValid(eventToEdit)) {
       if (!Manager.isValid(eventTitle)) {
         AlertManager.throwError('Name of event is required')
@@ -273,14 +283,15 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         return false
       }
 
-      const cleanedObject = ObjectManager.cleanObject(eventToEdit, ModelNames.calendarEvent)
+      const cleanedEvent = ObjectManager.cleanObject(eventToEdit, ModelNames.calendarEvent)
       const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
       const eventCount = allEvents.filter((x) => x.title === eventTitle).length
+      const dbPath = CalendarMapper.currentUserEventPath(currentUser, event)
 
       // Cloned Events
       if (eventCount > 1) {
         // Get record key
-        const key = await DB.getSnapshotKey(DB.tables.calendarEvents, event, 'id')
+        const key = await DB.getSnapshotKey(dbPath, event, 'id')
 
         // Update DB
         // await set(child(dbRef, `${DB.tables.calendarEvents}/${key}`), cleanedObject).finally(async () => {
@@ -305,9 +316,19 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
       // Update Single Event
       else {
-        const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}/${Manager.isValid(event.shareWith) ? 'sharedEvents' : 'events'}`
+        console.log(dbPath)
+        // if (!Manager.isValid(eventShareWith)) {
+        //   await CalendarManager.addCalendarEvent(currentUser, cleanedEvent)
+        //
+        //   // Remove from sharedEvents table
+        //   // await DB.delete(dbPath, event.id)
+        // } else {
+        //   console.log('else')
+        //   const key = await DB.getSnapshotKey(dbPath, event, 'id')
+        //   await DB.updateEntireRecord(`${dbPath}/${key}`, cleanedEvent)
+        // }
         const key = await DB.getSnapshotKey(dbPath, event, 'id')
-        await DB.updateEntireRecord(`${dbPath}/${key}`, cleanedObject)
+        await DB.updateEntireRecord(`${dbPath}/${key}`, cleanedEvent)
         await afterUpdateCallback()
 
         if (eventIsDateRange) {
@@ -359,6 +380,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
   const handleShareWithSelection = async (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
+    console.log(shareWithNumbers)
     setEventShareWith(shareWithNumbers)
   }
 
@@ -384,7 +406,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     )
   }
 
-  const setDefaultValues = () => {
+  const setDefaultValues = async () => {
     setEventTitle(event?.title)
     setEventFromDate(event?.startDate)
     setEventEndDate(event?.endDate)
@@ -393,13 +415,22 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setEventStartTime(event?.startTime)
     setEventEndTime(event?.endTime)
     setEventNotes(event?.notes)
-    setEventShareWith(event?.shareWith)
+    setEventShareWith(event?.shareWith ?? [])
     setDefaultEndTime(DateManager.isValidDate(event?.endTime) ? moment(event?.endTime, 'hh:mma') : '')
     setDefaultStartTime(DateManager.isValidDate(event?.startTime) ? moment(event?.startTime, 'hh:mma') : '')
     setView('details')
     setIsDateRange(event?.isDateRange)
     setIncludeChildren(Manager.isValid(event?.children))
     setShowReminders(Manager.isValid(event?.reminderTimes))
+
+    if (Manager.isValid(event?.shareWith)) {
+      let names = []
+      for (let userPhone of event?.shareWith) {
+        const coparent = await DB_UserScoped.getCoparentByPhone(userPhone, currentUser)
+        names.push(formatNameFirstNameOnly(coparent.name))
+      }
+      setShareWithNames(names)
+    }
 
     // Repeating
     if (Manager.isValid(event?.repeatInterval)) {
@@ -408,6 +439,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   }
 
   const deleteEvent = async () => {
+    const dbPath = CalendarMapper.currentUserEventPath(currentUser, event)
+
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventTitle).length
     if (eventCount === 1) {
@@ -416,7 +449,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       await resetForm()
     } else {
       const isShared = Manager.isValid(event?.shareWith)
-      let clonedEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/${isShared ? 'sharedEvents' : 'events'}`)
+      let clonedEvents = await DB.getTable(`${dbPath}`)
       if (Manager.isValid(clonedEvents)) {
         clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
         await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser, isShared ? 'sharedEvents' : 'events')
@@ -463,7 +496,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
   useEffect(() => {
     if (Manager.isValid(event)) {
-      setDefaultValues()
+      setDefaultValues().then((r) => r)
     }
   }, [event])
 
@@ -548,6 +581,12 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                         .join('|')
                         .replaceAll('|', '<span class="divider">|</span>')}`,
                     }}></p>
+                </div>
+              )}
+              {Manager.isValid(eventShareWith) && (
+                <div className="flex mt-10">
+                  <b>Shared with:</b>
+                  <p>{shareWithNames?.join(', ')}</p>
                 </div>
               )}
               {Manager.isValid(event?.children) && (
@@ -709,7 +748,12 @@ export default function EditCalEvent({ event, showCard, onClose }) {
               </div>
               {/* Share with */}
               {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
-                <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
+                <ShareWithCheckboxes
+                  required={false}
+                  onCheck={handleShareWithSelection}
+                  defaultActiveShareWith={eventShareWith}
+                  containerClass={`share-with-coparents`}
+                />
               )}
               {/* ALL DAY / HAS END DATE */}
               <div className={!DateManager.isValidDate(event?.startTime) ? 'flex all-day-toggle default-checked' : 'flex all-day-toggle'}>

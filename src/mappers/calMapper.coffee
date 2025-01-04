@@ -6,7 +6,7 @@ import DB from "../database/DB"
 
 CalendarMapper =
   currentUserEventPath: (currentUser, event) ->
-    if Manager.isValid(event?.shareWith)
+    if event?.shareWith and event?.shareWith?.length > 0
       return "#{DB.tables.calendarEvents}/#{currentUser.phone}/sharedEvents"
     else
       return "#{DB.tables.calendarEvents}/#{currentUser.phone}/events"
