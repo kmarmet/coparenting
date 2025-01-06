@@ -22,7 +22,6 @@ const DB = {
     chats: 'chats',
     chatRecoveryRequests: 'chatRecoveryRequests',
     chatMessages: 'chatMessages',
-    sharedEventIds: 'sharedEventIds',
     holidayEvents: 'holidayEvents',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
@@ -55,7 +54,6 @@ const DB = {
         const dbRef = ref(getDatabase())
         await get(child(dbRef, path)).then((snapshot) => {
           if (snapshot.exists()) {
-            console.log(propertyToCompare)
             let row = _.findKey(snapshot.val(), [propertyToCompare, objectToCheck[propertyToCompare]])
             // console.log(row)
             resolve(row)
@@ -185,6 +183,23 @@ const DB = {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }
   },
+  deleteById: async (path, id) => {
+    const dbRef = ref(getDatabase())
+    let key = null
+    const tableRecords = await DB.getTable(path)
+
+    for (const record of tableRecords) {
+      if (record?.id === id) {
+        key = await DB.getSnapshotKey(path, record, 'id')
+      }
+    }
+
+    try {
+      remove(child(dbRef, `${path}/${key}`))
+    } catch (error) {
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+    }
+  },
   deleteMemory: async (phoneUid, memory) => {
     const dbRef = ref(getDatabase())
     const key = await DB.getSnapshotKey(`${DB.tables.memories}`, memory, 'id')
@@ -229,10 +244,19 @@ const DB = {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }
   },
-  updateEntireRecord: async (path, updatedRow) => {
+  updateEntireRecord: async (path, updatedRow, id) => {
     const dbRef = getDatabase()
+    let key = null
+    const tableRecords = await DB.getTable(path)
+
+    for (const record of tableRecords) {
+      if (record?.id === id) {
+        key = await DB.getSnapshotKey(path, record, 'id')
+      }
+    }
+
     try {
-      update(ref(dbRef, path), updatedRow)
+      update(ref(dbRef, `${path}/${key}`), updatedRow)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }

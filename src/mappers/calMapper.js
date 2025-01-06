@@ -12,14 +12,6 @@ import Manager from "../managers/manager";
 import DB from "../database/DB";
 
 CalendarMapper = {
-  currentUserEventPath: function(currentUser, event) {
-    var ref;
-    if ((event != null ? event.shareWith : void 0) && (event != null ? (ref = event.shareWith) != null ? ref.length : void 0 : void 0) > 0) {
-      return `${DB.tables.calendarEvents}/${currentUser.phone}/sharedEvents`;
-    } else {
-      return `${DB.tables.calendarEvents}/${currentUser.phone}/events`;
-    }
-  },
   reminderTimes: function(timeframe) {
     if (Manager.contains(timeframe, 'hour')) {
       return ReminderTimes.hour;

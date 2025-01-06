@@ -316,10 +316,10 @@ const VisitationManager = {
     return [...formattedFirstPeriodArray, ...formattedSecondPeriodArray, ...formattedThirdPeriodArray].sort()
   },
   deleteSchedule: async (currentUser, scheduleEvents) => {
-    await CalendarManager.deleteMultipleEvents(currentUser, scheduleEvents, 'sharedEvents')
+    await CalendarManager.deleteMultipleEvents(currentUser, scheduleEvents)
   },
   deleteAllHolidaysForUser: async (currentUser) => {
-    const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}/sharedEvents`
+    const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}`
     const allEvents = await DB.getTable(dbPath)
     for (let event of allEvents) {
       if (event?.isHoliday && event?.ownerPhone === currentUser.phone) {
@@ -328,7 +328,7 @@ const VisitationManager = {
     }
   },
   addVisitationSchedule: async (currentUser, vScheduleEvents) => {
-    await CalendarManager.deleteMultipleEvents(vScheduleEvents, currentUser, 'sharedEvents')
+    await CalendarManager.deleteMultipleEvents(vScheduleEvents, currentUser)
     try {
       await CalendarManager.addMultipleCalEvents(currentUser, vScheduleEvents)
     } catch (error) {

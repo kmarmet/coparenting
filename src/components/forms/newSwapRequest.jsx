@@ -9,25 +9,7 @@ import CheckboxGroup from '@shared/checkboxGroup'
 import NotificationManager from '@managers/notificationManager.js'
 import BottomCard from '../shared/bottomCard'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
-
 import Toggle from 'react-toggle'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
 import { ImEye } from 'react-icons/im'
 import ModelNames from '../../models/modelNames'
 import InputWrapper from '../shared/inputWrapper'
@@ -36,6 +18,7 @@ import DateFormats from '../../constants/dateFormats'
 import ObjectManager from '../../managers/objectManager'
 import AlertManager from '../../managers/alertManager'
 import DB_UserScoped from '@userScoped'
+import StringManager from '../../managers/stringManager'
 
 export default function NewSwapRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -106,17 +89,17 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       newRequest.toHour = requestToHour
       newRequest.ownerPhone = currentUser?.phone
       newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
-      newRequest.recipientPhone = currentUser?.coparents?.filter((x) => contains(x?.name, recipientName))[0]?.phone || ''
+      newRequest.recipientPhone = currentUser?.coparents?.filter((x) => Manager.contains(x?.name, recipientName))[0]?.phone || ''
 
       const cleanObject = ObjectManager.cleanObject(newRequest, ModelNames.swapRequest)
 
       // Send Notification
-      await DB.add(DB.tables.swapRequests, cleanObject).finally(() => {
+      await DB.add(`${DB.tables.swapRequests}/${currentUser.phone}`, cleanObject).finally(() => {
         shareWith.forEach(async (coparentPhone) => {
           const subId = await NotificationManager.getUserSubId(coparentPhone, 'phone')
           NotificationManager.sendNotification(
             `New Swap Request`,
-            `${formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
+            `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
             subId
           )
         })

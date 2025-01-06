@@ -8,7 +8,6 @@ import Manager from '@manager'
 import CheckboxGroup from '@shared/checkboxGroup'
 import NotificationManager from '@managers/notificationManager.js'
 import CalendarMapper from '../../mappers/calMapper'
-import CalMapper from '../../mappers/calMapper'
 import DateFormats from '../../constants/dateFormats'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import CalendarManager from '../../managers/calendarManager.js'
@@ -19,24 +18,6 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import { BiSolidNavigation } from 'react-icons/bi'
 import 'react-toggle/style.css'
 import { Fade } from 'react-awesome-reveal'
-
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
 import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
@@ -48,45 +29,47 @@ import DatasetManager from '../../managers/datasetManager'
 import AlertManager from '../../managers/alertManager'
 import DB_UserScoped from '@userScoped'
 import ActivityCategory from '../../models/activityCategory'
+import StringManager from '../../managers/stringManager'
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
 
   // Event Details
-  const [eventFromDate, setEventFromDate] = useState('')
+  const [eventStartDate, setEventStartDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
-  const [eventTitle, setEventTitle] = useState('')
+  const [eventName, setEventName] = useState('')
   const [eventWebsiteUrl, setEventWebsiteUrl] = useState('')
   const [eventStartTime, setEventStartTime] = useState('')
   const [eventNotes, setEventNotes] = useState('')
   const [eventEndDate, setEventEndDate] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
+  const [eventPhone, setEventPhone] = useState('')
   const [eventChildren, setEventChildren] = useState(event?.children || [])
   const [eventReminderTimes, setEventReminderTimes] = useState([])
   const [eventShareWith, setEventShareWith] = useState(event?.shareWith || [])
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
+  const [eventIsRepeating, setEventIsRepeating] = useState(false)
+  const [eventIsCloned, setEventIsCloned] = useState(false)
+
   // State
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
   const [repeatingDatesToSubmit, setRepeatingDatesToSubmit] = useState([])
   const [isAllDay, setIsAllDay] = useState(false)
-  const [coparentsToRemind, setCoparentsToRemind] = useState([])
   const [includeChildren, setIncludeChildren] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
-  const [allEvents, setAllEvents] = useState([])
   const [isVisitation, setIsVisitation] = useState(false)
-  const [showCoparentsToRemind, setShowCoparentsToRemind] = useState(false)
-  const [defaultStartTime, setDefaultStartTime] = useState(moment())
-  const [defaultEndTime, setDefaultEndTime] = useState(moment())
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [view, setView] = useState('details')
   const [isDateRange, setIsDateRange] = useState(false)
   const [shareWithNames, setShareWithNames] = useState([])
+  const [dataIsLoading, setDataIsLoading] = useState(true)
+
   const resetForm = async () => {
     Manager.resetForm('edit-event-form')
-    setEventFromDate('')
+    setEventStartDate('')
     setEventLocation('')
-    setEventTitle('')
+    setEventName('')
     setEventWebsiteUrl('')
     setEventStartTime('')
     setEventNotes('')
@@ -99,16 +82,13 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setClonedDatesToSubmit([])
     setRepeatingDatesToSubmit([])
     setIsAllDay(false)
-    setCoparentsToRemind([])
     setIncludeChildren(false)
     setShowReminders(false)
-    setAllEvents([])
     setIsVisitation(false)
-    setShowCoparentsToRemind(false)
-    setDefaultEndTime(moment())
+    setEventIsRepeating(false)
+    setEventIsCloned(false)
     setRefreshKey(Manager.getUid())
     onClose(moment(event.startDate))
-    setRefreshKey(Manager.getUid())
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
     setState({ ...state, currentUser: updatedCurrentUser })
   }
@@ -120,10 +100,10 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     // Required
     const updatedEvent = { ...event }
     updatedEvent.id = Manager.getUid()
-    updatedEvent.title = eventTitle
+    updatedEvent.title = eventName
     updatedEvent.reminderTimes = eventReminderTimes
     updatedEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat() || []
-    updatedEvent.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
+    updatedEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
     updatedEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
 
     if (!isAllDay) {
@@ -139,9 +119,13 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     updatedEvent.children = eventChildren
     updatedEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
     updatedEvent.location = eventLocation
+    updatedEvent.phone = eventPhone
+    updatedEvent.isDateRange = eventIsDateRange
+    updatedEvent.isCloned = eventIsCloned
+    updatedEvent.isRepeating = eventIsRepeating
 
     // Add birthday cake
-    if (updatedEvent.title.toLowerCase().indexOf('birthday') > -1) {
+    if (Manager.contains(eventName, 'birthday')) {
       updatedEvent.title += ' 🎂'
     }
     updatedEvent.websiteUrl = eventWebsiteUrl
@@ -149,23 +133,21 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     updatedEvent.sentReminders = []
 
     if (Manager.isValid(updatedEvent)) {
-      if (!Manager.isValid(eventTitle)) {
+      if (!Manager.isValid(eventName)) {
         AlertManager.throwError('Event title is required')
         return false
       }
 
-      if (!Manager.isValid(eventFromDate)) {
+      if (!Manager.isValid(eventStartDate)) {
         AlertManager.throwError('Please select a date for this event')
         return false
       }
 
       const cleanedObject = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
-      const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
-      const eventCount = allEvents.filter((x) => x.title === eventTitle).length
-      const dbPath = CalendarMapper.currentUserEventPath(currentUser, cleanedObject)
+      const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}`
 
-      // Cloned Events
-      if (eventCount > 1) {
+      // Update dates with multiple dates
+      if (event?.isRepeating || event?.isDateRange || event?.isCloned) {
         // Get record key
         const key = await DB.getSnapshotKey(dbPath, event, 'id')
 
@@ -174,11 +156,12 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           await afterUpdateCallback()
         })
 
-        // Add cloned dates
+        // Events with multiple dates
         if (Manager.isValid(clonedDatesToSubmit)) {
           await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
         }
 
+        // Date range
         if (eventIsDateRange) {
           const dates = DateManager.getDateRangeDates(updatedEvent.startDate, eventEndDate)
           await CalendarManager.addMultipleCalEvents(currentUser, dates)
@@ -186,7 +169,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
         // Add repeating dates
         if (Manager.isValid(repeatingDatesToSubmit)) {
-          await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+          await CalendarManager.addMultipleCalEvents(currentUser, repeatingDatesToSubmit)
         }
       }
 
@@ -196,21 +179,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
         await editNonOwnerEvent(dbPath, cleanedEvent)
         await afterUpdateCallback()
-
-        if (eventIsDateRange) {
-          const dates = DateManager.getDateRangeDates(updatedEvent.startDate, eventEndDate)
-          await CalendarManager.addMultipleCalEvents(currentUser, dates)
-        }
-
-        // Add cloned dates
-        if (Manager.isValid(clonedDatesToSubmit)) {
-          await CalendarManager.addMultipleCalEvents(DatasetManager.getUniqueArray(clonedDatesToSubmit, true))
-        }
-
-        // Add repeating dates
-        if (Manager.isValid(repeatingDatesToSubmit)) {
-          await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
-        }
       }
     }
 
@@ -221,75 +189,68 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const editNonOwnerEvent = async (dbPath, newEvent) => {
     if (Manager.isValid(event?.shareWith)) {
       // Add cloned event for currentUser
-      if (Manager.contains(dbPath, 'shared')) {
-        await CalendarManager.addSharedEvent(currentUser, newEvent)
-      } else {
-        await CalendarManager.addCalendarEvent(currentUser, newEvent)
-      }
-
-      // Remove from original owner sharedEvents table
-      await DB.delete(`${DB.tables.calendarEvents}/${event.ownerPhone}/sharedEvents`, event.id)
-
-      // Remove from original event shareWith
-      // event.shareWith = event.shareWith.filter((x) => x !== currentUser.phone)
-      // const key = await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${event.ownerPhone}/sharedEvents`, event, 'id')
-      // await DB.updateEntireRecord(`${DB.tables.calendarEvents}/${event.ownerPhone}/sharedEvents/${key}`, event)
+      await CalendarManager.addCalendarEvent(currentUser, newEvent)
+      const filteredShareWith = event?.shareWith.filter((x) => x !== currentUser?.phone)
+      await CalendarManager.updateEvent(event?.ownerPhone, 'shareWith', filteredShareWith, event?.id)
     }
   }
 
   // SUBMIT
   const submit = async () => {
     // Set new event values
-    const eventToEdit = { ...event }
+    const updatedEvent = { ...event }
 
     // Required
-    eventToEdit.title = eventTitle
-    eventToEdit.reminderTimes = eventReminderTimes
-    eventToEdit.shareWith = eventShareWith
-    eventToEdit.startDate = moment(eventFromDate).format(DateFormats.dateForDb)
-    eventToEdit.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
+    updatedEvent.title = eventName
+    updatedEvent.reminderTimes = eventReminderTimes
+    updatedEvent.shareWith = eventShareWith
+    updatedEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
+    updatedEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
+    updatedEvent.phone = eventPhone
+    updatedEvent.isDateRange = eventIsDateRange
+    updatedEvent.isCloned = eventIsCloned
+    updatedEvent.isRepeating = eventIsRepeating
 
     if (!isAllDay) {
-      eventToEdit.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
-      eventToEdit.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
+      updatedEvent.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
+      updatedEvent.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
     }
 
     // Not Required
-    eventToEdit.ownerPhone = event.ownerPhone === currentUser?.phone ? currentUser.phone : event.ownerPhone
-    eventToEdit.createdBy = currentUser?.name
-    eventToEdit.notes = eventNotes
-    eventToEdit.reminderTimes = eventReminderTimes || []
-    eventToEdit.children = eventChildren
-    eventToEdit.directionsLink = Manager.getDirectionsLink(eventLocation)
-    eventToEdit.location = eventLocation
+    updatedEvent.ownerPhone = event.ownerPhone === currentUser?.phone ? currentUser.phone : event.ownerPhone
+    updatedEvent.createdBy = currentUser?.name
+    updatedEvent.notes = eventNotes
+    updatedEvent.reminderTimes = eventReminderTimes || []
+    updatedEvent.children = eventChildren
+    updatedEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
+    updatedEvent.location = eventLocation
 
     // Add birthday cake
-    if (eventToEdit.title.toLowerCase().indexOf('birthday') > -1) {
-      eventToEdit.title += ' 🎂'
+    if (Manager.contains(updatedEvent, 'birthday')) {
+      updatedEvent.title += ' 🎂'
     }
-    eventToEdit.websiteUrl = eventWebsiteUrl
-    eventToEdit.fromVisitationSchedule = isVisitation
-    eventToEdit.morningSummaryReminderSent = false
-    eventToEdit.eveningSummaryReminderSent = false
-    eventToEdit.sentReminders = []
-    if (Manager.isValid(eventToEdit)) {
-      if (!Manager.isValid(eventTitle)) {
-        AlertManager.throwError('Name of event is required')
+    updatedEvent.websiteUrl = eventWebsiteUrl
+    updatedEvent.fromVisitationSchedule = isVisitation
+    updatedEvent.morningSummaryReminderSent = false
+    updatedEvent.eveningSummaryReminderSent = false
+    updatedEvent.sentReminders = []
+
+    if (Manager.isValid(updatedEvent)) {
+      if (!Manager.isValid(eventName)) {
+        AlertManager.throwError('Event name is required')
         return false
       }
 
-      if (!Manager.isValid(eventFromDate)) {
+      if (!Manager.isValid(eventStartDate)) {
         AlertManager.throwError('Please select a date for this event')
         return false
       }
 
-      const cleanedEvent = ObjectManager.cleanObject(eventToEdit, ModelNames.calendarEvent)
-      const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
-      const eventCount = allEvents.filter((x) => x.title === eventTitle).length
-      const dbPath = CalendarMapper.currentUserEventPath(currentUser, event)
+      const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
+      const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}`
 
-      // Cloned Events
-      if (eventCount > 1) {
+      // Events with multiple days
+      if (event?.isRepeating || event?.isDateRange || event?.isCloned) {
         // Get record key
         const key = await DB.getSnapshotKey(dbPath, event, 'id')
 
@@ -304,7 +265,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         }
 
         if (eventIsDateRange) {
-          const dates = DateManager.getDateRangeDates(eventToEdit.startDate, eventEndDate)
+          const dates = DateManager.getDateRangeDates(updatedEvent.startDate, eventEndDate)
           // await CalendarManager.addMultipleCalEvents(currentUser, dates)
         }
 
@@ -316,35 +277,9 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
       // Update Single Event
       else {
-        console.log(dbPath)
-        // if (!Manager.isValid(eventShareWith)) {
-        //   await CalendarManager.addCalendarEvent(currentUser, cleanedEvent)
-        //
-        //   // Remove from sharedEvents table
-        //   // await DB.delete(dbPath, event.id)
-        // } else {
-        //   console.log('else')
-        //   const key = await DB.getSnapshotKey(dbPath, event, 'id')
-        //   await DB.updateEntireRecord(`${dbPath}/${key}`, cleanedEvent)
-        // }
-        const key = await DB.getSnapshotKey(dbPath, event, 'id')
-        await DB.updateEntireRecord(`${dbPath}/${key}`, cleanedEvent)
+        const key = await DB.getSnapshotKey(dbPath, updatedEvent, 'id')
+        await DB.updateEntireRecord(`${dbPath}/${key}`, cleanedEvent, updatedEvent.id)
         await afterUpdateCallback()
-
-        if (eventIsDateRange) {
-          const dates = DateManager.getDateRangeDates(eventToEdit.startDate, eventEndDate)
-          // await CalendarManager.addMultipleCalEvents(currentUser, dates)
-        }
-
-        // Add cloned dates
-        if (Manager.isValid(clonedDatesToSubmit)) {
-          // await CalendarManager.addMultipleCalEvents(DatasetManager.getUniqueArray(clonedDatesToSubmit, true))
-        }
-
-        // Add repeating dates
-        if (Manager.isValid(repeatingDatesToSubmit)) {
-          // await CalendarManager.addMultipleCalEvents(clonedDatesToSubmit)
-        }
       }
     }
 
@@ -354,7 +289,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
   const afterUpdateCallback = async () => {
     // Share with Notifications
-    NotificationManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventTitle} has been updated`, ActivityCategory.calendar)
+    NotificationManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventName} has been updated`, ActivityCategory.calendar)
 
     if (navigator.setAppBadge) {
       await navigator.setAppBadge(1)
@@ -380,7 +315,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
   const handleShareWithSelection = async (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
-    console.log(shareWithNumbers)
     setEventShareWith(shareWithNumbers)
   }
 
@@ -407,8 +341,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   }
 
   const setDefaultValues = async () => {
-    setEventTitle(event?.title)
-    setEventFromDate(event?.startDate)
+    setEventName(event?.title)
+    setEventStartDate(event?.startDate)
     setEventEndDate(event?.endDate)
     setEventLocation(event?.location)
     setEventReminderTimes(event?.reminderTimes || [])
@@ -416,8 +350,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setEventEndTime(event?.endTime)
     setEventNotes(event?.notes)
     setEventShareWith(event?.shareWith ?? [])
-    setDefaultEndTime(DateManager.isValidDate(event?.endTime) ? moment(event?.endTime, 'hh:mma') : '')
-    setDefaultStartTime(DateManager.isValidDate(event?.startTime) ? moment(event?.startTime, 'hh:mma') : '')
     setView('details')
     setIsDateRange(event?.isDateRange)
     setIncludeChildren(Manager.isValid(event?.children))
@@ -427,7 +359,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       let names = []
       for (let userPhone of event?.shareWith) {
         const coparent = await DB_UserScoped.getCoparentByPhone(userPhone, currentUser)
-        names.push(formatNameFirstNameOnly(coparent.name))
+        names.push(StringManager.formatNameFirstNameOnly(coparent?.name))
       }
       setShareWithNames(names)
     }
@@ -439,41 +371,31 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   }
 
   const deleteEvent = async () => {
-    const dbPath = CalendarMapper.currentUserEventPath(currentUser, event)
+    const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}`
 
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
-    const eventCount = allEvents.filter((x) => x.title === eventTitle).length
+    const eventCount = allEvents.filter((x) => x.title === eventName).length
     if (eventCount === 1) {
-      const isShared = Manager.isValid(event?.shareWith)
-      await CalendarManager.deleteEvent(currentUser, isShared ? 'sharedEvents' : 'events', event?.id)
+      await CalendarManager.deleteEvent(currentUser, event.id)
       await resetForm()
     } else {
-      const isShared = Manager.isValid(event?.shareWith)
       let clonedEvents = await DB.getTable(`${dbPath}`)
       if (Manager.isValid(clonedEvents)) {
         clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
-        await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser, isShared ? 'sharedEvents' : 'events')
+        await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser)
         await resetForm()
       }
     }
   }
 
-  const getEventCount = () => allEvents.filter((x) => x.title === eventTitle).length
-
   const setLocalConfirmMessage = () => {
     let message = 'Are you sure you want to delete this event?'
-    const eventCount = getEventCount()
 
-    if (eventCount > 1) {
+    if (event?.isRepeating) {
       message = 'Are you sure you would like to delete ALL events with these details?'
     }
 
     return message
-  }
-
-  const setAllCalEvents = async () => {
-    const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
-    setAllEvents(allEvents)
   }
 
   const addThemeToDatePickers = () => {
@@ -494,15 +416,18 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     }
   }, [isAllDay])
 
+  // Loading until date/name are loaded
+  useEffect(() => {
+    if (Manager.isValid(eventName) && Manager.isValid(eventStartDate)) {
+      setDataIsLoading(false)
+    }
+  }, [eventName, eventStartDate])
+
   useEffect(() => {
     if (Manager.isValid(event)) {
       setDefaultValues().then((r) => r)
     }
   }, [event])
-
-  useEffect(() => {
-    setAllCalEvents().then((r) => r)
-  }, [])
 
   return (
     <BottomCard
@@ -515,7 +440,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       }}
       hasDelete={view === 'edit' && currentUser?.phone === event?.ownerPhone}
       onSubmit={currentUser?.phone === event?.ownerPhone ? submit : nonOwnerSubmit}
-      submitText={'Done Editing'}
+      submitText={'Looks Good'}
       hasSubmitButton={view === 'edit'}
       onClose={async () => {
         onClose(moment(event.startDate))
@@ -535,354 +460,364 @@ export default function EditCalEvent({ event, showCard, onClose }) {
           </p>
         </div>
 
-        {view === 'details' && (
-          <Fade direction={'up'} duration={600} triggerOnce={true}>
-            <div id="details">
-              <div className="flex">
-                <b>Title:</b>
-                <p>{uppercaseFirstLetterOfAllWords(event?.title)}</p>
-              </div>
-              {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
-                <div className="flex">
-                  <b>Date:</b>
-                  <p>{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</p>
+        {!dataIsLoading && (
+          <>
+            {view === 'details' && (
+              <Fade direction={'up'} duration={600} triggerOnce={true}>
+                <div id="details">
+                  <div className="flex">
+                    <b>Event Name:</b>
+                    <p>{StringManager.uppercaseFirstLetterOfAllWords(event?.title)}</p>
+                  </div>
+                  {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
+                    <div className="flex">
+                      <b>Date:</b>
+                      <p>{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</p>
+                    </div>
+                  )}
+                  {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
+                    <div className="flex wrap no-gap">
+                      <b className="w-100">Dates</b>
+                      <p>
+                        {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}&nbsp;to&nbsp;
+                        {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
+                      </p>
+                    </div>
+                  )}
+                  {DateManager.isValidDate(event?.startTime) && DateManager.isValidDate(event?.endTime) && (
+                    <div className="flex">
+                      <b>Time:</b>
+                      <p>
+                        {event?.startTime} to {event?.endTime}
+                      </p>
+                    </div>
+                  )}
+                  {DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime) && (
+                    <div className="flex">
+                      <b>Time:</b>
+                      <p>{event?.startTime}</p>
+                    </div>
+                  )}
+                  {Manager.isValid(event?.reminderTimes) && (
+                    <div className="flex wrap no-gap">
+                      <b className="w-100">Reminders</b>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: `${event?.reminderTimes
+                            .map((x) => CalendarMapper.readableReminderBeforeTimeframes(x))
+                            .join('|')
+                            .replaceAll('|', '<span class="divider">|</span>')}`,
+                        }}></p>
+                    </div>
+                  )}
+                  {Manager.isValid(eventShareWith) && (
+                    <div className="flex mt-10">
+                      <b>Shared with:</b>
+                      <p>{shareWithNames?.join(', ')}</p>
+                    </div>
+                  )}
+                  {Manager.isValid(event?.children) && (
+                    <div className="flex wrap no-gap">
+                      <b className="w-100">Children</b>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                        }}></p>
+                    </div>
+                  )}
+                  {Manager.isValid(event?.websiteUrl) && (
+                    <div className="flex">
+                      <b>Website:</b>
+                      <a href={event?.websiteUrl} target="_blank">
+                        {event?.websiteUrl}
+                      </a>
+                    </div>
+                  )}
+                  {Manager.isValid(event?.phone) && (
+                    <div className="flex">
+                      <b>Phone:</b>
+                      <a href={`tel:${event?.phone}`} target="_blank">
+                        {StringManager.getReadablePhoneNumber(event?.phone)}
+                      </a>
+                    </div>
+                  )}
+                  {Manager.isValid(event?.notes) && (
+                    <div className="flex wrap no-gap">
+                      <b>Notes</b>
+                      <p>{event?.notes}</p>
+                    </div>
+                  )}
+                  {Manager.isValid(event?.location) && (
+                    <div className="flex wrap location">
+                      <b className="w-100">Location</b>
+                      <p className="mb-10">{event?.location}</p>
+                    </div>
+                  )}
+                  {Manager.isValid(event?.location) && (
+                    <a className="nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
+                      <BiSolidNavigation /> Nav
+                    </a>
+                  )}
+                  {Manager.isValid(event?.repeatInterval) && (
+                    <div className="flex">
+                      <b>Repeat Interval:</b>
+                      <p>{StringManager.uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</p>
+                    </div>
+                  )}
                 </div>
-              )}
-              {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
-                <>
-                  <b>Dates</b>
-                  <p>
-                    {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}&nbsp;to&nbsp;
-                    {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
-                  </p>
-                </>
-              )}
-              {DateManager.isValidDate(event?.startTime) && DateManager.isValidDate(event?.endTime) && (
-                <div className="flex">
-                  <b>Time:</b>
-                  <p>
-                    {event?.startTime} to {event?.endTime}
-                  </p>
-                </div>
-              )}
-              {DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime) && (
-                <div className="flex">
-                  <b>Time:</b>
-                  <p>{event?.startTime}</p>
-                </div>
-              )}
-              {Manager.isValid(event?.reminderTimes) && (
-                <div id="reminders">
-                  <b>Reminders</b>
-                  <p
-                    dangerouslySetInnerHTML={{
-                      __html: `${event?.reminderTimes
-                        .map((x) => CalMapper.readableReminderBeforeTimeframes(x))
-                        .join('|')
-                        .replaceAll('|', '<span class="divider">|</span>')}`,
-                    }}></p>
-                </div>
-              )}
-              {Manager.isValid(eventShareWith) && (
-                <div className="flex mt-10">
-                  <b>Shared with:</b>
-                  <p>{shareWithNames?.join(', ')}</p>
-                </div>
-              )}
-              {Manager.isValid(event?.children) && (
-                <div id="children">
-                  <b>Children</b>
-                  <p
-                    dangerouslySetInnerHTML={{
-                      __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                    }}></p>
-                </div>
-              )}
-              {Manager.isValid(event?.websiteUrl) && (
-                <div className="flex">
-                  <b>Website:</b>
-                  <a href={event?.websiteUrl} target="_blank">
-                    {event?.websiteUrl}
-                  </a>
-                </div>
-              )}
-              {Manager.isValid(event?.phone) && (
-                <div className="flex">
-                  <b>Phone:</b>
-                  <a href={`tel:${event?.phone}`} target="_blank">
-                    {event?.phone}
-                  </a>
-                </div>
-              )}
-              {Manager.isValid(event?.notes) && (
-                <>
-                  <b>Notes</b>
-                  <p>{event?.notes}</p>
-                </>
-              )}
-              {Manager.isValid(event?.location) && (
-                <>
-                  <b>Location</b>
-                  <p className="mb-10">{event?.location}</p>
-                </>
-              )}
-              {Manager.isValid(event?.location) && (
-                <a className="nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
-                  <BiSolidNavigation /> Nav
-                </a>
-              )}
-              {Manager.isValid(event?.repeatInterval) && (
-                <div className="flex">
-                  <b>Repeat Interval:</b>
-                  <p>{uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</p>
-                </div>
-              )}
-            </div>
-          </Fade>
-        )}
+              </Fade>
+            )}
 
-        {view === 'edit' && (
-          <Fade direction={'up'} duration={600} triggerOnce={true}>
-            <div className="content">
-              {/* SINGLE DAY / MULTIPLE DAYS */}
-              {/*<div id="duration-options" className="action-pills calendar">*/}
-              {/*  <div className={`duration-option  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>*/}
-              {/*    <p>Single Day</p>*/}
-              {/*  </div>*/}
-              {/*  <div*/}
-              {/*    className={`duration-option  ${eventLength === 'multiple' ? 'active' : ''}`}*/}
-              {/*    onClick={() => setEventLength(EventLengths.multiple)}>*/}
-              {/*    <p>Multiple Days</p>*/}
-              {/*  </div>*/}
-              {/*</div>*/}
+            {view === 'edit' && (
+              <Fade direction={'up'} duration={600} triggerOnce={true}>
+                <div className="content">
+                  {/* SINGLE DAY / MULTIPLE DAYS */}
+                  {/*<div id="duration-options" className="action-pills calendar">*/}
+                  {/*  <div className={`duration-option  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>*/}
+                  {/*    <p>Single Day</p>*/}
+                  {/*  </div>*/}
+                  {/*  <div*/}
+                  {/*    className={`duration-option  ${eventLength === 'multiple' ? 'active' : ''}`}*/}
+                  {/*    onClick={() => setEventLength(EventLengths.multiple)}>*/}
+                  {/*    <p>Multiple Days</p>*/}
+                  {/*  </div>*/}
+                  {/*</div>*/}
 
-              {/* TITLE */}
-              <div className="title-suggestion-wrapper">
-                <InputWrapper
-                  inputType={'input'}
-                  labelText={'Title'}
-                  defaultValue={eventTitle}
-                  required={true}
-                  onChange={async (e) => {
-                    const inputValue = e.target.value
-                    if (inputValue.length > 1) {
-                      setEventTitle(inputValue)
-                    }
-                  }}
-                />
-              </div>
-              {/* DATE */}
-              <div className="flex" id={'date-input-container'}>
-                {!isDateRange && (
-                  <>
-                    <div className="w-100">
-                      <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
-                        <MobileDatePicker
+                  {/* EVENT NAME */}
+                  <div className="title-suggestion-wrapper">
+                    <InputWrapper
+                      inputType={'input'}
+                      labelText={'Event Name'}
+                      defaultValue={eventName}
+                      required={true}
+                      onChange={async (e) => {
+                        const inputValue = e.target.value
+                        if (inputValue.length > 1) {
+                          setEventName(inputValue)
+                        }
+                      }}
+                    />
+                  </div>
+                  {/* DATE */}
+                  <div className="flex" id={'date-input-container'}>
+                    {!isDateRange && (
+                      <>
+                        <div className="w-100">
+                          <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
+                            <MobileDatePicker
+                              onOpen={addThemeToDatePickers}
+                              value={moment(event?.startDate)}
+                              className={`${theme} m-0 w-100 event-from-date mui-input`}
+                              onAccept={(e) => {
+                                setEventStartDate(e)
+                              }}
+                            />
+                          </InputWrapper>
+                        </div>
+                      </>
+                    )}
+
+                    {/* DATE RANGE */}
+                    {isDateRange && (
+                      <div className="w-100">
+                        <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
+                          <MobileDateRangePicker
+                            className={'w-100'}
+                            onOpen={() => {
+                              Manager.hideKeyboard('date-range-input')
+                              addThemeToDatePickers()
+                            }}
+                            defaultValue={[moment(event?.startDate), moment(event?.endDate)]}
+                            onAccept={(dateArray) => {
+                              if (Manager.isValid(dateArray)) {
+                                setEventStartDate(moment(dateArray[0]).format('MM/DD/YYYY'))
+                                setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
+                                setEventIsDateRange(true)
+                              }
+                            }}
+                            slots={{ field: SingleInputDateRangeField }}
+                            name="allowedRange"
+                          />
+                        </InputWrapper>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* EVENT START/END TIME */}
+                  <div className="flex gap">
+                    {/* START TIME */}
+                    <div>
+                      <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
+                        <MobileTimePicker
                           onOpen={addThemeToDatePickers}
-                          value={moment(event?.startDate)}
-                          className={`${theme} m-0 w-100 event-from-date mui-input`}
-                          onAccept={(e) => {
-                            setEventFromDate(e)
-                          }}
+                          format={'h:mma'}
+                          placeholder={''}
+                          value={moment(eventStartTime, 'hh:mma')}
+                          minutesStep={5}
+                          className={`${theme} m-0`}
+                          onAccept={(e) => setEventStartTime(e)}
                         />
                       </InputWrapper>
                     </div>
-                  </>
-                )}
 
-                {/* DATE RANGE */}
-                {isDateRange && (
-                  <div className="w-100">
-                    <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
-                      <MobileDateRangePicker
-                        className={'w-100'}
-                        onOpen={() => {
-                          Manager.hideKeyboard('date-range-input')
-                          addThemeToDatePickers()
-                        }}
-                        defaultValue={[moment(event?.startDate), moment(event?.endDate)]}
-                        onAccept={(dateArray) => {
-                          if (Manager.isValid(dateArray)) {
-                            setEventFromDate(moment(dateArray[0]).format('MM/DD/YYYY'))
-                            setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
-                            setEventIsDateRange(true)
-                          }
-                        }}
-                        slots={{ field: SingleInputDateRangeField }}
-                        name="allowedRange"
-                      />
-                    </InputWrapper>
-                  </div>
-                )}
-              </div>
-
-              {/* EVENT START/END TIME */}
-              <div className="flex gap">
-                {/* START TIME */}
-                <div>
-                  <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
-                    <MobileTimePicker
-                      onOpen={addThemeToDatePickers}
-                      format={'h:mma'}
-                      value={moment(eventStartTime, 'hh:mma')}
-                      minutesStep={5}
-                      className={`${theme} m-0`}
-                      onAccept={(e) => setEventStartTime(e)}
-                    />
-                  </InputWrapper>
-                </div>
-
-                {/* END TIME */}
-                <div>
-                  <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
-                    <MobileTimePicker
-                      onOpen={addThemeToDatePickers}
-                      format={'h:mma'}
-                      value={moment(defaultEndTime, 'hh:mma')}
-                      minutesStep={5}
-                      className={`${theme} m-0`}
-                      onAccept={(e) => setEventEndTime(e)}
-                    />
-                  </InputWrapper>
-                </div>
-              </div>
-              {/* Share with */}
-              {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
-                <ShareWithCheckboxes
-                  required={false}
-                  onCheck={handleShareWithSelection}
-                  defaultActiveShareWith={eventShareWith}
-                  containerClass={`share-with-coparents`}
-                />
-              )}
-              {/* ALL DAY / HAS END DATE */}
-              <div className={!DateManager.isValidDate(event?.startTime) ? 'flex all-day-toggle default-checked' : 'flex all-day-toggle'}>
-                <p>All Day</p>
-                <Toggle
-                  icons={{
-                    unchecked: null,
-                  }}
-                  className={'ml-auto'}
-                  defaultChecked={!DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime)}
-                  onChange={(e) => setIsAllDay(!!e.target.checked)}
-                />
-              </div>
-
-              {/* REMINDER */}
-              {!isAllDay && (
-                <>
-                  <Accordion expanded={showReminders} id={'checkboxes'}>
-                    <AccordionSummary>
-                      <div className="flex reminder-times-toggle">
-                        <p>Remind Me</p>
-                        <Toggle
-                          icons={{
-                            checked: <span className="material-icons-round">notifications</span>,
-                            unchecked: null,
-                          }}
-                          defaultChecked={Manager.isValid(event?.reminderTimes)}
-                          className={'ml-auto reminder-toggle'}
-                          onChange={(e) => setShowReminders(!showReminders)}
+                    {/* END TIME */}
+                    <div>
+                      <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
+                        <MobileTimePicker
+                          onOpen={addThemeToDatePickers}
+                          format={'h:mma'}
+                          value={moment(eventEndTime, 'hh:mma')}
+                          minutesStep={5}
+                          className={`${theme} m-0`}
+                          onAccept={(e) => setEventEndTime(e)}
                         />
-                      </div>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <CheckboxGroup
-                        elClass={`${theme} `}
-                        containerClass={'reminder-times'}
-                        defaultLabels={event?.reminderTimes?.map((x) => CalMapper.readableReminderBeforeTimeframes(x))}
-                        skipNameFormatting={true}
-                        dataPhone={
-                          currentUser?.accountType === 'parent'
-                            ? currentUser?.coparents?.map((x) => x.phone)
-                            : currentUser?.parents?.map((x) => x.phone)
-                        }
-                        checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
-                        onCheck={handleReminderSelection}
-                      />
-                    </AccordionDetails>
-                  </Accordion>
-                </>
-              )}
+                      </InputWrapper>
+                    </div>
+                  </div>
+                  {/* Share with */}
+                  {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
+                    <ShareWithCheckboxes
+                      required={false}
+                      onCheck={handleShareWithSelection}
+                      defaultActiveShareWith={eventShareWith}
+                      containerClass={`share-with-coparents`}
+                    />
+                  )}
+                  {/* ALL DAY / HAS END DATE */}
+                  <div className={!DateManager.isValidDate(event?.startTime) ? 'flex all-day-toggle default-checked' : 'flex all-day-toggle'}>
+                    <p>All Day</p>
+                    <Toggle
+                      icons={{
+                        unchecked: null,
+                      }}
+                      className={'ml-auto'}
+                      defaultChecked={!DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime)}
+                      onChange={(e) => setIsAllDay(!!e.target.checked)}
+                    />
+                  </div>
 
-              {/* IS VISITATION? */}
-              <div className="flex visitation-toggle">
-                <p>Visitation Event</p>
-                <Toggle
-                  icons={{
-                    unchecked: null,
-                  }}
-                  defaultChecked={event?.fromVisitationSchedule}
-                  className={'ml-auto'}
-                  onChange={(e) => setIsVisitation(!!e.target.checked)}
+                  {/* REMINDER */}
+                  {!isAllDay && (
+                    <>
+                      <Accordion expanded={showReminders} id={'checkboxes'}>
+                        <AccordionSummary>
+                          <div className="flex reminder-times-toggle">
+                            <p>Remind Me</p>
+                            <Toggle
+                              icons={{
+                                checked: <span className="material-icons-round">notifications</span>,
+                                unchecked: null,
+                              }}
+                              defaultChecked={Manager.isValid(event?.reminderTimes)}
+                              className={'ml-auto reminder-toggle'}
+                              onChange={(e) => setShowReminders(!showReminders)}
+                            />
+                          </div>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <CheckboxGroup
+                            elClass={`${theme} `}
+                            containerClass={'reminder-times'}
+                            defaultLabels={event?.reminderTimes?.map((x) => CalendarMapper.readableReminderBeforeTimeframes(x))}
+                            skipNameFormatting={true}
+                            dataPhone={
+                              currentUser?.accountType === 'parent'
+                                ? currentUser?.coparents?.map((x) => x.phone)
+                                : currentUser?.parents?.map((x) => x.phone)
+                            }
+                            checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
+                            onCheck={handleReminderSelection}
+                          />
+                        </AccordionDetails>
+                      </Accordion>
+                    </>
+                  )}
+
+                  {/* IS VISITATION? */}
+                  <div className="flex visitation-toggle">
+                    <p>Visitation Event</p>
+                    <Toggle
+                      icons={{
+                        unchecked: null,
+                      }}
+                      defaultChecked={event?.fromVisitationSchedule}
+                      className={'ml-auto'}
+                      onChange={(e) => setIsVisitation(!!e.target.checked)}
+                    />
+                  </div>
+
+                  {/* INCLUDING WHICH CHILDREN */}
+                  {currentUser?.accountType === 'parent' && (
+                    <Accordion expanded={includeChildren} id={'checkboxes'}>
+                      <AccordionSummary>
+                        <div className="flex children-toggle">
+                          <p>Include Children</p>
+                          <Toggle
+                            icons={{
+                              checked: <span className="material-icons-round">face</span>,
+                              unchecked: null,
+                            }}
+                            defaultChecked={Manager.isValid(event?.children)}
+                            className={'ml-auto'}
+                            onChange={(e) => setIncludeChildren(!includeChildren)}
+                          />
+                        </div>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <div id="include-children-checkbox-container">
+                          <CheckboxGroup
+                            defaultLabels={event?.children}
+                            containerClass={'include-children-checkbox-container'}
+                            checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
+                            onCheck={handleChildSelection}
+                          />
+                        </div>
+                      </AccordionDetails>
+                    </Accordion>
+                  )}
+                </div>
+
+                {/* URL/WEBSITE */}
+                <InputWrapper
+                  defaultValue={event?.websiteUrl}
+                  labelText={'URL/Website'}
+                  required={false}
+                  inputType={'input'}
+                  onChange={(e) => setEventWebsiteUrl(e.target.value)}
                 />
-              </div>
 
-              {/* INCLUDING WHICH CHILDREN */}
-              {currentUser?.accountType === 'parent' && (
-                <Accordion expanded={includeChildren} id={'checkboxes'}>
-                  <AccordionSummary>
-                    <div className="flex children-toggle">
-                      <p>Include Children</p>
-                      <Toggle
-                        icons={{
-                          checked: <span className="material-icons-round">face</span>,
-                          unchecked: null,
-                        }}
-                        defaultChecked={Manager.isValid(event?.children)}
-                        className={'ml-auto'}
-                        onChange={(e) => setIncludeChildren(!includeChildren)}
-                      />
-                    </div>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <div id="include-children-checkbox-container">
-                      <CheckboxGroup
-                        defaultLabels={event?.children}
-                        containerClass={'include-children-checkbox-container'}
-                        checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
-                        onCheck={handleChildSelection}
-                      />
-                    </div>
-                  </AccordionDetails>
-                </Accordion>
-              )}
-            </div>
+                {/* LOCATION/ADDRESS */}
+                <InputWrapper defaultValue={event?.location} labelText={'Location'} required={false} inputType={'location'}>
+                  <Autocomplete
+                    defaultValue={Manager.isValid(event?.location, true) ? event?.location : ''}
+                    apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+                    options={{
+                      types: ['geocode', 'establishment'],
+                      componentRestrictions: { country: 'usa' },
+                    }}
+                    placeholder={''}
+                    onPlaceSelected={(place) => {
+                      setEventLocation(place.formatted_address)
+                    }}
+                  />
+                </InputWrapper>
 
-            {/* URL/WEBSITE */}
-            <InputWrapper
-              defaultValue={event?.websiteUrl}
-              labelText={'URL/Website'}
-              required={false}
-              inputType={'input'}
-              onChange={(e) => setEventWebsiteUrl(e.target.value)}
-            />
+                {/* PHONE */}
+                <InputWrapper inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
 
-            {/* LOCATION/ADDRESS */}
-            <InputWrapper defaultValue={event?.location} labelText={'Location'} required={false} inputType={'location'}>
-              <Autocomplete
-                defaultValue={Manager.isValid(event?.location, true) ? event?.location : ''}
-                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                options={{
-                  types: ['geocode', 'establishment'],
-                  componentRestrictions: { country: 'usa' },
-                }}
-                onPlaceSelected={(place) => {
-                  setEventLocation(place.formatted_address)
-                }}
-              />
-            </InputWrapper>
-
-            {/* NOTES */}
-            <InputWrapper
-              defaultValue={event?.notes}
-              labelText={'Notes'}
-              required={false}
-              inputType={'textarea'}
-              onChange={(e) => setEventNotes(e.target.value)}
-            />
-          </Fade>
+                {/* NOTES */}
+                <InputWrapper
+                  defaultValue={event?.notes}
+                  labelText={'Notes'}
+                  required={false}
+                  inputType={'textarea'}
+                  onChange={(e) => setEventNotes(e.target.value)}
+                />
+              </Fade>
+            )}
+          </>
         )}
+        {dataIsLoading && <img id="bottom-card-loading-gif" src={require('../../img/loading.gif')} />}
       </div>
     </BottomCard>
   )

@@ -56,6 +56,7 @@ import DB_UserScoped from '@userScoped'
 import DB from '@db'
 import Manager from '@manager'
 import DomManager from './managers/domManager'
+import AppManager from './managers/appManager'
 
 export default function App() {
   // Initialize Firebase
@@ -136,7 +137,7 @@ export default function App() {
         const user = auth.currentUser
         const _currentUser = await DB_UserScoped.getCurrentUser(user.email, 'email')
         const oneSignalInitialized = localStorage.getItem('oneSignalInitialized')
-
+        AppManager.clearAppBadge().then((r) => r)
         // Delete scoped permission codes if they exist and OneSignal not already initted
         // if (!Manager.isValid(oneSignalInitialized) || oneSignalInitialized === 'false') {
         //   localStorage.setItem('oneSignalInitialized', 'true')

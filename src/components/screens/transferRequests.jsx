@@ -17,23 +17,6 @@ import { BiSolidNavigation } from 'react-icons/bi'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import Autocomplete from 'react-google-autocomplete'
-
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from 'globalFunctions'
 import AlertManager from '../../managers/alertManager'
 import BottomCard from '../shared/bottomCard'
 import DomManager from '../../managers/domManager'
@@ -43,6 +26,7 @@ import DateFormats from '../../constants/dateFormats'
 import InputWrapper from '../shared/inputWrapper'
 import ObjectManager from '../../managers/objectManager'
 import ModelNames from '../../models/modelNames'
+import StringManager from '../../managers/stringManager'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -90,13 +74,11 @@ export default function TransferRequests() {
       updatedRequest.responseDueDate = moment(responseDueDate).format(DateFormats.dateForDb)
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.transferChangeRequest)
-    await DB.delete(DB.tables.transferChangeRequests, activeRequest.id)
-    await DB.add(`${DB.tables.transferChangeRequests}`, cleanedRequest).then(async () => {
-      await getSecuredRequests()
-      setActiveRequest(updatedRequest)
-      setShowDetails(false)
-      await resetForm()
-    })
+    await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, cleanedRequest, activeRequest.id)
+    await getSecuredRequests()
+    setActiveRequest(updatedRequest)
+    setShowDetails(false)
+    await resetForm()
   }
 
   const getSecuredRequests = async () => {
@@ -107,25 +89,19 @@ export default function TransferRequests() {
   const deleteRequest = async (action = 'deleted') => {
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
-        await DB.delete(DB.tables.transferChangeRequests, activeRequest?.id)
+        await DB.deleteById(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, activeRequest?.id)
         AlertManager.successAlert(`Transfer Change Request has been deleted.`)
         setShowDetails(false)
       })
-    } else {
-      await DB.delete(DB.tables.transferChangeRequests, activeRequest?.id)
-      AlertManager.successAlert(`Transfer Change Request has been rejected and a notification has been sent to the request recipient.`)
-      setShowDetails(false)
     }
   }
 
   const selectDecision = async (decision) => {
-    const ownerSubId = await NotificationManager.getUserSubId(activeRequest.ownerPhone, 'phone')
     const recipient = await DB_UserScoped.getCoparentByPhone(activeRequest.recipientPhone, currentUser)
     const recipientName = recipient.name
     // Rejected
     if (decision === Decisions.rejected) {
-      await DB.updateRecord(DB.tables.transferChangeRequests, activeRequest, 'status', 'rejected', 'id')
-      await DB.updateRecord(DB.tables.transferChangeRequests, activeRequest, 'reason', rejectionReason, 'id')
+      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, activeRequest, activeRequest.id)
       const notifMessage = NotificationManager.templates.transferRequestRejection(activeRequest, recipientName)
       NotificationManager.sendNotification(
         'Transfer Request Decision',
@@ -139,9 +115,8 @@ export default function TransferRequests() {
 
     // Approved
     if (decision === Decisions.approved) {
-      await DB.updateRecord(DB.tables.transferChangeRequests, activeRequest, 'status', 'approved', 'id')
+      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, activeRequest, activeRequest.id)
       const notifMessage = NotificationManager.templates.transferRequestApproval(activeRequest, recipientName)
-      NotificationManager.sendNotification('Transfer Change Request Decision', notifMessage, ownerSubId)
       setShowDetails(false)
       NotificationManager.sendNotification(
         'Transfer Request Decision',
@@ -255,7 +230,7 @@ export default function TransferRequests() {
               <div className="flex flex-start" id="row">
                 <p id="title">
                   <b>Status: </b>
-                  {uppercaseFirstLetterOfAllWords(activeRequest?.status)}
+                  {StringManager.uppercaseFirstLetterOfAllWords(activeRequest?.status)}
                 </p>
               </div>
 
@@ -405,14 +380,18 @@ export default function TransferRequests() {
                         <p id="title" className="flex date row-title">
                           {DateManager.formatDate(request.date)}
                           <span className={`${request.status} status`} id="request-status">
-                            {uppercaseFirstLetterOfAllWords(request.status)}
+                            {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
                           </span>
                         </p>
-                        {request?.recipientPhone === currentUser.phone && <p id="subtitle">From {formatNameFirstNameOnly(request?.createdBy)}</p>}
+                        {request?.recipientPhone === currentUser.phone && (
+                          <p id="subtitle">From {StringManager.formatNameFirstNameOnly(request?.createdBy)}</p>
+                        )}
                         {request?.recipientPhone !== currentUser.phone && (
                           <p id="subtitle">
                             Request Sent to{' '}
-                            {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === request?.recipientPhone)[0]?.name)}
+                            {StringManager.formatNameFirstNameOnly(
+                              currentUser?.coparents?.filter((x) => x?.phone === request?.recipientPhone)[0]?.name
+                            )}
                           </p>
                         )}
                       </div>

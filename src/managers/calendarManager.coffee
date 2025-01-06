@@ -1,41 +1,17 @@
 import DB from "@db"
 import "../prototypes"
-import { child, getDatabase, ref, remove, set } from 'firebase/database'
+import { child, getDatabase, ref, remove, set, update } from 'firebase/database'
 import Manager from "./manager"
-import {
-  formatFileName,
-  formatNameFirstNameOnly,
-  formatTitleWords,
-  getFirstWord,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uppercaseFirstLetterOfAllWords,
-  wordCount
-} from "../globalFunctions"
 import LogManager from "./logManager"
-import CalendarMapper from "../mappers/calMapper"
+import StringManager from "./stringManager"
 
 export default CalendarManager =
-  formatEventTitle: (title) ->
-    if title and title.length > 0
-      title = uppercaseFirstLetterOfAllWords(title)
-      title = formatTitleWords(title)
-      return title
-
-  getAllEventsForUser: (currentUser) ->
-    all = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}")
-    console.log(all)
-
   addMultipleCalEvents: (currentUser, newEvents) ->
     dbRef = ref(getDatabase())
-    currentEvents = await DB.getTable(CalendarMapper.currentUserEventPath(currentUser, newEvents[0]))
+    currentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/")
     toAdd = [currentEvents..., newEvents...]
     try
-      await set(child(dbRef, CalendarMapper.currentUserEventPath(currentUser, newEvents[0])), toAdd)
+      await set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/"), toAdd)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
@@ -50,33 +26,40 @@ export default CalendarManager =
 
   addCalendarEvent: (currentUser, newEvent) ->
     dbRef = ref(getDatabase())
-    currentEvents =  await DB.getTable(CalendarMapper.currentUserEventPath(currentUser, newEvent))
+    currentEvents =  await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/")
     currentEvents = currentEvents.filter (n) -> n
+
     toAdd = []
     try
       if Manager.isValid(currentEvents)
         toAdd = [currentEvents..., newEvent]
       else
         toAdd = [newEvent]
-      set(child(dbRef, CalendarMapper.currentUserEventPath(currentUser, newEvent)), toAdd)
+      set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/"), toAdd)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
-  addSharedEvent: (currentUser,newEvent) ->
-    dbRef = ref(getDatabase())
-    currentEvents =  Manager.convertToArray(await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/sharedEvents"))
-    currentEvents = currentEvents.filter (n) -> n
-    try
-      set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/sharedEvents"), [currentEvents..., newEvent])
-    catch error
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
-
-  deleteMultipleEvents: (events, currentUser, eventParentName = "events") ->
-    dbRef = ref(getDatabase())
-    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventParentName}")
+  updateEvent: (userPhone, prop, value, id) ->
+    dbRef = getDatabase()
+    key = null
+    recordToUpdate
+    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{userPhone}/")
     for record in tableRecords
-      idToDelete = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventParentName}", record, 'id')
-      await remove(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventParentName}/#{idToDelete}"))
+      if record?.id is id
+        key = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{userPhone}/", record, 'id')
+        record[prop] = value;
+        recordToUpdate = record
+    try
+      update(ref(dbRef, "#{DB.tables.calendarEvents}/#{userPhone}/#{key}"), recordToUpdate)
+    catch error
+      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+
+  deleteMultipleEvents: (events, currentUser) ->
+    dbRef = ref(getDatabase())
+    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/")
+    for record in tableRecords
+      idToDelete = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{currentUser.phone}/", record, 'id')
+      await remove(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/#{idToDelete}"))
 
   deleteAllHolidayEvents: () ->
     dbRef = ref(getDatabase())
@@ -85,14 +68,14 @@ export default CalendarManager =
       idToDelete = await DB.getSnapshotKey("#{DB.tables.holidayEvents}", record, 'id')
       await remove(child(dbRef, "#{DB.tables.holidayEvents}/#{idToDelete}"))
 
-  deleteEvent: (currentUser, eventParentName = "events", id) ->
+  deleteEvent: (currentUser, id) ->
     dbRef = ref(getDatabase())
     idToDelete = null
-    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventParentName}")
+    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/")
     for record in tableRecords
       if record?.id is id
-        idToDelete = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventParentName}", record, 'id')
+        idToDelete = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{currentUser.phone}/", record, 'id')
         try
-          remove(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/#{eventParentName}/#{idToDelete}"))
+          remove(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/#{idToDelete}"))
         catch error
           LogManager.log(error.message, LogManager.logTypes.error, error.stack)

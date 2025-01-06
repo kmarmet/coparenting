@@ -22,24 +22,6 @@ import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import { Fade } from 'react-awesome-reveal'
 import { RxUpdate } from 'react-icons/rx'
 import 'lightgallery/css/lightgallery.css'
-//noinspection JSUnresolvedVariable
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from 'globalFunctions'
 // ICONS
 import { ImAppleinc } from 'react-icons/im'
 import { IoLogoVenmo } from 'react-icons/io5'
@@ -58,6 +40,7 @@ import NoDataFallbackText from '../shared/noDataFallbackText'
 import ActivityCategory from '../../models/activityCategory'
 import ObjectManager from '../../managers/objectManager'
 import ModelNames from '../../models/modelNames'
+import StringManager from '../../managers/stringManager'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -111,12 +94,13 @@ export default function ExpenseTracker() {
       updatedExpense.dueDate = moment(dueDate).format(DateFormats.dateForDb)
     }
     const cleanedExpense = ObjectManager.cleanObject(updatedExpense, ModelNames.expense)
-    await DB.delete(DB.tables.expenseTracker, activeExpense.id)
-    await DB.add(`${DB.tables.expenseTracker}`, cleanedExpense).then(async () => {
-      await getSecuredExpenses()
-      setActiveExpense(updatedExpense)
-      setShowDetails(false)
-    })
+    await DB.updateEntireRecord(`${DB.tables.expenseTracker}/${currentUser.phone}`, cleanedExpense, cleanedExpense.id)
+    // await DB.delete(DB.tables.expenseTracker, activeExpense.id)
+    // await DB.add(`${DB.tables.expenseTracker}`, cleanedExpense).then(async () => {
+    await getSecuredExpenses()
+    setActiveExpense(updatedExpense)
+    setShowDetails(false)
+    // })
   }
 
   const markAsPaid = async () => {
@@ -158,10 +142,7 @@ export default function ExpenseTracker() {
       // Delete Single
       else {
         AlertManager.confirmAlert(`Are you sure you would like to delete the ${activeExpense?.name} expense?`, "I'm Sure", true, async () => {
-          const deleteKey = await DB.getSnapshotKey(DB.tables.expenseTracker, expense, 'id')
-          if (deleteKey) {
-            await DB.deleteByPath(`${DB.tables.expenseTracker}/${deleteKey}`)
-          }
+          await DB.deleteById(`${DB.tables.expenseTracker}/${currentUser.phone}`, expense.id)
         })
       }
     }
@@ -170,7 +151,6 @@ export default function ExpenseTracker() {
   const getSecuredExpenses = async () => {
     let allExpenses = await SecurityManager.getExpenses(currentUser)
     allExpenses = DatasetManager.getUniqueArray(allExpenses, 'id')
-    console.log(allExpenses)
     const categories = allExpenses.map((x) => x.category).filter((x) => x !== '')
     setCategoriesInUse(categories)
     setFilterApplied(false)
@@ -462,8 +442,8 @@ export default function ExpenseTracker() {
       {/* DETAILS CARD */}
       <BottomCard
         submitText={'Update'}
-        title={`${uppercaseFirstLetterOfAllWords(activeExpense?.name || '')}`}
-        submitIcon={<RxUpdate className={'fs-22'} />}
+        title={`${StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name || '')}`}
+        submitIcon={<RxUpdate className={'fs-16'} />}
         onSubmit={update}
         className="expense-tracker form"
         wrapperClass="expense-tracker"
@@ -488,7 +468,7 @@ export default function ExpenseTracker() {
               {/* NAME */}
               <div id="row" className="flex-start">
                 <p id="title">
-                  <b>Name</b>: {uppercaseFirstLetterOfAllWords(activeExpense?.name)}
+                  <b>Name</b>: {StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name)}
                 </p>
               </div>
               {/* AMOUNT */}
@@ -501,7 +481,7 @@ export default function ExpenseTracker() {
                 {/* SENT TO */}
                 <p id="title">
                   <b>Sent to: </b>
-                  {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
+                  {StringManager.formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
                 </p>
               </div>
 
@@ -509,7 +489,7 @@ export default function ExpenseTracker() {
               <div id="row" className="flex-start">
                 <p id="title">
                   <b>Pay to: </b>
-                  {formatNameFirstNameOnly(activeExpense?.recipientName)}
+                  {StringManager.formatNameFirstNameOnly(activeExpense?.recipientName)}
                 </p>
               </div>
 
@@ -574,7 +554,13 @@ export default function ExpenseTracker() {
           {/* EDIT */}
           {view === 'edit' && (
             <>
-              <InputWrapper inputType="input" labelText={'Name'} defaultValue={activeExpense?.name} onChange={(e) => setName(e.target.value)} />
+              <InputWrapper
+                isDebounced={false}
+                inputType="input"
+                labelText={'Name'}
+                defaultValue={activeExpense?.name}
+                onChange={(e) => setName(e.target.value)}
+              />
 
               {/* AMOUNT */}
               <InputWrapper
@@ -690,10 +676,10 @@ export default function ExpenseTracker() {
                       {/* EXPENSE NAME */}
                       <div id="name-wrapper" className="flex align-center">
                         <p id="title" className="name row-title">
-                          {uppercaseFirstLetterOfAllWords(expense.name)}
+                          {StringManager.uppercaseFirstLetterOfAllWords(expense.name)}
                         </p>
                         <span className={`${expense.paidStatus} status`} id="request-status">
-                          {uppercaseFirstLetterOfAllWords(expense.paidStatus.toUpperCase())}
+                          {StringManager.uppercaseFirstLetterOfAllWords(expense.paidStatus.toUpperCase())}
                         </span>
                       </div>
 

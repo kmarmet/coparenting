@@ -101,6 +101,13 @@ const DateManager = {
   msToDate: (ms) => {
     return moment(ms, 'x').format(DateFormats.dateForDb)
   },
+  dateOrNull: (date) => {
+    if (!Manager.isValid(date)) {
+      return null
+    }
+
+    return date
+  },
   isValidDate: (date) => {
     if (!Manager.isValid(date)) {
       return false

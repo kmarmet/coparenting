@@ -12,7 +12,7 @@ export default AppManager =
     if window.navigator.setAppBadge
       window.navigator.setAppBadge(count)
   clearAppBadge: =>
-#    window.navigator.clearAppBadge()
+    window.navigator.clearAppBadge()
   isDevMode: =>
     location.hostname == 'localhost'
   getAccountType: (currentUser) =>

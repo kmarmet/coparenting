@@ -23,35 +23,30 @@ import _ from "lodash"
 SecurityManager =
   getCalendarEvents: (currentUser) ->
     returnRecords = []
-    coparentAndChildSharedEvents = []
-    events = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/events")
-    sharedEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/sharedEvents")
-    allEvents = [events..., sharedEvents...]
+    coparentAndChildEvents = []
+    allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.phone}")
 
-    for coparent in currentUser.coparents
-      theirSharedEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{coparent.phone}/sharedEvents")
-      coparentAndChildSharedEvents.push(_.flattenDeep([...theirSharedEvents]))
+    if Manager.isValid(currentUser) && Manager.isValid(currentUser?.coparents)
+      for coparent in currentUser?.coparents
+        coparentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{coparent.phone}")
+        for event in coparentEvents
+          if Manager.isValid(event?.shareWith)
+            if event?.shareWith?.includes currentUser?.phone
+              coparentAndChildEvents.push(event)
 
-    coparentAndChildSharedEvents = _.flattenDeep(coparentAndChildSharedEvents);
-
-    if Manager.isValid(coparentAndChildSharedEvents)
-      for event in coparentAndChildSharedEvents
-       if Manager.isValid(event?.shareWith)
-         if event.shareWith.includes(currentUser.phone)
-          returnRecords.push(event)
+    coparentAndChildEvents = _.flattenDeep(coparentAndChildEvents);
 
     if Manager.isValid(allEvents)
       for event in allEvents
-        if event.isHoliday
-          returnRecords.push(event)
         if DateManager.isValidDate(event.startDate)
           if (event.ownerPhone == currentUser?.phone)
             returnRecords.push(event)
+    returnRecords = [coparentAndChildEvents..., returnRecords...]
     return returnRecords
 
   getExpenses: (currentUser) ->
     returnRecords = []
-    allExpenses = Manager.convertToArray(await DB.getTable(DB.tables.expenseTracker)).flat()
+    allExpenses = Manager.convertToArray(await DB.getTable("#{DB.tables.expenseTracker}/#{currentUser?.phone}")).flat()
     if Manager.isValid(allExpenses)
       for expense in allExpenses
         shareWith = expense.shareWith
@@ -61,9 +56,10 @@ SecurityManager =
           if shareWith.includes(currentUser?.phone)
             returnRecords.push(expense)
     return returnRecords
+
   getSwapRequests: (currentUser) ->
     returnRecords = []
-    allRequests = Manager.convertToArray(await DB.getTable(DB.tables.swapRequests)).flat()
+    allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.swapRequests}/#{currentUser.phone}")).flat()
     if Manager.isValid(allRequests)
       for request in allRequests
         shareWith = request.shareWith
@@ -73,9 +69,10 @@ SecurityManager =
           if shareWith.includes(currentUser?.phone)
             returnRecords.push(request)
     return returnRecords
+
   getTransferChangeRequests: (currentUser) ->
     returnRecords = []
-    allRequests = Manager.convertToArray(await DB.getTable(DB.tables.transferChangeRequests)).flat()
+    allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.transferChangeRequests}/#{currentUser.phone}")).flat()
     if Manager.isValid(allRequests)
       for request in allRequests
         shareWith = request.shareWith
@@ -85,6 +82,7 @@ SecurityManager =
           if shareWith.includes(currentUser?.phone)
             returnRecords.push(request)
     return returnRecords.flat()
+
   getDocuments: (currentUser) ->
     returnRecords = []
     allDocs = Manager.convertToArray(await DB.getTable(DB.tables.documents)).flat()
@@ -116,7 +114,7 @@ SecurityManager =
     if Manager.isValid(allArchivedChats,true)
       for chatArray in allArchivedChats
         for chat in chatArray
-          if (chat.threadOwner == currentUser?.phone)
+          if (chat.ownerPhone == currentUser?.phone)
             returnRecords.push(chat)
     return returnRecords.flat()
   getInputSuggestions: (currentUser) ->
@@ -128,7 +126,7 @@ SecurityManager =
           returnRecords.push(suggestion)
     return returnRecords.flat()
   getChats: (currentUser) ->
-    chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}/#{currentUser.phone}")).flat()
+    chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}/#{currentUser?.phone}")).flat()
     securedChats = []
     # User does not have a chat with root access by phone
     if Manager.isValid(chats)
@@ -137,6 +135,7 @@ SecurityManager =
         if currentUser?.phone in members
           securedChats.push(chat)
     return securedChats.flat()
+
   getCoparentChats: (currentUser) ->
     allChats = await DB.getTable('chats')
     activeChats = []

@@ -10,13 +10,14 @@ import NotificationManager from '@managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import { ImEye } from 'react-icons/im'
-import { formatNameFirstNameOnly } from '../../globalFunctions'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import BottomCard from '../shared/bottomCard'
 import InputWrapper from '../shared/inputWrapper'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import AlertManager from '../../managers/alertManager'
+import StringManager from '../../managers/stringManager'
+import ActivityCategory from '../../models/activityCategory'
 
 export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -96,15 +97,16 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     }
 
     // Notify
-    const subId = await NotificationManager.getUserSubId(requestRecipientPhone, 'phone')
     NotificationManager.sendNotification(
       `Transfer Change Request`,
-      `${formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
-      subId
+      `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
+      requestRecipientPhone,
+      currentUser,
+      ActivityCategory.transferRequest
     )
 
     // // Add record
-    await DB.add(DB.tables.transferChangeRequests, newRequest)
+    await DB.add(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, newRequest)
     AlertManager.successAlert('Transfer Change Request Sent')
 
     await resetForm()

@@ -29,35 +29,29 @@ import _ from "lodash";
 
 SecurityManager = {
   getCalendarEvents: async function(currentUser) {
-    var allEvents, coparent, coparentAndChildSharedEvents, event, events, i, j, k, len, len1, len2, ref, returnRecords, sharedEvents, theirSharedEvents;
+    var allEvents, coparent, coparentAndChildEvents, coparentEvents, event, i, j, k, len, len1, len2, ref, ref1, returnRecords;
     returnRecords = [];
-    coparentAndChildSharedEvents = [];
-    events = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/events`));
-    sharedEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/sharedEvents`));
-    allEvents = [...events, ...sharedEvents];
-    ref = currentUser.coparents;
-    for (i = 0, len = ref.length; i < len; i++) {
-      coparent = ref[i];
-      theirSharedEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${coparent.phone}/sharedEvents`));
-      coparentAndChildSharedEvents.push(_.flattenDeep([...theirSharedEvents]));
-    }
-    coparentAndChildSharedEvents = _.flattenDeep(coparentAndChildSharedEvents);
-    if (Manager.isValid(coparentAndChildSharedEvents)) {
-      for (j = 0, len1 = coparentAndChildSharedEvents.length; j < len1; j++) {
-        event = coparentAndChildSharedEvents[j];
-        if (Manager.isValid(event != null ? event.shareWith : void 0)) {
-          if (event.shareWith.includes(currentUser.phone)) {
-            returnRecords.push(event);
+    coparentAndChildEvents = [];
+    allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.phone : void 0}`));
+    if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.coparents : void 0)) {
+      ref = currentUser != null ? currentUser.coparents : void 0;
+      for (i = 0, len = ref.length; i < len; i++) {
+        coparent = ref[i];
+        coparentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${coparent.phone}`));
+        for (j = 0, len1 = coparentEvents.length; j < len1; j++) {
+          event = coparentEvents[j];
+          if (Manager.isValid(event != null ? event.shareWith : void 0)) {
+            if (event != null ? (ref1 = event.shareWith) != null ? ref1.includes(currentUser != null ? currentUser.phone : void 0) : void 0 : void 0) {
+              coparentAndChildEvents.push(event);
+            }
           }
         }
       }
     }
+    coparentAndChildEvents = _.flattenDeep(coparentAndChildEvents);
     if (Manager.isValid(allEvents)) {
       for (k = 0, len2 = allEvents.length; k < len2; k++) {
         event = allEvents[k];
-        if (event.isHoliday) {
-          returnRecords.push(event);
-        }
         if (DateManager.isValidDate(event.startDate)) {
           if (event.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(event);
@@ -65,12 +59,13 @@ SecurityManager = {
         }
       }
     }
+    returnRecords = [...coparentAndChildEvents, ...returnRecords];
     return returnRecords;
   },
   getExpenses: async function(currentUser) {
     var allExpenses, expense, i, len, returnRecords, shareWith;
     returnRecords = [];
-    allExpenses = Manager.convertToArray((await DB.getTable(DB.tables.expenseTracker))).flat();
+    allExpenses = Manager.convertToArray((await DB.getTable(`${DB.tables.expenseTracker}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
     if (Manager.isValid(allExpenses)) {
       for (i = 0, len = allExpenses.length; i < len; i++) {
         expense = allExpenses[i];
@@ -90,7 +85,7 @@ SecurityManager = {
   getSwapRequests: async function(currentUser) {
     var allRequests, i, len, request, returnRecords, shareWith;
     returnRecords = [];
-    allRequests = Manager.convertToArray((await DB.getTable(DB.tables.swapRequests))).flat();
+    allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.swapRequests}/${currentUser.phone}`))).flat();
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
@@ -110,7 +105,7 @@ SecurityManager = {
   getTransferChangeRequests: async function(currentUser) {
     var allRequests, i, len, request, returnRecords, shareWith;
     returnRecords = [];
-    allRequests = Manager.convertToArray((await DB.getTable(DB.tables.transferChangeRequests))).flat();
+    allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.transferChangeRequests}/${currentUser.phone}`))).flat();
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
@@ -177,7 +172,7 @@ SecurityManager = {
         chatArray = allArchivedChats[i];
         for (j = 0, len1 = chatArray.length; j < len1; j++) {
           chat = chatArray[j];
-          if (chat.threadOwner === (currentUser != null ? currentUser.phone : void 0)) {
+          if (chat.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(chat);
           }
         }
@@ -201,7 +196,7 @@ SecurityManager = {
   },
   getChats: async function(currentUser) {
     var chat, chats, i, len, members, ref, ref1, ref2, securedChats;
-    chats = Manager.convertToArray((await DB.getTable(`${DB.tables.chats}/${currentUser.phone}`))).flat();
+    chats = Manager.convertToArray((await DB.getTable(`${DB.tables.chats}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
     securedChats = [];
     // User does not have a chat with root access by phone
     if (Manager.isValid(chats)) {

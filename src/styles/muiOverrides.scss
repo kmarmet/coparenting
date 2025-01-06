@@ -288,16 +288,18 @@
       border-radius: 100%;
     }
 
-    .current-user-visitation-dot, .current-user-event-dot {
+    .current-user-visitation-dot,
+    .current-user-event-dot {
       background-color: $currentUserGreen;
     }
 
-    .coparent-visitation-dot, .coparent-event-dot {
+    .coparent-visitation-dot,
+    .coparent-event-dot {
       background-color: $coparentPurple;
     }
 
     .holiday-event-dot {
-      background-color: #F88379;
+      background-color: #f88379;
     }
   }
   .invisible-dots {
@@ -331,7 +333,7 @@
     height: 425px !important;
     max-height: 425px !important;
     padding: 0 5px;
-    
+
     @media screen and (min-width: 1000px) {
       margin: 0 auto !important;
     }
@@ -351,7 +353,7 @@
       width: 60px !important;
       height: 50px !important;
       color: black !important;
-      opacity: .7;
+      opacity: 0.7;
     }
 
     .MuiPickersSlideTransition-root {
@@ -397,7 +399,11 @@
         }
       }
 
-      &.weekend-day, &.MuiPickersDay-dayOutsideMonth, &[aria-colindex="7"], , &[aria-colindex="1"] {
+      &.weekend-day,
+      &.MuiPickersDay-dayOutsideMonth,
+      &[aria-colindex='7'],
+      ,
+      &[aria-colindex='1'] {
         opacity: 0.5 !important;
 
         &.Mui-selected {
@@ -433,30 +439,35 @@
 
     &#calendar-legend {
       border-radius: $borderRadius !important;
-      background: #f5f5f8;
+      background: #fcfcfc !important;
       margin: 0 auto !important;
       position: relative;
 
       &.open {
-        padding: 20px 0 20px 10px !important;
+        width: 200px !important;
+        border: 1px solid $lightBorder !important;
+        padding: 10px 0 40px 10px !important;
       }
-      
+
+      .flex {
+        justify-content: center;
+      }
+
       .MuiButtonBase-root {
         width: auto !important;
-        margin-left: auto !important;
-        margin-bottom: 15px !important;
-        margin-top: 15px !important;
         padding: 0 !important;
         height: unset !important;
         min-height: unset !important;
-        opacity: .75;
+        opacity: 0.75;
         position: absolute;
-        top: -5px;
-        right: 0;
+        bottom: 10px;
         z-index: 1000;
-        
+        @include centerHoriz;
+
         svg {
           font-size: 15px !important;
+          color: black !important;
+          margin: 0 !important;
         }
       }
     }
@@ -467,20 +478,19 @@
     .open {
       display: block !important;
     }
-    
+
     p {
       &.coparent {
         color: $coparentPurple;
       }
       &.standard {
-        color: #F88379;
+        color: #f88379;
       }
-      
+
       &.currentUser {
         color: $currentUserGreen;
       }
     }
-
 
     .dot {
       background: red;
@@ -498,7 +508,7 @@
       }
 
       &.standard {
-        background: #F88379;
+        background: #f88379;
       }
 
       &.currentUser {
@@ -530,7 +540,7 @@
     z-index: 100000;
     padding: 0 0 10px 0;
     justify-content: center;
-    
+
     @media screen and (min-width: 1000px) {
       width: auto;
     }
@@ -573,7 +583,7 @@
     width: 100vw !important;
     max-width: 100vw !important;
     margin: 0 auto !important;
-    
+
     @media screen and (min-width: 1000px) {
       width: auto !important;
       max-width: 500px !important;
@@ -638,7 +648,7 @@
         background-color: white !important;
         width: 100vw !important;
         max-width: 100% !important;
-        
+
         @media screen and (min-width: 1000px) {
           display: block !important;
         }

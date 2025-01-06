@@ -18,13 +18,14 @@ import TabletImage from '../../img/homepage/devices/tablet.png'
 import LaptopImage from '../../img/homepage/devices/laptop.png'
 import PhoneImage from '../../img/homepage/devices/phone.png'
 import Logo from '../../img/logo.png'
-import { CarouselProvider, Slide, Slider } from 'pure-react-carousel'
 import 'pure-react-carousel/dist/react-carousel.es.css'
 import { MdOutlineStar } from 'react-icons/md'
 import { FaRegHandshake } from 'react-icons/fa'
 import { useLongPress } from 'use-long-press'
 import ScreenNames from '@screenNames'
 import Manager from '@manager'
+import LightGallery from 'lightgallery/react'
+import 'lightgallery/css/lightgallery.css'
 
 function LazyImage({ show, importedImage, imagesObjectPropName }) {
   const [showImage, setShowImage] = useState(false)
@@ -81,17 +82,21 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const appContentWithSidebar = document.getElementById('app-content-with-sidebar')
+    let homescreenWrapper = document.getElementById('home-screen-wrapper')
 
-    if (appContentWithSidebar) {
+    if (!DomManager.isMobile()) {
+      homescreenWrapper = document.getElementById('app-content-with-sidebar')
+    }
+
+    if (homescreenWrapper) {
       const imageWrappers = document.querySelectorAll('.img-wrapper')
       DomManager.addScrollListener(
-        appContentWithSidebar,
+        homescreenWrapper,
         () => {
           for (let imageWrapper of imageWrappers) {
-            console.log(imageWrapper)
             const imagesObjectPropName = imageWrapper.dataset.name
             if (DomManager.isInViewport(imageWrapper)) {
+              console.log(true)
               setLoadedImages([...loadedImages, imagesObjectPropName])
             }
           }
@@ -148,38 +153,13 @@ export default function Home() {
             {!DomManager.isMobile() && <p id="title">Peaceful Co-Parenting</p>}
             <p id="subtitle">Built for Families - Focused on Peace</p>
           </div>
-          {!DomManager.isMobile() && (
+          <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.image'}>
             <div className="flex" id="images">
-              <img src={CalendarImage} />
-              <img src={MemoriesImage} />
-              <img src={ChildInfoImage} />
+              <img className="image" src={CalendarImage} />
+              <img className="image" src={MemoriesImage} />
+              <img className="image" src={ChildInfoImage} />
             </div>
-          )}
-
-          {DomManager.isMobile() && (
-            <CarouselProvider
-              touchEnabled={true}
-              naturalSlideWidth={50}
-              naturalSlideHeight={125}
-              totalSlides={3}
-              dragEnabled={true}
-              isIntrinsicHeight={true}
-              infinite={true}
-              lockOnWindowScroll={true}
-              currentSlide={1}>
-              <Slider>
-                <Slide index={0}>
-                  <img src={require('../../img/homepage/childInfo.png')} />
-                </Slide>
-                <Slide index={1}>
-                  <img src={require('../../img/homepage/calendar.png')} />
-                </Slide>
-                <Slide index={2}>
-                  <img src={require('../../img/homepage/memories.png')} />s
-                </Slide>
-              </Slider>
-            </CarouselProvider>
-          )}
+          </LightGallery>
         </Fade>
       </div>
 

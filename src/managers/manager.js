@@ -183,7 +183,7 @@ const Manager = {
   },
   isValid: (variable, checkStringLength = false) => {
     // Check variable -> do not check for empty string
-    if (_.isEmpty(variable) && !checkStringLength) {
+    if (_.isEmpty(variable) && checkStringLength === false) {
       if (_.isEmpty(variable)) {
         return false
       }
@@ -220,6 +220,9 @@ const Manager = {
   },
   getDirectionsLink: (address) => {
     let directionsLink
+    if (!Manager.isValid(address, true)) {
+      return ''
+    }
     if (
       (!window?.navigator?.platform.includes('Win') && navigator.platform.indexOf('iPhone') != -1) ||
       navigator.platform.indexOf('iPod') != -1 ||
@@ -259,7 +262,6 @@ const Manager = {
     const clickedEl = e.currentTarget
     const selectedValue = clickedEl.getAttribute('data-phone')
     // UNCHECK
-    console.log(shareWith)
     if (clickedEl.classList.contains('active')) {
       clickedEl.classList.remove('active')
       if (Manager.isValid(shareWith)) {
@@ -307,7 +309,6 @@ const Manager = {
         }
       }
     }
-
     return shareWith
   },
   setDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) => {

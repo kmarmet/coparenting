@@ -43,7 +43,7 @@ const DB_UserScoped = {
   getValidAccountsForUser: async (currentUser) => {
     const children = await DB_UserScoped.getChildAccounts(currentUser)
     const coparents = []
-    if (Manager.isValid(currentUser?.coparents, true)) {
+    if (Manager.isValid(currentUser?.coparents)) {
       for (let coparent of currentUser?.coparents) {
         if (coparent?.phone) {
           const coparentAccount = await DB.find(DB.tables.users, ['phone', coparent?.phone], true)
@@ -133,11 +133,11 @@ const DB_UserScoped = {
   },
 
   // ADD
-  addMultipleExpenses: async (data) => {
+  addMultipleExpenses: async (currentUser, data) => {
     const dbRef = ref(getDatabase())
-    const currentExpenses = await DB.getTable(DB.tables.expenseTracker)
+    const currentExpenses = await DB.getTable(`${DB.tables.expenseTracker}/${currentUser.phone}`)
     const toAdd = [...currentExpenses, [...data]].filter((x) => x !== undefined).flat()
-    set(child(dbRef, `${DB.tables.expenseTracker}`), toAdd).catch((error) => {})
+    set(child(dbRef, `${DB.tables.expenseTracker}/${currentUser.phone}`), toAdd).catch((error) => {})
   },
   addUser: async (newUser) => {
     const dbRef = ref(getDatabase())

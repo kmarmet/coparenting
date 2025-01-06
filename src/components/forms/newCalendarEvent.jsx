@@ -28,25 +28,7 @@ import AlertManager from '../../managers/alertManager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import validator from 'validator'
-
 import AccordionDetails from '@mui/material/AccordionDetails'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
 import ObjectManager from '../../managers/objectManager'
 import DatasetManager from '../../managers/datasetManager'
 import InputSuggestion from '../../models/inputSuggestion' // COMPONENT
@@ -56,6 +38,7 @@ import CalendarManager from '../../managers/calendarManager.js'
 import NotificationManager from '../../managers/notificationManager.js'
 import DB_UserScoped from '@userScoped'
 import ActivityCategory from '../../models/activityCategory'
+import StringManager from '../../managers/stringManager'
 
 // COMPONENT
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
@@ -65,7 +48,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
-  const [eventStartDate, setEventStartDate] = useState('')
+  const [eventStartDate, setEventStartDate] = useState(moment(selectedNewEventDay).format(DateFormats.dateForDb))
   const [eventEndDate, setEventEndDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
   const [eventTitle, setEventTitle] = useState('')
@@ -75,6 +58,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [repeatInterval, setRepeatInterval] = useState('')
   const [eventStartTime, setEventStartTime] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
+  const [eventPhone, setEventPhone] = useState('')
   const [eventShareWith, setEventShareWith] = useState([])
   const [clonedDates, setClonedDates] = useState([])
   const [inputSuggestions, setInputSuggestions] = useState([])
@@ -83,7 +67,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [coparentsToRemind, setCoparentsToRemind] = useState([])
   const [eventIsRepeating, setEventIsRepeating] = useState(false)
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
-  const [eventPhone, setEventPhone] = useState('')
+  const [eventIsCloned, setEventIsCloned] = useState(false)
+
   // COMPONENT STATE
   const [isAllDay, setIsAllDay] = useState(false)
   const [showCloneInput, setShowCloneInput] = useState(false)
@@ -132,11 +117,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     const newEvent = new CalendarEvent()
     // Required
     newEvent.title = eventTitle
-    if (Manager.isValid(newEvent.title) && newEvent.title.toLowerCase().indexOf('birthday') > -1) {
+    if (Manager.contains(eventTitle, 'birthday')) {
       newEvent.title += ' 🎂'
     }
     if (isVisitation) {
-      newEvent.title = `${formatNameFirstNameOnly(currentUser?.name)}'s Visitation`
+      newEvent.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Visitation`
     }
     newEvent.startDate = Manager.isValid(eventStartDate) ? moment(eventStartDate).format(DateFormats.dateForDb) : ''
     newEvent.endDate = Manager.isValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
@@ -151,11 +136,13 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     newEvent.createdBy = currentUser?.name
     newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
     newEvent.notes = eventNotes
-    newEvent.isRepeating = eventIsRepeating
     newEvent.websiteUrl = eventWebsite
     newEvent.reminderTimes = eventReminderTimes
     newEvent.repeatInterval = repeatInterval
     newEvent.fromVisitationSchedule = isVisitation
+    newEvent.isRepeating = eventIsRepeating
+    newEvent.isCloned = eventIsCloned
+    newEvent.isDateRange = eventIsDateRange
 
     if (Manager.isValid(eventPhone, true)) {
       if (!validator.isMobilePhone(eventPhone)) {
@@ -173,12 +160,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         return false
       }
 
-      if (!Manager.isValid(eventTitle)) {
+      if (!Manager.isValid(eventTitle, true)) {
         AlertManager.throwError('Please enter an event title')
         return false
       }
 
-      if (!Manager.isValid(eventStartDate)) {
+      if (!Manager.isValid(eventStartDate, true)) {
         AlertManager.throwError('Please select an event date')
         return false
       }
@@ -202,39 +189,29 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
       const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
 
-      // Determine if you add 1 or more events
-      let addSingleEvent = true
-
       // Date Range
       if (eventIsDateRange) {
-        addSingleEvent = false
         const dateObjects = createEventList()
         await CalendarManager.addMultipleCalEvents(currentUser, dateObjects)
       }
 
       // Add cloned dates
-      if (Manager.isValid(clonedDates)) {
-        addSingleEvent = false
+      if (eventIsCloned) {
         const clonedDatesList = createEventList()
         await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesList)
       }
+
       // Repeating
       if (eventIsRepeating) {
-        addSingleEvent = false
         const repeatingDates = createEventList('repeating')
         await CalendarManager.addMultipleCalEvents(currentUser, repeatingDates)
       }
 
-      // SINGLE DATA --------------------------------------------------------------------------------------------------
-      if (addSingleEvent) {
-        // Add to shared
-        if (Manager.isValid(eventShareWith)) {
-          await CalendarManager.addSharedEvent(currentUser, cleanedObject)
-        }
-        // Not shared
-        else {
-          await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
-        }
+      // SINGLE DATE --------------------------------------------------------------------------------------------------
+      if (!eventIsRepeating && !eventIsDateRange && !eventIsCloned) {
+        await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
+
+        // Send notification
         await NotificationManager.sendToShareWith(
           eventShareWith,
           currentUser,
@@ -320,6 +297,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     // DATE RANGE
     if (eventLength === 'multiple') {
       datesToIterate = DateManager.getDateRangeDates(eventStartDate, eventEndDate)
+      setEventIsDateRange(true)
     }
 
     // REPEATING
@@ -329,16 +307,13 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         moment(eventStartDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
         repeatingEndDate
       )
-      if (datesToIterate) {
-        datesToIterate.push(eventStartDate)
-      }
+      setEventIsRepeating(true)
     }
 
     // CLONED DATES
     if (Manager.isValid(clonedDates)) {
       datesToIterate = clonedDates
-      // Add initial start date
-      datesToIterate.push(new Date(eventStartDate))
+      setEventIsCloned(true)
     }
 
     datesToIterate.forEach((date) => {
@@ -350,7 +325,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       dateObject.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
 
       // Not Required
-      dateObject.directionsLink = eventLocation
+      dateObject.directionsLink = Manager.getDirectionsLink(eventLocation)
       dateObject.location = eventLocation
       dateObject.children = eventChildren
       dateObject.ownerPhone = currentUser?.phone
@@ -358,9 +333,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       dateObject.phone = eventPhone
       dateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
       dateObject.notes = eventNotes
-      dateObject.isRepeating = Manager.isValid(repeatingEndDate)
-      dateObject.isDateRange = eventIsDateRange
       dateObject.websiteUrl = eventWebsite
+      dateObject.isRepeating = eventIsRepeating
+      dateObject.isDateRange = eventIsDateRange
+      dateObject.isCloned = eventIsCloned
       if (Manager.isValid(eventStartTime)) {
         dateObject.startTime = eventStartTime.format(DateFormats.timeForDb)
       }
@@ -398,6 +374,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
   useEffect(() => {
     if (selectedNewEventDay) {
+      console.log(selectedNewEventDay)
       setEventStartDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
     }
   }, [selectedNewEventDay])
@@ -415,12 +392,16 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     if (pickers) {
       pickers.forEach((x) => (x.value = ''))
     }
+    if (selectedNewEventDay) {
+      setEventStartDate(moment().format(DateFormats.dateForDb))
+    }
   }, [])
 
   return (
     <>
       {/* FORM WRAPPER */}
       <BottomCard
+        refreshKey={refreshKey}
         submitText={'Create Event'}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={resetForm}
@@ -441,14 +422,15 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           </div>
 
           {/* CALENDAR FORM */}
-          {/* TITLE */}
+          {/* EVENT NAME */}
           <InputWrapper
             inputClasses="event-title-input"
             inputType={'input'}
-            labelText={'Name of Event'}
+            labelText={'Event Name'}
             defaultValue={eventTitle}
             refreshKey={refreshKey}
             required={true}
+            isDebounced={false}
             inputValue={eventTitle}
             onChange={async (e) => {
               const inputValue = e.target.value
@@ -460,7 +442,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     (x) =>
                       x.formName === 'calendar' &&
                       x.ownerPhone === currentUser?.phone &&
-                      contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
+                      Manager.contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
                   )
                   setInputSuggestions(DatasetManager.getUniqueArray(matching, true))
                 }

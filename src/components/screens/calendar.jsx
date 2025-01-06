@@ -4,7 +4,6 @@ import DateManager from '@managers/dateManager.js'
 import Manager from '@manager'
 import moment from 'moment'
 import globalState from '../../context'
-import CalendarManager from 'managers/calendarManager'
 import BottomCard from 'components/shared/bottomCard'
 import DateFormats from '../../constants/dateFormats'
 import { LuCalendarSearch } from 'react-icons/lu'
@@ -29,47 +28,49 @@ import { TfiClose } from 'react-icons/tfi'
 import Label from '../shared/label'
 import { HiOutlineColorSwatch } from 'react-icons/hi'
 import DatasetManager from '../../managers/datasetManager'
+import AppManager from '../../managers/appManager.js'
+import StringManager from '../../managers/stringManager'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser, userIsLoggedIn } = state
+  const { theme, currentUser } = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
-  const [showHolidaysCard, setShowHolidaysCard] = useState(false)
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
+  const [searchResults, setSearchResults] = useState([])
+  const [holidays, setHolidays] = useState([])
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [selectedNewEventDay, setSelectedNewEventDay] = useState()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [eventToEdit, setEventToEdit] = useState(null)
   const [showNewEventCard, setShowNewEventCard] = useState(false)
   const [showEditCard, setShowEditCard] = useState(false)
-  const [eventToEdit, setEventToEdit] = useState(null)
+  const [showHolidaysCard, setShowHolidaysCard] = useState(false)
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [showHolidays, setShowHolidays] = useState(false)
-  const [searchResults, setSearchResults] = useState([])
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedNewEventDay, setSelectedNewEventDay] = useState(moment())
   const [loadingDisabled, setLoadingDisabled] = useState(false)
   const [showLegend, setShowLegend] = useState(false)
   const [showDesktopLegend, setShowDesktopLegend] = useState(false)
-  const [activeMonth, setActiveMonth] = useState('')
-  const [holidays, setHolidays] = useState([])
-
+  const [eventsSetOnPageLoad, setEventsSetOnPageLoad] = useState(false)
   // GET EVENTS
   const getSecuredEvents = async (selectedDay) => {
     let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
-    let eventsOfDay = []
+    let _eventsOfDay = []
     setAllEventsFromDb(securedEvents)
     securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
-    eventsOfDay = securedEvents.filter((x) => x.startDate === moment(selectedDay).format(DateFormats.dateForDb))
+    _eventsOfDay = securedEvents.filter((x) => x.startDate === moment(selectedDay).format(DateFormats.dateForDb))
     const holidaysToLoop = holidays.filter(
       (x) => moment(x.startDate).format(DateFormats.dateForDb) === moment(selectedDay).format(DateFormats.dateForDb)
     )
-    eventsOfDay = [...eventsOfDay, ...holidaysToLoop]
-    setEventsOfActiveDay(eventsOfDay)
+    _eventsOfDay = [..._eventsOfDay, ...holidaysToLoop]
+    setEventsOfActiveDay(_eventsOfDay)
 
     // ADD DAY INDICATORS
-    addDayIndicators([...securedEvents, ...holidays])
+    await addDayIndicators([...securedEvents, ...holidays])
   }
 
-  const addDayIndicators = (events) => {
+  const addDayIndicators = async (events) => {
     const paycheckStrings = ['payday', 'paycheck', 'pay', 'salary', 'paid']
+    const emojiHolidays = await DB.getTable(DB.tables.holidayEvents)
     // Remove existing icons/dots before adding them again
     document.querySelectorAll('.dot-wrapper').forEach((wrapper) => wrapper.remove())
     document.querySelectorAll('.payday-emoji').forEach((emoji) => emoji.remove())
@@ -95,7 +96,7 @@ export default function EventCalendar() {
         continue
       }
 
-      // Apply weekend day class
+      // WEEKEND OPACITY CLASS
       const dayOfWeek = moment(formattedDay).isoWeekday()
       if (dayOfWeek === 6 || dayOfWeek === 7) {
         dayElement.classList.add('weekend-day')
@@ -123,7 +124,7 @@ export default function EventCalendar() {
       }
 
       // HOLIDAYS
-      for (let holiday of holidays) {
+      for (let holiday of emojiHolidays) {
         if (Manager.isValid(holiday) && holiday?.startDate === dayEvent?.startDate) {
           const holidayEmoji = document.createElement('span')
           holidayEmoji.classList.add('holiday-emoji')
@@ -179,10 +180,8 @@ export default function EventCalendar() {
   }
 
   const showAllHolidays = async () => {
-    const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
-    const _holidays = allEvents.filter((x) => x.isHoliday === true).filter((x) => !contains(x?.title.toLowerCase(), 'visitation'))
     setShowHolidaysCard(!showHolidaysCard)
-    setEventsOfActiveDay(_holidays)
+    setEventsOfActiveDay(DatasetManager.getUniqueArray(holidays, true))
     setShowHolidays(true)
   }
 
@@ -225,16 +224,9 @@ export default function EventCalendar() {
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
+    await setHolidaysState()
     onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}`), async (snapshot) => {
       await getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
-    })
-  }
-
-  const onActivityChange = async () => {
-    const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.activities}/${currentUser?.phone}`), async (snapshot) => {
-      const activities = Manager.convertToArray(snapshot.val())
-      setState({ ...state, activityCount: activities.length, isLoading: false })
     })
   }
 
@@ -302,14 +294,24 @@ export default function EventCalendar() {
     }
   }
 
+  const setInitialActivities = async () => {
+    const activities = await DB.getTable(`${DB.tables.activities}/${currentUser?.phone}`)
+    await AppManager.setAppBadge(activities.length)
+    setState({ ...state, activityCount: activities.length, isLoading: false })
+  }
+
   useEffect(() => {
     if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
-      onActivityChange().then((r) => r)
       setLoadingDisabled(true)
       const appContentWithSidebar = document.getElementById('app-content-with-sidebar')
       if (appContentWithSidebar) {
         appContentWithSidebar.classList.add('logged-in')
       }
+      if (!eventsSetOnPageLoad) {
+        getSecuredEvents().then((r) => r)
+        setEventsSetOnPageLoad(true)
+      }
+      setInitialActivities().then((r) => r)
     }
   }, [currentUser])
 
@@ -351,7 +353,6 @@ export default function EventCalendar() {
       })
     }
 
-    setHolidaysState().then((r) => r)
     onTableChange().then((r) => r)
   }, [])
 
@@ -472,15 +473,11 @@ export default function EventCalendar() {
               {showLegend && <TfiClose onClick={() => setShowLegend(false)} />}
             </AccordionSummary>
             <AccordionDetails>
-              <p className="flex currentUser">
-                <span className="dot in-legend currentUser"></span> Your Event
-              </p>
-              <p className="flex coparent">
-                <span className="dot coparent in-legend"></span> Shared Event
-              </p>
-              <p className="flex standard">
-                <span className="dot in-legend standard"></span> Holiday
-              </p>
+              <Fade direction={'up'} triggerOnce={true}>
+                <p className="flex currentUser">Your Event</p>
+                <p className="flex coparent">Shared Event</p>
+                <p className="flex standard">Holiday</p>
+              </Fade>
             </AccordionDetails>
           </Accordion>
 
@@ -519,12 +516,11 @@ export default function EventCalendar() {
                         data-from-date={event?.startDate}
                         className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className} ${index === eventsOfActiveDay.length - 2 ? 'last-child' : ''}`}>
                         <div className="text flex space-between">
-                          {/* LEFT COLUMN */}
-                          {/* TITLE */}
+                          {/* EVENT NAME */}
                           <div className="flex space-between" id="title-wrapper">
                             <p className="title flex" id="title" data-event-id={event?.id}>
                               <span className={`${dotObject.className} event-type-dot`}></span>
-                              {CalendarManager.formatEventTitle(event?.title)}
+                              {StringManager.formatEventTitle(event?.title)}
                             </p>
                           </div>
                           {/* DATE CONTAINER */}

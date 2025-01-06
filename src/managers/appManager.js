@@ -26,8 +26,9 @@ export default AppManager = {
       return window.navigator.setAppBadge(count);
     }
   },
-  clearAppBadge: () => {},
-  //    window.navigator.clearAppBadge()
+  clearAppBadge: () => {
+    return window.navigator.clearAppBadge();
+  },
   isDevMode: () => {
     return location.hostname === 'localhost';
   },

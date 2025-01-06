@@ -1,6 +1,8 @@
+import Manager from "../managers/manager"
+
 export default class CalendarEvent
   constructor: (
-    @id = ''
+    @id = Manager.getUid()
     @websiteUrl = ''
     @notes = ''
     @shareWith = []
@@ -21,11 +23,11 @@ export default class CalendarEvent
     @repeatInterval = ''
     @sentReminders = []
     @visitationPeriodEndDate = ''
-    @isHoliday = false,
     @visibleToAll = false
     @holidayName = ''
     @visitationSchedule = ''
+    @isHoliday = false,
     @isRepeating = false
-    @isCloned = ''
-    @isDateRange = ''
+    @isCloned = false
+    @isDateRange = false
   ) ->

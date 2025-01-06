@@ -15,6 +15,7 @@ function InputWrapper({
   refreshKey,
   inputValueType = 'text',
   placeholder = '',
+  isDebounced = true,
 }) {
   const noInputTypes = ['location', 'textarea', 'date']
 
@@ -42,7 +43,7 @@ function InputWrapper({
             placeholder={placeholder}
             className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
             onChange={onChange}
-            debounceTimeout={800}
+            debounceTimeout={isDebounced ? 800 : 0}
             key={refreshKey}
             type={inputValueType}
             pattern={inputValueType === 'tel' ? '[0-9]{3} [0-9]{3} [0-9]{4}' : ''}

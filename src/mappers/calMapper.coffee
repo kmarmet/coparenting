@@ -5,12 +5,6 @@ import Manager from "../managers/manager"
 import DB from "../database/DB"
 
 CalendarMapper =
-  currentUserEventPath: (currentUser, event) ->
-    if event?.shareWith and event?.shareWith?.length > 0
-      return "#{DB.tables.calendarEvents}/#{currentUser.phone}/sharedEvents"
-    else
-      return "#{DB.tables.calendarEvents}/#{currentUser.phone}/events"
-
   reminderTimes: (timeframe) ->
     if Manager.contains(timeframe,'hour')
       return ReminderTimes.hour

@@ -1,6 +1,5 @@
 import React, { useContext, useRef, useState } from 'react'
 import DB from '@db'
-import tables from '@screenNames'
 import Manager from '@manager'
 import globalState from '../../context'
 import moment from 'moment'
@@ -18,7 +17,6 @@ import Toggle from 'react-toggle'
 import { ImEye } from 'react-icons/im'
 import { PiMoneyWavyDuotone } from 'react-icons/pi'
 import MenuItem from '@mui/material/MenuItem'
-
 import { formatNameFirstNameOnly } from '../../globalFunctions'
 import UploadInputs from '../shared/uploadInputs'
 import DateManager from '../../managers/dateManager'
@@ -83,7 +81,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
 
   const submitNewExpense = async () => {
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-
+    console.log(validAccounts)
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign expenses to',
@@ -153,7 +151,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     const cleanObject = ObjectManager.cleanObject(newExpense, ModelNames.expense)
 
     // Add to DB
-    await DB.add(tables.expenseTracker, cleanObject).finally(async () => {
+    await DB.add(`${DB.tables.expenseTracker}/${currentUser.phone}`, cleanObject).finally(async () => {
       // Add repeating expense to DB
       if (repeatInterval.length > 0 && repeatingEndDate.length > 0) {
         await addRepeatingExpensesToDb()
@@ -199,7 +197,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
         newExpense.repeating = true
         expensesToPush.push(newExpense)
       })
-      await DB_UserScoped.addMultipleExpenses(expensesToPush)
+      await DB_UserScoped.addMultipleExpenses(currentUser, expensesToPush)
     }
   }
 
@@ -414,33 +412,29 @@ export default function NewExpenseForm({ hideCard, showCard }) {
 
           <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'}></InputWrapper>
 
-          {currentUser && (
-            <CheckboxGroup
-              required={true}
-              parentLabel={'Who will be paying the expense?'}
-              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
-              checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
-              onCheck={(e) => {
-                const checkbox = e.target
-                document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
-                checkbox.classList.add('active')
-                handlePayerSelection(e).then((r) => r)
-              }}
-            />
-          )}
+          <CheckboxGroup
+            required={true}
+            parentLabel={'Who will be paying the expense?'}
+            dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+            checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
+            onCheck={(e) => {
+              const checkbox = e.target
+              document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
+              checkbox.classList.add('active')
+              handlePayerSelection(e).then((r) => r)
+            }}
+          />
 
           {/* SHARE WITH */}
-          {currentUser && (
-            <ShareWithCheckboxes
-              icon={<ImEye />}
-              shareWith={currentUser?.coparents?.map((x) => x.phone)}
-              onCheck={handleShareWithSelection}
-              labelText={'Share with'}
-              containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
-              checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
-            />
-          )}
+          <ShareWithCheckboxes
+            icon={<ImEye />}
+            shareWith={currentUser?.coparents?.map((x) => x.phone)}
+            onCheck={handleShareWithSelection}
+            labelText={'Share with'}
+            containerClass={'share-with-coparents'}
+            dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+            checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
+          />
 
           {/* INCLUDING WHICH CHILDREN */}
           {currentUser && currentUser?.children !== undefined && (

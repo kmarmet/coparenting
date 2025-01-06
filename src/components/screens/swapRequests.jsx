@@ -18,23 +18,6 @@ import { PiCheckBold, PiSwapDuotone } from 'react-icons/pi'
 import { Fade } from 'react-awesome-reveal'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import Toggle from 'react-toggle'
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from 'globalFunctions'
 import DateManager from '../../managers/dateManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import DomManager from '../../managers/domManager'
@@ -44,6 +27,7 @@ import CheckboxGroup from '../shared/checkboxGroup'
 import ObjectManager from '../../managers/objectManager'
 import ModelNames from '../../models/modelNames'
 import ActivityCategory from '../../models/activityCategory'
+import StringManager from '../../managers/stringManager'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -93,17 +77,16 @@ export default function SwapRequests() {
       updatedRequest.responseDueDate = moment(responseDueDate).format(DateFormats.dateForDb)
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.swapRequest)
-    await DB.delete(DB.tables.swapRequests, activeRequest.id)
-    await DB.add(`${DB.tables.swapRequests}`, cleanedRequest).then(async () => {
-      await getSecuredRequests()
-      setActiveRequest(updatedRequest)
-      setShowDetails(false)
-      await resetForm()
-    })
+    await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser.phone}`, cleanedRequest, cleanedRequest.id)
+    await getSecuredRequests()
+    setActiveRequest(updatedRequest)
+    setShowDetails(false)
+    await resetForm()
   }
 
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getSwapRequests(currentUser).then((r) => r)
+    console.log(allRequests)
     setExistingRequests(allRequests)
   }
 
@@ -112,8 +95,8 @@ export default function SwapRequests() {
     const recipientName = recipient.name
     // Rejected
     if (decision === Decisions.rejected) {
-      await DB.updateRecord(DB.tables.swapRequests, activeRequest, 'reason', rejectionReason, 'id')
-      await DB.updateRecord(DB.tables.swapRequests, activeRequest, 'status', 'rejected', 'id')
+      await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser.phone}`, activeRequest, activeRequest.id)
+
       const notifMessage = NotificationManager.templates.swapRequestRejection(activeRequest, recipientName)
       NotificationManager.sendNotification(
         'Swap Request Decision',
@@ -129,7 +112,8 @@ export default function SwapRequests() {
     // Approved
     if (decision === Decisions.approved) {
       const notifMessage = NotificationManager.templates.swapRequestApproval(activeRequest, recipientName)
-      await DB.updateRecord(DB.tables.swapRequests, activeRequest, 'status', 'approved', 'id')
+      await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser.phone}`, activeRequest, activeRequest.id)
+
       NotificationManager.sendNotification(
         'Swap Request Decision',
         notifMessage,
@@ -144,7 +128,7 @@ export default function SwapRequests() {
 
   const setCurrentRequest = async (request) => {
     const coparent = await DB_UserScoped.getCoparentByPhone(request.ownerPhone, currentUser)
-    setCreatedBy(formatNameFirstNameOnly(coparent.name))
+    setCreatedBy(StringManager.formatNameFirstNameOnly(coparent.name))
     setShowDetails(true)
     setActiveRequest(request)
   }
@@ -193,17 +177,14 @@ export default function SwapRequests() {
   const deleteRequest = async (action = 'deleted') => {
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
-        await DB.delete(DB.tables.swapRequests, activeRequest?.id)
+        await DB.deleteById(`${DB.tables.swapRequests}/${currentUser.phone}`, activeRequest?.id)
         AlertManager.successAlert(`Swap Request has been deleted`)
         setShowDetails(false)
       })
     } else {
       if (activeRequest?.ownerPhone === currentUser?.phone) {
-        await DB.delete(DB.tables.swapRequests, activeRequest?.id)
+        await DB.delete(`${DB.tables.swapRequests}/${currentUser.phone}`, activeRequest?.id)
         AlertManager.successAlert(`Swap Request has been deleted.`)
-      } else {
-        await DB.delete(DB.tables.swapRequests, activeRequest?.id)
-        AlertManager.successAlert(`Swap Request has been rejected and a notification has been sent to the request recipient.`)
       }
       setShowDetails(false)
     }
@@ -274,7 +255,7 @@ export default function SwapRequests() {
               <div className="flex flex-start" id="row">
                 <p id="title">
                   <b>Status: </b>
-                  {uppercaseFirstLetterOfAllWords(activeRequest?.status)}
+                  {StringManager.uppercaseFirstLetterOfAllWords(activeRequest?.status)}
                 </p>
               </div>
 
@@ -320,32 +301,32 @@ export default function SwapRequests() {
                 {activeRequest?.ownerPhone === currentUser?.phone && (
                   <p id="title">
                     <b>Sent to: </b>
-                    {formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
+                    {StringManager.formatNameFirstNameOnly(
+                      currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name
+                    )}
                   </p>
                 )}
               </div>
 
               {/* REASON */}
               {Manager.isValid(activeRequest?.reason) && (
-                <div className="flex flex-start" id="row">
-                  <p id="title">
+                <div className="flex flex-start wrap no-gap" id="row">
+                  <p id="title" className="w-100">
                     <b>Reason </b>
-                    <br />
-                    {activeRequest?.reason}
                   </p>
+                  <span>{activeRequest?.reason}</span>
                 </div>
               )}
               {/* CHILDREN */}
               {Manager.isValid(activeRequest?.children) && (
-                <div className="flex flex-start two-column" id="row">
+                <div className="flex flex-start wrap no-gap" id="row">
                   <p id="title" className="w-100">
                     <b>Children</b>
-                    <br />
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: `${activeRequest?.children?.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                      }}></span>
                   </p>
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: `${activeRequest?.children?.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
+                    }}></span>
                 </div>
               )}
             </Fade>
@@ -457,7 +438,7 @@ export default function SwapRequests() {
                             {moment(request.startDate).format('dddd, MMM Do')} to {moment(request.endDate).format('dddd, MMM Do')}
                           </p>
                           <span className={`${request.status} status`} id="request-status">
-                            {uppercaseFirstLetterOfAllWords(request.status)}
+                            {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
                           </span>
                         </div>
                       )}
@@ -469,7 +450,7 @@ export default function SwapRequests() {
                               {moment(request.startDate).format('dddd, MMM Do')}
                             </p>
                             <span className={`${request.status} status`} id="request-status">
-                              {uppercaseFirstLetterOfAllWords(request.status)}
+                              {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
                             </span>
                           </>
                         )}
@@ -480,7 +461,7 @@ export default function SwapRequests() {
                               {moment(request.startDate).format('dddd, MMM Do')}
                             </p>
                             <span className={`${request.status} status`} id="request-status">
-                              {uppercaseFirstLetterOfAllWords(request.status)}
+                              {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
                             </span>
                           </>
                         )}

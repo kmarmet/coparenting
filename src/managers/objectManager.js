@@ -19,19 +19,15 @@ import User from "../models/user";
 
 import Coparent from "../models/coparent";
 
-import ConversationThread from "../models/chat/chatThread";
+import ChatThread from "../models/chat/chatThread";
 
-import ConversationMessage from "../models/chat/chatMessage";
+import ChatMessage from "../models/chat/chatMessage";
 
 import ChildUser from "../models/child/childUser";
 
 import Doc from "../models/doc";
 
 import Child from "../models/child/child";
-
-import ChatThread from "../models/chat/chatThread";
-
-import ChatMessage from "../models/chat/chatMessage";
 
 ObjectManager = {
   cleanObject: function(object, modelName) {

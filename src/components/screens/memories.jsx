@@ -10,25 +10,6 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import moment from 'moment'
 import { Fade } from 'react-awesome-reveal'
-
-import {
-  capitalizeFirstWord,
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
 import { LuImagePlus } from 'react-icons/lu'
 import ImageManager from '../../managers/imageManager'
 import { IoIosCloseCircle } from 'react-icons/io'
@@ -37,6 +18,7 @@ import NavBar from '../navBar'
 import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import DomManager from '../../managers/domManager'
+import StringManager from '../../managers/stringManager'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -169,7 +151,7 @@ export default function Memories() {
                       {imgObj?.title.length > 0 && (
                         <div id="title-and-date">
                           {/* TITLE */}
-                          <p className="title">{uppercaseFirstLetterOfAllWords(imgObj.title)}</p>
+                          <p className="title">{StringManager.uppercaseFirstLetterOfAllWords(imgObj.title)}</p>
 
                           {/* DATE */}
                           {DateManager.dateIsValid(imgObj.memoryCaptureDate) && (
@@ -189,7 +171,7 @@ export default function Memories() {
 
                       {/* NOTES */}
                       <div id="below-image" className="flex">
-                        <p className="text">{capitalizeFirstWord(imgObj?.notes)}</p>
+                        <p className="text">{StringManager.capitalizeFirstWord(imgObj?.notes)}</p>
 
                         {/* SAVE ICON */}
                         <p onClick={(e) => saveMemoryImage(e)} id="download-text">

@@ -7,17 +7,15 @@
     width: 100vw;
     height: 100vh;
     mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
-
-//    overflow: hidden;
     * {
       text-align: center;
       line-height: 1;
     }
-    
+
     #title {
       font-size: 50px;
       font-weight: $fwBold;
-      
+
       @media screen and (max-width: 600px) {
         font-size: 40px;
       }
@@ -27,17 +25,17 @@
       opacity: 0.7;
       padding-top: 5px;
     }
-    
+
     #images {
       display: flex;
       gap: 10px;
+      margin: 15px auto 0 auto;
       justify-content: center;
-      margin-top: 25px;
       overflow: hidden;
       img {
         max-width: 330px;
         height: auto;
-        
+
         &:first-child {
           position: relative;
           top: 50px;
@@ -47,25 +45,39 @@
           top: 50px;
         }
       }
+
+      @media screen and (max-width: 600px) {
+        gap: 0;
+        max-width: 100vw;
+        position: relative;
+
+        img {
+          max-width: 40vw;
+        }
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      height: auto;
     }
   }
   #home-navbar {
     justify-content: space-between;
     transition: all 0.3s ease-in-out;
-    padding:  20px;
+    padding: 20px;
     #choose-peace-text {
       color: $mainBlue;
       font-style: italic;
       font-weight: $fwMedium;
       line-height: 1.4;
-      
+
       span {
         font-style: italic;
         font-weight: $fwMedium;
         color: $coparentPurple;
       }
     }
-    
+
     svg {
       position: relative;
       font-size: 16px;
@@ -75,7 +87,7 @@
       left: unset;
       margin-left: 5px;
     }
-    
+
     #logo {
       height: 100px;
       width: auto;
@@ -83,11 +95,11 @@
         height: 75px;
       }
     }
-    
+
     #login-buttons {
       display: flex;
       gap: 15px;
-      
+
       button {
         &#register-button {
           color: $mainBlue;
@@ -96,10 +108,10 @@
         &#login-button {
         }
       }
-      
+
       @media screen and (max-width: 600px) {
         gap: 5px;
-        
+
         button {
           font-size: 14px;
           width: auto;
@@ -136,7 +148,7 @@
       opacity: 0.7;
       padding-bottom: 15px;
     }
-    
+
     .text-wrapper {
       .subtitle {
         opacity: 0.7;
@@ -258,9 +270,9 @@
               text-align: left;
               justify-self: flex-start;
               color: white;
-              
+
               b {
-                color:white;
+                color: white;
               }
             }
 
@@ -349,7 +361,7 @@
         border: 0;
         justify-content: space-between;
         width: 100%;
-        
+
         background-image: linear-gradient(
           45deg,
           hsl(260deg 100% 66%) 3%,
@@ -367,7 +379,6 @@
           p {
             color: white;
           }
-          
         }
         .img-wrapper {
           min-width: 25%;
@@ -447,8 +458,6 @@
       }
     }
     /*#endregion  DEFAULTS*/
-
-
 
     #below-fold-intro-text {
       text-align: center;
