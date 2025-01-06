@@ -28,30 +28,35 @@ import DateManager from "./dateManager";
 import _ from "lodash";
 
 SecurityManager = {
-  getCalendarEvents: async function(currentUser) {
-    var allEvents, coparent, coparentAndChildEvents, coparentEvents, event, i, j, k, len, len1, len2, ref, ref1, returnRecords;
-    returnRecords = [];
+  getShareWithItems: async function(currentUser, table) {
+    var coparent, coparentAndChildEvents, i, j, len, len1, ref, ref1, sharedItem, sharedItems;
     coparentAndChildEvents = [];
-    allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.phone : void 0}`));
     if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.coparents : void 0)) {
       ref = currentUser != null ? currentUser.coparents : void 0;
       for (i = 0, len = ref.length; i < len; i++) {
         coparent = ref[i];
-        coparentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${coparent.phone}`));
-        for (j = 0, len1 = coparentEvents.length; j < len1; j++) {
-          event = coparentEvents[j];
-          if (Manager.isValid(event != null ? event.shareWith : void 0)) {
-            if (event != null ? (ref1 = event.shareWith) != null ? ref1.includes(currentUser != null ? currentUser.phone : void 0) : void 0 : void 0) {
-              coparentAndChildEvents.push(event);
+        sharedItems = (await DB.getTable(`${table}/${coparent.phone}`));
+        for (j = 0, len1 = sharedItems.length; j < len1; j++) {
+          sharedItem = sharedItems[j];
+          if (Manager.isValid(sharedItem != null ? sharedItem.shareWith : void 0)) {
+            if (sharedItem != null ? (ref1 = sharedItem.shareWith) != null ? ref1.includes(currentUser != null ? currentUser.phone : void 0) : void 0 : void 0) {
+              coparentAndChildEvents.push(sharedItem);
             }
           }
         }
       }
     }
     coparentAndChildEvents = _.flattenDeep(coparentAndChildEvents);
+    return coparentAndChildEvents;
+  },
+  getCalendarEvents: async function(currentUser) {
+    var allEvents, event, i, len, returnRecords, sharedEvents;
+    returnRecords = [];
+    allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.phone : void 0}`));
+    sharedEvents = SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents);
     if (Manager.isValid(allEvents)) {
-      for (k = 0, len2 = allEvents.length; k < len2; k++) {
-        event = allEvents[k];
+      for (i = 0, len = allEvents.length; i < len; i++) {
+        event = allEvents[i];
         if (DateManager.isValidDate(event.startDate)) {
           if (event.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
             returnRecords.push(event);
@@ -59,107 +64,98 @@ SecurityManager = {
         }
       }
     }
-    returnRecords = [...coparentAndChildEvents, ...returnRecords];
+    if (Manager.isValid(sharedEvents)) {
+      returnRecords = [...sharedEvents, ...returnRecords];
+    }
     return returnRecords;
   },
   getExpenses: async function(currentUser) {
-    var allExpenses, expense, i, len, returnRecords, shareWith;
+    var allExpenses, expense, i, len, returnRecords, sharedExpenses;
     returnRecords = [];
     allExpenses = Manager.convertToArray((await DB.getTable(`${DB.tables.expenseTracker}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
+    sharedExpenses = SecurityManager.getShareWithItems(currentUser, DB.tables.expenseTracker);
     if (Manager.isValid(allExpenses)) {
       for (i = 0, len = allExpenses.length; i < len; i++) {
         expense = allExpenses[i];
-        shareWith = expense.shareWith;
         if (expense.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(expense);
         }
-        if (Manager.isValid(shareWith)) {
-          if (shareWith.includes(currentUser != null ? currentUser.phone : void 0)) {
-            returnRecords.push(expense);
-          }
-        }
       }
+    }
+    if (Manager.isValid(sharedExpenses)) {
+      returnRecords = [...sharedExpenses, ...returnRecords];
     }
     return returnRecords;
   },
   getSwapRequests: async function(currentUser) {
-    var allRequests, i, len, request, returnRecords, shareWith;
+    var allRequests, i, len, request, returnRecords, sharedSwaps;
     returnRecords = [];
     allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.swapRequests}/${currentUser.phone}`))).flat();
+    sharedSwaps = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
-        shareWith = request.shareWith;
         if (request.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(request);
         }
-        if (Manager.isValid(shareWith)) {
-          if (shareWith.includes(currentUser != null ? currentUser.phone : void 0)) {
-            returnRecords.push(request);
-          }
-        }
       }
+    }
+    if (Manager.isValid(sharedSwaps)) {
+      returnRecords = [...sharedSwaps, ...returnRecords];
     }
     return returnRecords;
   },
   getTransferChangeRequests: async function(currentUser) {
-    var allRequests, i, len, request, returnRecords, shareWith;
+    var allRequests, i, len, request, returnRecords, sharedTransfers;
     returnRecords = [];
     allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.transferChangeRequests}/${currentUser.phone}`))).flat();
+    sharedTransfers = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
-        shareWith = request.shareWith;
         if (request.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(request);
         }
-        if (Manager.isValid(shareWith)) {
-          if (shareWith.includes(currentUser != null ? currentUser.phone : void 0)) {
-            returnRecords.push(request);
-          }
-        }
       }
+    }
+    if (Manager.isValid(sharedTransfers)) {
+      returnRecords = [...sharedTransfers, ...returnRecords];
     }
     return returnRecords.flat();
   },
   getDocuments: async function(currentUser) {
-    var allDocs, doc, i, len, returnRecords, shareWith;
+    var allDocs, doc, i, len, returnRecords, sharedDocs;
     returnRecords = [];
-    allDocs = Manager.convertToArray((await DB.getTable(DB.tables.documents))).flat();
+    allDocs = Manager.convertToArray((await DB.getTable(`${DB.tables.documents}/${currentUser.phone}`))).flat();
+    sharedDocs = SecurityManager.getShareWithItems(currentUser, DB.tables.documents);
     if (Manager.isValid(allDocs)) {
       for (i = 0, len = allDocs.length; i < len; i++) {
         doc = allDocs[i];
-        shareWith = doc.shareWith;
-        if (doc.phone === (currentUser != null ? currentUser.phone : void 0)) {
-          returnRecords.push(doc);
-        }
-        if (doc.phone === (currentUser != null ? currentUser.phone : void 0)) {
-          returnRecords.push(doc);
-        }
-        if (Manager.isValid(shareWith)) {
+        if (doc.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(doc);
         }
       }
     }
+    if (Manager.isValid(sharedDocs)) {
+      returnRecords = [...sharedDocs, ...returnRecords];
+    }
     return returnRecords.flat();
   },
   getMemories: async function(currentUser) {
-    var allMemories, i, len, memory, returnRecords, shareWith;
+    var allMemories, i, len, memory, returnRecords, sharedMemories;
     returnRecords = [];
-    allMemories = Manager.convertToArray((await DB.getTable(`${DB.tables.memories}`))).flat();
+    allMemories = Manager.convertToArray((await DB.getTable(`${DB.tables.memories}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
+    sharedMemories = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
     if (Manager.isValid(allMemories)) {
       for (i = 0, len = allMemories.length; i < len; i++) {
         memory = allMemories[i];
-        shareWith = memory.shareWith;
         if (memory.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
           returnRecords.push(memory);
         }
-        if (Manager.isValid(shareWith)) {
-          if (shareWith.includes(currentUser != null ? currentUser.phone : void 0)) {
-            returnRecords.push(memory);
-          }
-        }
       }
+    }
+    if (Manager.isValid(sharedMemories)) {
+      returnRecords = [...sharedMemories, ...returnRecords];
     }
     return returnRecords.flat();
   },

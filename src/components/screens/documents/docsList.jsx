@@ -8,29 +8,12 @@ import DocumentsManager from '../../../managers/documentsManager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import { GrDocumentImage, GrDocumentText, GrDocumentUpload } from 'react-icons/gr'
 import { Fade } from 'react-awesome-reveal'
-
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import SecurityManager from '../../../managers/securityManager'
 import UploadDocuments from './uploadDocuments'
 import NavBar from '../../navBar'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import DomManager from '../../../managers/domManager'
+import StringManager from '../../../managers/stringManager'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
@@ -42,6 +25,7 @@ export default function DocsList() {
 
   const getSecuredDocs = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)
+    console.log(allDocs)
     setDocs(allDocs)
     setState({ ...state, isLoading: false })
   }
@@ -60,13 +44,12 @@ export default function DocsList() {
   const deleteDocs = async () => {
     DocumentsManager.deleteDocsWithIds(toDelete, currentUser, (docId) => {
       setToDelete([])
-      // setDocs(docs.filter((x) => x.id !== docId))
     })
   }
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, DB.tables.documents), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.documents}/${currentUser?.phone}`), async (snapshot) => {
       await getSecuredDocs()
     })
   }
@@ -93,7 +76,7 @@ export default function DocsList() {
             <div className="sections">
               {Manager.isValid(docs) &&
                 docs.map((doc, index) => {
-                  const fileType = getFileExtension(doc.name).contains('docx') ? 'Document' : 'Image'
+                  const fileType = StringManager.getFileExtension(doc.name).contains('docx') ? 'Document' : 'Image'
                   return (
                     <div key={Manager.getUid()} className="row" key={index}>
                       <div className="flex section">
@@ -103,7 +86,7 @@ export default function DocsList() {
                             setSelectedDoc(doc)
                             setState({ ...state, docToView: doc, currentScreen: ScreenNames.docViewer })
                           }}>
-                          {removeFileExtension(doc.name)}
+                          {StringManager.removeFileExtension(doc.name)}
                         </p>
                         <div className={`checkbox delete`} onClick={(e) => handleDeleteCheckbox(e.currentTarget)}>
                           <span className="checkmark-icon material-icons-round">check</span>

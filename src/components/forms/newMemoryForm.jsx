@@ -10,23 +10,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import DateFormats from '../../constants/dateFormats'
 import moment from 'moment'
 import Memory from '../../models/memory.js'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 
 import SecurityManager from '../../managers/securityManager'
@@ -39,6 +22,7 @@ import ImageManager from '../../managers/imageManager'
 import AlertManager from '../../managers/alertManager'
 import DB_UserScoped from '@userScoped'
 import ActivityCategory from '../../models/activityCategory'
+import StringManager from '../../managers/stringManager'
 
 export default function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -53,7 +37,6 @@ export default function NewMemoryForm({ hideCard, showCard }) {
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
     setState({ ...state, currentUser: updatedCurrentUser, isLoading: false })
     setResetKey(Manager.getUid())
-    hideCard()
   }
 
   const handleShareWithSelection = async (e) => {
@@ -113,6 +96,9 @@ export default function NewMemoryForm({ hideCard, showCard }) {
       return false
     }
 
+    MyConfetti.fire()
+    hideCard()
+
     // Upload Image
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.id, localImages)
       .then(() => {
@@ -134,7 +120,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
             cleanedObject.ownerPhone = currentUser?.phone
 
             // Add to Database
-            await DB.add(`${DB.tables.memories}`, cleanedObject)
+            await DB.add(`${DB.tables.memories}/${currentUser.phone}`, cleanedObject)
           }
 
           // Send Notification
@@ -142,13 +128,12 @@ export default function NewMemoryForm({ hideCard, showCard }) {
             newMemory.shareWith,
             currentUser,
             `New Memory`,
-            `${formatNameFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
+            `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
             ActivityCategory.memories
           )
         })
         AppManager.setAppBadge(1)
         await resetForm()
-        MyConfetti.fire()
       })
   }
 

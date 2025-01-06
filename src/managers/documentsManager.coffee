@@ -2,38 +2,22 @@ import Manager from "./manager"
 import DB from "../database/DB"
 import { child, getDatabase, ref, set } from 'firebase/database'
 import FirebaseStorage from "../database/firebaseStorage"
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount
-} from "../globalFunctions"
 import DatasetManager from "./datasetManager"
 
 export default DocumentsManager =
-  deleteDocsWithIds: (toDelete, currentUser, callback = () => {}) ->
-    for docId in toDelete
-      docs = DatasetManager.getValidArray(await DB.getTable(DB.tables.documents))
+  deleteDocsWithIds: (idsToDelete, currentUser, callback = () => {}) ->
+    for docId in idsToDelete
+      docs = DatasetManager.getValidArray(await DB.getTable("#{DB.tables.documents}/#{currentUser?.phone}"))
       if Manager.isValid(docs)
         for thisDoc in docs
           if thisDoc.id == docId
-            await DB.delete(DB.tables.documents, docId)
+            await DB.deleteById("#{DB.tables.documents}/#{currentUser?.phone}", docId)
             await FirebaseStorage.delete(FirebaseStorage.directories.documents, currentUser.id, thisDoc.name)
             if callback then callback(docId)
-  addDocumentToDocumentsTable: ( data) ->
+
+  addDocumentToDocumentsTable: (currentUser, data) ->
     dbRef = ref getDatabase()
-    tableData = await DB.getTable (DB.tables.documents)
-    tableData = Manager.convertToArray (tableData)
+    tableData = await DB.getTable ("#{DB.tables.documents}/#{currentUser?.phone}")
 
     if Manager.isValid (tableData)
       if tableData.length > 0
@@ -42,5 +26,6 @@ export default DocumentsManager =
         tableData = [data]
     else
       tableData = [data]
+    console.log(tableData)
 
-    await set child(dbRef, DB.tables.documents), tableData
+    await set child(dbRef, "#{DB.tables.documents}/#{currentUser.phone}"), tableData

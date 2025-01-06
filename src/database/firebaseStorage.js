@@ -95,15 +95,16 @@ const FirebaseStorage = {
       reader.readAsDataURL(blob)
     })
   },
-  getUrlsFromFiles: async (directory, userId, imgs) => {
-    // console.log(directory, userId, domImg);
+  getUrlsFromFiles: async (directory, userId, imgs, firstImageName) => {
     let urls = []
     const imgFiles = Array.from(imgs)
     await FirebaseStorage.getImages(directory, userId).then(async (images) => {
       await Promise.all(images).then((firebaseUrls) => {
         firebaseUrls.forEach(async (url) => {
           const imageName = FirebaseStorage.getImageNameFromUrl(url)
+          console.log(imageName)
           const fileImageNames = imgFiles.map((x) => x.name)
+          console.log(fileImageNames)
           if (fileImageNames.includes(imageName)) {
             urls.push(url)
           }
@@ -145,8 +146,6 @@ const FirebaseStorage = {
     }),
   upload: async (imgDirectory, id, img, imgName) => {
     const storage = getStorage()
-    // console.log(img)
-    // console.log(`${imgDirectory}/${id}/${imgName}/`)
     const storageRef = ref(storage, `${imgDirectory}/${id}/${imgName}/`)
     await uploadBytes(storageRef, img)
     const returnUrl = await getDownloadURL(ref(storage, `${imgDirectory}/${id}/${imgName}/`))

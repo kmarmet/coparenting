@@ -14,34 +14,17 @@ import {
 
 import FirebaseStorage from "../database/firebaseStorage";
 
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount
-} from "../globalFunctions";
-
 import DatasetManager from "./datasetManager";
 
 export default DocumentsManager = {
-  deleteDocsWithIds: async function(toDelete, currentUser, callback = () => {
+  deleteDocsWithIds: async function(idsToDelete, currentUser, callback = () => {
       return {};
     }) {
     var docId, docs, i, len, results, thisDoc;
     results = [];
-    for (i = 0, len = toDelete.length; i < len; i++) {
-      docId = toDelete[i];
-      docs = DatasetManager.getValidArray((await DB.getTable(DB.tables.documents)));
+    for (i = 0, len = idsToDelete.length; i < len; i++) {
+      docId = idsToDelete[i];
+      docs = DatasetManager.getValidArray((await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.phone : void 0}`)));
       if (Manager.isValid(docs)) {
         results.push((await (async function() {
           var j, len1, results1;
@@ -49,7 +32,7 @@ export default DocumentsManager = {
           for (j = 0, len1 = docs.length; j < len1; j++) {
             thisDoc = docs[j];
             if (thisDoc.id === docId) {
-              await DB.delete(DB.tables.documents, docId);
+              await DB.deleteById(`${DB.tables.documents}/${currentUser != null ? currentUser.phone : void 0}`, docId);
               await FirebaseStorage.delete(FirebaseStorage.directories.documents, currentUser.id, thisDoc.name);
               if (callback) {
                 results1.push(callback(docId));
@@ -68,11 +51,10 @@ export default DocumentsManager = {
     }
     return results;
   },
-  addDocumentToDocumentsTable: async function(data) {
+  addDocumentToDocumentsTable: async function(currentUser, data) {
     var dbRef, tableData;
     dbRef = ref(getDatabase());
-    tableData = (await DB.getTable(DB.tables.documents));
-    tableData = Manager.convertToArray(tableData);
+    tableData = (await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.phone : void 0}`));
     if (Manager.isValid(tableData)) {
       if (tableData.length > 0) {
         tableData = [...tableData, data].filter(function(item) {
@@ -84,7 +66,8 @@ export default DocumentsManager = {
     } else {
       tableData = [data];
     }
-    return (await set(child(dbRef, DB.tables.documents), tableData));
+    console.log(tableData);
+    return (await set(child(dbRef, `${DB.tables.documents}/${currentUser.phone}`), tableData));
   }
 };
 

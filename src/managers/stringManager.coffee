@@ -18,6 +18,12 @@ StringManager = {
     returnString = returnString.split(' ')[0]
     StringManager.uppercaseFirstLetterOfAllWords(returnString)
 
+  getFileExtension: (fileName) ->
+    fileName.split('.').pop()
+
+  removeFileExtension: (input) ->
+    input.replace(/\.[^/.]+$/, '')
+
   capitalizeFirstWord: (str) ->
     firstWord = str.split(' ')[0];
     capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);

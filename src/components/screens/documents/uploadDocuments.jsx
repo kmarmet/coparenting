@@ -5,23 +5,6 @@ import FirebaseStorage from '@firebaseStorage'
 import CheckboxGroup from '@shared/checkboxGroup'
 import Doc from '../../../models/doc'
 import NotificationManager from '@managers/notificationManager.js'
-
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import UploadInputs from '../../shared/uploadInputs'
 import SecurityManager from '../../../managers/securityManager'
 import ShareWithCheckboxes from '../../shared/shareWithCheckboxes'
@@ -37,6 +20,7 @@ import ActivityCategory from '../../../models/activityCategory'
 import DB_UserScoped from '@userScoped'
 import InputWrapper from '../../shared/inputWrapper'
 import DB from '@db'
+import StringManager from '../../../managers/stringManager'
 
 export default function UploadDocuments({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -57,6 +41,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     setState({ ...state, isLoading: true })
     let files = document.querySelector('#upload-input').files
     const image = files[0]
+    const fileExtension = StringManager.getFileExtension(image.name)
 
     // Validation
     if (files.length === 0) {
@@ -77,7 +62,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
         return false
       }
     }
-    if (docType === 'document' && Object.entries(files).map((x) => !contains(x[1].name, '.docx'))[0]) {
+    if (docType === 'document' && Object.entries(files).map((x) => !Manager.contains(x[1].name, '.docx'))[0]) {
       AlertManager.throwError('Uploaded file MUST be of type .docx')
       setState({ ...state, isLoading: false })
       return false
@@ -111,11 +96,11 @@ export default function UploadDocuments({ hideCard, showCard }) {
     }
 
     // Upload to Firebase Storage
-    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.documents}/`, currentUser?.id, files)
+    await FirebaseStorage.upload(`${FirebaseStorage.directories.documents}/`, `${currentUser?.id}`, image, `${docName}.${fileExtension}`)
       .then(() => {})
       .finally(async () => {
         // Add documents to 'documents' property for currentUser
-        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.documents, currentUser?.id, files).then(async (urls) => {
+        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.documents, currentUser?.id, files, docName).then(async (urls) => {
           resetForm()
           // Add to user documents object
           for (const url of urls) {
@@ -126,7 +111,8 @@ export default function UploadDocuments({ hideCard, showCard }) {
             newDocument.type = docType
             newDocument.name = docName
             const cleanedDoc = ObjectManager.cleanObject(newDocument, ModelNames.doc)
-            await DocumentsManager.addDocumentToDocumentsTable(cleanedDoc)
+            console.log(cleanedDoc)
+            await DocumentsManager.addDocumentToDocumentsTable(currentUser, cleanedDoc)
           }
 
           AlertManager.successAlert('Document Uploaded!')
@@ -136,11 +122,12 @@ export default function UploadDocuments({ hideCard, showCard }) {
             shareWith,
             currentUser,
             `New Document`,
-            `${formatNameFirstNameOnly(currentUser.name)} has uploaded a new document`,
+            `${StringManager.formatNameFirstNameOnly(currentUser.name)} has uploaded a new document`,
             ActivityCategory.documents
           )
         })
       })
+    setState({ ...state, isLoading: false })
   }
 
   const handleShareWithSelection = async (e) => {

@@ -21,93 +21,103 @@ import DateManager from "./dateManager"
 import _ from "lodash"
 
 SecurityManager =
-  getCalendarEvents: (currentUser) ->
-    returnRecords = []
-    coparentAndChildEvents = []
-    allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.phone}")
-
+  getShareWithItems: (currentUser, table) ->
+    coparentAndChildEvents  = []
     if Manager.isValid(currentUser) && Manager.isValid(currentUser?.coparents)
       for coparent in currentUser?.coparents
-        coparentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{coparent.phone}")
-        for event in coparentEvents
-          if Manager.isValid(event?.shareWith)
-            if event?.shareWith?.includes currentUser?.phone
-              coparentAndChildEvents.push(event)
+        sharedItems = await DB.getTable("#{table}/#{coparent.phone}")
+        for sharedItem in sharedItems
+          if Manager.isValid(sharedItem?.shareWith)
+            if sharedItem?.shareWith?.includes currentUser?.phone
+              coparentAndChildEvents.push(sharedItem)
 
-    coparentAndChildEvents = _.flattenDeep(coparentAndChildEvents);
+    coparentAndChildEvents = _.flattenDeep(coparentAndChildEvents)
+    coparentAndChildEvents
+
+  getCalendarEvents: (currentUser) ->
+    returnRecords = []
+    allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.phone}")
+    sharedEvents = SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents);
 
     if Manager.isValid(allEvents)
       for event in allEvents
         if DateManager.isValidDate(event.startDate)
           if (event.ownerPhone == currentUser?.phone)
             returnRecords.push(event)
-    returnRecords = [coparentAndChildEvents..., returnRecords...]
+
+    if Manager.isValid(sharedEvents)
+      returnRecords = [sharedEvents..., returnRecords...]
+
     return returnRecords
 
   getExpenses: (currentUser) ->
     returnRecords = []
     allExpenses = Manager.convertToArray(await DB.getTable("#{DB.tables.expenseTracker}/#{currentUser?.phone}")).flat()
+    sharedExpenses = SecurityManager.getShareWithItems(currentUser, DB.tables.expenseTracker);
+
     if Manager.isValid(allExpenses)
       for expense in allExpenses
-        shareWith = expense.shareWith
         if (expense.ownerPhone == currentUser?.phone)
           returnRecords.push(expense)
-        if Manager.isValid(shareWith)
-          if shareWith.includes(currentUser?.phone)
-            returnRecords.push(expense)
+    if Manager.isValid(sharedExpenses)
+      returnRecords = [sharedExpenses..., returnRecords...]
     return returnRecords
 
   getSwapRequests: (currentUser) ->
     returnRecords = []
     allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.swapRequests}/#{currentUser.phone}")).flat()
+    sharedSwaps = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+
     if Manager.isValid(allRequests)
       for request in allRequests
-        shareWith = request.shareWith
         if (request.ownerPhone == currentUser?.phone)
           returnRecords.push(request)
-        if Manager.isValid(shareWith)
-          if shareWith.includes(currentUser?.phone)
-            returnRecords.push(request)
+
+    if Manager.isValid(sharedSwaps)
+      returnRecords = [sharedSwaps..., returnRecords...]
     return returnRecords
 
   getTransferChangeRequests: (currentUser) ->
     returnRecords = []
     allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.transferChangeRequests}/#{currentUser.phone}")).flat()
+    sharedTransfers = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+
     if Manager.isValid(allRequests)
       for request in allRequests
-        shareWith = request.shareWith
         if (request.ownerPhone == currentUser?.phone)
           returnRecords.push(request)
-        if Manager.isValid(shareWith)
-          if shareWith.includes(currentUser?.phone)
-            returnRecords.push(request)
+
+    if Manager.isValid(sharedTransfers)
+      returnRecords = [sharedTransfers..., returnRecords...]
     return returnRecords.flat()
 
   getDocuments: (currentUser) ->
     returnRecords = []
-    allDocs = Manager.convertToArray(await DB.getTable(DB.tables.documents)).flat()
+    allDocs = Manager.convertToArray(await DB.getTable("#{DB.tables.documents}/#{currentUser.phone}")).flat()
+    sharedDocs = SecurityManager.getShareWithItems(currentUser, DB.tables.documents);
+
     if Manager.isValid(allDocs)
       for doc in allDocs
-        shareWith = doc.shareWith
-        if (doc.phone == currentUser?.phone)
+        if (doc.ownerPhone == currentUser?.phone)
           returnRecords.push(doc)
-        if (doc.phone == currentUser?.phone)
-          returnRecords.push(doc)
-        if Manager.isValid(shareWith)
-            returnRecords.push(doc)
+
+    if Manager.isValid(sharedDocs)
+      returnRecords = [sharedDocs..., returnRecords...]
     return returnRecords.flat()
   getMemories: (currentUser) ->
     returnRecords = []
-    allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}")).flat()
+    allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}/#{currentUser?.phone}")).flat()
+    sharedMemories = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+
     if Manager.isValid(allMemories)
       for memory in allMemories
-        shareWith = memory.shareWith
         if (memory.ownerPhone == currentUser?.phone)
           returnRecords.push(memory)
-        if Manager.isValid(shareWith)
-          if shareWith.includes(currentUser?.phone)
-            returnRecords.push(memory)
+    if Manager.isValid(sharedMemories)
+      returnRecords = [sharedMemories..., returnRecords...]
+
     return returnRecords.flat()
+
   getArchivedChats: (currentUser) ->
     returnRecords = []
     allArchivedChats = Manager.convertToArray(await DB.getTable("#{DB.tables.archivedChats}")).flat()
@@ -117,6 +127,7 @@ SecurityManager =
           if (chat.ownerPhone == currentUser?.phone)
             returnRecords.push(chat)
     return returnRecords.flat()
+
   getInputSuggestions: (currentUser) ->
     returnRecords = []
     suggestions = Manager.convertToArray(await DB.getTable(DB.tables.suggestions)).flat()
@@ -125,6 +136,7 @@ SecurityManager =
         if suggestion.ownerPhone == currentUser?.phone
           returnRecords.push(suggestion)
     return returnRecords.flat()
+
   getChats: (currentUser) ->
     chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}/#{currentUser?.phone}")).flat()
     securedChats = []

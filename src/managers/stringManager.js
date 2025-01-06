@@ -25,6 +25,12 @@ StringManager = {
     returnString = returnString.split(' ')[0];
     return StringManager.uppercaseFirstLetterOfAllWords(returnString);
   },
+  getFileExtension: function(fileName) {
+    return fileName.split('.').pop();
+  },
+  removeFileExtension: function(input) {
+    return input.replace(/\.[^\/.]+$/, '');
+  },
   capitalizeFirstWord: function(str) {
     var capitalizedFirstWord, firstWord;
     firstWord = str.split(' ')[0];

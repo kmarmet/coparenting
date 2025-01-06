@@ -202,9 +202,9 @@ const DB = {
   },
   deleteMemory: async (phoneUid, memory) => {
     const dbRef = ref(getDatabase())
-    const key = await DB.getSnapshotKey(`${DB.tables.memories}`, memory, 'id')
+    const key = await DB.getSnapshotKey(`${DB.tables.memories}/${phoneUid}`, memory, 'id')
     try {
-      remove(child(dbRef, `${DB.tables.memories}/${key}`))
+      remove(child(dbRef, `${DB.tables.memories}/${phoneUid}/${key}`))
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }

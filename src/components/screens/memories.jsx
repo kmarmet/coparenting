@@ -81,7 +81,7 @@ export default function Memories() {
     }
     // Memory was shared with current user -> hide it
     else {
-      const memoryKey = await DB.getSnapshotKey(`${DB.tables.memories}`, record, 'id')
+      const memoryKey = await DB.getSnapshotKey(`${DB.tables.memories}/${currentUser.phone}`, record, 'id')
       const updatedShareWith = record.shareWith.filter((x) => x !== currentUser?.phone)
       await DB.updateByPath(`${DB.tables.memories}/${memoryKey}/shareWith`, updatedShareWith)
     }
@@ -113,7 +113,7 @@ export default function Memories() {
   }
 
   const onTableChange = async () => {
-    onValue(child(dbRef, `${DB.tables.memories}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.memories}/${currentUser.phone}`), async (snapshot) => {
       await getSecuredMemories(currentUser)
     })
   }
