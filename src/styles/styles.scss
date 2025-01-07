@@ -387,6 +387,10 @@
     .green {
       color: $green;
     }
+    
+    .low-opacity-text {
+      opacity: .8;
+    }
 
     .views-wrapper {
       @include viewsWrapper;

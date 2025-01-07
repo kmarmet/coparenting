@@ -368,16 +368,16 @@ export default function SwapRequests() {
                         checked: <span className="material-icons-round">face</span>,
                         unchecked: null,
                       }}
-                      defaultChecked={activeRequest?.children.length > 0}
+                      defaultChecked={activeRequest?.children?.length > 0}
                       className={'ml-auto reminder-toggle'}
                       onChange={(e) => setIncludeChildren(!includeChildren)}
                     />
                   </div>
                   {includeChildren ||
-                    (activeRequest?.children.length > 0 && (
+                    (activeRequest?.children?.length > 0 && (
                       <CheckboxGroup
-                        defaultLabels={activeRequest?.children.map((x) => x)}
-                        checkboxLabels={currentUser?.children.map((x) => x['general'].name)}
+                        defaultLabels={activeRequest?.children?.map((x) => x)}
+                        checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
                         onCheck={handleChildSelection}
                       />
                     ))}

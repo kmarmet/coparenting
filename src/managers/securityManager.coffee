@@ -25,11 +25,11 @@ SecurityManager =
     coparentAndChildEvents  = []
     if Manager.isValid(currentUser) && Manager.isValid(currentUser?.coparents)
       for coparent in currentUser?.coparents
-        sharedItems = await DB.getTable("#{table}/#{coparent.phone}")
-        for sharedItem in sharedItems
-          if Manager.isValid(sharedItem?.shareWith)
-            if sharedItem?.shareWith?.includes currentUser?.phone
-              coparentAndChildEvents.push(sharedItem)
+        coparentItems = await DB.getTable("#{table}/#{coparent.phone}")
+        for item in coparentItems
+          if Manager.isValid(item?.shareWith)
+            if item?.shareWith?.includes currentUser?.phone
+              coparentAndChildEvents.push(item)
 
     coparentAndChildEvents = _.flattenDeep(coparentAndChildEvents)
     coparentAndChildEvents
@@ -37,8 +37,7 @@ SecurityManager =
   getCalendarEvents: (currentUser) ->
     returnRecords = []
     allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.phone}")
-    sharedEvents = SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents);
-
+    sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents);
     if Manager.isValid(allEvents)
       for event in allEvents
         if DateManager.isValidDate(event.startDate)
@@ -53,7 +52,7 @@ SecurityManager =
   getExpenses: (currentUser) ->
     returnRecords = []
     allExpenses = Manager.convertToArray(await DB.getTable("#{DB.tables.expenseTracker}/#{currentUser?.phone}")).flat()
-    sharedExpenses = SecurityManager.getShareWithItems(currentUser, DB.tables.expenseTracker);
+    sharedExpenses = await SecurityManager.getShareWithItems(currentUser, DB.tables.expenseTracker);
 
     if Manager.isValid(allExpenses)
       for expense in allExpenses
@@ -66,7 +65,7 @@ SecurityManager =
   getSwapRequests: (currentUser) ->
     returnRecords = []
     allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.swapRequests}/#{currentUser.phone}")).flat()
-    sharedSwaps = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+    sharedSwaps = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
 
     if Manager.isValid(allRequests)
       for request in allRequests
@@ -80,7 +79,7 @@ SecurityManager =
   getTransferChangeRequests: (currentUser) ->
     returnRecords = []
     allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.transferChangeRequests}/#{currentUser.phone}")).flat()
-    sharedTransfers = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+    sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
 
     if Manager.isValid(allRequests)
       for request in allRequests
@@ -94,7 +93,7 @@ SecurityManager =
   getDocuments: (currentUser) ->
     returnRecords = []
     allDocs = Manager.convertToArray(await DB.getTable("#{DB.tables.documents}/#{currentUser.phone}")).flat()
-    sharedDocs = SecurityManager.getShareWithItems(currentUser, DB.tables.documents);
+    sharedDocs = await SecurityManager.getShareWithItems(currentUser, DB.tables.documents);
 
     if Manager.isValid(allDocs)
       for doc in allDocs
@@ -107,7 +106,7 @@ SecurityManager =
   getMemories: (currentUser) ->
     returnRecords = []
     allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}/#{currentUser?.phone}")).flat()
-    sharedMemories = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+    sharedMemories = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
 
     if Manager.isValid(allMemories)
       for memory in allMemories

@@ -29,18 +29,18 @@ import _ from "lodash";
 
 SecurityManager = {
   getShareWithItems: async function(currentUser, table) {
-    var coparent, coparentAndChildEvents, i, j, len, len1, ref, ref1, sharedItem, sharedItems;
+    var coparent, coparentAndChildEvents, coparentItems, i, item, j, len, len1, ref, ref1;
     coparentAndChildEvents = [];
     if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.coparents : void 0)) {
       ref = currentUser != null ? currentUser.coparents : void 0;
       for (i = 0, len = ref.length; i < len; i++) {
         coparent = ref[i];
-        sharedItems = (await DB.getTable(`${table}/${coparent.phone}`));
-        for (j = 0, len1 = sharedItems.length; j < len1; j++) {
-          sharedItem = sharedItems[j];
-          if (Manager.isValid(sharedItem != null ? sharedItem.shareWith : void 0)) {
-            if (sharedItem != null ? (ref1 = sharedItem.shareWith) != null ? ref1.includes(currentUser != null ? currentUser.phone : void 0) : void 0 : void 0) {
-              coparentAndChildEvents.push(sharedItem);
+        coparentItems = (await DB.getTable(`${table}/${coparent.phone}`));
+        for (j = 0, len1 = coparentItems.length; j < len1; j++) {
+          item = coparentItems[j];
+          if (Manager.isValid(item != null ? item.shareWith : void 0)) {
+            if (item != null ? (ref1 = item.shareWith) != null ? ref1.includes(currentUser != null ? currentUser.phone : void 0) : void 0 : void 0) {
+              coparentAndChildEvents.push(item);
             }
           }
         }
@@ -53,7 +53,7 @@ SecurityManager = {
     var allEvents, event, i, len, returnRecords, sharedEvents;
     returnRecords = [];
     allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.phone : void 0}`));
-    sharedEvents = SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents);
+    sharedEvents = (await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents));
     if (Manager.isValid(allEvents)) {
       for (i = 0, len = allEvents.length; i < len; i++) {
         event = allEvents[i];
@@ -73,7 +73,7 @@ SecurityManager = {
     var allExpenses, expense, i, len, returnRecords, sharedExpenses;
     returnRecords = [];
     allExpenses = Manager.convertToArray((await DB.getTable(`${DB.tables.expenseTracker}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
-    sharedExpenses = SecurityManager.getShareWithItems(currentUser, DB.tables.expenseTracker);
+    sharedExpenses = (await SecurityManager.getShareWithItems(currentUser, DB.tables.expenseTracker));
     if (Manager.isValid(allExpenses)) {
       for (i = 0, len = allExpenses.length; i < len; i++) {
         expense = allExpenses[i];
@@ -91,7 +91,7 @@ SecurityManager = {
     var allRequests, i, len, request, returnRecords, sharedSwaps;
     returnRecords = [];
     allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.swapRequests}/${currentUser.phone}`))).flat();
-    sharedSwaps = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+    sharedSwaps = (await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests));
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
@@ -109,7 +109,7 @@ SecurityManager = {
     var allRequests, i, len, request, returnRecords, sharedTransfers;
     returnRecords = [];
     allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.transferChangeRequests}/${currentUser.phone}`))).flat();
-    sharedTransfers = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+    sharedTransfers = (await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests));
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
@@ -127,7 +127,7 @@ SecurityManager = {
     var allDocs, doc, i, len, returnRecords, sharedDocs;
     returnRecords = [];
     allDocs = Manager.convertToArray((await DB.getTable(`${DB.tables.documents}/${currentUser.phone}`))).flat();
-    sharedDocs = SecurityManager.getShareWithItems(currentUser, DB.tables.documents);
+    sharedDocs = (await SecurityManager.getShareWithItems(currentUser, DB.tables.documents));
     if (Manager.isValid(allDocs)) {
       for (i = 0, len = allDocs.length; i < len; i++) {
         doc = allDocs[i];
@@ -145,7 +145,7 @@ SecurityManager = {
     var allMemories, i, len, memory, returnRecords, sharedMemories;
     returnRecords = [];
     allMemories = Manager.convertToArray((await DB.getTable(`${DB.tables.memories}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
-    sharedMemories = SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+    sharedMemories = (await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests));
     if (Manager.isValid(allMemories)) {
       for (i = 0, len = allMemories.length; i < len; i++) {
         memory = allMemories[i];

@@ -469,53 +469,54 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                 <div id="details">
                   <div className="flex">
                     <b>Event Name:</b>
-                    <p>{StringManager.uppercaseFirstLetterOfAllWords(event?.title)}</p>
+                    <span className="low-opacity-text">{StringManager.uppercaseFirstLetterOfAllWords(event?.title)}</span>
                   </div>
                   {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
                     <div className="flex">
                       <b>Date:</b>
-                      <p>{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</p>
+                      <span className="low-opacity-text">{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</span>
                     </div>
                   )}
                   {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
                     <div className="flex wrap no-gap">
                       <b className="w-100">Dates</b>
-                      <p>
+                      <span className="low-opacity-text">
                         {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}&nbsp;to&nbsp;
                         {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
-                      </p>
+                      </span>
                     </div>
                   )}
                   {DateManager.isValidDate(event?.startTime) && DateManager.isValidDate(event?.endTime) && (
                     <div className="flex">
                       <b>Time:</b>
-                      <p>
+                      <span className="low-opacity-text">
                         {event?.startTime} to {event?.endTime}
-                      </p>
+                      </span>
                     </div>
                   )}
                   {DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime) && (
                     <div className="flex">
                       <b>Time:</b>
-                      <p>{event?.startTime}</p>
+                      <span className="low-opacity-text">{event?.startTime}</span>
                     </div>
                   )}
                   {Manager.isValid(event?.reminderTimes) && (
                     <div className="flex wrap no-gap">
                       <b className="w-100">Reminders</b>
-                      <p
+                      <span
+                        className="low-opacity-text"
                         dangerouslySetInnerHTML={{
                           __html: `${event?.reminderTimes
                             .map((x) => CalendarMapper.readableReminderBeforeTimeframes(x))
                             .join('|')
                             .replaceAll('|', '<span class="divider">|</span>')}`,
-                        }}></p>
+                        }}></span>
                     </div>
                   )}
                   {Manager.isValid(eventShareWith) && (
                     <div className="flex mt-10">
                       <b>Shared with:</b>
-                      <p>{shareWithNames?.join(', ')}</p>
+                      <span className="low-opacity-text">{shareWithNames?.join(', ')}</span>
                     </div>
                   )}
                   {Manager.isValid(event?.children) && (
@@ -805,7 +806,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                 </InputWrapper>
 
                 {/* PHONE */}
-                <InputWrapper inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
+                <InputWrapper defaultValue={event?.phone} inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
 
                 {/* NOTES */}
                 <InputWrapper

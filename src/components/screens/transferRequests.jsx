@@ -191,7 +191,7 @@ export default function TransferRequests() {
                 <div className="flex flex-start" id="row">
                   <p id="title">
                     <b>Transfer Date: </b>
-                    {DateManager.formatDate(activeRequest?.date)}
+                    <span className="low-opacity-text">{DateManager.formatDate(activeRequest?.date)}</span>
                   </p>
                 </div>
               )}
@@ -202,15 +202,19 @@ export default function TransferRequests() {
                   {!Manager.isValid(activeRequest?.endDate) && (
                     <p id="title" className="mr-auto">
                       <b>Respond by: </b>
-                      {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
-                      {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                      <span className="low-opacity-text">
+                        {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
+                        {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                      </span>
                     </p>
                   )}
                   {Manager.isValid(activeRequest?.endDate) && (
                     <p id="title">
                       <b>Respond by:</b>
-                      {DateManager.formatDate(activeRequest?.responseDueDate)}&nbsp;to&nbsp;{DateManager.formatDate(activeRequest?.endDate)}
-                      {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                      <span className="low-opacity-text">
+                        {DateManager.formatDate(activeRequest?.responseDueDate)}&nbsp;to&nbsp;{DateManager.formatDate(activeRequest?.endDate)}
+                        {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                      </span>
                     </p>
                   )}
                 </div>
@@ -221,7 +225,7 @@ export default function TransferRequests() {
                 <div className="flex" id="row">
                   <p id="title" className="mr-auto">
                     <b>Time: </b>
-                    {activeRequest?.time}
+                    <span className="low-opacity-text">{activeRequest?.time}</span>
                   </p>
                 </div>
               )}
@@ -230,17 +234,16 @@ export default function TransferRequests() {
               <div className="flex flex-start" id="row">
                 <p id="title">
                   <b>Status: </b>
-                  {StringManager.uppercaseFirstLetterOfAllWords(activeRequest?.status)}
+                  <span className="low-opacity-text">{StringManager.uppercaseFirstLetterOfAllWords(activeRequest?.status)}</span>
                 </p>
               </div>
 
               {/* LOCATION */}
               {Manager.isValid(activeRequest?.location) && (
-                <div className="flex flex-start" id="row">
-                  <p id="title" className="mr-auto">
+                <div className="flex flex-start wrap no-gap" id="row">
+                  <p id="title" className="mr-auto w-100">
                     <b>Location</b>
-                    <br />
-                    {activeRequest?.location}
+                    <span className="low-opacity-text">{activeRequest?.location}</span>
                   </p>
                 </div>
               )}
@@ -254,10 +257,10 @@ export default function TransferRequests() {
               {/* REASON */}
               {Manager.isValid(activeRequest?.reason) && (
                 <div className="flex" id="row">
-                  <p id="title" className="mr-auto">
+                  <p id="title" className="mr-auto wrap no-gap w-100">
                     <b>Reason</b>
                     <br />
-                    {activeRequest?.reason}
+                    <span className="low-opacity-text">{activeRequest?.reason}</span>
                   </p>
                 </div>
               )}
@@ -289,7 +292,7 @@ export default function TransferRequests() {
               {/*  NEW LOCATION*/}
               <InputWrapper inputType={'location'} labelText={'Location'}>
                 <Autocomplete
-                  placeholder={currentUser?.defaultTransferLocation}
+                  defaultValue={requestLocation}
                   apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
                   options={{
                     types: ['geocode', 'establishment'],
@@ -305,7 +308,7 @@ export default function TransferRequests() {
               <InputWrapper inputType={'date'} labelText={'Respond by'}>
                 <MobileDatePicker
                   onOpen={addThemeToDatePickers}
-                  className={`${theme}  w-100`}
+                  className={`${theme} w-100`}
                   defaultValue={moment(activeRequest?.responseDueDate)}
                   onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
                 />
@@ -387,8 +390,8 @@ export default function TransferRequests() {
                           <p id="subtitle">From {StringManager.formatNameFirstNameOnly(request?.createdBy)}</p>
                         )}
                         {request?.recipientPhone !== currentUser.phone && (
-                          <p id="subtitle">
-                            Request Sent to{' '}
+                          <p id="subtitle" className="low-opacity-text">
+                            Request Sent to&nbsp;
                             {StringManager.formatNameFirstNameOnly(
                               currentUser?.coparents?.filter((x) => x?.phone === request?.recipientPhone)[0]?.name
                             )}

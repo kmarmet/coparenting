@@ -1,6 +1,5 @@
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
-import { DateRangePicker } from 'rsuite'
 import Autocomplete from 'react-google-autocomplete'
 import scheduleTypes from '@constants/scheduleTypes'
 import globalState from '../../context'
@@ -15,11 +14,10 @@ import MyConfetti from '@shared/myConfetti'
 import Note from '@shared/note'
 import DB_UserScoped from '@userScoped'
 import VisitationMapper from 'mappers/visitationMapper'
-import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import { MobileDatePicker, MobileDateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../constants/dateFormats'
 import CalendarMapper from '../../mappers/calMapper'
 import { ImEye } from 'react-icons/im'
-import { formatNameFirstNameOnly, uniqueArray } from '../../globalFunctions'
 import BottomCard from '../shared/bottomCard'
 import ScheduleTypes from '../../constants/scheduleTypes'
 import Label from '../shared/label' // Icons
@@ -35,6 +33,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa6'
+import StringManager from '../../managers/stringManager'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -64,6 +63,7 @@ export default function Visitation() {
   const [existingScheduleEvents, setExistingScheduleEvents] = useState([])
   const [showUpdateHolidaysButton, setShowUpdateHolidaysButton] = useState(true)
   const [showDeleteButton, setShowDeleteButton] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   // Holiday
   const [selectedHolidayDates, setSelectedHolidayDates] = useState([])
   const [showFFExample, setShowFFExample] = useState(false)
@@ -84,7 +84,8 @@ export default function Visitation() {
     AlertManager.successAlert('Visitation Schedule Removed')
   }
 
-  const resetScreen = () => {
+  const resetForm = async () => {
+    Manager.resetForm('add-fifty-fifty-schedule')
     setScheduleType('')
     setDefaultSelectedWeekends([])
     setFifthWeekendSelection('')
@@ -96,8 +97,11 @@ export default function Visitation() {
     setThirdFFPeriodStart('')
     setThirdFFPeriodEnd('')
     setShowFFExample(false)
-    const checkboxes = document.querySelectorAll('.box')
-    checkboxes.forEach((box) => box.classList.remove('active'))
+    setRefreshKey(Manager.getUid())
+    setShowFiftyFiftyCard(false)
+    setShowCustomWeekendsCard(false)
+    setShowEveryOtherWeekendCard(false)
+    await getCurrentVisitationSchedule()
   }
 
   // Specific Weekends
@@ -116,7 +120,7 @@ export default function Visitation() {
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
+      dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
       dateObject.ownerPhone = currentUser?.phone
@@ -133,11 +137,12 @@ export default function Visitation() {
       }
     })
 
+    MyConfetti.fire()
+    await resetForm()
     events = Manager.getUniqueArray(events, 'startDate')
 
     // Upload to DB
     VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
-    MyConfetti.fire()
   }
 
   // Every Other Weekend
@@ -152,7 +157,7 @@ export default function Visitation() {
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
+      dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
       dateObject.ownerPhone = currentUser?.phone
@@ -162,10 +167,11 @@ export default function Visitation() {
 
       events.push(dateObject)
     })
+    MyConfetti.fire()
+    await resetForm()
     // Upload to DB
     VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
     setShowEveryOtherWeekendCard(false)
-    MyConfetti.fire()
   }
 
   // Every Weekend
@@ -176,7 +182,7 @@ export default function Visitation() {
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
+      dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
       dateObject.ownerPhone = currentUser?.phone
@@ -213,13 +219,12 @@ export default function Visitation() {
     scheduleDates.forEach((date, index) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
-      dateObject.startDate = moment(date).format('MM/DD/yyyy')
+      dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
+      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
       dateObject.ownerPhone = currentUser?.phone
       dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
-      dateObject.shareWith = shareWith
       dateObject.id = Manager.getUid()
       dateObject.visitationSchedule = ScheduleTypes.fiftyFifty
       dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
@@ -229,10 +234,11 @@ export default function Visitation() {
         events = [...events, dateObject]
       }
     })
-
+    MyConfetti.fire()
+    await resetForm()
+    setShowDeleteButton(true)
     // Upload to DB
     await VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
-    MyConfetti.fire()
   }
 
   // SET HOLIDAYS IN DATABASE
@@ -245,8 +251,8 @@ export default function Visitation() {
         const dateObject = new CalendarEvent()
         const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format('MM/DD'))
         // Required
-        dateObject.title = `${formatNameFirstNameOnly(currentUser?.name)}'s Holiday Visitation`
-        dateObject.startDate = moment(holidayDateString).format('MM/DD/yyyy')
+        dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Holiday Visitation`
+        dateObject.startDate = moment(holidayDateString).format(DateFormats.dateForDb)
         dateObject.holidayName = holidayName
         // Not Required
         dateObject.ownerPhone = currentUser?.phone
@@ -305,7 +311,7 @@ export default function Visitation() {
         const holidayMonth = moment(dataDate).month() + 1
         const currentMonth = moment().month() + 1
         const holidayYear = holidayMonth < currentMonth ? moment().year() + 1 : moment().year()
-        const dateAsString = moment(`${dataDate}/${holidayYear}`, 'MM/DD/yyyy').format(DateFormats.dateForDb)
+        const dateAsString = moment(`${dataDate}/${holidayYear}`, DateFormats.dateForDb).format(DateFormats.dateForDb)
         setSelectedHolidayDates([...selectedHolidayDates, dateAsString])
       },
       (e) => {
@@ -313,7 +319,7 @@ export default function Visitation() {
         const holidayMonth = moment(dataDate).month() + 1
         const currentMonth = moment().month() + 1
         const holidayYear = holidayMonth < currentMonth ? moment().year() + 1 : moment().year()
-        const dateAsString = moment(`${dataDate}/${holidayYear}`, 'MM/DD/yyyy').format(DateFormats.dateForDb)
+        const dateAsString = moment(`${dataDate}/${holidayYear}`, DateFormats.dateForDb).format(DateFormats.dateForDb)
         let filtered = selectedHolidayDates.filter((x) => x !== dateAsString)
         setSelectedHolidayDates(filtered)
       },
@@ -372,11 +378,11 @@ export default function Visitation() {
       const userHolidaysDates = userHolidaysList.map((x) => x.date)
       const allHolidayDates = holidaysObject.holidays.map((x) => x.date)
       setDataDates(allHolidayDates)
-      setSelectedHolidayDates(uniqueArray(userHolidaysDates).flat())
+      setSelectedHolidayDates(DatasetManager.getUniqueArray(userHolidaysDates, true))
       setHolidayLabels(holidays)
-      setUserHolidayEvents(uniqueArray(userHolidays).flat())
+      setUserHolidayEvents(DatasetManager.getUniqueArray(userHolidays, true))
       setTimeout(() => {
-        setDefaultHolidays(uniqueArray(userHolidaysList).flat())
+        setDefaultHolidays(DatasetManager.getUniqueArray(userHolidaysList, true))
       }, 300)
     })
   }
@@ -463,9 +469,10 @@ export default function Visitation() {
           wrapperClass="add-fifty-fifty-schedule"
           title={'50/50 Visitation Schedule'}
           showCard={showFiftyFiftyCard}
+          refreshKey={refreshKey}
           onClose={() => {
             setScheduleType('')
-            setShowFiftyFiftyCard(false)
+            resetForm().then((r) => r)
           }}>
           <div className="text mt-15 mb-15">
             <Accordion id={'checkboxes'} expanded={expandFiftyFiftyInfoText}>
@@ -497,69 +504,60 @@ export default function Visitation() {
           </div>
 
           {/* 50/50 DATE PICKERS */}
-          <InputWrapper labelText={'First Period'} required={true} inputType={'date'}>
-            <DateRangePicker
-              showOneCalendar
-              showHeader={false}
-              editable={false}
-              placement="auto"
-              character=" to "
-              className=" event-date"
-              format={'MM/dd/yyyy'}
-              onChange={(e) => {
-                let formattedDates = []
-                if (e && e.length > 0) {
-                  e.forEach((date) => {
-                    formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                  })
-                  setFirstFFPeriodStart(formattedDates[0])
-                  setFirstFFPeriodEnd(formattedDates[1])
+          {/* FIRST PERIOD */}
+          <InputWrapper wrapperClasses="date-range-input" labelText={'First Period'} required={true} inputType={'date'}>
+            <MobileDateRangePicker
+              className={'w-100'}
+              onOpen={() => {
+                Manager.hideKeyboard('date-range-input')
+                addThemeToDatePickers()
+              }}
+              onAccept={(dateArray) => {
+                if (Manager.isValid(dateArray)) {
+                  setFirstFFPeriodStart(dateArray[0].format(DateFormats.dateForDb))
+                  setFirstFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
                 }
               }}
+              slots={{ field: SingleInputDateRangeField }}
+              name="allowedRange"
             />
           </InputWrapper>
-          <InputWrapper labelText={'Second Period'} required={true} inputType={'date'}>
-            <DateRangePicker
-              showOneCalendar
-              showHeader={false}
-              editable={false}
-              className=" event-date"
-              placement="auto"
-              label={''}
-              placeholder={''}
-              character=" to "
-              format={'MM/dd/yyyy'}
-              onChange={(e) => {
-                let formattedDates = []
-                if (e && e.length > 0) {
-                  e.forEach((date) => {
-                    formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                  })
-                  setSecondFFPeriodStart(formattedDates[0])
-                  setSecondFFPeriodEnd(formattedDates[1])
+
+          {/* SECOND PERIOD */}
+          <InputWrapper wrapperClasses="date-range-input" labelText={'Second Period'} required={true} inputType={'date'}>
+            <MobileDateRangePicker
+              className={'w-100'}
+              onOpen={() => {
+                Manager.hideKeyboard('date-range-input')
+                addThemeToDatePickers()
+              }}
+              onAccept={(dateArray) => {
+                if (Manager.isValid(dateArray)) {
+                  setSecondFFPeriodStart(dateArray[0].format(DateFormats.dateForDb))
+                  setSecondFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
                 }
               }}
+              slots={{ field: SingleInputDateRangeField }}
+              name="allowedRange"
             />
           </InputWrapper>
-          <InputWrapper labelText={'Third  Period'} required={false} inputType={'date'}>
-            <DateRangePicker
-              showOneCalendar
-              showHeader={false}
-              editable={false}
-              className="event-date mb-20"
-              placement="auto"
-              character=" to "
-              format={'MM/dd/yyyy'}
-              onChange={(e) => {
-                let formattedDates = []
-                if (e && e.length > 0) {
-                  e.forEach((date) => {
-                    formattedDates.push(new Date(moment(date).format('MM/DD/YYYY')))
-                  })
-                  setThirdFFPeriodStart(formattedDates[0])
-                  setThirdFFPeriodEnd(formattedDates[1])
+
+          {/* THIRD PERIOD */}
+          <InputWrapper wrapperClasses="date-range-input" labelText={'Third Period'} required={false} inputType={'date'}>
+            <MobileDateRangePicker
+              className={'w-100'}
+              onOpen={() => {
+                Manager.hideKeyboard('date-range-input')
+                addThemeToDatePickers()
+              }}
+              onAccept={(dateArray) => {
+                if (Manager.isValid(dateArray)) {
+                  setThirdFFPeriodStart(dateArray[0].format(DateFormats.dateForDb))
+                  setThirdFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
                 }
               }}
+              slots={{ field: SingleInputDateRangeField }}
+              name="allowedRange"
             />
           </InputWrapper>
         </BottomCard>
@@ -574,8 +572,8 @@ export default function Visitation() {
           title={'Every other Weekend'}
           showCard={showEveryOtherWeekendCard}
           onClose={() => {
-            setShowEveryOtherWeekendCard(false)
             setScheduleType('')
+            resetForm().then((r) => r)
           }}>
           <InputWrapper wrapperClasses="mt-15" labelText={'Friday of the next weekend you have your child(ren)'} required={true} inputType={'date'}>
             <MobileDatePicker onOpen={addThemeToDatePickers} onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100`} />
@@ -592,7 +590,7 @@ export default function Visitation() {
           title={'Custom Weekends Schedule'}
           showCard={showCustomWeekendsCard}
           onClose={() => {
-            setShowCustomWeekendsCard(false)
+            resetForm().then((r) => r)
             setScheduleType('')
           }}>
           <>
@@ -607,19 +605,12 @@ export default function Visitation() {
               checkboxLabels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend']}
             />
           </>
-          {defaultSelectedWeekends.length > 0 && (
-            <div className="buttons">
-              <button className="card-button" onClick={addSpecificWeekendsToCalendar}>
-                Done <span className="material-icons-round pl-5">check</span>
-              </button>
-            </div>
-          )}
         </BottomCard>
       </>
 
       {/* PAGE CONTAINER */}
       <div id="visitation-container" className={`${theme} page-container form`}>
-        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'visitation-fade-wrapper'}>
+        <Fade direction={'up'} duration={1000} triggerOnce={true}>
           {/* SCREEN TITLE */}
           <p className="screen-title">Visitation</p>
 

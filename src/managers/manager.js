@@ -207,7 +207,7 @@ const Manager = {
     let outputArray = Array.from(new Set(arr))
 
     if (Manager.isValid(propertyNameForUid)) {
-      return _.uniqueBy(arr, propertyNameForUid.toString())
+      return _.uniqBy(arr, propertyNameForUid.toString())
     }
     return outputArray
   },
