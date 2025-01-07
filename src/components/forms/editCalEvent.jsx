@@ -30,6 +30,7 @@ import AlertManager from '../../managers/alertManager'
 import DB_UserScoped from '@userScoped'
 import ActivityCategory from '../../models/activityCategory'
 import StringManager from '../../managers/stringManager'
+import { LuCalendarCheck } from 'react-icons/lu'
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
@@ -204,6 +205,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     updatedEvent.title = eventName
     updatedEvent.reminderTimes = eventReminderTimes
     updatedEvent.shareWith = eventShareWith
+    console.log(eventStartDate)
     updatedEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
     updatedEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
     updatedEvent.phone = eventPhone
@@ -277,8 +279,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
       // Update Single Event
       else {
-        const key = await DB.getSnapshotKey(dbPath, updatedEvent, 'id')
-        await DB.updateEntireRecord(`${dbPath}/${key}`, cleanedEvent, updatedEvent.id)
+        await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updatedEvent.id)
         await afterUpdateCallback()
       }
     }
@@ -440,7 +441,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       }}
       hasDelete={view === 'edit' && currentUser?.phone === event?.ownerPhone}
       onSubmit={currentUser?.phone === event?.ownerPhone ? submit : nonOwnerSubmit}
-      submitText={'Looks Good'}
+      submitText={'Update'}
+      submitIcon={<LuCalendarCheck />}
       hasSubmitButton={view === 'edit'}
       onClose={async () => {
         onClose(moment(event.startDate))
@@ -543,8 +545,10 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   )}
                   {Manager.isValid(event?.notes) && (
                     <div className="flex wrap no-gap">
-                      <b>Notes</b>
-                      <p>{event?.notes}</p>
+                      <p className="w-100">
+                        <b>Notes</b>
+                      </p>
+                      <span>{event?.notes}</span>
                     </div>
                   )}
                   {Manager.isValid(event?.location) && (
@@ -601,20 +605,17 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   {/* DATE */}
                   <div className="flex" id={'date-input-container'}>
                     {!isDateRange && (
-                      <>
-                        <div className="w-100">
-                          <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
-                            <MobileDatePicker
-                              onOpen={addThemeToDatePickers}
-                              value={moment(event?.startDate)}
-                              className={`${theme} m-0 w-100 event-from-date mui-input`}
-                              onAccept={(e) => {
-                                setEventStartDate(e)
-                              }}
-                            />
-                          </InputWrapper>
-                        </div>
-                      </>
+                      <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
+                        <MobileDatePicker
+                          onOpen={addThemeToDatePickers}
+                          defaultValue={DateManager.dateOrNull(moment(eventStartDate))}
+                          className={`${theme} m-0 w-100 event-from-date mui-input`}
+                          yearsPerRow={4}
+                          onAccept={(e) => {
+                            setEventStartDate(e)
+                          }}
+                        />
+                      </InputWrapper>
                     )}
 
                     {/* DATE RANGE */}
@@ -630,8 +631,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                             defaultValue={[moment(event?.startDate), moment(event?.endDate)]}
                             onAccept={(dateArray) => {
                               if (Manager.isValid(dateArray)) {
-                                setEventStartDate(moment(dateArray[0]).format('MM/DD/YYYY'))
-                                setEventEndDate(moment(dateArray[1]).format('MM/DD/YYYY'))
+                                setEventStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
+                                setEventEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
                                 setEventIsDateRange(true)
                               }
                             }}
@@ -779,6 +780,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
                 {/* URL/WEBSITE */}
                 <InputWrapper
+                  wrapperClasses="mt-15"
                   defaultValue={event?.websiteUrl}
                   labelText={'URL/Website'}
                   required={false}

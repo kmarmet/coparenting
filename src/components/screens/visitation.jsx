@@ -62,20 +62,27 @@ export default function Visitation() {
   const [showCustomWeekendsCard, setShowCustomWeekendsCard] = useState(false)
   const [scheduleType, setScheduleType] = useState('')
   const [existingScheduleEvents, setExistingScheduleEvents] = useState([])
-
+  const [showUpdateHolidaysButton, setShowUpdateHolidaysButton] = useState(true)
+  const [showDeleteButton, setShowDeleteButton] = useState(false)
   // Holiday
   const [selectedHolidayDates, setSelectedHolidayDates] = useState([])
   const [showFFExample, setShowFFExample] = useState(false)
   const [holidayLabels, setHolidayLabels] = useState([])
   const [userHolidayEvents, setUserHolidayEvents] = useState([])
   const [dataDates, setDataDates] = useState([])
-
   const updateDefaultTransferLocation = async (location, link) => {
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/defaultTransferNavLink`, link)
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/defaultTransferLocation`, location)
   }
 
-  const deleteSchedule = async () => await VisitationManager.deleteSchedule(existingScheduleEvents)
+  const deleteSchedule = async () => {
+    setState({ ...state, isLoading: true })
+    await VisitationManager.deleteSchedule(currentUser, existingScheduleEvents)
+    setExistingScheduleEvents([])
+    setShowDeleteButton(false)
+    setState({ ...state, isLoading: false })
+    AlertManager.successAlert('Visitation Schedule Removed')
+  }
 
   const resetScreen = () => {
     setScheduleType('')
@@ -129,23 +136,15 @@ export default function Visitation() {
     events = Manager.getUniqueArray(events, 'startDate')
 
     // Upload to DB
-    VisitationManager.addVisitationSchedule(events).then((r) => r)
+    VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
     MyConfetti.fire()
   }
 
   // Every Other Weekend
   const addEveryOtherWeekendToCalendar = async () => {
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-
     if (firstEveryOtherWeekend.length === 0) {
       AlertManager.throwError('Please choose the Friday of the next weekend YOU have the child(ren)')
       return false
-    }
-    if (validAccounts > 0 && currentUser?.coparents?.length > 0) {
-      if (shareWith.length === 0) {
-        AlertManager.throwError('Please choose who you would like to share this schedule with')
-        return false
-      }
     }
     // Set end date to the end of the year
     let weekends = VisitationManager.getEveryOtherWeekend(moment(firstEveryOtherWeekend).format(DateFormats.dateForDb))
@@ -157,17 +156,15 @@ export default function Visitation() {
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
       dateObject.ownerPhone = currentUser?.phone
-      dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
-      dateObject.id = Manager.getUid()
       dateObject.visitationSchedule = ScheduleTypes.everyOtherWeekend
       dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
 
       events.push(dateObject)
     })
-
     // Upload to DB
-    VisitationManager.addVisitationSchedule(events).then((r) => r)
+    VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
+    setShowEveryOtherWeekendCard(false)
     MyConfetti.fire()
   }
 
@@ -185,7 +182,6 @@ export default function Visitation() {
       dateObject.ownerPhone = currentUser?.phone
       dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
-      dateObject.id = Manager.getUid()
       dateObject.visitationSchedule = ScheduleTypes.everyWeekend
       dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
 
@@ -193,7 +189,7 @@ export default function Visitation() {
     })
 
     // Upload to DB
-    VisitationManager.addVisitationSchedule(events).then((r) => r)
+    VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
     MyConfetti.fire()
   }
 
@@ -235,7 +231,7 @@ export default function Visitation() {
     })
 
     // Upload to DB
-    await VisitationManager.addVisitationSchedule(events).then((r) => r)
+    await VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
     MyConfetti.fire()
   }
 
@@ -243,6 +239,7 @@ export default function Visitation() {
   const setHolidaysInDatabase = async () => {
     // Holidays
     if (Manager.isValid(selectedHolidayDates)) {
+      setShowUpdateHolidaysButton(false)
       let events = []
       selectedHolidayDates.forEach((holidayDateString) => {
         const dateObject = new CalendarEvent()
@@ -390,6 +387,7 @@ export default function Visitation() {
 
     if (scheduleEvents.length > 0) {
       setExistingScheduleEvents(scheduleEvents)
+      setShowDeleteButton(true)
     } else {
       setExistingScheduleEvents([])
     }
@@ -632,24 +630,25 @@ export default function Visitation() {
                 You currently have a 50/50 visitation schedule added to your calendar. If you would like to modify the current schedule or switch to
                 another schedule, please delete the current schedule first.
               </p>
-              <div className="buttons flex mt-15">
-                <button
-                  className="button red default center mb-20"
-                  onClick={() => {
-                    AlertManager.confirmAlert(
-                      'Are you sure you would like to permanently delete your current visitation schedule?',
-                      "I'm Sure",
-                      true,
-                      async () => {
-                        await deleteSchedule()
-                        AlertManager.successAlert('Event Deleted')
-                      },
-                      setScheduleType('')
-                    )
-                  }}>
-                  Delete Current Schedule
-                </button>
-              </div>
+              {showDeleteButton && (
+                <div className="buttons flex mt-15">
+                  <button
+                    className="button red default center mb-20"
+                    onClick={() => {
+                      AlertManager.confirmAlert(
+                        'Are you sure you would like to permanently delete your current visitation schedule?',
+                        "I'm Sure",
+                        true,
+                        async () => {
+                          await deleteSchedule()
+                        },
+                        setScheduleType('')
+                      )
+                    }}>
+                    Delete Current Schedule
+                  </button>
+                </div>
+              )}
             </>
           )}
 
@@ -716,9 +715,11 @@ export default function Visitation() {
             dataDate={dataDates}
           />
 
-          <button className="button default green center mt-30" onClick={() => setHolidaysInDatabase()}>
-            Update Holidays
-          </button>
+          {showUpdateHolidaysButton && (
+            <button className="button default green center mt-30" onClick={() => setHolidaysInDatabase()}>
+              Update Holidays
+            </button>
+          )}
         </Fade>
       </div>
       {!showEveryOtherWeekendCard && !showCustomWeekendsCard && !showFiftyFiftyCard && <NavBar navbarClass={'visitation no-add-new-button'}></NavBar>}

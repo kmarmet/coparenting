@@ -69,7 +69,7 @@ export default function EventCalendar() {
   }
 
   const addDayIndicators = async (events) => {
-    const paycheckStrings = ['payday', 'paycheck', 'pay', 'salary', 'paid']
+    const paycheckStrings = ['payday', 'paycheck', 'pay', 'salary', 'paid', 'payment']
     const emojiHolidays = await DB.getTable(DB.tables.holidayEvents)
     // Remove existing icons/dots before adding them again
     document.querySelectorAll('.dot-wrapper').forEach((wrapper) => wrapper.remove())
@@ -110,7 +110,7 @@ export default function EventCalendar() {
       const showPaydayEmoji = (title) => {
         let exists = false
         paycheckStrings.forEach((word) => {
-          if (title.toLowerCase().includes(word)) {
+          if (title.toLowerCase().indexOf(word.toLowerCase()) > -1) {
             exists = true
           }
         })

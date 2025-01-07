@@ -374,7 +374,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
   useEffect(() => {
     if (selectedNewEventDay) {
-      console.log(selectedNewEventDay)
       setEventStartDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
     }
   }, [selectedNewEventDay])

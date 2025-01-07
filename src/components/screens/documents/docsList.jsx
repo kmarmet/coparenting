@@ -25,7 +25,6 @@ export default function DocsList() {
 
   const getSecuredDocs = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)
-    console.log(allDocs)
     setDocs(allDocs)
     setState({ ...state, isLoading: false })
   }
@@ -78,7 +77,7 @@ export default function DocsList() {
                 docs.map((doc, index) => {
                   const fileType = StringManager.getFileExtension(doc.name).contains('docx') ? 'Document' : 'Image'
                   return (
-                    <div key={Manager.getUid()} className="row" key={index}>
+                    <div className="row" key={index}>
                       <div className="flex section">
                         <p
                           data-id={doc.id}
@@ -86,7 +85,7 @@ export default function DocsList() {
                             setSelectedDoc(doc)
                             setState({ ...state, docToView: doc, currentScreen: ScreenNames.docViewer })
                           }}>
-                          {StringManager.removeFileExtension(doc.name)}
+                          {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
                         </p>
                         <div className={`checkbox delete`} onClick={(e) => handleDeleteCheckbox(e.currentTarget)}>
                           <span className="checkmark-icon material-icons-round">check</span>

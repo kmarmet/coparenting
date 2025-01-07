@@ -66,7 +66,6 @@ export default DocumentsManager = {
     } else {
       tableData = [data];
     }
-    console.log(tableData);
     return (await set(child(dbRef, `${DB.tables.documents}/${currentUser.phone}`), tableData));
   }
 };

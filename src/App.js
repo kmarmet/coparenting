@@ -56,7 +56,7 @@ import DB_UserScoped from '@userScoped'
 import DB from '@db'
 import Manager from '@manager'
 import DomManager from './managers/domManager'
-import AppManager from './managers/appManager'
+import AppManager from './managers/appManager.js'
 
 export default function App() {
   // Initialize Firebase
@@ -162,6 +162,9 @@ export default function App() {
         // }
 
         const activities = await DB.getTable(`${DB.tables.activities}/${_currentUser.phone}`)
+
+        AppManager.deleteExpiredCalendarEvents(_currentUser).then((r) => r)
+        AppManager.deleteExpiredMemories(_currentUser).then((r) => r)
         // Update currentUser in state
         if (user.emailVerified) {
           setState({
@@ -177,7 +180,6 @@ export default function App() {
         console.log('signed out or user doesn"t exist')
       }
     })
-
     LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
   }, [])
 

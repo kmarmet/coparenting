@@ -198,6 +198,7 @@ export default function SwapRequests() {
 
   useEffect(() => {
     onTableChange().then((r) => r)
+    setView('details')
   }, [])
 
   return (
@@ -216,6 +217,7 @@ export default function SwapRequests() {
         wrapperClass="swap-requests"
         onClose={() => {
           setShowDetails(false)
+          setView('details')
           setActiveRequest(null)
         }}
         showCard={showDetails}>
@@ -366,13 +368,19 @@ export default function SwapRequests() {
                         checked: <span className="material-icons-round">face</span>,
                         unchecked: null,
                       }}
+                      defaultChecked={activeRequest?.children.length > 0}
                       className={'ml-auto reminder-toggle'}
                       onChange={(e) => setIncludeChildren(!includeChildren)}
                     />
                   </div>
-                  {includeChildren && (
-                    <CheckboxGroup checkboxLabels={currentUser?.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
-                  )}
+                  {includeChildren ||
+                    (activeRequest?.children.length > 0 && (
+                      <CheckboxGroup
+                        defaultLabels={activeRequest?.children.map((x) => x)}
+                        checkboxLabels={currentUser?.children.map((x) => x['general'].name)}
+                        onCheck={handleChildSelection}
+                      />
+                    ))}
                 </div>
               )}
 

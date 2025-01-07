@@ -26,6 +26,5 @@ export default DocumentsManager =
         tableData = [data]
     else
       tableData = [data]
-    console.log(tableData)
 
     await set child(dbRef, "#{DB.tables.documents}/#{currentUser.phone}"), tableData

@@ -7,23 +7,6 @@ import { FaCheck, FaChevronDown } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
-
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
 import { IoCheckmarkDoneOutline } from 'react-icons/io5'
 import DB from '@db'
 import Manager from '@manager'
@@ -35,6 +18,7 @@ import DatasetManager from '../../managers/datasetManager'
 import ScreenNames from '@screenNames'
 import ActivityCategory from '../../models/activityCategory'
 import { PiSealWarningDuotone } from 'react-icons/pi'
+import StringManager from '../../managers/stringManager'
 
 export default function Activity() {
   const { state, setState } = useContext(globalState)
@@ -160,9 +144,9 @@ export default function Activity() {
                   <div key={index} className="flex" id="row-wrapper">
                     <div className={`activity-row row ${className}`} onClick={() => changeScreen(screen)}>
                       <p className={`card-title ${className}`}>
-                        {criticalCategories.includes(category) && <PiSealWarningDuotone />} {uppercaseFirstLetterOfAllWords(title)}{' '}
+                        {criticalCategories.includes(category) && <PiSealWarningDuotone />} {StringManager.uppercaseFirstLetterOfAllWords(title)}{' '}
                       </p>
-                      <p className="text">{uppercaseFirstLetterOfAllWords(text)}</p>
+                      <p className="text">{StringManager.uppercaseFirstLetterOfAllWords(text)}</p>
                       <p id="date">{moment(dateCreated, DateFormats.fullDatetime).format(DateFormats.readableDatetime)}</p>
                     </div>
                     <div id="svg-wrapper" onClick={() => clearActivity(activity)}>

@@ -5,8 +5,6 @@ import Manager from "./manager";
 
 import DB from "../database/DB";
 
-import DateManager from "./dateManager";
-
 import moment from "moment";
 
 import {
@@ -19,6 +17,10 @@ import {
 import DateFormats from "../constants/dateFormats";
 
 import DB_UserScoped from "../database/db_userScoped";
+
+import CalendarManager from "./calendarManager";
+
+import FirebaseStorage from "../database/firebaseStorage";
 
 export default AppManager = {
   setAppBadge: (count) => {
@@ -44,41 +46,25 @@ export default AppManager = {
       return 'parent';
     }
   },
-  hidePopupCard: () => {
-    var cardContainer;
-    cardContainer = document.getElementById("popup-card-container");
-    if (cardContainer) {
-      return cardContainer.classList.remove("active");
-    }
-  },
-  applyVersionNumberToUrl: () => {
-    var formattedUpdateUrl, formattedUpdateUrlWithOneVersion, versionNumber;
-    versionNumber = Manager.getUid().substring(0, 4);
-    formattedUpdateUrl = window.location.href.replaceAll(versionNumber, '');
-    formattedUpdateUrlWithOneVersion = formattedUpdateUrl.substring(0, formattedUpdateUrl.indexOf("/") + versionNumber);
-    return history.replaceState(versionNumber, '', formattedUpdateUrlWithOneVersion);
-  },
-  deleteExpiredCalendarEvents: async function() {
-    var daysPassed, event, events, i, len;
-    events = (await DB.getTable(DB.tables.calendarEvents));
-    if (!Array.isArray(events)) {
-      events = Manager.convertToArray(events);
-    }
+  deleteExpiredCalendarEvents: async function(currentUser) {
+    var daysPassed, event, events, i, len, results;
+    events = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`));
     if (Manager.isValid(events)) {
       events = events.filter(function(x) {
         return x != null;
       });
+      events = events.flat();
+      results = [];
       for (i = 0, len = events.length; i < len; i++) {
         event = events[i];
-        if (!(Manager.isValid(event))) {
-          continue;
-        }
-        daysPassed = DateManager.getDuration('days', moment(), event.startDate);
-        if (daysPassed <= -30 && !event.isHoliday) {
-          await DB.delete(DB.tables.calendarEvents, event.id);
-          return;
+        daysPassed = moment().diff(event.startDate, 'days');
+        if (daysPassed >= 30) {
+          results.push((await CalendarManager.deleteEvent(currentUser, event.id)));
+        } else {
+          results.push(void 0);
         }
       }
+      return results;
     }
   },
   setUpdateAvailable: async function(updateAvailableValue = null) {
@@ -113,16 +99,21 @@ export default AppManager = {
     updateObject = (await DB.getTable("updateAvailable"));
     return updateObject;
   },
-  deleteExpiredMemories: async function() {
-    var i, key, len, memories, memory, results;
+  deleteExpiredMemories: async function(currentUser) {
+    var daysPassed, i, len, memories, memory, results;
     memories = (await DB.getTable(DB.tables.memories));
-    if (Manager.isValid(memories, true)) {
+    if (Manager.isValid(memories)) {
       results = [];
       for (i = 0, len = memories.length; i < len; i++) {
         memory = memories[i];
-        if (DateManager.getDuration("days", moment(memory != null ? memory.creationDate : void 0), moment()) > 28) {
-          key = (await DB.getNestedSnapshotKey("memories", memory, "id"));
-          results.push((await DB.deleteByPath(`memories/${key}`)));
+        daysPassed = moment().diff(event.creationDate, 'days');
+        if (daysPassed >= 30) {
+          await DB.delete(`${DB.tables.memories}/${currentUser.phone}`, memory.id);
+          if (Manager.isValid(memory != null ? memory.memoryName : void 0)) {
+            results.push((await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser.phone, memory != null ? memory.memoryName : void 0)));
+          } else {
+            results.push(void 0);
+          }
         } else {
           results.push(void 0);
         }

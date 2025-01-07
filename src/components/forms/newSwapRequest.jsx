@@ -19,6 +19,7 @@ import ObjectManager from '../../managers/objectManager'
 import AlertManager from '../../managers/alertManager'
 import DB_UserScoped from '@userScoped'
 import StringManager from '../../managers/stringManager'
+import ActivityCategory from '../../models/activityCategory'
 
 export default function NewSwapRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -95,14 +96,13 @@ export default function NewSwapRequest({ showCard, hideCard }) {
 
       // Send Notification
       await DB.add(`${DB.tables.swapRequests}/${currentUser.phone}`, cleanObject).finally(() => {
-        shareWith.forEach(async (coparentPhone) => {
-          const subId = await NotificationManager.getUserSubId(coparentPhone, 'phone')
-          NotificationManager.sendNotification(
-            `New Swap Request`,
-            `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
-            subId
-          )
-        })
+        NotificationManager.sendToShareWith(
+          shareWith,
+          currentUser,
+          'New Swap Request',
+          `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
+          ActivityCategory.swapRequest
+        )
         setSwapDuration(SwapDurations.single)
       })
       AlertManager.successAlert('Swap Request Sent')

@@ -926,8 +926,8 @@
 
   .view {
     padding-bottom: 3px;
-    font-size: 14px;
-    margin: 0;
+    font-size: 16px;
+    margin: 0 0 10px 0;
     text-align: center;
     @include hover;
     &.active {
@@ -2526,6 +2526,12 @@
         .flex {
           gap: 10px;
           align-items: center;
+          margin-bottom: 10px;
+          
+          p,b {
+            line-height: 1;
+            margin:0;
+          }
           
           &.no-gap {
             gap:0;

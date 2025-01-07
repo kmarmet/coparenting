@@ -38,7 +38,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
   }
 
   const upload = async () => {
-    setState({ ...state, isLoading: true })
+    // setState({ ...state, isLoading: true })
     let files = document.querySelector('#upload-input').files
     const image = files[0]
     const fileExtension = StringManager.getFileExtension(image.name)
@@ -95,39 +95,40 @@ export default function UploadDocuments({ hideCard, showCard }) {
       files = localImages
     }
 
+    hideCard()
+
+    let docNameToUse = `${docName}.${fileExtension}`
+    if (!Manager.isValid(docName, true)) {
+      docNameToUse = image.name
+    }
+
     // Upload to Firebase Storage
-    await FirebaseStorage.upload(`${FirebaseStorage.directories.documents}/`, `${currentUser?.id}`, image, `${docName}.${fileExtension}`)
-      .then(() => {})
-      .finally(async () => {
-        // Add documents to 'documents' property for currentUser
-        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.documents, currentUser?.id, files, docName).then(async (urls) => {
-          resetForm()
-          // Add to user documents object
-          for (const url of urls) {
-            const newDocument = new Doc()
-            newDocument.url = url
-            newDocument.ownerPhone = currentUser?.phone
-            newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
-            newDocument.type = docType
-            newDocument.name = docName
-            const cleanedDoc = ObjectManager.cleanObject(newDocument, ModelNames.doc)
-            console.log(cleanedDoc)
-            await DocumentsManager.addDocumentToDocumentsTable(currentUser, cleanedDoc)
-          }
+    await FirebaseStorage.upload(`${FirebaseStorage.directories.documents}/`, `${currentUser?.id}`, image, docNameToUse).finally(async () => {
+      const fileUrl = await FirebaseStorage.getFileUrl(FirebaseStorage.directories.documents, currentUser?.id, docNameToUse)
+      console.log(fileUrl)
+      resetForm()
+      // Add to user documents object
+      const newDocument = new Doc()
+      newDocument.url = fileUrl
+      newDocument.ownerPhone = currentUser?.phone
+      newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
+      newDocument.type = docType
+      newDocument.name = docNameToUse
+      const cleanedDoc = ObjectManager.cleanObject(newDocument, ModelNames.doc)
+      await DocumentsManager.addDocumentToDocumentsTable(currentUser, cleanedDoc)
 
-          AlertManager.successAlert('Document Uploaded!')
+      AlertManager.successAlert('Document Uploaded!')
 
-          // Send Notification
-          await NotificationManager.sendToShareWith(
-            shareWith,
-            currentUser,
-            `New Document`,
-            `${StringManager.formatNameFirstNameOnly(currentUser.name)} has uploaded a new document`,
-            ActivityCategory.documents
-          )
-        })
-      })
-    setState({ ...state, isLoading: false })
+      // Send Notification
+      await NotificationManager.sendToShareWith(
+        shareWith,
+        currentUser,
+        `New Document`,
+        `${StringManager.formatNameFirstNameOnly(currentUser.name)} has uploaded a new document`,
+        ActivityCategory.documents
+      )
+      setState({ ...state, isLoading: false })
+    })
   }
 
   const handleShareWithSelection = async (e) => {

@@ -18,13 +18,11 @@ import Manager from "./manager";
 
 import LogManager from "./logManager";
 
-import StringManager from "./stringManager";
-
 export default CalendarManager = {
   addMultipleCalEvents: async function(currentUser, newEvents) {
     var currentEvents, dbRef, error, toAdd;
     dbRef = ref(getDatabase());
-    currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/`));
+    currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`));
     toAdd = [...currentEvents, ...newEvents];
     try {
       return (await set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/`), toAdd));
@@ -50,7 +48,7 @@ export default CalendarManager = {
   addCalendarEvent: async function(currentUser, newEvent) {
     var currentEvents, dbRef, error, toAdd;
     dbRef = ref(getDatabase());
-    currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/`));
+    currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`));
     currentEvents = currentEvents.filter(function(n) {
       return n;
     });
@@ -72,11 +70,11 @@ export default CalendarManager = {
     dbRef = getDatabase();
     key = null;
     recordToUpdate;
-    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${userPhone}/`));
+    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${userPhone}`));
     for (i = 0, len = tableRecords.length; i < len; i++) {
       record = tableRecords[i];
       if ((record != null ? record.id : void 0) === id) {
-        key = (await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${userPhone}/`, record, 'id'));
+        key = (await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${userPhone}`, record, 'id'));
         record[prop] = value;
         recordToUpdate = record;
       }
@@ -89,16 +87,24 @@ export default CalendarManager = {
     }
   },
   deleteMultipleEvents: async function(events, currentUser) {
-    var dbRef, i, idToDelete, len, record, results, tableRecords;
+    var dbRef, i, idsToDelete, len, record, results, tableRecords;
     dbRef = ref(getDatabase());
-    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/`));
-    results = [];
-    for (i = 0, len = tableRecords.length; i < len; i++) {
-      record = tableRecords[i];
-      idToDelete = (await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${currentUser.phone}/`, record, 'id'));
-      results.push((await remove(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/${idToDelete}`))));
+    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`));
+    idsToDelete = events.map(function(x) {
+      return x.id;
+    });
+    if (Manager.isValid(tableRecords)) {
+      results = [];
+      for (i = 0, len = tableRecords.length; i < len; i++) {
+        record = tableRecords[i];
+        if (Manager.contains(idsToDelete, record.id)) {
+          results.push((await CalendarManager.deleteEvent(currentUser, record.id)));
+        } else {
+          results.push(void 0);
+        }
+      }
+      return results;
     }
-    return results;
   },
   deleteAllHolidayEvents: async function() {
     var dbRef, i, idToDelete, len, record, results, tableRecords;

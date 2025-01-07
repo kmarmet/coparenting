@@ -95,16 +95,14 @@ const FirebaseStorage = {
       reader.readAsDataURL(blob)
     })
   },
-  getUrlsFromFiles: async (directory, userId, imgs, firstImageName) => {
+  getUrlsFromFiles: async (directory, userId, imgs) => {
     let urls = []
     const imgFiles = Array.from(imgs)
     await FirebaseStorage.getImages(directory, userId).then(async (images) => {
       await Promise.all(images).then((firebaseUrls) => {
         firebaseUrls.forEach(async (url) => {
           const imageName = FirebaseStorage.getImageNameFromUrl(url)
-          console.log(imageName)
           const fileImageNames = imgFiles.map((x) => x.name)
-          console.log(fileImageNames)
           if (fileImageNames.includes(imageName)) {
             urls.push(url)
           }
@@ -113,6 +111,20 @@ const FirebaseStorage = {
     })
     return urls.flat()
   },
+  getFileUrl: async (directory, userId, fileName) =>
+    new Promise(async (resolve, reject) => {
+      await FirebaseStorage.getImages(directory, userId).then(async (images) => {
+        await Promise.all(images).then((firebaseUrls) => {
+          for (let url of firebaseUrls) {
+            const _fileName = FirebaseStorage.getImageNameFromUrl(url)
+            if (_fileName === fileName) {
+              resolve(url)
+            }
+          }
+        })
+      })
+    }),
+
   getProfilePicUrl: async (directory, userId, imgs) => {
     const images = async () =>
       await new Promise(async (resolve) => {
