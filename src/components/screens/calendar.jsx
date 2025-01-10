@@ -441,7 +441,7 @@ export default function EventCalendar() {
         <NewCalendarEvent selectedNewEventDay={selectedNewEventDay} showCard={showNewEventCard} hideCard={() => setShowNewEventCard(false)} />
 
         {/* EDIT EVENT */}
-        <EditCalEvent showCard={showEditCard} onClose={async (editDay) => setShowEditCard(false)} event={eventToEdit} />
+        <EditCalEvent showCard={showEditCard} onClose={() => setShowEditCard(false)} event={eventToEdit} />
       </>
 
       {/* PAGE CONTAINER */}
@@ -450,6 +450,7 @@ export default function EventCalendar() {
           {/* STATIC CALENDAR */}
           <div id="static-calendar" className={theme}>
             <StaticDatePicker
+              yearsPerRow={4}
               showDaysOutsideCurrentMonth={true}
               defaultValue={moment(selectedNewEventDay)}
               onMonthChange={async (month) => {

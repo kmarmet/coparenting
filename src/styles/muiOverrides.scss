@@ -411,14 +411,15 @@
         }
       }
       &.Mui-selected {
-        background-color: transparent;
-        transform: scale(1.3);
         transition: all 0.2s ease-in-out !important;
-        color: $mainBlue !important;
         font-weight: $fwMediumBold !important;
-        .dot-wrapper {
-          top: -10px;
-        }
+        background: $mainBlue;
+        color:white !important;
+        height: 40px !important;
+        width: 40px !important;
+        border-radius: 100% !important;
+        position: relative;
+        top: 5px;
       }
     }
   }

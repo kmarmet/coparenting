@@ -566,7 +566,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   {Manager.isValid(event?.repeatInterval) && (
                     <div className="flex">
                       <b>Repeat Interval:</b>
-                      <p>{StringManager.uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</p>
+                      <span className="low-opacity-text">{StringManager.uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</span>
                     </div>
                   )}
                 </div>

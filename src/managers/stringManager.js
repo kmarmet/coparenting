@@ -25,11 +25,20 @@ StringManager = {
     returnString = returnString.split(' ')[0];
     return StringManager.uppercaseFirstLetterOfAllWords(returnString);
   },
+  isAllUppercase: function(input) {
+    return input === input.toUpperCase();
+  },
   getFileExtension: function(fileName) {
     return fileName.split('.').pop();
   },
   removeFileExtension: function(input) {
     return input.replace(/\.[^\/.]+$/, '');
+  },
+  wordCount: function(input) {
+    return input.trim().split(/\s+/).length;
+  },
+  stringHasNumbers: function(input) {
+    return /\d/.test(input);
   },
   capitalizeFirstWord: function(str) {
     var capitalizedFirstWord, firstWord;

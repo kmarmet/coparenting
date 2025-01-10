@@ -85,23 +85,12 @@ export default function DocsList() {
                             setSelectedDoc(doc)
                             setState({ ...state, docToView: doc, currentScreen: ScreenNames.docViewer })
                           }}>
+                          {fileType === 'Document' ? <GrDocumentText className={'file-type'} /> : <GrDocumentImage className={'file-type'} />}
                           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
                         </p>
                         <div className={`checkbox delete`} onClick={(e) => handleDeleteCheckbox(e.currentTarget)}>
                           <span className="checkmark-icon material-icons-round">check</span>
                         </div>
-                        {fileType === 'Document' && (
-                          <div className="flex doc-type">
-                            <GrDocumentText />
-                            <p>Document</p>
-                          </div>
-                        )}
-                        {fileType === 'Image' && (
-                          <div className="flex doc-type">
-                            <GrDocumentImage />
-                            <p>Image</p>
-                          </div>
-                        )}
                       </div>
                     </div>
                   )

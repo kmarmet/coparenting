@@ -18,11 +18,20 @@ StringManager = {
     returnString = returnString.split(' ')[0]
     StringManager.uppercaseFirstLetterOfAllWords(returnString)
 
+  isAllUppercase: (input)->
+    return input == input.toUpperCase()
+
   getFileExtension: (fileName) ->
     fileName.split('.').pop()
 
   removeFileExtension: (input) ->
     input.replace(/\.[^/.]+$/, '')
+
+  wordCount: (input) ->
+    input.trim().split(/\s+/).length
+
+  stringHasNumbers: (input) ->
+    return /\d/.test(input)
 
   capitalizeFirstWord: (str) ->
     firstWord = str.split(' ')[0];

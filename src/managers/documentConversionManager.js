@@ -2,26 +2,7 @@ import Manager from '@manager'
 import { createWorker } from 'tesseract.js'
 import FirebaseStorage from '@firebaseStorage'
 import reactStringReplace from 'react-string-replace'
-
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  getPositionOfWordInText,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../globalFunctions'
+import StringManager from './stringManager'
 
 const DocumentConversionManager = {
   tocHeaders: [
@@ -91,7 +72,7 @@ const DocumentConversionManager = {
     'status-of-temporary-orders',
     'waiver-of-rights-on-death-of-other-spouse',
     'reconciliation',
-    'modification-by-subsequent-agreeement',
+    'modification-by-subsequent-agreement',
     'attorney-fees-to-enforce-or-modify-agreement',
     'cooperation-in-implementation',
     'effective-date',
@@ -200,6 +181,7 @@ const DocumentConversionManager = {
   docToHtml: async (fileName, currentUserId) => {
     const myHeaders = new Headers()
     myHeaders.append('Access-Control-Allow-Origin', '*')
+    let apiAddress = Manager.contains(window.location, 'localhost') ? 'http://localhost:5267' : 'https://peaceful-coparenting.app:5000'
 
     const requestOptions = {
       method: 'GET',
@@ -214,7 +196,7 @@ const DocumentConversionManager = {
     const { status, imageUrl } = all
 
     if (status === 'success') {
-      await fetch(`http://localhost:5267/document/getDocText?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
+      await fetch(`${apiAddress}/document/getDocText?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
         .then((response) => response.text())
         .then((result) => (returnHtml = result))
         .catch((error) => console.error(error))
@@ -251,7 +233,7 @@ const DocumentConversionManager = {
       returnString = returnString.toUpperCase()
     }
     if (uppercaseFirstWord) {
-      returnString = uppercaseFirstLetterOfAllWords(returnString)
+      returnString = StringManager.uppercaseFirstLetterOfAllWords(returnString)
     }
     return returnString.replaceAll("'", '')
   },
@@ -275,19 +257,20 @@ const DocumentConversionManager = {
       for (let par of paragraphs) {
         allText.push(par.text)
       }
-      console.log(allText)
+      console.log(lines)
+      returnText = allText
       //let textWithHeaders = DocumentConversionManager.wrapTextInHeader(allText[0])
-      returnText = reactStringReplace(result, allText[0].toLocaleLowerCase(), (match, i) => (
-        <span className="header" key={match + i}>
-          {match}
-        </span>
-      ))
+      // returnText = reactStringReplace(result, allText[0].toLocaleLowerCase(), (match, i) => (
+      //   <span className="header" key={match + i}>
+      //     {match}
+      //   </span>
+      // ))
       for (let line of lines) {
-        returnText = reactStringReplace(result, line.text.toLocaleLowerCase(), (match, i) => (
-          <span className="header" key={match + i}>
-            {match}
-          </span>
-        ))
+        // returnText = reactStringReplace(result, line.text.toLocaleLowerCase(), (match, i) => (
+        //   <span className="header" key={match + i}>
+        //     {match}
+        //   </span>
+        // ))
         // if (line.text.indexOf('Halloween') > -1) {
         //   const wordPosition = getPositionOfWordInText('Halloween', line.text)
         //   const { start, end } = wordPosition
@@ -330,10 +313,10 @@ const DocumentConversionManager = {
       if (Manager.isValid(el)) {
         const strongText = el.textContent
         const hasNumbers = strongText.indexOf('.') > -1
-        if (hasNumbers && wordCount(strongText) < 6 && strongText.length > 3) {
+        if (hasNumbers && StringManager.wordCount(strongText) < 6 && strongText.length > 3) {
           el.parentNode.classList.add('header')
         }
-        if (wordCount(strongText) <= 6 && strongText.length > 5) {
+        if (StringManager.wordCount(strongText) <= 6 && strongText.length > 5) {
           if (strongText.toLowerCase().indexOf('state') === -1 && strongText.toLowerCase().indexOf('county') === -1) {
             el.parentNode.classList.add('header')
           } else {
@@ -346,10 +329,10 @@ const DocumentConversionManager = {
         const strongText = strong.textContent
         const hasNumbers = strongText.indexOf('.') > -1
 
-        if (hasNumbers && wordCount(strongText) < 6 && strongText.length > 3) {
+        if (hasNumbers && StringManager.wordCount(strongText) < 6 && strongText.length > 3) {
           el.classList.add('header')
         }
-        if (wordCount(strongText) <= 6 && strongText.length > 5) {
+        if (StringManager.wordCount(strongText) <= 6 && strongText.length > 5) {
           if (strongText.toLowerCase().indexOf('state') === -1 && strongText.toLowerCase().indexOf('county') === -1) {
             el.classList.add('header')
           }

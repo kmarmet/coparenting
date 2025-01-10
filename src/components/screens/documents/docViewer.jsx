@@ -7,32 +7,16 @@ import Manager from '@manager'
 import BottomCard from '../../shared/bottomCard'
 import { DebounceInput } from 'react-debounce-input'
 import reactStringReplace from 'react-string-replace'
-
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import SecurityManager from '../../../managers/securityManager'
-
+import { Fade } from 'react-awesome-reveal'
 import { AiOutlineFileSearch } from 'react-icons/ai'
 import NavBar from '../../navBar'
 import DB from '@db'
 import AlertManager from '../../../managers/alertManager'
+import StringManager from '../../../managers/stringManager'
 
 export default function DocViewer() {
+  const headerSet = DocumentConversionManager.textHeaders
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, docToView } = state
   const [tocHeaders, setTocHeaders] = useState([])
@@ -42,6 +26,7 @@ export default function DocViewer() {
   const [showSearch, setShowSearch] = useState(false)
   const [searchResultsCount, setSearchResultsCount] = useState(0)
   const [textWithHeaders, setTextWithHeaders] = useState('')
+
   const scrollToHeader = (header) => {
     closeSearch()
     const firstChar = header.slice(0, 1)
@@ -60,7 +45,7 @@ export default function DocViewer() {
   }
 
   const convertAndAppendDocOrImage = async () => {
-    const fileType = `.${getFileExtension(docToView.name)}`
+    const fileType = `.${StringManager.getFileExtension(docToView.name)}`
     if (currentUser && fileType === '.docx') {
       await getDoc()
     } else {
@@ -153,6 +138,19 @@ export default function DocViewer() {
     }
   }
 
+  const shouldAddClass = (el, text) => {
+    if (text && text.length > 0) {
+      const textToSkip = ['add additional terms']
+      const isAllUppercase = StringManager.isAllUppercase(text)
+      const classAlreadyAdded = el.classList.contains('header')
+      const isMinimumLength = text.replaceAll(' ', '').length > 3
+      const isDefinedHeader = headerSet.includes(text.toLowerCase())
+      const dontSkip = !textToSkip.includes(text.toLowerCase())
+      return isAllUppercase && !classAlreadyAdded && isMinimumLength && isDefinedHeader && dontSkip
+    }
+    return false
+  }
+
   // Get/Append Doc
   const getDoc = async () => {
     const url = docToView.url
@@ -187,41 +185,49 @@ export default function DocViewer() {
 
     // List Item formatting
     listItems.forEach((listItem, index) => {
-      if (stringHasNumbers(listItem.textContent) && listItem.textContent.toLowerCase().indexOf('article') > -1) {
+      if (StringManager.stringHasNumbers(listItem.textContent) && listItem.textContent.toLowerCase().indexOf('article') > -1) {
         listItem.classList.add('highlight')
       }
-      if (isAllUppercase(listItem.textContent) && !listItem.classList.contains('header')) {
-        listItem.classList.add('highlight')
-      }
-      if (stringHasNumbers(listItem.textContent)) {
+
+      // ADD HIGHLIGHT
+      if (shouldAddClass(listItem, listItem.textContent)) {
         listItem.classList.add('highlight')
       }
       if (listItem.classList.contains('highlight')) {
         const header = listItem.textContent.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
         listItem.setAttribute('data-header-date', header)
       }
+
       const allStrongs = listItem.querySelectorAll('strong')
       allStrongs.forEach((thisStrong) => {
+        if (shouldAddClass(thisStrong, thisStrong.textContent)) {
+          thisStrong.classList.add('highlight')
+        }
         DocumentConversionManager.addHeaderClass(thisStrong)
       })
       DocumentConversionManager.addHeaderClass(listItem)
-      if (wordCount(listItem.textContent) > 10) {
+      if (StringManager.wordCount(listItem.textContent) > 10) {
         listItem.classList.remove('highlight')
       }
     })
 
     // Header formatting
     pars.forEach((par, index) => {
-      if (stringHasNumbers(par.textContent) && par.textContent.toLowerCase().indexOf('article') > -1) {
-        par.classList.add('header')
-        par.classList.add('w-100')
+      const text = par.textContent
+      if (StringManager.stringHasNumbers(text) && text.toLowerCase().indexOf('article') > -1) {
+        par.classList.add('header', 'w-100')
       }
-      if (isAllUppercase(par.textContent) && !par.classList.contains('header')) {
+
+      // ADD HIGHLIGHT
+      if (shouldAddClass(par, text)) {
         par.classList.add('highlight')
       }
 
       const allStrongs = par.querySelectorAll('strong')
       allStrongs.forEach((thisStrong) => {
+        if (shouldAddClass(thisStrong, thisStrong.textContent)) {
+          thisStrong.classList.add('highlight')
+        }
         DocumentConversionManager.addHeaderClass(thisStrong)
       })
       DocumentConversionManager.addHeaderClass(par)
@@ -229,14 +235,19 @@ export default function DocViewer() {
 
     // Cleanup unnecessary header classes
     pars.forEach((par) => {
-      if (!containsLettersRegex.test(par.textContent)) {
+      const text = par.textContent
+      if (!containsLettersRegex.test(text)) {
         par.classList.remove('header', 'highlight')
         par.remove()
       }
-      if (contains(par.textContent, '___')) {
-        par.textContent.replace(/_/g, '')
+      if (Manager.contains(text.toLowerCase(), 'notary public')) {
+        par.classList.remove('header', 'highlight')
+        // par.remove()
       }
-      if (wordCount(par.textContent) > 10) {
+      if (Manager.contains(text, '___')) {
+        text.replace(/_/g, '')
+      }
+      if (StringManager.wordCount(text) > 10) {
         par.classList.remove('header')
       }
       if (par.classList.contains('header')) {
@@ -257,7 +268,7 @@ export default function DocViewer() {
         .replace('.', '')
         .replace(/\s/g, '')
         .replaceAll('•', '')
-      if (newHeaderArray.indexOf(text) === -1 && wordCount(header.textContent) < 10) {
+      if (newHeaderArray.indexOf(text) === -1 && StringManager.wordCount(header.textContent) < 10) {
         newHeaderArray.push(text)
       }
     })
@@ -311,37 +322,29 @@ export default function DocViewer() {
       return false
     }
 
-    const coparentsFromObject = allDocs.map((x) => x.coparent)
-
-    if (!Manager.isValid(coparentsFromObject)) {
-      setState({ ...state, isLoading: false })
-      return false
-    }
-    const relevantDoc = await DB.find(DB.tables.documents, ['name', docToView.name], true)
-    if (!Manager.isValid(relevantDoc)) {
-      setState({ ...state, isLoading: false })
-      return false
-    }
-    let docOwner = await DB.find(DB.tables.users, ['phone', relevantDoc.uploadedBy], true)
+    // const relevantDoc = await DB.find(DB.tables.documents, ['id', docToView.id], true)
+    // console.log(relevantDoc)
+    // if (!Manager.isValid(relevantDoc)) {
+    //   setState({ ...state, isLoading: false })
+    //   return false
+    // }
+    let docOwner = await DB.find(DB.tables.users, ['phone', docToView.ownerPhone], true)
     if (!Manager.isValid(docOwner)) {
-      console.log('doc owner')
       setState({ ...state, isLoading: false })
       return false
     }
     const firebasePathId = docOwner.id
 
-    if (!Manager.isValid(relevantDoc)) {
+    if (!Manager.isValid(docToView)) {
       setState({ ...state, isLoading: false })
       AlertManager.throwError('No Document Found')
       return false
     }
     const imageResult = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, firebasePathId, docToView.name)
     if (imageResult.status === 'success') {
-      // await DocumentConversionManager.imageToTextAndAppend(imageResult.imageUrl, document.querySelector('#text-container')).finally(() => {
-      //   Manager.showPageContainer('show')
-      // })
+      await DocumentConversionManager.imageToTextAndAppend(imageResult.imageUrl, document.querySelector('#text-container'))
       const text = await DocumentConversionManager.imageToTextAndAppend(imageResult.imageUrl)
-
+      console.log(text)
       // wrapTextInHeader(text)
       setTextWithHeaders(text)
       // Filter TOC
@@ -369,9 +372,8 @@ export default function DocViewer() {
   }, [tocHeaders])
 
   useEffect(() => {
-    setState({ ...state, isLoading: true })
+    // setState({ ...state, isLoading: true })
     document.getElementById('text-container').innerText = ''
-    Manager.showPageContainer()
     convertAndAppendDocOrImage().then((r) => r)
   }, [])
 
@@ -462,12 +464,14 @@ export default function DocViewer() {
       )}
 
       <div id="documents-container" className={`${theme} page-container form`}>
-        {/*{textWithHeaders}*/}
-        <div
-          dangerouslySetInnerHTML={{
-            __html: `${textWithHeaders}`,
-          }}></div>
-        <div id="text-container"></div>
+        <Fade direction={'up'} className={'doc-viewer-fade-wrapper'} duration={1000} triggerOnce={true}>
+          {/*{textWithHeaders}*/}
+          <div
+            dangerouslySetInnerHTML={{
+              __html: `${textWithHeaders}`,
+            }}></div>
+          <div id="text-container"></div>
+        </Fade>
       </div>
       {!showSearch && !showCard && (
         <NavBar>
