@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import globalState from '../../context'
 import '../../prototypes'
-import Manager from '@manager'
+import Manager from 'managers/manager'
 
 export default function Numpad({ onNumClick, onSubmit, onBackspace, className }) {
   const { state, setState } = useContext(globalState)

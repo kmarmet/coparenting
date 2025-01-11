@@ -1,9 +1,9 @@
 // @ts-ignore
-import DB from '@db'
+import DB from 'database/DB'
 import '../prototypes'
-import { hasClass, uppercaseFirstLetterOfAllWords } from '../globalFunctions'
 import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
+import StringManager from './stringManager'
 
 const Manager = {
   invalidInputs: (requiredInputs) => {
@@ -317,7 +317,7 @@ const Manager = {
       let repeatingEvents = await DB.getTable(DB.tables.calendarEvents)
       repeatingEvents = repeatingEvents.filter((x) => x.title === eventTitle)
       const repeatInterval = object['repeatInterval']
-      document.querySelector(`[data-label='${uppercaseFirstLetterOfAllWords(repeatInterval)}']`).classList.add('active')
+      document.querySelector(`[data-label='${StringManager.uppercaseFirstLetterOfAllWords(repeatInterval)}']`).classList.add('active')
       return repeatingEvents
     }
     // Share With

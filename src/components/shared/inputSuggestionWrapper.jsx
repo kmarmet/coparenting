@@ -1,4 +1,4 @@
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import globalState from '../../context'
 import { useContext, useEffect, useState } from 'react'
 import AccordionSummary from '@mui/material/AccordionSummary'

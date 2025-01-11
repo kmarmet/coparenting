@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import globalState from '../../context'
-import Manager from '@manager'
-import '@prototypes'
+import Manager from 'managers/manager'
+import 'prototypes'
 import BottomCard from '../shared/bottomCard'
 import EmailManager from '../../managers/emailManager'
 import {

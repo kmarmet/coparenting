@@ -1,29 +1,11 @@
 import moment from 'moment'
-import Manager from '@manager'
-import CalendarEvent from '@models/calendarEvent'
-import DateFormats from '@constants/dateFormats'
+import Manager from 'managers/manager'
+import CalendarEvent from 'models/calendarEvent'
+import DateFormats from 'constants/dateFormats'
 import CalendarManager from './calendarManager.js'
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../globalFunctions'
 import _ from 'lodash'
 import ObjectManager from './objectManager'
-import ModelNames from '../models/modelNames'
+import ModelNames from 'models/modelNames'
 
 const DateManager = {
   reminderTimes: {
@@ -259,7 +241,7 @@ const DateManager = {
     const holidays = await DateManager.getHolidays()
     let holidayEvents = []
     const switchCheck = (title, holidayName) => {
-      return !!contains(title, holidayName)
+      return !!Manager.contains(title, holidayName)
     }
 
     // SET EMOJIS / CREATE EVENT SET

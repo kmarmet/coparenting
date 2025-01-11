@@ -55,6 +55,16 @@ DomManager = {
     return scrollableElement.addEventListener('scroll', DomManager.debounce(function() {
       return callback();
     }, delay));
+  },
+  getSelectionText: function() {
+    var text;
+    text = "";
+    if (window.getSelection != null) {
+      text = window.getSelection().toString();
+    } else if ((document.selection != null) && document.selection.type !== "Control") {
+      text = document.selection.createRange().text;
+    }
+    return text;
   }
 };
 

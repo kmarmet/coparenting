@@ -2,26 +2,9 @@
 var SecurityManager,
   indexOf = [].indexOf;
 
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount
-} from "../globalFunctions";
+import Manager from 'managers/manager';
 
-import Manager from '@manager';
-
-import DB from "../database/DB";
+import DB from "database/DB";
 
 import DateManager from "./dateManager";
 

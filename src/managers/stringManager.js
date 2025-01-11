@@ -28,6 +28,10 @@ StringManager = {
   isAllUppercase: function(input) {
     return input === input.toUpperCase();
   },
+  formatPhone: function(input) {
+    input = input.toString().replace(/-/g, '').replace(/\s+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\+/g, '').replace(/\+1/g, '');
+    return input;
+  },
   getFileExtension: function(fileName) {
     return fileName.split('.').pop();
   },

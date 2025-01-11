@@ -1,4 +1,4 @@
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import {
@@ -19,7 +19,7 @@ import {
   wordCount,
 } from '../../globalFunctions'
 import Label from './label'
-import DB from '@db'
+import DB from 'database/DB'
 import { FaCheck } from 'react-icons/fa6'
 
 export default function ShareWithCheckboxes({

@@ -42,6 +42,18 @@ DomManager = {
     scrollableElement.addEventListener 'scroll', DomManager.debounce  ->
         callback()
       , delay
+
+  getSelectionText: ->
+    text = ""
+
+    if window.getSelection?
+      text = window.getSelection().toString()
+    else if document.selection? and document.selection.type != "Control"
+      text = document.selection.createRange().text
+
+    return text
+
+
 }
 
 export default DomManager

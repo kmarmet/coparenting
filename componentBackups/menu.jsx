@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../context'
-import ScreenNames from '@screenNames'
-import Manager from '@manager'
-import AppManager from '@managers/appManager'
+import ScreenNames from 'constants/screenNames'
+import Manager from 'managers/manager'
+import AppManager from 'managers/appManager'
 import ThemeToggle from './screens/settings/themeToggle'
 
 export default function Menu() {

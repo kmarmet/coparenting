@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import {
   contains,
   formatFileName,
@@ -18,7 +18,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import DB_UserScoped from '@userScoped'
+import DB_UserScoped from 'database/db_userScoped'
 import BottomCard from '../../shared/bottomCard'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import _ from 'lodash'

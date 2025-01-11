@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import {
   formatFileName,
   formatNameFirstNameOnly,
@@ -16,7 +16,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import DB from '@db'
+import DB from 'database/DB'
 import BottomCard from '../../shared/bottomCard'
 
 function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) {

@@ -1,11 +1,9 @@
 import React, { useContext } from 'react'
-import { contains, formatNameFirstNameOnly } from '../../globalFunctions'
-import ScreenNames from '@screenNames'
+import ScreenNames from 'constants/screenNames'
 import globalState from '../../context'
-import Manager from '@manager'
-import AppManager from '@managers/appManager'
-import { getAuth, signOut } from 'firebase/auth'
-// ICONS
+import Manager from 'managers/manager'
+import AppManager from 'managers/appManager'
+import { getAuth, signOut } from 'firebase/auth' // ICONS
 import {
   PiCalendarDotsDuotone,
   PiCarProfileDuotone,
@@ -20,7 +18,7 @@ import {
   PiToolboxDuotone,
 } from 'react-icons/pi'
 import { RxActivityLog } from 'react-icons/rx'
-import DB_UserScoped from '@userScoped'
+import DB_UserScoped from 'database/db_userScoped'
 import { RiMailSendLine } from 'react-icons/ri'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
 import { BsPeople } from 'react-icons/bs'

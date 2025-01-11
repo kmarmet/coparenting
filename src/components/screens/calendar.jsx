@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
-import DB from '@db'
-import DateManager from '@managers/dateManager.js'
-import Manager from '@manager'
+import DB from 'database/DB'
+import DateManager from 'managers/dateManager.js'
+import Manager from 'managers/manager'
 import moment from 'moment'
 import globalState from '../../context'
 import BottomCard from 'components/shared/bottomCard'
@@ -85,9 +85,9 @@ export default function EventCalendar() {
       let daysEventsObject = getEventsFromDate(formattedDay, events)
       const { dotClasses } = daysEventsObject
       const dayEvent = events.filter((x) => x?.startDate === formattedDay)[0]
-
+      const holiday = holidays.filter((x) => x?.startDate === formattedDay)[0]
       // APPEND INVISIBLE DOTS AND SKIP DAY WITHOUT EVENT
-      if (!dayEvent) {
+      if (!dayEvent && !holiday) {
         const invisibleDots = document.createElement('span')
         invisibleDots.classList.add('invisible-dots')
         if (dayElement.innerHTML.indexOf('invisible') === -1) {
@@ -614,7 +614,7 @@ export default function EventCalendar() {
                 <span className="dot in-legend currentUser"></span> Your Event
               </p>
               <p className="flex coparent">
-                <span className="dot coparent in-legend"></span> Co-Parent/Child Event
+                <span className="dot coparent in-legend"></span> Shared Event
               </p>
               <p className="flex standard">
                 <span className="dot in-legend standard"></span> Holiday

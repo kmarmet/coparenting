@@ -1,22 +1,5 @@
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount
-} from "../globalFunctions"
-
-import Manager from '@manager'
-import DB from "../database/DB"
+import Manager from 'managers/manager'
+import DB from "database/DB"
 import DateManager from "./dateManager"
 import _ from "lodash"
 

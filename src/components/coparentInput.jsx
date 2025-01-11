@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
-import CheckboxGroup from '@shared/checkboxGroup'
-import Manager from '@manager'
+import CheckboxGroup from 'components/shared/checkboxGroup'
+import Manager from 'managers/manager'
 import globalState from '../context'
 import {
   contains,
@@ -22,7 +22,7 @@ import {
 } from '../globalFunctions'
 import validator from 'validator'
 import AlertManager from '../managers/alertManager'
-import InputWrapper from './shared/inputWrapper'
+import InputWrapper from 'components/shared/inputWrapper'
 
 export default function CoparentInputs({ add, coparentsLength = 1 }) {
   const { state, setState } = useContext(globalState)

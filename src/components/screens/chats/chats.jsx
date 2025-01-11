@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import globalState from '../../../context.js'
 import 'rsuite/dist/rsuite.min.css'
-import ChatManager from '@managers/chatManager.js'
-import DB_UserScoped from '@userScoped'
+import ChatManager from 'managers/chatManager.js'
+import DB_UserScoped from 'database/db_userScoped'
 import { BiDotsVerticalRounded, BiMessageRoundedAdd, BiMessageRoundedDetail, BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
 import { IoNotificationsOffCircle } from 'react-icons/io5'
 import { HiMiniBellAlert } from 'react-icons/hi2'
@@ -31,7 +31,7 @@ import NoDataFallbackText from '../../shared/noDataFallbackText'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
-import ScreenNames from '@screenNames'
+import ScreenNames from 'constants/screenNames'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -173,7 +173,7 @@ const Chats = () => {
         {!showNewThreadForm && chats.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
         <Fade direction={'up'} duration={1000} triggerOnce={true} className={'visitation-fade-wrapper'}>
           <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title">Chats </p>
+            <p className="screen-title">Chats</p>
             {!DomManager.isMobile() && <BiSolidEdit id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
           </div>
           {/* THREAD ITEMS */}

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import {
   camelCaseToString,
   contains,
@@ -21,7 +21,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import DB_UserScoped from '@userScoped'
+import DB_UserScoped from 'database/db_userScoped'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -30,7 +30,7 @@ import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
 import { IoCloseOutline } from 'react-icons/io5'
 import { FaBriefcaseMedical } from 'react-icons/fa'
-import DB from '@db'
+import DB from 'database/DB'
 
 export default function Medical({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)

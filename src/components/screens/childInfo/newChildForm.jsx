@@ -1,13 +1,13 @@
 import moment from 'moment'
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import DB from '@db'
+import DB from 'database/DB'
 import globalState from '../../../context'
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import Autocomplete from 'react-google-autocomplete'
-import General from '@models/child/general'
-import Child from '@models/child/child'
-import CheckboxGroup from '@shared/checkboxGroup'
-import DB_UserScoped from '@userScoped'
+import General from 'models/child/general'
+import Child from 'models/child/child'
+import CheckboxGroup from 'components/shared/checkboxGroup'
+import DB_UserScoped from 'database/db_userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import {
   contains,
@@ -33,7 +33,7 @@ import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
 import UploadInputs from '../../shared/uploadInputs'
 import ImageManager from '../../../managers/imageManager'
-import FirebaseStorage from '@firebaseStorage'
+import FirebaseStorage from 'database/firebaseStorage'
 import Label from '../../shared/label'
 
 const NewChildForm = ({ hideCard, showCard }) => {

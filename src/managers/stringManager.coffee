@@ -21,6 +21,16 @@ StringManager = {
   isAllUppercase: (input)->
     return input == input.toUpperCase()
 
+  formatPhone: (input)->
+    input = input.toString()
+      .replace(/-/g, '')
+      .replace(/\s+/g, '')
+      .replace(/\(/g, '')
+      .replace(/\)/g, '')
+      .replace(/\+/g, '')
+      .replace(/\+1/g, '')
+    input
+
   getFileExtension: (fileName) ->
     fileName.split('.').pop()
 

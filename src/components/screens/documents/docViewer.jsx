@@ -2,21 +2,25 @@ import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import FirebaseStorage from '../../../database/firebaseStorage'
 import TableOfContentsListItem from '../../tableOfContentsListItem'
-import DocumentConversionManager from '@managers/documentConversionManager'
-import Manager from '@manager'
+import DocumentConversionManager from 'managers/documentConversionManager'
+import Manager from 'managers/manager'
 import BottomCard from '../../shared/bottomCard'
 import { DebounceInput } from 'react-debounce-input'
 import reactStringReplace from 'react-string-replace'
 import SecurityManager from '../../../managers/securityManager'
-import { Fade } from 'react-awesome-reveal'
 import { AiOutlineFileSearch } from 'react-icons/ai'
 import NavBar from '../../navBar'
-import DB from '@db'
+import DB from 'database/DB'
 import AlertManager from '../../../managers/alertManager'
 import StringManager from '../../../managers/stringManager'
+import LightGallery from 'lightgallery/react'
+import 'lightgallery/css/lightgallery.css'
+import DomManager from '../../../managers/domManager'
+import debounce from 'debounce'
+import { IoClose } from 'react-icons/io5'
 
 export default function DocViewer() {
-  const headerSet = DocumentConversionManager.textHeaders
+  const headerSet = DocumentConversionManager.tocHeaders
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, docToView } = state
   const [tocHeaders, setTocHeaders] = useState([])
@@ -26,6 +30,8 @@ export default function DocViewer() {
   const [showSearch, setShowSearch] = useState(false)
   const [searchResultsCount, setSearchResultsCount] = useState(0)
   const [textWithHeaders, setTextWithHeaders] = useState('')
+  const [imgUrl, setImgUrl] = useState('')
+  const [docType, setDocType] = useState('document')
 
   const scrollToHeader = (header) => {
     closeSearch()
@@ -47,8 +53,10 @@ export default function DocViewer() {
   const convertAndAppendDocOrImage = async () => {
     const fileType = `.${StringManager.getFileExtension(docToView.name)}`
     if (currentUser && fileType === '.docx') {
+      setDocType('document')
       await getDoc()
     } else {
+      setDocType('image')
       await getImage()
     }
   }
@@ -275,45 +283,6 @@ export default function DocViewer() {
     setTocHeaders(newHeaderArray.sort())
   }
 
-  const wrapTextInHeader = (text) => {
-    let result = reactStringReplace(text, 'Thanksgiving Day', (match, i) => (
-      <span className="header" key={match + i}>
-        {match}
-      </span>
-    ))
-    const toReplace = DocumentConversionManager.textHeaders
-    for (let _string of toReplace) {
-      result = reactStringReplace(result, _string.toLocaleLowerCase(), (match, i) => (
-        <span className="header" key={match + i}>
-          {match}
-        </span>
-      ))
-    }
-
-    // for (let header of DocumentConversionManager.textHeaders) {
-    //   const indexOf = text.toLowerCase().indexOf(header.toLowerCase())
-    //   const extractedString = text.substring(indexOf, indexOf + header.length)
-    //   if (indexOf > -1) {
-    //     stringArray.push(extractedString)
-    //   }
-    // }
-    // stringArray = DatasetManager.getUniqueArray(stringArray, true)
-    // let counter = 0
-    // let seenCounters = []
-    // for (let _string of stringArray) {
-    //   result = reactStringReplace(result, _string.toLocaleLowerCase(), (match, i) => (
-    //     <span className="header" key={counter}>
-    //       {`${match}${counter}`}
-    //     </span>
-    //   ))
-    //   counter++
-    //   seenCounters.push(counter)
-    //   console.log(result)
-    // }
-    // setTextWithHeaders(result)
-    return result
-  }
-
   // Get/Append Image
   const getImage = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)
@@ -341,28 +310,55 @@ export default function DocViewer() {
       return false
     }
     const imageResult = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, firebasePathId, docToView.name)
+    const userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+    let allHeaders = []
+    if (Manager.isValid(userHeaders)) {
+      allHeaders = [...headerSet, ...userHeaders].flat();
+    }
+    else {
+      allHeaders = headerSet;
+    }
+    setImgUrl(imageResult?.imageUrl)
+
     if (imageResult.status === 'success') {
-      await DocumentConversionManager.imageToTextAndAppend(imageResult.imageUrl, document.querySelector('#text-container'))
-      const text = await DocumentConversionManager.imageToTextAndAppend(imageResult.imageUrl)
-      console.log(text)
-      // wrapTextInHeader(text)
-      setTextWithHeaders(text)
-      // Filter TOC
-      const spanHeaders = document.querySelectorAll('.header')
-      // let newHeaderArray = []
-      // spanHeaders.forEach((header) => {
-      //   const text = header.textContent.replaceAll(' ', '-')
-      //   if (newHeaderArray.indexOf(text) === -1) {
-      //     newHeaderArray.push(text)
-      //   }
-      // })
-      // setTocHeaders(newHeaderArray)
+      const text = await DocumentConversionManager.getImageText(imageResult?.imageUrl)
+      const textToView = wrapTextInHeader(text, allHeaders, userHeaders)
+      setTextWithHeaders(textToView)
       setState({ ...state, isLoading: false })
     } else {
       AlertManager.throwError('No Document Found')
     }
     setState({ ...state, isLoading: false })
   }
+
+  const wrapTextInHeader = (text, allHeaders, userHeaders) => {
+    let result = reactStringReplace(text, 'dependents', (match, i) => (
+      <span className="header" key={match + i}>
+        {match}
+      </span>
+    ))
+    for (let _string of allHeaders) {
+      result = reactStringReplace(result, _string.toLowerCase(), (match, i) => (
+        <span className="header" key={match + i}>
+          {match} {userHeaders.includes(_string.toLowerCase()) ? <IoClose /> : ""}
+        </span>
+      ))
+    }
+    return result
+  }
+
+  const getSelectedText = () => {
+    const text = DomManager.getSelectionText();
+
+    if (text.length> 0) {
+      AlertManager.confirmAlert("Would you like to use the selected text as a header?", "Yes", true, async () => {
+        await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, text);
+        setTextWithHeaders("")
+        await getImage();
+      })
+    }
+  }
+
 
   // Show search icon when text is loaded
   useEffect(() => {
@@ -371,15 +367,20 @@ export default function DocViewer() {
     }
   }, [tocHeaders])
 
+
   useEffect(() => {
     // setState({ ...state, isLoading: true })
-    document.getElementById('text-container').innerText = ''
+    const textContainer = document.getElementById('text-container')
+    if (textContainer) {
+      document.getElementById('text-container').innerText = ''
+    }
     convertAndAppendDocOrImage().then((r) => r)
+    document.addEventListener("selectionchange",debounce(getSelectedText, 1000));
   }, [])
 
   return (
     <div className="doc-viewer-container">
-      <p className="screen-title pt-10">Doc Viewer</p>
+      <button onClick={getSelectedText}>click</button>
       {/* BOTTOM ACTIONS */}
       <div className={`${theme} flex form`} id="bottom-actions">
         {Manager.isValid(document.querySelectorAll('.header'), true) && (
@@ -463,15 +464,20 @@ export default function DocViewer() {
         </BottomCard>
       )}
 
-      <div id="documents-container" className={`${theme} page-container form`}>
-        <Fade direction={'up'} className={'doc-viewer-fade-wrapper'} duration={1000} triggerOnce={true}>
-          {/*{textWithHeaders}*/}
-          <div
-            dangerouslySetInnerHTML={{
-              __html: `${textWithHeaders}`,
-            }}></div>
-          <div id="text-container"></div>
-        </Fade>
+      {/* TEXT */}
+      <div id="documents-container" className={`${theme} page-container form documents`}>
+        <p className="screen-title pt-10">Doc Viewer</p>
+        {/* IMAGE */}
+        {docType === 'image' && (
+          <>
+            <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
+              <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
+            </LightGallery>
+            {textWithHeaders}
+          </>
+        )}
+        {/* DOCUMENT */}
+        {docType === 'document' && <div id="text-container"></div>}
       </div>
       {!showSearch && !showCard && (
         <NavBar>

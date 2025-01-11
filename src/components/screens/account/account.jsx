@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
-import ScreenNames from '@screenNames'
+import ScreenNames from 'constants/screenNames'
 import globalState from '../../../context.js'
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import {
   contains,
   formatFileName,
@@ -27,15 +27,15 @@ import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
-import DB_UserScoped from '@userScoped'
-import DB from '@db'
+import DB_UserScoped from 'database/db_userScoped'
+import DB from 'database/DB'
 import BottomCard from '../../shared/bottomCard'
 import InputWrapper from '../../shared/inputWrapper'
 import validator from 'validator'
 import { EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail } from 'firebase/auth'
 import { useSwipeable } from 'react-swipeable'
 import NotificationManager from '../../../managers/notificationManager'
-import FirebaseStorage from '@firebaseStorage'
+import FirebaseStorage from 'database/firebaseStorage'
 
 export default function Account() {
   const { state, setState } = useContext(globalState)

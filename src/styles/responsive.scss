@@ -53,6 +53,11 @@
         max-height: calc(100vh - 110px);
         border: 1px solid $desktopBorderColor;
         border-radius: $bigBorderRadius;
+        
+        &.documents {
+          background: white;
+            width: calc(100vw - 30px);
+        }
       }
       .page-container {
         &.home {
@@ -246,7 +251,7 @@
                 color: $coparentPurple;
               }
               &.standard {
-                color: $green;
+                color: $orange;
               }
             }
           }

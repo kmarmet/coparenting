@@ -1,40 +1,21 @@
 import { child, getDatabase, ref, set } from 'firebase/database'
 import React, { useContext, useEffect, useState } from 'react'
 import PasswordChecklist from 'react-password-checklist'
-import ScreenNames from '@screenNames'
+import ScreenNames from 'constants/screenNames'
 import globalState from '../../../context.js'
 import User from '../../../models/user.js'
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import ChildrenInput from '../../childrenInput.jsx'
 import CoparentInputs from '../../coparentInput.jsx'
-import CheckboxGroup from '@shared/checkboxGroup.jsx'
-import SmsManager from '@managers/smsManager.js'
-import NotificationManager from '@managers/notificationManager.js'
+import CheckboxGroup from 'components/shared/checkboxGroup.jsx'
+import SmsManager from 'managers/smsManager.js'
+import NotificationManager from 'managers/notificationManager'
 import ChildUser from 'models/child/childUser.js'
 import ParentInput from '../../parentInput'
 import { MdOutlineSecurity, MdOutlineSystemSecurityUpdateGood } from 'react-icons/md'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
-
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  formatPhone,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import ModelNames from '../../../models/modelNames'
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'
@@ -52,6 +33,7 @@ import { TbDeviceMobileMessage } from 'react-icons/tb'
 import DateFormats from '../../../constants/dateFormats'
 import moment from 'moment'
 import DomManager from '../../../managers/domManager'
+import StringManager from '../../../managers/stringManager'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -113,10 +95,10 @@ export default function Registration() {
       let newUser = new User()
       newUser.id = Manager.getUid()
       newUser.email = email
-      newUser.name = uppercaseFirstLetterOfAllWords(userName).trim()
+      newUser.name = StringManager.uppercaseFirstLetterOfAllWords(userName).trim()
       newUser.accountType = 'parent'
       newUser.children = children
-      newUser.phone = formatPhone(userPhone)
+      newUser.phone = StringManager.formatPhone(userPhone)
       newUser.coparents = coparents
       newUser.parentType = parentType
       newUser.settings.notificationsEnabled = true
@@ -142,7 +124,7 @@ export default function Registration() {
         })
         .catch((error) => {
           console.error('Sign up error:', error.message)
-          if (contains(error.message, 'email-already-in-use')) {
+          if (Manager.contains(error.message, 'email-already-in-use')) {
             AlertManager.throwError('Account already exists. If this is you, please login')
             setShowVerificationCard(false)
           }
@@ -160,7 +142,7 @@ export default function Registration() {
     }
     let childUser = new ChildUser()
     childUser.id = Manager.getUid()
-    childUser.name = uppercaseFirstLetterOfAllWords(userName).trim()
+    childUser.name = StringManager.uppercaseFirstLetterOfAllWords(userName).trim()
     childUser.accountType = 'child'
     childUser.parents = parents
     childUser.email = email
@@ -170,7 +152,7 @@ export default function Registration() {
     childUser.dailySummaries.morningReminderSummaryHour = '10am'
     childUser.dailySummaries.eveningSentDate = moment().format(DateFormats.dateForDb)
     childUser.dailySummaries.morningSentDateSentDate = moment().format(DateFormats.dateForDb)
-    childUser.phone = formatPhone(userPhone)
+    childUser.phone = StringManager.formatPhone(userPhone)
     const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
     const dbRef = ref(getDatabase())
     createUserWithEmailAndPassword(auth, email, password)
@@ -198,7 +180,7 @@ export default function Registration() {
     // Send to me
     const mySubId = await NotificationManager.getUserSubId('3307494534', 'phone')
     NotificationManager.sendNotification('New Registration', `Phone: ${userPhone}`, mySubId)
-    AlertManager.successAlert(`Welcome Aboard ${formatNameFirstNameOnly(userName)}!`)
+    AlertManager.successAlert(`Welcome Aboard ${StringManager.formatNameFirstNameOnly(userName)}!`)
     setState({ ...state, currentScreen: ScreenNames.login })
   }
 
@@ -344,7 +326,7 @@ export default function Registration() {
                   inputValueType="phone"
                   labelText={'Phone Number'}
                   required={true}
-                  onChange={(e) => setUserPhone(formatPhone(e.target.value))}
+                  onChange={(e) => setUserPhone(StringManager.formatPhone(e.target.value))}
                 />
                 <button className="button default green center mt-15" onClick={sendPhoneVerificationCode}>
                   Send Phone Verification Code <MdOutlineSystemSecurityUpdateGood />
@@ -435,7 +417,7 @@ export default function Registration() {
               inputValueType="number"
               required={true}
               labelText={'Phone Number of Parent that has the App'}
-              onChange={(e) => setParentPhone(formatPhone(e.target.value))}
+              onChange={(e) => setParentPhone(StringManager.formatPhone(e.target.value))}
             />
             <InputWrapper
               inputType={'input'}

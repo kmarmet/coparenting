@@ -1,4 +1,4 @@
-import Manager from '@manager'
+import Manager from 'managers/manager.js'
 
 export default class ChildUser
   constructor: (

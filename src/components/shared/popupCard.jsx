@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import globalState from '../../context'
-import Manager from '@manager'
+import Manager from 'managers/manager'
 
 function PopupCard({ onOpen, children, title, subtitle = '', className = '', onClose, closeable = true }) {
   useEffect(() => {

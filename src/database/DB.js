@@ -1,4 +1,4 @@
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
 import _ from 'lodash'
 import LogManager from '../managers/logManager'
@@ -23,6 +23,7 @@ const DB = {
     chatRecoveryRequests: 'chatRecoveryRequests',
     chatMessages: 'chatMessages',
     holidayEvents: 'holidayEvents',
+    documentHeaders: 'documentHeaders'
   },
   find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
     if (filterFunction) {

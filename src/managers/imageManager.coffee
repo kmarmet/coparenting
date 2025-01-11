@@ -1,11 +1,10 @@
 import SecurityManager from "./securityManager"
 import imageCompression from 'browser-image-compression'
-import _ from "lodash";
-DB = require '@db'
-{ saveAs } = require 'file-saver'
-FirebaseStorage = require '@firebaseStorage'
-domtoimage = require 'dom-to-image'
-Manager = require '@manager'
+import _ from "lodash"
+import DB from "database/DB"
+import { saveAs } from 'file-saver'
+import FirebaseStorage from 'database/firebaseStorage'
+import domtoimage from 'dom-to-image';
 
 ImageManager =
   getStatusCode: (url) ->

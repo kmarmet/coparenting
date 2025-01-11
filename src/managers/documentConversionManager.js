@@ -1,103 +1,19 @@
-import Manager from '@manager'
+import Manager from 'managers/manager'
 import { createWorker } from 'tesseract.js'
-import FirebaseStorage from '@firebaseStorage'
+import FirebaseStorage from 'database/firebaseStorage'
 import reactStringReplace from 'react-string-replace'
 import StringManager from './stringManager'
-
+// 'thanksgiving day',
+// 'thanksgiving weekend',
+// 'christmas day',
+// "new year's day",
+// "new year's eve",
+// 'christmas break',
+// 'between',
+//   'background',
+// 'thanksgiving-day',
 const DocumentConversionManager = {
   tocHeaders: [
-    'income-tax-exemptions',
-    'child-support',
-    'spousal-maintenance',
-    'matrimonial-home',
-    'assets',
-    'debts',
-    'equitable-distribution-release',
-    'dower-courtesy-and-homestead-release',
-    'between',
-    'background',
-    'living-separate-and-apart',
-    'interference',
-    'children',
-    'child-custody',
-    'estate-and-testamentary-disposition',
-    'pension-release',
-    'general-release',
-    'general-provisions',
-    'acknowledgement',
-    'division-of-property',
-    'real-estate',
-    'household-goods-and-furnishings',
-    'motor-vehicles',
-    'financial-accounts',
-    'incomes-taxes',
-    'definitions',
-    'the-distribution',
-    'mutual-releases-indemnification-and-litigation',
-    'custody-and-visitation',
-    'spousal-support',
-    'the-family-residence',
-    'retirement-benefits',
-    'husbands-separate-property',
-    'wifes-separate-property',
-    'severability-and-enforceability',
-    'law-applicable',
-    'introductory-provisions',
-    'property',
-    'purpose-of-agreement',
-    'week-one',
-    'week-two',
-    'holiday-parenting-time',
-    'odd-years',
-    'even-years',
-    'the-parties',
-    'the-marriage',
-    'separation-date',
-    'armed-forces',
-    'name-change',
-    'minor-children',
-    'financial-disclosure',
-    'health-insurance',
-    'marital-home',
-    'husbands"s-property',
-    'wife"s-liabilities-debts',
-    'payment-to-balance-division',
-    'ground-for-legal-separation',
-    'assets-disclosure',
-    'other-property-provisions',
-    'liabilities-disclosure',
-    'undisclosed-gifts',
-    'future-liabilities',
-    'release-of-liabilities-and-claims',
-    'status-of-temporary-orders',
-    'waiver-of-rights-on-death-of-other-spouse',
-    'reconciliation',
-    'modification-by-subsequent-agreement',
-    'attorney-fees-to-enforce-or-modify-agreement',
-    'cooperation-in-implementation',
-    'effective-date',
-    'court-action',
-    'severability',
-    'additional-terms-&-conditions',
-    'future-children',
-    'parenting-time',
-    'parenting-visitation',
-    'physical-custody',
-    'notice-of-change-of-residence',
-    'previous-court-actions',
-    'additional-support',
-    'deferred',
-    'dependents',
-    'thanksgiving-day',
-  ],
-  textHeaders: [
-    'thanksgiving day',
-    'thanksgiving weekend',
-    'christmas day',
-    "new year's day",
-    "new year's eve",
-    'christmas break',
-    'exchanges and transportation',
     'income tax exemptions',
     'child support',
     'spousal maintenance',
@@ -106,7 +22,6 @@ const DocumentConversionManager = {
     'debts',
     'equitable distribution release',
     'dower courtesy and homestead release',
-    'background',
     'living separate and apart',
     'interference',
     'children',
@@ -136,8 +51,6 @@ const DocumentConversionManager = {
     'introductory provisions',
     'property',
     'purpose of agreement',
-    'week one',
-    'week two',
     'holiday parenting time',
     'the parties',
     'the marriage',
@@ -212,7 +125,7 @@ const DocumentConversionManager = {
     ))
 
     for (let _string of asArray) {
-      if (DocumentConversionManager.textHeaders.includes(_string.toLowerCase())) {
+      if (DocumentConversionManager.tocHeaders.includes(_string.toLowerCase())) {
         result = reactStringReplace(result, _string.toLocaleLowerCase(), (match, i) => (
           <span className="header" key={match + i}>
             {match}
@@ -246,6 +159,14 @@ const DocumentConversionManager = {
     })
     return text
   },
+  getImageText: async (imgUrl) => {
+    const worker = await createWorker()
+    const result = await worker.recognize(imgUrl)
+    const {data} = result
+    const {text} = data;
+    await worker.terminate()
+    return text
+  },
   imageToTextAndAppend: async (imagePath, textContainer) => {
     let returnText = ''
     const worker = await createWorker()
@@ -257,7 +178,6 @@ const DocumentConversionManager = {
       for (let par of paragraphs) {
         allText.push(par.text)
       }
-      console.log(lines)
       returnText = allText
       //let textWithHeaders = DocumentConversionManager.wrapTextInHeader(allText[0])
       // returnText = reactStringReplace(result, allText[0].toLocaleLowerCase(), (match, i) => (

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react'
 
-import ScreenNames from '@screenNames'
-import DB from '@db'
-import Manager from '@manager'
+import ScreenNames from 'constants/screenNames'
+import DB from 'database/DB'
+import Manager from 'managers/manager'
 import globalState from '../../../context'
 import DocumentsManager from '../../../managers/documentsManager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'

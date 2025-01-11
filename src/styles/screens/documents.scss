@@ -2,6 +2,8 @@
 
 #external-overrides {
   #documents-container {
+    
+    
     .header {
       width: 100%;
       display: block;
@@ -17,7 +19,16 @@
       justify-content: center;
       text-align: center;
     }
+    
+    #document-image {
+      height: auto;
+      width: 80px;
+      background-size: cover;
+      border-radius: $borderRadius;
+      margin-bottom: 15px;
+    }
   }
+  
   #bottom-actions {
     padding-top: 10px;
     position: fixed;
@@ -314,7 +325,6 @@
     .highlight {
       font-weight: 500;
       padding: 10px;
-      margin: 0;
       border-radius: 5px;
       width: calc(100vw - 35px);
       overflow: hidden;

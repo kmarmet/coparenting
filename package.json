@@ -23,6 +23,7 @@
     "compress-create-react-app": "1.4.5",
     "cors": "2.8.5",
     "cra-append-sw": "^2.7.0",
+    "debounce": "^2.2.0",
     "dom-to-image": "^2.6.0",
     "emoji-picker-react": "4.11.1",
     "eslint-config-react-app": "7.0.1",
@@ -83,12 +84,10 @@
     "workbox": "0.0.0",
     "workbox-cli": "7.1.0"
   },
-  "livelyReload": {
-    "livelyReload.port": 3000
-  },
   "scripts": {
     "testMode": "set PORT 3001 && npm run dev",
-    "dev": "craco start",
+    "dev": "react-scripts start",
+    "devBackup": "craco start",
     "deleteBuild": "del /S /F build",
     "preBuild": "cra-append-sw ./public/sw.js",
     "build": " craco build && compress-cra",

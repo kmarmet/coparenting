@@ -54,7 +54,7 @@
     </codeStyleSettings>
     <codeStyleSettings language="SCSS">
       <option name="LINE_COMMENT_AT_FIRST_COLUMN" value="true" />
-      <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
+      <option name="KEEP_BLANK_LINES_IN_CODE" value="0" />
       <indentOptions>
         <option name="USE_TAB_CHARACTER" value="true" />
         <option name="KEEP_INDENTS_ON_EMPTY_LINES" value="true" />
