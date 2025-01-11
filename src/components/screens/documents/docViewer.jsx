@@ -18,9 +18,10 @@ import 'lightgallery/css/lightgallery.css'
 import DomManager from '../../../managers/domManager'
 import debounce from 'debounce'
 import { IoClose } from 'react-icons/io5'
+import DocumentHeader from 'models/documentHeader.js'
 
 export default function DocViewer() {
-  const headerSet = DocumentConversionManager.tocHeaders
+  const predefinedHeaders = DocumentConversionManager.tocHeaders
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, docToView } = state
   const [tocHeaders, setTocHeaders] = useState([])
@@ -152,7 +153,7 @@ export default function DocViewer() {
       const isAllUppercase = StringManager.isAllUppercase(text)
       const classAlreadyAdded = el.classList.contains('header')
       const isMinimumLength = text.replaceAll(' ', '').length > 3
-      const isDefinedHeader = headerSet.includes(text.toLowerCase())
+      const isDefinedHeader = predefinedHeaders.includes(text.toLowerCase())
       const dontSkip = !textToSkip.includes(text.toLowerCase())
       return isAllUppercase && !classAlreadyAdded && isMinimumLength && isDefinedHeader && dontSkip
     }
@@ -285,41 +286,43 @@ export default function DocViewer() {
 
   // Get/Append Image
   const getImage = async () => {
+    setState({...state, isLoading: true})
     const allDocs = await SecurityManager.getDocuments(currentUser)
+    let docOwner = await DB.find(DB.tables.users, ['phone', docToView.ownerPhone], true)
+    const firebasePathId = docOwner.id
+
+    // Catch errors
     if (!Manager.isValid(allDocs)) {
       setState({ ...state, isLoading: false })
       return false
     }
-
-    // const relevantDoc = await DB.find(DB.tables.documents, ['id', docToView.id], true)
-    // console.log(relevantDoc)
-    // if (!Manager.isValid(relevantDoc)) {
-    //   setState({ ...state, isLoading: false })
-    //   return false
-    // }
-    let docOwner = await DB.find(DB.tables.users, ['phone', docToView.ownerPhone], true)
     if (!Manager.isValid(docOwner)) {
       setState({ ...state, isLoading: false })
       return false
     }
-    const firebasePathId = docOwner.id
 
     if (!Manager.isValid(docToView)) {
       setState({ ...state, isLoading: false })
       AlertManager.throwError('No Document Found')
       return false
     }
+
+    // Get image URL
     const imageResult = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, firebasePathId, docToView.name)
-    const userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
-    let allHeaders = []
-    if (Manager.isValid(userHeaders)) {
-      allHeaders = [...headerSet, ...userHeaders].flat();
-    }
-    else {
-      allHeaders = headerSet;
-    }
     setImgUrl(imageResult?.imageUrl)
 
+    // Get all headers
+    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+    userHeaders = userHeaders.map(x => x.headerText)
+    let allHeaders = []
+    if (Manager.isValid(userHeaders)) {
+      allHeaders = [...predefinedHeaders, ...userHeaders].flat();
+    }
+    else {
+      allHeaders = predefinedHeaders;
+    }
+
+    // Insert text
     if (imageResult.status === 'success') {
       const text = await DocumentConversionManager.getImageText(imageResult?.imageUrl)
       const textToView = wrapTextInHeader(text, allHeaders, userHeaders)
@@ -327,45 +330,48 @@ export default function DocViewer() {
       setState({ ...state, isLoading: false })
     } else {
       AlertManager.throwError('No Document Found')
+      setState({ ...state, isLoading: false })
+      return false;
     }
     setState({ ...state, isLoading: false })
   }
 
+  const deleteHeader = async (headerText) => {
+    const header = await DB.find(`${DB.tables.documentHeaders}/${currentUser.phone}`, ["headerText", headerText])
+    await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser.phone}`,header.id)
+    await getImage();
+  }
+
   const wrapTextInHeader = (text, allHeaders, userHeaders) => {
     let result = reactStringReplace(text, 'dependents', (match, i) => (
-      <span className="header" key={match + i}>
+      <p key={match + i}>
         {match}
-      </span>
+      </p>
     ))
     for (let _string of allHeaders) {
       result = reactStringReplace(result, _string.toLowerCase(), (match, i) => (
-        <span className="header" key={match + i}>
-          {match} {userHeaders.includes(_string.toLowerCase()) ? <IoClose /> : ""}
-        </span>
+        <p className="header" key={match + i}>
+          {match} {userHeaders.includes(_string) ? <IoClose onClick={() => deleteHeader(_string)} /> : ""}
+        </p>
       ))
     }
     return result
   }
 
-  const getSelectedText = () => {
+  const addUserHeaderToDatabase = () => {
     const text = DomManager.getSelectionText();
 
     if (text.length> 0) {
       AlertManager.confirmAlert("Would you like to use the selected text as a header?", "Yes", true, async () => {
-        await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, text);
+        const header = new DocumentHeader()
+        header.headerText = text;
+        header.ownerPhone = currentUser.phone
+        await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, header);
         setTextWithHeaders("")
         await getImage();
       })
     }
   }
-
-
-  // Show search icon when text is loaded
-  useEffect(() => {
-    if (Manager.isValid(tocHeaders)) {
-      // setState({ ...state, isLoading: false })
-    }
-  }, [tocHeaders])
 
 
   useEffect(() => {
@@ -375,12 +381,13 @@ export default function DocViewer() {
       document.getElementById('text-container').innerText = ''
     }
     convertAndAppendDocOrImage().then((r) => r)
-    document.addEventListener("selectionchange",debounce(getSelectedText, 1000));
+
+    // Listen for selection change
+    document.addEventListener("selectionchange",debounce(addUserHeaderToDatabase, 1000));
   }, [])
 
   return (
     <div className="doc-viewer-container">
-      <button onClick={getSelectedText}>click</button>
       {/* BOTTOM ACTIONS */}
       <div className={`${theme} flex form`} id="bottom-actions">
         {Manager.isValid(document.querySelectorAll('.header'), true) && (
