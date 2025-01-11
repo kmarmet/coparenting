@@ -8,7 +8,7 @@ import MyConfetti from 'components/shared/myConfetti.js'
 import DateManager from 'managers/dateManager.js'
 import DateFormats from 'constants/dateFormats.js'
 import moment from 'moment'
-import '../../prototypes.js'
+
 import BottomCard from '../shared/bottomCard'
 import { PiBellSimpleRinging, PiMoneyWavyDuotone } from 'react-icons/pi'
 import { AiOutlineFileAdd } from 'react-icons/ai'
@@ -21,7 +21,8 @@ import MenuItem from '@mui/material/MenuItem'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import { Fade } from 'react-awesome-reveal'
 import { RxUpdate } from 'react-icons/rx'
-import 'lightgallery/css/lightgallery.css' // ICONS
+import 'lightgallery/css/lightgallery.css'
+
 import { ImAppleinc } from 'react-icons/im'
 import { IoLogoVenmo } from 'react-icons/io5'
 import { SiCashapp, SiZelle } from 'react-icons/si'

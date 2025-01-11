@@ -7,28 +7,10 @@ import SignaturePad from 'signature_pad'
 import FirebaseStorage from 'database/firebaseStorage'
 import moment from 'moment'
 import CheckboxGroup from 'components/shared/checkboxGroup'
-import '../../../prototypes'
 import DateFormats from '../../../constants/dateFormats'
 import domtoimage from 'dom-to-image'
 import ChatRecoveryRequest from '../../../models/chat/chatRecoveryRequest'
 import ImageManager from '../../../managers/imageManager'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import NavBar from '../../navBar'
 import InputWrapper from '../../shared/inputWrapper'
 import InputSuggestion from '../../../models/inputSuggestion'
@@ -196,7 +178,9 @@ function ChatRecovery() {
                       const dbSuggestions = await DB.getTable(DB.tables.suggestions)
                       const matching = dbSuggestions.filter(
                         (x) =>
-                          x.formName === 'archived-chat' && x.ownerPhone === currentUser?.phone && contains(x.suggestion.toLowerCase(), inputValue)
+                          x.formName === 'archived-chat' &&
+                          x.ownerPhone === currentUser?.phone &&
+                          Manager.contains(x.suggestion.toLowerCase(), inputValue)
                       )
                       setInputSuggestions(Manager.getUniqueArray(matching).flat())
                     } else {

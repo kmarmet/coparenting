@@ -81,7 +81,7 @@
 
     #row {
       flex-wrap: wrap;
-      
+
       .thread-actions {
         position: relative;
         opacity: 0;
@@ -102,12 +102,13 @@
 
         #unmute-wrapper,
         #archive-wrapper,
-        #mute-wrapper, #delete-wrapper {
+        #mute-wrapper,
+        #delete-wrapper {
           display: flex;
           align-items: center;
           justify-content: center;
           flex-wrap: wrap;
-          
+
           span {
             width: 100%;
             text-align: center;
@@ -117,18 +118,19 @@
         }
 
         .delete-icon,
-        .mute-icon, .archive-icon {
+        .mute-icon,
+        .archive-icon {
           color: $red;
           font-size: 30px;
 
           &.mute-icon {
             color: $mainBlue;
           }
-          
+
           &.delete-icon {
             color: $red;
           }
-          
+
           &.archive-icon {
             color: $gold;
           }
@@ -642,7 +644,7 @@
 
         &:focus {
           border: 1px solid $mainBlue;
-          border-radius:15px;
+          border-radius: 15px;
           background: $lightIconBgBlue;
           color: black;
 

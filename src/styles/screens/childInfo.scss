@@ -3,11 +3,11 @@
 #external-overrides {
   .info-section {
     .MuiAccordion-root {
-      .MuiAccordion-heading  {
-        .MuiButtonBase-root  {
+      .MuiAccordion-heading {
+        .MuiButtonBase-root {
           .svg {
             font-size: 28px !important;
-            
+
             &.medical {
               font-size: 26px !important;
               position: relative;
@@ -321,16 +321,15 @@
           max-width: calc(100vw - 30px);
           margin-bottom: 10px;
           overflow: hidden;
-          
+
           &:first-child {
             padding-top: 10px;
-       
           }
-          
+
           @media screen and (min-width: 1000px) {
             &:hover {
               margin-bottom: 10px;
-              
+
               span {
                 padding-left: 10px;
               }

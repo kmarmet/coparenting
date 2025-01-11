@@ -42,7 +42,7 @@
     #date {
       color: black;
       font-size: 14px;
-      opacity: .7;
+      opacity: 0.7;
     }
   }
 }
@@ -54,7 +54,7 @@
     width: 100%;
     justify-content: space-between;
     align-items: flex-start;
-    
+
     #download-text {
       color: $mainBlue;
       font-size: 12px;
@@ -63,7 +63,7 @@
       line-height: 1;
       margin: 0;
       padding: 0;
-      @include  transformHover;
+      @include transformHover;
     }
   }
 

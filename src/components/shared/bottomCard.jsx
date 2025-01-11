@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
-import '../../prototypes'
+
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { CgClose } from 'react-icons/cg'
 

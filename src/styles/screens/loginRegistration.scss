@@ -232,7 +232,7 @@
       border-radius: 50px;
       background: $mainBlue;
       animation: beat 2s infinite;
-      
+
       @include hover;
     }
 
@@ -241,12 +241,12 @@
       bottom: 10px;
       @include hover;
     }
-    
+
     #contact-support-text {
       margin-top: 30px;
       font-size: 15px;
       width: 80%;
-      opacity: .85;
+      opacity: 0.85;
       font-weight: $fwRegular;
 
       a {
@@ -342,7 +342,6 @@
       }
 
       #checkbox-group {
-
         .flex {
           width: 100%;
 

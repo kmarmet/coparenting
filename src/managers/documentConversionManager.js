@@ -162,8 +162,8 @@ const DocumentConversionManager = {
   getImageText: async (imgUrl) => {
     const worker = await createWorker()
     const result = await worker.recognize(imgUrl)
-    const {data} = result
-    const {text} = data;
+    const { data } = result
+    const { text } = data
     await worker.terminate()
     return text
   },

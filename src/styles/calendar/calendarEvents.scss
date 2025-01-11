@@ -8,16 +8,16 @@
       padding: 20px 15px 200px 15px;
       background: white;
       border-radius: 25px 25px 0 0;
-      
+
       #no-events-text {
         margin: 0 auto;
         width: 100%;
         text-align: center;
         font-size: 14px;
         font-style: italic;
-        opacity: .7;
+        opacity: 0.7;
       }
-      
+
       .material-icons-round {
         color: $mainBlue;
         font-size: 18px;
@@ -38,7 +38,7 @@
           color: black;
           opacity: 0.5;
         }
-        
+
         #children {
           margin-bottom: 5px;
           margin-left: auto;
@@ -50,7 +50,7 @@
             font-size: 13px;
             font-weight: $fwRegular;
             opacity: 0.85;
-            color:black;
+            color: black;
           }
         }
 
@@ -85,8 +85,6 @@
                 font-size: 13px;
               }
             }
-
-     
           }
           #title-wrapper {
             width: 100%;
@@ -99,20 +97,19 @@
             }
             // REMINDERS
             .reminders {
-              
               svg {
                 margin-right: 5px;
                 font-size: 17px;
-                opacity: .4;
+                opacity: 0.4;
               }
-              
+
               .reminder-times {
                 p,
                 span {
                   font-size: 13px;
                   opacity: 0.85;
                   font-weight: $fwRegular;
-                  color:black;
+                  color: black;
                 }
                 .divider {
                   padding: 0 5px;

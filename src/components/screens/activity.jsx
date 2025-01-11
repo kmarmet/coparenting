@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
-import 'prototypes'
+
 import { Fade } from 'react-awesome-reveal'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import { FaCheck, FaChevronDown } from 'react-icons/fa6'

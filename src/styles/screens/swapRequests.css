@@ -15,15 +15,17 @@
   }
 }
 @keyframes pulse {
-  0%, 100% {
-    color: "#9d98fc";
+  0%,
+  100% {
+    color: '#9d98fc';
   }
   50% {
     color: #2b3563;
   }
 }
 @keyframes pulseWhite {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0px 0px 20px 0px white;
   }
   50% {
@@ -106,26 +108,86 @@
 }
 @keyframes topBubbles {
   0% {
-    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    background-position:
+      5% 90%,
+      10% 90%,
+      10% 90%,
+      15% 90%,
+      25% 90%,
+      25% 90%,
+      40% 90%,
+      55% 90%,
+      70% 90%;
   }
   50% {
-    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    background-position:
+      0% 80%,
+      0% 20%,
+      10% 40%,
+      20% 0%,
+      30% 30%,
+      22% 50%,
+      50% 50%,
+      65% 20%,
+      90% 30%;
   }
   100% {
-    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    background-position:
+      0% 70%,
+      0% 10%,
+      10% 30%,
+      20% -10%,
+      30% 20%,
+      22% 40%,
+      50% 40%,
+      65% 10%,
+      90% 20%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
   }
 }
 @keyframes bottomBubbles {
   0% {
-    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+    background-position:
+      10% -10%,
+      30% 10%,
+      55% -10%,
+      70% -10%,
+      85% -10%,
+      70% -10%,
+      70% 0%;
   }
   50% {
-    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+    background-position:
+      0% 80%,
+      20% 80%,
+      45% 60%,
+      60% 100%,
+      75% 70%,
+      95% 60%,
+      105% 0%;
   }
   100% {
-    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    background-position:
+      0% 90%,
+      20% 90%,
+      45% 70%,
+      60% 110%,
+      75% 80%,
+      95% 70%,
+      110% 10%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
   }
 }
 @keyframes rotate {
@@ -233,12 +295,14 @@
   color: var(--textColor);
   text-align: center;
 }
-#swap-requests .action-pills.swap-request, #swap-requests .action-pills.calendar-event,
+#swap-requests .action-pills.swap-request,
+#swap-requests .action-pills.calendar-event,
 #transfer-requests-container .action-pills.swap-request,
 #transfer-requests-container .action-pills.calendar-event {
   justify-content: flex-start;
 }
-#swap-requests .action-pills.swap-request .flex, #swap-requests .action-pills.calendar-event .flex,
+#swap-requests .action-pills.swap-request .flex,
+#swap-requests .action-pills.calendar-event .flex,
 #transfer-requests-container .action-pills.swap-request .flex,
 #transfer-requests-container .action-pills.calendar-event .flex {
   background-image: none;
@@ -254,39 +318,45 @@
   display: flex;
   width: 100%;
 }
-#swap-requests .action-pills.swap-request .flex p, #swap-requests .action-pills.calendar-event .flex p,
+#swap-requests .action-pills.swap-request .flex p,
+#swap-requests .action-pills.calendar-event .flex p,
 #transfer-requests-container .action-pills.swap-request .flex p,
 #transfer-requests-container .action-pills.calendar-event .flex p {
   opacity: 0.5;
 }
-#swap-requests .action-pills.swap-request .flex.active, #swap-requests .action-pills.calendar-event .flex.active,
+#swap-requests .action-pills.swap-request .flex.active,
+#swap-requests .action-pills.calendar-event .flex.active,
 #transfer-requests-container .action-pills.swap-request .flex.active,
 #transfer-requests-container .action-pills.calendar-event .flex.active {
   width: 100%;
   border: 0;
   background-color: var(--compColor);
 }
-#swap-requests .action-pills.swap-request .flex.active p, #swap-requests .action-pills.calendar-event .flex.active p,
+#swap-requests .action-pills.swap-request .flex.active p,
+#swap-requests .action-pills.calendar-event .flex.active p,
 #transfer-requests-container .action-pills.swap-request .flex.active p,
 #transfer-requests-container .action-pills.calendar-event .flex.active p {
   color: var(--bgColor);
   opacity: 1;
   font-weight: 500;
 }
-#swap-requests .action-pills.swap-request .flex.active span, #swap-requests .action-pills.calendar-event .flex.active span,
+#swap-requests .action-pills.swap-request .flex.active span,
+#swap-requests .action-pills.calendar-event .flex.active span,
 #transfer-requests-container .action-pills.swap-request .flex.active span,
 #transfer-requests-container .action-pills.calendar-event .flex.active span {
   display: inline;
   color: var(--bgColor);
   opacity: 1;
 }
-#swap-requests .action-pills.swap-request.swap-request .flex, #swap-requests .action-pills.calendar-event.swap-request .flex,
+#swap-requests .action-pills.swap-request.swap-request .flex,
+#swap-requests .action-pills.calendar-event.swap-request .flex,
 #transfer-requests-container .action-pills.swap-request.swap-request .flex,
 #transfer-requests-container .action-pills.calendar-event.swap-request .flex {
   max-width: 30%;
   min-width: 0;
 }
-#swap-requests .action-pills.swap-request.swap-request .flex.active, #swap-requests .action-pills.calendar-event.swap-request .flex.active,
+#swap-requests .action-pills.swap-request.swap-request .flex.active,
+#swap-requests .action-pills.calendar-event.swap-request .flex.active,
 #transfer-requests-container .action-pills.swap-request.swap-request .flex.active,
 #transfer-requests-container .action-pills.calendar-event.swap-request .flex.active {
   width: 60%;
@@ -326,7 +396,9 @@
   width: 100%;
   overflow: hidden;
   transition: all 0.3s ease-in-out;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
 }
 #swap-requests #swap-requests-container .request.open,
 #swap-requests #all-transfer-requests-container .request.open,
@@ -405,7 +477,10 @@
   border-radius: 8px;
   background-color: var(--eventDetails);
 }
-#swap-requests #swap-requests-container .request textarea::-moz-placeholder, #swap-requests #all-transfer-requests-container .request textarea::-moz-placeholder, #transfer-requests-container #swap-requests-container .request textarea::-moz-placeholder, #transfer-requests-container #all-transfer-requests-container .request textarea::-moz-placeholder {
+#swap-requests #swap-requests-container .request textarea::-moz-placeholder,
+#swap-requests #all-transfer-requests-container .request textarea::-moz-placeholder,
+#transfer-requests-container #swap-requests-container .request textarea::-moz-placeholder,
+#transfer-requests-container #all-transfer-requests-container .request textarea::-moz-placeholder {
   color: var(--textColor);
   font-weight: 300;
   opacity: 0.7;
@@ -510,7 +585,8 @@
   line-height: 1.2;
   font-weight: 400;
 }
-#swap-requests #swap-requests-container .request .request-date-container .request-date span:nth-child(2), #swap-requests #swap-requests-container .request .request-date-container .request-date span.time,
+#swap-requests #swap-requests-container .request .request-date-container .request-date span:nth-child(2),
+#swap-requests #swap-requests-container .request .request-date-container .request-date span.time,
 #swap-requests #all-transfer-requests-container .request .request-date-container .request-date span:nth-child(2),
 #swap-requests #all-transfer-requests-container .request .request-date-container .request-date span.time,
 #transfer-requests-container #swap-requests-container .request .request-date-container .request-date span:nth-child(2),
@@ -580,7 +656,8 @@
   color: #ca436c;
   opacity: 1;
 }
-#swap-requests #swap-requests-container .request .content .flex p.request-date, #swap-requests #swap-requests-container .request .content .flex p.amount,
+#swap-requests #swap-requests-container .request .content .flex p.request-date,
+#swap-requests #swap-requests-container .request .content .flex p.amount,
 #swap-requests #all-transfer-requests-container .request .content .flex p.request-date,
 #swap-requests #all-transfer-requests-container .request .content .flex p.amount,
 #transfer-requests-container #swap-requests-container .request .content .flex p.request-date,
@@ -632,7 +709,8 @@
 #transfer-requests-container #request-form .form.transfer-change input:first-child {
   margin-bottom: 0;
 }
-#swap-requests #request-form .form input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus), #transfer-requests-container #request-form .form input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus) {
+#swap-requests #request-form .form input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus),
+#transfer-requests-container #request-form .form input:is(:-webkit-autofill, :-webkit-autofill, :-webkit-autofill:focus) {
   margin: 0 auto;
   display: block;
   border-radius: 5px;
@@ -690,7 +768,10 @@
 #transfer-requests-container #request-form .form textarea.rs-input {
   margin-bottom: 0;
 }
-#swap-requests #request-form .form input::-moz-placeholder, #swap-requests #request-form .form textarea::-moz-placeholder, #transfer-requests-container #request-form .form input::-moz-placeholder, #transfer-requests-container #request-form .form textarea::-moz-placeholder {
+#swap-requests #request-form .form input::-moz-placeholder,
+#swap-requests #request-form .form textarea::-moz-placeholder,
+#transfer-requests-container #request-form .form input::-moz-placeholder,
+#transfer-requests-container #request-form .form textarea::-moz-placeholder {
   color: var(--textColor) !important;
   opacity: 0.8;
   font-style: italic;
@@ -719,8 +800,8 @@
   font-weight: 400;
   font-size: 16px;
   line-height: 1.5;
-  font-family: "Rubik";
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Rubik';
+  font-family: 'Montserrat', sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
   display: flex;
@@ -786,4 +867,4 @@
 #transfer-requests-container .button-group button.close {
   min-width: 0;
   width: 50%;
-}/*# sourceMappingURL=swapRequests.css.map */
+} /*# sourceMappingURL=swapRequests.css.map */

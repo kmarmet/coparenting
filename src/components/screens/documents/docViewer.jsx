@@ -19,6 +19,7 @@ import DomManager from '../../../managers/domManager'
 import debounce from 'debounce'
 import { IoClose } from 'react-icons/io5'
 import DocumentHeader from 'models/documentHeader.js'
+import DocumentsManager from '../../../managers/documentsManager'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
@@ -286,7 +287,7 @@ export default function DocViewer() {
 
   // Get/Append Image
   const getImage = async () => {
-    setState({...state, isLoading: true})
+    setState({ ...state, isLoading: true })
     const allDocs = await SecurityManager.getDocuments(currentUser)
     let docOwner = await DB.find(DB.tables.users, ['phone', docToView.ownerPhone], true)
     const firebasePathId = docOwner.id
@@ -313,45 +314,40 @@ export default function DocViewer() {
 
     // Get all headers
     let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
-    userHeaders = userHeaders.map(x => x.headerText)
+    userHeaders = userHeaders.map((x) => x.headerText)
     let allHeaders = []
     if (Manager.isValid(userHeaders)) {
-      allHeaders = [...predefinedHeaders, ...userHeaders].flat();
-    }
-    else {
-      allHeaders = predefinedHeaders;
+      allHeaders = [...predefinedHeaders, ...userHeaders].flat()
+    } else {
+      allHeaders = predefinedHeaders
     }
 
     // Insert text
     if (imageResult.status === 'success') {
-      const text = await DocumentConversionManager.getImageText(imageResult?.imageUrl)
+      let text = await DocumentConversionManager.getImageText(imageResult?.imageUrl)
+      text = DocumentsManager.fixTypos(text)
       const textToView = wrapTextInHeader(text, allHeaders, userHeaders)
       setTextWithHeaders(textToView)
       setState({ ...state, isLoading: false })
     } else {
       AlertManager.throwError('No Document Found')
       setState({ ...state, isLoading: false })
-      return false;
+      return false
     }
-    setState({ ...state, isLoading: false })
   }
 
   const deleteHeader = async (headerText) => {
-    const header = await DB.find(`${DB.tables.documentHeaders}/${currentUser.phone}`, ["headerText", headerText])
-    await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser.phone}`,header.id)
-    await getImage();
+    const header = await DB.find(`${DB.tables.documentHeaders}/${currentUser.phone}`, ['headerText', headerText])
+    await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser.phone}`, header.id)
+    await getImage()
   }
 
   const wrapTextInHeader = (text, allHeaders, userHeaders) => {
-    let result = reactStringReplace(text, 'dependents', (match, i) => (
-      <p key={match + i}>
-        {match}
-      </p>
-    ))
+    let result = reactStringReplace(text, 'dependents', (match, i) => <p key={match + i}>{match}</p>)
     for (let _string of allHeaders) {
       result = reactStringReplace(result, _string.toLowerCase(), (match, i) => (
         <p className="header" key={match + i}>
-          {match} {userHeaders.includes(_string) ? <IoClose onClick={() => deleteHeader(_string)} /> : ""}
+          {match} {userHeaders.includes(_string) ? <IoClose onClick={() => deleteHeader(_string)} /> : ''}
         </p>
       ))
     }
@@ -359,20 +355,19 @@ export default function DocViewer() {
   }
 
   const addUserHeaderToDatabase = () => {
-    const text = DomManager.getSelectionText();
+    const text = DomManager.getSelectionText()
 
-    if (text.length> 0) {
-      AlertManager.confirmAlert("Would you like to use the selected text as a header?", "Yes", true, async () => {
+    if (text.length > 0) {
+      AlertManager.confirmAlert('Would you like to use the selected text as a header?', 'Yes', true, async () => {
         const header = new DocumentHeader()
-        header.headerText = text;
+        header.headerText = text
         header.ownerPhone = currentUser.phone
-        await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, header);
-        setTextWithHeaders("")
-        await getImage();
+        await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, header)
+        setTextWithHeaders('')
+        await getImage()
       })
     }
   }
-
 
   useEffect(() => {
     // setState({ ...state, isLoading: true })
@@ -383,7 +378,7 @@ export default function DocViewer() {
     convertAndAppendDocOrImage().then((r) => r)
 
     // Listen for selection change
-    document.addEventListener("selectionchange",debounce(addUserHeaderToDatabase, 1000));
+    document.addEventListener('selectionchange', debounce(addUserHeaderToDatabase, 1000))
   }, [])
 
   return (

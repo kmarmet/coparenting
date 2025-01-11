@@ -1,5 +1,5 @@
-@import "./mixins";
-@import "./variables";
+@import './mixins';
+@import './variables';
 
 *,
 *::before,
@@ -56,13 +56,13 @@ body {
   height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
   min-height: calc(100% + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  
+
   &.dark {
-//      background-color: $darkBg;
+    //      background-color: $darkBg;
   }
   &.light {
-//    background-color: $lightBg;
-    
+    //    background-color: $lightBg;
+
     .rc-tooltip {
       .rc-tooltip-inner {
         background-color: $lightBlueDark !important;
@@ -70,7 +70,6 @@ body {
       }
     }
   }
-
 
   // height: 100vh;
 
@@ -101,7 +100,7 @@ body {
 img,
 picture,
 video,
-canvas{
+canvas {
   display: block;
   max-width: 100%;
 }

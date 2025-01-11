@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import moment from 'moment'
 import DB_UserScoped from 'database/db_userScoped'
-import 'prototypes'
+
 import { MobileTimePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../../constants/dateFormats'
 import Toggle from 'react-toggle'

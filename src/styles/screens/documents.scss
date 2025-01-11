@@ -18,7 +18,7 @@
       align-items: center;
       opacity: 1;
       position: relative;
-      
+
       svg {
         position: absolute;
         right: 10px;
@@ -26,7 +26,7 @@
         color: $red;
       }
     }
-    
+
     #document-image {
       height: auto;
       width: 80px;
@@ -35,7 +35,7 @@
       margin-bottom: 15px;
     }
   }
-  
+
   #bottom-actions {
     padding-top: 10px;
     position: fixed;
@@ -209,7 +209,7 @@
               }
             }
           }
-          
+
           p {
             line-height: 1;
             margin: 0;
@@ -217,7 +217,7 @@
             display: flex;
             align-items: center;
           }
-          
+
           svg {
             font-size: 22px;
             margin-right: 10px;
@@ -328,7 +328,7 @@
         z-index: 100;
       }
     }
-    
+
     .highlight {
       font-weight: 500;
       padding: 10px;
@@ -341,20 +341,20 @@
       &:not(.header) {
         background-color: $lightIconBgBlue;
         color: $mainBlue;
-        
+
         * {
           color: $mainBlue;
         }
-        
+
         .highlight {
           border: 0;
         }
       }
-      
+
       .highlight {
         width: calc(100vw - 20px);
       }
-      
+
       &.header {
       }
     }
@@ -477,7 +477,6 @@
           }
         }
       }
-
 
       .sub-header {
         font-weight: bold;

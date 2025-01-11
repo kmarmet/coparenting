@@ -3,7 +3,7 @@
 #external-overrides {
   #coparenting-setup-container {
     z-index: 1000000;
-    
+
     .ff-note {
       padding: 10px;
       border: 2px solid red;
@@ -75,7 +75,6 @@
       }
 
       .rs-panel-title {
-        
         text-align: left;
       }
     }
@@ -141,7 +140,7 @@
 
       .section {
         justify-content: flex-start;
-        
+
         //test
 
         &.summary {
@@ -164,11 +163,10 @@
 
             input {
               border-radius: 0;
-              
+
               width: 100%;
 
               &::placeholder {
-                
                 opacity: 0.7;
                 font-style: italic;
                 font-size: 16px;
@@ -207,7 +205,7 @@
 
             &:nth-child(2) {
               margin-left: 20px;
-              
+
               font-size: 20px;
             }
           }

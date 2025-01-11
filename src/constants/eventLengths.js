@@ -4,4 +4,4 @@ const EventLengths = {
   intra: 'intraday',
 }
 
-export default EventLengths; 
+export default EventLengths

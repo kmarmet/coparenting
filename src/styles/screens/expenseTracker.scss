@@ -151,13 +151,12 @@
 
     /*#region  EXPENSE*/
     .expense {
-
       &.active {
         overflow: auto;
         max-height: 10000px;
         transition: all 0.3s ease-in-out;
       }
-      
+
       span {
         font-size: 14px;
       }
@@ -165,9 +164,9 @@
       * {
         line-height: 1;
       }
-      
+
       p:not(.name) {
-        opacity: .85;
+        opacity: 0.85;
         font-size: 13px;
       }
 
@@ -175,7 +174,7 @@
         margin-top: 0;
         .amount {
           font-size: 16px;
-//          color: ;$red
+          //          color: ;$red
           opacity: 0.85;
           font-weight: $fwMedium;
           display: inline;

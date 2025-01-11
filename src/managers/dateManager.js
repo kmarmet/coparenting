@@ -96,7 +96,7 @@ const DateManager = {
     }
     const format = DateManager.getMomentFormat(date)
     const asMoment = moment(date, format).format(format)
-    if (asMoment.contains('Invalid')) {
+    if (Manager.contains(asMoment, 'Invalid')) {
       return false
     }
     return asMoment.length !== 0

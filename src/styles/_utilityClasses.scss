@@ -488,11 +488,11 @@
   color: $lightBlack !important;
   font-size: 14px !important;
   font-style: italic !important;
-  
+
   &.dark {
     color: white !important;
   }
-  
+
   &.payment-options {
     font-size: 16px !important;
   }
@@ -504,7 +504,7 @@
     color: $lightBlackLight !important;
   }
   /*#endregion  LIGHT THEME*/
-  
+
   /*#region  DARK THEME*/
   &.dark {
     color: $offWhite !important;
@@ -515,7 +515,7 @@
 
 /*#region  FONT STYLE*/
 .italic {
-  font-style:  italic !important;
+  font-style: italic !important;
 }
 .underline {
   text-decoration: underline !important;

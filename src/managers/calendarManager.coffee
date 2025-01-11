@@ -1,5 +1,4 @@
 import DB from "database/DB"
-import "../prototypes"
 import { child, getDatabase, ref, remove, set, update } from 'firebase/database'
 import Manager from "./manager"
 import LogManager from "./logManager"

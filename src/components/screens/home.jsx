@@ -26,6 +26,7 @@ import ScreenNames from 'constants/screenNames'
 import Manager from 'managers/manager'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
+import ImageManager from 'managers/imageManager'
 
 function LazyImage({ show, importedImage, imagesObjectPropName }) {
   const [showImage, setShowImage] = useState(false)
@@ -40,10 +41,10 @@ function LazyImage({ show, importedImage, imagesObjectPropName }) {
     <div className="img-wrapper" data-name={imagesObjectPropName}>
       {showImage && (
         <Fade>
-          <img src={importedImage} className={`lazy-loaded-image`} />
+          <img alt="Peaceful coParenting" src={importedImage} className={`lazy-loaded-image`} />
         </Fade>
       )}
-      {!showImage && <img id="lazy-loaded-img-placeholder" src={require('../../img/loading.gif')} />}
+      {!showImage && <img alt="Loading..." id="lazy-loaded-img-placeholder" src={require('../../img/loading.gif')} />}
     </div>
   )
 }
@@ -52,11 +53,10 @@ export default function Home() {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
   const [loadedImages, setLoadedImages] = useState([])
-
+  const [calendarImage, setCalendarImage] = useState(null)
   const bind = useLongPress((element) => {
     setState({ ...state, currentScreen: ScreenNames.login })
   })
-
   // Init Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
@@ -80,7 +80,6 @@ export default function Home() {
       }
     }
   }
-
   useEffect(() => {
     let homescreenWrapper = document.getElementById('home-screen-wrapper')
 
@@ -96,7 +95,6 @@ export default function Home() {
           for (let imageWrapper of imageWrappers) {
             const imagesObjectPropName = imageWrapper.dataset.name
             if (DomManager.isInViewport(imageWrapper)) {
-              console.log(true)
               setLoadedImages([...loadedImages, imagesObjectPropName])
             }
           }
@@ -155,9 +153,9 @@ export default function Home() {
           </div>
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.image'}>
             <div className="flex" id="images">
-              <img className="image" src={CalendarImage} />
-              <img className="image" src={MemoriesImage} />
-              <img className="image" src={ChildInfoImage} />
+              <img alt="Calendar" className="image" src={CalendarImage} />
+              <img alt="Memories" className="image" src={MemoriesImage} />
+              <img alt="Child Info" className="image" src={ChildInfoImage} />
             </div>
           </LightGallery>
         </Fade>
@@ -168,7 +166,7 @@ export default function Home() {
         {/* NAVBAR */}
         <div id="below-fold-intro-text" className="section">
           <p>
-            Our app provides a stress-free way to manage co-parenting by enhancing communication, scheduling, and decision-making, so{' '}
+            Our app provides a stress-free way to manage co-parenting by enhancing communication, scheduling, and decision-making, so
             <b>you can focus on what matters most, your children's well-being</b>.
           </p>
         </div>
@@ -345,7 +343,7 @@ export default function Home() {
                       <li className="list-title">
                         Straightforward Pages (e.g Expense Tracker, Memories, .etc)
                         <ul>
-                          <li>Each page includes text at the top that indicate exactly what the page can be used for </li>
+                          <li>Each page includes text at the top that indicate exactly what the page can be used for</li>
                           <li>
                             You will also notice that anything that could lead to a question is typically paired with helpful text and/or visual tools
                             <ul>

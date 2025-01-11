@@ -4,8 +4,7 @@ import Manager from 'managers/manager'
 
 function PopupCard({ onOpen, children, title, subtitle = '', className = '', onClose, closeable = true }) {
   useEffect(() => {
-    // @ts-ignore
-    if (!className.contains('active')) {
+    if (!Manager.contains(className, 'active')) {
       Manager.showPageContainer('show')
     } else {
       Manager.showPageContainer('hide')

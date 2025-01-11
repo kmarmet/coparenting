@@ -53,10 +53,10 @@
         max-height: calc(100vh - 110px);
         border: 1px solid $desktopBorderColor;
         border-radius: $bigBorderRadius;
-        
+
         &.documents {
           background: white;
-            width: calc(100vw - 30px);
+          width: calc(100vw - 30px);
         }
       }
       .page-container {
@@ -199,7 +199,7 @@
               color: $mainBlue;
               padding-left: 15px;
               cursor: pointer;
-              
+
               label {
                 color: $mainBlue;
                 opacity: 1;
@@ -578,9 +578,9 @@
           width: 20vw;
           border-radius: $bigBorderRadius;
           border: 1px solid $desktopBorderColor;
-          
+
           #input-wrapper {
-            padding:0;
+            padding: 0;
           }
 
           #user-name {

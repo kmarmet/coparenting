@@ -1,12 +1,12 @@
 /*#region  BASE COLORS */
-$green:  #2ecc71;
+$green: #2ecc71;
 $red: #d24d57;
 $bgRed: #f5e0e1;
 $yellow: #fbf5bf;
 $gold: #f5bc02;
 $orange: #e8964a;
 $lightPurple: #af90fd;
-$purple: #6447f5 ;
+$purple: #6447f5;
 $darkPurple: #5b3bdc;
 $linkColor: #6ea8fe;
 $accent: $purple;
@@ -15,12 +15,12 @@ $lightestGreen: rgba(173, 245, 203, 0.65);
 /*#endregion  BASE COLORS */
 
 /*#region  BLACKS (NOT NEGROES)*/
-$black : #232323;
+$black: #232323;
 $lightBlack: #1c1c1c;
 $translucent: rgba(255, 255, 255, 0.02);
 $translucentLighter: rgba(255, 255, 255, 0.05);
 $translucentLightest: rgba(255, 255, 255, 0.09);
-$anotherBlack: #12130F;
+$anotherBlack: #12130f;
 /*#endregion  BLACKS (NOT NEGROES)*/
 
 /*#region  GREYS*/
@@ -48,20 +48,22 @@ $currentUserGreen: $green;
 $darkBlueDarkest: #121735;
 $darkBg: #1a2034;
 $darkestBg: #0f121e;
-$darkPurple :#808cf8;
-$darkLightPurple: #AAA8CC;
+$darkPurple: #808cf8;
+$darkLightPurple: #aaa8cc;
 $darkLightBg: #13112f;
-$darkGreen: #00C899;
-$darkBlue: #5C8DF7;
+$darkGreen: #00c899;
+$darkBlue: #5c8df7;
 $darkBlueMedium: #567fff;
 $darkBlueLight: cornflowerblue;
-$darkSmallShadow: 0 3px 6px rgba(0, 0, 0, 0.16),0 3px 6px rgba(0, 0, 0, 0.23);
+$darkSmallShadow:
+  0 3px 6px rgba(0, 0, 0, 0.16),
+  0 3px 6px rgba(0, 0, 0, 0.23);
 $darkBorderColor: rgba(147, 147, 147, 0.2);
 /*#endregion  Dark Theme*/
 
 /*#region  LIGHT THEME*/
-$lightBlueDark: #00319F;
-$lightBlueLightDark: #0049BE;
+$lightBlueDark: #00319f;
+$lightBlueLightDark: #0049be;
 $lightBlueMedium: #4c6fff;
 $lightAccent: #4c75a3;
 $lightIconBgBlue: #dde5ff;

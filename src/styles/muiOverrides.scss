@@ -414,23 +414,23 @@
       &.Mui-selected {
         transition: all 0.2s ease-in-out !important;
         font-weight: $fwBold !important;
-        background:transparent;
+        background: transparent;
         color: $mainBlue;
         width: 60px !important;
         height: 50px !important;
         border-radius: 0 !important;
         position: relative;
         top: 1px;
-        
+
         &::after {
-          content: "";
+          content: '';
           height: 2px;
           background: $mainBlue;
           position: relative;
           top: -23px;
           width: 30px;
         }
-        
+
         .dot-wrapper {
           position: relative;
           top: 0;

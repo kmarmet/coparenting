@@ -3,8 +3,6 @@ var CalendarManager;
 
 import DB from "database/DB";
 
-import "../prototypes";
-
 import {
   child,
   getDatabase,

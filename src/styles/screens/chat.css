@@ -15,15 +15,17 @@
   }
 }
 @keyframes pulse {
-  0%, 100% {
-    color: "#9d98fc";
+  0%,
+  100% {
+    color: '#9d98fc';
   }
   50% {
     color: #2b3563;
   }
 }
 @keyframes pulseWhite {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0px 0px 20px 0px white;
   }
   50% {
@@ -106,26 +108,86 @@
 }
 @keyframes topBubbles {
   0% {
-    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    background-position:
+      5% 90%,
+      10% 90%,
+      10% 90%,
+      15% 90%,
+      25% 90%,
+      25% 90%,
+      40% 90%,
+      55% 90%,
+      70% 90%;
   }
   50% {
-    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    background-position:
+      0% 80%,
+      0% 20%,
+      10% 40%,
+      20% 0%,
+      30% 30%,
+      22% 50%,
+      50% 50%,
+      65% 20%,
+      90% 30%;
   }
   100% {
-    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    background-position:
+      0% 70%,
+      0% 10%,
+      10% 30%,
+      20% -10%,
+      30% 20%,
+      22% 40%,
+      50% 40%,
+      65% 10%,
+      90% 20%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
   }
 }
 @keyframes bottomBubbles {
   0% {
-    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+    background-position:
+      10% -10%,
+      30% 10%,
+      55% -10%,
+      70% -10%,
+      85% -10%,
+      70% -10%,
+      70% 0%;
   }
   50% {
-    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+    background-position:
+      0% 80%,
+      20% 80%,
+      45% 60%,
+      60% 100%,
+      75% 70%,
+      95% 60%,
+      105% 0%;
   }
   100% {
-    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    background-position:
+      0% 90%,
+      20% 90%,
+      45% 70%,
+      60% 110%,
+      75% 80%,
+      95% 70%,
+      110% 10%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
   }
 }
 @keyframes rotate {
@@ -285,7 +347,9 @@
   box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 30px 14px;
   margin-bottom: 5px;
 }
-#external-overrides #message-thread-container.page-container .search-input:focus, #external-overrides #message-thread-container.page-container .search-input:active, #external-overrides #message-thread-container.page-container .search-input:focus-visible {
+#external-overrides #message-thread-container.page-container .search-input:focus,
+#external-overrides #message-thread-container.page-container .search-input:active,
+#external-overrides #message-thread-container.page-container .search-input:focus-visible {
   outline: none;
 }
 #external-overrides #message-thread-container.page-container .search-input::-moz-placeholder {
@@ -331,7 +395,7 @@
   transition: all 0.2s ease-in-out;
   -webkit-user-select: none;
   -moz-user-select: none;
-       user-select: none;
+  user-select: none;
 }
 #external-overrides #message-thread-container.page-container #messages .message.longpress p {
   animation: beat 1.5s infinite;
@@ -348,8 +412,8 @@
 }
 #external-overrides #message-thread-container.page-container #messages .message .under-message {
   -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  user-select: none;
   outline: none;
   margin-bottom: 20px;
   clear: both;
@@ -383,7 +447,9 @@
   border-radius: 20px;
   margin-bottom: 5px;
   padding: 10px 15px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   font-weight: 300;
   line-height: 1.3;
@@ -459,4 +525,4 @@
   position: relative;
   top: 5px;
   margin-left: 10px;
-}/*# sourceMappingURL=chat.css.map */
+} /*# sourceMappingURL=chat.css.map */

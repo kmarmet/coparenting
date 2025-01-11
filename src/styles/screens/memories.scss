@@ -3,7 +3,7 @@
 #external-overrides {
   #memories-container {
     .loading-memory-gif {
-      transform: scale(.5);
+      transform: scale(0.5);
     }
     .light-gallery {
       margin-top: 15px;
@@ -96,14 +96,14 @@
       .memory-image {
         width: 33.33%;
       }
-      
+
       .memory-image {
         float: left;
         margin-bottom: 10px;
-        transition: all .5s ease-in-out;
+        transition: all 0.5s ease-in-out;
         opacity: 0;
-        transform: scale(.6);
-        
+        transform: scale(0.6);
+
         &.active {
           transform: scale(1);
           opacity: 1;

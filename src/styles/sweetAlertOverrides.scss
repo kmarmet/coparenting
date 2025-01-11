@@ -1,12 +1,12 @@
-@import "./palette";
-@import "./_variables.scss";
-@import "./_mixins.scss";
+@import './palette';
+@import './_variables.scss';
+@import './_mixins.scss';
 
 div {
   &:where(.swal2-container) {
     button {
       &:where(.swal2-styled):where(.swal2-confirm) {
-		background-color: $mainBlue !important;
+        background-color: $mainBlue !important;
         width: 140px !important;
       }
       &:where(.swal2-styled):where(.swal2-deny) {
@@ -18,7 +18,7 @@ div {
 }
 
 .swal2-confirm {
-//  background-color: $green !important;
+  //  background-color: $green !important;
 }
 
 .swal2-title {
@@ -27,7 +27,7 @@ div {
 }
 
 .swal2-icon {
-  transform: scale(.9);
+  transform: scale(0.9);
 }
 
 .swal2-popup {
@@ -36,7 +36,7 @@ div {
 }
 
 .swal2-backdrop-show {
-  background: rgba(0,0,0,.6) !important;
+  background: rgba(0, 0, 0, 0.6) !important;
 }
 
 .swal2-actions {

@@ -20,7 +20,6 @@
   .rs-input {
     margin: 0 !important;
   }
-  
 
   .rs-calendar-table-header-row {
     position: relative !important;
@@ -213,7 +212,6 @@
     .rs-stack-item {
       height: auto;
 
-
       .rs-calendar {
         height: 50vh;
       }
@@ -269,9 +267,9 @@
           background-color: $mainBlue;
           justify-content: center;
           padding: 20px;
-         span {
-           color: white !important;
-         }
+          span {
+            color: white !important;
+          }
         }
       }
     }
@@ -556,7 +554,6 @@
       border: 0;
       border-radius: 0;
       border-bottom: 1px solid #e3e8ee;
-    
 
       &:focus,
       &:valid,
@@ -638,7 +635,7 @@
 
   .rs-tag-icon-close {
     position: relative;
-    
+
     svg {
       font-size: 20px !important;
       align-self: stretch !important;

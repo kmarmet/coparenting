@@ -1,160 +1,153 @@
-@import "../mixins";
+@import '../mixins';
 
 #external-overrides {
-    #chat-request-container {
-        .signature-pad {
-            width: 100%;
-            border-radius: $borderRadius;
-        }
-
-        #canvas-wrapper {
-            width: calc(100vw - 30px);
-            height: 550px;
-
-            .conversation-canvas {
-                width: 100%;
-                border-radius: $borderRadius;
-            }
-        }
-        
-        #image-wrapper {
-            img {
-                filter: brightness(0);
-            }
-        }
+  #chat-request-container {
+    .signature-pad {
+      width: 100%;
+      border-radius: $borderRadius;
     }
 
-    #account-container {
-        #user-name {
-            font-size: 20px;
-            font-weight: 500;
-            padding-bottom: 8px;
+    #canvas-wrapper {
+      width: calc(100vw - 30px);
+      height: 550px;
 
-            svg {
-                font-size: 20px;
-                color: $mainBlue;
-                position: relative;
-                top: 3px;
-            }
+      .conversation-canvas {
+        width: 100%;
+        border-radius: $borderRadius;
+      }
+    }
+
+    #image-wrapper {
+      img {
+        filter: brightness(0);
+      }
+    }
+  }
+
+  #account-container {
+    #user-name {
+      font-size: 20px;
+      font-weight: 500;
+      padding-bottom: 8px;
+
+      svg {
+        font-size: 20px;
+        color: $mainBlue;
+        position: relative;
+        top: 3px;
+      }
+    }
+
+    .sections {
+      .section {
+        @include lineItem;
+        justify-content: flex-start;
+        border-bottom: 1px solid $borderColor;
+
+        p {
+          color: black;
         }
 
-        .sections {
-            .section {
-                @include lineItem;
-                justify-content: flex-start;
-                border-bottom: 1px solid $borderColor;
-                
-                p {
-                    color: black;
-                }
-                
-                svg {
-                    color: $mainBlue;
-                }
-                
-                &.close-account {
-                    color: $red;
-                    
-                    svg {
-                        color: $red;
-                    }
-                }
-
-                &.notifications {
-                    flex-wrap: nowrap;
-                    justify-content: space-between;
-
-                    span {
-                        line-height: 1.2;
-                        justify-self: flex-start;
-                        margin-right: auto;
-                        margin-left: 0;
-
-                        &:nth-child(2) {
-                        
-                        }
-
-                        &.accent {
-                            margin-right: 20px;
-                        }
-                    }
-
-                    #checkbox-group {
-                        display: flex;
-                        flex-wrap: nowrap;
-                        margin: 0;
-                        margin-left: 10px;
-
-                        .flex {
-                            width: auto;
-
-                            &:last-child {
-                                margin: 0;
-                            }
-                        }
-                    }
-                }
-
-
-                &.theme {
-                    span {
-                        margin: 0;
-
-                        &:nth-child(2) {
-                            margin-left: 20px;
-                            
-                        }
-                    }
-
-                    div {
-                        margin-left: auto;
-
-
-                        span {
-                            font-size: 20px;
-                        }
-                    }
-                }
-
-
-                &:first-child {
-                    border-top: 1px solid rgba(255, 255, 255, 0.1);
-                }
-
-                span {
-                    font-size: 25px;
-                    margin-right: 20px;
-                    opacity: .8;
-                    color: $mainBlue;
-                }
-
-            }
+        svg {
+          color: $mainBlue;
         }
 
-        .back-button {
-            
-            font-weight: 400;
-            margin-bottom: 8px;
+        &.close-account {
+          color: $red;
+
+          svg {
+            color: $red;
+          }
+        }
+
+        &.notifications {
+          flex-wrap: nowrap;
+          justify-content: space-between;
+
+          span {
+            line-height: 1.2;
+            justify-self: flex-start;
+            margin-right: auto;
+            margin-left: 0;
+
+            &:nth-child(2) {
+            }
+
+            &.accent {
+              margin-right: 20px;
+            }
+          }
+
+          #checkbox-group {
             display: flex;
-            align-items: center;
-            color: $linkColor;
-            justify-content: flex-start;
-            width: auto;
-            position: fixed;
-            left: -15px;
-            padding: 0 8px;
-            border-radius: $borderRadius;
-            bottom: 90px;
-            font-size: 18px;
-            text-align: left;
+            flex-wrap: nowrap;
+            margin: 0;
+            margin-left: 10px;
+
+            .flex {
+              width: auto;
+
+              &:last-child {
+                margin: 0;
+              }
+            }
+          }
+        }
+
+        &.theme {
+          span {
+            margin: 0;
+
+            &:nth-child(2) {
+              margin-left: 20px;
+            }
+          }
+
+          div {
+            margin-left: auto;
 
             span {
-                padding: 0;
-                width: 25px;
-                margin-right: 0;
-                font-size: 45px;
-                margin-right: 5px;
+              font-size: 20px;
             }
+          }
         }
+
+        &:first-child {
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        span {
+          font-size: 25px;
+          margin-right: 20px;
+          opacity: 0.8;
+          color: $mainBlue;
+        }
+      }
     }
+
+    .back-button {
+      font-weight: 400;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      color: $linkColor;
+      justify-content: flex-start;
+      width: auto;
+      position: fixed;
+      left: -15px;
+      padding: 0 8px;
+      border-radius: $borderRadius;
+      bottom: 90px;
+      font-size: 18px;
+      text-align: left;
+
+      span {
+        padding: 0;
+        width: 25px;
+        margin-right: 0;
+        font-size: 45px;
+        margin-right: 5px;
+      }
+    }
+  }
 }

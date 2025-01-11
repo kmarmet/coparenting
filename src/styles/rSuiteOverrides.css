@@ -15,15 +15,17 @@
   }
 }
 @keyframes pulse {
-  0%, 100% {
-    color: "#9d98fc";
+  0%,
+  100% {
+    color: '#9d98fc';
   }
   50% {
     color: #2b3563;
   }
 }
 @keyframes pulseWhite {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0px 0px 20px 0px white;
   }
   50% {
@@ -106,26 +108,86 @@
 }
 @keyframes topBubbles {
   0% {
-    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    background-position:
+      5% 90%,
+      10% 90%,
+      10% 90%,
+      15% 90%,
+      25% 90%,
+      25% 90%,
+      40% 90%,
+      55% 90%,
+      70% 90%;
   }
   50% {
-    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    background-position:
+      0% 80%,
+      0% 20%,
+      10% 40%,
+      20% 0%,
+      30% 30%,
+      22% 50%,
+      50% 50%,
+      65% 20%,
+      90% 30%;
   }
   100% {
-    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    background-position:
+      0% 70%,
+      0% 10%,
+      10% 30%,
+      20% -10%,
+      30% 20%,
+      22% 40%,
+      50% 40%,
+      65% 10%,
+      90% 20%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
   }
 }
 @keyframes bottomBubbles {
   0% {
-    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+    background-position:
+      10% -10%,
+      30% 10%,
+      55% -10%,
+      70% -10%,
+      85% -10%,
+      70% -10%,
+      70% 0%;
   }
   50% {
-    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+    background-position:
+      0% 80%,
+      20% 80%,
+      45% 60%,
+      60% 100%,
+      75% 70%,
+      95% 60%,
+      105% 0%;
   }
   100% {
-    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    background-position:
+      0% 90%,
+      20% 90%,
+      45% 70%,
+      60% 110%,
+      75% 80%,
+      95% 70%,
+      110% 10%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
   }
 }
 @keyframes rotate {
@@ -175,10 +237,13 @@
 #external-overrides .flatpickr-calendar.hide {
   display: none !important;
 }
-#external-overrides .flatpickr-calendar::before, #external-overrides .flatpickr-calendar::after {
+#external-overrides .flatpickr-calendar::before,
+#external-overrides .flatpickr-calendar::after {
   display: none;
 }
-#external-overrides .flatpickr-calendar *:not(.flatpickr-month, .flatpickr-current-month, .flatpickr-monthDropdown-months, .flatpickr-monthDropdown-month, .flatpickr-months) {
+#external-overrides
+  .flatpickr-calendar
+  *:not(.flatpickr-month, .flatpickr-current-month, .flatpickr-monthDropdown-months, .flatpickr-monthDropdown-month, .flatpickr-months) {
   color: var(--textColor);
   font-weight: 400;
   margin: 0 auto;
@@ -346,10 +411,12 @@
   top: 28px;
   left: 58%;
 }
-#external-overrides .flatpickr-calendar .flatpickr-day.nextMonthDay, #external-overrides .flatpickr-calendar .flatpickr-day.prevMonthDay {
+#external-overrides .flatpickr-calendar .flatpickr-day.nextMonthDay,
+#external-overrides .flatpickr-calendar .flatpickr-day.prevMonthDay {
   opacity: 0.4;
 }
-#external-overrides .flatpickr-calendar .flatpickr-day.nextMonthDay.selected, #external-overrides .flatpickr-calendar .flatpickr-day.prevMonthDay.selected {
+#external-overrides .flatpickr-calendar .flatpickr-day.nextMonthDay.selected,
+#external-overrides .flatpickr-calendar .flatpickr-day.prevMonthDay.selected {
   background-color: #ca436c;
   border: 1px solid #2b3563;
   color: white;
@@ -434,7 +501,9 @@
 #external-overrides .rs-picker-toggle ul {
   background-color: var(--bgColor) !important;
   border: 0 !important;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
 }
 #external-overrides .rs-dropdown ul li,
 #external-overrides .rs-picker ul li,
@@ -599,15 +668,15 @@
   font-size: 18px;
   background-color: black;
 }
-#external-overrides .rs-picker-popup .rs-calendar-time-dropdown-column [aria-label="Select hours"] {
+#external-overrides .rs-picker-popup .rs-calendar-time-dropdown-column [aria-label='Select hours'] {
   margin-right: 8px;
 }
-#external-overrides .rs-picker-popup .rs-calendar-time-dropdown-column [aria-selected=true] span {
+#external-overrides .rs-picker-popup .rs-calendar-time-dropdown-column [aria-selected='true'] span {
   background-color: var(--eventDetails);
   border-radius: 8px;
 }
 #external-overrides .rs-picker-popup .rs-calendar-time-dropdown-column:after {
-  content: "";
+  content: '';
   position: absolute;
   z-index: 1;
   bottom: -1px;
@@ -735,7 +804,7 @@
 #external-overrides [data-testid].center .rs-picker-toolbar .rs-btn-primary {
   background-color: var(--accent);
 }
-#external-overrides [data-testid=daterange-predefined-bottom] {
+#external-overrides [data-testid='daterange-predefined-bottom'] {
   display: none !important;
 }
 #external-overrides .flatpickr-day.selected {
@@ -807,7 +876,12 @@
 #external-overrides .rs-input-group textarea.rs-input {
   margin-bottom: 0;
 }
-#external-overrides .rs-input-group input:focus, #external-overrides .rs-input-group input:valid, #external-overrides .rs-input-group input:-webkit-autofill, #external-overrides .rs-input-group input:-webkit-autofill:hover, #external-overrides .rs-input-group input:-webkit-autofill:focus, #external-overrides .rs-input-group input:-webkit-autofill:active,
+#external-overrides .rs-input-group input:focus,
+#external-overrides .rs-input-group input:valid,
+#external-overrides .rs-input-group input:-webkit-autofill,
+#external-overrides .rs-input-group input:-webkit-autofill:hover,
+#external-overrides .rs-input-group input:-webkit-autofill:focus,
+#external-overrides .rs-input-group input:-webkit-autofill:active,
 #external-overrides .rs-input-group textarea:focus,
 #external-overrides .rs-input-group textarea:valid,
 #external-overrides .rs-input-group textarea:-webkit-autofill,
@@ -817,7 +891,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: #ffffff;
 }
-#external-overrides .rs-input-group input::-moz-placeholder, #external-overrides .rs-input-group textarea::-moz-placeholder {
+#external-overrides .rs-input-group input::-moz-placeholder,
+#external-overrides .rs-input-group textarea::-moz-placeholder {
   color: var(--textColor);
   opacity: 0.6;
   font-style: italic;
@@ -917,4 +992,4 @@
   opacity: 0.7;
   height: 20px;
   width: 20px;
-}/*# sourceMappingURL=rSuiteOverrides.css.map */
+} /*# sourceMappingURL=rSuiteOverrides.css.map */

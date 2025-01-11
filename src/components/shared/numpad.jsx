@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import globalState from '../../context'
-import '../../prototypes'
+
 import Manager from 'managers/manager'
 
 export default function Numpad({ onNumClick, onSubmit, onBackspace, className }) {

@@ -7,14 +7,14 @@
       border-radius: 0 0 $borderRadius $borderRadius;
       border-top: 0;
     }
-    
+
     #label-wrapper {
       #medium-title {
         font-size: 22px;
         margin-bottom: 10px;
       }
     }
-    
+
     .back-button {
       font-weight: 400;
       margin-bottom: 8px;
@@ -41,14 +41,13 @@
 
     .calendar-settings,
     .shortcuts-settings {
-
       .shortcuts-example {
         border-radius: 15px;
       }
 
       .section {
         width: 100%;
-//        display: flex;
+        //        display: flex;
 
         .input-container {
           width: 100%;
@@ -87,7 +86,5 @@
         color: $accent;
       }
     }
-
-
   }
 }
