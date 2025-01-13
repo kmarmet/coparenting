@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import globalState from '../context'
-import Manager from 'managers/manager'
+import Manager from '../managers/manager'
 import phone from 'phone'
 
 import {
@@ -23,7 +23,7 @@ import {
 } from '../globalFunctions'
 import AlertManager from '../managers/alertManager'
 import ChildUser from '../models/child/childUser'
-import InputWrapper from 'components/shared/inputWrapper'
+import InputWrapper from '../components/shared/inputWrapper'
 import General from '../models/child/general'
 
 export default function ChildrenInput({ add, childrenCount }) {

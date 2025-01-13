@@ -1,11 +1,11 @@
 import moment from 'moment'
-import Manager from 'managers/manager'
-import CalendarEvent from 'models/calendarEvent'
-import DateFormats from 'constants/dateFormats'
+import Manager from '../managers/manager'
+import CalendarEvent from '../models/calendarEvent'
+import DateFormats from '../constants/dateFormats'
 import CalendarManager from './calendarManager.js'
 import _ from 'lodash'
 import ObjectManager from './objectManager'
-import ModelNames from 'models/modelNames'
+import ModelNames from '../models/modelNames'
 
 const DateManager = {
   reminderTimes: {

@@ -1,1 +1,1 @@
-regex for finding 2 strings: ^(?=.*\bisValid\b)(?=.*\b, true\b).*$
+regex for finding 2 strings: ^(?=._\bisValid\b)(?=._\b, true\b).\*$

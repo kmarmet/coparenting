@@ -12,7 +12,11 @@
 
 *.map
 
+.parcel-cache/data.mdb
+
 build/
+dist/
+.parcel-cache/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

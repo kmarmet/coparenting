@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
-import Manager from 'managers/manager'
+import Manager from '../../managers/manager'
 
 const Modal = ({
   children,

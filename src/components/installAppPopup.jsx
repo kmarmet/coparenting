@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../context'
-import Manager from 'managers/manager'
+import Manager from '../managers/manager'
 import PopupCard from './shared/popupCard'
 import { FaApple } from 'react-icons/fa6'
 import { BsAndroid2 } from 'react-icons/bs'

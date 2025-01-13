@@ -22,11 +22,10 @@ import 'pure-react-carousel/dist/react-carousel.es.css'
 import { MdOutlineStar } from 'react-icons/md'
 import { FaRegHandshake } from 'react-icons/fa'
 import { useLongPress } from 'use-long-press'
-import ScreenNames from 'constants/screenNames'
-import Manager from 'managers/manager'
+import ScreenNames from '../../constants/screenNames'
+import Manager from '../../managers/manager'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
-import ImageManager from 'managers/imageManager'
 
 function LazyImage({ show, importedImage, imagesObjectPropName }) {
   const [showImage, setShowImage] = useState(false)

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import globalState from '../context'
-import ScreenNames from 'constants/screenNames'
+import ScreenNames from '../constants/screenNames'
 import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone } from 'react-icons/pi'
 import { TbGridDots } from 'react-icons/tb'
 import { BiFace } from 'react-icons/bi'

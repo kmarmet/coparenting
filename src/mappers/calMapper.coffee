@@ -1,8 +1,7 @@
-import ReminderTimes from 'constants/reminderTimes'
-import DateManager from 'managers/dateManager'
+import ReminderTimes from '../constants/reminderTimes'
+import DateManager from '../managers/dateManager'
 import moment from "moment"
 import Manager from "../managers/manager"
-import DB from "../database/DB"
 
 CalendarMapper =
   reminderTimes: (timeframe) ->

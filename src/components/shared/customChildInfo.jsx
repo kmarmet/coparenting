@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import globalState from '../../context'
-import Manager from 'managers/manager'
-import DB_UserScoped from 'database/db_userScoped'
+import Manager from '../../managers/manager'
+import DB_UserScoped from '../../database/db_userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import {
   contains,

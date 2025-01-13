@@ -1,10 +1,10 @@
-import Manager from 'managers/manager'
+import Manager from '../../managers/manager'
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import { formatNameFirstNameOnly, stringHasNumbers } from '../../globalFunctions'
 import { FaCheck } from 'react-icons/fa6'
-import DB_UserScoped from 'database/db_userScoped'
-import ScreenNames from 'constants/screenNames'
+import DB_UserScoped from '../../database/db_userScoped'
+import ScreenNames from '../../constants/screenNames'
 
 export default function CheckboxGroup({
   checkboxLabels,

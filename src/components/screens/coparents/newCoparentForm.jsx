@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../../context'
 import Coparent from '../../../models/coparent'
-import Manager from 'managers/manager'
-import CheckboxGroup from 'components/shared/checkboxGroup'
+import Manager from '../../../managers/manager'
+import CheckboxGroup from '../../../components/shared/checkboxGroup'
 import {
   contains,
   formatFileName,
@@ -25,11 +25,11 @@ import {
 import { RiUserAddLine } from 'react-icons/ri'
 import ModelNames from '../../../models/modelNames'
 import ObjectManager from '../../../managers/objectManager'
-import InputWrapper from 'components/shared/inputWrapper'
-import BottomCard from 'components/shared/bottomCard'
+import InputWrapper from '../../../components/shared/inputWrapper'
+import BottomCard from '../../../components/shared/bottomCard'
 import AlertManager from '../../../managers/alertManager'
 import LogManager from '../../../managers/logManager'
-import DB_UserScoped from 'database/db_userScoped'
+import DB_UserScoped from '../../../database/db_userScoped'
 import validator from 'validator'
 
 const NewCoparentForm = ({ showCard, hideCard }) => {

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
-import Manager from 'managers/manager'
+import Manager from '../../../managers/manager'
 import {
   camelCaseToString,
   contains,
@@ -21,7 +21,7 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import DB_UserScoped from 'database/db_userScoped'
+import DB_UserScoped from '../../../database/db_userScoped'
 import { FaChevronDown } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -29,7 +29,7 @@ import Accordion from '@mui/material/Accordion'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
 import { IoCloseOutline, IoSchool } from 'react-icons/io5'
-import DB from 'database/DB'
+import DB from '../../../database/DB'
 
 export default function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)

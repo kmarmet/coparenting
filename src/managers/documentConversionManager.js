@@ -1,6 +1,6 @@
-import Manager from 'managers/manager'
+import Manager from '../managers/manager'
 import { createWorker } from 'tesseract.js'
-import FirebaseStorage from 'database/firebaseStorage'
+import FirebaseStorage from '../database/firebaseStorage'
 import reactStringReplace from 'react-string-replace'
 import StringManager from './stringManager'
 // 'thanksgiving day',

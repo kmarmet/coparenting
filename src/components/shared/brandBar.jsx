@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { contains, formatNameFirstNameOnly } from '../../globalFunctions'
 import globalState from '../../context'
 import { PiUserCircleDuotone } from 'react-icons/pi'
-import ScreenNames from 'constants/screenNames'
+import ScreenNames from '../../constants/screenNames'
 
 export default function BrandBar() {
   const { state, setState } = useContext(globalState)

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import moment from 'moment'
-import DB_UserScoped from 'database/db_userScoped'
+import DB_UserScoped from '../../../database/db_userScoped'
 
 import { MobileTimePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../../constants/dateFormats'
@@ -29,7 +29,7 @@ import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import Label from '../../shared/label'
-import DB from 'database/DB'
+import DB from '../../../database/DB'
 import NotificationManager from '../../../managers/notificationManager.js'
 
 export default function Settings() {

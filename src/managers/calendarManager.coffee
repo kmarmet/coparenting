@@ -1,4 +1,4 @@
-import DB from "database/DB"
+import DB from "../database/DB"
 import { child, getDatabase, ref, remove, set, update } from 'firebase/database'
 import Manager from "./manager"
 import LogManager from "./logManager"

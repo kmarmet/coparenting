@@ -1,4 +1,4 @@
-import Manager from 'managers/manager'
+import Manager from '../../managers/manager'
 import General from './general'
 import Medical from './medical'
 import Schooling from './schooling'

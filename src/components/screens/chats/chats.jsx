@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Manager from 'managers/manager'
+import Manager from '../../../managers/manager'
 import globalState from '../../../context.js'
 import 'rsuite/dist/rsuite.min.css'
-import ChatManager from 'managers/chatManager.js'
-import DB_UserScoped from 'database/db_userScoped'
+import ChatManager from '../../../managers/chatManager.js'
+import DB_UserScoped from '../../../database/db_userScoped'
 import { BiDotsVerticalRounded, BiMessageRoundedAdd, BiMessageRoundedDetail, BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
 import { IoNotificationsOffCircle } from 'react-icons/io5'
 import { HiMiniBellAlert } from 'react-icons/hi2'
@@ -31,7 +31,7 @@ import NoDataFallbackText from '../../shared/noDataFallbackText'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
-import ScreenNames from 'constants/screenNames'
+import ScreenNames from '../../../constants/screenNames'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
-import Manager from 'managers/manager'
+import Manager from '../../../managers/manager'
 import {
   camelCaseToString,
   contains,
@@ -22,7 +22,7 @@ import {
   wordCount,
 } from '../../../globalFunctions'
 import { IoCloseOutline } from 'react-icons/io5'
-import DB_UserScoped from 'database/db_userScoped'
+import DB_UserScoped from '../../../database/db_userScoped'
 import Accordion from '@mui/material/Accordion'
 import { FaChevronDown } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -30,7 +30,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
 import { GiBrain } from 'react-icons/gi'
-import DB from 'database/DB'
+import DB from '../../../database/DB'
 
 export default function Behavior({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)

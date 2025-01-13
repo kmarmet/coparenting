@@ -1193,8 +1193,13 @@
       line-height: 1;
     }
     label {
-      display: flex;
+      display: inline;
       align-items: center;
+      span {
+        display: inline;
+        width: auto;
+        font-weight: $fwMedium;
+      }
     }
   }
 

@@ -1,7 +1,7 @@
-import Manager from 'managers/manager'
+import Manager from '../managers/manager'
 import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
 import FirebaseStorage from './firebaseStorage'
-import DB from 'database/DB'
+import DB from '../database/DB'
 import {
   contains,
   displayAlert,

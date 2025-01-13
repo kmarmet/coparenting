@@ -48,6 +48,9 @@ StringManager = {
     capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
     return capitalizedFirstWord + str.slice(firstWord.length);
 
+  getFirstWord: (input) ->
+    input.toString().replace(/ .*/, '')
+
   uppercaseFirstLetterOfAllWords: (input) ->
     words = input?.toString()
     if words and words != undefined

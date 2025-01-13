@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 import Label from './label'
-import Manager from 'managers/manager'
+import Manager from '../../managers/manager'
 
 function InputWrapper({
   wrapperClasses = '',

@@ -1,6 +1,6 @@
-import Manager from 'managers/manager'
-import DB from "database/DB"
-import DateManager from "./dateManager"
+import Manager from '../managers/manager'
+import DB from "../database/DB"
+import DateManager from "../managers/dateManager"
 import _ from "lodash"
 
 SecurityManager =

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 // import { Accordion } from 'rsuite'
 import globalState from '../../../context'
-import Manager from 'managers/manager'
+import Manager from '../../../managers/manager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import { IoCloseOutline } from 'react-icons/io5'
@@ -25,14 +25,14 @@ import {
   uppercaseFirstLetterOfAllWords,
   wordCount,
 } from '../../../globalFunctions'
-import DB_UserScoped from 'database/db_userScoped'
+import DB_UserScoped from '../../../database/db_userScoped'
 import Accordion from '@mui/material/Accordion'
 import Autocomplete from 'react-google-autocomplete'
 import { FaChevronDown } from 'react-icons/fa6'
 import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
 import { MdContactEmergency } from 'react-icons/md'
-import DB from 'database/DB'
+import DB from '../../../database/DB'
 
 function General({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)

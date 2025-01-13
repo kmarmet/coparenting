@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Manager from 'managers/manager'
+import Manager from '../../managers/manager'
 
 export default function Table({ headers, rows }) {
   return (

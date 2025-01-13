@@ -1,6 +1,6 @@
 import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from 'firebase/storage'
-import Manager from 'managers/manager'
-import DB from 'database/DB'
+import Manager from '../managers/manager'
+import DB from '../database/DB'
 
 const FirebaseStorage = {
   directories: {

@@ -1,4 +1,4 @@
-import Manager from "managers/manager"
+import Manager from "../managers/manager"
 
 export default class DocumentHeader
   constructor: (

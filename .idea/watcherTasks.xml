@@ -14,7 +14,7 @@
         <array />
       </option>
       <option name="outputFromStdout" value="false" />
-      <option name="program" value="$PROJECT_DIR$/node_modules/sass/sass.js" />
+      <option name="program" value="sass" />
       <option name="runOnExternalChanges" value="true" />
       <option name="scopeName" value="All Changed Files" />
       <option name="trackOnlyRoot" value="true" />
@@ -41,7 +41,7 @@
       </option>
       <option name="outputFromStdout" value="false" />
       <option name="program" value="coffee" />
-      <option name="runOnExternalChanges" value="true" />
+      <option name="runOnExternalChanges" value="false" />
       <option name="scopeName" value="Project Files" />
       <option name="trackOnlyRoot" value="true" />
       <option name="workingDir" value="$FileDir$" />

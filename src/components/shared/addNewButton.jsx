@@ -1,5 +1,5 @@
 import React from 'react'
-import Manager from 'managers/manager'
+import Manager from '../managers/manager'
 
 export default function AddNewButton({ onClick, icon, scopedClass }) {
   return (

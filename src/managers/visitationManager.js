@@ -1,11 +1,12 @@
 import moment from 'moment'
 import DateManager from './dateManager'
-import Manager from 'managers/manager'
-import DB from 'database/DB'
+import Manager from '../managers/manager'
+import DB from '../database/DB'
 import DateFormats from '../constants/dateFormats'
 import DatasetManager from './datasetManager'
 import LogManager from './logManager'
 import CalendarManager from './calendarManager.js'
+import StringManager from '../managers/stringManager'
 
 const VisitationManager = {
   weekendMapper: (input) => {
@@ -203,8 +204,8 @@ const VisitationManager = {
     ]
     holidays.forEach((holiday) => {
       visitationRelatedHolidays.forEach((mainHoliday) => {
-        if (mainHoliday.getFirstWord() === holiday.name.getFirstWord()) {
-          const exists = visitationHolidays.filter((x) => x.name.contains(holiday.name))
+        if (StringManager.getFirstWord(mainHoliday) === StringManager.getFirstWord(holiday.name)) {
+          const exists = visitationHolidays.filter((x) => Manager.contains(x.name, holiday.name))
           if (exists.length === 0) {
             if (holiday.name === 'Juneteenth National Independence Day') {
               holiday.name = 'Juneteenth'

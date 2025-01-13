@@ -1,6 +1,6 @@
 import { child, getDatabase, ref, set } from 'firebase/database'
-import Manager from 'managers/manager'
-import DB from 'database/DB'
+import Manager from '../managers/manager'
+import DB from '../database/DB'
 import SecurityManager from './securityManager'
 import {
   contains,
@@ -22,7 +22,7 @@ import {
 } from '../globalFunctions'
 import ChatBookmark from '../models/chat/chatBookmark'
 import LogManager from './logManager'
-import DB_UserScoped from 'database/db_userScoped'
+import DB_UserScoped from '../database/db_userScoped'
 
 const ChatManager = {
   getScopedChat: async (currentUser, messageToUserPhone) => {

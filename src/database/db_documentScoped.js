@@ -1,4 +1,4 @@
-import DB from 'database/DB'
+import DB from '../database/DB'
 
 const DB_DocumentScoped = {
   getAllDocs: () =>

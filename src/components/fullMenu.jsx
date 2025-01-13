@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import globalState from '../context'
-import ScreenNames from 'constants/screenNames'
-import Manager from 'managers/manager'
-import AppManager from 'managers/appManager'
+import ScreenNames from '../constants/screenNames'
+import Manager from '../managers/manager'
+import AppManager from '../managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
 import { VscSettings } from 'react-icons/vsc'
 import { RxActivityLog } from 'react-icons/rx'
@@ -21,7 +21,7 @@ import {
   PiSwapDuotone,
   PiToolboxDuotone,
 } from 'react-icons/pi'
-import DB_UserScoped from 'database/db_userScoped'
+import DB_UserScoped from '../database/db_userScoped'
 import { RiMailSendLine } from 'react-icons/ri'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
 import { BsPeople } from 'react-icons/bs'

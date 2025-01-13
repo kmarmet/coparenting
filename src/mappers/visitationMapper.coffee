@@ -1,20 +1,19 @@
-import ReminderTimes from 'constants/reminderTimes'
-import DateManager from 'managers/dateManager'
-import ScheduleTypes from 'constants/scheduleTypes'
+import ScheduleTypes from '../constants/scheduleTypes'
+import Manager from "../managers/manager"
 
 VisitationMapper =
   formattedScheduleTypes: (type) ->
+    console.log(type)
     switch true
-      when type.contains '50'
+      when Manager.contains(type, '50')
         return ScheduleTypes.fiftyFifty
-      when type.contains 'Custom Weekends'
+      when Manager.contains(type, 'Custom Weekends')
         return ScheduleTypes.customWeekends
-      when type.contains 'Every Weekend'
+      when Manager.contains(type, 'Every Weekend')
         return ScheduleTypes.everyWeekend
-      when type.contains 'Every other Weekend'
+      when Manager.contains(type, 'Every other Weekend')
         return ScheduleTypes.everyOtherWeekend
     null
 
 
 export default VisitationMapper
-

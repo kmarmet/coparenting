@@ -33,12 +33,12 @@
         <item url="file://$PROJECT_DIR$/src/mappers/userMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
         <item url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
+        <item url="file://$PROJECT_DIR$/src/models/chat/chatRecoveryRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/child.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/general.js" />
         <item url="file://$PROJECT_DIR$/src/models/coparent.js" />
         <item url="file://$PROJECT_DIR$/src/models/doc.js" />
-        <item url="file://$PROJECT_DIR$/src/models/documentHeaders.js" />
         <item url="file://$PROJECT_DIR$/src/models/expense.js" />
         <item url="file://$PROJECT_DIR$/src/models/formNames.js" />
         <item url="file://$PROJECT_DIR$/src/models/inputSuggestion.js" />
@@ -94,6 +94,7 @@
       <root url="file://$PROJECT_DIR$/src/models/child/general.js" />
       <root url="file://$PROJECT_DIR$/src/models/coparent.js" />
       <root url="file://$PROJECT_DIR$/src/models/doc.js" />
+      <root url="file://$PROJECT_DIR$/src/models/documentHeader.js" />
       <root url="file://$PROJECT_DIR$/src/models/expense.js" />
       <root url="file://$PROJECT_DIR$/src/models/formNames.js" />
       <root url="file://$PROJECT_DIR$/src/models/inputSuggestion.js" />
@@ -106,7 +107,6 @@
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
       <root url="file://$PROJECT_DIR$/src/prototypes.js" />
-      <root url="file://$PROJECT_DIR$/src/models/documentHeader.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

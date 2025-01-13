@@ -1,5 +1,5 @@
 // @ts-ignore
-import DB from 'database/DB'
+import DB from '../database/DB'
 import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
 import StringManager from './stringManager'

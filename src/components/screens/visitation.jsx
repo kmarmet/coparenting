@@ -1,39 +1,33 @@
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
-import scheduleTypes from 'constants/scheduleTypes'
+import ScheduleTypes from '../../constants/scheduleTypes'
 import globalState from '../../context'
-import DB from 'database/DB'
+import DB from '../../database/DB'
 import { Fade } from 'react-awesome-reveal'
-import CalendarEvent from 'models/calendarEvent'
-import Manager from 'managers/manager'
-import Manger from 'managers/manager'
-import CheckboxGroup from 'components/shared/checkboxGroup'
-import VisitationManager from 'managers/visitationManager'
-import MyConfetti from 'components/shared/myConfetti'
-import Note from 'components/shared/note'
-import DB_UserScoped from 'database/db_userScoped'
-import VisitationMapper from 'mappers/visitationMapper'
-import { MobileDatePicker, MobileDateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
+import CalendarEvent from '../../models/calendarEvent'
+import Manager from '../../managers/manager'
+import CheckboxGroup from '../../components/shared/checkboxGroup'
+import VisitationManager from '../../managers/visitationManager'
+import MyConfetti from '../../components/shared/myConfetti'
+import Note from '../../components/shared/note'
+import DB_UserScoped from '../../database/db_userScoped'
+import VisitationMapper from '../../mappers/visitationMapper'
 import DateFormats from '../../constants/dateFormats'
 import CalendarMapper from '../../mappers/calMapper'
 import { ImEye } from 'react-icons/im'
-import BottomCard from 'components/shared/bottomCard'
-import ScheduleTypes from '../../constants/scheduleTypes'
-import Label from 'components/shared/label' // Icons
+import BottomCard from '../../components/shared/bottomCard'
 import SecurityManager from '../../managers/securityManager'
 import NavBar from '../navBar'
-import ShareWithCheckboxes from 'components/shared/shareWithCheckboxes'
-import InputWrapper from 'components/shared/inputWrapper'
+import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
+import InputWrapper from '../../components/shared/inputWrapper'
 import DatasetManager from '../../managers/datasetManager'
 import AlertManager from '../../managers/alertManager'
 import ObjectManager from '../../managers/objectManager'
 import ModelNames from '../../models/modelNames'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa6'
 import StringManager from '../../managers/stringManager'
+import FiftyFifty from '../../components/screens/visitation/fiftyFifty'
+import EveryOtherWeekend from '../../components/screens/visitation/everyOtherWeekend'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -44,15 +38,8 @@ export default function Visitation() {
   const [fifthWeekendSelection, setFifthWeekendSelection] = useState('')
 
   // 50/50
-  const [firstFFPeriodStart, setFirstFFPeriodStart] = useState('')
-  const [firstFFPeriodEnd, setFirstFFPeriodEnd] = useState('')
-  const [secondFFPeriodStart, setSecondFFPeriodStart] = useState('')
-  const [secondFFPeriodEnd, setSecondFFPeriodEnd] = useState('')
-  const [thirdFFPeriodStart, setThirdFFPeriodStart] = useState('')
-  const [thirdFFPeriodEnd, setThirdFFPeriodEnd] = useState('')
-  const [expandFiftyFiftyInfoText, setExpandFiftyFiftyInfoText] = useState(false)
+
   // Every other weekend
-  const [firstEveryOtherWeekend, setFirstEveryOtherWeekend] = useState('')
 
   // State
   const [showEveryOtherWeekendCard, setShowEveryOtherWeekendCard] = useState(false)
@@ -66,9 +53,7 @@ export default function Visitation() {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   // Holiday
   const [selectedHolidayDates, setSelectedHolidayDates] = useState([])
-  const [showFFExample, setShowFFExample] = useState(false)
   const [holidayLabels, setHolidayLabels] = useState([])
-  const [userHolidayEvents, setUserHolidayEvents] = useState([])
   const [dataDates, setDataDates] = useState([])
   const updateDefaultTransferLocation = async (location, link) => {
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/defaultTransferNavLink`, link)
@@ -90,13 +75,6 @@ export default function Visitation() {
     setDefaultSelectedWeekends([])
     setFifthWeekendSelection('')
     setShareWith([])
-    setFirstFFPeriodStart('')
-    setFirstFFPeriodEnd('')
-    setSecondFFPeriodStart('')
-    setSecondFFPeriodEnd('')
-    setThirdFFPeriodStart('')
-    setThirdFFPeriodEnd('')
-    setShowFFExample(false)
     setRefreshKey(Manager.getUid())
     setShowFiftyFiftyCard(false)
     setShowCustomWeekendsCard(false)
@@ -146,33 +124,6 @@ export default function Visitation() {
   }
 
   // Every Other Weekend
-  const addEveryOtherWeekendToCalendar = async () => {
-    if (firstEveryOtherWeekend.length === 0) {
-      AlertManager.throwError('Please choose the Friday of the next weekend YOU have the child(ren)')
-      return false
-    }
-    // Set end date to the end of the year
-    let weekends = VisitationManager.getEveryOtherWeekend(moment(firstEveryOtherWeekend).format(DateFormats.dateForDb))
-    let events = []
-    weekends.flat().forEach((date) => {
-      const dateObject = new CalendarEvent()
-      // Required
-      dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
-      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
-      // Not Required
-      dateObject.ownerPhone = currentUser?.phone
-      dateObject.fromVisitationSchedule = true
-      dateObject.visitationSchedule = ScheduleTypes.everyOtherWeekend
-      dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
-
-      events.push(dateObject)
-    })
-    MyConfetti.fire()
-    await resetForm()
-    // Upload to DB
-    VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
-    setShowEveryOtherWeekendCard(false)
-  }
 
   // Every Weekend
   const addEveryWeekendToCalendar = async () => {
@@ -197,48 +148,6 @@ export default function Visitation() {
     // Upload to DB
     VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
     MyConfetti.fire()
-  }
-
-  // 50/50
-  const addFiftyFiftyToCal = async () => {
-    if (firstFFPeriodEnd.length === 0 || firstFFPeriodStart.length === 0 || secondFFPeriodEnd.length === 0 || secondFFPeriodStart.length === 0) {
-      AlertManager.throwError('Both schedule ranges are required')
-      return false
-    }
-
-    let events = []
-    const dates = {
-      firstFFPeriodStart,
-      firstFFPeriodEnd,
-      secondFFPeriodStart,
-      secondFFPeriodEnd,
-      thirdFFPeriodStart,
-      thirdFFPeriodEnd,
-    }
-    const scheduleDates = VisitationManager.getFiftyFifty(dates)
-    scheduleDates.forEach((date, index) => {
-      const dateObject = new CalendarEvent()
-      // Required
-      dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
-      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
-      // Not Required
-      dateObject.ownerPhone = currentUser?.phone
-      dateObject.createdBy = currentUser?.name
-      dateObject.fromVisitationSchedule = true
-      dateObject.id = Manager.getUid()
-      dateObject.visitationSchedule = ScheduleTypes.fiftyFifty
-      dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
-      if (events.length === 0) {
-        events = [dateObject]
-      } else {
-        events = [...events, dateObject]
-      }
-    })
-    MyConfetti.fire()
-    await resetForm()
-    setShowDeleteButton(true)
-    // Upload to DB
-    await VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
   }
 
   // SET HOLIDAYS IN DATABASE
@@ -380,7 +289,6 @@ export default function Visitation() {
       setDataDates(allHolidayDates)
       setSelectedHolidayDates(DatasetManager.getUniqueArray(userHolidaysDates, true))
       setHolidayLabels(holidays)
-      setUserHolidayEvents(DatasetManager.getUniqueArray(userHolidays, true))
       setTimeout(() => {
         setDefaultHolidays(DatasetManager.getUniqueArray(userHolidaysList, true))
       }, 300)
@@ -461,124 +369,20 @@ export default function Visitation() {
     <>
       {/* SCHEDULE CARDS */}
       <>
-        {/* 50/50 SCHEDULE */}
-        <BottomCard
-          onSubmit={addFiftyFiftyToCal}
-          submitText={'Add Schedule'}
-          className="form"
-          wrapperClass="add-fifty-fifty-schedule"
-          title={'50/50 Visitation Schedule'}
+        <FiftyFifty
           showCard={showFiftyFiftyCard}
-          refreshKey={refreshKey}
-          onClose={() => {
+          hide={() => {
+            setShowFiftyFiftyCard(false)
             setScheduleType('')
-            resetForm().then((r) => r)
-          }}>
-          <div className="text mt-15 mb-15">
-            <Accordion id={'checkboxes'} expanded={expandFiftyFiftyInfoText}>
-              <AccordionSummary>
-                <div className="flex w-100 space-between" onClick={() => setExpandFiftyFiftyInfoText(!expandFiftyFiftyInfoText)}>
-                  <Label text={`What is a 50/50 Visitation Schedule`} />
-                  {!expandFiftyFiftyInfoText && <FaChevronDown className={'visitation-card'} />}
-                  {expandFiftyFiftyInfoText && <FaChevronUp className={'visitation-card'} />}
-                </div>
-              </AccordionSummary>
-              <AccordionDetails>
-                <p>An arrangement where both you and your co-parent have equal time with your children.</p>
-                <p>
-                  For the start of the next visitation period (and next period ONLY) you have your children, enter the date ranges for both the first
-                  half of the 50/50 and the second half of the 50/50.
-                </p>
-                <p>
-                  <i>
-                    Use the <u>third period</u> date selector if it is necessary for your schedule.
-                  </i>
-                </p>
-                <p>
-                  <b>Example</b> <br /> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:
-                  <br />
-                  <span>You would choose: 8/14-8/16 for the first period and 8/19-8/21 for the second period.</span>
-                </p>
-              </AccordionDetails>
-            </Accordion>
-          </div>
-
-          {/* 50/50 DATE PICKERS */}
-          {/* FIRST PERIOD */}
-          <InputWrapper wrapperClasses="date-range-input" labelText={'First Period'} required={true} inputType={'date'}>
-            <MobileDateRangePicker
-              className={'w-100'}
-              onOpen={() => {
-                Manager.hideKeyboard('date-range-input')
-                addThemeToDatePickers()
-              }}
-              onAccept={(dateArray) => {
-                if (Manager.isValid(dateArray)) {
-                  setFirstFFPeriodStart(dateArray[0].format(DateFormats.dateForDb))
-                  setFirstFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
-                }
-              }}
-              slots={{ field: SingleInputDateRangeField }}
-              name="allowedRange"
-            />
-          </InputWrapper>
-
-          {/* SECOND PERIOD */}
-          <InputWrapper wrapperClasses="date-range-input" labelText={'Second Period'} required={true} inputType={'date'}>
-            <MobileDateRangePicker
-              className={'w-100'}
-              onOpen={() => {
-                Manager.hideKeyboard('date-range-input')
-                addThemeToDatePickers()
-              }}
-              onAccept={(dateArray) => {
-                if (Manager.isValid(dateArray)) {
-                  setSecondFFPeriodStart(dateArray[0].format(DateFormats.dateForDb))
-                  setSecondFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
-                }
-              }}
-              slots={{ field: SingleInputDateRangeField }}
-              name="allowedRange"
-            />
-          </InputWrapper>
-
-          {/* THIRD PERIOD */}
-          <InputWrapper wrapperClasses="date-range-input" labelText={'Third Period'} required={false} inputType={'date'}>
-            <MobileDateRangePicker
-              className={'w-100'}
-              onOpen={() => {
-                Manager.hideKeyboard('date-range-input')
-                addThemeToDatePickers()
-              }}
-              onAccept={(dateArray) => {
-                if (Manager.isValid(dateArray)) {
-                  setThirdFFPeriodStart(dateArray[0].format(DateFormats.dateForDb))
-                  setThirdFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
-                }
-              }}
-              slots={{ field: SingleInputDateRangeField }}
-              name="allowedRange"
-            />
-          </InputWrapper>
-        </BottomCard>
-
-        {/* EVERY OTHER WEEKEND */}
-        <BottomCard
-          submitText={'Add Schedule'}
-          subtitle="Add every other weekend visitation schedule."
-          className="form"
-          wrapperClass="add-every-other-weekend-schedule"
-          onSubmit={addEveryOtherWeekendToCalendar}
-          title={'Every other Weekend'}
+          }}
+        />
+        <EveryOtherWeekend
           showCard={showEveryOtherWeekendCard}
-          onClose={() => {
+          hide={() => {
+            setShowEveryOtherWeekendCard(false)
             setScheduleType('')
-            resetForm().then((r) => r)
-          }}>
-          <InputWrapper wrapperClasses="mt-15" labelText={'Friday of the next weekend you have your child(ren)'} required={true} inputType={'date'}>
-            <MobileDatePicker onOpen={addThemeToDatePickers} onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100`} />
-          </InputWrapper>
-        </BottomCard>
+          }}
+        />
 
         {/* SPECIFIC WEEKENDS SCHEDULE */}
         <BottomCard
