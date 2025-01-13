@@ -14,6 +14,7 @@ import NavBar from '../../navBar'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
+import { FaCheck } from 'react-icons/fa6'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
@@ -75,7 +76,7 @@ export default function DocsList() {
             <div className="sections">
               {Manager.isValid(docs) &&
                 docs.map((doc, index) => {
-                  const fileType = StringManager.getFileExtension(doc.name).contains('docx') ? 'Document' : 'Image'
+                  const fileType = Manager.contains(StringManager.getFileExtension(doc.name), 'docx') ? 'Document' : 'Image'
                   return (
                     <div className="row" key={index}>
                       <div className="flex section">
@@ -89,7 +90,7 @@ export default function DocsList() {
                           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
                         </p>
                         <div className={`checkbox delete`} onClick={(e) => handleDeleteCheckbox(e.currentTarget)}>
-                          <span className="checkmark-icon material-icons-round">check</span>
+                          <FaCheck className={'checkmark-icon'} />
                         </div>
                       </div>
                     </div>

@@ -6,7 +6,6 @@ import DocumentConversionManager from '../../../managers/documentConversionManag
 import Manager from '../../../managers/manager'
 import BottomCard from '../../shared/bottomCard'
 import { DebounceInput } from 'react-debounce-input'
-import reactStringReplace from 'react-string-replace'
 import SecurityManager from '../../../managers/securityManager'
 import { AiOutlineFileSearch } from 'react-icons/ai'
 import NavBar from '../../navBar'
@@ -17,9 +16,7 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import DomManager from '../../../managers/domManager'
 import debounce from 'debounce'
-import { IoClose } from 'react-icons/io5'
-import DocumentHeader from '../../../models/documentHeader.js'
-import DocumentsManager from '../../../managers/documentsManager'
+import DocumentHeader from '../../../models/documentHeader'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
@@ -324,10 +321,31 @@ export default function DocViewer() {
 
     // Insert text
     if (imageResult.status === 'success') {
-      let text = await DocumentConversionManager.getImageText(imageResult?.imageUrl)
-      text = DocumentsManager.fixTypos(text)
-      const textToView = wrapTextInHeader(text, allHeaders, userHeaders)
-      setTextWithHeaders(textToView)
+      let text = await DocumentConversionManager.imageToText(imageResult?.imageUrl)
+
+      // HTML symbol -> regular
+      text = text.replaceAll('&#039;', "'")
+
+      // Format headers
+      let index = 0
+      for (let _string of allHeaders) {
+        // use for search nav
+        if (Manager.contains(_string, "President's Day")) {
+          // console.log(text.indexOf(_string))
+        }
+
+        text = text.replaceAll(_string, `<span data-header=${index} class="header">${_string}</span>`)
+        const thisHeader = document.querySelector(`[data-header="${index}"]`)
+        if (thisHeader && thisHeader?.nextElementSibling) {
+          if (thisHeader.nextElementSibling.tagName === 'BR') {
+            console.log(thisHeader.nextSibling)
+            thisHeader.nextElementSibling.remove()
+          }
+        }
+        index++
+      }
+
+      setTextWithHeaders(text)
       setState({ ...state, isLoading: false })
     } else {
       AlertManager.throwError('No Document Found')
@@ -342,25 +360,13 @@ export default function DocViewer() {
     await getImage()
   }
 
-  const wrapTextInHeader = (text, allHeaders, userHeaders) => {
-    let result = reactStringReplace(text, 'dependents', (match, i) => <p key={match + i}>{match}</p>)
-    for (let _string of allHeaders) {
-      result = reactStringReplace(result, _string.toLowerCase(), (match, i) => (
-        <p className="header" key={match + i}>
-          {match} {userHeaders.includes(_string) ? <IoClose onClick={() => deleteHeader(_string)} /> : ''}
-        </p>
-      ))
-    }
-    return result
-  }
-
   const addUserHeaderToDatabase = () => {
     const text = DomManager.getSelectionText()
 
     if (text.length > 0) {
       AlertManager.confirmAlert('Would you like to use the selected text as a header?', 'Yes', true, async () => {
         const header = new DocumentHeader()
-        header.headerText = text
+        header.headerText = text.toLowerCase().replaceAll("'", '')
         header.ownerPhone = currentUser.phone
         await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, header)
         setTextWithHeaders('')
@@ -387,7 +393,7 @@ export default function DocViewer() {
       <div className={`${theme} flex form`} id="bottom-actions">
         {Manager.isValid(document.querySelectorAll('.header'), true) && (
           <div id="toc-button" className={`${theme}`} onClick={() => setShowCard(true)}>
-            Table of Contents <span className="pl-10 fs-20 material-icons-round">format_list_bulleted</span>
+            Table of Contents
           </div>
         )}
       </div>
@@ -475,7 +481,7 @@ export default function DocViewer() {
             <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
               <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
             </LightGallery>
-            {textWithHeaders}
+            <div dangerouslySetInnerHTML={{ __html: textWithHeaders }} />
           </>
         )}
         {/* DOCUMENT */}

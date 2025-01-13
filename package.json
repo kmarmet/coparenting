@@ -93,7 +93,7 @@
   },
   "scripts": {
     "testMode": "set PORT 3001 && npm run dev",
-    "dev": "react-scripts start",
+    "dev": "cd public && parcel index.html",
     "devBackup": "webpack serve",
     "deleteBuild": "del /S /F build",
     "preBuild": "cra-append-sw ./public/sw.js",

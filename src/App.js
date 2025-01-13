@@ -136,7 +136,7 @@ export default function App() {
         const user = auth.currentUser
         const _currentUser = await DB_UserScoped.getCurrentUser(user.email, 'email')
         const oneSignalInitialized = localStorage.getItem('oneSignalInitialized')
-        AppManager.clearAppBadge().then((r) => r)
+        AppManager.clearAppBadge()
         // Delete scoped permission codes if they exist and OneSignal not already initted
         // if (!Manager.isValid(oneSignalInitialized) || oneSignalInitialized === 'false') {
         //   localStorage.setItem('oneSignalInitialized', 'true')

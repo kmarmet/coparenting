@@ -36,6 +36,7 @@ export default function FiftyFifty({ hide, showCard }) {
     Manager.resetForm('add-fifty-fifty-schedule')
     setShareWith([])
     setRefreshKey(Manager.getUid())
+    hide()
   }
 
   // 50/50
@@ -101,7 +102,7 @@ export default function FiftyFifty({ hide, showCard }) {
       title={'50/50 Visitation Schedule'}
       showCard={showCard}
       refreshKey={refreshKey}
-      onClose={hide}>
+      onClose={resetForm}>
       <div className="text mt-15 mb-15">
         <Accordion id={'checkboxes'} expanded={expandFiftyFiftyInfoText}>
           <AccordionSummary>

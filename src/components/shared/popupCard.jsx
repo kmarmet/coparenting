@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import Manager from '../../managers/manager'
+import { IoIosArrowUp } from 'react-icons/io'
 
 function PopupCard({ onOpen, children, title, subtitle = '', className = '', onClose, closeable = true }) {
   useEffect(() => {
@@ -19,15 +20,13 @@ function PopupCard({ onOpen, children, title, subtitle = '', className = '', onC
   return (
     <div className={`${className} `} id="popup-card-container">
       {closeable && (
-        <span
-          className="material-icons-round"
-          id="close-icon"
+        <IoIosArrowUp
+          id={'close-icon'}
           onClick={() => {
             onClose()
             Manager.showPageContainer('show')
-          }}>
-          expand_more
-        </span>
+          }}
+        />
       )}
       <div id="card">
         <div id="title" className="flex">

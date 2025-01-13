@@ -9,12 +9,15 @@
   transition: all 0.5s ease-in-out;
   transition-timing-function: cubic-bezier(0.17, 0.67, 0.21, 0.95);
   background: $lightBg;
-  overflow: auto;
-  overflow-x: hidden;
   height: 100%;
+
   padding: 15px 15px 200px 15px;
   width: 100%;
   position: relative;
+
+  &.home {
+    overflow: hidden;
+  }
 
   &.active {
     z-index: 1;
@@ -1171,7 +1174,7 @@
 @mixin label {
   label {
     font-size: 16px;
-    font-weight: $fwMedium;
+    font-weight: $fwMediumBold;
     opacity: 0.85;
     color: black;
     margin: 0;
@@ -1196,9 +1199,10 @@
       display: inline;
       align-items: center;
       span {
+        font-weight: $fwMediumBold;
         display: inline;
         width: auto;
-        font-weight: $fwMedium;
+        opacity: 0.85;
       }
     }
   }

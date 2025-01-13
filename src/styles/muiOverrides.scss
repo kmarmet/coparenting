@@ -4,6 +4,11 @@
   .Mui-expanded {
     margin: 0 !important;
   }
+  .info-section {
+    svg {
+      font-size: 20px !important;
+    }
+  }
   // EVENT ROW
   .event-row {
     .text {
@@ -101,6 +106,12 @@
         height: auto;
       }
     }
+  }
+
+  // Dropdown year selector
+  .MuiYearCalendar-root {
+    width: 100% !important;
+    border: 1px solid $mainBlue !important;
   }
 
   // CALENDAR ARROWS
@@ -242,7 +253,7 @@
         }
 
         svg {
-          font-size: 20px !important;
+          //          font-size: 20px !important;
           margin-right: 10px;
 
           &.visitation-card {

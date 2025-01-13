@@ -14,7 +14,6 @@ import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import DatetimePickerViews from '../../constants/datetimePickerViews'
 import Numpad from '../../components/shared/numpad'
 import Toggle from 'react-toggle'
-import { ImEye } from 'react-icons/im'
 import { PiMoneyWavyDuotone } from 'react-icons/pi'
 import MenuItem from '@mui/material/MenuItem'
 import { formatNameFirstNameOnly } from '../../globalFunctions'
@@ -30,6 +29,7 @@ import AlertManager from '../../managers/alertManager'
 import ImageManager from '../../managers/imageManager'
 import SelectDropdown from '../shared/selectDropdown'
 import ActivityCategory from '../../models/activityCategory'
+import { MdEventRepeat, MdOutlineFaceUnlock } from 'react-icons/md'
 
 export default function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -404,6 +404,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
             <MobileDatePicker
               onOpen={addThemeToDatePickers}
               className="mt-0 w-100"
+              yearsPerRow={4}
               onChange={(e) => {
                 setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
               }}
@@ -427,7 +428,6 @@ export default function NewExpenseForm({ hideCard, showCard }) {
 
           {/* SHARE WITH */}
           <ShareWithCheckboxes
-            icon={<ImEye />}
             shareWith={currentUser?.coparents?.map((x) => x.phone)}
             onCheck={handleShareWithSelection}
             labelText={'Share with'}
@@ -443,7 +443,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
                 <p>Applicable Child(ren)</p>
                 <Toggle
                   icons={{
-                    checked: <span className="material-icons-round">face</span>,
+                    checked: <MdOutlineFaceUnlock />,
                     unchecked: null,
                   }}
                   className={'ml-auto reminder-toggle'}
@@ -463,7 +463,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
                 <p>Repeating</p>
                 <Toggle
                   icons={{
-                    checked: <span className="material-icons-round">event_repeat</span>,
+                    checked: <MdEventRepeat />,
                     unchecked: null,
                   }}
                   className={'ml-auto reminder-toggle'}
@@ -477,8 +477,10 @@ export default function NewExpenseForm({ hideCard, showCard }) {
                   {repeatInterval && (
                     <MobileDatePicker
                       onOpen={addThemeToDatePickers}
+                      yearsPerRow={4}
                       className={'mt-0 w-100'}
                       format={DateFormats.readableMonth}
+                      closeOnSelect={true}
                       views={DatetimePickerViews.monthAndYear}
                       hasAmPm={false}
                       onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}

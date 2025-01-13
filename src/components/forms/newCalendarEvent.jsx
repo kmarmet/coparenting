@@ -39,7 +39,7 @@ import NotificationManager from '../../managers/notificationManager.js'
 import DB_UserScoped from '../../database/db_userScoped'
 import ActivityCategory from '../../models/activityCategory'
 import StringManager from '../../managers/stringManager' // COMPONENT
-
+import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
 // COMPONENT
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
@@ -547,7 +547,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       <p>Remind Me</p>
                       <Toggle
                         icons={{
-                          checked: <span className="material-icons-round">notifications</span>,
+                          checked: <MdNotificationsActive />,
                           unchecked: null,
                         }}
                         className={'ml-auto reminder-toggle'}
@@ -592,7 +592,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     <p>Include Children</p>
                     <Toggle
                       icons={{
-                        checked: <span className="material-icons-round">face</span>,
+                        checked: <MdOutlineFaceUnlock />,
                         unchecked: null,
                       }}
                       className={'ml-auto reminder-toggle'}
@@ -622,7 +622,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       <p>Repeating</p>
                       <Toggle
                         icons={{
-                          checked: <span className="material-icons-round">event_repeat</span>,
+                          checked: <MdEventRepeat />,
                           unchecked: null,
                         }}
                         className={'ml-auto reminder-toggle'}

@@ -17,21 +17,15 @@ import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 export default function EveryOtherWeekend({ hide, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
-  const [expandFiftyFiftyInfoText, setExpandFiftyFiftyInfoText] = useState(false)
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-  const [firstFFPeriodStart, setFirstFFPeriodStart] = useState('')
-  const [firstFFPeriodEnd, setFirstFFPeriodEnd] = useState('')
-  const [secondFFPeriodStart, setSecondFFPeriodStart] = useState('')
-  const [secondFFPeriodEnd, setSecondFFPeriodEnd] = useState('')
-  const [thirdFFPeriodStart, setThirdFFPeriodStart] = useState('')
-  const [thirdFFPeriodEnd, setThirdFFPeriodEnd] = useState('')
   const [shareWith, setShareWith] = useState([])
   const [firstEveryOtherWeekend, setFirstEveryOtherWeekend] = useState('')
 
   const resetForm = () => {
-    Manager.resetForm('"add-every-other-weekend-schedule')
+    Manager.resetForm('add-every-other-weekend-schedule')
     setShareWith([])
     setRefreshKey(Manager.getUid())
+    hide()
   }
 
   const addToCalendar = async () => {
@@ -81,7 +75,7 @@ export default function EveryOtherWeekend({ hide, showCard }) {
       onSubmit={addToCalendar}
       title={'Every other Weekend Visitation Schedule'}
       showCard={showCard}
-      onClose={hide}>
+      onClose={resetForm}>
       <InputWrapper wrapperClasses="mt-15" labelText={'Friday of the next weekend you have your child(ren)'} required={true} inputType={'date'}>
         <MobileDatePicker onOpen={addThemeToDatePickers} onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100`} />
       </InputWrapper>

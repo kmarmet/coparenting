@@ -14,6 +14,7 @@ const Manager = {
   },
   resetForm: (parentClass) => {
     const inputWrappers = document.querySelectorAll('.input-container')
+
     const parentClassInputs = document.querySelector(`.${parentClass}`)?.querySelectorAll('input, textarea')
     const toggles = document.querySelectorAll('.react-toggle')
     const checkboxes = document.querySelector(`.${parentClass}`)?.querySelectorAll('.box')

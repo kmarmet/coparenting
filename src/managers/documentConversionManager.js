@@ -24,7 +24,6 @@ const DocumentConversionManager = {
     'dower courtesy and homestead release',
     'living separate and apart',
     'interference',
-    'children',
     'child custody',
     'estate and testamentary disposition',
     'pension release',
@@ -51,7 +50,6 @@ const DocumentConversionManager = {
     'introductory provisions',
     'property',
     'purpose of agreement',
-    'holiday parenting time',
     'the parties',
     'the marriage',
     'separation date',
@@ -82,7 +80,6 @@ const DocumentConversionManager = {
     'severability',
     'additional terms & conditions',
     'future children',
-    'parenting time',
     'parenting visitation',
     'physical custody',
     'notice of change of residence',
@@ -161,17 +158,48 @@ const DocumentConversionManager = {
   },
   getImageText: async (imgUrl) => {
     const worker = await createWorker()
+    // Set the whitelist to only recognize digits and letters
+    // await worker.setParameters({
+    //   preserve_interword_spaces: '0',
+    //   tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+    // })
     const result = await worker.recognize(imgUrl)
     const { data } = result
     const { text } = data
     await worker.terminate()
     return text
   },
+  imageToText: async (imageUrl) => {
+    const myHeaders = new Headers()
+    myHeaders.append('Content-Type', 'application/json')
+    myHeaders.append('Authorization', 'Bearer 4a44586a48f7fdaa4fae19b700019017273112de')
+
+    const raw = JSON.stringify({
+      image_url: imageUrl,
+    })
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    }
+
+    try {
+      const response = await fetch('https://www.imagetotext.info/api/imageToText', requestOptions)
+      const result = await response.text()
+      // console.log(JSON.parse(result).result)
+      return JSON.parse(result).result
+    } catch (error) {
+      console.error(error)
+    }
+  },
   imageToTextAndAppend: async (imagePath, textContainer) => {
     let returnText = ''
     const worker = await createWorker()
     await worker.recognize(imagePath).then((result) => {
       let confidence = result.confidence
+      console.log(confidence)
       const { data } = result
       const { symbols, lines, paragraphs } = data
       let allText = []

@@ -31,6 +31,7 @@ import DB_UserScoped from '../../database/db_userScoped'
 import ActivityCategory from '../../models/activityCategory'
 import StringManager from '../../managers/stringManager'
 import { LuCalendarCheck } from 'react-icons/lu'
+import { MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
@@ -430,6 +431,15 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     }
   }, [event])
 
+  useEffect(() => {
+    const confirmButton = document.querySelector('.swal2-confirm')
+    const denyButton = document.querySelector('.swal2-deny')
+    if (confirmButton && denyButton) {
+      confirmButton.classList.add('red')
+      denyButton.classList.add('blue')
+    }
+  }, [document.querySelector('.swal2-confirm')])
+
   return (
     <BottomCard
       refreshKey={refreshKey}
@@ -707,7 +717,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                             <p>Remind Me</p>
                             <Toggle
                               icons={{
-                                checked: <span className="material-icons-round">notifications</span>,
+                                checked: <MdNotificationsActive />,
                                 unchecked: null,
                               }}
                               defaultChecked={Manager.isValid(event?.reminderTimes)}
@@ -756,7 +766,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                           <p>Include Children</p>
                           <Toggle
                             icons={{
-                              checked: <span className="material-icons-round">face</span>,
+                              checked: <MdOutlineFaceUnlock />,
                               unchecked: null,
                             }}
                             defaultChecked={Manager.isValid(event?.children)}

@@ -6,10 +6,6 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { getAuth, signOut } from 'firebase/auth'
 import AlertManager from './managers/alertManager'
 
-if (module.hot) {
-  module.hot.accept()
-}
-
 if ('serviceWorker' in navigator) {
   function handleConnection() {
     if (navigator.onLine) {

@@ -89,7 +89,7 @@ export default function BottomCard({
   }, [showCard])
 
   return (
-    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
+    <div key={refreshKey} id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>

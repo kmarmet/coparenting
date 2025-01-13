@@ -11,27 +11,11 @@ import { PiEyeClosedDuotone, PiEyeDuotone } from 'react-icons/pi'
 import validator from 'validator'
 import { MdOutlinePassword } from 'react-icons/md'
 import { Fade } from 'react-awesome-reveal'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import { SlLogin } from 'react-icons/sl'
 import DomManager from '../../../managers/domManager'
+import { GrInstallOption } from 'react-icons/gr'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
@@ -89,7 +73,7 @@ export default function Login() {
           .catch((error) => {
             setState({ ...state, isLoading: false })
             console.error('Sign in error:', error.message)
-            if (contains(error.message, 'wrong-password')) {
+            if (Manager.contains(error.message, 'wrong-password')) {
               console.log('found')
               AlertManager.throwError(`Incorrect Password`, `Please ${DomManager.tapOrClick(true)} Reset Password below`)
             }
@@ -133,7 +117,7 @@ export default function Login() {
       .catch((error) => {
         setState({ ...state, isLoading: false })
         console.error('Sign in error:', error.message)
-        if (contains(error.message, 'user-not-found')) {
+        if (Manager.contains(error.message, 'user-not-found')) {
           AlertManager.throwError(
             `No account with email ${email} found.`,
             `If you have forgotten your password, please ${DomManager.tapOrClick()} Reset Password`
@@ -186,7 +170,7 @@ export default function Login() {
               document.querySelector('.install-app').classList.add('active')
               Manager.showPageContainer('hide')
             }}>
-            Install App <span className="material-icons">install_mobile</span>
+            Install App <GrInstallOption className={'fs-18 ml-10'} />
           </p>
 
           {/* FORM/INPUTS */}

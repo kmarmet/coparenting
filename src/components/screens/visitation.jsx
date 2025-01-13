@@ -16,7 +16,6 @@ import VisitationMapper from '../../mappers/visitationMapper'
 import DateFormats from '../../constants/dateFormats'
 import CalendarMapper from '../../mappers/calMapper'
 import { ImEye } from 'react-icons/im'
-import BottomCard from '../../components/shared/bottomCard'
 import SecurityManager from '../../managers/securityManager'
 import NavBar from '../navBar'
 import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
@@ -28,18 +27,11 @@ import ModelNames from '../../models/modelNames'
 import StringManager from '../../managers/stringManager'
 import FiftyFifty from '../../components/screens/visitation/fiftyFifty'
 import EveryOtherWeekend from '../../components/screens/visitation/everyOtherWeekend'
+import CustomWeekends from '../../components/screens/visitation/customWeekends'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
-
-  // Custom Weekends
-  const [defaultSelectedWeekends, setDefaultSelectedWeekends] = useState([])
-  const [fifthWeekendSelection, setFifthWeekendSelection] = useState('')
-
-  // 50/50
-
-  // Every other weekend
 
   // State
   const [showEveryOtherWeekendCard, setShowEveryOtherWeekendCard] = useState(false)
@@ -51,6 +43,8 @@ export default function Visitation() {
   const [showUpdateHolidaysButton, setShowUpdateHolidaysButton] = useState(true)
   const [showDeleteButton, setShowDeleteButton] = useState(false)
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [firstEveryOtherWeekend, setFirstEveryOtherWeekend] = useState('')
+
   // Holiday
   const [selectedHolidayDates, setSelectedHolidayDates] = useState([])
   const [holidayLabels, setHolidayLabels] = useState([])
@@ -69,59 +63,7 @@ export default function Visitation() {
     AlertManager.successAlert('Visitation Schedule Removed')
   }
 
-  const resetForm = async () => {
-    Manager.resetForm('add-fifty-fifty-schedule')
-    setScheduleType('')
-    setDefaultSelectedWeekends([])
-    setFifthWeekendSelection('')
-    setShareWith([])
-    setRefreshKey(Manager.getUid())
-    setShowFiftyFiftyCard(false)
-    setShowCustomWeekendsCard(false)
-    setShowEveryOtherWeekendCard(false)
-    await getCurrentVisitationSchedule()
-  }
-
   // Specific Weekends
-  const addSpecificWeekendsToCalendar = async () => {
-    if (!Manager.isValid(defaultSelectedWeekends) || !Manager.isValid(fifthWeekendSelection)) {
-      AlertManager.throwError('Please choose default weekends and a five-month weekend')
-      return false
-    }
-
-    // Set end date to the end of the year
-    const endDate = moment([moment().year()]).endOf('year').format('MM-DD-YYYY')
-    let weekends = VisitationManager.getSpecificWeekends(scheduleTypes.variableWeekends, endDate, defaultSelectedWeekends, fifthWeekendSelection)
-
-    // Standard Dates
-    let events = []
-    weekends.flat().forEach((date) => {
-      const dateObject = new CalendarEvent()
-      // Required
-      dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
-      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
-      // Not Required
-      dateObject.ownerPhone = currentUser?.phone
-      dateObject.createdBy = currentUser?.name
-      dateObject.fromVisitationSchedule = true
-      dateObject.id = Manager.getUid()
-      dateObject.visitationSchedule = ScheduleTypes.customWeekends
-      dateObject.shareWith = Manager.getUniqueArray(shareWith, 'phone').flat()
-
-      if (events.length === 0) {
-        events = [dateObject]
-      } else {
-        events = [...events, dateObject]
-      }
-    })
-
-    MyConfetti.fire()
-    await resetForm()
-    events = Manager.getUniqueArray(events, 'startDate')
-
-    // Upload to DB
-    VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
-  }
 
   // Every Other Weekend
 
@@ -179,32 +121,6 @@ export default function Visitation() {
       await VisitationManager.deleteAllHolidaysForUser(currentUser)
     }
     AlertManager.successAlert('Visitation Holidays Updated!')
-  }
-
-  const handleSpecificWeekendSelection = (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      (e) => {
-        if (defaultSelectedWeekends.length > 0) {
-          setDefaultSelectedWeekends((defaultSelectedWeekends) => [...defaultSelectedWeekends, e])
-        } else {
-          setDefaultSelectedWeekends([e])
-        }
-      },
-      (e) => {},
-      true
-    )
-  }
-
-  const handleFifthWeekendSelection = (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      (e) => {
-        setFifthWeekendSelection(e)
-      },
-      (e) => {},
-      false
-    )
   }
 
   const handleShareWithSelection = async (e) => {
@@ -283,7 +199,7 @@ export default function Visitation() {
   const setAllStates = async () => {
     await getVisitationHolidays(currentUser).then((holidaysObject) => {
       const { holidays, userHolidays } = holidaysObject
-      const userHolidaysList = Manger.convertToArray(CalendarMapper.eventsToHolidays(userHolidays))
+      const userHolidaysList = Manager.convertToArray(CalendarMapper.eventsToHolidays(userHolidays))
       const userHolidaysDates = userHolidaysList.map((x) => x.date)
       const allHolidayDates = holidaysObject.holidays.map((x) => x.date)
       setDataDates(allHolidayDates)
@@ -383,33 +299,13 @@ export default function Visitation() {
             setScheduleType('')
           }}
         />
-
-        {/* SPECIFIC WEEKENDS SCHEDULE */}
-        <BottomCard
-          submitText={'Add Schedule'}
-          className="form"
-          onSubmit={addSpecificWeekendsToCalendar}
-          hasSubmitButton={Manager.isValid(defaultSelectedWeekends)}
-          wrapperClass="add-weekends-schedule"
-          title={'Custom Weekends Schedule'}
+        <CustomWeekends
           showCard={showCustomWeekendsCard}
-          onClose={() => {
-            resetForm().then((r) => r)
+          hide={() => {
+            setShowCustomWeekendsCard(false)
             setScheduleType('')
-          }}>
-          <>
-            <CheckboxGroup
-              parentLabel={'Weekend YOU will have the child(ren)'}
-              onCheck={handleSpecificWeekendSelection}
-              checkboxLabels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend']}
-            />
-            <CheckboxGroup
-              parentLabel={'Month with 5 weekends - extra weekend'}
-              onCheck={handleFifthWeekendSelection}
-              checkboxLabels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend']}
-            />
-          </>
-        </BottomCard>
+          }}
+        />
       </>
 
       {/* PAGE CONTAINER */}

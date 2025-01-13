@@ -75,7 +75,7 @@ export default DocumentsManager =
       .replaceAll "at:the", "at the"
       .replaceAll "44 ; pild(ren)’s", "child(ren)'s"
       .replaceAll "birt c 4 Ad Pater y d(ren)’s", ""
-      .replaceAll "even- bered", "event-numbered"
+      .replaceAll "even-\nbered", "even-numbered"
       .replaceAll "Lar ent 2", "Parent 2"
       .replaceAll "otherwi di pum gE 5 Vols. nless", ""
       .replaceAll "Schoo *", "School"
@@ -86,10 +86,44 @@ export default DocumentsManager =
       .replaceAll "Bven", "Even"
       .replaceAll "gE ", ""
       .replaceAll "Vols. ", ""
-      .replaceAll " nless", "unless"
       .replaceAll "chil oa 2y.13 £0 DY SPOIL", ""
       .replaceAll "Wot mt week", ""
       .replaceAll "birt ", ""
       .replaceAll "Pater ", ""
       .replaceAll "Birthda ", ""
       .replaceAll " d(ren)’s", "child(ren)'s"
+      .replaceAll "c 4", ""
+      .replaceAll "pild(ren)’s", "children's"
+      .replaceAll "ychild(ren)'s", "children's"
+      .replaceAll "44 ;", ""
+      .replaceAll " c ", ""
+      .replaceAll "even-\n\nbered", "even-numbered"
+      .replaceAll " di ", ""
+      .replaceAll "5unless", "unless"
+      .replaceAll "otherwi ", "otherwise"
+      .replaceAll "otherwisedi", "otherwise"
+      .replaceAll "pum", ""
+      .replaceAll "4 Ad", ""
+      .replaceAll "child(ren)’s   children's", "children's"
+#      .replaceAll "\n", "X"
+      .replaceAll "patent", "parent"
+      .replaceAll "IIE", "on his/her"
+      .replaceAll " 1n", " in"
+      .replaceAll "\nild(ren)", " children"
+#      .replaceAll " 5 ", ""
+      .replaceAll "otherwise\n", ""
+      .replaceAll " nless", ""
+      .replaceAll "otherwise\n otherwise", ""
+      .replaceAll "entitled\nto", "entitled to"
+      .replaceAll(" , ", ", ")
+      .replaceAll("10 2.10.   H n. i   ", "10a.m. to 8p.m. for ")
+      .replaceAll(" i 3 i her birthday", " ")
+      .replaceAll("pam...", "p.m.")
+      .replaceAll("Fr\nFinding", "Ending")
+      .replaceAll("Le ven a", "")
+      .replaceAll("io a 4", "")
+      .replaceAll("- pe\n", "")
+      .replaceAll("6 00 ", "6:00")
+      .replaceAll("Given years", "Even years")
+      .replaceAll("5 otherwise", " otherwise")
+      .replaceAll(" © ", " ")

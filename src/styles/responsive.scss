@@ -723,7 +723,7 @@
       &:not(.home) {
         align-self: stretch;
         @media screen and (max-width: 600px) {
-          height: 100vh;
+          //          height: 100vh;
         }
         @media (min-width: 768px), (max-width: 1024px) {
           width: 100vw;

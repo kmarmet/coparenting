@@ -12,6 +12,9 @@ div {
       &:where(.swal2-styled):where(.swal2-deny) {
         background-color: $red !important;
         width: 140px !important;
+        &.blue {
+          background-color: $mainBlue !important;
+        }
       }
     }
   }
@@ -19,6 +22,12 @@ div {
 
 .swal2-confirm {
   //  background-color: $green !important;
+  &.red {
+    background-color: $red !important;
+  }
+  &.blue {
+    background-color: $mainBlue !important;
+  }
 }
 
 .swal2-title {
