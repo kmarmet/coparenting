@@ -50,6 +50,10 @@ StringManager = {
     capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
     return capitalizedFirstWord + str.slice(firstWord.length);
   },
+  addSpaceBetweenWords: function(str) {
+    str = str.replace(/([a-z])([A-Z])/, '$1 $2');
+    return str;
+  },
   getFirstWord: function(input) {
     return input.toString().replace(/ .*/, '');
   },

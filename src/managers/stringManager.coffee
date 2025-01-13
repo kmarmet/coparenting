@@ -48,6 +48,10 @@ StringManager = {
     capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
     return capitalizedFirstWord + str.slice(firstWord.length);
 
+  addSpaceBetweenWords: (str) ->
+    str = str.replace(/([a-z])([A-Z])/, '$1 $2')
+    str
+
   getFirstWord: (input) ->
     input.toString().replace(/ .*/, '')
 

@@ -5,9 +5,7 @@ import TableOfContentsListItem from '../../tableOfContentsListItem'
 import DocumentConversionManager from '../../../managers/documentConversionManager'
 import Manager from '../../../managers/manager'
 import BottomCard from '../../shared/bottomCard'
-import { DebounceInput } from 'react-debounce-input'
 import SecurityManager from '../../../managers/securityManager'
-import { AiOutlineFileSearch } from 'react-icons/ai'
 import NavBar from '../../navBar'
 import DB from '../../../database/DB'
 import AlertManager from '../../../managers/alertManager'
@@ -17,40 +15,43 @@ import 'lightgallery/css/lightgallery.css'
 import DomManager from '../../../managers/domManager'
 import debounce from 'debounce'
 import DocumentHeader from '../../../models/documentHeader'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
+import InputWrapper from '../../../components/shared/inputWrapper'
+import { TbFileSearch } from 'react-icons/tb'
+import { MdSearchOff } from 'react-icons/md'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, docToView } = state
+  const { currentUser, theme, docToView, isLoading } = state
   const [tocHeaders, setTocHeaders] = useState([])
-  const [showCard, setShowCard] = useState(false)
-  const [searchResults, setSearchResults] = useState([])
-  const [searchResultsIndex, setSearchResultsIndex] = useState(1)
+  const [showToc, setShowToc] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
-  const [searchResultsCount, setSearchResultsCount] = useState(0)
   const [textWithHeaders, setTextWithHeaders] = useState('')
   const [imgUrl, setImgUrl] = useState('')
   const [docType, setDocType] = useState('document')
-
-  const scrollToHeader = (header) => {
-    closeSearch()
-    const firstChar = header.slice(0, 1)
-    if (firstChar === '-') {
-      header = header.replace('-', '')
+  const [searching, setSearching] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const scrollToHeader = (headerText) => {
+    const header = headerText.replaceAll(' ', '').replaceAll("'", '').replace('"', '').replaceAll('-', '')
+    const domHeader = document.querySelector(`[data-header='${header}']`)
+    if (domHeader) {
+      setTimeout(() => {
+        if (domHeader) {
+          domHeader.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          })
+        }
+      }, 300)
     }
-    const el = document.querySelector(`.header[data-header-date='${header}']`)
-    setTimeout(() => {
-      if (el) {
-        el.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        })
-      }
-    }, 500)
   }
 
-  const convertAndAppendDocOrImage = async () => {
+  const onLoad = async () => {
     const fileType = `.${StringManager.getFileExtension(docToView.name)}`
+    setTimeout(() => {
+      setState({ ...state, isLoading: true })
+    }, 500)
     if (currentUser && fileType === '.docx') {
       setDocType('document')
       await getDoc()
@@ -58,90 +59,92 @@ export default function DocViewer() {
       setDocType('image')
       await getImage()
     }
-  }
 
-  const search = (searchValue) => {
-    let allPars = document.querySelectorAll('#text-container p')
-    allPars.forEach((par) => {
-      par.classList.add('low-opacity')
-    })
-    allPars = Array.from(allPars)
-
-    if (searchValue.length === 0) {
-      allPars.forEach((par) => par.classList.remove('search-highlight'))
+    // Set TOC headers
+    // Get all headers
+    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+    userHeaders = userHeaders.map((x) => x.headerText)
+    let allHeaders = []
+    if (Manager.isValid(userHeaders)) {
+      allHeaders = [...predefinedHeaders, ...userHeaders].flat()
     } else {
-      // Allow search
-      if (searchValue.length > 3) {
-        let resultsFound = allPars.filter((x) => x.textContent.toLowerCase().contains(searchValue.toLowerCase()))
-        setSearchResultsCount(resultsFound.length)
-        let foundElement = allPars.filter((x) => x.textContent.toLowerCase().contains(searchValue.toLowerCase()))[0]
-        console.log(foundElement)
-        let allParsNodes = document.querySelectorAll('#text-container p')
-        allParsNodes = Array.from(allParsNodes)
-        allParsNodes = allParsNodes.filter((x) => x.textContent.toLowerCase().contains(searchValue.toLowerCase()))
-        setSearchResults(allParsNodes)
-        if (foundElement) {
-          foundElement.scrollIntoView({ block: 'start', behavior: 'smooth' })
-          foundElement.classList.add('search-highlight')
-          foundElement.classList.remove('low-opacity')
-        }
-      } else {
-        allPars.forEach((par) => par.classList.remove('search-highlight'))
-      }
+      allHeaders = predefinedHeaders
     }
+    setTocHeaders(allHeaders)
   }
 
-  const searchTraverse = (direction) => {
-    let allPars = document.querySelectorAll('#text-container p')
-    let currentIndex = searchResultsIndex
+  const search = async (searchValue) => {
+    setSearching(true)
+    setTextWithHeaders('')
+    await formatImageDocument(searchValue)
+    setSearching(false)
+  }
 
-    // TOGGLE UP/DOWN ARROWS BASED ON EXISTENCE OF FOUND ELEMENT
-    const preFoundElement = direction === 'up' ? searchResults[(currentIndex -= 1)] : searchResults[(currentIndex += 1)]
-    if (preFoundElement) {
-      // Remove highlight class by default
-      allPars = Array.from(allPars)
-      allPars.forEach((par) => {
-        par.classList.remove('search-highlight')
-        par.classList.add('low-opacity')
-      })
+  const formatImageDocument = async (searchValue) => {
+    const allDocs = await SecurityManager.getDocuments(currentUser)
+    let docOwner = await DB.find(DB.tables.users, ['phone', docToView.ownerPhone], true)
+    const firebasePathId = docOwner.id
+    const imageResult = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, firebasePathId, docToView.name)
 
-      // Update index state on nav arrow click
-      if (direction === 'up') {
-        setSearchResultsIndex((searchResultsIndex) => (searchResultsIndex -= 1))
+    // Catch errors
+    if (!Manager.isValid(allDocs)) {
+      // setState({ ...state, isLoading: false })
+      return false
+    }
+    if (!Manager.isValid(docOwner)) {
+      // setState({ ...state, isLoading: false })
+      return false
+    }
+
+    if (!Manager.isValid(docToView)) {
+      // setState({ ...state, isLoading: false })
+      AlertManager.throwError('No Document Found')
+      return false
+    }
+    // Insert text
+    if (imageResult.status === 'success') {
+      // Get all headers
+      let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+      userHeaders = userHeaders.map((x) => x.headerText)
+      let allHeaders = []
+      if (Manager.isValid(userHeaders)) {
+        allHeaders = [...predefinedHeaders, ...userHeaders].flat()
       } else {
-        setSearchResultsIndex((searchResultsIndex) => (searchResultsIndex += 1))
+        allHeaders = predefinedHeaders
       }
+      let text = await DocumentConversionManager.imageToText(imageResult?.imageUrl)
+      // HTML symbol -> regular
+      text = text.replaceAll('&#039;', "'")
 
+      // FOR SEARCH
+      if (Manager.isValid(searchValue, true)) {
+        text = text.toLowerCase().replaceAll(searchValue, `<span class="search-highlight">${searchValue}</span>`)
+      }
+      // Remove line breaks after header
+      const lineBreaks = document.querySelectorAll('br')
+      for (let lineBreak of lineBreaks) {
+        const previousSibling = lineBreak.previousElementSibling
+        if (previousSibling && previousSibling?.tagName === 'SPAN') {
+          lineBreak.remove()
+        }
+      }
+      // Format headers
+      for (let header of allHeaders) {
+        const dataHeader = header.replaceAll(' ', '').replaceAll("'", '').replace('"', '')
+        if (userHeaders.includes(header)) {
+          text = text.replaceAll(header, `<span data-header=${dataHeader} class="header">${header}<span class="delete-header-button">X</span></span>`)
+        } else {
+          text = text.replaceAll(header, `<span data-header=${dataHeader} class="header">${header}</span>`)
+        }
+      }
+      setTextWithHeaders(text)
       setTimeout(() => {
-        const foundElement = searchResults[searchResultsIndex]
-        if (foundElement) {
-          // Scroll to next index / add class
-          setTimeout(() => {
-            foundElement.scrollIntoView({ block: 'center', behavior: 'smooth' })
-          }, 200)
-          foundElement.classList.add('search-highlight')
-          foundElement.classList.remove('low-opacity')
-        }
-      }, 200)
-    }
-  }
-
-  const closeSearch = () => {
-    Manager.resetForm('doc-viewer-container')
-    document.getElementById('search-input').value = ''
-    let allHeaders = document.querySelectorAll('.header')
-    let allPars = document.querySelectorAll('#text-container p')
-    allPars = Array.from(allPars)
-    allPars.forEach((par) => {
-      par.classList.remove('search-highlight')
-      par.classList.remove('low-opacity')
-    })
-    setSearchResults([])
-    setSearchResultsIndex(0)
-    setShowSearch(false)
-    allHeaders = Array.from(allHeaders)
-    if (Manager.isValid(allHeaders)) {
-      allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
+        setState({ ...state, isLoading: false })
+      }, 300)
+    } else {
+      AlertManager.throwError('No Document Found')
+      setState({ ...state, isLoading: false })
+      return false
     }
   }
 
@@ -284,80 +287,15 @@ export default function DocViewer() {
 
   // Get/Append Image
   const getImage = async () => {
-    setState({ ...state, isLoading: true })
-    const allDocs = await SecurityManager.getDocuments(currentUser)
-    let docOwner = await DB.find(DB.tables.users, ['phone', docToView.ownerPhone], true)
-    const firebasePathId = docOwner.id
-
-    // Catch errors
-    if (!Manager.isValid(allDocs)) {
-      setState({ ...state, isLoading: false })
-      return false
-    }
-    if (!Manager.isValid(docOwner)) {
-      setState({ ...state, isLoading: false })
-      return false
-    }
-
-    if (!Manager.isValid(docToView)) {
-      setState({ ...state, isLoading: false })
-      AlertManager.throwError('No Document Found')
-      return false
-    }
-
-    // Get image URL
-    const imageResult = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, firebasePathId, docToView.name)
-    setImgUrl(imageResult?.imageUrl)
-
-    // Get all headers
-    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
-    userHeaders = userHeaders.map((x) => x.headerText)
-    let allHeaders = []
-    if (Manager.isValid(userHeaders)) {
-      allHeaders = [...predefinedHeaders, ...userHeaders].flat()
-    } else {
-      allHeaders = predefinedHeaders
-    }
-
-    // Insert text
-    if (imageResult.status === 'success') {
-      let text = await DocumentConversionManager.imageToText(imageResult?.imageUrl)
-
-      // HTML symbol -> regular
-      text = text.replaceAll('&#039;', "'")
-
-      // Format headers
-      let index = 0
-      for (let _string of allHeaders) {
-        // use for search nav
-        if (Manager.contains(_string, "President's Day")) {
-          // console.log(text.indexOf(_string))
-        }
-
-        text = text.replaceAll(_string, `<span data-header=${index} class="header">${_string}</span>`)
-        const thisHeader = document.querySelector(`[data-header="${index}"]`)
-        if (thisHeader && thisHeader?.nextElementSibling) {
-          if (thisHeader.nextElementSibling.tagName === 'BR') {
-            console.log(thisHeader.nextSibling)
-            thisHeader.nextElementSibling.remove()
-          }
-        }
-        index++
-      }
-
-      setTextWithHeaders(text)
-      setState({ ...state, isLoading: false })
-    } else {
-      AlertManager.throwError('No Document Found')
-      setState({ ...state, isLoading: false })
-      return false
-    }
+    await formatImageDocument()
   }
 
   const deleteHeader = async (headerText) => {
     const header = await DB.find(`${DB.tables.documentHeaders}/${currentUser.phone}`, ['headerText', headerText])
-    await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser.phone}`, header.id)
-    await getImage()
+    if (header) {
+      await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser.phone}`, header.id)
+      await getImage()
+    }
   }
 
   const addUserHeaderToDatabase = () => {
@@ -370,18 +308,64 @@ export default function DocViewer() {
         header.ownerPhone = currentUser.phone
         await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, header)
         setTextWithHeaders('')
+
         await getImage()
       })
     }
   }
 
+  const addHeaderClickHandler = async (textWrapper) => {
+    const headers = textWrapper.querySelectorAll('.header')
+    if (Manager.isValid(headers)) {
+      for (let header of headers) {
+        header.addEventListener('click', async (e) => {
+          const buttonParent = e.target.parentNode
+          if (buttonParent) {
+            let headerText = buttonParent.textContent.replace('X', '').replace(' ', '')
+            headerText = headerText.toLowerCase()
+            headerText = StringManager.addSpaceBetweenWords(headerText)
+            headerText = StringManager.uppercaseFirstLetterOfAllWords(headerText)
+            console.log(headerText)
+            await deleteHeader(headerText)
+          }
+        })
+      }
+    }
+  }
+
+  const onTableChange = async () => {
+    setState({ ...state, isLoading: true })
+    const dbRef = ref(getDatabase())
+    onValue(child(dbRef, `${DB.tables.documentHeaders}/${currentUser.phone}`), async (snapshot) => {
+      await onLoad()
+    })
+  }
+
+  const closeSearch = async () => {
+    setShowSearch(false)
+    setRefreshKey(Manager.getUid())
+    const searchHighlights = document.querySelectorAll('.search-highlight')
+    if (Manager.isValid(searchHighlights)) {
+      for (let highlight of searchHighlights) {
+        highlight.classList.remove('search-highlight')
+      }
+    }
+  }
+
+  // Add header click handler when text is in DOM
   useEffect(() => {
-    // setState({ ...state, isLoading: true })
+    const imageText = document.getElementById('image-text')
+    if (Manager.isValid(imageText)) {
+      addHeaderClickHandler(imageText).then((r) => r)
+    }
+  }, [document.getElementById('image-text')])
+
+  useEffect(() => {
+    onTableChange().then((r) => r)
     const textContainer = document.getElementById('text-container')
     if (textContainer) {
       document.getElementById('text-container').innerText = ''
     }
-    convertAndAppendDocOrImage().then((r) => r)
 
     // Listen for selection change
     document.addEventListener('selectionchange', debounce(addUserHeaderToDatabase, 1000))
@@ -392,35 +376,23 @@ export default function DocViewer() {
       {/* BOTTOM ACTIONS */}
       <div className={`${theme} flex form`} id="bottom-actions">
         {Manager.isValid(document.querySelectorAll('.header'), true) && (
-          <div id="toc-button" className={`${theme}`} onClick={() => setShowCard(true)}>
+          <div id="toc-button" className={`${theme}`} onClick={() => setShowToc(true)}>
             Table of Contents
           </div>
         )}
       </div>
-      {/* INPUT */}
+      {/* SEARCH CARD */}
       <BottomCard
         wrapperClass="doc-search-card"
         hasSubmitButton={false}
         className="form search-card"
         showCard={showSearch}
-        title={'Find Text'}
+        title={'Search'}
+        refreshKey={refreshKey}
+        showOverlay={false}
         onClose={closeSearch}>
         <div className="flex">
-          <DebounceInput minLength={3} id="search-input" onChange={(e) => search(e.target.value)} debounceTimeout={500} />
-          {/* SEARCH NAV */}
-          {searchResults.length > 0 && searchResultsCount > 1 && (
-            <div id="input-and-nav">
-              {/* NAVIGATION */}
-              <div className="flex">
-                <span className="material-icons-round" onClick={() => searchTraverse('up')}>
-                  arrow_upward
-                </span>
-                <span className="material-icons-round" onClick={() => searchTraverse('down')}>
-                  arrow_downward
-                </span>
-              </div>
-            </div>
-          )}
+          <InputWrapper placeholder="Enter text to search for..." onChange={(e) => search(e.target.value)} inputValueType="text" />
         </div>
       </BottomCard>
 
@@ -429,8 +401,8 @@ export default function DocViewer() {
         <BottomCard
           wrapperClass="toc-card"
           hasSubmitButton={false}
-          showCard={showCard}
-          onClose={() => setShowCard(false)}
+          showCard={showToc}
+          onClose={() => setShowToc(false)}
           className="toc"
           title={'Table of Contents'}>
           <div id="table-of-contents">
@@ -438,7 +410,7 @@ export default function DocViewer() {
               id="toc-scroll-button"
               className="button default center mt-5"
               onClick={() => {
-                setShowCard(false)
+                setShowToc(false)
                 let allHeaders = document.querySelectorAll('.header')
                 if (Manager.isValid(allHeaders)) {
                   allHeaders = Array.from(allHeaders)
@@ -450,20 +422,20 @@ export default function DocViewer() {
             <div id="toc-contents">
               {tocHeaders.length > 0 &&
                 tocHeaders.sort().map((header, index) => {
+                  const dataHeader = header.replaceAll(' ', '').replaceAll("'", '').replace('"', '')
                   header = header.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
+                  const domHeader = document.querySelector(`[data-header='${dataHeader}']`)
                   return (
                     <span key={index}>
-                      {!header.contains('___') && (
-                        <TableOfContentsListItem
-                          agreementText={document.querySelector('#text-container').textContent}
-                          text={`• ${header}`}
-                          dataHeader={header}
-                          onClick={() => {
-                            setShowCard(false)
-                            scrollToHeader(header)
-                          }}
-                        />
-                      )}
+                      <TableOfContentsListItem
+                        text={`> ${header}`}
+                        classes={domHeader ? 'show' : 'hide'}
+                        dataHeader={dataHeader}
+                        onClick={() => {
+                          setShowToc(false)
+                          scrollToHeader(header)
+                        }}
+                      />
                     </span>
                   )
                 })}
@@ -481,15 +453,22 @@ export default function DocViewer() {
             <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
               <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
             </LightGallery>
-            <div dangerouslySetInnerHTML={{ __html: textWithHeaders }} />
+            <div id="image-text" dangerouslySetInnerHTML={{ __html: textWithHeaders }} />
           </>
         )}
         {/* DOCUMENT */}
         {docType === 'document' && <div id="text-container"></div>}
+        {searching && <p id="search-loading-textx">Finding and marking your search results...</p>}
       </div>
-      {!showSearch && !showCard && (
-        <NavBar>
-          <AiOutlineFileSearch id={'add-new-button'} onClick={() => setShowSearch(true)} />
+
+      {!showSearch && !showToc && !isLoading && (
+        <NavBar addOrClose="add">
+          <TbFileSearch id={'open-search-button'} onClick={() => setShowSearch(true)} />
+        </NavBar>
+      )}
+      {showSearch && !showToc && !isLoading && (
+        <NavBar addOrClose="close">
+          <MdSearchOff id={'close-search-button'} onClick={closeSearch} />
         </NavBar>
       )}
     </div>

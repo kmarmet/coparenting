@@ -99,6 +99,7 @@
     "preBuild": "cra-append-sw ./public/sw.js",
     "build": "react-scripts build && compress-cra",
     "removeUnusedPackages": "rm -rf node_modules && npm install",
+    "removeParcelCache": "rm -rf .parcel-cache",
     "minify": "minify-all-js ./build/static/js ../build/new",
     "generate-splash": "pwa-asset-generator splash.png ./assets --splash-only  --background \"#ffffff\" -o false -r padding \"0px\"\n",
     "generate-icons": "pwa-asset-generator icon.png ./assets --icon-only --background \"#ffffff\" padding \"0px\"\n"
