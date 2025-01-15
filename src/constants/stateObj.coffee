@@ -1,5 +1,4 @@
 import ScreenNames from "./screenNames"
-import ActivitySet from "../models/activity"
 
 StateObj =
   activeInfoChild: null
@@ -10,6 +9,7 @@ StateObj =
   docToView: ''
   firebaseUser: null,
   isLoading: true
+  loadingText: 'Preparing your pathway to peace...'
   menuIsOpen: false
   messageToUser: null
   modalIsOpen: false
@@ -38,6 +38,7 @@ StateObj =
   setEventToEdit: (event) ->
   setFirebaseUser: (user) ->
   setIsLoading: (bool) ->
+  setLoadingText: (text) ->
   setMenuIsOpen: (isOpen) ->
   setMessageToUser: (user) ->
   setModalIsOpen: (bool) ->

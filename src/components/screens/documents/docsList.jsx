@@ -98,6 +98,7 @@ export default function DocsList() {
                 })}
             </div>
           )}
+
           {toDelete.length > 0 && (
             <button onClick={deleteDocs} className="mt-20 button default red center">
               Delete {toDelete.length} Documents

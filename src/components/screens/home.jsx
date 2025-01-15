@@ -1,31 +1,32 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { contains, formatNameFirstNameOnly } from '../../globalFunctions'
 import globalState from '../../context'
 import { Fade } from 'react-awesome-reveal'
 import { PiCalendarDotsDuotone, PiMoneyWavyDuotone } from 'react-icons/pi'
 import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool } from 'react-icons/ai'
-import DomManager from '../../managers/domManager'
+import DomManager from '/src/managers/domManager'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import firebaseConfig from '../../firebaseConfig'
+import firebaseConfig from '/src/firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import { TbSunMoon } from 'react-icons/tb'
-import MemoriesImage from '../../img/homepage/memories.png'
-import ChildInfoImage from '../../img/homepage/childInfo.png'
-import CalendarImage from '../../img/homepage/calendar.png'
-import MenuImage from '../../img/homepage/menu.png'
-import ExpensesImage from '../../img/homepage/expense-tracker.png'
-import TabletImage from '../../img/homepage/devices/tablet.png'
-import LaptopImage from '../../img/homepage/devices/laptop.png'
-import PhoneImage from '../../img/homepage/devices/phone.png'
-import Logo from '../../img/logo.png'
+import MemoriesImage from '/src/img/homepage/memories.png'
+import ChildInfoImage from '/src/img/homepage/childInfo.png'
+import CalendarImage from '/src/img/homepage/calendar.png'
+import MenuImage from '/src/img/homepage/menu.png'
+import ExpensesImage from '/src/img/homepage/expense-tracker.png'
+import TabletImage from '/src/img/homepage/devices/tablet.png'
+import LaptopImage from '/src/img/homepage/devices/laptop.png'
+import PhoneImage from '/src/img/homepage/devices/phone.png'
+import Logo from '/src/img/logo.png'
 import 'pure-react-carousel/dist/react-carousel.es.css'
 import { MdOutlineStar } from 'react-icons/md'
 import { FaRegHandshake } from 'react-icons/fa'
 import { useLongPress } from 'use-long-press'
-import ScreenNames from '../../constants/screenNames'
-import Manager from '../../managers/manager'
+import ScreenNames from '/src/constants/screenNames'
+import Manager from '/src/managers/manager'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
+import AppManager from '/src/managers/appManager.js'
+import HomescreenSections from '/src/models/homescreenSections.js'
 
 function LazyImage({ show, importedImage, imagesObjectPropName }) {
   const [showImage, setShowImage] = useState(false)
@@ -43,7 +44,7 @@ function LazyImage({ show, importedImage, imagesObjectPropName }) {
           <img alt="Peaceful coParenting" src={importedImage} className={`lazy-loaded-image`} />
         </Fade>
       )}
-      {!showImage && <img alt="Loading..." id="lazy-loaded-img-placeholder" src={require('../../img/loading.gif')} />}
+      {!showImage && <img alt="Loading..." id="lazy-loaded-img-placeholder" src={require('/src/img/loading.gif')} />}
     </div>
   )
 }
@@ -66,7 +67,7 @@ export default function Home() {
     const allFeatureElements = document.querySelectorAll(`[data-name]`)
 
     if (clickedFeatureElement) {
-      if (clickedFeatureElement.classList.contains('active')) {
+      if (Manager.contains(clickedFeatureElement.classList, 'active')) {
         clickedFeatureElement.classList.remove('active')
       } else {
         if (Manager.isValid(allFeatureElements)) {
@@ -80,17 +81,14 @@ export default function Home() {
     }
   }
   useEffect(() => {
-    let homescreenWrapper = document.getElementById('home-screen-wrapper')
-
-    if (!DomManager.isMobile()) {
-      homescreenWrapper = document.getElementById('app-content-with-sidebar')
-    }
+    let homescreenWrapper = document.getElementById('app-content-with-sidebar')
 
     if (homescreenWrapper) {
       const imageWrappers = document.querySelectorAll('.img-wrapper')
       DomManager.addScrollListener(
         homescreenWrapper,
         () => {
+          console.log(imageWrappers)
           for (let imageWrapper of imageWrappers) {
             const imagesObjectPropName = imageWrapper.dataset.name
             if (DomManager.isInViewport(imageWrapper)) {
@@ -101,7 +99,6 @@ export default function Home() {
         0
       )
     }
-
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         // console.log(user)
@@ -112,6 +109,16 @@ export default function Home() {
         setState({ ...state, isLoading: false })
       }
     })
+
+    const queryStringSection = AppManager.getQueryStringParams('section')
+    if (Manager.isValid(queryStringSection)) {
+      const whyUsSection = document.querySelector('.unique-features.section')
+      if (queryStringSection === HomescreenSections.whyUs) {
+        if (whyUsSection) {
+          whyUsSection.scrollIntoView({ behavior: 'smooth' })
+        }
+      }
+    }
   }, [])
 
   return (
@@ -137,18 +144,10 @@ export default function Home() {
             </div>
           </div>
           <div className="section page-title">
-            {DomManager.isMobile() && (
-              <>
-                <p id="title" className="mobile">
-                  Peaceful
-                </p>
-                <p id="title" className="mobile">
-                  Co-Parenting
-                </p>
-              </>
-            )}
-            {!DomManager.isMobile() && <p id="title">Peaceful Co-Parenting</p>}
-            <p id="subtitle">Built for Families - Focused on Peace</p>
+            <p id="title">Peaceful {DomManager.isMobile() ? <br /> : ''} Co-Parenting</p>
+            <p id="subtitle">
+              Built for Families {DomManager.isMobile() ? '' : '-'} {DomManager.isMobile() ? <br /> : ''} Focused on Peace
+            </p>
           </div>
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.image'}>
             <div className="flex" id="images">

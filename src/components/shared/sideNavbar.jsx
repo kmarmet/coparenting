@@ -39,7 +39,6 @@ export default function SideNavbar() {
   }
 
   const changeTheme = async (theme) => {
-    console.log(theme)
     await DB_UserScoped.updateUserRecord(currentUser?.phone, `settings/theme`, theme)
     window.location.reload()
   }
@@ -66,7 +65,7 @@ export default function SideNavbar() {
       duration={1000}
       triggerOnce={true}
       className={`${currentScreen === ScreenNames.calendar ? 'side-navbar-fade-wrapper calendar' : 'side-navbar-fade-wrapper'}`}>
-      <div id="side-navbar" className={theme}>
+      <div id="side-navbar" className={`${theme} ${currentScreen}`}>
         <div id="top">
           {/* ADMIN DASHBOARD */}
           {currentUser?.email === 'kmarmet1@gmail.com' && (

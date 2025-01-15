@@ -168,7 +168,10 @@ export default function Login() {
             onClick={() => {
               setState({ ...state, menuIsOpen: false })
               document.querySelector('.install-app').classList.add('active')
-              Manager.showPageContainer('hide')
+              const pageOverlay = document.getElementById('page-overlay')
+              if (pageOverlay) {
+                pageOverlay.classList.add('active')
+              }
             }}>
             Install App <GrInstallOption className={'fs-18 ml-10'} />
           </p>

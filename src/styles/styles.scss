@@ -418,12 +418,16 @@
 
     #app-content-with-sidebar {
       margin: 0 15px;
-      max-width: 100vw;
+      max-width: calc(100vw - 30px);
       position: relative;
       gap: 15px;
       overflow: auto;
       max-height: 1000px;
       height: 100vh;
+
+      &.fullscreen {
+        max-width: 100vw;
+      }
 
       &.logged-in {
         flex-wrap: nowrap;
@@ -431,7 +435,9 @@
         justify-content: center;
         align-items: flex-start;
 
-        @media screen and (min-width: 1000px) {
+        @media screen and (min-width: 800px) {
+          //          position: relative;
+          //          top: 90px;
           max-height: calc(100vh - 110px);
         }
       }
@@ -440,9 +446,6 @@
         margin: 0;
         #home-screen-wrapper {
           .section {
-            width: calc(100vw - 30px);
-            max-width: calc(100vw - 30px);
-
             &.full-width-box {
               width: calc(100vw - 30px);
             }
@@ -493,13 +496,21 @@
         #home-screen-wrapper {
           #below-fold-wrapper,
           #above-fold-wrapper {
-            width: calc(100vw - 80px);
-            max-width: calc(100vw - 80px);
+            width: 100vw;
+            max-width: 100vw;
+            margin: 0;
+            left: 0;
+            overflow-x: hidden;
+
+            &#below-fold-wrapper {
+              padding: 15px;
+            }
           }
         }
         .home {
           width: 100vw;
           max-width: 100vw;
+          padding: 0;
         }
       }
     }
@@ -631,7 +642,8 @@
       @include deadCenter;
     }
 
-    .loading-overlay {
+    .loading-overlay,
+    #loading-with-text-overlay {
       top: 0;
       bottom: 0;
       left: 0;
@@ -639,8 +651,8 @@
       position: fixed;
       @include blurredBg;
       background-color: white;
-      z-index: $maxZIndex;
       display: none;
+      @include zIndex(99999);
 
       &.dark {
         background: $darkBg;
@@ -652,6 +664,8 @@
 
       p {
         @include deadCenter;
+        font-size: 22px;
+        font-weight: $fwMedium;
       }
 
       img {

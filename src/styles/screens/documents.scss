@@ -1,12 +1,39 @@
 @import '../mixins';
 
 #external-overrides {
+  #desktop-search-button-wrapper {
+    background: $mainBlue;
+    position: fixed;
+    bottom: 25px;
+    right: 40px;
+    border-radius: 100%;
+    height: 50px;
+    width: 50px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include hoverShadow;
+    @include bestShadow;
+    #desktop-search-button {
+      color: white;
+    }
+  }
   #documents-container {
     #image-text {
       .search-highlight {
         color: $mainBlue;
+        background: $lightIconBgBlue;
+        border-radius: 5px;
+        padding: 0 5px;
         font-weight: $fwBold;
       }
+    }
+    #image-name {
+      text-align: right;
+      font-size: 14px;
+      opacity: 0.75;
+      font-style: italic;
     }
     .header {
       width: 100%;
@@ -241,6 +268,8 @@
             padding: 0;
             display: flex;
             align-items: center;
+
+            @include hoverBlue;
           }
 
           svg {

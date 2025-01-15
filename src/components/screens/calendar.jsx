@@ -1,35 +1,34 @@
 import React, { useContext, useEffect, useState } from 'react'
-import DB from '../../database/DB'
-import DateManager from '../../managers/dateManager.js'
-import Manager from '../../managers/manager'
-import moment from 'moment'
-import globalState from '../../context'
-import BottomCard from '../../components/shared/bottomCard'
-import DateFormats from '../../constants/dateFormats'
-import { LuCalendarSearch } from 'react-icons/lu'
-import SecurityManager from '../../managers/securityManager'
-import { PiCalendarPlusDuotone, PiCalendarXDuotone } from 'react-icons/pi'
-import { StaticDatePicker } from '@mui/x-date-pickers-pro'
-import AlertManager from '../../managers/alertManager'
-import { CgClose } from 'react-icons/cg'
-import { contains, formatNameFirstNameOnly } from '../../globalFunctions'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
-import NavBar from '../navBar'
-import InputWrapper from '../shared/inputWrapper'
-import { GiPartyPopper } from 'react-icons/gi'
-import DomManager from '../../managers/domManager'
-import { Fade } from 'react-awesome-reveal'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import { TfiClose } from 'react-icons/tfi'
-import Label from '../shared/label'
+import AlertManager from '/src/managers/alertManager'
+import AppManager from '/src/managers/appManager'
+import BottomCard from '/src/components/shared/bottomCard'
+import DB from '/src/database/DB'
+import DatasetManager from '/src/managers/datasetManager'
+import DateFormats from '/src/constants/dateFormats'
+import DateManager from '/src/managers/dateManager'
+import DomManager from '/src/managers/domManager'
+import EditCalEvent from '/src/components/forms/editCalEvent'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import Label from '/src/components/shared/label.jsx'
+import Manager from '/src/managers/manager'
+import NavBar from '/src/components/navBar.jsx'
+import NewCalendarEvent from '/src/components/forms/newCalendarEvent'
+import SecurityManager from '/src/managers/securityManager'
+import StringManager from '/src/managers/stringManager'
+import globalState from '/src/context.js'
+import moment from 'moment'
+import { CgClose } from 'react-icons/cg'
+import { Fade } from 'react-awesome-reveal'
+import { GiPartyPopper } from 'react-icons/gi'
 import { HiOutlineColorSwatch } from 'react-icons/hi'
-import DatasetManager from '../../managers/datasetManager'
-import AppManager from '../../managers/appManager.js'
-import StringManager from '../../managers/stringManager'
-import NewCalendarEvent from '../forms/newCalendarEvent'
-import EditCalEvent from '../forms/editCalEvent'
+import { LuCalendarSearch } from 'react-icons/lu'
+import { PiCalendarPlusDuotone, PiCalendarXDuotone } from 'react-icons/pi'
+import { StaticDatePicker } from '@mui/x-date-pickers-pro'
+import { TfiClose } from 'react-icons/tfi'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -190,7 +189,7 @@ export default function EventCalendar() {
     let userVisitationHolidays = []
     if (currentUser.accountType === 'parent') {
       userVisitationHolidays = allEvents.filter(
-        (x) => x.isHoliday === true && x.ownerPhone === currentUser?.phone && contains(x.title.toLowerCase(), 'holiday')
+        (x) => x.isHoliday === true && x.ownerPhone === currentUser?.phone && Manager.contains(x.title.toLowerCase(), 'holiday')
       )
     }
     if (currentUser.accountType === 'child') {
@@ -533,19 +532,19 @@ export default function EventCalendar() {
                                 </span>
                               )}
                               {/* FROM DATE */}
-                              {!Manager.isValid(searchResults) && !contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
+                              {!Manager.isValid(searchResults) && !Manager.contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
                                 <span className="start-date" id="subtitle">
                                   {moment(event?.startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
                                 </span>
                               )}
                               {/* TO WORD */}
-                              {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                              {!Manager.contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
                                 <span className="end-date" id="subtitle">
                                   &nbsp;to&nbsp;{' '}
                                 </span>
                               )}
                               {/* TO DATE */}
-                              {!contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                              {!Manager.contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
                                 <span id="subtitle">{moment(event?.endDate).format(DateFormats.readableDay)}</span>
                               )}
                               {/* ALL DAY */}
@@ -558,12 +557,12 @@ export default function EventCalendar() {
                                   </span>
                                 )}
                               {/* TIMES */}
-                              {!contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
+                              {!Manager.contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
                                 <span id="subtitle" className="from-time">
                                   <span className="at-symbol">&nbsp;@</span> {event?.startTime}
                                 </span>
                               )}
-                              {!contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
+                              {!Manager.contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (
                                 <span id="subtitle" className="to-time">
                                   &nbsp;-&nbsp;{event?.endTime}
                                 </span>

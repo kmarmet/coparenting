@@ -13,6 +13,7 @@
     "@mui/x-date-pickers": "^7.16.0",
     "@mui/x-date-pickers-pro": "^7.22.2",
     "@mui/x-license": "^7.21.0",
+    "@parcel/optimizer-svgo": "^2.13.3",
     "@rsuite/multi-date-picker": "1.0.0",
     "@theme-toggles/react": "4.1.0",
     "add": "2.0.6",
@@ -58,6 +59,7 @@
     "react-debounce-input": "3.3.0",
     "react-doc-viewer": "0.1.13",
     "react-dom": "18.3.1",
+    "react-draggable": "^4.4.6",
     "react-error-boundary": "4.0.13",
     "react-google-autocomplete": "2.7.3",
     "react-icons": "^5.3.0",
@@ -93,20 +95,20 @@
   },
   "scripts": {
     "testMode": "set PORT 3001 && npm run dev",
-    "dev": "cd public && parcel index.html",
-    "devBackup": "webpack serve",
-    "deleteBuild": "del /S /F build",
+    "dev": "parcel src/index.html",
+    "parcelBuild": "npm run deleteBuild &&  cd src && parcel build index.html --no-source-maps && cd .. && cd dist && compress-cra",
+    "deleteImagesFromBuild": "cd dist && del /S /F *.jpg && del /S /F *.png && del /S /F *.ttf && del /S /F *.gif && del /S /F *.woff && del /S /F *.woff2 && del /S /F *.svg",
+    "deleteBuild": "del /S /F dist",
     "preBuild": "cra-append-sw ./public/sw.js",
     "build": "react-scripts build && compress-cra",
     "removeUnusedPackages": "rm -rf node_modules && npm install",
-    "removeParcelCache": "rm -rf .parcel-cache",
+    "removeParcelCache": "del /S /F .parcel-cache",
     "minify": "minify-all-js ./build/static/js ../build/new",
     "generate-splash": "pwa-asset-generator splash.png ./assets --splash-only  --background \"#ffffff\" -o false -r padding \"0px\"\n",
     "generate-icons": "pwa-asset-generator icon.png ./assets --icon-only --background \"#ffffff\" padding \"0px\"\n"
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
       "react-app/jest"
     ]
   },

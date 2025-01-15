@@ -13,6 +13,9 @@
       <excludeFolder url="file://$MODULE_DIR$/assets" />
       <excludeFolder url="file://$MODULE_DIR$/backups" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.parcel-cache" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/important!!" />
     </content>
     <content url="file://$MODULE_DIR$/node_modules" />
     <orderEntry type="inheritedJdk" />

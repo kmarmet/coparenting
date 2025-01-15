@@ -19,6 +19,7 @@ import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
+import { GoHeartFill } from 'react-icons/go'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -137,7 +138,7 @@ export default function Memories() {
             {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />}
           </div>
           <p id="happy-subtitle" className={`${theme} mb-10`}>
-            Upload photos of memories that are too good NOT to share <span className="material-icons heart">favorite</span>
+            Upload photos of memories that are too good NOT to share <GoHeartFill className={'heart'} />
           </p>
 
           {/* GALLERY */}

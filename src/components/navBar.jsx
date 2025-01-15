@@ -9,7 +9,7 @@ import { RxActivityLog } from 'react-icons/rx'
 
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, currentUser, menuIsOpen, theme, unreadMessageCount, activityCount } = state
+  const { currentScreen, currentUser, menuIsOpen, theme, activityCount } = state
 
   const changeCurrentScreen = async (screen) => {
     setState({
@@ -41,7 +41,6 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
                 id="chat-menu-item"
                 onClick={() => changeCurrentScreen(ScreenNames.chats)}
                 className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
-                {unreadMessageCount > 0 && <p className="navbar-activity-badge"></p>}
                 <PiChatsCircleDuotone />
               </div>
             )}

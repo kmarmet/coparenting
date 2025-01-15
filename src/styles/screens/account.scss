@@ -44,6 +44,8 @@
         justify-content: flex-start;
         border-bottom: 1px solid $borderColor;
 
+        @include hoverBlue();
+
         p {
           color: black;
         }

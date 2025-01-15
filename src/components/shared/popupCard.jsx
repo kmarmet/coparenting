@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import Manager from '../../managers/manager'
 import { IoIosArrowUp } from 'react-icons/io'
-
+import { CgClose } from 'react-icons/cg'
 function PopupCard({ onOpen, children, title, subtitle = '', className = '', onClose, closeable = true }) {
   useEffect(() => {
     if (!Manager.contains(className, 'active')) {
@@ -20,11 +20,14 @@ function PopupCard({ onOpen, children, title, subtitle = '', className = '', onC
   return (
     <div className={`${className} `} id="popup-card-container">
       {closeable && (
-        <IoIosArrowUp
+        <CgClose
           id={'close-icon'}
           onClick={() => {
             onClose()
-            Manager.showPageContainer('show')
+            const pageOverlay = document.getElementById('page-overlay')
+            if (pageOverlay) {
+              pageOverlay.classList.remove('active')
+            }
           }}
         />
       )}

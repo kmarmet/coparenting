@@ -8,7 +8,7 @@
     width: 100vw;
     height: 100vh;
     mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
-
+    overflow: hidden;
     * {
       text-align: center;
       line-height: 1;
@@ -71,15 +71,16 @@
     padding: 20px;
 
     #choose-peace-text {
-      color: $mainBlue;
+      color: black;
       font-style: italic;
       font-weight: $fwMedium;
       line-height: 1.4;
+      opacity: 1;
 
       span {
         font-style: italic;
         font-weight: $fwMedium;
-        color: $coparentPurple;
+        color: $mainBlue;
       }
     }
 
@@ -488,6 +489,7 @@
         width: 100%;
         max-width: 100%;
         margin: 0;
+        padding: 15px;
       }
     }
 
@@ -580,6 +582,8 @@
               position: relative;
               background: #f5f7fa;
 
+              @include hoverShadow;
+
               .star {
                 position: absolute;
                 top: 8px;
@@ -632,7 +636,7 @@
 
                 b {
                   font-size: 14px;
-                  color: $coparentPurple;
+                  color: $green;
                 }
               }
 

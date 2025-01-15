@@ -39,8 +39,10 @@
         <item url="file://$PROJECT_DIR$/src/models/child/general.js" />
         <item url="file://$PROJECT_DIR$/src/models/coparent.js" />
         <item url="file://$PROJECT_DIR$/src/models/doc.js" />
+        <item url="file://$PROJECT_DIR$/src/models/documentHeader.js" />
         <item url="file://$PROJECT_DIR$/src/models/expense.js" />
         <item url="file://$PROJECT_DIR$/src/models/formNames.js" />
+        <item url="file://$PROJECT_DIR$/src/models/homescreenSections.js" />
         <item url="file://$PROJECT_DIR$/src/models/inputSuggestion.js" />
         <item url="file://$PROJECT_DIR$/src/models/memory.js" />
         <item url="file://$PROJECT_DIR$/src/models/modelNames.js" />
@@ -50,7 +52,6 @@
         <item url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/user.js" />
-        <item url="file://$PROJECT_DIR$/src/prototypes.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
@@ -97,6 +98,7 @@
       <root url="file://$PROJECT_DIR$/src/models/documentHeader.js" />
       <root url="file://$PROJECT_DIR$/src/models/expense.js" />
       <root url="file://$PROJECT_DIR$/src/models/formNames.js" />
+      <root url="file://$PROJECT_DIR$/src/models/homescreenSections.js" />
       <root url="file://$PROJECT_DIR$/src/models/inputSuggestion.js" />
       <root url="file://$PROJECT_DIR$/src/models/memory.js" />
       <root url="file://$PROJECT_DIR$/src/models/modelNames.js" />
@@ -106,7 +108,6 @@
       <root url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
-      <root url="file://$PROJECT_DIR$/src/prototypes.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

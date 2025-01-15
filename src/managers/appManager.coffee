@@ -9,6 +9,14 @@ import FirebaseStorage from "../database/firebaseStorage"
 
 
 export default AppManager =
+  getQueryStringParams: (queryStringName) ->
+    searchParams = new URLSearchParams(window.location.search);
+
+    if Manager.isValid(queryStringName, true)
+      return searchParams.get(queryStringName)
+
+    return searchParams
+
   setAppBadge: (count) =>
     if window.navigator.setAppBadge
       window.navigator.setAppBadge(count)

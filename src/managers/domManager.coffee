@@ -9,7 +9,7 @@ DomManager = {
     else
       false
 
-  isMobile: () -> window.screen.width < 800
+  isMobile: () -> window.screen.width < 801
 
   tapOrClick: (isUppercase = false) ->
     if !isUppercase

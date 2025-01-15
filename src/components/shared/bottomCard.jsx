@@ -1,6 +1,8 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
-
+import Draggable from 'react-draggable' // The default
+import { DraggableCore } from 'react-draggable' // <DraggableCore>
+import Draggable, { DraggableCore } from 'react-draggable'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { CgClose } from 'react-icons/cg'
 

@@ -5,7 +5,7 @@ import globalState from './context.js'
 import 'react-toggle/style.css'
 
 // Screens
-import Activity from './components/screens/activity'
+import Activity from '/src/components/screens/activity'
 import EventCalendar from './components/screens/calendar.jsx'
 import InstallAppPopup from './components/installAppPopup.jsx'
 import Account from './components/screens/account/account.jsx'
@@ -37,7 +37,6 @@ import ChildSelector from './components/screens/childInfo/childSelector.jsx'
 import Loading from './components/shared/loading'
 import DocViewer from './components/screens/documents/docViewer'
 import emailjs from '@emailjs/browser'
-import './globalFunctions'
 import StateObj from './constants/stateObj' // Menus
 import FullMenu from './components/fullMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
@@ -67,7 +66,7 @@ export default function App() {
   const myCanvas = document.createElement('canvas')
 
   const fullscreenScreens = [ScreenNames.login, ScreenNames.home, ScreenNames.registration]
-  const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home, ScreenNames.docViewer]
+  const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
   const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
 
   emailjs.init({
@@ -89,7 +88,7 @@ export default function App() {
   })
 
   // State to include in App.js
-  const { isLoading, currentScreen, menuIsOpen, currentUser } = state
+  const { isLoading, currentScreen, menuIsOpen, currentUser, loadingText } = state
 
   const deleteMenuAnimation = () => {
     document.querySelectorAll('#full-menu .menu-item').forEach((menuItem, i) => {
@@ -172,6 +171,7 @@ export default function App() {
             theme: _currentUser?.settings?.theme,
             currentScreen: ScreenNames.calendar,
             userIsLoggedIn: true,
+            loadingText: '',
             activityCount: activities.length,
           })
         }
@@ -195,7 +195,7 @@ export default function App() {
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div className={`${currentUser?.settings?.theme} App`} id="app-container">
         {/* LOADING */}
-        {isLoading && <Loading isLoading={isLoading} theme={currentUser?.settings?.theme} />}
+        {isLoading && <Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />}
 
         <div id="page-overlay"></div>
 
@@ -206,11 +206,12 @@ export default function App() {
           {/* FULL MENU */}
           <FullMenu />
 
-          {/* TOP NAVBAR */}
+          {/* BRAND BAR */}
           {!screensToHideBrandbar.includes(currentScreen) && <BrandBar />}
 
           {/* SCREENS */}
           <div id="app-content-with-sidebar" className={fullscreenScreens.includes(currentScreen) ? 'fullscreen' : ''}>
+            {/* SIDE NAVBAR */}
             {!screensToHideSidebar.includes(currentScreen) && !DomManager.isMobile() && <SideNavbar />}
 
             {/* ADMIN */}

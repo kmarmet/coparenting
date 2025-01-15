@@ -10,15 +10,12 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import DomManager from '../managers/domManager'
-
+import { MdOutlineIosShare } from 'react-icons/md'
 export default function InstallAppPopup() {
   const { state, setState } = useContext(globalState)
   const [expandAppleAccordion, setExpandAppleAccordion] = useState(false)
   const [expandAndroidAccordion, setExpandAndroidAccordion] = useState(false)
   const [expandDesktopAccordion, setExpandDesktopAccordion] = useState(false)
-  useEffect(() => {
-    Manager.showPageContainer('hide')
-  }, [])
 
   return (
     <PopupCard
@@ -42,7 +39,7 @@ export default function InstallAppPopup() {
                 <div className="flex">
                   <span className="step-number">1.</span>
                   <p>
-                    {DomManager.tapOrClick(true)} the Share button <span className="material-icons round">ios_share</span> in the menu bar
+                    {DomManager.tapOrClick(true)} the Share button <MdOutlineIosShare /> in the menu bar
                   </p>
                 </div>
 

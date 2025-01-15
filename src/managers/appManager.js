@@ -23,6 +23,14 @@ import CalendarManager from "./calendarManager";
 import FirebaseStorage from "../database/firebaseStorage";
 
 export default AppManager = {
+  getQueryStringParams: function(queryStringName) {
+    var searchParams;
+    searchParams = new URLSearchParams(window.location.search);
+    if (Manager.isValid(queryStringName, true)) {
+      return searchParams.get(queryStringName);
+    }
+    return searchParams;
+  },
   setAppBadge: (count) => {
     if (window.navigator.setAppBadge) {
       return window.navigator.setAppBadge(count);

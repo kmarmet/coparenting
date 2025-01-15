@@ -186,12 +186,22 @@ const DocumentConversionManager = {
     }
 
     try {
-      const response = await fetch('https://www.imagetotext.info/api/imageToText', requestOptions)
-      const result = await response.text()
+      let returnResult = ''
+      const response = await fetch('https://www.imagetotext.info/api/imageToText', requestOptions).catch((error) => {
+        returnResult = null
+      })
+      if (response) {
+        let result = await response.text()
+        returnResult = JSON.parse(result).result
+      }
       // console.log(JSON.parse(result).result)
-      return JSON.parse(result).result
+      if (Manager.isValid(returnResult, true)) {
+        return returnResult
+      } else {
+        return null
+      }
     } catch (error) {
-      console.error(error)
+      return error
     }
   },
   imageToTextAndAppend: async (imagePath, textContainer) => {

@@ -3,7 +3,7 @@
 @import './mixins';
 
 #external-overrides {
-  /*#region  1000PX OUTSIDE APP CONTAINER*/
+  /*#region  OUTSIDE APP CONTAINER */
   @media screen and (min-width: 1600px) {
     .full-menu {
       #full-menu {
@@ -32,6 +32,36 @@
       }
     }
   }
+  @media screen and (min-width: 815px) {
+    #side-navbar {
+      &.calendar {
+        width: 25vw;
+      }
+      &.docViewer {
+        width: 25vw;
+      }
+    }
+    #calendar-sidebar {
+      width: 35vw;
+    }
+
+    #bottom-actions {
+      left: unset;
+      right: 120px;
+      #toc-button {
+        &#toc-button {
+          width: 200px;
+          bottom: -46px;
+          left: unset;
+          right: 0;
+          transform: unset;
+          @include hoverShadow;
+          @include bestShadow;
+        }
+      }
+    }
+  }
+
   @media screen and (max-width: 800px) {
     .MuiYearCalendar-root {
       border-radius: $bigBorderRadius;
@@ -42,21 +72,47 @@
         background: $mainBlue;
       }
     }
+    #documents-container {
+      &.page-container {
+        width: 100vw;
+      }
+    }
+    #calendar-sidebar {
+      display: none;
+    }
+    #app-container {
+      #app-content-with-sidebar {
+        margin: 0;
+        width: 100vw;
+        gap: 0;
+        max-width: 100vw;
+        &.logged-in {
+          display: block;
+        }
+      }
+    }
   }
-  /*#endregion  1000PX OUTSIDE APP CONTAINER*/
+  /*#endregion OUTSIDE APP CONTAINER */
 
-  /*#region  1000PX APP CONTAINER*/
+  /*#region  800px APP CONTAINER*/
   #app-container {
-    @media screen and (min-width: 1000px) {
+    @media screen and (min-width: 800px) {
       .page-container:not(.home):not(.login) {
         padding: 20px 20px 200px 20px;
         max-height: calc(100vh - 110px);
         border: 1px solid $desktopBorderColor;
         border-radius: $bigBorderRadius;
+        &.calendar {
+          width: 100vw;
+          max-height: 90vh;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
 
         &.documents {
           background: white;
-          width: calc(100vw - 30px);
+          width: 50vw;
+          max-height: unset;
         }
       }
       .page-container {
@@ -68,7 +124,23 @@
           margin: 0 auto;
         }
       }
-      // LOGIN SCREEN
+
+      // DOCUMENTS
+      #documents-container {
+        min-width: 70vw;
+        justify-self: flex-start;
+        .header {
+          min-width: 300px;
+          width: 400px;
+          margin: 20px auto;
+
+          .header {
+            margin: 0;
+          }
+        }
+      }
+
+      // APP CONTENT WITH SIDEBAR
       #app-content-with-sidebar {
         &.fullscreen {
           margin: 0;
@@ -182,7 +254,6 @@
         padding: 20px;
         border-radius: $bigBorderRadius;
         border: 1px solid $desktopBorderColor;
-        width: 40%;
 
         @media screen and (max-width: 600px) {
           display: none;
@@ -523,8 +594,6 @@
             }
           }
         }
-        @media screen and (min-width: 800px) {
-        }
         @media screen and (min-width: 650px) {
           .close-icon {
             @include hover;
@@ -726,8 +795,8 @@
           //          height: 100vh;
         }
         @media (min-width: 768px), (max-width: 1024px) {
-          width: 100vw;
-          max-width: 100vw;
+          //          width: 100vw;
+          //          max-width: 100vw;
         }
         @media screen and (min-width: 1600px) {
           width: 50vw;
@@ -736,7 +805,7 @@
       }
     }
   }
-  /*#endregion  1000PX APP CONTAINER*/
+  /*#endregion  800px APP CONTAINER*/
 
   /*#region  600PX PHONE CONTAINER*/
   @media screen and (max-width: 600px) {
