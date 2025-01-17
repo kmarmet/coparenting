@@ -5,6 +5,8 @@ import { DraggableCore } from 'react-draggable' // <DraggableCore>
 import Draggable, { DraggableCore } from 'react-draggable'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { CgClose } from 'react-icons/cg'
+import Manager from '../../managers/manager.js'
+import ScreenNames from '../../constants/screenNames.coffee'
 
 export default function BottomCard({
   submitText,
@@ -15,7 +17,6 @@ export default function BottomCard({
   onClose,
   children,
   title,
-  refreshKey = 0,
   subtitle = '',
   showCard = false,
   className = '',
@@ -25,7 +26,7 @@ export default function BottomCard({
   wrapperClass = '',
 }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentScreen, theme } = state
 
   const hideCard = () => {
     const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
@@ -91,7 +92,7 @@ export default function BottomCard({
   }, [showCard])
 
   return (
-    <div key={refreshKey} id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
+    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
@@ -100,6 +101,9 @@ export default function BottomCard({
             onClick={() => {
               onClose()
               hideCard()
+              if (currentScreen !== ScreenNames.editCalendarEvent) {
+                setState({ ...state, refreshKey: Manager.getUid() })
+              }
             }}
           />
         </div>

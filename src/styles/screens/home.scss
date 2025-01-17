@@ -128,9 +128,11 @@
     #logo {
       height: 100px;
       width: auto;
-      @media screen and (max-width: 600px) {
-        height: 75px;
-      }
+      border-radius: 100%;
+      background: #f9f9f9;
+      //      @media screen and (max-width: 600px) {
+      //        height: 75px;
+      //      }
     }
 
     #login-buttons {

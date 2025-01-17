@@ -85,7 +85,6 @@ export default function DocViewer() {
       let docOwner = await DB.find(DB.tables.users, ['phone', docToView?.ownerPhone], true)
       const firebasePathId = docOwner.id
       const imageResult = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, firebasePathId, docToView.name)
-
       // Catch errors
       if (!Manager.isValid(allDocs)) {
         setState({ ...state, isLoading: false, loadingText: '' })
@@ -207,6 +206,11 @@ export default function DocViewer() {
 
     // Insert HTML
     const docHtml = await DocumentConversionManager.docToHtml(fileName, currentUser?.id)
+    if (!Manager.isValid(docHtml, true)) {
+      AlertManager.throwError('Unable to find or load document. Please try again after awhile.')
+      setState({ ...state, isLoading: false, currentScreen: ScreenNames.docsList })
+      return false
+    }
     textContainer.innerHTML = docHtml
 
     // Format HTML

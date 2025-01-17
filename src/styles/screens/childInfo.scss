@@ -75,15 +75,15 @@
     .profile-pic-container {
       height: 130px;
       width: 130px;
-      border-radius: 100%;
+      border-radius: 50%;
       background-size: cover;
       margin-bottom: 5px;
       position: relative;
       display: flex;
       align-items: center;
       margin-top: 10px;
-      border: 1px solid $bestGreyForWhite;
-
+      border: 0;
+      @include fadeEdges;
       @include hover;
 
       input {
@@ -97,9 +97,10 @@
           backdrop-filter: unset;
           width: 100%;
           right: unset;
+          @include fadeEdges;
 
           svg {
-            font-size: 60px;
+            font-size: 40px;
           }
         }
 
@@ -266,10 +267,10 @@
       .child-name {
         font-size: 22px;
         color: black;
-        font-weight: $fwMedium;
         border: 0;
+        opacity: 0.65;
         font-optical-sizing: auto;
-        font-style: normal;
+        font-style: italic;
       }
     }
 

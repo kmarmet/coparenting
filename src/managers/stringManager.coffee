@@ -48,6 +48,16 @@ StringManager = {
     capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
     return capitalizedFirstWord + str.slice(firstWord.length);
 
+  toCamelCase: (str) ->
+    str =  str.replace /(?:^\w|[A-Z]|\b\w)/g, (word, index) ->
+      if index == 0 then word.toLowerCase() else word.toUpperCase()
+    str =  str.replace(/\s+/g, '').replaceAll(" ",  "")
+    return str
+
+  formatDbProp: (prop) ->
+    prop = StringManager.toCamelCase(prop).replaceAll(' ', '')
+    prop
+
   addSpaceBetweenWords: (str) ->
     str = str.replace(/([a-z])([A-Z])/, '$1 $2')
     str

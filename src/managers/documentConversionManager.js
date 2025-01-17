@@ -91,7 +91,7 @@ const DocumentConversionManager = {
   docToHtml: async (fileName, currentUserId) => {
     const myHeaders = new Headers()
     myHeaders.append('Access-Control-Allow-Origin', '*')
-    let apiAddress = Manager.contains(window.location, 'localhost') ? 'http://localhost:5267' : 'https://peaceful-coparenting.app:5000'
+    let apiAddress = 'https://peaceful-coparenting.app:5000'
 
     const requestOptions = {
       method: 'GET',
@@ -104,13 +104,13 @@ const DocumentConversionManager = {
     let returnHtml = ''
     const all = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, currentUserId, fileName)
     const { status, imageUrl } = all
-
     if (status === 'success') {
       await fetch(`${apiAddress}/document/getDocText?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
         .then((response) => response.text())
         .then((result) => (returnHtml = result))
         .catch((error) => console.error(error))
     }
+    console.log(returnHtml)
     return returnHtml
   },
   wrapTextInHeader: (text) => {

@@ -50,6 +50,21 @@ StringManager = {
     capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
     return capitalizedFirstWord + str.slice(firstWord.length);
   },
+  toCamelCase: function(str) {
+    str = str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+      if (index === 0) {
+        return word.toLowerCase();
+      } else {
+        return word.toUpperCase();
+      }
+    });
+    str = str.replace(/\s+/g, '').replaceAll(" ", "");
+    return str;
+  },
+  formatDbProp: function(prop) {
+    prop = StringManager.toCamelCase(prop).replaceAll(' ', '');
+    return prop;
+  },
   addSpaceBetweenWords: function(str) {
     str = str.replace(/([a-z])([A-Z])/, '$1 $2');
     return str;

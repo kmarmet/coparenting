@@ -13,6 +13,8 @@
   padding: 15px 15px 200px 15px;
   width: 100%;
   position: relative;
+  max-height: 100vh;
+  overflow-y: auto;
 
   &.documents {
     padding-bottom: 300px;
@@ -603,6 +605,9 @@
 /*#endregion  BUTTONS*/
 
 /*#region  EFFECTS*/
+@mixin fadeEdges {
+  box-shadow: 0 0 5px 5px white inset;
+}
 @mixin zIndex($depth: 9999) {
   z-index: $depth;
 }
@@ -879,6 +884,7 @@
   }
 }
 /*#endregion  EFFECTS*/
+
 /*#region  POSITIONING*/
 @mixin centerHoriz() {
   left: 50%;
@@ -917,6 +923,7 @@
   }
 }
 /*#endregion  POSITIONING*/
+
 /*#region  COMPONENTS*/
 @mixin viewsWrapper {
   display: flex;
@@ -2334,7 +2341,7 @@
     bottom: 0;
 
     &.search-card {
-      @include zIndex(99998);
+      @include zIndex(99999);
     }
   }
   // ACTIVE
@@ -2659,12 +2666,12 @@
         .no-image {
           width: 100%;
           background: $lightIconBgBlue;
-          border-radius: $borderRadius;
           display: flex;
           justify-content: center;
           align-items: center;
           height: 115px;
-
+          @include fadeEdges;
+          border-radius: 50%;
           p {
             font-size: 50px;
             color: $mainBlue;
@@ -2678,7 +2685,8 @@
           position: relative;
           display: flex;
           align-items: center;
-          border-radius: 12px;
+          border-radius: 50%;
+          @include fadeEdges;
 
           img {
             width: 100%;
@@ -2771,7 +2779,7 @@
       gap: 10px;
 
       #users-wrapper {
-        width: calc(100% / 3.5);
+        width: 100%;
 
         .user-wrapper {
           position: relative;
@@ -2781,10 +2789,14 @@
           align-items: center;
           flex-wrap: wrap;
           padding: 10px;
-          border-radius: $bigBorderRadius;
+          background: #dde5ff;
+          border-radius: 50%;
+          height: 115px;
+          width: 115px;
+          @include fadeEdges;
 
           svg {
-            font-size: 40px;
+            font-size: 35px;
             height: unset;
             width: unset;
             color: $mainBlue;
@@ -2794,9 +2806,10 @@
             color: $mainBlue;
             height: unset;
             width: 100%;
-            font-size: 20px;
+            font-size: 18px;
             text-align: center;
-            font-weight: $fwMediumBold;
+            position: relative;
+            top: -12px;
           }
         }
       }
@@ -3065,6 +3078,7 @@
   }
 }
 /*#endregion  COMPONENTS*/
+
 /*#region  MENU*/
 @mixin sideNavbar {
   height: 100%;

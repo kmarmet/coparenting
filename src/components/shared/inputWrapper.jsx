@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 import Label from './label'
 import Manager from '../../managers/manager'
+import globalState from '../../context.js'
 
 function InputWrapper({
   wrapperClasses = '',
@@ -12,13 +13,13 @@ function InputWrapper({
   onChange,
   defaultValue = '',
   inputClasses = '',
-  refreshKey,
   inputValueType = 'text',
   placeholder = '',
   isDebounced = true,
 }) {
+  const { state, setState } = useContext(globalState)
+  const { currentUser, refreshKey } = state
   const noInputTypes = ['location', 'textarea', 'date']
-
   useEffect(() => {
     const inputWrapper = document.getElementById('input-wrapper')
     if (inputWrapper) {

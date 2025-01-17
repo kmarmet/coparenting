@@ -11,17 +11,6 @@ import { FaWandMagicSparkles } from 'react-icons/fa6'
 import { IoPersonRemove } from 'react-icons/io5'
 import { RiParentFill } from 'react-icons/ri'
 import { Fade } from 'react-awesome-reveal'
-
-import {
-  contains,
-  formatDbProp,
-  formatNameFirstNameOnly,
-  formatTitleWords,
-  lowercaseShouldBeLowercase,
-  spaceBetweenWords,
-  toCamelCase,
-  uppercaseFirstLetterOfAllWords,
-} from '../../../globalFunctions'
 import { IoMdRemoveCircle } from 'react-icons/io'
 import NavBar from '../../navBar'
 import { BsPersonAdd } from 'react-icons/bs'
@@ -30,6 +19,7 @@ import InputWrapper from '../../shared/inputWrapper'
 import AlertManager from '../../../managers/alertManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DomManager from '../../../managers/domManager'
+import StringManager from '../../../managers/stringManager.coffee'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -44,29 +34,30 @@ export default function Coparents() {
   const deleteProp = async (prop) => {
     let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
 
-    const coparentPhone = selectedCoparentDataArray.filter((x) => contains(x, 'phone'))[0][1]
+    const coparentPhone = selectedCoparentDataArray.filter((x) => Manager.contains(x, 'phone'))[0][1]
     const coparent = coparents.filter((x) => x.phone === coparentPhone)[0]
-    await DB_UserScoped.deleteCoparentInfoProp(currentUser, formatDbProp(prop), coparent)
+    await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), coparent)
   }
 
   const update = async (prop, value) => {
-    // Update DB
     AlertManager.successAlert('Updated!')
-    const updatedCoparent = await DB_UserScoped.updateCoparent(currentUser, selectedCoparentDataArray, formatDbProp(prop), value)
+    const updatedCoparent = await DB_UserScoped.updateCoparent(currentUser, selectedCoparentDataArray, StringManager.formatDbProp(prop), value)
     setSelectedCoparentDataArray(Object.entries(updatedCoparent))
   }
 
   const deleteCoparent = async () => {
     let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
-    const coparentPhone = selectedCoparentDataArray.filter((x) => contains(x, 'phone'))[0][1]
+    const coparentPhone = selectedCoparentDataArray.filter((x) => Manager.contains(x, 'phone'))[0][1]
     const coparent = coparents.filter((x) => x.phone === coparentPhone)[0]
     await DB_UserScoped.deleteCoparent(currentUser, coparent)
+    await getCoparents()
   }
 
   const getCoparents = async () => {
     let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
     coparents = DatasetManager.getValidArray(coparents)
     setUserCoparents(coparents)
+    console.log(Object.entries(coparents[0]))
     setTimeout(() => {
       setSelectedCoparentDataArray(Object.entries(coparents[0]))
     }, 300)
@@ -107,7 +98,6 @@ export default function Coparents() {
             {selectedCoparentDataArray &&
               Manager.isValid(userCoparents) &&
               userCoparents.map((coparent, index) => {
-                console.log(coparent)
                 const coparentPhone = selectedCoparentDataArray.filter((x) => Manager.contains(x, 'phone'))[0][1]
                 return (
                   <div
@@ -120,7 +110,7 @@ export default function Coparents() {
                     key={index}>
                     <RiParentFill />
                     {/*<span className="material-icons-round">escalator_warning</span>*/}
-                    <span className="coparent-name">{formatNameFirstNameOnly(coparent.name)}</span>
+                    <span className="coparent-name">{StringManager.formatNameFirstNameOnly(coparent.name)}</span>
                     <span className="coparent-type">{coparent.parentType}</span>
                   </div>
                 )
@@ -135,16 +125,18 @@ export default function Coparents() {
               {/* ITERATE COPARENT INFO */}
               {Manager.isValid(selectedCoparentDataArray) &&
                 selectedCoparentDataArray.map((propArray, index) => {
-                  let infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(propArray[0])))
-                  infoLabel = formatTitleWords(infoLabel)
+                  let infoLabel = propArray[0]
+                  infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
+                  infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
                   const value = propArray[1]
+                  console.log(infoLabel)
                   return (
                     <div key={index}>
                       {infoLabel !== 'Id' && (
                         <div className="row">
                           <div className="flex input">
                             {/* LOCATION */}
-                            {contains(infoLabel.toLowerCase(), 'address') && (
+                            {Manager.contains(infoLabel.toLowerCase(), 'address') && (
                               <InputWrapper inputType={'date'} labelText={infoLabel}>
                                 <Autocomplete
                                   apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
@@ -155,13 +147,13 @@ export default function Coparents() {
                                   onPlaceSelected={async (place) => {
                                     await update('address', place.formatted_address)
                                   }}
-                                  defaultValue={contains(infoLabel, 'Address') ? value : 'Home Address'}
+                                  defaultValue={Manager.contains(infoLabel, 'Address') ? value : 'Home Address'}
                                 />
                               </InputWrapper>
                             )}
 
                             {/* TEXT INPUT */}
-                            {!contains(infoLabel.toLowerCase(), 'address') && (
+                            {!Manager.contains(infoLabel.toLowerCase(), 'address') && (
                               <InputWrapper
                                 defaultValue={value}
                                 onChange={async (e) => {

@@ -1,31 +1,15 @@
 import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '../../../managers/manager'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import DB_UserScoped from '../../../database/db_userScoped'
 import BottomCard from '../../shared/bottomCard'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import _ from 'lodash'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
+import StringManager from '../../../managers/stringManager.coffee'
 
-export default function CustomCoparentInfo({ hideCard, setActiveCoparent, activeCoparent, showCard }) {
+export default function CustomCoparentInfo({ hideCard, activeCoparent, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [title, setTitle] = useState('')
@@ -46,7 +30,7 @@ export default function CustomCoparentInfo({ hideCard, setActiveCoparent, active
       return false
     }
     await DB_UserScoped.addCoparentProp(currentUser, activeCoparent, title, value)
-    AlertManager.successAlert(`${uppercaseFirstLetterOfAllWords(title)} Added!`)
+    AlertManager.successAlert(`${StringManager.uppercaseFirstLetterOfAllWords(title)} Added!`)
     resetForm()
   }
 
