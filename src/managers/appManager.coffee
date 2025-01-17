@@ -44,7 +44,7 @@ export default AppManager =
       events = events.flat()
       for event in events
         daysPassed = moment().diff(event.startDate, 'days')
-        if daysPassed >= 30
+        if daysPassed >= 30 || moment(event.startDate).year() != moment().year()
           await CalendarManager.deleteEvent(currentUser,  event.id)
 
   setUpdateAvailable: ( updateAvailableValue = null) ->

@@ -68,7 +68,7 @@ export default AppManager = {
       for (i = 0, len = events.length; i < len; i++) {
         event = events[i];
         daysPassed = moment().diff(event.startDate, 'days');
-        if (daysPassed >= 30) {
+        if (daysPassed >= 30 || moment(event.startDate).year() !== moment().year()) {
           results.push((await CalendarManager.deleteEvent(currentUser, event.id)));
         } else {
           results.push(void 0);

@@ -442,30 +442,6 @@
         }
       }
 
-      @media screen and (max-width: 600px) {
-        margin: 0;
-        #home-screen-wrapper {
-          .section {
-            &.full-width-box {
-              width: calc(100vw - 30px);
-            }
-          }
-          .flex {
-            &#double {
-              width: calc(100vw - 30px);
-              max-width: calc(100vw - 30px);
-            }
-          }
-          #below-fold-wrapper,
-          #above-fold-wrapper {
-            .text-box,
-            #footer-wrapper {
-              width: calc(100vw - 30px);
-              max-width: calc(100vw - 30px);
-            }
-          }
-        }
-      }
       @media screen and (min-width: 1000px) {
         #home-screen-wrapper {
           #below-fold-wrapper {
@@ -503,7 +479,7 @@
             overflow-x: hidden;
 
             &#below-fold-wrapper {
-              padding: 15px;
+              padding: 0;
             }
           }
         }

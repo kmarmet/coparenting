@@ -143,10 +143,10 @@ export default function Activity() {
                   <div key={index} className="flex" id="row-wrapper">
                     <div className={`activity-row row ${className}`} onClick={() => changeScreen(screen)}>
                       <p className={`card-title ${className}`}>
-                        {criticalCategories.includes(category) && <PiSealWarningDuotone />} {StringManager.uppercaseFirstLetterOfAllWords(title)}{' '}
+                        {criticalCategories.includes(category) && <PiSealWarningDuotone />} {StringManager.uppercaseFirstLetterOfAllWords(title)}
                       </p>
                       <p className="text">{StringManager.uppercaseFirstLetterOfAllWords(text)}</p>
-                      <p id="date">{moment(dateCreated, DateFormats.fullDatetime).format(DateFormats.readableDatetime)}</p>
+                      <p id="date">Received: {moment(dateCreated, DateFormats.fullDatetime).format(DateFormats.readableDatetime)}</p>
                     </div>
                     <div id="svg-wrapper" onClick={() => clearActivity(activity)}>
                       <FaCheck />

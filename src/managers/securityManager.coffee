@@ -32,6 +32,21 @@ SecurityManager =
 
     return returnRecords
 
+  getUserVisitationHolidays: (currentUser) ->
+    returnRecords = []
+    allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.phone}")
+    sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents);
+    if Manager.isValid(allEvents)
+      for event in allEvents
+        if DateManager.isValidDate(event.startDate)
+          if (event.ownerPhone == currentUser?.phone)
+            returnRecords.push(event)
+
+    if Manager.isValid(sharedEvents)
+      returnRecords = [sharedEvents..., returnRecords...]
+
+    return returnRecords
+
   getExpenses: (currentUser) ->
     returnRecords = []
     allExpenses = Manager.convertToArray(await DB.getTable("#{DB.tables.expenseTracker}/#{currentUser?.phone}")).flat()

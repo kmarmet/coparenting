@@ -130,6 +130,7 @@
     "@babel/preset-react": "7.24.7",
     "@craco/craco": "7.1.0",
     "@parcel/packager-raw-url": "^2.13.3",
+    "@parcel/transformer-coffeescript": "^2.13.3",
     "@parcel/transformer-sass": "^2.13.3",
     "@parcel/transformer-webmanifest": "^2.13.3",
     "craco-alias": "3.0.1",

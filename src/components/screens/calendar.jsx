@@ -185,7 +185,8 @@ export default function EventCalendar() {
   }
 
   const showVisitationHolidays = async () => {
-    const allEvents = Manager.convertToArray(await DB.getTable(DB.tables.calendarEvents))
+    let allEvents = await DB.getTable(DB.tables.calendarEvents)
+    allEvents = allEvents.flat()
     let userVisitationHolidays = []
     if (currentUser.accountType === 'parent') {
       userVisitationHolidays = allEvents.filter(

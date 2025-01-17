@@ -3,6 +3,37 @@
 @import '../mixins';
 
 #external-overrides {
+  #wrapper {
+    max-height: 100vh;
+    overflow: auto;
+  }
+  #app-container {
+    #scroll-to-top-button-wrapper {
+      position: fixed;
+      bottom: 20px;
+      right: 10px;
+      z-index: 9999;
+      border-radius: 100%;
+      height: 55px;
+      width: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $mainBlue;
+      @include bestShadow;
+      transition: all 0.6s ease-in-out;
+
+      &.hide {
+        opacity: 0;
+        bottom: -200px;
+        transition: all 0.6s ease-in-out;
+      }
+      #scroll-to-top-button {
+        font-size: 45px;
+        color: white;
+      }
+    }
+  }
   #above-fold-wrapper {
     margin: 0 auto;
     width: 100vw;
@@ -500,6 +531,7 @@
       padding-top: 25px;
       width: 60vw;
       margin: 0 auto;
+      overflow: hidden;
       @media (min-width: 768px), (max-width: 1024px) {
         width: calc(100vw - 30px);
         max-width: calc(100vw - 30px);

@@ -2,6 +2,7 @@ import Manager from "../managers/manager"
 
 export default class User
   constructor: (
+    @id = Manager.getUid()
     @name = ''
     @email = ''
     @phone = ''
@@ -10,9 +11,6 @@ export default class User
     @parentType = ''
     @accountType = ''
     @allowNotifications = ''
-    @id = Manager.getUid()
-    @defaultTransferLocation = ''
-    @defaultTransferNavLink = ''
     @settings = {
       theme: 'light'
     }
@@ -22,5 +20,12 @@ export default class User
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'
       notificationsEnabled: true
+    }
+    @visitation = {
+      transferLocation: ''
+      transferLocationNavLink: ''
+      visitationSchedule: ''
+      visitationHolidays: []
+
     }
   ) ->

@@ -809,16 +809,69 @@
 
   /*#region  600PX PHONE CONTAINER*/
   @media screen and (max-width: 600px) {
-    #home-screen-wrapper {
-      #below-fold-wrapper {
-        .full-width-box {
-          &.unique-features {
-            #feature-grid {
-              display: block;
+    #app-content-with-sidebar {
+      #home-screen-wrapper {
+        #collaboration {
+        }
+        #below-fold-wrapper {
+          .boxes {
+            &.section {
+              .text-box {
+                border-radius: 0;
+              }
+            }
+          }
+          #double {
+            .text-wrapper {
+              width: calc(100vw - 30px);
+              margin: 0 auto 15px auto;
+            }
+          }
+          #footer-wrapper {
+            width: 100vw;
 
-              .feature {
+            .section {
+              width: calc(100vw - 30px);
+              margin: 0 auto 15px auto;
+            }
+          }
+          #collaboration {
+            &.text-box {
+              max-width: unset;
+              width: 100vw;
+              border-radius: 0;
+            }
+          }
+          #expenses-wrapper {
+            .text-wrapper {
+              padding: 15px;
+            }
+          }
+          #all-devices {
+            &.text-box {
+              max-width: unset;
+              width: 100vw;
+              border-radius: 0;
+            }
+          }
+          .full-width-box {
+            &.unique-features {
+              padding: 0;
+              border: 0;
+              width: 100%;
+              #text-content {
+                padding: 15px;
+              }
+              #feature-grid {
+                display: block;
                 width: 100%;
-                margin-bottom: 10px;
+                margin: 0 auto;
+                .feature {
+                  margin: 0 15px 15px 15px;
+                  width: calc(100% - 30px);
+                  max-width: unset;
+                  display: block;
+                }
               }
             }
           }

@@ -52,6 +52,26 @@ SecurityManager = {
     }
     return returnRecords;
   },
+  getUserVisitationHolidays: async function(currentUser) {
+    var allEvents, event, i, len, returnRecords, sharedEvents;
+    returnRecords = [];
+    allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.phone : void 0}`));
+    sharedEvents = (await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents));
+    if (Manager.isValid(allEvents)) {
+      for (i = 0, len = allEvents.length; i < len; i++) {
+        event = allEvents[i];
+        if (DateManager.isValidDate(event.startDate)) {
+          if (event.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
+            returnRecords.push(event);
+          }
+        }
+      }
+    }
+    if (Manager.isValid(sharedEvents)) {
+      returnRecords = [...sharedEvents, ...returnRecords];
+    }
+    return returnRecords;
+  },
   getExpenses: async function(currentUser) {
     var allExpenses, expense, i, len, returnRecords, sharedExpenses;
     returnRecords = [];

@@ -28,6 +28,7 @@ import StringManager from '../../managers/stringManager'
 import FiftyFifty from '../../components/screens/visitation/fiftyFifty'
 import EveryOtherWeekend from '../../components/screens/visitation/everyOtherWeekend'
 import CustomWeekends from '../../components/screens/visitation/customWeekends'
+import DateManager from '../../managers/dateManager.js'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -42,12 +43,11 @@ export default function Visitation() {
   const [existingScheduleEvents, setExistingScheduleEvents] = useState([])
   const [showUpdateHolidaysButton, setShowUpdateHolidaysButton] = useState(true)
   const [showDeleteButton, setShowDeleteButton] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-  const [firstEveryOtherWeekend, setFirstEveryOtherWeekend] = useState('')
 
   // Holiday
+  const [userHolidays, setUserHolidays] = useState([])
   const [selectedHolidayDates, setSelectedHolidayDates] = useState([])
-  const [holidayLabels, setHolidayLabels] = useState([])
+  const [holidaysFromApi, setHolidaysFromApi] = useState([])
   const [dataDates, setDataDates] = useState([])
   const updateDefaultTransferLocation = async (location, link) => {
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/defaultTransferNavLink`, link)
@@ -101,6 +101,8 @@ export default function Visitation() {
       selectedHolidayDates.forEach((holidayDateString) => {
         const dateObject = new CalendarEvent()
         const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format('MM/DD'))
+        console.log(holidayName)
+        console.log(moment(holidayDateString).format('MM/DD'))
         // Required
         dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Holiday Visitation`
         dateObject.startDate = moment(holidayDateString).format(DateFormats.dateForDb)
@@ -179,15 +181,14 @@ export default function Visitation() {
     }
   }
 
-  const setDefaultHolidays = (allUserHolidayObjects) => {
-    const holidayCheckboxesWrapper = document.querySelector('.holiday-checkboxes')
+  const setDefaultHolidayCheckboxes = (allUserHolidayObjects) => {
+    const holidayCheckboxesWrapper = document.querySelector('.holiday-checkboxes-wrapper')
     if (Manager.isValid(holidayCheckboxesWrapper)) {
       const checkboxes = holidayCheckboxesWrapper.querySelectorAll('[data-date]')
       checkboxes.forEach((checkboxWrapper) => {
         const holidayLabel = checkboxWrapper.getAttribute('data-label')
         if (holidayLabel.length > 0) {
-          const allUserHolidays = allUserHolidayObjects.map((x) => x.name)
-          if (allUserHolidays.includes(holidayLabel)) {
+          if (userHolidays.includes(holidayLabel)) {
             // Set checkboxes active
             holidayCheckboxesWrapper.querySelector(`[data-label="${holidayLabel}"]`).classList.add('active')
           }
@@ -197,16 +198,19 @@ export default function Visitation() {
   }
 
   const setAllStates = async () => {
+    const apiHolidays = await DateManager.getHolidays()
+    setHolidaysFromApi(apiHolidays)
     await getVisitationHolidays(currentUser).then((holidaysObject) => {
       const { holidays, userHolidays } = holidaysObject
       const userHolidaysList = Manager.convertToArray(CalendarMapper.eventsToHolidays(userHolidays))
       const userHolidaysDates = userHolidaysList.map((x) => x.date)
-      const allHolidayDates = holidaysObject.holidays.map((x) => x.date)
+      const allHolidayDates = holidays.map((x) => x.date)
       setDataDates(allHolidayDates)
       setSelectedHolidayDates(DatasetManager.getUniqueArray(userHolidaysDates, true))
-      setHolidayLabels(holidays)
+
+      setUserHolidays(userHolidaysList.map((x) => x.name))
       setTimeout(() => {
-        setDefaultHolidays(DatasetManager.getUniqueArray(userHolidaysList, true))
+        setDefaultHolidayCheckboxes(holidays)
       }, 300)
     })
   }
@@ -214,20 +218,12 @@ export default function Visitation() {
   const getCurrentVisitationSchedule = async () => {
     let scheduleEvents = await VisitationManager.getSchedule(currentUser)
     scheduleEvents = scheduleEvents.filter((x) => x.isHoliday === false)
-
     if (scheduleEvents.length > 0) {
       setExistingScheduleEvents(scheduleEvents)
       setShowDeleteButton(true)
     } else {
       setExistingScheduleEvents([])
     }
-  }
-
-  const addThemeToDatePickers = () => {
-    setTimeout(() => {
-      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      datetimeParent.classList.add(currentUser?.settings?.theme)
-    }, 100)
   }
 
   const removeScheduleTypeActiveClass = () => {
@@ -342,7 +338,6 @@ export default function Visitation() {
               )}
             </>
           )}
-
           {/* NO EXISTING SCHEDULE */}
           {existingScheduleEvents.length === 0 && (
             <div className="sections">
@@ -399,10 +394,11 @@ export default function Visitation() {
           {/* HOLIDAY SELECTION */}
           <CheckboxGroup
             parentLabel={'Select the holidays YOU have the child(ren) this year'}
-            elClass={'holiday-checkboxes gap-10'}
+            elClass={'holiday-checkboxes-wrapper gap-10'}
             onCheck={handleHolidaySelection}
             skipNameFormatting={true}
-            checkboxLabels={holidayLabels.map((x) => x.name).sort()}
+            defaultLabels={userHolidays}
+            checkboxLabels={holidaysFromApi.map((x) => x.name).sort()}
             dataDate={dataDates}
           />
 

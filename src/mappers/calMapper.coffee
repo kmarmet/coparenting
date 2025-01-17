@@ -91,39 +91,39 @@ CalendarMapper =
     date = moment(date).format("MM/DD")
     switch true
       when date == '01/01'
-        "New Year's Day"
+        return "New Year's Day"
       when date == '01/15'
-        "Martin Luther King Day"
+        return "Martin Luther King Day"
       when date == '05/29'
-        "Good Friday"
+        return "Good Friday"
       when date == '04/20'
-        'Easter'
+        return 'Easter'
       when date == '06/19'
-        'Juneteenth'
+        return 'Juneteenth'
       when date == '06/15'
-        "Father's Day"
+        return "Father's Day"
       when date == '05/11'
-        "Mother's Day"
+        return "Mother's Day"
       when date == '05/27'
-        'Memorial Day'
+        return 'Memorial Day'
       when date == '07/04'
-        'Independence Day'
+        return 'Independence Day'
       when date == '09/02'
-        'Labor Day'
+        return 'Labor Day'
       when date == '10/14'
-        'Columbus Day'
+        return 'Columbus Day'
       when date == '10/31'
-        'Halloween'
+        return 'Halloween'
       when date == '12/25'
-        'Christmas Day'
+        return 'Christmas Day'
       when date == '12/24'
-        'Christmas Eve'
+        return 'Christmas Eve'
       when date == '12/31'
-        "New Year's Eve"
+        return "New Year's Eve"
       when date == '11/11'
-        "Veteran's Day"
+        return "Veteran's Day"
       when date == '11/28'
-        "Thanksgiving Day"
+        return "Thanksgiving Day"
       else
         ''
   eventsToHolidays: (holidayEvents) ->

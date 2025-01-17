@@ -21,6 +21,11 @@ DatasetManager = {
     if propThree
       uniqueData = _.values(_.keyBy(arr, (item) -> "#{item[propOne]}-#{item[propTwo]}-#{item[propThree]}"))
     uniqueData
+
+  getUniqueByPropValue: (arr, propName) ->
+    uniqueUsers = _.uniqBy(arr, propName);
+    uniqueUsers
+
   getUniqueArrayFromMultiple: (arrOne, arrTwo) ->
     _.uniqBy(_.flattenDeep(arrOne, arrTwo))
   sortByProperty: (arr, prop, direction) ->

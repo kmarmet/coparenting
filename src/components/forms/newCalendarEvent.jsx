@@ -215,8 +215,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         await NotificationManager.sendToShareWith(
           eventShareWith,
           currentUser,
-          'New Calendar Event',
-          `${eventTitle} on ${moment(eventStartDate).format('ddd DD')}`,
+          `New Calendar Event - ${moment(eventStartDate).format(DateFormats.readableMonthAndDay)}`,
+          `${eventTitle}`,
           ActivityCategory.calendar
         )
       }

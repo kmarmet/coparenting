@@ -50,7 +50,9 @@ export default function AdminDashboard() {
   new ClipboardJS('.chat-recovery-clipboard-button')
 
   const deletedExpiredCalEvents = async () => AppManager.deleteExpiredCalendarEvents().then((r) => r)
+
   const deleteExpiredMemories = async () => AppManager.deleteExpiredMemories().then((r) => r)
+
   const setHolidays = async () => DateManager.setHolidays()
 
   // CHAT RECOVERY REQUESTS
@@ -67,6 +69,7 @@ export default function AdminDashboard() {
     const userRequests = allRequests.filter((x) => x.createdBy === chatRecoveryRequestEmail)
     setChatRequests(userRequests)
   }
+
   const deleteChatRecoveryRequest = async (request) => {
     await DB.delete(DB.tables.chatRecoveryRequests, request.id)
     await getChatRecoveryRequest()

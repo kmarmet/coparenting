@@ -6,23 +6,12 @@ import CalendarManager from './calendarManager.js'
 import _ from 'lodash'
 import ObjectManager from './objectManager'
 import ModelNames from '../models/modelNames'
+import DatasetManager from '../managers/datasetManager.coffee'
 
 const DateManager = {
   reminderTimes: {
     oneHour: 'hour',
     halfHour: 'halfHour',
-  },
-  formValidation: (title, shareWith, startDate) => {
-    if (_.isEmpty(title)) {
-      return 'Please enter an event title'
-    }
-    if (_.isEmpty(shareWith)) {
-      return 'Please select who you would like to share this event with'
-    }
-    if (!DateManager.dateIsValid(startDate)) {
-      return 'Please select an event date'
-    }
-    return null
   },
   formatDate: (inputDate, inputFormat = 'M-DD-YYYY', outputFormat = 'dddd, MMM DD') => {
     let inputFormatString = inputFormat
@@ -190,7 +179,16 @@ const DateManager = {
         .then((response) => response.json())
         .then((holidayArray) => {
           let holidays = []
-          holidays = holidayArray
+          let unique = DatasetManager.getUniqueByPropValue(holidayArray, 'name')
+          unique = unique.map((obj) => {
+            if (obj.name === 'Juneteenth National Independence Day') {
+              obj.name = 'Juneteenth'
+              return obj
+            }
+            return obj
+          })
+
+          holidays = unique
 
           holidays.push({
             name: 'Christmas Eve',
@@ -216,6 +214,7 @@ const DateManager = {
             name: "Mother's Day",
             date: `${moment().year()}-05-11`,
           })
+
           resolve(holidays)
         })
     }),
@@ -292,21 +291,6 @@ const DateManager = {
   dateIsValid: (inputDate, format = DateFormats.dateForDb) => {
     return moment(inputDate, format).isValid()
   },
-  returnValidDate: (inputDate, type, outputFormat) => {
-    const inputFormats = [DateFormats.dateForDb, DateFormats.timeForDb, DateFormats.dateForDb, DateFormats.fullDatetime]
-    let formatted = moment(inputDate).format(DateFormats.dateForDb)
-
-    if (type === 'time') {
-      formatted = moment(inputDate).format(DateFormats.timeForDb)
-    }
-    let returnDate = inputDate
-    if (!DateManager.dateIsValid(returnDate)) {
-      returnDate = ''
-    }
-    // console.log(moment(returnDate, inputFormats).format(outputFormat))
-    return moment(returnDate, formatted).format(outputFormat)
-  },
-
   // DELETE
   deleteAllHolidays: async () => {
     await CalendarManager.deleteAllHolidayEvents()

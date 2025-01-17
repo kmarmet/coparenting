@@ -35,8 +35,16 @@ DomManager = {
     if Manager.isValid(el)
       rect = el.getBoundingClientRect()
       rect.top >= 0 and rect.left >= 0 and
-      rect.bottom <= (window.innerHeight or document.documentElement.clientHeight) and # or $(window).height()
-      rect.right <= (window.innerWidth or document.documentElement.clientWidth) # or $(window).width()
+        rect.bottom <= (window.innerHeight or document.documentElement.clientHeight) and
+        rect.right <= (window.innerWidth or document.documentElement.clientWidth)
+
+  mostIsInViewport: (scrollWrapper, el) ->
+    if Manager.isValid(el)
+      rect = el.getBoundingClientRect()
+      scrollWrapperHeight = scrollWrapper.getBoundingClientRect().height
+      pxCloseToEl =rect.top - scrollWrapperHeight;
+
+      pxCloseToEl <= -170
 
   addScrollListener: (scrollableElement, callback, delay) ->
     scrollableElement.addEventListener 'scroll', DomManager.debounce  ->

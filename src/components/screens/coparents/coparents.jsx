@@ -107,7 +107,8 @@ export default function Coparents() {
             {selectedCoparentDataArray &&
               Manager.isValid(userCoparents) &&
               userCoparents.map((coparent, index) => {
-                const coparentPhone = selectedCoparentDataArray.filter((x) => contains(x, 'phone'))[0][1]
+                console.log(coparent)
+                const coparentPhone = selectedCoparentDataArray.filter((x) => Manager.contains(x, 'phone'))[0][1]
                 return (
                   <div
                     onClick={() => {

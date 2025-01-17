@@ -27,6 +27,7 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import AppManager from '/src/managers/appManager.js'
 import HomescreenSections from '/src/models/homescreenSections.js'
+import { IoIosArrowUp } from 'react-icons/io'
 
 function LazyImage({ show, importedImage, imagesObjectPropName }) {
   const [showImage, setShowImage] = useState(false)
@@ -80,6 +81,23 @@ export default function Home() {
       }
     }
   }
+
+  const handleScroll = () => {
+    const firstViewableBox = document.querySelector('#first-scroll-button-candidate')
+    const scrollWrapper = document.querySelector('#wrapper')
+    const scrollToTopButton = document.querySelector('#scroll-to-top-button-wrapper')
+    if (DomManager.mostIsInViewport(scrollWrapper, firstViewableBox)) {
+      scrollToTopButton.classList.remove('hide')
+    } else {
+      scrollToTopButton.classList.add('hide')
+    }
+  }
+
+  const scrollToTop = () => {
+    const header = document.getElementById('home-navbar')
+    header.scrollIntoView({ behavior: 'smooth' })
+  }
+
   useEffect(() => {
     let homescreenWrapper = document.getElementById('app-content-with-sidebar')
 
@@ -88,7 +106,6 @@ export default function Home() {
       DomManager.addScrollListener(
         homescreenWrapper,
         () => {
-          console.log(imageWrappers)
           for (let imageWrapper of imageWrappers) {
             const imagesObjectPropName = imageWrapper.dataset.name
             if (DomManager.isInViewport(imageWrapper)) {
@@ -122,8 +139,11 @@ export default function Home() {
   }, [])
 
   return (
-    <>
+    <div id="wrapper" onScroll={handleScroll}>
       {/* ABOVE FOLD WRAPPER */}
+      <div id="scroll-to-top-button-wrapper" className="hide" onClick={scrollToTop}>
+        <IoIosArrowUp id={'scroll-to-top-button'} />
+      </div>
       <div id="above-fold-wrapper" className="section above-fold">
         <Fade>
           <div id="home-navbar" className="flex">
@@ -161,10 +181,9 @@ export default function Home() {
 
       {/* PAGE CONTAINER */}
       <div className="page-container home" id="home-screen-wrapper">
-        {/* NAVBAR */}
         <div id="below-fold-intro-text" className="section">
           <p>
-            Our app provides a stress-free way to manage co-parenting by enhancing communication, scheduling, and decision-making, so
+            Our app provides a stress-free way to manage co-parenting by enhancing communication, scheduling, and decision-making, so&nbsp;
             <b>you can focus on what matters most, your children's well-being</b>.
           </p>
         </div>
@@ -181,7 +200,7 @@ export default function Home() {
                   parents stay on the same page without the hassle.
                 </p>
               </div>
-              <div className="text-box with-bg">
+              <div className="text-box with-bg" id="first-scroll-button-candidate">
                 <AiTwotoneMessage />
                 <p className="text-box-title"> Effective Communication without Conflict </p>
                 <p className="text-box-subtitle">Clear Messaging for Healthier Conversations</p>
@@ -195,20 +214,22 @@ export default function Home() {
 
           <Fade direction={'up'} duration={1000} triggerOnce={true}>
             <div className="section full-width-box unique-features">
-              <p className="title">
-                Why <span>Choose</span> <span>Peace</span>ful Co-Parenting?
-              </p>
-              <p className="text subtitle">
-                Peaceful Co-Parenting has the same functionality and features as other apps, but our app has <b>UNIQUE FEATURES</b>. These unique
-                features are <u>NOT</u> available in other co-parenting applications.
-              </p>
-              <p id="unique-features-title">
-                <b>Features Exclusive to Peaceful Co-Parenting</b>
-                <br />
-                <span>{DomManager.tapOrClick(true)} any feature to see exactly how it will improve your co-parenting experience. </span>
-                <br />
-                <span>{DomManager.tapOrClick(true)} again to close the feature's details.</span>
-              </p>
+              <div id="text-content">
+                <p className="title">
+                  Why <span>Choose</span> <span>Peace</span>ful Co-Parenting?
+                </p>
+                <p className="text subtitle">
+                  Peaceful Co-Parenting has the same functionality and features as other apps, but our app has <b>UNIQUE FEATURES</b>. These unique
+                  features are <u>NOT</u> available in other co-parenting applications.
+                </p>
+                <p id="unique-features-title">
+                  <b>Features Exclusive to Peaceful Co-Parenting</b>
+                  <br />
+                  <span>{DomManager.tapOrClick(true)} any feature to see exactly how it will improve your co-parenting experience. </span>
+                  <br />
+                  <span>{DomManager.tapOrClick(true)} again to close the feature's details.</span>
+                </p>
+              </div>
 
               <div className="flex" id="feature-grid">
                 <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'any-device'}>
@@ -684,6 +705,6 @@ export default function Home() {
           </Fade>
         </div>
       </div>
-    </>
+    </div>
   )
 }

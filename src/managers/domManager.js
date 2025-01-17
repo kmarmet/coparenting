@@ -48,7 +48,16 @@ DomManager = {
     var rect;
     if (Manager.isValid(el)) {
       rect = el.getBoundingClientRect();
-      return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth); // or $(window).width()
+      return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+    }
+  },
+  mostIsInViewport: function(scrollWrapper, el) {
+    var pxCloseToEl, rect, scrollWrapperHeight;
+    if (Manager.isValid(el)) {
+      rect = el.getBoundingClientRect();
+      scrollWrapperHeight = scrollWrapper.getBoundingClientRect().height;
+      pxCloseToEl = rect.top - scrollWrapperHeight;
+      return pxCloseToEl <= -170;
     }
   },
   addScrollListener: function(scrollableElement, callback, delay) {
