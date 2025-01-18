@@ -2,28 +2,10 @@ import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import moment from 'moment'
 import DB_UserScoped from '../../../database/db_userScoped'
-
 import { MobileTimePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '../../../constants/dateFormats'
 import Toggle from 'react-toggle'
 import { Fade } from 'react-awesome-reveal'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import DateManager from '../../../managers/dateManager'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
@@ -79,7 +61,7 @@ export default function Settings() {
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <p className="screen-title">Settings</p>
           {/* CALENDAR SETTINGS */}
-          <Label text={'Calendar'} labelId="medium-title" />
+          <Label text={'Calendar'} labelId="medium-title" isBold={true} />
           <div className="calendar-settings mb-10 form">
             <div className="section summary mb-10 gap-10">
               <p className="pb-10">
@@ -103,7 +85,7 @@ export default function Settings() {
             )}
 
             {/* IS VISITATION? */}
-            <Label text={'Notifications'} labelId="medium-title" classes="mt-30" />
+            <Label text={'Notifications'} labelId="medium-title" classes="mt-30" isBold={true} />
             <div className="flex">
               {currentUser?.settings?.notificationsEnabled && <p>Disable</p>}
               {!currentUser?.settings?.notificationsEnabled && <p>Enable</p>}

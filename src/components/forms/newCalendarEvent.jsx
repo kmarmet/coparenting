@@ -220,7 +220,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           ActivityCategory.calendar
         )
       }
-      await navigator.setAppBadge(1)
+      if (navigator.setAppBadge) {
+        await navigator.setAppBadge(1)
+      }
       await resetForm()
     }
   }

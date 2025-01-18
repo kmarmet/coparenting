@@ -99,7 +99,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    let homescreenWrapper = document.getElementById('app-content-with-sidebar')
+    let homescreenWrapper = document.getElementById('wrapper')
 
     if (homescreenWrapper) {
       const imageWrappers = document.querySelectorAll('.img-wrapper')

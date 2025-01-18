@@ -121,22 +121,16 @@
 @mixin lineItem {
   display: flex;
   align-items: center;
-  font-size: 20px;
+  //  font-size: 18px;
   width: calc(100vw - 30px);
   position: relative;
   flex-wrap: wrap;
   line-height: 1;
   justify-content: space-between;
   margin: 0 auto;
-
   @include row;
-
-  span {
-    &:nth-child(2) {
-      margin-left: auto;
-      margin-right: 0;
-      font-size: 20px;
-    }
+  svg {
+    font-size: 22px;
   }
 }
 @mixin hideScrollbars() {
@@ -931,22 +925,32 @@
   align-items: center;
   gap: 15px;
   margin-bottom: 15px;
+  border-bottom: 1px solid $lightBorder;
+
   * {
     line-height: 1;
     transition: all 0.3s ease-in-out;
+    margin: 0;
   }
+
   .view {
     padding-bottom: 3px;
     font-size: 16px;
-    margin: 0 0 10px 0;
     text-align: center;
     @include hover;
 
     &.active {
-      border-bottom: 1px solid #557fff;
-      font-weight: 500;
       color: #557fff;
+      font-weight: $fwMedium;
       opacity: 1;
+      &:after {
+        content: '';
+        position: relative;
+        top: 4px;
+        display: block;
+        border-bottom: 1px solid $mainBlue;
+        background: $mainBlue;
+      }
     }
   }
 }
@@ -1007,6 +1011,7 @@
         font-weight: $fwMediumBold;
         text-align: center;
         font-size: 15px;
+        opacity: 1;
       }
     }
   }
@@ -1014,9 +1019,9 @@
 @mixin table {
 }
 @mixin row {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   border-bottom: 1px solid rgba(214, 219, 222, 0.45);
-  padding-bottom: 15px;
+  padding-bottom: 10px;
   width: 100%;
   align-items: center;
   justify-content: space-between;
@@ -1099,9 +1104,6 @@
       margin-left: 20px;
     }
   }
-  #title {
-    font-size: 17px;
-  }
   #content {
     width: calc(100% - 60px);
     margin: 0;
@@ -1133,7 +1135,6 @@
   }
   .row-title {
     color: $lightBlackLight;
-    font-size: 18px;
     font-weight: $fwMedium;
   }
   #details {
@@ -2514,6 +2515,9 @@
 
           &.no-gap {
             gap: 0;
+            p {
+              opacity: 1;
+            }
           }
         }
 
@@ -2980,7 +2984,7 @@
   #relative-wrapper {
     position: relative;
     padding: 0 20px 200px 20px;
-
+    overflow-x: hidden;
     #subtitle {
       font-size: 18px;
       opacity: 0.85;
@@ -3114,8 +3118,6 @@
     }
 
     &.activity {
-      opacity: 1;
-
       p {
         justify-content: space-between;
         opacity: 0.75;

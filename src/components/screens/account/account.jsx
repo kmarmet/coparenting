@@ -229,9 +229,9 @@ export default function Account() {
         showCard={showLoginForm}
         title={`Please login to complete account deletion`}>
         <div {...handlers} id="reauthentication-wrapper" className={`${theme} form`}>
-          <InputWrapper onChange={(e) => setEmail(e.currentTarget.value)} labelText={'Email Address'} required={true}></InputWrapper>
+          <InputWrapper onChange={(e) => setEmail(e?.currentTarget?.value)} labelText={'Email Address'} required={true}></InputWrapper>
           <InputWrapper
-            onChange={(e) => setPhone(e.currentTarget.value)}
+            onChange={(e) => setPhone(e?.currentTarget?.value)}
             labelText={'Password'}
             inputValueType="password"
             required={true}></InputWrapper>
@@ -243,7 +243,7 @@ export default function Account() {
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <p className="screen-title">Account</p>
           <p id="user-name">
-            Hello {formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone className={'fs-24'} />
+            Hey {formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
           </p>
           <div className="sections">
             <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>

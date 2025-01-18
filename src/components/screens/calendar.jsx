@@ -29,7 +29,7 @@ import { PiCalendarPlusDuotone, PiCalendarXDuotone } from 'react-icons/pi'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 import { TfiClose } from 'react-icons/tfi'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-
+import { BsStars } from 'react-icons/bs'
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
@@ -38,7 +38,7 @@ export default function EventCalendar() {
   const [searchResults, setSearchResults] = useState([])
   const [holidays, setHolidays] = useState([])
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-  const [selectedNewEventDay, setSelectedNewEventDay] = useState()
+  const [selectedDate, setSelectedDate] = useState()
   const [searchQuery, setSearchQuery] = useState('')
   const [eventToEdit, setEventToEdit] = useState(null)
   const [showNewEventCard, setShowNewEventCard] = useState(false)
@@ -50,15 +50,26 @@ export default function EventCalendar() {
   const [showLegend, setShowLegend] = useState(false)
   const [showDesktopLegend, setShowDesktopLegend] = useState(false)
   const [eventsSetOnPageLoad, setEventsSetOnPageLoad] = useState(false)
+
   // GET EVENTS
-  const getSecuredEvents = async (selectedDay) => {
+  const getSecuredEvents = async () => {
     let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
     let _eventsOfDay = []
     setAllEventsFromDb(securedEvents)
+
+    console.log(selectedDate)
+
+    console.log(moment(selectedDate).format(DateFormats.dateForDb))
+
+    // All secured events
     securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
-    _eventsOfDay = securedEvents.filter((x) => x.startDate === moment(selectedDay).format(DateFormats.dateForDb))
+
+    // Set events of day
+    _eventsOfDay = securedEvents.filter((x) => x.startDate === moment(selectedDate).format(DateFormats.dateForDb))
+
+    // Set Holidays
     const holidaysToLoop = holidays.filter(
-      (x) => moment(x.startDate).format(DateFormats.dateForDb) === moment(selectedDay).format(DateFormats.dateForDb)
+      (x) => moment(x.startDate).format(DateFormats.dateForDb) === moment(selectedDate).format(DateFormats.dateForDb)
     )
     _eventsOfDay = [..._eventsOfDay, ...holidaysToLoop]
     setEventsOfActiveDay(_eventsOfDay)
@@ -226,7 +237,7 @@ export default function EventCalendar() {
     const dbRef = ref(getDatabase())
     await setHolidaysState()
     onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}`), async (snapshot) => {
-      await getSecuredEvents(moment(selectedNewEventDay).format(DateFormats.dateForDb), moment().format('MM')).then((r) => r)
+      await getSecuredEvents()
     })
   }
 
@@ -299,6 +310,10 @@ export default function EventCalendar() {
     await AppManager.setAppBadge(activities.length)
     setState({ ...state, activityCount: activities.length, isLoading: false })
   }
+
+  useEffect(() => {
+    getSecuredEvents().then((r) => r)
+  }, [selectedDate])
 
   useEffect(() => {
     if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
@@ -438,7 +453,7 @@ export default function EventCalendar() {
         </BottomCard>
 
         {/* NEW EVENT */}
-        <NewCalendarEvent selectedNewEventDay={selectedNewEventDay} showCard={showNewEventCard} hideCard={() => setShowNewEventCard(false)} />
+        <NewCalendarEvent selectedNewEventDay={selectedDate} showCard={showNewEventCard} hideCard={() => setShowNewEventCard(false)} />
 
         {/* EDIT EVENT */}
         <EditCalEvent showCard={showEditCard} onClose={() => setShowEditCard(false)} event={eventToEdit} />
@@ -450,15 +465,15 @@ export default function EventCalendar() {
           {/* STATIC CALENDAR */}
           <div id="static-calendar" className={theme}>
             <StaticDatePicker
-              yearsPerRow={4}
               showDaysOutsideCurrentMonth={true}
-              defaultValue={moment(selectedNewEventDay)}
-              onMonthChange={async (month) => {
-                await getSecuredEvents(null)
-              }}
+              defaultValue={moment(selectedDate)}
+              views={['month', 'day']}
+              minDate={moment(`${moment().year()}-01-01`)}
+              maxDate={moment(`${moment().year()}-12-31`)}
+              onMonthChange={async (month) => await getSecuredEvents()}
               onChange={async (day) => {
-                await getSecuredEvents(day)
-                setSelectedNewEventDay(day)
+                console.log(true)
+                setSelectedDate(day)
               }}
               slotProps={{
                 actionBar: {
@@ -588,7 +603,7 @@ export default function EventCalendar() {
           </p>
           {!showHolidays && (
             <p className="item" id="holidays-button" onClick={() => setShowHolidaysCard(true)}>
-              <GiPartyPopper />
+              <BsStars />
               Holidays
             </p>
           )}
@@ -641,7 +656,9 @@ export default function EventCalendar() {
               } else {
                 if (inputValue.length === 0) {
                   setShowSearchCard(false)
-                  Manager.scrollIntoView('#static-calendar')
+                  if (DomManager.isMobile()) {
+                    Manager.scrollIntoView('#static-calendar')
+                  }
                   await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
                   setRefreshKey(Manager.getUid())
                   e.target.value = ''

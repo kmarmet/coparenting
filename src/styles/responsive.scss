@@ -117,7 +117,6 @@
       }
       .page-container {
         &.home {
-          overflow: hidden;
           height: auto;
         }
         &.login {
@@ -278,12 +277,13 @@
               }
             }
             svg {
-              font-size: 22px;
+              font-size: 20px;
               margin-right: 17px;
+              opacity: 0.75;
             }
 
             label {
-              opacity: 0.85;
+              opacity: 0.75;
               font-weight: $fwRegular;
             }
           }
@@ -341,8 +341,14 @@
           margin-bottom: 15px;
           display: flex;
           align-items: center;
-          opacity: 0.85;
           transition: all 0.3s ease-in-out;
+
+          &#holidays-button {
+            svg {
+              font-size: 20px;
+              opacity: 0.75;
+            }
+          }
 
           &:hover {
             opacity: 1;
@@ -370,7 +376,7 @@
           svg {
             font-size: 22px;
             margin-right: 15px;
-            opacity: 0.85;
+            opacity: 0.75;
           }
         }
       }
@@ -522,8 +528,7 @@
           @include bestShadow;
           border-radius: $bigBorderRadius;
           #relative-wrapper {
-            //            max-height: 90%;
-            overflow: scroll;
+            overflow-y: scroll;
             padding-bottom: 0;
             .buttons {
               position: fixed;

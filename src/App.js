@@ -193,7 +193,7 @@ export default function App() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
-      <div className={`${currentUser?.settings?.theme} App`} id="app-container">
+      <div className={`App`} id="app-container">
         {/* LOADING */}
         {isLoading && <Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />}
 

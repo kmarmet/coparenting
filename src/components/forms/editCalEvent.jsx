@@ -563,15 +563,15 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                     </div>
                   )}
                   {Manager.isValid(event?.location) && (
-                    <div className="flex wrap location">
-                      <b className="w-100">Location</b>
-                      <p className="mb-10">{event?.location}</p>
-                    </div>
-                  )}
-                  {Manager.isValid(event?.location) && (
-                    <a className="nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
-                      <BiSolidNavigation /> Nav
-                    </a>
+                    <>
+                      <div className="flex wrap location">
+                        <b className="w-100">Location</b>
+                        <p>{event?.location}</p>
+                      </div>
+                      <a className="nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
+                        <BiSolidNavigation /> Nav
+                      </a>
+                    </>
                   )}
                   {Manager.isValid(event?.repeatInterval) && (
                     <div className="flex">

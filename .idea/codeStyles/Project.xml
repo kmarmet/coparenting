@@ -19,8 +19,8 @@
       <option name="SPACES_WITHIN_OBJECT_LITERAL_BRACES" value="true" />
       <option name="SPACES_WITHIN_IMPORTS" value="true" />
       <option name="CHAINED_CALL_DOT_ON_NEW_LINE" value="false" />
-      <option name="IMPORT_PREFER_ABSOLUTE_PATH" value="TRUE" />
       <option name="IMPORT_USE_NODE_RESOLUTION" value="FALSE" />
+      <option name="USE_PATH_MAPPING" value="NEVER" />
     </JSCodeStyleSettings>
     <TypeScriptCodeStyleSettings version="0">
       <option name="USE_SEMICOLON_AFTER_STATEMENT" value="false" />

@@ -36,6 +36,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
     setState({ ...state, currentUser: updatedCurrentUser, isLoading: false })
     setResetKey(Manager.getUid())
+    hideCard()
   }
 
   const handleShareWithSelection = async (e) => {
