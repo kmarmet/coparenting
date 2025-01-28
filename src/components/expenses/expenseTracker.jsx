@@ -1,45 +1,41 @@
 import React, { useContext, useEffect, useState } from 'react'
-import DB from '../../database/DB'
-import Manager from '../../managers/manager'
-import globalState from '../../context.js'
+import globalState from '/src/context.js'
+import DB from '/src/database/DB'
+import Manager from '/src/managers/manager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-import NotificationManager from '../../managers/notificationManager'
-import MyConfetti from '../../components/shared/myConfetti.js'
-import DateManager from '../../managers/dateManager.js'
-import DateFormats from '../../constants/dateFormats.js'
+import NotificationManager from '/src/managers/notificationManager'
+import MyConfetti from '/src/components/shared/myConfetti.js'
+import DateManager from '/src/managers/dateManager.js'
+import DateFormats from '/src/constants/dateFormats.js'
 import moment from 'moment'
 import BottomCard from '../shared/bottomCard'
-import { PiBellSimpleRinging, PiMoneyWavyDuotone } from 'react-icons/pi'
 import { AiOutlineFileAdd } from 'react-icons/ai'
 import { MdOutlineFilterAltOff } from 'react-icons/md'
-import SecurityManager from '../../managers/securityManager'
+import SecurityManager from '/src/managers/securityManager'
 import NewExpenseForm from '../forms/newExpenseForm'
-import FirebaseStorage from '../../database/firebaseStorage'
+import FirebaseStorage from '/src/database/firebaseStorage'
 import LightGallery from 'lightgallery/react'
 import MenuItem from '@mui/material/MenuItem'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import { Fade } from 'react-awesome-reveal'
 import { RxUpdate } from 'react-icons/rx'
 import 'lightgallery/css/lightgallery.css'
-
-import { ImAppleinc } from 'react-icons/im'
-import { IoLogoVenmo } from 'react-icons/io5'
-import { SiCashapp, SiZelle } from 'react-icons/si'
-import { LiaCcPaypal } from 'react-icons/lia'
 import { BsFilter } from 'react-icons/bs'
 import NavBar from '../navBar'
 import Label from '../shared/label'
-import ExpenseCategories from '../../constants/expenseCategories'
-import DatasetManager from '../../managers/datasetManager'
-import AlertManager from '../../managers/alertManager'
+import ExpenseCategories from '/src/constants/expenseCategories'
+import DatasetManager from '/src/managers/datasetManager'
+import AlertManager from '/src/managers/alertManager'
 import SelectDropdown from '../shared/selectDropdown'
 import InputWrapper from '../shared/inputWrapper'
-import DomManager from '../../managers/domManager'
+import DomManager from '/src/managers/domManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
-import ActivityCategory from '../../models/activityCategory'
-import ObjectManager from '../../managers/objectManager'
-import ModelNames from '../../models/modelNames'
-import StringManager from '../../managers/stringManager'
+import ActivityCategory from '/src/models/activityCategory'
+import ObjectManager from '/src/managers/objectManager'
+import ModelNames from '/src/models/modelNames'
+import StringManager from '/src/managers/stringManager'
+import ExpenseManager from '/src/managers/expenseManager.js'
+import PaymentOptions from '../expenses/paymentOptions.jsx'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -87,27 +83,27 @@ export default function ExpenseTracker() {
     updatedExpense.imageName = imageName
     updatedExpense.recipientName = recipientName
     updatedExpense.name = name
-    updatedExpense.ownerPhone = currentUser?.phone
 
     if (!Manager.isValid(dueDate)) {
       updatedExpense.dueDate = moment(dueDate).format(DateFormats.dateForDb)
     }
     const cleanedExpense = ObjectManager.cleanObject(updatedExpense, ModelNames.expense)
-    await DB.updateEntireRecord(`${DB.tables.expenseTracker}/${currentUser.phone}`, cleanedExpense, cleanedExpense.id)
-    // await DB.delete(DB.tables.expenseTracker, activeExpense.id)
-    // await DB.add(`${DB.tables.expenseTracker}`, cleanedExpense).then(async () => {
+    cleanedExpense.ownerPhone = activeExpense.ownerPhone
+    await ExpenseManager.updateExpense(currentUser, cleanedExpense, cleanedExpense.id)
     await getSecuredExpenses()
     setActiveExpense(updatedExpense)
     setShowDetails(false)
-    // })
   }
 
-  const markAsPaid = async () => {
-    await DB.updateRecord(DB.tables.expenseTracker, activeExpense, 'paidStatus', 'paid').then(async () => {
+  const togglePaidStatus = async () => {
+    const updatedStatus = (activeExpense.paidStatus = 'paid' ? 'unpaid' : 'paid')
+    setPaidStatus(updatedStatus)
+    activeExpense.paidStatus = updatedStatus
+    await ExpenseManager.updateExpense(currentUser, activeExpense, activeExpense.id).then(async () => {
       NotificationManager.sendNotification(
         `Expense Paid`,
         `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${activeExpense.name} \nYou can delete the expense now`,
-        currentUser.coparents.filter((x) => (x.name = activeExpense.recipientName))[0].phone,
+        activeExpense?.ownerPhone,
         currentUser,
         activeExpense.category
       )
@@ -132,7 +128,7 @@ export default function ExpenseTracker() {
         AlertManager.confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, async () => {
           let existingMultipleExpenses = existing.filter((x) => x.name === expense.name && x.repeating === true)
           if (Manager.isValid(existingMultipleExpenses)) {
-            await DB.deleteMultipleRows(DB.tables.expenseTracker, existingMultipleExpenses)
+            await DB.deleteMultipleRows(DB.tables.expenses, existingMultipleExpenses)
             AlertManager.successAlert(`All ${expense.name} expenses have been deleted`)
           }
         })
@@ -141,7 +137,7 @@ export default function ExpenseTracker() {
       // Delete Single
       else {
         AlertManager.confirmAlert(`Are you sure you would like to delete the ${activeExpense?.name} expense?`, "I'm Sure", true, async () => {
-          await DB.deleteById(`${DB.tables.expenseTracker}/${currentUser.phone}`, expense.id)
+          await DB.deleteById(`${DB.tables.expenses}/${currentUser.phone}`, expense.id)
         })
       }
     }
@@ -169,7 +165,7 @@ export default function ExpenseTracker() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
 
-    onValue(child(dbRef, DB.tables.expenseTracker), async (snapshot) => {
+    onValue(child(dbRef, DB.tables.expenses), async (snapshot) => {
       await getSecuredExpenses()
     })
   }
@@ -192,6 +188,13 @@ export default function ExpenseTracker() {
   const handlePaidStatusSelection = async (status) => {
     const allExpenses = await getSecuredExpenses()
     setExpenses(allExpenses.filter((x) => x.paidStatus === status))
+    setShowFilterCard(false)
+    setFilterApplied(true)
+  }
+
+  const setToUnpaidAsDefault = async () => {
+    const allExpenses = await getSecuredExpenses()
+    setExpenses(allExpenses.filter((x) => x.paidStatus === 'unpaid'))
     setShowFilterCard(false)
     setFilterApplied(true)
   }
@@ -231,12 +234,13 @@ export default function ExpenseTracker() {
   const setDefaults = () => {
     setCategory(activeExpense?.category)
     setAmount(activeExpense?.amount)
+    setName(activeExpense?.name)
     setPayer(activeExpense?.payer)
     setNotes(activeExpense?.notes)
     setDueDate(activeExpense?.dueDate)
     setChildren(activeExpense?.children)
     setShareWith(activeExpense?.shareWith)
-    setPaidStatus('unpaid')
+    setPaidStatus(activeExpense?.paidStatus)
     setImageName(activeExpense?.imageName)
     setRecipientName(activeExpense?.recipientName)
   }
@@ -250,6 +254,7 @@ export default function ExpenseTracker() {
   useEffect(() => {
     onTableChange().then((r) => r)
     setView('details')
+    setToUnpaidAsDefault('unpaid').then((r) => r)
   }, [])
 
   return (
@@ -291,14 +296,14 @@ export default function ExpenseTracker() {
             <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
             <div className="pills type">
               <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
-                UNPAID
+                Unpaid
               </div>
               <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
-                PAID
+                Paid
               </div>
             </div>
           </div>
-          <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>
+          {categoriesInUse.length > 0 && <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>}
           <div className="filter-row">
             <div className="pills category">
               {ExpenseCategories.sort().map((cat, index) => {
@@ -324,119 +329,7 @@ export default function ExpenseTracker() {
       </BottomCard>
 
       {/* PAYMENT OPTIONS */}
-      <>
-        <BottomCard
-          hasSubmitButton={false}
-          subtitle="There are a multitude of simple and FREE ways to send money to a co-parent for expenses, or for any other reason. Please look below to
-              see which option works best for you."
-          title={'Payment/Transfer Options'}
-          className="payment-options-card"
-          wrapperClass="payment-options-card"
-          onClose={() => setShowPaymentOptionsCard(false)}
-          showCard={showPaymentOptionsCard}>
-          <div id="payment-options-card">
-            <div className="options">
-              {/* ZELLE */}
-              <div className="option zelle">
-                <div className="flex brand-name-wrapper zelle">
-                  <p className="brand-name accent mr-10">Zelle</p>
-                  <SiZelle className={'zelle-icon'} />
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className={`${theme} description payment-options`}>Safely send money to co-parent, no matter where they bank.</p>
-                    <a href="https://www.zellepay.com/how-it-works" target="_blank" className="setup-instructions mb-10">
-                      Learn More <span className="material-icons">open_in_new</span>
-                    </a>
-                  </div>
-                </div>
-                <iframe
-                  width="560"
-                  height="315"
-                  src="https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO"
-                  title="Zelle® | How it Works"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen></iframe>
-              </div>
-
-              {/* VENMO */}
-              <div className="option venmo">
-                <div className="flex brand-name-wrapper venmo">
-                  <p className="brand-name mr-10">Venmo</p>
-                  <IoLogoVenmo className={'venmo-icon'} />
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className={`${theme} description payment-options`}>Fast, safe, social payments.</p>
-                    <a
-                      href="https://help.venmo.com/hc/en-us/articles/209690068-How-to-Sign-Up-for-a-Personal-Venmo-Account"
-                      target="_blank"
-                      className="setup-instructions mb-10">
-                      Learn More <span className="material-icons">open_in_new</span>
-                    </a>
-                  </div>
-                </div>
-                <iframe
-                  src="https://www.youtube.com/embed/zAqz0Kzootg"
-                  title="Paying or Requesting Payment From Multiple Users in a Single Transaction"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen></iframe>
-              </div>
-
-              {/* APPLE PAY */}
-              <div className="option apple-cash">
-                <div className="flex brand-name-wrapper apple">
-                  <p className="brand-name mr-10">Apple Cash</p>
-                  <ImAppleinc className={'apple-icon'} />
-                </div>
-                <div className="flex ">
-                  <div className="text">
-                    <p className={`${theme} description payment-options`}>Use Apple Cash to send and receive money with people you know.</p>
-                    <a href="https://support.apple.com/en-us/105013" target="_blank" className="setup-instructions mb-10">
-                      Learn More <span className="material-icons">open_in_new</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* PAYPAL */}
-              <div className="option paypal">
-                <div className="flex brand-name-wrapper paypal">
-                  <p className="brand-name mr-10">PayPal</p>
-                  <LiaCcPaypal className={'paypal-icon'} />
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className={`${theme} description payment-options`}>Send and request money, quickly and securely.</p>
-                    <a href="https://www.paypal.com/us/digital-wallet/send-receive-money" target="_blank" className="setup-instructions mb-10">
-                      Learn More <span className="material-icons">open_in_new</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* CASHAPP */}
-              <div className="option cashapp">
-                <div className="flex brand-name-wrapper cashapp">
-                  <p className="brand-name mr-10">CashApp</p>
-                  <SiCashapp />
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className={`${theme} description payment-options`}>Pay anyone, instantly.</p>
-                    <a href="https://cash.app/help/6485-getting-started-with-cash-app" target="_blank" className="setup-instructions mb-10">
-                      Learn More <span className="material-icons">open_in_new</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </BottomCard>
-      </>
+      <PaymentOptions setShowPaymentOptionsCard={setShowPaymentOptionsCard} showPaymentOptionsCard={showPaymentOptionsCard} />
 
       {/* DETAILS CARD */}
       <BottomCard
@@ -476,8 +369,9 @@ export default function ExpenseTracker() {
                   <b>Amount</b>: ${activeExpense?.amount}
                 </p>
               </div>
+
+              {/* SENT TO */}
               <div id="row" className="flex-start">
-                {/* SENT TO */}
                 <p id="title">
                   <b>Sent to: </b>
                   {StringManager.formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
@@ -494,7 +388,7 @@ export default function ExpenseTracker() {
 
               {/* DUE DATE */}
               {activeExpense?.dueDate && activeExpense?.dueDate?.length > 0 && (
-                <div className="flex flex-start" id="row">
+                <div className="flex-start" id="row">
                   <p id="title">
                     <b>Due Date: </b>
                     <span>
@@ -506,9 +400,12 @@ export default function ExpenseTracker() {
 
               {/* CHILDREN */}
               {Manager.isValid(activeExpense?.children) && (
-                <div className="flex flex-start" id="row">
+                <div className="flex wrap" id="row">
+                  <p id="title" className="mr-auto">
+                    <b>Children</b>
+                  </p>
                   <p
-                    id="title"
+                    className="w-100 mb-5"
                     dangerouslySetInnerHTML={{
                       __html: `${activeExpense?.children?.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
                     }}></p>
@@ -578,8 +475,13 @@ export default function ExpenseTracker() {
                 />
               </InputWrapper>
 
-              {/* EXPENSE TYPE */}
-              <SelectDropdown wrapperClasses={'mb-15'} selectValue={category} onChange={(e) => setCategory(e.target.value)} labelText={'Category'}>
+              {/* CATEGORY */}
+              <SelectDropdown
+                labelClasses={'mb-5'}
+                wrapperClasses={'mb-15'}
+                selectValue={category}
+                onChange={(e) => setCategory(e.target.value)}
+                labelText={'Category'}>
                 {ExpenseCategories.map((cat, index) => {
                   return (
                     <MenuItem key={index} value={cat}>
@@ -597,9 +499,17 @@ export default function ExpenseTracker() {
 
               {/* BUTTONS */}
               <div className="action-buttons">
-                <button className="button default" onClick={() => markAsPaid()}>
-                  Mark Paid
-                </button>
+                {activeExpense?.paidStatus === 'unpaid' && (
+                  <button className="button green default" onClick={() => togglePaidStatus()}>
+                    Mark Paid
+                  </button>
+                )}
+
+                {activeExpense?.paidStatus === 'paid' && (
+                  <button className="button red default" onClick={() => togglePaidStatus()}>
+                    Mark Unpaid
+                  </button>
+                )}
 
                 {/* DELETE */}
                 {activeExpense?.ownerPhone === currentUser?.phone && (
@@ -613,12 +523,12 @@ export default function ExpenseTracker() {
                     Delete
                   </button>
                 )}
-              </div>
-              {activeExpense?.paidStatus === 'unpaid' && activeExpense?.ownerPhone === currentUser?.phone && (
-                <button className="button default submit green center mt-10" onClick={() => sendReminder(activeExpense)}>
-                  Send Reminder <PiBellSimpleRinging className={'fs-18'} />
+                {/*{activeExpense?.paidStatus === 'unpaid' && activeExpense?.ownerPhone === currentUser?.phone && (*/}
+                <button className="button default submit blue center" onClick={() => sendReminder(activeExpense)}>
+                  Send Reminder
                 </button>
-              )}
+                {/*)}*/}
+              </div>
             </>
           )}
         </div>
@@ -668,8 +578,7 @@ export default function ExpenseTracker() {
                       setShowDetails(true)
                     }}>
                     <div id="primary-icon-wrapper">
-                      {expense.paidStatus === 'unpaid' && <span className="amount">${expense.amount}</span>}
-                      {expense.paidStatus === 'paid' && <PiMoneyWavyDuotone id={'primary-row-icon'} />}
+                      <span className="amount">${expense.amount}</span>
                     </div>
                     <div id="content" data-expense-id={expense.id} className={`expense wrap`}>
                       {/* EXPENSE NAME */}
