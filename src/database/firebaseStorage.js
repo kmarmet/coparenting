@@ -21,10 +21,31 @@ const FirebaseStorage = {
     }
     return new File([u8arr], imageName, { type: mime })
   },
-  getSingleImage: async (imageDir, id, imageName, domImg) =>
+  getSingleFile: (fileDirectory, id, fileName) =>
+    new Promise((resolve, reject) => {
+      const storage = getStorage()
+      const fileRef = ref(storage, `${fileDirectory}/${id}/${fileName}`)
+      getDownloadURL(fileRef)
+        .then((url) => {
+          fetch(url)
+            .then((response) => response.text())
+            .then((text) => {
+              resolve(text)
+            })
+            .catch((error) => {
+              reject(error)
+              console.error('Error fetching text file:', error)
+            })
+        })
+        .catch((error) => {
+          console.error('Error getting download URL:', error)
+        })
+    }),
+
+  getSingleFileUrl: async (fileDirectory, id, filename) =>
     new Promise(async (resolve, reject) => {
       const storage = getStorage()
-      await getDownloadURL(ref(storage, `${imageDir}/${id}/${imageName}`))
+      await getDownloadURL(ref(storage, `${fileDirectory}/${id}/${filename}`))
         .then((url) => {
           if (Manager.isValid(url)) {
             if (url.indexOf(id) > -1) {
@@ -123,7 +144,6 @@ const FirebaseStorage = {
         })
       })
     }),
-
   getProfilePicUrl: async (directory, userId, imgs) => {
     const images = async () =>
       await new Promise(async (resolve) => {
@@ -155,12 +175,24 @@ const FirebaseStorage = {
           }
         })
     }),
-  upload: async (imgDirectory, id, img, imgName) => {
+  upload: async (fileDirectory, id, file, fileName) => {
     const storage = getStorage()
-    const storageRef = ref(storage, `${imgDirectory}/${id}/${imgName}/`)
-    await uploadBytes(storageRef, img)
-    const returnUrl = await getDownloadURL(ref(storage, `${imgDirectory}/${id}/${imgName}/`))
+    const storageRef = ref(storage, `${fileDirectory}/${id}/${fileName}/`)
+    await uploadBytes(storageRef, file)
+    const returnUrl = await getDownloadURL(ref(storage, `${fileDirectory}/${id}/${fileName}/`))
     return await returnUrl
+  },
+  uploadByPath: async (path, file) => {
+    try {
+      const storage = getStorage()
+      const storageRef = ref(storage, path)
+      await uploadBytes(storageRef, file)
+      const returnUrl = await getDownloadURL(ref(storage, path))
+      return await returnUrl
+    } catch (error) {
+      console.log(error)
+      return null
+    }
   },
   addProfilePic: (imgDirectory, storageKey, img) =>
     new Promise(async (resolve) => {
@@ -186,6 +218,20 @@ const FirebaseStorage = {
       const storageRef = ref(storage, `${imgDirectory}/${id}/${images[i].name}`.replace('//', '/'))
       await uploadBytes(storageRef, images[i])
     }
+  },
+  deleteFile: async (path) => {
+    const storage = getStorage()
+    let bin = ref(storage, `${path}`)
+    // Delete the file
+    deleteObject(bin)
+      .then(() => {
+        console.log('file deleted')
+        // File deleted successfully
+      })
+      .catch((error) => {
+        console.log(error)
+        // Uh-oh, an error occurred!
+      })
   },
   delete: async (imgDirectory, uid, imageName, recordToDeleteIfNoImage) => {
     const storage = getStorage()

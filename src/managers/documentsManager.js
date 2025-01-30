@@ -33,7 +33,7 @@ export default DocumentsManager = {
             thisDoc = docs[j];
             if (thisDoc.id === docId) {
               await DB.deleteById(`${DB.tables.documents}/${currentUser != null ? currentUser.phone : void 0}`, docId);
-              await FirebaseStorage.delete(FirebaseStorage.directories.documents, currentUser.id, thisDoc.name);
+              await FirebaseStorage.deleteFile(`${FirebaseStorage.directories.documents}/${currentUser.id}/${thisDoc.name}`);
               if (callback) {
                 results1.push(callback(docId));
               } else {
@@ -51,7 +51,7 @@ export default DocumentsManager = {
     }
     return results;
   },
-  addDocumentToDocumentsTable: async function(currentUser, data) {
+  addToDocumentsTable: async function(currentUser, data) {
     var dbRef, tableData;
     dbRef = ref(getDatabase());
     tableData = (await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.phone : void 0}`));

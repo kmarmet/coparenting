@@ -32,6 +32,7 @@ import ActivityCategory from '../../models/activityCategory'
 import StringManager from '../../managers/stringManager'
 import { LuCalendarCheck } from 'react-icons/lu'
 import { MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
+import manager from '../../managers/manager'
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
@@ -92,7 +93,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setRefreshKey(Manager.getUid())
     onClose(moment(event.startDate))
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    setState({ ...state, currentUser: updatedCurrentUser })
+    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
 
   const nonOwnerSubmit = async () => {
@@ -393,7 +394,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const setLocalConfirmMessage = () => {
     let message = 'Are you sure you want to delete this event?'
 
-    if (event?.isRepeating) {
+    if (event?.isRepeating || event?.isCloned) {
       message = 'Are you sure you would like to delete ALL events with these details?'
     }
 
@@ -539,17 +540,19 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                     </div>
                   )}
                   {Manager.isValid(event?.websiteUrl) && (
-                    <div className="flex">
-                      <b>Website:</b>
-                      <a href={event?.websiteUrl} target="_blank">
-                        {event?.websiteUrl}
+                    <div className="flex wrap no-gap">
+                      <p className="w-100">
+                        <b>Website</b>
+                      </p>
+                      <a className="low-opacity-text" href={decodeURIComponent(event?.websiteUrl)} target="_blank">
+                        {decodeURIComponent(event?.websiteUrl)}
                       </a>
                     </div>
                   )}
                   {Manager.isValid(event?.phone) && (
                     <div className="flex">
                       <b>Phone:</b>
-                      <a href={`tel:${event?.phone}`} target="_blank">
+                      <a className="low-opacity-text" href={`tel:${event?.phone}`} target="_blank">
                         {StringManager.getReadablePhoneNumber(event?.phone)}
                       </a>
                     </div>
@@ -559,7 +562,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                       <p className="w-100">
                         <b>Notes</b>
                       </p>
-                      <span>{event?.notes}</span>
+                      <span className="low-opacity-text">{event?.notes}</span>
                     </div>
                   )}
                   {Manager.isValid(event?.location) && (
@@ -568,7 +571,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                         <b className="w-100">Location</b>
                         <p>{event?.location}</p>
                       </div>
-                      <a className="nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
+                      <a className="low-opacity-text nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
                         <BiSolidNavigation /> Nav
                       </a>
                     </>
@@ -603,7 +606,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                     <InputWrapper
                       inputType={'input'}
                       labelText={'Event Name'}
-                      defaultValue={eventName}
+                      defaultValue={event?.title}
                       required={true}
                       onChange={async (e) => {
                         const inputValue = e.target.value
@@ -619,7 +622,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                       <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
                         <MobileDatePicker
                           onOpen={addThemeToDatePickers}
-                          defaultValue={DateManager.dateOrNull(moment(eventStartDate))}
+                          defaultValue={DateManager.dateOrNull(moment(event?.startDate))}
                           className={`${theme} m-0 w-100 event-from-date mui-input`}
                           yearsPerRow={4}
                           onAccept={(e) => {
@@ -664,7 +667,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                           onOpen={addThemeToDatePickers}
                           format={'h:mma'}
                           placeholder={''}
-                          value={moment(eventStartTime, 'hh:mma')}
+                          value={moment(event?.startTime, 'hh:mma')}
                           minutesStep={5}
                           className={`${theme} m-0`}
                           onAccept={(e) => setEventStartTime(e)}
@@ -678,7 +681,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                         <MobileTimePicker
                           onOpen={addThemeToDatePickers}
                           format={'h:mma'}
-                          value={moment(eventEndTime, 'hh:mma')}
+                          value={moment(event?.endTime, 'hh:mma')}
                           minutesStep={5}
                           className={`${theme} m-0`}
                           onAccept={(e) => setEventEndTime(e)}
@@ -691,7 +694,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                     <ShareWithCheckboxes
                       required={false}
                       onCheck={handleShareWithSelection}
-                      defaultActiveShareWith={eventShareWith}
+                      defaultActiveShareWith={event?.shareWith}
                       containerClass={`share-with-coparents`}
                     />
                   )}

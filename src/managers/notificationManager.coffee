@@ -140,12 +140,14 @@ export default NotificationManager =
 
     DB.add "#{DB.tables.activities}/#{recipientPhone}", newActivity
 
-    fetch "https://api.onesignal.com/notifications", requestOptions
-      .then (response) -> response.text()
-      .then (result) ->
-        console.log result
-        console.log("Sent to #{subId}")
-      .catch (error) -> console.error error
+    # Do not send notification in dev
+    if !window.location.href.includes("localhost")
+      fetch "https://api.onesignal.com/notifications", requestOptions
+        .then (response) -> response.text()
+        .then (result) ->
+          console.log result
+          console.log("Sent to #{subId}")
+        .catch (error) -> console.error error
 
   enableNotifications: (subId) ->
     myHeaders = new Headers()

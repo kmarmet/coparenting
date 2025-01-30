@@ -52,17 +52,12 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow: hidden !important;
-  background-color: $lightBg !important;
+  background-color: white !important;
   height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
   min-height: calc(100% + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 
-  &.dark {
-    //      background-color: $darkBg;
-  }
   &.light {
-    //    background-color: $lightBg;
-
     .rc-tooltip {
       .rc-tooltip-inner {
         background-color: $lightBlueDark !important;

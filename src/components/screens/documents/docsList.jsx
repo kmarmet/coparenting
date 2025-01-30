@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react'
-
 import ScreenNames from '../../../constants/screenNames'
 import DB from '../../../database/DB'
 import Manager from '../../../managers/manager'
@@ -27,7 +26,6 @@ export default function DocsList() {
   const getSecuredDocs = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)
     setDocs(allDocs)
-    setState({ ...state, isLoading: false })
   }
 
   const handleDeleteCheckbox = (checkbox) => {
@@ -61,22 +59,25 @@ export default function DocsList() {
   return (
     <>
       <UploadDocuments showCard={showCard} hideCard={() => setShowCard(false)} />
-      {docs.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
 
       <div id="doc-selection-container" className={`${theme} page-container`}>
+        {docs.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Documents</p>
             {!DomManager.isMobile() && <GrDocumentUpload id={'add-new-button'} onClick={() => setShowCard(true)} />}
           </div>
-          <p className="mb-10">Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise.</p>
-          <p className="mb-10">If the document type you {DomManager.tapOrClick(false)} is an image, the loading time may be a bit longer.</p>
+          <p className="mb-10">
+            Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise. These documents can be shared with a
+            co-parent if you choose to.
+          </p>
 
           {!Manager.isValid(selectedDoc) && (
             <div className="sections">
               {Manager.isValid(docs) &&
                 docs.map((doc, index) => {
-                  const fileType = Manager.contains(StringManager.getFileExtension(doc.name), 'docx') ? 'Document' : 'Image'
+                  const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
+                  const fileType = documentExts.includes(StringManager.getFileExtension(doc.name).toString()) ? 'Document' : 'Image'
                   return (
                     <div className="row" key={index}>
                       <div className="flex section">
@@ -84,6 +85,7 @@ export default function DocsList() {
                           data-id={doc.id}
                           onClick={() => {
                             setSelectedDoc(doc)
+
                             setState({ ...state, docToView: doc, currentScreen: ScreenNames.docViewer })
                           }}>
                           {fileType === 'Document' ? <GrDocumentText className={'file-type'} /> : <GrDocumentImage className={'file-type'} />}

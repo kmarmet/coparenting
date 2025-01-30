@@ -11,17 +11,15 @@ import StringManager from '../../../managers/stringManager.coffee'
 
 export default function CustomCoparentInfo({ hideCard, activeCoparent, showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, refreshKey } = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
 
   const resetForm = () => {
     Manager.resetForm('custom-coparent-info-wrapper')
     setTitle('')
     setValue('')
     hideCard()
-    setRefreshKey(Manager.getUid())
   }
 
   const add = async () => {
@@ -36,7 +34,6 @@ export default function CustomCoparentInfo({ hideCard, activeCoparent, showCard 
 
   return (
     <BottomCard
-      refreshKey={refreshKey}
       submitIcon={<FaWandMagicSparkles />}
       submitText={'Add'}
       onSubmit={add}
@@ -46,8 +43,8 @@ export default function CustomCoparentInfo({ hideCard, activeCoparent, showCard 
       onClose={resetForm}>
       <div className="custom-coparent-info-wrapper">
         <div className={`${theme} form`}>
-          <InputWrapper inputType={'input'} labelText={'Title/Label*'} onChange={(e) => setTitle(e.target.value)} />
-          <InputWrapper inputType={'input'} labelText={'Value*'} onChange={(e) => setValue(e.target.value)} />
+          <InputWrapper key={`${refreshKey}jdklskd`} inputType={'input'} labelText={'Title/Label*'} onChange={(e) => setTitle(e.target.value)} />
+          <InputWrapper key={refreshKey} inputType={'input'} labelText={'Value*'} onChange={(e) => setValue(e.target.value)} />
         </div>
       </div>
     </BottomCard>

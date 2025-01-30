@@ -1,12 +1,8 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
-import Draggable from 'react-draggable' // The default
-import { DraggableCore } from 'react-draggable' // <DraggableCore>
-import Draggable, { DraggableCore } from 'react-draggable'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { CgClose } from 'react-icons/cg'
-import Manager from '../../managers/manager.js'
-import ScreenNames from '../../constants/screenNames.coffee'
+import { useSwipeable } from 'react-swipeable'
 
 export default function BottomCard({
   submitText,
@@ -28,17 +24,35 @@ export default function BottomCard({
   const { state, setState } = useContext(globalState)
   const { currentScreen, theme } = state
 
+  const handlers = useSwipeable({
+    onSwipedDown: (eventData) => {
+      console.log('User Swiped!', eventData)
+      hideCard()
+      onClose()
+    },
+    // preventScrollOnSwipe: true,
+    delta: {
+      up: 20,
+      down: 200,
+    },
+    swipeDuration: 250,
+    trackMouse: false,
+  })
+
   const hideCard = () => {
+    const pageOverlay = document.getElementById('page-overlay')
     const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
     const fadeOutDown = 'animate__fadeOutDown'
     const fadeInUp = 'animate__fadeInUp'
+    if (bottomCard) {
+      bottomCard.classList.add(fadeOutDown)
 
-    bottomCard.classList.add(fadeOutDown)
-
-    setTimeout(() => {
-      bottomCard.classList.remove(fadeInUp)
-      bottomCard.classList.remove(fadeOutDown)
-    }, 500)
+      setTimeout(() => {
+        pageOverlay.classList.remove('active')
+        bottomCard.classList.remove(fadeInUp)
+        bottomCard.classList.remove(fadeOutDown)
+      }, 500)
+    }
   }
 
   useEffect(() => {
@@ -47,7 +61,6 @@ export default function BottomCard({
     const body = document.body
     const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
     const checkboxContainer = document.getElementById('share-with-checkbox-container')
-
     if (wrapperClass.length > 0) {
       const fadeInUp = 'animate__fadeInUp'
       const fadeOutDown = 'animate__fadeOutDown'
@@ -59,6 +72,7 @@ export default function BottomCard({
         if (checkboxContainer) {
           checkboxContainer.classList.remove('active')
         }
+
         if (showOverlay) {
           if (pageOverlay) {
             pageOverlay.classList.add('active')
@@ -79,31 +93,40 @@ export default function BottomCard({
         }
       }
 
-      // Disable scroll on page container
-      if (pageContainer) {
-        if (showCard && bottomCard) {
-          pageContainer.classList.add('disable-scroll')
-          bottomCard.scrollTop = 0
-        } else {
-          pageContainer.classList.remove('disable-scroll')
-        }
+      if (!showCard) {
+        // pageOverlay.classList.remove('active')
+        // setState({ ...state, refreshKey: Manager.getUid() })
       }
+
+      // Disable scroll on page container
+      // if (pageContainer) {
+      //   if (showCard && bottomCard) {
+      //     pageContainer.classList.add('disable-scroll')
+      //     bottomCard.scrollTop = 0
+      //   } else {
+      //     pageContainer.classList.remove('disable-scroll')
+      //   }
+      // }
     }
   }, [showCard])
 
   return (
-    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
+    <div {...handlers} id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
+      <div id="swipe-bar-wrapper">
+        <div id="swipe-bar"></div>
+      </div>
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
           <CgClose
             className="close-icon"
             onClick={() => {
+              const pageOverlay = document.getElementById('page-overlay')
+              if (pageOverlay) {
+                pageOverlay.classList.remove('active')
+              }
               onClose()
               hideCard()
-              if (currentScreen !== ScreenNames.editCalendarEvent) {
-                setState({ ...state, refreshKey: Manager.getUid() })
-              }
             }}
           />
         </div>

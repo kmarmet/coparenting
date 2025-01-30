@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="PCP React" exclude=".svn;.cvs;.idea;.DS_Store;.git;.hg;*.hprof;*.pyc;*.jpg;*.png;*.svg;" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
+  <component name="PublishConfigData" serverName="PCP React" traceLevel="BRIEF" exclude=".svn;.cvs;.idea;.DS_Store;.git;.hg;*.hprof;*.pyc;*.jpg;*.png;*.svg;*.gif;*.json;*.ico;*.woff;*.woff2;*.ttf;" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
     <option name="confirmBeforeUploading" value="false" />
     <serverData>
       <paths name="PCP React">
         <serverdata>
           <mappings>
-            <mapping deploy="/" local="$PROJECT_DIR$/build" web="" />
+            <mapping deploy="/" local="$PROJECT_DIR$/dist" web="" />
           </mappings>
         </serverdata>
       </paths>

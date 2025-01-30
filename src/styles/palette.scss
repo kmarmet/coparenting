@@ -1,6 +1,6 @@
 /*#region  BASE COLORS */
 $green: #2ecc71;
-$red: #d24d57;
+$red: #d5646c;
 $bgRed: #f5e0e1;
 $yellow: #fbf5bf;
 $gold: #f5bc02;
@@ -33,6 +33,7 @@ $buttonGrey: #efefef;
 $iconGrey: #e3e8ee;
 $darkGrey: #939393;
 $bestGreyForWhite: #f2f4f5;
+$bestGreyForWhite2: #f1f1f1;
 $desktopBorderColor: #e0e0e0;
 /*#endregion  GREYS*/
 
@@ -46,7 +47,7 @@ $currentUserGreen: $green;
 
 /*#region  Dark Theme*/
 $darkBlueDarkest: #121735;
-$darkBg: #1a2034;
+$darkBg: rgba(26, 32, 52, 0.27);
 $darkestBg: #0f121e;
 $darkPurple: #808cf8;
 $darkLightPurple: #aaa8cc;

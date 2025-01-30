@@ -135,9 +135,9 @@ const DB_UserScoped = {
   // ADD
   addMultipleExpenses: async (currentUser, data) => {
     const dbRef = ref(getDatabase())
-    const currentExpenses = await DB.getTable(`${DB.tables.expenseTracker}/${currentUser.phone}`)
+    const currentExpenses = await DB.getTable(`${DB.tables.expenses}/${currentUser.phone}`)
     const toAdd = [...currentExpenses, [...data]].filter((x) => x !== undefined).flat()
-    set(child(dbRef, `${DB.tables.expenseTracker}/${currentUser.phone}`), toAdd).catch((error) => {})
+    set(child(dbRef, `${DB.tables.expenses}/${currentUser.phone}`), toAdd).catch((error) => {})
   },
   addUser: async (newUser) => {
     const dbRef = ref(getDatabase())
@@ -325,7 +325,7 @@ const DB_UserScoped = {
     const dbRef = ref(getDatabase())
     const events = await Manager.convertToArray(DB.getTable(DB.tables.calendarEvents))
     const memories = await Manager.convertToArray(DB.getTable(DB.tables.memories))
-    const expenses = await Manager.convertToArray(DB.getTable(DB.tables.expenseTracker))
+    const expenses = await Manager.convertToArray(DB.getTable(DB.tables.expenses))
     const suggestions = await Manager.convertToArray(DB.getTable(DB.tables.suggestions))
     const merged = _.concat(events, memories, expenses, suggestions).filter((x) => x)
     const scopedToCurrentUser = merged.filter(
@@ -349,7 +349,7 @@ const DB_UserScoped = {
       }
 
       if (record.hasOwnProperty('paidStatus')) {
-        await DB.deleteMultipleRows(DB.tables.expenseTracker, expenses, currentUser)
+        await DB.deleteMultipleRows(DB.tables.expenses, expenses, currentUser)
       }
 
       if (record.hasOwnProperty('memoryCaptureDate')) {

@@ -6,7 +6,7 @@ import 'react-toggle/style.css'
 
 // Screens
 import Activity from '/src/components/screens/activity'
-import EventCalendar from './components/screens/calendar.jsx'
+import EventCalendar from './components/screens/calendar/calendar.jsx'
 import InstallAppPopup from './components/installAppPopup.jsx'
 import Account from './components/screens/account/account.jsx'
 import Chat from './components/screens/chats/chats.jsx'
@@ -15,7 +15,7 @@ import ChildInfo from './components/screens/childInfo/childInfo.jsx'
 import Coparents from './components/screens/coparents/coparents.jsx'
 import DocsList from './components/screens/documents/docsList.jsx'
 import UploadDocuments from './components/screens/documents/uploadDocuments.jsx'
-import ExpenseTracker from './components/screens/expenseTracker.jsx'
+import ExpenseTracker from './components/expenses/expenseTracker.jsx'
 import ResetPassword from './components/screens/account/resetPassword.jsx'
 import Login from './components/screens/auth/login.jsx'
 import Memories from './components/screens/memories.jsx'
@@ -109,7 +109,7 @@ export default function App() {
     setState({ ...state, currentUser: _currentUser, isLoading: false })
   }
 
-  // CLEAR APP BADGE
+  // ON SCREEN CHANGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)

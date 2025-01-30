@@ -16,7 +16,6 @@ import Numpad from '../../components/shared/numpad'
 import Toggle from 'react-toggle'
 import { PiMoneyWavyDuotone } from 'react-icons/pi'
 import MenuItem from '@mui/material/MenuItem'
-import { formatNameFirstNameOnly } from '../../globalFunctions'
 import UploadInputs from '../../components/shared/uploadInputs'
 import DateManager from '../../managers/dateManager'
 import ModelNames from '../../models/modelNames'
@@ -30,10 +29,11 @@ import ImageManager from '../../managers/imageManager'
 import SelectDropdown from '../shared/selectDropdown'
 import ActivityCategory from '../../models/activityCategory'
 import { MdEventRepeat, MdOutlineFaceUnlock } from 'react-icons/md'
+import StringManager from '../../managers/stringManager.coffee'
 
 export default function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow } = state
+  const { currentUser, theme, refreshKey } = state
   const [expenseName, setExpenseName] = useState('')
   const [expenseChildren, setExpenseChildren] = useState([])
   const [expenseDueDate, setExpenseDueDate] = useState('')
@@ -51,12 +51,10 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
   const [showNumpad, setShowNumpad] = useState(false)
   const [expenseAmount, setExpenseAmount] = useState('')
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const imgRef = useRef()
 
   const resetForm = async () => {
     Manager.resetForm('expenses-wrapper')
-    setRefreshKey(Manager.getUid())
     setExpenseName('')
     setExpenseChildren([])
     setExpenseDueDate('')
@@ -75,13 +73,12 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     setShowNumpad(false)
     setExpenseAmount('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    setState({ ...state, currentUser: updatedCurrentUser })
+    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
     hideCard()
   }
 
   const submitNewExpense = async () => {
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-    console.log(validAccounts)
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign expenses to',
@@ -132,7 +129,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     }
 
     // Get coparent name
-    newExpense.recipientName = formatNameFirstNameOnly(currentUser?.name)
+    newExpense.recipientName = StringManager.formatNameFirstNameOnly(currentUser?.name)
 
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
@@ -151,7 +148,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     const cleanObject = ObjectManager.cleanObject(newExpense, ModelNames.expense)
 
     // Add to DB
-    await DB.add(`${DB.tables.expenseTracker}/${currentUser.phone}`, cleanObject).finally(async () => {
+    await DB.add(`${DB.tables.expenses}/${currentUser.phone}`, cleanObject).finally(async () => {
       // Add repeating expense to DB
       if (repeatInterval.length > 0 && repeatingEndDate.length > 0) {
         await addRepeatingExpensesToDb()
@@ -162,7 +159,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
         await NotificationManager.sendToShareWith(
           shareWith,
           currentUser,
-          `${formatNameFirstNameOnly(currentUser?.name)} has created a new expense`,
+          `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a new expense`,
           `${expenseName} - $${expenseAmount}`,
           ActivityCategory.expenses
         )
@@ -193,7 +190,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
         newExpense.paidStatus = 'unpaid'
         newExpense.createdBy = currentUser?.name
         newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
-        newExpense.recipientName = formatNameFirstNameOnly(currentUser?.name)
+        newExpense.recipientName = StringManager.formatNameFirstNameOnly(currentUser?.name)
         newExpense.repeating = true
         expensesToPush.push(newExpense)
       })
@@ -413,17 +410,13 @@ export default function NewExpenseForm({ hideCard, showCard }) {
 
           <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'}></InputWrapper>
 
+          {/* PAYER */}
           <CheckboxGroup
             required={true}
             parentLabel={'Who will be paying the expense?'}
             dataPhone={currentUser?.coparents?.map((x) => x.phone)}
             checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
-            onCheck={(e) => {
-              const checkbox = e.target
-              document.querySelectorAll('#checkbox-container').forEach((x) => x.classList.remove('active'))
-              checkbox.classList.add('active')
-              handlePayerSelection(e).then((r) => r)
-            }}
+            onCheck={handlePayerSelection}
           />
 
           {/* SHARE WITH */}

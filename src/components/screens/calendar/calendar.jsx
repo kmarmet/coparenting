@@ -1,7 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
 import AlertManager from '/src/managers/alertManager'
 import AppManager from '/src/managers/appManager'
 import BottomCard from '/src/components/shared/bottomCard'
@@ -12,28 +9,26 @@ import DateManager from '/src/managers/dateManager'
 import DomManager from '/src/managers/domManager'
 import EditCalEvent from '/src/components/forms/editCalEvent'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Label from '/src/components/shared/label.jsx'
 import Manager from '/src/managers/manager'
 import NavBar from '/src/components/navBar.jsx'
 import NewCalendarEvent from '/src/components/forms/newCalendarEvent'
 import SecurityManager from '/src/managers/securityManager'
-import StringManager from '/src/managers/stringManager'
 import globalState from '/src/context.js'
 import moment from 'moment'
 import { CgClose } from 'react-icons/cg'
 import { Fade } from 'react-awesome-reveal'
-import { GiPartyPopper } from 'react-icons/gi'
-import { HiOutlineColorSwatch } from 'react-icons/hi'
 import { LuCalendarSearch } from 'react-icons/lu'
 import { PiCalendarPlusDuotone, PiCalendarXDuotone } from 'react-icons/pi'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
-import { TfiClose } from 'react-icons/tfi'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import { BsStars } from 'react-icons/bs'
-import CalendarEvents from './calendar/calendarEvents.jsx'
+import CalendarEvents from './calendarEvents.jsx'
+import Legend from './legend.jsx'
+import DesktopLegend from './desktopLegend.jsx'
+
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser } = state
+  const { theme, currentUser, isLoading } = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
   const [searchResults, setSearchResults] = useState([])
@@ -49,26 +44,26 @@ export default function EventCalendar() {
   const [showHolidays, setShowHolidays] = useState(false)
   const [loadingDisabled, setLoadingDisabled] = useState(false)
   const [showLegend, setShowLegend] = useState(false)
-  const [showDesktopLegend, setShowDesktopLegend] = useState(false)
   const [eventsSetOnPageLoad, setEventsSetOnPageLoad] = useState(false)
 
   // GET EVENTS
-  const getSecuredEvents = async () => {
+  const getSecuredEvents = async (activeDay) => {
     let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
     let _eventsOfDay = []
     setAllEventsFromDb(securedEvents)
-
-    console.log(moment(selectedDate).format('MM/DD'))
-
+    let dateToUse = activeDay
+    if (!activeDay) {
+      dateToUse = selectedDate
+    }
     // All secured events
     securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
 
     // Set events of day
-    _eventsOfDay = securedEvents.filter((x) => x.startDate === moment(selectedDate).format(DateFormats.dateForDb))
+    _eventsOfDay = securedEvents.filter((x) => x.startDate === moment(dateToUse).format(DateFormats.dateForDb))
 
     // Set Holidays
     const holidaysToLoop = holidays.filter(
-      (x) => moment(x.startDate).format(DateFormats.dateForDb) === moment(selectedDate).format(DateFormats.dateForDb)
+      (x) => moment(x.startDate).format(DateFormats.dateForDb) === moment(dateToUse).format(DateFormats.dateForDb)
     )
     _eventsOfDay = [..._eventsOfDay, ...holidaysToLoop]
     setEventsOfActiveDay(_eventsOfDay)
@@ -266,20 +261,10 @@ export default function EventCalendar() {
       if (selectedCalendarElement) {
         const timestampMs = selectedCalendarElement.dataset.timestamp
         const asDay = DateManager.msToDate(timestampMs)
-        setSelectedDate(asDay)
-        setTimeout(async () => {
-          await getSecuredEvents()
-        }, 400)
+        await getSecuredEvents(asDay)
       }
     })
   }
-
-  useEffect(() => {
-    if (selectedDate) {
-      console.log(moment(selectedDate).format('MM/DD'))
-      getSecuredEvents().then((r) => r)
-    }
-  }, [selectedDate])
 
   useEffect(() => {
     if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
@@ -315,15 +300,10 @@ export default function EventCalendar() {
     const staticCalendar = document.querySelector('.MuiDialogActions-root')
     const holidaysButton = document.getElementById('holidays-button')
     const searchButton = document.getElementById('search-button')
-    const legendButtonWrapper = document.getElementById('legend-wrapper')
-    if (staticCalendar && holidaysButton && searchButton && legendButtonWrapper) {
+    if (staticCalendar && holidaysButton && searchButton) {
       staticCalendar.prepend(holidaysButton)
       staticCalendar.prepend(searchButton)
-      staticCalendar.prepend(legendButtonWrapper)
 
-      legendButtonWrapper.addEventListener('click', () => {
-        setShowLegend(true)
-      })
       holidaysButton.addEventListener('click', () => {
         setShowHolidaysCard(!showHolidaysCard)
       })
@@ -431,7 +411,7 @@ export default function EventCalendar() {
           <div id="static-calendar" className={theme}>
             <StaticDatePicker
               showDaysOutsideCurrentMonth={true}
-              // defaultValue={moment(selectedDate)}
+              defaultValue={moment(selectedDate)}
               views={['month', 'day']}
               minDate={moment(`${moment().year()}-01-01`)}
               maxDate={moment(`${moment().year()}-12-31`)}
@@ -440,6 +420,7 @@ export default function EventCalendar() {
               }}
               onChange={async (day) => {
                 setSelectedDate(day)
+                await getSecuredEvents(day).then((r) => r)
               }}
               slotProps={{
                 actionBar: {
@@ -450,38 +431,29 @@ export default function EventCalendar() {
           </div>
 
           {/* LEGEND */}
-          <Accordion expanded={showLegend} id={'calendar-legend'} className={showLegend ? 'open' : 'closed'}>
-            <AccordionSummary className={showLegend ? 'open' : 'closed'}>
-              {showLegend && <TfiClose onClick={() => setShowLegend(false)} />}
-            </AccordionSummary>
-            <AccordionDetails>
-              <Fade direction={'up'} triggerOnce={true}>
-                <p className="flex currentUser">Your Event</p>
-                <p className="flex coparent">Shared Event</p>
-                <p className="flex standard">Holiday</p>
-              </Fade>
-            </AccordionDetails>
-          </Accordion>
+          <Legend />
+
+          {/* BELOW CALENDAR BUTTONS */}
+          {!showHolidays && !showSearchCard && (
+            <div id="below-calendar" className={`${theme} mt-10 flex`}>
+              {/* LEGEND BUTTON */}
+              <div className="flex" id="legend-wrapper" onClick={() => setShowLegend(true)}>
+                <span className="dot currentUser"></span>
+                <span className="dot coparent"></span>
+                <span className="dot standard"></span>
+                <p id="legend-button">Legend</p>
+              </div>
+
+              {/* SEARCH BUTTON */}
+              <p id="search-button">Search</p>
+
+              {/* HOLIDAY BUTTON */}
+              <p id="holidays-button">Holidays</p>
+            </div>
+          )}
 
           {/* CONTENT WITH PADDING */}
           <div className="with-padding">
-            {/* BELOW CALENDAR */}
-            {!showHolidays && !showSearchCard && (
-              <div id="below-calendar" className={`${theme} mt-10 flex`}>
-                {/* LEGEND BUTTON */}
-                <div className="flex" id="legend-wrapper" onClick={() => setShowLegend(true)}>
-                  <span className="dot currentUser"></span>
-                  <span className="dot coparent"></span>
-                  <span className="dot standard"></span>
-                  <p id="legend-button">Legend</p>
-                </div>
-                {/* HOLIDAY BUTTON */}
-                <p id="holidays-button">Holidays</p>
-
-                {/* SEARCH BUTTON */}
-                <p id="search-button">Search</p>
-              </div>
-            )}
             {/* MAP/LOOP EVENTS */}
             <CalendarEvents
               eventsOfActiveDay={eventsOfActiveDay}
@@ -518,23 +490,7 @@ export default function EventCalendar() {
           )}
 
           {/* DESKTOP LEGEND WRAPPER */}
-          <div id="desktop-legend-wrapper">
-            <div className="flex" id="legend-row" onClick={() => setShowDesktopLegend(!showDesktopLegend)}>
-              <HiOutlineColorSwatch />
-              <Label text={'Legend'} />
-            </div>
-            <div id="legend-content" className={showDesktopLegend ? 'active' : ''}>
-              <p className="flex currentUser">
-                <span className="dot in-legend currentUser"></span> Your Event
-              </p>
-              <p className="flex coparent">
-                <span className="dot coparent in-legend"></span> Shared Event
-              </p>
-              <p className="flex standard">
-                <span className="dot in-legend standard"></span> Holiday
-              </p>
-            </div>
-          </div>
+          <DesktopLegend />
 
           <InputWrapper
             placeholder="Find events..."

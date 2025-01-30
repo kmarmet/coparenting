@@ -30,7 +30,7 @@ export default function Coparents() {
   const [selectedCoparentDataArray, setSelectedCoparentDataArray] = useState(null)
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
-
+  const [selectedCoparentRaw, setSelectedCoparentRaw] = useState()
   const deleteProp = async (prop) => {
     let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
 
@@ -57,9 +57,11 @@ export default function Coparents() {
     let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
     coparents = DatasetManager.getValidArray(coparents)
     setUserCoparents(coparents)
-    console.log(Object.entries(coparents[0]))
     setTimeout(() => {
-      setSelectedCoparentDataArray(Object.entries(coparents[0]))
+      if (Manager.isValid(currentUser?.coparents)) {
+        setSelectedCoparentDataArray(Object.entries(coparents[0]))
+        setSelectedCoparentRaw(coparents[0])
+      }
     }, 300)
   }
 
@@ -80,15 +82,15 @@ export default function Coparents() {
   return (
     <>
       {/* CUSTOM INFO FORM */}
-      <CustomCoparentInfo hideCard={() => setShowCustomInfoCard(false)} activeCoparent={selectedCoparentDataArray} showCard={showCustomInfoCard} />
+      <CustomCoparentInfo hideCard={() => setShowCustomInfoCard(false)} activeCoparent={selectedCoparentRaw} showCard={showCustomInfoCard} />
 
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
+      {/*{!selectedCoparentDataArray && <NoDataFallbackText text={'No Co-Parents Added'} />}*/}
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container coparents-wrapper form`}>
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
-          {!selectedCoparentDataArray && <NoDataFallbackText text={'No Co-Parents Added'} />}
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Co-Parents </p>
             {!DomManager.isMobile() && <BsPersonAdd id={'add-new-button'} onClick={() => setShowNewCoparentFormCard(true)} />}
@@ -103,6 +105,7 @@ export default function Coparents() {
                   <div
                     onClick={() => {
                       setSelectedCoparentDataArray(Object.entries(coparent))
+                      setSelectedCoparentRaw(coparent)
                     }}
                     className={coparentPhone && coparentPhone === coparent.phone ? 'active coparent' : 'coparent'}
                     data-phone={coparent.phone}
@@ -129,14 +132,13 @@ export default function Coparents() {
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
                   infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
                   const value = propArray[1]
-                  console.log(infoLabel)
                   return (
                     <div key={index}>
                       {infoLabel !== 'Id' && (
                         <div className="row">
                           <div className="flex input">
                             {/* LOCATION */}
-                            {Manager.contains(infoLabel.toLowerCase(), 'address') && (
+                            {infoLabel.toLowerCase().includes('address') && (
                               <InputWrapper inputType={'date'} labelText={infoLabel}>
                                 <Autocomplete
                                   apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
@@ -147,7 +149,7 @@ export default function Coparents() {
                                   onPlaceSelected={async (place) => {
                                     await update('address', place.formatted_address)
                                   }}
-                                  defaultValue={Manager.contains(infoLabel, 'Address') ? value : 'Home Address'}
+                                  value={value}
                                 />
                               </InputWrapper>
                             )}
@@ -172,24 +174,28 @@ export default function Coparents() {
                 })}
 
               {/* BUTTONS */}
-              <button
-                className="button  default center white-text mb-10 mt-20 green"
-                onClick={() => {
-                  setShowCustomInfoCard(true)
-                }}>
-                Add Your Own Info <FaWandMagicSparkles />
-              </button>
-              <button
-                className="button   default red center"
-                onClick={(e) => {
-                  AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
-                    await deleteCoparent()
-                    AlertManager.successAlert('Co-Parent Removed')
-                    setSelectedCoparentDataArray(null)
-                  })
-                }}>
-                Remove Co-Parent <IoPersonRemove />
-              </button>
+              {currentUser?.coparents?.length > 0 && (
+                <>
+                  <button
+                    className="button  default center white-text mb-10 mt-20 green"
+                    onClick={() => {
+                      setShowCustomInfoCard(true)
+                    }}>
+                    Add Your Own Info <FaWandMagicSparkles />
+                  </button>
+                  <button
+                    className="button   default red center"
+                    onClick={(e) => {
+                      AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
+                        await deleteCoparent()
+                        AlertManager.successAlert('Co-Parent Removed')
+                        setSelectedCoparentDataArray(null)
+                      })
+                    }}>
+                    Remove Co-Parent <IoPersonRemove />
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </Fade>

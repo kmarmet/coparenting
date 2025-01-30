@@ -14,14 +14,18 @@ ImageManager =
         return statusCode
 
   compressImage: (imgFile) ->
-    options = {
-      maxSizeMB: 1,
-      useWebWorker: true,
-    }
-    compressedFile = await imageCompression(imgFile, options);
-    console.log('compressedFile instanceof Blob', compressedFile instanceof Blob);
-    console.log("compressedFile size #{compressedFile.size / 1024 / 1024} MB");
-    return compressedFile
+    try
+      options = {
+        maxSizeMB: 3,
+        useWebWorker: true,
+      }
+      compressedFile = await imageCompression(imgFile, options);
+      console.log('compressedFile instanceof Blob', compressedFile instanceof Blob);
+      console.log("compressedFile size #{compressedFile.size / 1024 / 1024} MB");
+      return compressedFile
+    catch error
+      console.log(error)
+
 
   expandImage: (img, modal) ->
     modal ?= document.querySelector('.image-modal')

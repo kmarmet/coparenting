@@ -9,12 +9,22 @@
   transition: all 0.5s ease-in-out;
   transition-timing-function: cubic-bezier(0.17, 0.67, 0.21, 0.95);
   background: $lightBg;
-  height: 100%;
-  padding: 15px 15px 200px 15px;
+  height: calc(100vh - 90px);
+  padding: $statusBarHeight 15px 20px 15px;
   width: 100%;
-  position: relative;
-  max-height: 100vh;
+  position: fixed;
+  max-height: calc(100vh - 90px);
+  top: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 99999;
+
+  &.home {
+    //    overflow: hidden;
+    //    max-height: unset;
+    position: relative;
+    padding-top: 0;
+  }
 
   &.documents {
     padding-bottom: 300px;
@@ -34,7 +44,7 @@
   }
 
   &.calendar {
-    padding: 0;
+    padding: 44pt 0 0 0;
   }
 
   &.login {
@@ -45,7 +55,8 @@
 // SCREEN TITLE
 @mixin screenTitle {
   font-size: 24px;
-  width: 100%;
+  width: 100vw;
+  max-width: 100%;
   word-break: break-word;
   transition: all 0.6s linear;
   line-height: 1;
@@ -110,10 +121,9 @@
   transition: all 0.3s ease-in-out;
   background-color: rgba(0, 0, 0, 0.4);
   overflow: hidden;
-
   &.active {
     opacity: 1;
-    @include zIndex(99999);
+    z-index: 999999;
   }
 }
 
@@ -334,17 +344,6 @@
   }
 
   label {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    line-height: 1;
-    font-size: 16px;
-    font-weight: 500;
-    opacity: 0.85;
-    color: black;
-    margin: 0;
-    letter-spacing: 0.4px;
-
     svg {
       font-size: 22px;
       margin-right: 8px;
@@ -409,6 +408,14 @@
     color: $mainBlue;
     border: 1px solid $mainBlue;
     background: transparent;
+
+    @media screen and (min-width: 800px) {
+      &:hover {
+        background: $mainBlue;
+        color: white;
+      }
+    }
+
     &.green {
       background: transparent;
       border: 1px solid $green;
@@ -934,15 +941,18 @@
   }
 
   .view {
-    padding-bottom: 3px;
-    font-size: 16px;
+    font-size: 14px;
     text-align: center;
+    opacity: 0.65;
+    padding-bottom: 4px;
     @include hover;
 
     &.active {
-      color: #557fff;
+      padding-bottom: 3px;
+      font-size: 16px;
+      color: $mainBlue;
       font-weight: $fwMedium;
-      opacity: 1;
+      opacity: 0.8;
       &:after {
         content: '';
         position: relative;
@@ -1170,13 +1180,20 @@
 }
 @mixin label {
   label {
-    font-size: 16px;
-    font-weight: $fwMediumBold;
-    opacity: 0.85;
-    color: black;
-    margin: 0;
-    letter-spacing: 0.4px;
-    line-height: 1.3;
+    span:not(.asterisk) {
+      font-weight: $fwMedium;
+      color: black;
+      opacity: 0.6;
+      margin: 0;
+      letter-spacing: 0.4px;
+      line-height: 1.3;
+      font-size: 16px;
+    }
+    &.bold {
+      span {
+        font-weight: bold;
+      }
+    }
   }
 }
 @mixin inputWrapper {
@@ -1187,23 +1204,6 @@
   align-items: flex-start;
   width: 100%;
   margin-bottom: 20px;
-  #label-wrapper {
-    * {
-      line-height: 1;
-    }
-
-    label {
-      display: inline;
-      align-items: center;
-
-      span {
-        font-weight: $fwMediumBold;
-        display: inline;
-        width: auto;
-        opacity: 0.85;
-      }
-    }
-  }
   textarea {
     max-height: 30px;
     height: 30px;
@@ -1550,20 +1550,22 @@
       transition: all 0.3s ease-in-out;
 
       .pill {
-        background: rgba(231, 233, 238, 0.78);
-        color: rgba(0, 0, 0, 0.8);
-        font-weight: $fwMediumBold;
-        border: 0;
+        background: #ffeebb;
+        color: #7c6842;
+        font-weight: $fwMedium;
         display: flex;
         align-items: center;
         line-height: 1;
-        padding: 7px 10px;
-        transition: all 0.3s ease-in-out;
+        padding: 8px 10px;
+        text-align: center;
+        transition: 0.5s;
+        background-size: 200% auto;
 
         svg {
           width: auto;
           position: unset;
-          transition: all 0.3s ease-in-out;
+          transition: all 0.3s linear;
+          margin-left: 5px;
         }
       }
     }
@@ -1573,14 +1575,14 @@
     }
 
     .pill {
-      border: 1px solid rgba(0, 0, 0, 0.38);
-      color: rgba(0, 0, 0, 0.58);
+      color: rgba(0, 0, 0, 0.75);
+      background: $bestGreyForWhite;
       border-radius: 50px;
       min-width: 60px;
       text-align: center;
-      font-weight: $fwMedium;
+      font-weight: $fwRegular;
       line-height: 1;
-      padding: 5px 10px;
+      padding: 8px 10px;
       font-size: 12px;
       display: flex;
       align-items: center;
@@ -1601,9 +1603,8 @@
 
       svg {
         font-size: 12px;
-        margin-left: 5px;
         width: 0;
-        transition: all 0.3s ease-in-out;
+        transition: all 0.3s linear;
       }
     }
   }
@@ -1621,6 +1622,15 @@
   }
   #upload-input {
     width: 100%;
+
+    &::file-selector-button {
+      padding: 5px 15px;
+      border-radius: 50px;
+      background: $bestGreyForWhite;
+      margin-right: 10px;
+      font-size: 14px;
+      font-weight: $fwMediumBold;
+    }
   }
 }
 @mixin accordionList {
@@ -2336,15 +2346,16 @@
   bottom: -100vh;
   z-index: -1;
   box-shadow: rgba(0, 0, 0, 0.56) 0 2px 30px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
   // ANIMATION
   &.animate__fadeInUp {
     @include zIndex(999999);
     bottom: 0;
-
-    &.search-card {
-      @include zIndex(99999);
-    }
   }
+
   // ACTIVE
   &.active {
     &.view-holidays {
@@ -2352,6 +2363,35 @@
       min-height: 0;
     }
   }
+
+  #swipe-bar-wrapper {
+    width: 100%;
+    height: 15px;
+    position: fixed;
+    top: 0;
+    z-index: 100000000;
+    background: white;
+    #swipe-bar {
+      width: 80px;
+      height: 4px;
+      background: #b9b9b9;
+      border-radius: 50px;
+      margin: 10px auto 0 auto;
+    }
+  }
+
+  #details {
+    a {
+      max-width: 90%;
+      word-break: break-all;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+    .low-opacity-text {
+      font-size: 15px;
+    }
+  }
+
   #bottom-card-loading-gif {
     transform: scale(0.3);
   }
@@ -2462,7 +2502,7 @@
         &.with-bg {
           background: $red;
           color: white;
-          boder: unset;
+          border: unset;
         }
       }
 
@@ -2493,6 +2533,7 @@
       }
     }
   }
+
   // EDIT CALENDAR EVENT
   &.edit-calendar-event {
     #relative-wrapper {
@@ -2530,7 +2571,8 @@
       }
     }
   }
-  // TRANSFER
+
+  // TRANSFER/SWAP/EXPENSES
   &.transfer-change,
   &.expense-tracker,
   &.edit-calendar-event,
@@ -2549,7 +2591,7 @@
     }
 
     #row {
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       border: 0;
       padding: 0;
 
@@ -2561,6 +2603,19 @@
         font-size: 16px;
         font-weight: $fwRegular;
         line-height: 1;
+      }
+    }
+
+    &.expense-tracker {
+      min-height: 70vh;
+      .action-buttons {
+        button {
+          width: calc(100% / 3);
+          justify-content: center;
+          font-size: 14px;
+          padding: 8px 0;
+          margin: 0;
+        }
       }
     }
 
@@ -2581,6 +2636,17 @@
         svg {
           margin-left: 5px;
         }
+        @media screen and (min-width: 800px) {
+          &:hover {
+            background: $mainBlue;
+            color: white;
+
+            &.red {
+              background: $red;
+              color: white;
+            }
+          }
+        }
 
         &.green {
           border: 1px solid $green;
@@ -2600,6 +2666,11 @@
   // UPLOAD DOCUMENT
   &.upload-document-card {
     min-height: 80vh;
+    #convert-doc-link {
+      padding: 0;
+      margin-bottom: 15px;
+      display: block;
+    }
   }
   // VIEW HOLIDAYS
   &.view-holidays {
@@ -2640,11 +2711,11 @@
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      gap: 5px 10px;
       flex-wrap: wrap;
 
       .pill {
         @include pillButton;
+        margin-right: 8px;
       }
     }
   }
@@ -2779,112 +2850,82 @@
     }
 
     #content {
-      display: flex;
-      gap: 10px;
-
+      margin-top: 10px;
       #users-wrapper {
-        width: 100%;
-
+        @include row;
         .user-wrapper {
           position: relative;
-          background: $lightIconBgBlue;
           display: flex;
-          justify-content: center;
+          width: 100%;
           align-items: center;
-          flex-wrap: wrap;
-          padding: 10px;
-          background: #dde5ff;
-          border-radius: 50%;
-          height: 115px;
-          width: 115px;
-          @include fadeEdges;
-
+          justify-content: flex-start;
           svg {
-            font-size: 35px;
-            height: unset;
+            font-size: 24px;
             width: unset;
-            color: $mainBlue;
+            color: black;
+            opacity: 0.7;
           }
 
           p {
-            color: $mainBlue;
             height: unset;
-            width: 100%;
-            font-size: 18px;
             text-align: center;
-            position: relative;
-            top: -12px;
+            margin-right: auto;
+            font-weight: $fwMediumBold;
+            margin-left: 10px;
+            opacity: 0.7;
           }
         }
       }
     }
   }
+
+  &.doc-tips-card {
+    .text-highlight {
+      color: white;
+      background: $mainBlue;
+      font-size: 18px;
+      border-radius: 5px;
+      padding: 0 5px;
+      font-weight: $fwBold;
+    }
+    #toc-button-inline {
+      font-size: 22px;
+      position: relative;
+      top: 5px;
+      color: $mainBlue;
+    }
+  }
+
   // TABLE OF CONTENTS
   &.toc {
-    max-height: 70vh;
-    overflow: auto;
-
-    #toc-scroll-button {
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
-
-    p:not(#title) {
-      text-align: left;
-      justify-self: flex-start;
-      justify-content: flex-start;
-      background-color: transparent;
-      border: 0;
-      -webkit-border-radius: 0;
-      -moz-border-radius: 0;
-      border-radius: 0;
-      padding: 10px 0;
-      color: $offWhite;
-      font-weight: 500;
-
-      &#toc-subtitle {
-        text-align: center;
-        justify-content: center;
-        opacity: 0.6;
-        font-weight: 400;
-        font-style: italic;
-        margin-bottom: 0;
-        color: black;
-        padding-bottom: 0;
+    #toc-header-wrapper {
+      margin: 12px 0;
+      span {
+        font-size: 25px;
+        color: $mainBlue;
+        margin-right: 8px;
       }
-
-      &.toc-header {
+      .toc-header {
         color: black;
-        font-weight: 400;
-        font-size: 14px;
-        background-color: transparent;
-        border-radius: 0;
+        font-weight: $fwMedium;
         width: 100%;
-        border-bottom: 1px solid $translucent;
-        opacity: 0.6;
-        margin: 0 0 10px 0;
-        padding: 0;
+        line-height: 1;
         text-transform: capitalize;
         @include hover;
+        padding: 12px 10px;
+        border: 0;
+        background: $bestGreyForWhite2;
+        border-radius: $borderRadius;
+        opacity: 0.95;
+        justify-content: flex-start;
 
         &.hide {
           display: none;
         }
-
-        &p {
-          &:not(#title) {
-            background-color: transparent;
-          }
-        }
       }
     }
-
-    #title {
-      margin-bottom: 0;
-      text-align: center;
-      justify-content: center;
-    }
   }
+
   // PAYMENT OPTIONS
   &.payment-options-card {
     max-height: 80vh;
@@ -2892,13 +2933,32 @@
     padding-bottom: 200px;
     transition: all 0.3s ease-in-out;
 
+    a {
+      line-height: 1;
+    }
+
+    .new-tab-icon {
+      font-size: 18px;
+      margin: 0;
+      padding: 0;
+      line-height: 1;
+      position: relative;
+      top: 3px;
+    }
+
     .option {
       .brand-name-wrapper {
-        margin-top: 10px;
+        margin-top: 30px;
         align-items: center;
         padding: 10px;
         border-radius: $borderRadius;
 
+        .brand-name {
+          opacity: 1;
+          line-height: 1;
+          font-size: 22px;
+          justify-content: center;
+        }
         &.zelle {
           background: #6d1fd4;
         }
@@ -2928,12 +2988,6 @@
             font-size: 24px;
           }
         }
-
-        .brand-name {
-          line-height: 1;
-          font-size: 22px;
-          justify-content: center;
-        }
       }
 
       .option {
@@ -2947,7 +3001,6 @@
         max-width: 100%;
         width: 100%;
         height: auto;
-        @include shadow;
       }
 
       img {
@@ -2996,16 +3049,19 @@
       }
     }
 
+    #content {
+      padding-top: 30px;
+    }
+
     #title-wrapper {
       position: sticky;
-      top: -10px;
+      top: 15px;
       background-color: white;
       z-index: 10000000;
       right: 0;
       left: 0;
-      padding-top: 20px;
+      padding-top: 10px;
       margin: 0;
-      padding-bottom: 10px;
 
       #large-title {
         justify-content: center;
@@ -3364,17 +3420,16 @@
   width: 100vw;
   background-color: $lightBg;
   position: fixed;
-  overflow: hidden;
   transition: all 0.5s ease-in-out;
   border-radius: 0 0 30px 30px;
-  height: calc(90px + env(safe-area-inset-bottom));
-  padding-top: 15px;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 50px);
+  padding-bottom: $homeIndicatorHeight - 15px;
   display: flex;
   align-items: center;
   bottom: 0;
   opacity: 1;
-  z-index: $maxZIndex;
+  z-index: 99999;
+  box-shadow: 0 0 5px 5px white inset;
+  //  border: 2px solid red;
   &.hidden {
     bottom: -200px;
   }
@@ -3445,10 +3500,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    overflow: auto;
     width: 100vw;
-    padding: 25px 15px 10px 15px;
-
+    padding: 15px 15px 0 15px;
+    box-shadow: 0 0 5px 5px white inset;
     .menu-item {
       opacity: 0.8;
       flex-wrap: wrap;

@@ -26,15 +26,20 @@ ImageManager = {
     });
   },
   compressImage: async function(imgFile) {
-    var compressedFile, options;
-    options = {
-      maxSizeMB: 1,
-      useWebWorker: true
-    };
-    compressedFile = (await imageCompression(imgFile, options));
-    console.log('compressedFile instanceof Blob', compressedFile instanceof Blob);
-    console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`);
-    return compressedFile;
+    var compressedFile, error, options;
+    try {
+      options = {
+        maxSizeMB: 3,
+        useWebWorker: true
+      };
+      compressedFile = (await imageCompression(imgFile, options));
+      console.log('compressedFile instanceof Blob', compressedFile instanceof Blob);
+      console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`);
+      return compressedFile;
+    } catch (error1) {
+      error = error1;
+      return console.log(error);
+    }
   },
   expandImage: function(img, modal) {
     var imageModal, src;

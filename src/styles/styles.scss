@@ -200,7 +200,8 @@
   }
 
   &.conversation-fade-wrapper {
-    height: 100vh;
+    height: calc(100vh - 115px);
+    overflow: hidden;
   }
 
   &.side-navbar-fade-wrapper,
@@ -231,16 +232,17 @@
   }
   #app-container {
     position: relative;
-    max-height: 100vh;
-    overflow: auto;
     max-width: 100vw;
     width: 100vw;
-    height: 100vh;
     padding: 0;
     margin: 0;
     opacity: 1;
     background: $lightDesktopBg;
-    overflow-y: hidden;
+    overflow: hidden;
+    height: 100vh;
+    @media screen and (max-width: 800px) {
+      background: white;
+    }
 
     &.disable-scroll {
       overflow: hidden;
@@ -375,7 +377,7 @@
         @include defaultButton;
       }
 
-      @media screen and (min-width: 1000px) {
+      @media screen and (min-width: 800px) {
         &:hover {
           transform: scale(1.1);
           transition: all 0.3s ease-in-out;
@@ -401,10 +403,10 @@
       align-items: flex-start;
 
       svg {
-        font-size: 26px;
+        font-size: 36px;
         color: $green;
         position: relative;
-        bottom: 4px;
+        bottom: 6px;
 
         &.swap-requests {
           font-size: 28px;
@@ -421,10 +423,26 @@
       max-width: calc(100vw - 30px);
       position: relative;
       gap: 15px;
-      overflow: auto;
-      //      max-height: 1000px;
-      //      height: 100vh;
-      //
+      overflow: hidden;
+      height: 100vh;
+
+      @media screen and (min-width: 800px) {
+        height: calc(100vh - 80px);
+        max-height: calc(100vh - 110px);
+        overflow: auto;
+      }
+
+      &.home {
+        //        overflow-y: auto;
+        //        overflow-x: auto;
+        //        max-height: 1000px;
+        height: 100vh;
+        max-height: 100vh;
+        position: fixed;
+        overflow: auto;
+        //        display: block;
+      }
+
       &.fullscreen {
         max-width: 100vw;
       }
@@ -436,7 +454,7 @@
         align-items: flex-start;
 
         @media screen and (min-width: 800px) {
-          max-height: calc(100vh - 110px);
+          //          max-height: calc(100vh - 110px);
         }
       }
 
@@ -629,8 +647,9 @@
       @include blurredBg;
       background-color: white;
       display: none;
-      @include zIndex(99999);
-
+      height: 100vh;
+      width: 100vw;
+      z-index: $maxZIndex;
       &.dark {
         background: $darkBg;
       }
@@ -660,7 +679,7 @@
       color: black;
       width: 100%;
       font-size: 25px;
-      opacity: 0.85;
+      opacity: 1;
       font-weight: $fwBold;
       line-height: 1.2;
     }
@@ -692,9 +711,6 @@
       color: $red;
       font-weight: bold;
       max-height: 15px;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
     }
 
     #disclaimer {
@@ -718,6 +734,10 @@
 
     .blue {
       color: $mainBlue;
+    }
+
+    .red {
+      color: $red;
     }
 
     .required-field-error {

@@ -1,32 +1,158 @@
 @import '../mixins';
 
 #external-overrides {
-  #desktop-search-button-wrapper {
-    background: $mainBlue;
+  #floating-buttons {
+    box-shadow: unset;
     position: fixed;
-    bottom: 25px;
-    right: 40px;
-    border-radius: 100%;
-    height: 50px;
-    width: 50px;
-    z-index: 1000;
+    bottom: 120px;
+    right: 10px;
+    padding: 15px 10px 20px 10px;
+    z-index: 999999;
+    border-radius: 50px;
+    background: $mainBlue;
+    transition: all 0.6s ease-in-out;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    @include hoverShadow;
-    @include bestShadow;
-    #desktop-search-button {
+    gap: 20px;
+    @include shadow;
+    &.hide {
+      opacity: 0;
+      transition: all 0.6s ease-in-out;
+      bottom: -200px;
+    }
+
+    svg {
       color: white;
+      font-size: 34px;
+      line-height: 1;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+    #tips-icon-wrapper {
+      svg {
+        font-size: 28px;
+      }
+    }
+    #toc-button-wrapper,
+    #scroll-to-top-icon-wrapper,
+    #tips-icon-wrapper,
+    #desktop-search-button-wrapper {
+      max-height: 25px;
+      margin: 0;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &#desktop-search-button-wrapper {
+        svg {
+          font-size: 30px;
+        }
+      }
     }
   }
   #documents-container {
-    #image-text {
-      .search-highlight {
-        color: $mainBlue;
-        background: $lightIconBgBlue;
+    #doc-text {
+      * {
+        text-decoration: unset !important;
+      }
+      .text-highlight {
+        color: white;
+        background: $mainBlue;
+        font-size: 18px;
         border-radius: 5px;
         padding: 0 5px;
         font-weight: $fwBold;
+      }
+      .Title {
+        // what here?
+      }
+      .Text_Body {
+        font-size: 16px !important;
+        span {
+          font-size: 16px !important;
+        }
+      }
+      .Heading_1,
+      .Heading_2 {
+        width: 100%;
+        margin: 20px 0 5px 0 !important;
+        background-color: $lightIconBgBlue;
+        border-radius: 5px;
+        padding: 8px 0;
+        display: block;
+        opacity: 1;
+        position: relative;
+        text-align: center;
+
+        span {
+          line-height: 1.3;
+          text-transform: capitalize;
+          font-weight: $fwMediumBold;
+          color: $mainBlue;
+          font-family: 'Roboto', serif !important;
+          text-indent: unset !important;
+        }
+      }
+      input {
+        display: none;
+      }
+      a {
+        text-decoration: none;
+        line-height: 1;
+
+        &[name='Check2'] {
+          color: inherit;
+        }
+      }
+      h3 {
+        width: 100%;
+        margin: 15px 0;
+      }
+      p {
+        font-size: 16px;
+        opacity: 1;
+        max-width: 95%;
+        word-break: break-word;
+        &.delete-header-button {
+          font-size: 12px;
+        }
+        &.header {
+          width: 100%;
+          display: flex !important;
+          align-items: center;
+          flex-wrap: wrap;
+          padding: 10px;
+          font-weight: $fwMedium;
+          justify-content: center;
+          font-size: 16px;
+
+          span {
+            font-size: 16px;
+            font-weight: $fwMedium;
+            width: auto;
+          }
+        }
+      }
+      p,
+      li {
+        letter-spacing: 1px;
+        font-size: 18px;
+        font-weight: 400;
+        margin: 10px 0 20px 0;
+        font-family: 'Roboto', serif !important;
+        span {
+          line-height: 1.4 !important;
+          font-family: 'Roboto', serif !important;
+        }
+        &.delete-header-button {
+          margin: 5px auto 0 auto;
+        }
+        &:has(> span) {
+          margin-bottom: 0;
+        }
       }
     }
     #image-name {
@@ -40,17 +166,15 @@
       font-weight: $fwMediumBold;
       margin: 20px 0 5px 0;
       line-height: 1.3;
-      font-size: 18px;
       text-transform: capitalize;
       background-color: $lightIconBgBlue;
       color: $mainBlue;
       border-radius: 5px;
       padding: 8px 0;
-      display: block;
       opacity: 1;
       position: relative;
       text-align: center;
-
+      display: block;
       .header {
         padding: 0;
         margin: 0;
@@ -60,24 +184,26 @@
       }
 
       .delete-header-button {
-        font-size: 14px;
+        font-size: 12px;
         line-height: 1;
-        transform: scale(1, 0.9);
-        justify-self: flex-start;
-        width: 20px;
-        height: 20px;
-        border-radius: 100%;
-        margin: 0 auto 0 auto;
-        position: absolute;
-        top: -8px;
-        display: flex;
         align-items: center;
         justify-content: center;
         padding: 0;
-        right: -5px;
-        background-color: $bgRed;
-        color: $red;
+        user-select: none;
+        color: #ff7680;
+        margin: 0 auto;
+        display: block;
+        width: 80px;
         @include hover;
+
+        &:after {
+          padding: 0;
+          border-bottom: 1px solid #ff7680;
+          position: relative;
+          content: 'DELETE';
+          font-weight: $fwMedium;
+          font-size: 12px;
+        }
       }
 
       svg {
@@ -93,61 +219,8 @@
       width: 80px;
       background-size: cover;
       border-radius: $borderRadius;
-    }
-  }
-
-  #bottom-actions {
-    padding-top: 10px;
-    position: fixed;
-    bottom: 80px;
-    z-index: 1000;
-    @include centerHoriz;
-    #toc-button,
-    #search-button {
-      position: fixed;
-      bottom: 20px;
-      text-align: center;
-      background-color: white;
-      font-weight: bold;
-      padding: 5px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: $borderRadius;
-      z-index: 10000;
-
-      &#toc-button {
-        width: 50vw;
-        @include centerHoriz;
-        background-color: $green;
-        color: white;
-        @include shadow;
-        @include hover;
-      }
-      &#search-button {
-        right: 10px;
-        background-color: transparent;
-        font-size: 30px;
-        bottom: 12px;
-      }
-    }
-
-    #search-wrapper {
-      #search-input {
-        justify-self: flex-end;
-        width: 70%;
-        margin-left: auto;
-        margin-right: 50px;
-      }
-    }
-
-    &.dark {
-      background-color: $darkBg;
-      width: 100vw;
-
-      #search-button {
-        color: $darkBlueMedium;
-      }
+      border: 1px solid $darkGrey;
+      filter: grayscale(100%);
     }
   }
 
@@ -393,7 +466,7 @@
       font-weight: 500;
       padding: 10px;
       border-radius: 5px;
-      width: calc(100vw - 35px);
+      width: 100%;
       overflow: hidden;
       display: block;
       margin-bottom: 10px;
@@ -412,10 +485,21 @@
       }
 
       .highlight {
-        width: calc(100vw - 20px);
+        //        width: calc(100vw - 20px);
       }
 
       &.header {
+      }
+    }
+
+    p,
+    span:not(.pill),
+    li,
+    a:not(.pill) {
+      line-height: 1.7 !important;
+
+      &.bold {
+        padding-right: 8px;
       }
     }
 
@@ -435,19 +519,30 @@
       margin-bottom: 10px;
     }
 
+    ol,
+    ul {
+      max-width: 92%;
+      position: relative;
+      left: 8%;
+
+      li {
+        opacity: 1 !important;
+        color: black !important;
+
+        &::marker {
+          font-size: 16px;
+          font-weight: $fwBold;
+        }
+      }
+    }
+
     a {
       font-size: 16px;
       color: $linkColor;
       font-weight: bold;
       text-decoration: underline;
-      display: block;
       font-style: italic;
-
-      span {
-        position: relative;
-        top: 5px;
-        font-size: 18px;
-      }
+      padding: 0 5px;
     }
 
     #text-container {
@@ -491,50 +586,6 @@
         strong {
           font-weight: bold;
           background-color: transparent;
-        }
-      }
-
-      p,
-      li {
-        letter-spacing: 1px;
-        font-size: 18px;
-        font-weight: 400;
-        margin: 10px 0 20px 0;
-        line-height: 1.3;
-
-        &:has(> span) {
-          margin-bottom: 0;
-        }
-      }
-
-      ol {
-        padding-left: 0;
-      }
-
-      ul {
-        padding: 0;
-        ul {
-          * {
-            -ms-word-break: break-word;
-            word-break: break-word;
-            max-width: 95%;
-          }
-        }
-        ol {
-          padding: 0 !important;
-        }
-        li {
-          padding: 0;
-          width: calc(100vw - 20px);
-          &.highlight {
-            //            max-width: 95%;
-            padding: 12px 12px 0 12px;
-
-            * {
-              background-color: transparent !important;
-              padding: 0 !important;
-            }
-          }
         }
       }
 

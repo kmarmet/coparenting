@@ -8,16 +8,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import firebaseConfig from '/src/firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import { TbSunMoon } from 'react-icons/tb'
-import MemoriesImage from '/src/img/homepage/memories.png'
-import ChildInfoImage from '/src/img/homepage/childInfo.png'
-import CalendarImage from '/src/img/homepage/calendar.png'
-import MenuImage from '/src/img/homepage/menu.png'
-import ExpensesImage from '/src/img/homepage/expense-tracker.png'
-import TabletImage from '/src/img/homepage/devices/tablet.png'
-import LaptopImage from '/src/img/homepage/devices/laptop.png'
-import PhoneImage from '/src/img/homepage/devices/phone.png'
-import Logo from '/src/img/logo.png'
-import 'pure-react-carousel/dist/react-carousel.es.css'
+import Logo from '../../img/logo.png'
 import { MdOutlineStar } from 'react-icons/md'
 import { FaRegHandshake } from 'react-icons/fa'
 import { useLongPress } from 'use-long-press'
@@ -28,33 +19,12 @@ import 'lightgallery/css/lightgallery.css'
 import AppManager from '/src/managers/appManager.js'
 import HomescreenSections from '/src/models/homescreenSections.js'
 import { IoIosArrowUp } from 'react-icons/io'
-
-function LazyImage({ show, importedImage, imagesObjectPropName }) {
-  const [showImage, setShowImage] = useState(false)
-
-  useEffect(() => {
-    if (show) {
-      setShowImage(true)
-    }
-  }, [show])
-
-  return (
-    <div className="img-wrapper" data-name={imagesObjectPropName}>
-      {showImage && (
-        <Fade>
-          <img alt="Peaceful coParenting" src={importedImage} className={`lazy-loaded-image`} />
-        </Fade>
-      )}
-      {!showImage && <img alt="Loading..." id="lazy-loaded-img-placeholder" src={require('/src/img/loading.gif')} />}
-    </div>
-  )
-}
+import { LazyLoadImage } from 'react-lazy-load-image-component'
 
 export default function Home() {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
   const [loadedImages, setLoadedImages] = useState([])
-  const [calendarImage, setCalendarImage] = useState(null)
   const bind = useLongPress((element) => {
     setState({ ...state, currentScreen: ScreenNames.login })
   })
@@ -94,28 +64,14 @@ export default function Home() {
   }
 
   const scrollToTop = () => {
+    const scrollToTopButton = document.querySelector('#scroll-to-top-button-wrapper')
+    scrollToTopButton.classList.remove('hide')
+
     const header = document.getElementById('home-navbar')
     header.scrollIntoView({ behavior: 'smooth' })
   }
 
   useEffect(() => {
-    let homescreenWrapper = document.getElementById('wrapper')
-
-    if (homescreenWrapper) {
-      const imageWrappers = document.querySelectorAll('.img-wrapper')
-      DomManager.addScrollListener(
-        homescreenWrapper,
-        () => {
-          for (let imageWrapper of imageWrappers) {
-            const imagesObjectPropName = imageWrapper.dataset.name
-            if (DomManager.isInViewport(imageWrapper)) {
-              setLoadedImages([...loadedImages, imagesObjectPropName])
-            }
-          }
-        },
-        0
-      )
-    }
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         // console.log(user)
@@ -135,6 +91,11 @@ export default function Home() {
           whyUsSection.scrollIntoView({ behavior: 'smooth' })
         }
       }
+    }
+
+    const appWrapper = document.getElementById('app-content-with-sidebar')
+    if (appWrapper) {
+      appWrapper.classList.add('home')
     }
   }, [])
 
@@ -171,9 +132,9 @@ export default function Home() {
           </div>
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.image'}>
             <div className="flex" id="images">
-              <img alt="Calendar" className="image" src={CalendarImage} />
-              <img alt="Memories" className="image" src={MemoriesImage} />
-              <img alt="Child Info" className="image" src={ChildInfoImage} />
+              <LazyLoadImage className={'image'} delay={1000} src={require('/src/img/homepage/memories.png')} alt="Menu" effect="blur" />
+              <LazyLoadImage className={'image'} delay={1000} src={require('/src/img/homepage/calendar.png')} alt="Menu" effect="blur" />
+              <LazyLoadImage className={'image'} delay={1000} src={require('/src/img/homepage/childInfo.png')} alt="Menu" effect="blur" />
             </div>
           </LightGallery>
         </Fade>
@@ -291,7 +252,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'one-subscription'}>
-                  <p className="feature-title">One Subscription for All Features</p>
+                  <p className="feature-title">One Subscription for ALL Features</p>
                   <MdOutlineStar className={'star'} />
                   <p className="feature-subtitle">
                     Almost every co-parenting application have multiple tiers of pricing. You get very basic features for one price, and then they
@@ -300,22 +261,40 @@ export default function Home() {
                   <div className="content">
                     <ul>
                       <li className="list-title">
-                        Low Subscription Cost
+                        Fair Pricing that Everyone can Afford
                         <ul>
                           <li>$4.99 per month</li>
                           <li>
-                            For example: The OurFamilyWizard application costs $120 per year
+                            For example: The OurFamilyWizard application costs $150 per year - <b>PER co-parent/user!</b>
                             <ul>
                               <li>
-                                Peaceful Co-Parenting costs <b>HALF of THAT</b>
+                                The price of Peaceful Co-Parenting per year is <b>85% cheaper!</b>
+                              </li>
+                              <li>
+                                $120 for <b>BOTH co-parents</b> instead of $300
+                                <ul>
+                                  <li>
+                                    That means both you <b>AND</b> you co-parent can utilize our application (and all of its tools) for{' '}
+                                    <b>less than HALF</b> of the cost of <b>ONE</b> OurFamilyWizard subscription
+                                  </li>
+                                </ul>
                               </li>
                             </ul>
                           </li>
                         </ul>
                       </li>
                       <li className="list-title">
-                        Access to ALL Features
+                        Access to ALL Features - ZERO Upselling
                         <ul>
+                          <li>
+                            Too often subscriptions (such as OurFamilyWizard) have several pricing tiers. Basic, Premium, Max, .etc.
+                            <ul>
+                              <li>That is NOT keeping you in mind</li>
+                              <ul>
+                                <li>You deserve access to ALL features for one very affordable price</li>
+                              </ul>
+                            </ul>
+                          </li>
                           <li>
                             For the price of a cup of coffee ($4.99) you get <b>ALL</b> features
                             <ul>
@@ -508,7 +487,7 @@ export default function Home() {
                         Lightning Fast Response Time
                         <ul>
                           <li>
-                            You will have a reply from our response team <b>within hours</b> not days
+                            You will have a reply from our response team <b>within hours</b>, not days
                           </li>
                           <li>
                             This includes
@@ -597,7 +576,7 @@ export default function Home() {
                   environment for your children.
                 </p>
               </div>
-              <LazyImage show={loadedImages.includes('menu')} importedImage={MenuImage} imagesObjectPropName={'menu'} />
+              <LazyLoadImage src={require('/src/img/homepage/menu.png')} alt="Menu" effect="blur" delay={1000} />
             </div>
           </Fade>
 
@@ -612,7 +591,7 @@ export default function Home() {
                   split costs and avoid conflicts over money.
                 </p>
               </div>
-              <LazyImage importedImage={ExpensesImage} imagesObjectPropName={'expenses'} show={loadedImages.includes('expenses')} />
+              <LazyLoadImage src={require('/src/img/homepage/expense-tracker.png')} alt="Menu" effect="blur" delay={1000} />
             </div>
           </Fade>
 
@@ -643,9 +622,11 @@ export default function Home() {
               </div>
 
               <div className="flex images mt-15">
-                <LazyImage importedImage={PhoneImage} imagesObjectPropName={'phone'} show={loadedImages.includes('phone')} className="phone" />
-                <LazyImage importedImage={LaptopImage} imagesObjectPropName={'laptop'} show={loadedImages.includes('laptop')} className="laptop" />
-                <LazyImage importedImage={TabletImage} imagesObjectPropName={'tablet'} show={loadedImages.includes('tablet')} className="tablet" />
+                <LazyLoadImage src={require('/src/img/homepage/devices/phone.png')} alt="Menu" effect="blur" delay={1000} />
+
+                <LazyLoadImage src={require('/src/img/homepage/devices/laptop.png')} alt="Menu" effect="blur" delay={1000} />
+
+                <LazyLoadImage src={require('/src/img/homepage/devices/tablet.png')} alt="Menu" effect="blur" delay={1000} />
               </div>
 
               <p className="subtitle mt-25 mb-0" id="multiple-device-usage">

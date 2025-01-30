@@ -2,39 +2,55 @@ import { child, getDatabase, ref, set } from 'firebase/database'
 import Manager from '../managers/manager'
 import DB from '../database/DB'
 import SecurityManager from './securityManager'
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../globalFunctions'
 import ChatBookmark from '../models/chat/chatBookmark'
 import LogManager from './logManager'
-import DB_UserScoped from '../database/db_userScoped'
+import DatasetManager from './datasetManager.coffee'
+import StringManager from './stringManager.coffee'
 
 const ChatManager = {
+  getToneRating: (toneObject) => {
+    const overallToneArray = toneObject?.overall
+    let tone = 'Great/Neutral'
+    if (overallToneArray) {
+      const primaryTone = toneObject?.overall[0][1]
+      const badWords = ['angry', 'disapproving', 'repulsed', 'annoyed', 'disappointed']
+      if (badWords.includes(primaryTone)) {
+        tone = `${StringManager.uppercaseFirstLetterOfAllWords(primaryTone)} (Revision Suggested)`
+      }
+    }
+    return {
+      tone,
+      color: tone === 'Great/Neutral' ? 'green' : 'red',
+    }
+  },
+  getTone: (message) =>
+    new Promise((resolve, reject) => {
+      fetch('https://api.sapling.ai/api/v1/tone', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4',
+          text: message,
+        }),
+      })
+        .then((response) => response)
+        .then((result) => {
+          resolve(result.json())
+        })
+        .catch((error) => reject(error))
+    }),
   getScopedChat: async (currentUser, messageToUserPhone) => {
     try {
       const securedChats = await SecurityManager.getChats(currentUser)
-      const chatToReturn = await DB.find(securedChats, null, false, (chat) => {
-        const members = chat.members
-        const memberPhones = members.map((x) => x.phone)
+      let chatToReturn = null
+      for (let chat of securedChats) {
+        const memberPhones = chat.members.map((x) => x.phone)
         if (memberPhones.includes(currentUser.phone) && memberPhones.includes(messageToUserPhone)) {
-          return chat
+          chatToReturn = chat
         }
-      })
+      }
       return chatToReturn
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
@@ -43,22 +59,34 @@ const ChatManager = {
   getMessages: async (chatId) => {
     return await DB.getTable(`${DB.tables.chatMessages}/${chatId}`)
   },
-  archiveChat: async (currentUser, coparent) => {
+  pauseChat: async (currentUser, coparent) => {
     const securedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
-    const key = await DB.getSnapshotKey(`${DB.tables.chats}/${currentUser.phone}`, securedChat, 'id')
     try {
-      await DB.deleteByPath(`${DB.tables.chats}/${currentUser.phone}/${key}`)
-      await DB.add(`${DB.tables.archivedChats}/${currentUser.phone}`, securedChat)
+      let isPausedFor = securedChat.isPausedFor
+
+      if (!Manager.isValid(isPausedFor)) {
+        isPausedFor = [currentUser.phone]
+      } else {
+        isPausedFor = [...isPausedFor, currentUser.phone]
+      }
+      isPausedFor = DatasetManager.getUniqueArray(isPausedFor, true)
+      securedChat.isPausedFor = isPausedFor
+      // Set chat inactive
+      await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser.phone}`, securedChat, securedChat.id)
+      await DB.updateEntireRecord(`${DB.tables.chats}/${coparent.phone}`, securedChat, securedChat.id)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }
   },
-  toggleMute: async (currentUser, coparentPhone, muteOrUnmute = 'mute') => {
-    const securedChat = await ChatManager.getScopedChat(currentUser, coparentPhone)
-    const key = await DB.getSnapshotKey(`${DB.tables.chats}/${currentUser.phone}`, securedChat, 'id')
-    let isMuted = muteOrUnmute === 'mute'
+  unpauseChat: async (currentUser, coparent) => {
+    const securedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
     try {
-      await DB_UserScoped.updateByPath(`${DB.tables.chats}/${currentUser.phone}/${key}/isMuted`, isMuted)
+      let isPausedFor = securedChat?.isPausedFor?.filter((x) => x !== currentUser.phone)
+      isPausedFor = DatasetManager.getUniqueArray(isPausedFor, true)
+      securedChat.isPausedFor = isPausedFor
+      // Set chat inactive
+      await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser.phone}`, securedChat, securedChat.id)
+      await DB.updateEntireRecord(`${DB.tables.chats}/${coparent.phone}`, securedChat, securedChat.id)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }
@@ -93,27 +121,6 @@ const ChatManager = {
       await set(child(dbRef, `${DB.tables.chatBookmarks}/${chatId}`), toAdd).catch((error) => {})
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
-    }
-  },
-  markMessagesRead: async (currentUser, messageToUser, chat) => {
-    const dbRef = ref(getDatabase())
-    let messages = Manager.convertToArray(chat.messages)
-    let allMessages = []
-
-    // Mark unread messages as read
-    if (Manager.isValid(messages, true)) {
-      messages.forEach((message) => {
-        if (message.readState === 'delivered' && formatNameFirstNameOnly(message.recipient) === formatNameFirstNameOnly(currentUser.name)) {
-          message.readState = 'read'
-          allMessages.push(message)
-        } else {
-          allMessages.push(message)
-        }
-      })
-    }
-    const chatKey = await DB.getSnapshotKey(`chats`, chat, 'id')
-    if (chatKey) {
-      set(child(dbRef, `chats/${chatKey}/messages`), Manager.getUniqueArray(allMessages).flat())
     }
   },
   addChat: async (path, chat) => {

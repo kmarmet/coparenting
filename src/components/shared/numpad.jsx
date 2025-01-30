@@ -1,6 +1,8 @@
 import React, { useContext } from 'react'
 import globalState from '../../context'
-
+import { IoCheckmark } from 'react-icons/io5'
+import { PiBackspaceDuotone } from 'react-icons/pi'
+import { MdBackspace } from 'react-icons/md'
 export default function Numpad({ onNumClick, onSubmit, onBackspace, className }) {
   const { state, setState } = useContext(globalState)
 
@@ -51,10 +53,10 @@ export default function Numpad({ onNumClick, onSubmit, onBackspace, className })
             0
           </p>
           <div className="num-box" id="submit-button" onClick={onSubmit}>
-            <span className="material-icons">check</span>
+            <IoCheckmark className={'green'} />
           </div>
           <p onClick={onBackspace} className="num-box radius-right-bottom">
-            <span className="material-icons submit">backspace</span>
+            <MdBackspace className={'fs-24'} />
           </p>
         </div>
       </div>

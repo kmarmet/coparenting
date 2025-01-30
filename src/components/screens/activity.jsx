@@ -18,15 +18,17 @@ import ScreenNames from '../../constants/screenNames'
 import ActivityCategory from '../../models/activityCategory'
 import { PiSealWarningDuotone } from 'react-icons/pi'
 import StringManager from '../../managers/stringManager'
+import AppManager from '../../managers/appManager.coffee'
 
 export default function Activity() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activitySet } = state
+  const { currentUser, theme, activityCount } = state
   const [activities, setActivities] = useState([])
   const [legendIsExpanded, setLegendIsExpanded] = useState(false)
   const getActivities = async () => {
     const all = await DB.getTable(`${DB.tables.activities}/${currentUser.phone}`)
     const toReturn = DatasetManager.sortDates(all)
+    await AppManager.setAppBadge(activityCount)
     setState({ ...state, activityCount: toReturn.length })
     setActivities(toReturn)
   }
@@ -100,7 +102,7 @@ export default function Activity() {
     <>
       <div id="activity-wrapper" className={`${theme} form page-container`}>
         {activities.length === 0 && <NoDataFallbackText text={'No current activity'} />}
-        <p className="screen-title">Activity</p>
+        <p className="screen-title">Activity Log</p>
         <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
           <p className="intro-text mb-15">Stay informed with all co-parenting and child-related updates and activity.</p>
 

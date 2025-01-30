@@ -1,41 +1,45 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
-import FirebaseStorage from '../../../database/firebaseStorage'
-import TableOfContentsListItem from '../../tableOfContentsListItem'
-import DocumentConversionManager from '../../../managers/documentConversionManager'
-import Manager from '../../../managers/manager'
-import BottomCard from '../../shared/bottomCard'
-import SecurityManager from '../../../managers/securityManager'
+import FirebaseStorage from '/src/database/firebaseStorage'
+import searchTextHL from 'search-text-highlight'
+import DocumentConversionManager from '/src/managers/documentConversionManager'
+import Manager from '/src/managers/manager'
+import BottomCard from '/src/components/shared/bottomCard'
+import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../../navBar'
-import DB from '../../../database/DB'
-import AlertManager from '../../../managers/alertManager'
-import StringManager from '../../../managers/stringManager'
+import DB from '/src/database/DB'
+import AlertManager from '/src/managers/alertManager'
+import StringManager from '/src/managers/stringManager'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
-import DomManager from '../../../managers/domManager'
+import DomManager from '/src/managers/domManager'
 import debounce from 'debounce'
-import DocumentHeader from '../../../models/documentHeader'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
-import InputWrapper from '../../../components/shared/inputWrapper'
+import { IoListOutline } from 'react-icons/io5'
+import DocumentHeader from '/src/models/documentHeader'
+import InputWrapper from '/src/components/shared/inputWrapper'
 import { TbFileSearch } from 'react-icons/tb'
-import { MdSearchOff } from 'react-icons/md'
-import ScreenNames from '../../../constants/screenNames'
+import { MdSearchOff, MdTipsAndUpdates } from 'react-icons/md'
+import ScreenNames from '/src/constants/screenNames'
+import { IoIosArrowUp } from 'react-icons/io'
+import _ from 'lodash'
+import Label from '../../shared/label.jsx'
+import DatasetManager from '../../../managers/datasetManager.coffee'
+import reactStringReplace from 'react-string-replace'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, docToView, isLoading, currentScreen } = state
+  const { currentUser, theme, docToView, isLoading, currentScreen, refreshKey } = state
   const [tocHeaders, setTocHeaders] = useState([])
   const [showToc, setShowToc] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
   const [textWithHeaders, setTextWithHeaders] = useState('')
   const [imgUrl, setImgUrl] = useState('')
   const [docType, setDocType] = useState('document')
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-
+  const [showTips, setShowTips] = useState(false)
+  const [isFormatting, setIsFormatting] = useState(false)
   const scrollToHeader = (headerText) => {
-    const header = headerText.replaceAll(' ', '').replaceAll("'", '').replace('"', '').replaceAll('-', '')
-    const domHeader = document.querySelector(`[data-header='${header}']`)
+    const domHeader = document.querySelector(`#doc-text [data-header='${headerText}']`)
     if (domHeader) {
       setTimeout(() => {
         if (domHeader) {
@@ -47,39 +51,78 @@ export default function DocViewer() {
       }, 300)
     }
   }
-
   const onLoad = async () => {
+    // setState({ ...state, isLoading: false })
     const fileType = `.${StringManager.getFileExtension(docToView.name)}`
-    setTimeout(() => {
-      setState({ ...state, isLoading: true, loadingText: 'Converting your document image to text...' })
-    }, 500)
-    if (currentUser && fileType === '.docx') {
+    setTextWithHeaders('')
+    setIsFormatting(true)
+    const nonImageFileTypes = ['.docx', '.doc', '.pdf', '.odt', '.txt']
+    if (currentUser && nonImageFileTypes.includes(fileType)) {
       setDocType('document')
-      await getDoc()
+      const url = docToView.url
+      const fileName = FirebaseStorage.getImageNameFromUrl(url)
+      const firebaseText = await FirebaseStorage.getSingleFile(FirebaseStorage.directories.documents, currentUser.id, fileName)
+      await formatDocument(firebaseText)
     } else {
       setDocType('image')
-      await getImage()
+      await formatImageDocument()
     }
+  }
 
-    // Set ALL headers
+  const setTableOfContentsHeaders = async () => {
     let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
     userHeaders = userHeaders.map((x) => x.headerText)
-    let allHeaders = []
-    if (Manager.isValid(userHeaders)) {
-      allHeaders = [...predefinedHeaders, ...userHeaders].flat()
-    } else {
-      allHeaders = predefinedHeaders
+    const domHeaders = document.querySelectorAll('.header')
+    let headersInDocument = []
+    for (let header of domHeaders) {
+      const headerText = header.textContent.trim()
+      if (!_.isEmpty(headerText) && StringManager.wordCount(headerText) <= 10) {
+        if (!headersInDocument.includes(headerText)) {
+          headersInDocument.push(headerText)
+        }
+      }
     }
-    setTocHeaders(allHeaders)
+    const userHeadersMatchingHeadersInDocument = userHeaders.filter((x) => headersInDocument.includes(x))
+    let allHeaders = []
+
+    if (Manager.isValid(userHeadersMatchingHeadersInDocument)) {
+      allHeaders = userHeadersMatchingHeadersInDocument
+    } else {
+      allHeaders = headersInDocument
+    }
+    setTocHeaders(DatasetManager.getUniqueArray(allHeaders, true))
   }
 
   const search = async (searchValue) => {
-    setState({ ...state, isLoading: true, loadingText: 'Finding and highlighting your search results...' })
-    setTextWithHeaders('')
-    await formatImageDocument(searchValue)
+    // setState({ ...state, isLoading: true })
+    if (Manager.isValid(searchValue, true)) {
+      const docText = document.getElementById('doc-text')
+      let textAsHtml = docText.innerHTML
+      setTextWithHeaders('')
+      textAsHtml = searchTextHL.highlight(textAsHtml, searchValue)
+      textAsHtml = textAsHtml.replaceAll('<span class=" text-highlight"="', '')
+      setTextWithHeaders(textAsHtml)
+      setTimeout(() => {
+        let headers = docText.querySelectorAll('.header')
+        for (let header of headers) {
+          if (header.textContent.includes(searchValue.toUpperCase())) {
+            header.textContent = header.textContent.replace('">', '')
+            header.textContent = header.textContent.replace(searchValue, '')
+            const childSpan = header.querySelector('span')
+            if (childSpan) {
+              childSpan.remove()
+            }
+            const dataHeader = header.dataset.header
+            const cleanHeader = dataHeader.replaceAll('<span class=', '')
+            header.setAttribute('data-header', cleanHeader.trim())
+          }
+        }
+      }, 500)
+      setState({ ...state, isLoading: false })
+    }
   }
 
-  const formatImageDocument = async (searchValue) => {
+  const formatImageDocument = async () => {
     try {
       const allDocs = await SecurityManager.getDocuments(currentUser)
       let docOwner = await DB.find(DB.tables.users, ['phone', docToView?.ownerPhone], true)
@@ -129,10 +172,6 @@ export default function DocViewer() {
         // HTML symbol -> regular
         text = text.replaceAll('&#039;', "'")
 
-        // FOR SEARCH
-        if (Manager.isValid(searchValue, true)) {
-          text = text.toLowerCase().replaceAll(searchValue, `<span class="search-highlight">${searchValue}</span>`)
-        }
         // Remove line breaks after header
         const lineBreaks = document.querySelectorAll('br')
         for (let lineBreak of lineBreaks) {
@@ -147,16 +186,16 @@ export default function DocViewer() {
           if (userHeaders.includes(header)) {
             text = text.replaceAll(
               header,
-              `<span data-header=${dataHeader} class="header">${header}<span class="delete-header-button">X</span></span>`
+              `<span data-header=${dataHeader} class="header">${header}<TiDelete className="delete-header-button"/></span>`
             )
           } else {
             text = text.replaceAll(header, `<span data-header=${dataHeader} class="header">${header}</span>`)
           }
         }
         setTextWithHeaders(text)
-        setTimeout(() => {
-          setState({ ...state, isLoading: false, loadingText: '' })
-        }, 300)
+        setState({ ...state, isLoading: false, loadingText: '' })
+
+        //TODO ADD CLICK HANDLER
       } else {
         AlertManager.throwError('No Document Found')
         setState({ ...state, isLoading: false, loadingText: '' })
@@ -168,229 +207,250 @@ export default function DocViewer() {
     }
   }
 
-  const shouldAddClass = (el, text) => {
-    if (text && text.length > 0) {
-      const textToSkip = ['add additional terms']
-      const isAllUppercase = StringManager.isAllUppercase(text)
-      const classAlreadyAdded = el.classList.contains('header')
-      const isMinimumLength = text.replaceAll(' ', '').length > 3
-      const isDefinedHeader = predefinedHeaders.includes(text.toLowerCase())
-      const dontSkip = !textToSkip.includes(text.toLowerCase())
-      return isAllUppercase && !classAlreadyAdded && isMinimumLength && isDefinedHeader && dontSkip
-    }
-    return false
+  const formatHeaderText = (headerText) => {
+    return headerText
+      .trim()
+      .replaceAll('&nbsp;', '')
+      .replace(/[^a-zA-Z0-9 ]/g, '')
+      .replaceAll('  ', ' ')
+      .replaceAll('   ', ' ')
   }
 
-  // Get/Append Doc
-  const getDoc = async () => {
+  const formatDocument = async (firebaseText) => {
     const url = docToView.url
-    const fileName = FirebaseStorage.getImageNameFromUrl(url)
-    const textContainer = document.getElementById('text-container')
+    if (!Manager.isValid(url)) {
+      setState({ ...state, isLoading: false })
+      return false
+    }
+    const textContainer = document.getElementById('doc-text')
+    const allDocuments = await SecurityManager.getDocuments(currentUser)
+    const coparents = allDocuments.map((x) => x.coparent)
+    const relevantDoc = allDocuments.filter((x) => x?.name === docToView?.name)[0]
+    const fileExtension = StringManager.getFileExtension(docToView?.name).toString()
 
-    const coparentDocsObjects = await SecurityManager.getDocuments(currentUser)
-    if (!Manager.isValid(coparentDocsObjects)) {
+    if (!Manager.isValid(relevantDoc)) {
+      setState({ ...state, isLoading: false })
+      return false
+    }
+    let docHtml = firebaseText
+
+    //#region VALIDATION
+    if (!Manager.isValid(allDocuments)) {
       setState({ ...state, isLoading: false })
       return false
     }
 
-    const coparentsFromObject = coparentDocsObjects.map((x) => x.coparent)
-    if (!Manager.isValid(coparentsFromObject)) {
+    if (!Manager.isValid(coparents)) {
       setState({ ...state, isLoading: false })
       return false
     }
-    const relevantDoc = coparentDocsObjects.filter((x) => x?.name === docToView?.name)[0]
     if (!Manager.isValid(relevantDoc)) {
       setState({ ...state, isLoading: false })
       return false
     }
 
-    // Insert HTML
-    const docHtml = await DocumentConversionManager.docToHtml(fileName, currentUser?.id)
     if (!Manager.isValid(docHtml, true)) {
       AlertManager.throwError('Unable to find or load document. Please try again after awhile.')
       setState({ ...state, isLoading: false, currentScreen: ScreenNames.docsList })
       return false
     }
-    textContainer.innerHTML = docHtml
 
-    // Format HTML
-    const pars = textContainer.querySelectorAll('p, li')
-    const listItems = textContainer.querySelectorAll('li')
-    const containsLettersRegex = /[a-zA-Z]/g
+    //#endregion VALIDATION
 
-    // List Item formatting
-    listItems.forEach((listItem, index) => {
-      if (StringManager.stringHasNumbers(listItem.textContent) && listItem.textContent.toLowerCase().indexOf('article') > -1) {
-        listItem.classList.add('highlight')
+    // APPEND HTML
+    setTextWithHeaders(docHtml)
+
+    //#region STYLING/FORMATTING
+    setTimeout(async () => {
+      var x = document.body.getElementsByTagName('style')
+      for (var i = x.length - 1; i >= 0; i--) x[i].parentElement.removeChild(x[i])
+      let allPars = textContainer?.querySelectorAll('p')
+
+      if (fileExtension === 'pdf') {
+        allPars = textContainer?.querySelectorAll('span')
       }
+      const allTags = textContainer?.querySelectorAll('h3,h2,p,span,li,p')
 
-      // ADD HIGHLIGHT
-      if (shouldAddClass(listItem, listItem.textContent)) {
-        listItem.classList.add('highlight')
-      }
-      if (listItem.classList.contains('highlight')) {
-        const header = listItem.textContent.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
-        listItem.setAttribute('data-header-date', header)
-      }
-
-      const allStrongs = listItem.querySelectorAll('strong')
-      allStrongs.forEach((thisStrong) => {
-        if (shouldAddClass(thisStrong, thisStrong.textContent)) {
-          thisStrong.classList.add('highlight')
+      // Remove JS styles
+      if (Manager.isValid(allTags)) {
+        for (let tag of allTags) {
+          tag.style = null
         }
-        DocumentConversionManager.addHeaderClass(thisStrong)
-      })
-      DocumentConversionManager.addHeaderClass(listItem)
-      if (StringManager.wordCount(listItem.textContent) > 10) {
-        listItem.classList.remove('highlight')
-      }
-    })
-
-    // Header formatting
-    pars.forEach((par, index) => {
-      const text = par.textContent
-      if (StringManager.stringHasNumbers(text) && text.toLowerCase().indexOf('article') > -1) {
-        par.classList.add('header', 'w-100')
       }
 
-      // ADD HIGHLIGHT
-      if (shouldAddClass(par, text)) {
-        par.classList.add('highlight')
-      }
+      //#region PDF
+      if (fileExtension === 'pdf') {
+        const textWrappers = document.querySelectorAll('.stl_01')
 
-      const allStrongs = par.querySelectorAll('strong')
-      allStrongs.forEach((thisStrong) => {
-        if (shouldAddClass(thisStrong, thisStrong.textContent)) {
-          thisStrong.classList.add('highlight')
-        }
-        DocumentConversionManager.addHeaderClass(thisStrong)
-      })
-      DocumentConversionManager.addHeaderClass(par)
-    })
+        for (let textElement of textWrappers) {
+          const spans = textElement.querySelectorAll('span')
+          let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
 
-    // Cleanup unnecessary header classes
-    pars.forEach((par) => {
-      const text = par.textContent
-      if (!containsLettersRegex.test(text)) {
-        par.classList.remove('header', 'highlight')
-        par.remove()
-      }
-      if (Manager.contains(text.toLowerCase(), 'notary public')) {
-        par.classList.remove('header', 'highlight')
-        // par.remove()
-      }
-      if (Manager.contains(text, '___')) {
-        text.replace(/_/g, '')
-      }
-      if (StringManager.wordCount(text) > 10) {
-        par.classList.remove('header')
-      }
-      if (par.classList.contains('header')) {
-        const header = par.textContent.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
-        par.setAttribute('data-header-date', header)
-      }
-    })
-
-    // Set TOC headers
-    const headers = document.querySelectorAll('.header, li.highlight, span.highlight, .toc-header')
-    let newHeaderArray = []
-    headers.forEach((header) => {
-      const text = header.textContent
-        .replaceAll(' ', '-')
-        .replaceAll('-', ' ')
-        .replace(/ /g, '-')
-        .replace(/[0-9]/g, '')
-        .replace('.', '')
-        .replace(/\s/g, '')
-        .replaceAll('•', '')
-      if (newHeaderArray.indexOf(text) === -1 && StringManager.wordCount(header.textContent) < 10) {
-        newHeaderArray.push(text)
-      }
-    })
-    setTocHeaders(newHeaderArray.sort())
-  }
-
-  // Get/Append Image
-  const getImage = async () => {
-    await formatImageDocument()
-  }
-
-  const deleteHeader = async (headerText) => {
-    const header = await DB.find(`${DB.tables.documentHeaders}/${currentUser.phone}`, ['headerText', headerText])
-    if (header) {
-      await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser.phone}`, header.id)
-      await getImage()
-    }
-  }
-
-  const addUserHeaderToDatabase = () => {
-    const text = DomManager.getSelectionText()
-
-    if (text.length > 0 && currentScreen === ScreenNames.docViewer) {
-      AlertManager.confirmAlert('Would you like to use the selected text as a header?', 'Yes', true, async () => {
-        const header = new DocumentHeader()
-        header.headerText = text.toLowerCase().replaceAll("'", '')
-        header.ownerPhone = currentUser.phone
-        await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, header)
-        setTextWithHeaders('')
-
-        await getImage()
-      })
-    }
-  }
-
-  const addHeaderClickHandler = async (textWrapper) => {
-    const headers = textWrapper.querySelectorAll('.header')
-    if (Manager.isValid(headers)) {
-      for (let header of headers) {
-        header.addEventListener('click', async (e) => {
-          const buttonParent = e.target.parentNode
-          if (buttonParent) {
-            let headerText = buttonParent.textContent.replace('X', '').replace(' ', '')
-            headerText = headerText.toLowerCase()
-            headerText = StringManager.addSpaceBetweenWords(headerText)
-            headerText = StringManager.uppercaseFirstLetterOfAllWords(headerText)
-            console.log(headerText)
-            await deleteHeader(headerText)
+          for (let span of spans) {
+            for (let userHeader of userHeaders) {
+              const userHeaderText = formatHeaderText(userHeader.headerText)
+              let text = formatHeaderText(span.textContent)
+              if (text.includes(userHeaderText)) {
+                const newHeader = document.createElement('span')
+                newHeader.classList.add('header')
+                newHeader.setAttribute('data-header', userHeaderText)
+                span.replaceWith(newHeader)
+                newHeader.textContent = userHeaderText
+                const deleteIcon = document.createElement('p')
+                deleteIcon.classList.add('delete-header-button')
+                deleteIcon.onclick = async (e) => {
+                  await deleteHeader(e)
+                }
+                newHeader.append(deleteIcon)
+              }
+            }
           }
+        }
+      }
+      //#endregion PDF
+
+      //#region NOT PDF
+      else {
+        // Format p/span
+        if (Manager.isValid(allPars)) {
+          for (let par of allPars) {
+            const spans = par.querySelectorAll('span')
+            const links = par.querySelectorAll('a')
+
+            // Get all headers
+            let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+            userHeaders = userHeaders.map((x) => x.headerText)
+
+            // Remove unnecessary pars
+            if (_.isEmpty(par.innerHTML.trim()) || _.isEmpty(par.innerText.trim()) || _.isEmpty(par.textContent.trim())) {
+              par.remove()
+            }
+
+            // LINKS (<a>)
+            for (let link of links) {
+              link.setAttribute('target', '_blank')
+            }
+
+            // SPANS
+            for (let span of spans) {
+              if (span) {
+                let elementText = span.textContent
+                const textLength = elementText.length
+                const spanInlineStyles = span.style.cssText
+                const header = span.parentNode
+                const onlyDashes = span.innerText.match(/__/g)
+
+                if (StringManager.isAllUppercase(span.innerText)) {
+                  span.classList.add('bold')
+                }
+
+                // Handle user headers
+                for (let userHeader of userHeaders) {
+                  console.log(elementText, userHeader)
+                  if (elementText.includes(userHeader)) {
+                    const _span = document.createElement('span')
+                    const deleteIcon = document.createElement('p')
+                    deleteIcon.classList.add('delete-header-button')
+                    deleteIcon.onclick = async (e) => {
+                      await deleteHeader(e)
+                    }
+                    _span.innerText = userHeader
+                    _span.classList.add('header')
+                    _span.setAttribute('data-header', userHeader)
+                    _span.append(deleteIcon)
+                    par.append(_span)
+                  }
+                }
+                span.innerHTML = span.innerHTML.replace(/&nbsp;/g, '')
+                if (onlyDashes && onlyDashes.length > 1) {
+                  span.remove()
+                }
+                if (span.innerText.length < 5) {
+                  span.remove()
+                }
+
+                // Add header class
+                if (Manager.contains(spanInlineStyles, 'font-weight: bold') && textLength > 3) {
+                  header.classList.add('header')
+                  header.setAttribute('data-header', header.textContent)
+                }
+              }
+            }
+
+            // Remove unnecessary pars
+            if (_.isEmpty(par.innerHTML.trim()) || _.isEmpty(par.innerText.trim()) || _.isEmpty(par.textContent.trim())) {
+              par.remove()
+            }
+          }
+        }
+      }
+      //#endregion NOT PDF
+
+      setIsFormatting(false)
+      // setState({ ...state, isLoading: false })
+    }, 400)
+    //#endregion STYLING/FORMATTING
+
+    if (!Manager.isValid(firebaseText)) {
+      setState({ ...state, isLoading: false })
+    }
+  }
+
+  const deleteHeader = async (headerElement) => {
+    const headerTarget = headerElement?.target
+    if (headerTarget) {
+      const headerText = formatHeaderText(headerTarget?.parentNode?.textContent)
+      const header = await DB.find(`${DB.tables.documentHeaders}/${currentUser.phone}`, ['headerText', headerText], true)
+      if (header) {
+        await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser.phone}`, header.id)
+        setTocHeaders([])
+        await onLoad()
+      }
+    }
+  }
+
+  const addUserHeaderToDatabase = async () => {
+    // setState({ ...state, isLoading: true })
+    const text = DomManager.getSelectionText()
+    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+    const alreadyExists = userHeaders.filter((x) => x.headerText.trim().includes(text.trim())).length > 0
+    if (!alreadyExists) {
+      if (text.length > 0 && currentScreen === ScreenNames.docViewer) {
+        AlertManager.confirmAlert('Would you like to use the selected text as a header?', 'Yes', true, async () => {
+          const header = new DocumentHeader()
+          header.headerText = formatHeaderText(text)
+          header.ownerPhone = currentUser.phone
+          await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, header)
+          await onLoad()
         })
       }
     }
   }
-
-  const onTableChange = async () => {
-    setState({ ...state, isLoading: true })
-    const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.documentHeaders}/${currentUser.phone}`), async (snapshot) => {
-      await onLoad()
-    })
-  }
-
   const closeSearch = async () => {
     setShowSearch(false)
-    setRefreshKey(Manager.getUid())
-    const searchHighlights = document.querySelectorAll('.search-highlight')
+    setState({ ...state, refreshKey: Manager.getUid() })
+    const searchHighlights = document.querySelectorAll('.text-highlight')
     if (Manager.isValid(searchHighlights)) {
       for (let highlight of searchHighlights) {
-        highlight.classList.remove('search-highlight')
+        highlight.classList.remove('text-highlight')
       }
     }
   }
 
-  // Add header click handler when text is in DOM
-  useEffect(() => {
-    const imageText = document.getElementById('image-text')
-    if (Manager.isValid(imageText)) {
-      addHeaderClickHandler(imageText).then((r) => r)
-    }
-  }, [document.getElementById('image-text')])
+  const scrollToTop = () => {
+    const header = document.querySelector('.screen-title')
+    header.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }
 
   useEffect(() => {
-    onTableChange().then((r) => r)
-    const textContainer = document.getElementById('text-container')
-    if (textContainer) {
-      document.getElementById('text-container').innerText = ''
+    if (isFormatting === false) {
+      setTableOfContentsHeaders().then((r) => r)
     }
+  }, [isFormatting])
+
+  // PAGE LOAD
+  useEffect(() => {
+    onLoad().then((r) => r)
     const appContentWithSidebar = document.getElementById('app-content-with-sidebar')
     if (appContentWithSidebar) {
       appContentWithSidebar.classList.add('doc-viewer')
@@ -402,15 +462,6 @@ export default function DocViewer() {
 
   return (
     <div className="doc-viewer-container">
-      {/* BOTTOM ACTIONS */}
-      <div className={`${theme} flex form`} id="bottom-actions">
-        {Manager.isValid(document.querySelectorAll('.header'), true) && (
-          <div id="toc-button" className={`${theme}`} onClick={() => setShowToc(true)}>
-            Table of Contents
-          </div>
-        )}
-      </div>
-
       {/* SEARCH CARD */}
       <BottomCard
         wrapperClass="doc-search-card"
@@ -418,16 +469,53 @@ export default function DocViewer() {
         className="form search-card"
         showCard={showSearch}
         title={'Search'}
-        refreshKey={refreshKey}
         showOverlay={false}
         onClose={closeSearch}>
         <div className="flex">
-          <InputWrapper placeholder="Enter text to search for..." onChange={(e) => search(e.target.value)} inputValueType="text" />
+          <InputWrapper placeholder="Enter text to find..." onChange={(e) => search(e.target.value)} inputValueType="text" />
         </div>
       </BottomCard>
 
+      {/* TIPS CARD */}
+      <BottomCard
+        wrapperClass="doc-tips-card"
+        hasSubmitButton={false}
+        showCard={showTips}
+        title={'Tips'}
+        showOverlay={true}
+        onClose={() => setShowTips(false)}>
+        <>
+          <Label text={'Searching'} isBold={true} />
+          <p className="tip-text">
+            {DomManager.tapOrClick(true)} the search button and start typing the word/words you would like to find. Found results will be&nbsp;
+            <span className="text-highlight">highlighted</span>&nbsp;.
+          </p>
+          <Label text={'Table of Contents'} classes="mt-15" isBold={true} />
+          <p className="tip-text">
+            {DomManager.tapOrClick(true)} the <IoListOutline id="toc-button-inline" className={`${theme}`} /> icon to view the Table of Contents.
+          </p>
+          <p className="tip-text">When you click on an item you will be taken directly to that header in the document.</p>
+          <p>If the document has a lot of text, it may take a few moments for the table of contents button to appear.</p>
+          <Label text={'Create Your Own Headers'} classes="mt-15" isBold={true} />
+          <p className="tip-text">
+            There are headers (dark blue text with a light blue background) that are predefined that you may see. But you will likely want to define
+            your own custom headers so that certain texts stands out to you.
+          </p>
+          <p className="tip-text">
+            Simply select the text you would like to create a new header for and when you see the confirmation button, {DomManager.tapOrClick()}{' '}
+            <b>Yes</b>.
+          </p>
+          <p className="tip-text">
+            The page will reload and you will now see the new header you have created! You will see the same header every time you view the document.
+          </p>
+          <p className="tip-text">
+            You can delete it at any time by {DomManager.tapOrClick()}ing the red <span className="red">X</span> icon to the right of the header.
+          </p>
+        </>
+      </BottomCard>
+
       {/* TABLE OF CONTENTS */}
-      {Manager.isValid(document.querySelectorAll('.header'), true) && (
+      {tocHeaders?.length > 0 && (
         <BottomCard
           wrapperClass="toc-card"
           hasSubmitButton={false}
@@ -436,37 +524,21 @@ export default function DocViewer() {
           className="toc"
           title={'Table of Contents'}>
           <div id="table-of-contents">
-            <button
-              id="toc-scroll-button"
-              className="button default center mt-5"
-              onClick={() => {
-                setShowToc(false)
-                let allHeaders = document.querySelectorAll('.header')
-                if (Manager.isValid(allHeaders)) {
-                  allHeaders = Array.from(allHeaders)
-                  allHeaders[0].scrollIntoView({ block: 'center', behavior: 'smooth' })
-                }
-              }}>
-              Scroll to top
-            </button>
             <div id="toc-contents">
               {tocHeaders.length > 0 &&
                 tocHeaders.sort().map((header, index) => {
-                  const dataHeader = header.replaceAll(' ', '').replaceAll("'", '').replace('"', '')
-                  header = header.replace(/ /g, '-').replace(/[0-9]/g, '').replace('.', '').replace(/\s/g, '')
-                  const domHeader = document.querySelector(`[data-header='${dataHeader}']`)
                   return (
-                    <span key={index}>
-                      <TableOfContentsListItem
-                        text={`> ${header}`}
-                        classes={domHeader ? 'show' : 'hide'}
-                        dataHeader={dataHeader}
+                    <div className="flex" id="toc-header-wrapper">
+                      <span>•</span>
+                      <p
                         onClick={() => {
                           setShowToc(false)
                           scrollToHeader(header)
                         }}
-                      />
-                    </span>
+                        className={`toc-header`}
+                        data-header={header}
+                        dangerouslySetInnerHTML={{ __html: header }}></p>
+                    </div>
                   )
                 })}
             </div>
@@ -474,31 +546,51 @@ export default function DocViewer() {
         </BottomCard>
       )}
 
-      {/* SEARCH ICON FOR 800PX > */}
-      {!DomManager.isMobile() && (
-        <div id="desktop-search-button-wrapper">
-          <TbFileSearch id={'desktop-search-button'} onClick={() => setShowSearch(true)} />
+      {/* FLOATING BUTTONS */}
+      <div id="floating-buttons" className={` ${showToc || showSearch || showTips ? 'hide' : ''}`}>
+        {/* SCROLL TO TOP BUTTON */}
+        <div id="scroll-to-top-icon-wrapper" onClick={scrollToTop}>
+          <IoIosArrowUp id={'scroll-to-top-button'} />
         </div>
-      )}
+
+        {/* TOC BUTTON */}
+        {tocHeaders.length > 0 && (
+          <div
+            id="toc-button-wrapper"
+            onClick={async () => {
+              await setTableOfContentsHeaders()
+              setShowToc(true)
+            }}>
+            <IoListOutline id="toc-button" className={`${theme}`} />
+          </div>
+        )}
+
+        {/* SEARCH ICON FOR 800PX > */}
+        {!DomManager.isMobile() && (
+          <div id="desktop-search-button-wrapper">
+            <TbFileSearch id={'desktop-search-button'} onClick={() => setShowSearch(true)} />
+          </div>
+        )}
+
+        {/* TIPS ICON */}
+        <div id="tips-icon-wrapper" onClick={() => setShowTips(true)}>
+          <MdTipsAndUpdates id={'tips-icon'} />
+        </div>
+      </div>
 
       {/* PAGE CONTAINER / TEXT */}
       <div id="documents-container" className={`${theme} page-container form documents`}>
-        {/* DOC NAME */}
-        {!DomManager.isMobile() && docType === 'image' && <p id="image-name">{StringManager.removeFileExtension(docToView?.name)}</p>}
-        <p className="screen-title pt-10">Doc Viewer</p>
-        {/* DOC NAME */}
-        {DomManager.isMobile() && docType === 'image' && <p id="image-name">{StringManager.removeFileExtension(docToView?.name)}</p>}
-        {/* IMAGE */}
-        {docType === 'image' && (
-          <>
+        <p className="screen-title">
+          {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')}
+        </p>
+        <>
+          {docType === 'image' && (
             <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
               <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
             </LightGallery>
-            <div id="image-text" dangerouslySetInnerHTML={{ __html: textWithHeaders }} />
-          </>
-        )}
-        {/* DOCUMENT */}
-        {docType === 'document' && <div id="text-container"></div>}
+          )}
+          <div id="doc-text" dangerouslySetInnerHTML={{ __html: textWithHeaders }} />
+        </>
       </div>
 
       {/* NAVBARS */}

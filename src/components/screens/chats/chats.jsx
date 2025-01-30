@@ -1,38 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Manager from '../../../managers/manager'
+import Manager from '/src/managers/manager'
 import globalState from '../../../context.js'
 import 'rsuite/dist/rsuite.min.css'
-import ChatManager from '../../../managers/chatManager.js'
-import DB_UserScoped from '../../../database/db_userScoped'
-import { BiDotsVerticalRounded, BiMessageRoundedAdd, BiMessageRoundedDetail, BiSolidEdit, BiSolidMessageRoundedMinus } from 'react-icons/bi'
-import { IoNotificationsOffCircle } from 'react-icons/io5'
-import { HiMiniBellAlert } from 'react-icons/hi2'
+import DB_UserScoped from '/src/database/db_userScoped'
+import { BiMessageRoundedAdd } from 'react-icons/bi'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
 import { Fade } from 'react-awesome-reveal'
-import { IoMdCloseCircleOutline } from 'react-icons/io'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import BottomCard from '../../shared/bottomCard'
-import SecurityManager from '../../../managers/securityManager'
+import SecurityManager from '/src/managers/securityManager'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import NavBar from '../../navBar'
-import AlertManager from '../../../managers/alertManager'
-import DomManager from '../../../managers/domManager'
-import ScreenNames from '../../../constants/screenNames'
-
+import AlertManager from '/src/managers/alertManager'
+import DomManager from '/src/managers/domManager'
+import ScreenNames from '/src/constants/screenNames'
+import StringManager from '/src/managers/stringManager.coffee'
+import ChatRow from './chatRow.jsx'
+import DB from '/src/database/DB.js'
+import { TbMessageCirclePlus } from 'react-icons/tb'
 const Chats = () => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
@@ -41,8 +25,6 @@ const Chats = () => {
   const [selectedCoparent, setSelectedCoparent] = useState(null)
   const [activeChatPhones, setActiveChatPhones] = useState([])
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
-  const [threadActionToShow, setThreadActionToShow] = useState(false)
-
   const openMessageThread = async (coparent) => {
     // Check if thread member (coparent) account exists in DB
     let userCoparent = await DB_UserScoped.getCoparentByPhone(coparent?.phone, currentUser)
@@ -62,53 +44,23 @@ const Chats = () => {
 
   const getSecuredChats = async () => {
     let securedChats = await SecurityManager.getChats(currentUser)
-    let chatPhones = []
-    for (let chat of securedChats) {
-      const chatMemberPhones = chat.members.map((x) => x.phone)
-      const hideFrom = chat?.hideFrom
-      if (Manager.isValid(hideFrom)) {
-        if (!hideFrom.includes(currentUser.phone)) {
-          chatMemberPhones.push(currentUser.phone)
-        }
-      } else {
-        chatMemberPhones.push(currentUser.phone)
-      }
-    }
-    setActiveChatPhones(chatPhones)
+    const members = securedChats.map((x) => x.members).flat()
+    const activeChats = members.filter((x) => x.phone && x.phone !== currentUser.phone)
+    const activeChatPhones = activeChats.map((x) => x.phone)
     setChats(securedChats)
+    setActiveChatPhones(activeChatPhones)
   }
 
-  const archiveChat = async (coparent) => {
-    if (Manager.isValid(coparent)) {
-      await ChatManager.archiveChat(currentUser, coparent)
-      AlertManager.successAlert('Chat Archived')
+  const onTableChange = async () => {
+    const dbRef = ref(getDatabase())
+    onValue(child(dbRef, `${DB.tables.chats}/${currentUser.phone}`), async (snapshot) => {
       await getSecuredChats()
-      setSelectedCoparent(null)
-    }
-  }
-
-  const toggleMute = async (coparentPhone, muteOrUnmute, threadId) => {
-    await ChatManager.toggleMute(currentUser, coparentPhone, muteOrUnmute)
-    await getSecuredChats()
-    toggleThreadActions(threadId)
-  }
-
-  const toggleThreadActions = (threadId) => {
-    const threadAction = document.querySelector(`.thread-actions[data-thread-id='${threadId}']`)
-    if (Manager.isValid(threadAction)) {
-      if (threadAction.classList.contains('active')) {
-        threadAction.classList.remove('active')
-        setThreadActionToShow(null)
-      } else {
-        setThreadActionToShow(threadId)
-        threadAction.classList.add('active')
-      }
-    }
+    })
   }
 
   useEffect(() => {
     if (currentUser?.accountType === 'parent') {
-      getSecuredChats().then((r) => r)
+      onTableChange().then((r) => r)
     }
   }, [selectedCoparent])
 
@@ -122,29 +74,31 @@ const Chats = () => {
         onClose={() => setShowNewConvoCard(false)}
         showCard={showNewConvoCard}
         title={'New Chat'}>
+        {/* COPARENTS */}
         {currentUser?.accountType === 'parent' &&
           Manager.isValid(currentUser?.coparents) &&
           currentUser?.coparents?.map((coparent, index) => {
             return (
               <div key={index}>
                 {!activeChatPhones.includes(coparent?.phone) && (
-                  <div className="flex" id="users-wrapper">
+                  <div id="users-wrapper">
                     <div className="user-wrapper">
-                      <BiMessageRoundedAdd />
+                      <TbMessageCirclePlus />
                       <p
                         className="coparent-name new-thread-coparent-name"
                         onClick={() => {
                           openMessageThread(coparent).then((r) => r)
                         }}>
-                        {formatNameFirstNameOnly(coparent?.name)}
+                        {StringManager.formatNameFirstNameOnly(coparent?.name)}
                       </p>
                     </div>
                   </div>
                 )}
-                {activeChatPhones.includes(coparent?.phone) && <p>All available co-parents already have an open conversation with you </p>}
               </div>
             )
           })}
+
+        {/* CHILDREN */}
         {currentUser?.accountType === 'child' &&
           Manager.isValid(currentUser?.parents) &&
           currentUser?.parents?.map((parent, index) => {
@@ -171,114 +125,24 @@ const Chats = () => {
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
         {!showNewThreadForm && chats.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
-        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'visitation-fade-wrapper'}>
+        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'chats-fade-wrapper'}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Chats</p>
-            {!DomManager.isMobile() && <BiSolidEdit id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
+            {!DomManager.isMobile() && <TbMessageCirclePlus id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
           </div>
-          {/* THREAD ITEMS */}
+
+          {/* CHAT ROWS */}
           {!showNewThreadForm &&
             chats.length > 0 &&
-            chats.map((thread, index) => {
-              const coparent = thread?.members?.filter((x) => x.phone !== currentUser?.phone)[0]
-              return (
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    if (e.currentTarget.id === 'row') {
-                      openMessageThread(coparent).then((r) => r)
-                    }
-                    if (e.target !== e.currentTarget) return
-                  }}
-                  data-thread-id={thread.id}
-                  id="row"
-                  className="chats"
-                  key={index}>
-                  {/* THREAD ITEM */}
-                  <div className={`flex thread-item`}>
-                    {/* COPARENT NAME */}
-                    <div className="flex">
-                      <div id="user-initial-wrapper">
-                        <BiMessageRoundedDetail />
-                      </div>
-                      <p data-coparent-phone={coparent.phone} className="coparent-name">
-                        {formatNameFirstNameOnly(coparent.name)}
-                      </p>
-                    </div>
-
-                    {threadActionToShow === thread.id && (
-                      <IoMdCloseCircleOutline
-                        id={'close-thread-actions-icon'}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          toggleThreadActions(thread.id)
-                        }}
-                      />
-                    )}
-                    {threadActionToShow !== thread.id && (
-                      <BiDotsVerticalRounded
-                        id={'edit-icon'}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          toggleThreadActions(thread.id)
-                        }}
-                      />
-                    )}
-                  </div>
-                  {/* THREAD ACTIONS */}
-                  <div data-thread-id={thread.id} className={'flex thread-actions'}>
-                    {/* DELETE CHAT BUTTON */}
-                    <div id="delete-wrapper">
-                      <BiSolidMessageRoundedMinus
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          AlertManager.confirmAlert(
-                            'Once deleted, you can visit Account -> Chat Recovery to recover the messages. Are you sure?',
-                            "I'm Sure",
-                            true,
-                            async (e) => {
-                              await archiveChat(coparent)
-                            },
-                            () => {
-                              setThreadActionToShow(false)
-                              const threadAction = document.querySelector(`.thread-actions[data-thread-id='${thread.id}']`)
-                              threadAction.classList.remove('active')
-                            }
-                          )
-                        }}
-                        className={`delete-icon ${threadActionToShow ? 'active' : ''}`}
-                      />
-                      <span>DELETE</span>
-                    </div>
-
-                    {!thread.isMuted && (
-                      <div id="mute-wrapper">
-                        <IoNotificationsOffCircle
-                          onClick={async (e) => {
-                            e.stopPropagation()
-                            await toggleMute(coparent.phone, 'mute', thread.id)
-                          }}
-                          className={'mute-icon '}
-                        />
-                        <span>MUTE</span>
-                      </div>
-                    )}
-                    {/* UNMUTE BUTTON */}
-                    {thread.isMuted && (
-                      <div id="unmute-wrapper">
-                        <HiMiniBellAlert id={'unmute-icon'} onClick={() => toggleMute(coparent.phone, 'unmute', thread.id)} />
-                        <span>UNMUTE</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )
+            chats.map((chat, index) => {
+              const coparent = chat?.members?.filter((x) => x.phone !== currentUser?.phone)[0]
+              return <ChatRow coparent={coparent} chat={chat} index={index} openChat={() => openMessageThread(coparent)} />
             })}
         </Fade>
       </div>
       {!showNewConvoCard && (
         <NavBar navbarClass={'calendar'}>
-          {DomManager.isMobile() && <BiMessageRoundedAdd id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
+          {DomManager.isMobile() && <TbMessageCirclePlus id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
         </NavBar>
       )}
     </>

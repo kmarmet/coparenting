@@ -8,11 +8,11 @@ import MyConfetti from '/src/components/shared/myConfetti.js'
 import DateManager from '/src/managers/dateManager.js'
 import DateFormats from '/src/constants/dateFormats.js'
 import moment from 'moment'
-import BottomCard from '../shared/bottomCard'
+import BottomCard from '../shared/bottomCard.jsx'
 import { AiOutlineFileAdd } from 'react-icons/ai'
 import { MdOutlineFilterAltOff } from 'react-icons/md'
 import SecurityManager from '/src/managers/securityManager'
-import NewExpenseForm from '../forms/newExpenseForm'
+import NewExpenseForm from '../forms/newExpenseForm.jsx'
 import FirebaseStorage from '/src/database/firebaseStorage'
 import LightGallery from 'lightgallery/react'
 import MenuItem from '@mui/material/MenuItem'
@@ -21,21 +21,21 @@ import { Fade } from 'react-awesome-reveal'
 import { RxUpdate } from 'react-icons/rx'
 import 'lightgallery/css/lightgallery.css'
 import { BsFilter } from 'react-icons/bs'
-import NavBar from '../navBar'
-import Label from '../shared/label'
+import NavBar from '../navBar.jsx'
+import Label from '../shared/label.jsx'
 import ExpenseCategories from '/src/constants/expenseCategories'
 import DatasetManager from '/src/managers/datasetManager'
 import AlertManager from '/src/managers/alertManager'
-import SelectDropdown from '../shared/selectDropdown'
-import InputWrapper from '../shared/inputWrapper'
+import SelectDropdown from '../shared/selectDropdown.jsx'
+import InputWrapper from '../shared/inputWrapper.jsx'
 import DomManager from '/src/managers/domManager'
-import NoDataFallbackText from '../shared/noDataFallbackText'
+import NoDataFallbackText from '../shared/noDataFallbackText.jsx'
 import ActivityCategory from '/src/models/activityCategory'
 import ObjectManager from '/src/managers/objectManager'
 import ModelNames from '/src/models/modelNames'
 import StringManager from '/src/managers/stringManager'
 import ExpenseManager from '/src/managers/expenseManager.js'
-import PaymentOptions from '../expenses/paymentOptions.jsx'
+import PaymentOptions from './paymentOptions.jsx'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -116,20 +116,20 @@ export default function ExpenseTracker() {
     let existing = await getSecuredExpenses()
 
     if (Manager.isValid(expense)) {
-      existing = existing.filter((x) => x.name === expense.name)
+      existing = existing.filter((x) => x.name === expense?.name)
 
       // Delete in Firebase Storage
-      if (Manager.isValid(expense) && Manager.isValid(expense.imageName)) {
-        await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser?.id, expense.imageName, expense)
+      if (Manager.isValid(expense) && Manager.isValid(expense?.imageName)) {
+        await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser?.id, expense?.imageName, expense)
       }
 
       // Delete Multiple
       if (existing.length > 1) {
         AlertManager.confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, async () => {
-          let existingMultipleExpenses = existing.filter((x) => x.name === expense.name && x.repeating === true)
+          let existingMultipleExpenses = existing.filter((x) => x.name === expense?.name && x.repeating === true)
           if (Manager.isValid(existingMultipleExpenses)) {
             await DB.deleteMultipleRows(DB.tables.expenses, existingMultipleExpenses)
-            AlertManager.successAlert(`All ${expense.name} expenses have been deleted`)
+            AlertManager.successAlert(`All ${expense?.name} expenses have been deleted`)
           }
         })
       }
@@ -137,7 +137,7 @@ export default function ExpenseTracker() {
       // Delete Single
       else {
         AlertManager.confirmAlert(`Are you sure you would like to delete the ${activeExpense?.name} expense?`, "I'm Sure", true, async () => {
-          await DB.deleteById(`${DB.tables.expenses}/${currentUser.phone}`, expense.id)
+          await DB.deleteById(`${DB.tables.expenses}/${currentUser.phone}`, expense?.id)
         })
       }
     }
@@ -155,8 +155,8 @@ export default function ExpenseTracker() {
   }
 
   const sendReminder = async (expense) => {
-    const message = `This is a reminder to pay the ${expense.name} expense.  ${
-      Manager.isValid(expense.dueDate) ? 'Due date is: ' + expense.dueDate : ''
+    const message = `This is a reminder to pay the ${expense?.name} expense?.  ${
+      Manager.isValid(expense?.dueDate) ? 'Due date is: ' + expense?.dueDate : ''
     }`
     NotificationManager.sendNotification(`Expense Reminder`, message, expense?.payer?.phone, currentUser, ActivityCategory.expenses)
     AlertManager.successAlert('Reminder Sent')
@@ -329,7 +329,7 @@ export default function ExpenseTracker() {
       </BottomCard>
 
       {/* PAYMENT OPTIONS */}
-      <PaymentOptions setShowPaymentOptionsCard={setShowPaymentOptionsCard} showPaymentOptionsCard={showPaymentOptionsCard} />
+      <PaymentOptions onClose={() => setShowPaymentOptionsCard(false)} showPaymentOptionsCard={showPaymentOptionsCard} />
 
       {/* DETAILS CARD */}
       <BottomCard
@@ -369,6 +369,15 @@ export default function ExpenseTracker() {
                   <b>Amount</b>: ${activeExpense?.amount}
                 </p>
               </div>
+
+              {/* CATEGORY */}
+              {Manager.isValid(activeExpense?.category) && (
+                <div id="row" className="flex-start">
+                  <p id="category">
+                    <b>Category</b>: {activeExpense?.category}
+                  </p>
+                </div>
+              )}
 
               {/* SENT TO */}
               <div id="row" className="flex-start">
@@ -415,7 +424,7 @@ export default function ExpenseTracker() {
               {/* DATE ADDED */}
               <div id="row" className="flex-start flex">
                 <p id="title">
-                  <b>Created on: </b> <span>{DateManager.formatDate(activeExpense?.dateAdded)}</span>
+                  <b>Created on: </b> <span>{moment(activeExpense?.dateAdded).format(DateFormats.monthDayYear)}</span>
                 </p>
               </div>
 
@@ -568,9 +577,13 @@ export default function ExpenseTracker() {
           <div id="expenses-container">
             {Manager.isValid(expenses) &&
               expenses.map((expense, index) => {
+                let dueDate = moment(expense?.dueDate).format(DateFormats.readableMonthAndDay) ?? ''
+                if (!Manager.isValid(dueDate)) {
+                  dueDate = ''
+                }
                 return (
                   <div
-                    key={expense.id}
+                    key={expense?.id}
                     className="mt-20"
                     id="row"
                     onClick={() => {
@@ -578,27 +591,33 @@ export default function ExpenseTracker() {
                       setShowDetails(true)
                     }}>
                     <div id="primary-icon-wrapper">
-                      <span className="amount">${expense.amount}</span>
+                      <span className="amount">${expense?.amount}</span>
                     </div>
-                    <div id="content" data-expense-id={expense.id} className={`expense wrap`}>
+                    <div id="content" data-expense-id={expense?.id} className={`expense wrap`}>
                       {/* EXPENSE NAME */}
                       <div id="name-wrapper" className="flex align-center">
                         <p id="title" className="name row-title">
-                          {StringManager.uppercaseFirstLetterOfAllWords(expense.name)}
+                          {StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}
                         </p>
-                        <span className={`${expense.paidStatus} status`} id="request-status">
-                          {StringManager.uppercaseFirstLetterOfAllWords(expense.paidStatus.toUpperCase())}
+                        <span className={`${expense?.paidStatus} status`} id="request-status">
+                          {StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
                         </span>
                       </div>
 
-                      {/* CATEGORY/AMOUNT */}
-                      {expense?.category?.length > 0 && (
-                        <p id="subtitle">
-                          Category:
-                          <span>{expense.category}</span>
-                        </p>
-                      )}
-                      {(!expense.category || expense?.category?.length === 0) && <p id="subtitle">No Category Selected</p>}
+                      <div className="flex" id="below-title">
+                        {Manager.isValid(dueDate, true) && (
+                          <>
+                            <p className="due-date">
+                              {DateManager.formatDate(expense?.dueDate)} ({moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()})
+                            </p>
+                          </>
+                        )}
+                        {!Manager.isValid(dueDate, true) && (
+                          <>
+                            <p className="due-date">No due date</p>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )

@@ -1,26 +1,10 @@
 import Manager from '../../managers/manager'
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
 import Label from './label'
 import DB from '../../database/DB'
 import { FaCheck } from 'react-icons/fa6'
+import StringManager from '../../managers/stringManager.coffee'
 
 export default function ShareWithCheckboxes({
   defaultActiveShareWith = [],
@@ -37,12 +21,16 @@ export default function ShareWithCheckboxes({
 
   const setShareWithUsers = async () => {
     let people = []
+
+    // COPARENTS
     if (Manager.isValid(currentUser?.coparents)) {
       people = [...people, [...currentUser.coparents]].filter((x) => x)
     }
+
     if (Manager.isValid(currentUser?.parents)) {
       people = [...people, [...currentUser.parents]].filter((x) => x)
     }
+    // CHILDREN
     if (Manager.isValid(currentUser?.children) > 0) {
       let childrenAccounts = []
       for (let child of currentUser?.children) {
@@ -56,13 +44,15 @@ export default function ShareWithCheckboxes({
       people = [...people, [...childrenAccounts]].filter((x) => x)
     }
     let peopleWithAccounts = []
-    for (let person of people.flat()) {
-      const account = await DB.find(DB.tables.users, ['phone', person?.phone], true)
-      if (account) {
-        peopleWithAccounts.push(account)
+    if (Manager.isValid(people)) {
+      for (let person of people.flat()) {
+        const account = await DB.find(DB.tables.users, ['phone', person?.phone], true)
+        if (account) {
+          peopleWithAccounts.push(account)
+        }
       }
+      setShareWith(Manager.convertToArray(peopleWithAccounts).flat())
     }
-    setShareWith(Manager.convertToArray(peopleWithAccounts).flat())
   }
 
   useEffect(() => {
@@ -75,9 +65,7 @@ export default function ShareWithCheckboxes({
     <>
       {Manager.isValid(shareWith) && (
         <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass}`}>
-          <div className="flex">
-            <Label text={`${labelText.length === 0 ? 'Share with' : labelText}`} required={required} />
-          </div>
+          <Label text={`${labelText.length === 0 ? 'Share with' : labelText}`} required={required} />
           <div className="flex" id="checkboxes">
             {Manager.isValid(shareWith) &&
               shareWith?.map((user, index) => {
@@ -98,7 +86,7 @@ export default function ShareWithCheckboxes({
                     className={`flex ${containerClass} ${defaultActiveShareWith.includes(phone) ? 'active' : ''}`}
                     onClick={onCheck}>
                     <span className="pill">
-                      {formatNameFirstNameOnly(name)} <FaCheck />
+                      {StringManager.formatNameFirstNameOnly(name)} <FaCheck />
                     </span>
                   </div>
                 )

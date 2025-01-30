@@ -75,8 +75,8 @@ SecurityManager = {
   getExpenses: async function(currentUser) {
     var allExpenses, expense, i, len, returnRecords, sharedExpenses;
     returnRecords = [];
-    allExpenses = Manager.convertToArray((await DB.getTable(`${DB.tables.expenseTracker}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
-    sharedExpenses = (await SecurityManager.getShareWithItems(currentUser, DB.tables.expenseTracker));
+    allExpenses = Manager.convertToArray((await DB.getTable(`${DB.tables.expenses}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
+    sharedExpenses = (await SecurityManager.getShareWithItems(currentUser, DB.tables.expenses));
     if (Manager.isValid(allExpenses)) {
       for (i = 0, len = allExpenses.length; i < len; i++) {
         expense = allExpenses[i];
@@ -194,18 +194,17 @@ SecurityManager = {
     return returnRecords.flat();
   },
   getChats: async function(currentUser) {
-    var chat, chats, i, len, members, ref, ref1, ref2, securedChats;
+    var chat, chats, i, len, members, ref, ref1, securedChats;
     chats = Manager.convertToArray((await DB.getTable(`${DB.tables.chats}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
     securedChats = [];
     // User does not have a chat with root access by phone
     if (Manager.isValid(chats)) {
-      ref = chats.flat();
-      for (i = 0, len = ref.length; i < len; i++) {
-        chat = ref[i];
-        members = chat != null ? (ref1 = chat.members) != null ? ref1.map(function(x) {
+      for (i = 0, len = chats.length; i < len; i++) {
+        chat = chats[i];
+        members = chat != null ? (ref = chat.members) != null ? ref.map(function(x) {
           return x.phone;
         }) : void 0 : void 0;
-        if (ref2 = currentUser != null ? currentUser.phone : void 0, indexOf.call(members, ref2) >= 0) {
+        if (ref1 = currentUser != null ? currentUser.phone : void 0, indexOf.call(members, ref1) >= 0) {
           securedChats.push(chat);
         }
       }

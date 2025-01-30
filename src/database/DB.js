@@ -1,17 +1,16 @@
 import Manager from '../managers/manager'
-import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
+import { child, get, getDatabase, ref, remove, set } from 'firebase/database'
 import _ from 'lodash'
 import LogManager from '../managers/logManager'
 
 const DB = {
   tables: {
-    expenseTracker: 'expenseTracker',
+    expenses: 'expenses',
     swapRequests: 'swapRequests',
     users: 'users',
     calendarEvents: 'calendarEvents',
     transferChangeRequests: 'transferChangeRequests',
     documents: 'documents',
-    archivedChats: 'archivedChats',
     suggestions: 'suggestions',
     memories: 'memories',
     parentPermissionCodes: 'parentPermissionCodes',
@@ -228,7 +227,7 @@ const DB = {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }
   },
-  updateRecord: async (tableName, recordToUpdate, prop, value, propUid) => {
+  updateRecord: async (tableName, currentUser, recordToUpdate, prop, value, propUid) => {
     const dbRef = ref(getDatabase())
     const tableRecords = Manager.convertToArray(await DB.getTable(tableName))
     let toUpdate
@@ -249,15 +248,18 @@ const DB = {
     const dbRef = getDatabase()
     let key = null
     const tableRecords = await DB.getTable(path)
-
+    console.log(path)
+    console.log(tableRecords)
     for (const record of tableRecords) {
+      console.log(record.id)
       if (record?.id === id) {
         key = await DB.getSnapshotKey(path, record, 'id')
       }
     }
 
     try {
-      update(ref(dbRef, `${path}/${key}`), updatedRow)
+      console.log(key)
+      // update(ref(dbRef, `${path}/${key}`), updatedRow)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }

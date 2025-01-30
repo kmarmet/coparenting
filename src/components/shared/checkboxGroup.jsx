@@ -5,6 +5,7 @@ import { formatNameFirstNameOnly, stringHasNumbers } from '../../globalFunctions
 import { FaCheck } from 'react-icons/fa6'
 import DB_UserScoped from '../../database/db_userScoped'
 import ScreenNames from '../../constants/screenNames'
+import Label from './label.jsx'
 
 export default function CheckboxGroup({
   checkboxLabels,
@@ -41,8 +42,7 @@ export default function CheckboxGroup({
         <div id="checkbox-group" className={`${theme} ${elClass}`}>
           {parentLabel.length > 0 && (
             <div id="parent-label-wrapper">
-              <label id="parent-label">{parentLabel}</label>
-              {required && <span className="asterisk">*</span>}
+              <Label text={parentLabel} required={required} />
             </div>
           )}
           <div id="checkboxes">

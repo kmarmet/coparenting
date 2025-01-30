@@ -63,12 +63,12 @@
     #images {
       display: flex;
       gap: 10px;
-      margin: 15px auto 0 auto;
+      margin: 45px auto 0 auto;
       justify-content: center;
       overflow: hidden;
 
-      img {
-        max-width: 330px;
+      .lazy-load-image-loaded {
+        max-width: 300px;
         height: auto;
 
         &:first-child {
@@ -131,9 +131,9 @@
       width: auto;
       border-radius: 100%;
       background: #f9f9f9;
-      //      @media screen and (max-width: 600px) {
-      //        height: 75px;
-      //      }
+      @media screen and (max-width: 600px) {
+        height: 80px;
+      }
     }
 
     #login-buttons {
@@ -223,7 +223,7 @@
           width: 45%;
         }
 
-        .img-wrapper {
+        .lazy-load-image-loaded {
           width: 20%;
 
           img {
@@ -233,7 +233,7 @@
         }
 
         @media screen and (max-width: 600px) {
-          .img-wrapper {
+          .lazy-load-image-loaded {
             width: 100%;
 
             img {
@@ -372,35 +372,25 @@
           }
           .images {
             display: block;
+            width: 100%;
 
-            .img-wrapper {
-              width: 100%;
-              margin-bottom: 15px;
+            .lazy-load-image-loaded {
+              margin-bottom: 20px;
+            }
 
-              &[data-name='phone'] {
-                width: 100%;
-
+            .lazy-load-image-loaded {
+              margin: 0 auto 20px auto;
+              img {
+                margin: 0 auto 20px auto;
+              }
+              &:first-child {
                 img {
                   width: 70%;
-                  margin: 0 auto;
                 }
               }
-
-              &[data-name='laptop'] {
-                width: 100%;
-
+              &:last-child {
                 img {
-                  width: 100%;
-                  margin: 0 auto;
-                }
-              }
-
-              &[data-name='tablet'] {
-                width: 100%;
-
-                img {
-                  width: 70%;
-                  margin: 0 auto;
+                  width: 90%;
                 }
               }
             }
@@ -452,14 +442,10 @@
             width: 100%;
             max-width: 100%;
           }
-          .img-wrapper {
+          .lazy-load-image-loaded {
             width: 60%;
             margin: 20px auto 0 auto;
-
-            img {
-              width: 100%;
-              height: auto;
-            }
+            display: block !important;
           }
         }
       }

@@ -4,5 +4,5 @@ import moment from "moment"
 
 export default class ChatThread
   constructor: (
-    @id = Manager.getUid(), @members = [], @creationTimestamp = moment().format(DateFormats.dateForDb), @hideFrom = [],  @ownerPhone = '', @isMuted = false
+    @id = Manager.getUid(), @members = [], @creationTimestamp = moment().format(DateFormats.dateForDb),  @ownerPhone = '', @isPausedFor = []
   ) ->

@@ -240,11 +240,11 @@ export default function TransferRequests() {
 
               {/* LOCATION */}
               {Manager.isValid(activeRequest?.location) && (
-                <div className="flex flex-start wrap no-gap" id="row">
+                <div className="flex-start wrap no-gap" id="row">
                   <p id="title" className="mr-auto w-100">
                     <b>Location</b>
-                    <span className="low-opacity-text">{activeRequest?.location}</span>
                   </p>
+                  <span className="low-opacity-text">{activeRequest?.location}</span>
                 </div>
               )}
 

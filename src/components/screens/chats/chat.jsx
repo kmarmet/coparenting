@@ -2,48 +2,34 @@ import React, { useContext, useEffect, useState } from 'react'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import moment from 'moment'
 import 'rsuite/dist/rsuite.min.css'
-import ScreenNames from '../../../constants/screenNames'
-import globalState from '../../../context.js'
-import DB from '../../../database/DB'
-import ChatMessage from '../../../models/chat/chatMessage'
-import Manager from '../../../managers/manager'
-import NotificationManager from '../../../managers/notificationManager'
-import AppManager from '../../../managers/appManager.js'
+import ScreenNames from '/src/constants/screenNames'
+import globalState from '/src/context.js'
+import DB from '/src/database/DB'
+import ChatMessage from '/src/models/chat/chatMessage'
+import Manager from '/src/managers/manager'
+import NotificationManager from '/src/managers/notificationManager'
+import { BsFillHandThumbsUpFill } from 'react-icons/bs'
 import 'rc-tooltip/assets/bootstrap_white.css'
-import ChatManager from '../../../managers/chatManager.js'
-import DateFormats from '../../../constants/dateFormats'
+import ChatManager from '/src/managers/chatManager.js'
+import DateFormats from '/src/constants/dateFormats'
 import { PiBookmarkSimpleDuotone, PiBookmarksSimpleDuotone } from 'react-icons/pi'
 import { FaBookmark } from 'react-icons/fa'
-import ModelNames from '../../../models/modelNames'
+import ModelNames from '/src/models/modelNames'
 import { Fade } from 'react-awesome-reveal'
 import { IoChevronBack } from 'react-icons/io5'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
-import BottomCard from '../../shared/bottomCard'
+import BottomCard from '/src/components/shared/bottomCard'
 import { TbMessageCircleSearch } from 'react-icons/tb'
 import ContentEditable from '../../shared/contentEditable'
 import { useLongPress } from 'use-long-press'
-import ObjectManager from '../../../managers/objectManager'
-import AlertManager from '../../../managers/alertManager'
-import InputWrapper from '../../shared/inputWrapper'
-import DomManager from '../../../managers/domManager'
-import ActivityCategory from '../../../models/activityCategory'
-import ChatThread from '../../../models/chat/chatThread'
+import ObjectManager from '/src/managers/objectManager'
+import AlertManager from '/src/managers/alertManager'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import DomManager from '/src/managers/domManager'
+import ActivityCategory from '/src/models/activityCategory'
+import ChatThread from '/src/models/chat/chatThread'
+import StringManager from '/src/managers/stringManager.coffee'
+import { FaFaceSmile } from 'react-icons/fa6'
+import { FaFaceFrown } from 'react-icons/fa6'
 
 const Chat = () => {
   const { state, setState } = useContext(globalState)
@@ -59,7 +45,7 @@ const Chat = () => {
   const [searchInputQuery, setSearchInputQuery] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [readonly, setReadonly] = useState(false)
-  const [shouldCreateNewChat, setShouldCreateNewChat] = useState(false)
+  const [toneObject, setToneObject] = useState()
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
     AlertManager.successAlert('Message Copied!', false)
@@ -82,7 +68,6 @@ const Chat = () => {
 
     const chat = new ChatThread()
     const chatMessage = new ChatMessage()
-    //messages should get pushed to chatMessages/primaryKey
     const uid = Manager.getUid()
 
     // Chat
@@ -99,11 +84,13 @@ const Chat = () => {
     chat.id = uid
     chat.members = [memberOne, memberTwo]
     chat.creationTimestamp = moment().format(DateFormats.fullDatetime)
-    chat.isMuted = false
     chat.ownerPhone = currentUser?.phone
+    chat.isPausedFor = []
 
     const cleanedChat = ObjectManager.cleanObject(chat, ModelNames.chatThread)
+    cleanedChat.isPausedFor = []
     let cleanedRecipientChat = { ...cleanedChat }
+    cleanedRecipientChat.isPausedFor = []
     cleanedRecipientChat.ownerPhone = messageRecipient.phone
 
     // Message
@@ -120,11 +107,6 @@ const Chat = () => {
     // ADD TO DATABASE
     // Existing chat
     if (Manager.isValid(existingChat)) {
-      // If other member has archived their chat -> create a new chat for them
-      if (shouldCreateNewChat) {
-        cleanedRecipientChat.id = existingChat.id
-        await ChatManager.addChat(`${DB.tables.chats}/${messageRecipient.phone}`, cleanedRecipientChat)
-      }
       await ChatManager.addChatMessage(`${DB.tables.chatMessages}/${existingChat.id}`, cleanMessage)
     }
     // Create new chat (for each member, if one doesn't exist between members)
@@ -134,13 +116,11 @@ const Chat = () => {
       await ChatManager.addChatMessage(`${DB.tables.chatMessages}/${uid}`, cleanMessage)
     }
 
-    // Only send notification if co-parent has chat UN-muted
-    let secondMemberChat = await ChatManager.getScopedChat(messageRecipient, currentUser?.phone)
-
-    if (!secondMemberChat.isMuted) {
+    // Only send if it is not paused for the recipient
+    if (!existingChat?.isPausedFor?.includes(messageRecipient?.phone)) {
       NotificationManager.sendNotification(
         'New Message',
-        `You have an unread conversation message 💬 from ${uppercaseFirstLetterOfAllWords(currentUser.name)}`,
+        `You have an unread conversation message 💬 from ${StringManager.uppercaseFirstLetterOfAllWords(currentUser.name)}`,
         messageRecipient?.phone,
         currentUser,
         ActivityCategory.chats
@@ -148,9 +128,9 @@ const Chat = () => {
     }
 
     await getExistingMessages()
-    AppManager.setAppBadge(1)
     messageInputValue.innerHTML = ''
     setMessageText('')
+    setToneObject(null)
     // TODO MOBILE ONLY?
     // setRefreshKey(Manager.getUid())
   }
@@ -166,16 +146,12 @@ const Chat = () => {
     let chat = await ChatManager.getScopedChat(currentUser, messageRecipient?.phone)
     let secondMemberChat = await ChatManager.getScopedChat(messageRecipient, currentUser?.phone)
 
-    if (!Manager.isValid(secondMemberChat)) {
-      setShouldCreateNewChat(true)
-    }
-
     let bookmarkRecords = await ChatManager.getBookmarks(chat?.id)
     let bookmarkedRecordIds = bookmarkRecords.map((x) => x.messageId)
     let messages = []
 
     // Co-parent account closed
-    if (!Manager.isValid(messageRecipient)) {
+    if (!Manager.isValid(messageRecipient) || !secondMemberChat) {
       setReadonly(true)
     }
 
@@ -212,25 +188,46 @@ const Chat = () => {
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.chats}/${currentUser?.phone}`), async (snapshot) => {
-      await getExistingMessages().then((r) => r)
-    })
+    const userChats = await DB.getTable(`${DB.tables.chats}/${currentUser?.phone}`)
+    const thisChat = userChats.filter(
+      (x) => x.members.map((x) => x?.phone).includes(currentUser.phone) && x.members.map((x) => x?.phone).includes(messageRecipient.phone)
+    )[0]
+
+    if (thisChat) {
+      const chatId = thisChat.id
+      onValue(child(dbRef, `${DB.tables.chatMessages}/${chatId}`), async (snapshot) => {
+        await getExistingMessages().then((r) => r)
+      })
+    }
   }
 
   const handleMessageTyping = (input) => {
     const valueLength = input.target.textContent.length
-    const parent = input.target.parentNode
     if (valueLength === 0) {
       input.target.classList.remove('has-value')
     } else {
       setMessageText(input.target.textContent)
+      setTone(input.target.textContent).then((r) => r)
     }
   }
 
+  const setTone = async (text) => {
+    const tone = await ChatManager.getTone(text)
+    const _toneObject = ChatManager.getToneRating(tone)
+    setToneObject(_toneObject)
+  }
+
   useEffect(() => {
+    const element = document.querySelector('.message-input')
+
+    if (element) {
+      element.addEventListener('blur', function (event) {
+        element.classList.remove('has-value')
+      })
+    }
     setState({ ...state, isLoading: true })
     onTableChange().then((r) => r)
-    // scrollToLatestMessage()
+
     const appContainer = document.querySelector('.App')
 
     if (appContainer) {
@@ -306,7 +303,7 @@ const Chat = () => {
                 Manager.showPageContainer('show')
               }}>
               <IoChevronBack />
-              <p id="user-name">{formatNameFirstNameOnly(messageRecipient?.name)}</p>
+              <p id="user-name">{StringManager.formatNameFirstNameOnly(messageRecipient?.name)}</p>
             </div>
             <div id="right-side" className="flex">
               <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />
@@ -327,10 +324,10 @@ const Chat = () => {
             {Manager.isValid(searchResults) &&
               searchResults.map((messageObj, index) => {
                 let sender
-                if (formatNameFirstNameOnly(messageObj.sender) === formatNameFirstNameOnly(currentUser?.name)) {
+                if (StringManager.formatNameFirstNameOnly(messageObj.sender) === StringManager.formatNameFirstNameOnly(currentUser?.name)) {
                   sender = 'ME'
                 } else {
-                  sender = formatNameFirstNameOnly(messageObj.sender)
+                  sender = StringManager.formatNameFirstNameOnly(messageObj.sender)
                 }
                 return (
                   <div key={index}>
@@ -349,17 +346,17 @@ const Chat = () => {
           <div id="bookmark-messages" className="bookmark-results">
             {bookmarks.map((bookmark, index) => {
               let sender
-              if (formatNameFirstNameOnly(bookmark.sender) === formatNameFirstNameOnly(currentUser?.name)) {
+              if (StringManager.formatNameFirstNameOnly(bookmark.sender) === StringManager.formatNameFirstNameOnly(currentUser?.name)) {
                 sender = 'ME'
               } else {
-                sender = formatNameFirstNameOnly(bookmark.sender)
+                sender = StringManager.formatNameFirstNameOnly(bookmark.sender)
               }
               return (
                 <div key={index}>
-                  <p className={bookmark.sender === currentUser?.name ? 'message from' : 'to message'}>
-                    {bookmark.message}
+                  <div className="message-wrapper">
+                    <p className={bookmark.sender === currentUser?.name ? 'message from' : 'to message'}>{bookmark.message}</p>
                     <FaBookmark className={'bookmarked'} onClick={(e) => toggleMessageBookmark(bookmark)} />
-                  </p>
+                  </div>
                   <span className={bookmark.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                     From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
                   </span>
@@ -387,18 +384,21 @@ const Chat = () => {
                       timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
                     }
                     return (
-                      <div key={index}>
-                        <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
-                          {message.message}
+                      <>
+                        <div key={index} className="message-wrapper flex">
+                          <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
+                            {message.message}
+                          </p>
                           {!readonly && (
                             <>
                               {isBookmarked && <FaBookmark className={'bookmarked'} onClick={() => toggleMessageBookmark(message, true)} />}
                               {!isBookmarked && <PiBookmarkSimpleDuotone onClick={(e) => toggleMessageBookmark(message, false)} />}
                             </>
                           )}
-                        </p>
+                        </div>
+
                         <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
-                      </div>
+                      </>
                     )
                   })}
                 <div id="last-message-anchor"></div>
@@ -407,6 +407,15 @@ const Chat = () => {
               {/* MESSAGE INPUT */}
               {!readonly && (
                 <div className="form message-input-form">
+                  {!ObjectManager.isEmpty(toneObject) && (
+                    <div id="tone-wrapper">
+                      <p>
+                        <b>Tone:</b>
+                      </p>
+                      <span className={toneObject.color}>{toneObject.tone}</span>
+                      {toneObject.color === 'green' ? <FaFaceSmile className={'green'} /> : <FaFaceFrown className={'red'} />}
+                    </div>
+                  )}
                   {/* SEND BUTTON */}
                   <div
                     className={messageText.length > 1 ? 'flex has-value' : 'flex'}
@@ -427,7 +436,7 @@ const Chat = () => {
         {!DomManager.isMobile() && (
           <Fade direction={'up'} duration={1000} className={'conversation-sidebar-fade-wrapper'} triggerOnce={true}>
             <div className="top-buttons">
-              <p id="user-name">{formatNameFirstNameOnly(messageRecipient.name)}</p>
+              <p id="user-name">{StringManager.formatNameFirstNameOnly(messageRecipient.name)}</p>
               <p id="view-bookmarks" className="item" onClick={(e) => viewBookmarks(e)}>
                 <PiBookmarksSimpleDuotone
                   id="conversation-bookmark-icon"

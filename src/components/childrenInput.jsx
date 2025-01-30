@@ -2,29 +2,11 @@ import React, { useContext, useState } from 'react'
 import globalState from '../context'
 import Manager from '../managers/manager'
 import phone from 'phone'
-
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  formatPhone,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../globalFunctions'
 import AlertManager from '../managers/alertManager'
 import ChildUser from '../models/child/childUser'
 import InputWrapper from '../components/shared/inputWrapper'
 import General from '../models/child/general'
+import StringManager from '../managers/stringManager.coffee'
 
 export default function ChildrenInput({ add, childrenCount }) {
   const { state, setState } = useContext(globalState)
@@ -33,7 +15,7 @@ export default function ChildrenInput({ add, childrenCount }) {
   const [showAddButton, setShowAddButton] = useState(true)
 
   const validatePhone = () => {
-    const validatePhone = phone(`+1${formatPhone(userPhone)}`)
+    const validatePhone = phone(`+1${StringManager.formatPhone(userPhone)}`)
     const { isValid } = validatePhone
     return isValid
   }
@@ -41,7 +23,7 @@ export default function ChildrenInput({ add, childrenCount }) {
   return (
     <div id="child-input-container">
       <p id="child-label">
-        Child #{childrenCount} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
+        Child #{childrenCount} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
       </p>
       <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
       <InputWrapper inputType={'input'} inputValueType="number" labelText={'Phone Number'} onChange={(e) => setUserPhone(e.target.value)} />
@@ -49,7 +31,7 @@ export default function ChildrenInput({ add, childrenCount }) {
         <button
           className="button default green"
           onClick={() => {
-            if (name.length == 0) {
+            if (name.length === 0) {
               AlertManager.throwError('Please enter required fields')
               return false
             }
@@ -67,7 +49,7 @@ export default function ChildrenInput({ add, childrenCount }) {
             add(child)
             setShowAddButton(false)
           }}>
-          Save {uppercaseFirstLetterOfAllWords(name)}
+          Save {StringManager.uppercaseFirstLetterOfAllWords(name)}
         </button>
       )}
     </div>

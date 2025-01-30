@@ -14,6 +14,14 @@ function UploadInputs({
   const { state, setState } = useContext(globalState)
   const { currentUser, currentScreen } = state
 
+  const getUploadType = () => {
+    if (uploadType === 'document') {
+      return 'application/pdf,.doc,.docx,application/msword'
+    } else {
+      return 'image/*'
+    }
+  }
+
   return (
     <div id="upload-inputs" className={containerClass}>
       <div className="flex">
@@ -26,8 +34,7 @@ function UploadInputs({
           id="upload-input"
           name="file-upload"
           type="file"
-          multiple
-          accept={uploadType === 'document' ? '.docx' : 'image/*'}
+          accept={getUploadType()}
         />
       </div>
     </div>

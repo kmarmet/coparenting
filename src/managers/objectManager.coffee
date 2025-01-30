@@ -12,7 +12,7 @@ import ChatMessage from "../models/chat/chatMessage"
 import ChildUser from "../models/child/childUser"
 import Doc from "../models/doc"
 import Child from "../models/child/child"
-
+import _ from "lodash"
 ObjectManager = {
   cleanObject: (object, modelName) ->
     returnObject = switch modelName

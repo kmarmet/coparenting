@@ -97,7 +97,7 @@ function ChatRecovery() {
 
       const signaturePadImage = FirebaseStorage.base64ToImage(signaturePad.toDataURL(), 'signature.jpg')
       await FirebaseStorage.uploadChatRecoverySignature(scopedChat.id, signaturePadImage).finally(async (img) => {})
-      await FirebaseStorage.getSingleImage(FirebaseStorage.directories.chatRecoveryRequests, scopedChat.id, 'signature.jpg').then(async (url) => {
+      await FirebaseStorage.getSingleFileUrl(FirebaseStorage.directories.chatRecoveryRequests, scopedChat.id, 'signature.jpg').then(async (url) => {
         if (url && url !== undefined && url.length > 0) {
           const chatRecoveryRequest = new ChatRecoveryRequest()
           chatRecoveryRequest.id = scopedChat.id

@@ -1,2 +1,0 @@
-// If clearing/adding node_modules 
-**** remove the svgo from "optimizers" in @parcel/config-default/index.json

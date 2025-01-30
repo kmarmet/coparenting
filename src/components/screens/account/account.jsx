@@ -2,23 +2,6 @@ import React, { useContext, useState } from 'react'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import Manager from '../../../managers/manager'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import { Fade } from 'react-awesome-reveal'
 // ICONS
 import { PiChatsCircleDuotone, PiHandWavingDuotone, PiUserCircleMinusDuotone } from 'react-icons/pi'
@@ -36,6 +19,7 @@ import { EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, upda
 import { useSwipeable } from 'react-swipeable'
 import NotificationManager from '../../../managers/notificationManager'
 import FirebaseStorage from '../../../database/firebaseStorage'
+import StringManager from '../../../managers/stringManager.coffee'
 
 export default function Account() {
   const { state, setState } = useContext(globalState)
@@ -200,7 +184,7 @@ export default function Account() {
         }}
         wrapperClass="update-card"
         showCard={showUpdateCard}
-        title={`Update your ${uppercaseFirstLetterOfAllWords(updateType)}`}>
+        title={`Update your ${StringManager.uppercaseFirstLetterOfAllWords(updateType)}`}>
         <div {...handlers} id="update-contact-info-container" className={`${theme}  form`}>
           <div className="form">
             {updateType === 'email' && (
@@ -243,7 +227,7 @@ export default function Account() {
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <p className="screen-title">Account</p>
           <p id="user-name">
-            Hey {formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
+            Hey {StringManager.formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
           </p>
           <div className="sections">
             <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
@@ -268,12 +252,12 @@ export default function Account() {
               <MdOutlineContactMail className={'mr-10'} />
               Update Email Address
             </p>
-            {currentUser && currentUser?.accountType === 'parent' && (
-              <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.chatRecovery })}>
-                <PiChatsCircleDuotone className={'mr-10'} />
-                Chat Recovery
-              </p>
-            )}
+            {/*{currentUser && currentUser?.accountType === 'parent' && (*/}
+            {/*  <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.chatRecovery })}>*/}
+            {/*    <PiChatsCircleDuotone className={'mr-10'} />*/}
+            {/*    Chat Recovery*/}
+            {/*  </p>*/}
+            {/*)}*/}
             <p className="section close-account" onClick={closeAccount}>
               <PiUserCircleMinusDuotone className={'mr-10'} />
               Close Account

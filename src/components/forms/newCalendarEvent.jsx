@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { default as MultiDatePicker } from '@rsuite/multi-date-picker'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
@@ -13,12 +12,9 @@ import CalendarMapper from '../../mappers/calMapper'
 import DatetimePicker from '../../components/shared/datetimePicker.jsx'
 import DateFormats from '../../constants/dateFormats'
 import DatetimePickerViews from '../../constants/datetimePickerViews'
-import DB from '../../database/DB'
 import DateManager from '../../managers/dateManager'
-import InputSuggestionWrapper from '../../components/shared/inputSuggestionWrapper'
 import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
 import Toggle from 'react-toggle'
-import SecurityManager from '../../managers/securityManager'
 import ModelNames from '../../models/modelNames'
 import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
 import InputWrapper from '../../components/shared/inputWrapper'
@@ -27,20 +23,18 @@ import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputD
 import AlertManager from '../../managers/alertManager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
-import validator from 'validator'
 import AccordionDetails from '@mui/material/AccordionDetails'
+import validator from 'validator'
 import ObjectManager from '../../managers/objectManager'
 import DatasetManager from '../../managers/datasetManager'
-import InputSuggestion from '../../models/inputSuggestion' // COMPONENT
 import _ from 'lodash'
-import FormNames from '../../models/formNames'
 import CalendarManager from '../../managers/calendarManager.js'
 import NotificationManager from '../../managers/notificationManager.js'
 import DB_UserScoped from '../../database/db_userScoped'
 import ActivityCategory from '../../models/activityCategory'
 import StringManager from '../../managers/stringManager' // COMPONENT
 import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
-// COMPONENT
+
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
@@ -75,12 +69,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [showReminders, setShowReminders] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
-  const [showCoparentReminderToggle, setShowCoparentReminderToggle] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-  const [suggestionRefreshKey, setSuggestionRefreshKey] = useState(Manager.getUid())
 
   const resetForm = async () => {
-    hideCard()
     Manager.resetForm('new-event-form')
     setEventLength(EventLengths.single)
     setEventStartDate('')
@@ -95,7 +85,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     setEventEndTime('')
     setEventShareWith([])
     setClonedDates([])
-    setInputSuggestions([])
     setEventChildren([])
     setEventReminderTimes([])
     setCoparentsToRemind([])
@@ -106,14 +95,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     setShowReminders(false)
     setIncludeChildren(false)
     setIsVisitation(false)
-    setShowCoparentReminderToggle(false)
-    setRefreshKey(Manager.getUid())
-    setSuggestionRefreshKey(Manager.getUid())
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    setState({ ...state, currentUser: updatedCurrentUser })
+    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
 
   const submit = async () => {
+    //#region FILL NEW EVENT
     const newEvent = new CalendarEvent()
     // Required
     newEvent.title = eventTitle
@@ -141,8 +128,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     newEvent.repeatInterval = repeatInterval
     newEvent.fromVisitationSchedule = isVisitation
     newEvent.isRepeating = eventIsRepeating
-    newEvent.isCloned = eventIsCloned
+    newEvent.isCloned = Manager.isValid(clonedDates)
     newEvent.isDateRange = eventIsDateRange
+    //#endregion FILL NEW EVENT
 
     if (Manager.isValid(eventPhone, true)) {
       if (!validator.isMobilePhone(eventPhone)) {
@@ -154,7 +142,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     }
 
     if (Manager.isValid(newEvent)) {
-      // Repeating Events Validation
+      //#region VALIDATION
       if (Manager.isValid(repeatingEndDate) && !Manager.isValid(repeatInterval)) {
         AlertManager.throwError('If you have chosen to repeat this event, please select an end month')
         return false
@@ -165,30 +153,24 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         return false
       }
 
-      if (!Manager.isValid(eventStartDate, true)) {
+      if (!Manager.isValid(eventShareWith)) {
+        AlertManager.throwError('Please select who you would like to share with event with')
+        return false
+      }
+
+      if (!Manager.isValid(eventStartDate)) {
         AlertManager.throwError('Please select an event date')
         return false
       }
 
+      //#endregion VALIDATION
+
       hideCard()
       MyConfetti.fire()
 
-      // Insert Suggestion
-      const alreadyExists =
-        _.filter(inputSuggestions, (row) => {
-          return row.suggestion.toLowerCase() === newEvent.title.toLowerCase() && row.ownerPhone === currentUser?.phone
-        }).length > 0
-
-      if (!alreadyExists) {
-        const newSuggestion = new InputSuggestion()
-        newSuggestion.ownerPhone = currentUser?.phone
-        newSuggestion.formName = FormNames.calendar
-        newSuggestion.suggestion = newEvent.title
-        await DB.addSuggestion(newSuggestion)
-      }
-
       const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
 
+      //#region MULTIPLE DATES
       // Date Range
       if (eventIsDateRange) {
         const dateObjects = createEventList()
@@ -196,7 +178,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       }
 
       // Add cloned dates
-      if (eventIsCloned) {
+      if (Manager.isValid(clonedDates)) {
         const clonedDatesList = createEventList()
         await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesList)
       }
@@ -206,8 +188,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         const repeatingDates = createEventList('repeating')
         await CalendarManager.addMultipleCalEvents(currentUser, repeatingDates)
       }
+      //#endregion MULTIPLE DATES
 
-      // SINGLE DATE --------------------------------------------------------------------------------------------------
+      //#region SINGLE DATE
       if (!eventIsRepeating && !eventIsDateRange && !eventIsCloned) {
         await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
 
@@ -220,9 +203,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           ActivityCategory.calendar
         )
       }
-      if (navigator.setAppBadge) {
-        await navigator.setAppBadge(1)
-      }
+      //#endregion SINGLE DATE
       await resetForm()
     }
   }
@@ -402,7 +383,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     <>
       {/* FORM WRAPPER */}
       <BottomCard
-        refreshKey={refreshKey}
         submitText={'Create Event'}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={resetForm}
@@ -429,45 +409,14 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             inputType={'input'}
             labelText={'Event Name'}
             defaultValue={eventTitle}
-            refreshKey={refreshKey}
             required={true}
             isDebounced={false}
             inputValue={eventTitle}
             onChange={async (e) => {
               const inputValue = e.target.value
-              if (inputValue.length > 1) {
-                const dbSuggestions = await SecurityManager.getInputSuggestions(currentUser)
-
-                if (Manager.isValid(dbSuggestions)) {
-                  const matching = dbSuggestions.filter(
-                    (x) =>
-                      x.formName === 'calendar' &&
-                      x.ownerPhone === currentUser?.phone &&
-                      Manager.contains(x.suggestion.toLowerCase(), inputValue.toLowerCase())
-                  )
-                  setInputSuggestions(DatasetManager.getUniqueArray(matching, true))
-                }
-              } else {
-                setInputSuggestions([])
-              }
               setEventTitle(inputValue)
             }}
           />
-
-          {/* SUGGESTIONS DROPDOWN */}
-          {Manager.isValid(eventTitle) && (
-            <div className="title-suggestion-wrapper">
-              <InputSuggestionWrapper
-                suggestions={inputSuggestions}
-                setSuggestions={() => setInputSuggestions([])}
-                onClick={(e) => {
-                  const suggestion = e.target.textContent
-                  setEventTitle(suggestion)
-                  setInputSuggestions([])
-                }}
-              />
-            </div>
-          )}
 
           {/* FROM DATE */}
           <div className="flex gap">
@@ -692,13 +641,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             wrapperClasses="mt-15"
             labelText={'Website'}
             required={false}
-            refreshKey={refreshKey}
             inputType={'input'}
             inputValueType="url"
             onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
 
           {/* LOCATION/ADDRESS */}
-          <InputWrapper refreshKey={refreshKey} labelText={'Location'} required={false} inputType={'location'}>
+          <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
             <Autocomplete
               apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
               options={{
@@ -716,12 +664,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           <InputWrapper inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
 
           {/* NOTES */}
-          <InputWrapper
-            labelText={'Notes'}
-            refreshKey={refreshKey}
-            required={false}
-            inputType={'textarea'}
-            onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
+          <InputWrapper labelText={'Notes'} required={false} inputType={'textarea'} onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
         </div>
       </BottomCard>
     </>

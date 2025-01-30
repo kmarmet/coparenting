@@ -154,14 +154,16 @@ export default NotificationManager = {
     newActivity.text = message;
     newActivity.category = category;
     DB.add(`${DB.tables.activities}/${recipientPhone}`, newActivity);
-    return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
-      return response.text();
-    }).then(function(result) {
-      console.log(result);
-      return console.log(`Sent to ${subId}`);
-    }).catch(function(error) {
-      return console.error(error);
-    });
+    if (!window.location.href.includes("localhost")) {
+      return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
+        return response.text();
+      }).then(function(result) {
+        console.log(result);
+        return console.log(`Sent to ${subId}`);
+      }).catch(function(error) {
+        return console.error(error);
+      });
+    }
   },
   enableNotifications: function(subId) {
     var myHeaders, options, raw, url;

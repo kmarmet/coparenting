@@ -36,7 +36,7 @@ export default function FullMenu() {
   const auth = getAuth()
 
   const changeCurrentScreen = (screen) => {
-    setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), menuIsOpen: false })
+    setState({ ...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false })
     Manager.showPageContainer('show')
   }
 
@@ -66,7 +66,7 @@ export default function FullMenu() {
       wrapperClass="full-menu"
       title={'Menu'}
       className={`full-menu ${theme}`}
-      onClose={() => setState({ ...state, menuIsOpen: false })}
+      onClose={() => setState({ ...state, menuIsOpen: false, refreshKey: Manager.getUid() })}
       showCard={menuIsOpen}
       hasDelete={false}
       hasSubmitButton={false}>

@@ -49,8 +49,8 @@ SecurityManager =
 
   getExpenses: (currentUser) ->
     returnRecords = []
-    allExpenses = Manager.convertToArray(await DB.getTable("#{DB.tables.expenseTracker}/#{currentUser?.phone}")).flat()
-    sharedExpenses = await SecurityManager.getShareWithItems(currentUser, DB.tables.expenseTracker);
+    allExpenses = Manager.convertToArray(await DB.getTable("#{DB.tables.expenses}/#{currentUser?.phone}")).flat()
+    sharedExpenses = await SecurityManager.getShareWithItems(currentUser, DB.tables.expenses);
 
     if Manager.isValid(allExpenses)
       for expense in allExpenses
@@ -101,6 +101,7 @@ SecurityManager =
     if Manager.isValid(sharedDocs)
       returnRecords = [sharedDocs..., returnRecords...]
     return returnRecords.flat()
+
   getMemories: (currentUser) ->
     returnRecords = []
     allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}/#{currentUser?.phone}")).flat()
@@ -139,7 +140,7 @@ SecurityManager =
     securedChats = []
     # User does not have a chat with root access by phone
     if Manager.isValid(chats)
-      for chat in chats.flat()
+      for chat in chats
         members = chat?.members?.map (x) -> x.phone
         if currentUser?.phone in members
           securedChats.push(chat)
