@@ -700,8 +700,8 @@
   animation: gradient 7s ease infinite;
 }
 @mixin blurredBg() {
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(50px);
+  background: none;
   transition: all 0.5s ease-in-out;
 }
 @mixin gradientButtonBg {
@@ -1204,6 +1204,7 @@
   align-items: flex-start;
   width: 100%;
   margin-bottom: 20px;
+
   textarea {
     max-height: 30px;
     height: 30px;
@@ -1235,11 +1236,15 @@
     border-radius: 0;
     border-bottom: 1px solid $lightBorder;
 
+    &.date-input {
+      border-radius: 0;
+    }
+
     &:focus {
       border: 0;
       border-bottom: 1px solid $mainBlue;
-      background: rgba(153, 178, 255, 0.14);
       border-radius: 0;
+      background: rgba(153, 178, 255, 0.14);
     }
   }
   textarea {
@@ -1500,6 +1505,7 @@
   padding: 0;
   display: block;
   margin-bottom: 10px;
+
   svg {
     position: relative;
     bottom: 4px;
@@ -1512,12 +1518,6 @@
         width: 45%;
       }
     }
-  }
-  #checkboxes {
-    gap: 5px 8px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
   }
   #label-wrapper {
     width: 100%;
@@ -1539,7 +1539,7 @@
       }
     }
   }
-  #checkbox-container,
+  #checkboxes,
   #standalone-checkbox-container,
   #share-with-checkbox-container {
     @include hover;
@@ -1548,18 +1548,60 @@
     &.active {
       opacity: 1;
       transition: all 0.3s ease-in-out;
+    }
 
-      .pill {
-        background: #ffeebb;
-        color: #7c6842;
+    &#checkboxes {
+      border-radius: 0;
+      max-width: 100%;
+      width: 100%;
+      overflow: auto;
+      white-space: nowrap;
+      mask-image: linear-gradient(to right, black 95%, transparent 100%);
+      min-height: 30px;
+      padding: 5px 0;
+    }
+
+    .pill {
+      color: rgba(0, 0, 0, 0.75);
+      background: $bestGreyForWhite;
+      border-radius: 50px;
+      text-align: center;
+      font-weight: $fwRegular;
+      line-height: 1;
+      padding: 6.5px 15px;
+      font-size: 12px;
+      align-items: center;
+      justify-content: center;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      transition: all 0.3s ease-in-out;
+      letter-spacing: 0.8px;
+      display: inline-flex;
+      margin-right: 8px;
+
+      svg {
+        font-size: 12px;
+        width: 0;
+        transition: all 0.3s linear;
+      }
+
+      @media screen and (min-width: 800px) {
+        &:hover {
+          background: rgba(231, 233, 238, 0.78);
+          color: rgba(0, 0, 0, 0.8);
+        }
+      }
+
+      &.active {
+        background: $gold;
+        color: $goldText;
         font-weight: $fwMedium;
-        display: flex;
-        align-items: center;
         line-height: 1;
-        padding: 8px 10px;
+        padding: 6.5px 15px;
         text-align: center;
         transition: 0.5s;
-        background-size: 200% auto;
 
         svg {
           width: auto;
@@ -1572,40 +1614,6 @@
 
     &.flex {
       margin: 0;
-    }
-
-    .pill {
-      color: rgba(0, 0, 0, 0.75);
-      background: $bestGreyForWhite;
-      border-radius: 50px;
-      min-width: 60px;
-      text-align: center;
-      font-weight: $fwRegular;
-      line-height: 1;
-      padding: 8px 10px;
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      align-self: stretch;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      transition: all 0.3s ease-in-out;
-
-      @media screen and (min-width: 800px) {
-        &:hover {
-          background: rgba(231, 233, 238, 0.78);
-          color: rgba(0, 0, 0, 0.8);
-        }
-      }
-
-      svg {
-        font-size: 12px;
-        width: 0;
-        transition: all 0.3s linear;
-      }
     }
   }
 }
@@ -2411,18 +2419,20 @@
       font-size: 20px;
     }
   }
+
   // BUTTONS
   .buttons {
-    position: sticky;
+    position: fixed;
     display: flex;
     justify-content: center;
-    z-index: 10000;
     border: 0;
     bottom: 0;
-    margin: 0 auto;
+    margin: 0;
     width: 100%;
-    background: white;
     padding: 8px 0 20px 0;
+    height: 80px;
+    z-index: 1;
+    background: white;
 
     * {
       line-height: 1;
@@ -2457,7 +2467,6 @@
       right: inherit;
       bottom: 0;
       border: 1px solid $green;
-      background-color: white;
       justify-self: flex-start;
       margin: 0 auto;
       line-height: 1;
@@ -2524,6 +2533,47 @@
   /*#region  CARDS BY CLASS*/
   // NEW CALENDAR EVENT
   &.new-calendar-event {
+    .cloned-date-wrapper {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 0;
+      max-height: 0;
+      width: 100%;
+
+      &.active {
+        transition: all 0.3s ease-in-out;
+        max-height: unset;
+        opacity: 1;
+      }
+
+      .input-wrapper {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+
+        button {
+          font-weight: $fwMedium;
+          line-height: 1;
+          color: $red;
+          font-size: 12px;
+          border-radius: 50px;
+          padding: 5px 15px;
+          background: $bgRed;
+          @include hover;
+        }
+        input {
+          &.date-input {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid #e7e9ee;
+            background: transparent;
+          }
+        }
+      }
+    }
+
     #relative-wrapper {
       .flex {
         &.event-times-wrapper {
@@ -2663,6 +2713,7 @@
       }
     }
   }
+
   // UPLOAD DOCUMENT
   &.upload-document-card {
     min-height: 80vh;
@@ -2672,6 +2723,7 @@
       display: block;
     }
   }
+
   // VIEW HOLIDAYS
   &.view-holidays {
     min-height: 250px;
@@ -2683,6 +2735,7 @@
       top: 5px;
     }
   }
+
   // EXPENSE TRACKER FILTER CARD
   &.filter-card {
     .filter-row {
@@ -2719,6 +2772,7 @@
       }
     }
   }
+
   // CHILD SELECTOR
   &.child-selector {
     #child-selector {
@@ -2772,6 +2826,7 @@
       }
     }
   }
+
   // FULL MENU
   &.full-menu {
     background: $lightBg;
@@ -2787,6 +2842,7 @@
       display: none !important;
     }
   }
+
   // CUSTOM CHILD INFO
   &.custom-child-info-wrapper {
     #checkbox-group {
@@ -2813,11 +2869,13 @@
       }
     }
   }
+
   // CONVERSATION SEARCH CARD
   &.conversation-search-card {
     min-height: 200px;
     max-height: 200px;
   }
+
   // DOC VIEWER SEARCH
   &.search-card {
     max-height: 25vh;
@@ -2843,6 +2901,7 @@
       }
     }
   }
+
   // NEW CONVERSATION
   &.new-conversation {
     .coparent-name {
@@ -2879,6 +2938,7 @@
     }
   }
 
+  // DOC TIPS
   &.doc-tips-card {
     .text-highlight {
       color: white;
@@ -3034,10 +3094,12 @@
     }
   }
   /*#endregion  CARDS BY CLASS*/
+
   #relative-wrapper {
     position: relative;
     padding: 0 20px 200px 20px;
     overflow-x: hidden;
+    max-height: calc(100% - 80px);
     #subtitle {
       font-size: 18px;
       opacity: 0.85;
@@ -3308,7 +3370,8 @@
 
       &.coparents,
       &.account,
-      &.settings {
+      &.settings,
+      &.records {
         border: 1px solid #213bc7;
 
         * {

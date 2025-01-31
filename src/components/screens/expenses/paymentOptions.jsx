@@ -1,10 +1,10 @@
-import BottomCard from '../shared/bottomCard.jsx'
+import BottomCard from '../../shared/bottomCard.jsx'
 import { RxOpenInNewWindow } from 'react-icons/rx'
 import { ImAppleinc } from 'react-icons/im'
 import { IoLogoVenmo } from 'react-icons/io5'
 import { SiCashapp, SiZelle } from 'react-icons/si'
 import { LiaCcPaypal } from 'react-icons/lia'
-import globalState from '../../context.js'
+import globalState from '../../../context.js'
 import { useContext } from 'react'
 
 const zelleLink = 'https://www.zellepay.com/how-it-works'

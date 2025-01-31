@@ -155,10 +155,10 @@
   align-items: center !important;
   height: 100% !important;
   width: auto !important;
+
   .material-icons-round,
   svg {
     margin: auto 0;
-    align-self: stretch;
     color: white !important;
     font-size: 18px !important;
   }
@@ -167,7 +167,9 @@
   &.clone-toggle {
     svg {
       position: relative;
-      bottom: 3px;
+      bottom: 0;
+      font-size: 14px !important;
+      margin: 0 !important;
     }
   }
 }
@@ -200,7 +202,7 @@
   }
 
   &.conversation-fade-wrapper {
-    height: calc(100vh - 115px);
+    height: 100vh;
     overflow: hidden;
   }
 
@@ -644,30 +646,44 @@
       left: 0;
       right: 0;
       position: fixed;
-      @include blurredBg;
-      background-color: white;
       display: none;
       height: 100vh;
       width: 100vw;
       z-index: $maxZIndex;
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      background: rgba(000, 000, 000, 0.1);
+      inset: 0;
+      overflow: hidden;
       &.dark {
         background: $darkBg;
       }
 
       &.active {
         display: block;
+        opacity: 1;
       }
 
       p {
         @include deadCenter;
         font-size: 22px;
         font-weight: $fwMedium;
+        color: $mainBlue;
+        background-color: white;
+        padding: 20px;
+        text-align: center;
+        max-width: 80vw;
+        opacity: 1;
+        border-radius: $bigBorderRadius;
+        margin-bottom: 15px;
+        @include bestShadow;
       }
 
       img {
         @include deadCenter;
         width: 120px;
         height: 120px;
+        top: 52%;
       }
     }
 

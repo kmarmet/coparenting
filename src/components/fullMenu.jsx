@@ -6,7 +6,7 @@ import AppManager from '../managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
 import { VscSettings } from 'react-icons/vsc'
 import { RxActivityLog } from 'react-icons/rx'
-
+import { PiArchiveDuotone } from 'react-icons/pi'
 // ICONS
 import {
   PiCalendarDotsDuotone,
@@ -181,6 +181,14 @@ export default function FullMenu() {
           onClick={() => changeCurrentScreen(ScreenNames.account)}>
           <MdOutlineManageAccounts />
           <p>Account</p>
+        </div>
+
+        {/* RECORDS */}
+        <div
+          className={`menu-item records ${currentScreen === ScreenNames.records ? 'active' : ''}`}
+          onClick={() => changeCurrentScreen(ScreenNames.records)}>
+          <PiArchiveDuotone />
+          <p>Records</p>
         </div>
 
         {/* SETTINGS */}

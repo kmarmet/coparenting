@@ -3,14 +3,14 @@ import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../context'
-import DB from '../../database/DB'
-import Manager from '../../managers/manager'
-import CheckboxGroup from '../../components/shared/checkboxGroup'
-import NotificationManager from '../../managers/notificationManager'
-import CalendarMapper from '../../mappers/calMapper'
-import DateFormats from '../../constants/dateFormats'
+import DB from '/src/database/DB'
+import Manager from '/src/managers/manager'
+import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import NotificationManager from '/src/managers/notificationManager'
+import CalendarMapper from '/src/mappers/calMapper'
+import DateFormats from '/src/constants/dateFormats'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
-import CalendarManager from '../../managers/calendarManager.js'
+import CalendarManager from '/src/managers/calendarManager.js'
 import Toggle from 'react-toggle'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -18,21 +18,21 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import { BiSolidNavigation } from 'react-icons/bi'
 import 'react-toggle/style.css'
 import { Fade } from 'react-awesome-reveal'
-import SecurityManager from '../../managers/securityManager'
-import ModelNames from '../../models/modelNames'
-import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
-import InputWrapper from '../../components/shared/inputWrapper'
-import DateManager from '../../managers/dateManager'
-import BottomCard from '../../components/shared/bottomCard'
-import ObjectManager from '../../managers/objectManager'
-import DatasetManager from '../../managers/datasetManager'
-import AlertManager from '../../managers/alertManager'
-import DB_UserScoped from '../../database/db_userScoped'
-import ActivityCategory from '../../models/activityCategory'
-import StringManager from '../../managers/stringManager'
+import SecurityManager from '/src/managers/securityManager'
+import ModelNames from '/src/models/modelNames'
+import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import DateManager from '/src/managers/dateManager'
+import BottomCard from '/src/components/shared/bottomCard'
+import ObjectManager from '/src/managers/objectManager'
+import DatasetManager from '/src/managers/datasetManager'
+import AlertManager from '/src/managers/alertManager'
+import DB_UserScoped from '/src/database/db_userScoped'
+import ActivityCategory from '/src/models/activityCategory'
+import StringManager from '/src/managers/stringManager'
 import { LuCalendarCheck } from 'react-icons/lu'
 import { MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
-import manager from '../../managers/manager'
+import DomManager from '../../managers/domManager.coffee'
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
@@ -619,17 +619,31 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   {/* DATE */}
                   <div className="flex" id={'date-input-container'}>
                     {!isDateRange && (
-                      <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
-                        <MobileDatePicker
-                          onOpen={addThemeToDatePickers}
-                          defaultValue={DateManager.dateOrNull(moment(event?.startDate))}
-                          className={`${theme} m-0 w-100 event-from-date mui-input`}
-                          yearsPerRow={4}
-                          onAccept={(e) => {
-                            setEventStartDate(e)
-                          }}
-                        />
-                      </InputWrapper>
+                      <>
+                        {!DomManager.isMobile() && (
+                          <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
+                            <MobileDatePicker
+                              onOpen={addThemeToDatePickers}
+                              defaultValue={DateManager.dateOrNull(moment(event?.startDate))}
+                              className={`${theme} m-0 w-100 event-from-date mui-input`}
+                              yearsPerRow={4}
+                              onAccept={(e) => {
+                                setEventStartDate(e)
+                              }}
+                            />
+                          </InputWrapper>
+                        )}
+                        {DomManager.isMobile() && (
+                          <InputWrapper
+                            defaultValue={moment(event?.startDate)}
+                            onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
+                            useNativeDate={true}
+                            labelText={'Date'}
+                            inputType={'date'}
+                            required={true}
+                          />
+                        )}
+                      </>
                     )}
 
                     {/* DATE RANGE */}

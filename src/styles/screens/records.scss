@@ -1,0 +1,46 @@
+@import '../mixins';
+
+#external-overrides {
+  #records-wrapper {
+    #row {
+      flex-wrap: wrap;
+
+      .low-opacity-text {
+        opacity: 0.75;
+      }
+      #title-row {
+        justify-content: space-between;
+        width: 100%;
+        align-items: center;
+
+        p {
+          line-height: 1;
+          margin: 0;
+          &.title {
+            font-weight: $fwMedium;
+          }
+          &.amount {
+            font-size: 14px;
+          }
+        }
+      }
+
+      .smaller-text {
+        font-size: 12px;
+        margin: 0;
+        padding-top: 4px;
+
+        span {
+          font-size: 12px;
+        }
+      }
+      .date {
+        width: 100%;
+      }
+      .created-by {
+        span {
+        }
+      }
+    }
+  }
+}

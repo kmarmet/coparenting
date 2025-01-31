@@ -4,7 +4,6 @@
 @import './variables';
 @import './muiOverrides';
 @import './sweetAlertOverrides';
-@import './rSuiteOverrides';
 @import './utilityClasses';
 @import './styles';
 @import './animations.scss';
@@ -23,6 +22,7 @@
 @import './screens/loginRegistration';
 @import './screens/adminDashboard';
 @import './screens/visitation';
+@import './screens/records';
 @import './screens/contactUs';
 @import './screens/activity';
 @import './screens/home';

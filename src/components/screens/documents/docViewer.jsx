@@ -194,8 +194,6 @@ export default function DocViewer() {
         }
         setTextWithHeaders(text)
         setState({ ...state, isLoading: false, loadingText: '' })
-
-        //TODO ADD CLICK HANDLER
       } else {
         AlertManager.throwError('No Document Found')
         setState({ ...state, isLoading: false, loadingText: '' })

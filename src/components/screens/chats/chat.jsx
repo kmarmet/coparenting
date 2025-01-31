@@ -8,7 +8,6 @@ import DB from '/src/database/DB'
 import ChatMessage from '/src/models/chat/chatMessage'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
-import { BsFillHandThumbsUpFill } from 'react-icons/bs'
 import 'rc-tooltip/assets/bootstrap_white.css'
 import ChatManager from '/src/managers/chatManager.js'
 import DateFormats from '/src/constants/dateFormats'
@@ -19,7 +18,7 @@ import { Fade } from 'react-awesome-reveal'
 import { IoChevronBack } from 'react-icons/io5'
 import BottomCard from '/src/components/shared/bottomCard'
 import { TbMessageCircleSearch } from 'react-icons/tb'
-import ContentEditable from '../../shared/contentEditable'
+import { DebounceInput } from 'react-debounce-input'
 import { useLongPress } from 'use-long-press'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
@@ -28,8 +27,7 @@ import DomManager from '/src/managers/domManager'
 import ActivityCategory from '/src/models/activityCategory'
 import ChatThread from '/src/models/chat/chatThread'
 import StringManager from '/src/managers/stringManager.coffee'
-import { FaFaceSmile } from 'react-icons/fa6'
-import { FaFaceFrown } from 'react-icons/fa6'
+import { IoSend } from 'react-icons/io5'
 
 const Chat = () => {
   const { state, setState } = useContext(globalState)
@@ -46,6 +44,7 @@ const Chat = () => {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [readonly, setReadonly] = useState(false)
   const [toneObject, setToneObject] = useState()
+  const [messageInputKey, setMessageInputKey] = useState(Manager.getUid())
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
     AlertManager.successAlert('Message Copied!', false)
@@ -58,14 +57,13 @@ const Chat = () => {
   }
 
   const sendMessage = async () => {
-    // Clear input
-    let messageInputValue = document.querySelector('.message-input')
-
-    if (messageInputValue.textContent.length === 0) {
+    let messageInput = document.querySelector('.message-input')
+    if (messageInput.value.length === 0) {
       AlertManager.throwError('Please enter a message')
       return false
     }
 
+    //#region FILL MODELS
     const chat = new ChatThread()
     const chatMessage = new ChatMessage()
     const uid = Manager.getUid()
@@ -103,8 +101,9 @@ const Chat = () => {
     chatMessage.notificationSent = false
 
     const cleanMessage = ObjectManager.cleanObject(chatMessage, ModelNames.chatMessage)
+    //#endregion FILL MODELS
 
-    // ADD TO DATABASE
+    //#region ADD TO DB
     // Existing chat
     if (Manager.isValid(existingChat)) {
       await ChatManager.addChatMessage(`${DB.tables.chatMessages}/${existingChat.id}`, cleanMessage)
@@ -115,8 +114,9 @@ const Chat = () => {
       await ChatManager.addChat(`${DB.tables.chats}/${messageRecipient.phone}`, cleanedRecipientChat)
       await ChatManager.addChatMessage(`${DB.tables.chatMessages}/${uid}`, cleanMessage)
     }
+    //#endregion ADD TO DB
 
-    // Only send if it is not paused for the recipient
+    // SEND NOTIFICATION - Only send if it is not paused for the recipient
     if (!existingChat?.isPausedFor?.includes(messageRecipient?.phone)) {
       NotificationManager.sendNotification(
         'New Message',
@@ -128,11 +128,10 @@ const Chat = () => {
     }
 
     await getExistingMessages()
-    messageInputValue.innerHTML = ''
     setMessageText('')
-    setToneObject(null)
-    // TODO MOBILE ONLY?
-    // setRefreshKey(Manager.getUid())
+    setTimeout(() => {
+      setToneObject(null)
+    }, 300)
   }
 
   const viewBookmarks = (e) => {
@@ -173,7 +172,6 @@ const Chat = () => {
       setShowBookmarks(false)
       setBookmarks([])
     }
-    setState({ ...state, isLoading: false })
     scrollToLatestMessage()
   }
 
@@ -202,40 +200,38 @@ const Chat = () => {
   }
 
   const handleMessageTyping = (input) => {
-    const valueLength = input.target.textContent.length
-    if (valueLength === 0) {
-      input.target.classList.remove('has-value')
+    const messageInput = document.querySelector('.message-input')
+    const valueLength = messageInput.value?.length
+    const text = messageInput.value
+    if (messageInput && messageInput.value.trim().length > 1) {
+      messageInput.classList.add('has-value')
+      setTone(text).then((r) => r)
     } else {
-      setMessageText(input.target.textContent)
-      setTone(input.target.textContent).then((r) => r)
+      messageInput.classList.remove('has-value')
+      setToneObject(null)
+    }
+    if (valueLength > 0) {
+      setMessageText(messageInput.value)
     }
   }
 
   const setTone = async (text) => {
-    const tone = await ChatManager.getTone(text)
-    const _toneObject = ChatManager.getToneRating(tone)
-    setToneObject(_toneObject)
+    const toneAndSentiment = await ChatManager.getToneAndSentiment(text)
+    setToneObject(toneAndSentiment)
   }
 
   useEffect(() => {
-    const element = document.querySelector('.message-input')
+    const messageInput = document.querySelector('.message-input')
 
-    if (element) {
-      element.addEventListener('blur', function (event) {
-        element.classList.remove('has-value')
-      })
+    if (messageInput) {
+      messageInput.focus()
     }
-    setState({ ...state, isLoading: true })
     onTableChange().then((r) => r)
 
     const appContainer = document.querySelector('.App')
 
     if (appContainer) {
       appContainer.classList.add('disable-scroll')
-    }
-    const messageInput = document.getElementById('message-input')
-    if (messageInput) {
-      messageInput.focus()
     }
   }, [])
 
@@ -330,7 +326,7 @@ const Chat = () => {
                   sender = StringManager.formatNameFirstNameOnly(messageObj.sender)
                 }
                 return (
-                  <div key={index}>
+                  <div className="message-wrapper search" key={index}>
                     <p className={messageObj.sender === currentUser?.name ? 'message from' : 'to message'}>{messageObj.message}</p>
                     <span className={messageObj.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                       From {sender} on&nbsp;{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
@@ -352,15 +348,15 @@ const Chat = () => {
                 sender = StringManager.formatNameFirstNameOnly(bookmark.sender)
               }
               return (
-                <div key={index}>
-                  <div className="message-wrapper">
+                <Fade direction={'left'} duration={700} className={'message-fade-wrapper'}>
+                  <div className="flex">
                     <p className={bookmark.sender === currentUser?.name ? 'message from' : 'to message'}>{bookmark.message}</p>
-                    <FaBookmark className={'bookmarked'} onClick={(e) => toggleMessageBookmark(bookmark)} />
+                    <PiBookmarkSimpleDuotone className={'active'} onClick={(e) => toggleMessageBookmark(bookmark)} />
                   </div>
                   <span className={bookmark.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                     From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
                   </span>
-                </div>
+                </Fade>
               )
             })}
           </div>
@@ -368,68 +364,63 @@ const Chat = () => {
 
         {/* LOOP MESSAGES */}
         {!showBookmarks && searchResults.length === 0 && (
-          <Fade direction={'up'} duration={1000} className={'conversation-fade-wrapper'} triggerOnce={true}>
-            <>
-              <div id="default-messages">
-                {Manager.isValid(messagesToLoop) &&
-                  messagesToLoop.map((message, index) => {
-                    // Determine bookmark class
-                    let isBookmarked = false
-                    if (bookmarks?.filter((x) => x.id === message.id).length > 0) {
-                      isBookmarked = true
-                    }
-                    let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mma')
-                    // Message Sent Today
-                    if (moment(message.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
-                      timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
-                    }
-                    return (
-                      <>
-                        <div key={index} className="message-wrapper flex">
-                          <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
-                            {message.message}
-                          </p>
-                          {!readonly && (
-                            <>
-                              {isBookmarked && <FaBookmark className={'bookmarked'} onClick={() => toggleMessageBookmark(message, true)} />}
-                              {!isBookmarked && <PiBookmarkSimpleDuotone onClick={(e) => toggleMessageBookmark(message, false)} />}
-                            </>
-                          )}
-                        </div>
+          <>
+            <div id="default-messages">
+              {Manager.isValid(messagesToLoop) &&
+                messagesToLoop.map((message, index) => {
+                  // Determine bookmark class
+                  let isBookmarked = false
+                  if (bookmarks?.filter((x) => x.id === message.id).length > 0) {
+                    isBookmarked = true
+                  }
+                  let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mma')
+                  // Message Sent Today
+                  if (moment(message.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
+                    timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
+                  }
+                  return (
+                    <Fade direction={'left'} duration={900} className={'message-fade-wrapper '}>
+                      <div className="flex">
+                        <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
+                          {message.message}
+                        </p>
+                        <PiBookmarkSimpleDuotone className={isBookmarked ? 'active' : ''} onClick={(e) => toggleMessageBookmark(message, false)} />
+                      </div>
+                      <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
+                    </Fade>
+                  )
+                })}
+              <div id="last-message-anchor"></div>
+            </div>
 
-                        <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
-                      </>
-                    )
-                  })}
-                <div id="last-message-anchor"></div>
-              </div>
-
-              {/* MESSAGE INPUT */}
-              {!readonly && (
-                <div className="form message-input-form">
-                  {!ObjectManager.isEmpty(toneObject) && (
-                    <div id="tone-wrapper">
-                      <p>
-                        <b>Tone:</b>
-                      </p>
-                      <span className={toneObject.color}>{toneObject.tone}</span>
-                      {toneObject.color === 'green' ? <FaFaceSmile className={'green'} /> : <FaFaceFrown className={'red'} />}
-                    </div>
-                  )}
-                  {/* SEND BUTTON */}
-                  <div
-                    className={messageText.length > 1 ? 'flex has-value' : 'flex'}
-                    id="message-input-container"
-                    onClick={(e) => e.target.classList.add('has-value')}>
-                    <ContentEditable classNames={'message-input'} onChange={handleMessageTyping} />
-                    <button className={messageText.length > 1 ? 'filled' : 'outline'} onClick={async () => await sendMessage()} id="send-button">
-                      Send
-                    </button>
-                  </div>
+            {/* MESSAGE INPUT */}
+            <div className="form message-input-form">
+              {/* MESSAGE INPUT CONTAINER */}
+              <div className={messageText.length > 1 ? 'flex has-value' : 'flex'} id="message-input-container">
+                <div id="tone-wrapper" className={`${toneObject?.color} ${Manager.isValid(toneObject) ? 'active' : ''}`}>
+                  <span className="emotion-text">EMOTION</span>
+                  <span className="tone">{StringManager.uppercaseFirstLetterOfAllWords(toneObject?.tone)}</span>
+                  <span className="icon">{toneObject?.icon}</span>
                 </div>
-              )}
-            </>
-          </Fade>
+                <div id="input-and-send-button" className="flex">
+                  <DebounceInput
+                    element={'textarea'}
+                    minLength={2}
+                    placeholder={'Enter message...'}
+                    className={`message-input`}
+                    onChange={handleMessageTyping}
+                    debounceTimeout={200}
+                    value={messageText}
+                    rows={'1'}
+                    onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
+                  />
+                  <button className={toneObject?.color} onClick={sendMessage} id="send-button">
+                    Send <IoSend />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
         )}
 
         {/* DESKTOP SIDEBAR */}

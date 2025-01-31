@@ -3,6 +3,7 @@ import { DebounceInput } from 'react-debounce-input'
 import Label from './label'
 import Manager from '../../managers/manager'
 import globalState from '../../context.js'
+import moment from 'moment'
 
 function InputWrapper({
   wrapperClasses = '',
@@ -16,6 +17,7 @@ function InputWrapper({
   inputValueType = 'text',
   placeholder = '',
   isDebounced = true,
+  useNativeDate = false,
 }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, refreshKey } = state
@@ -55,7 +57,12 @@ function InputWrapper({
       )}
 
       {/* DATE/LOCATION */}
-      {noInputTypes.includes(inputType) && <div className={`w-100`}>{children}</div>}
+      {noInputTypes.includes(inputType) && (
+        <>
+          {useNativeDate && <input value={moment(defaultValue).format('yyyy-MM-DD')} type="date" onChange={onChange} />}
+          {!useNativeDate && <div className={`w-100`}>{children}</div>}
+        </>
+      )}
 
       {/* TEXTAREA */}
       {inputType === 'textarea' && (

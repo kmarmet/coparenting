@@ -68,7 +68,6 @@
     "react-swipeable": "7.0.1",
     "react-toggle": "^4.1.3",
     "react-use-clipboard": "^1.0.9",
-    "rsuite": "5.64.0",
     "save-file": "^2.3.1",
     "search-text-highlight": "^2.0.8",
     "signature_pad": "5.0.3",
@@ -86,7 +85,7 @@
   },
   "scripts": {
     "dev": "parcel src/index.html",
-    "build": "npm run deleteBuild && cd src && parcel build index.html && npm run deleteImagesFromBuild && cd .. && compress-cra -d dist",
+    "build": "npm run deleteBuild && cd src && parcel build index.html --no-source-maps && cd .. && npm run deleteImagesFromBuild && cd dist && compress-cra",
     "deleteImagesFromBuild": "cd dist && del /S /F *.jpg && del /S /F *.ico && del /S /F *.png && del /S /F *.ttf && del /S /F *.gif && del /S /F *.woff && del /S /F *.woff2 && del /S /F *.svg",
     "deleteBuild": "del /S /F /Q dist && npm run removeParcelCache",
     "craBuild": "react-scripts build && compress-cra",

@@ -5,24 +5,41 @@ import SecurityManager from './securityManager'
 import ChatBookmark from '../models/chat/chatBookmark'
 import LogManager from './logManager'
 import DatasetManager from './datasetManager.coffee'
-import StringManager from './stringManager.coffee'
 
 const ChatManager = {
-  getToneRating: (toneObject) => {
-    const overallToneArray = toneObject?.overall
-    let tone = 'Great/Neutral'
-    if (overallToneArray) {
-      const primaryTone = toneObject?.overall[0][1]
-      const badWords = ['angry', 'disapproving', 'repulsed', 'annoyed', 'disappointed']
-      if (badWords.includes(primaryTone)) {
-        tone = `${StringManager.uppercaseFirstLetterOfAllWords(primaryTone)} (Revision Suggested)`
-      }
-    }
+  getToneAndSentiment: async (message) => {
+    let tone = await ChatManager.getTone(message)
+    let sentiment = await ChatManager.getSentiment(message)
+
+    const returnTone = tone.overall[0][1]
+    const returnSentiment = sentiment.overall[0][1]
+    let icon = tone.overall[0][2]
+
     return {
-      tone,
-      color: tone === 'Great/Neutral' ? 'green' : 'red',
+      tone: returnTone,
+      sentiment: returnSentiment,
+      color: returnSentiment === 'NEGATIVE' ? 'red' : 'green',
+      icon,
     }
   },
+  getSentiment: (message) =>
+    new Promise((resolve, reject) => {
+      fetch('https://api.sapling.ai/api/v1/sentiment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4',
+          text: message,
+        }),
+      })
+        .then((response) => response)
+        .then((result) => {
+          resolve(result.json())
+        })
+        .catch((error) => reject(error))
+    }),
   getTone: (message) =>
     new Promise((resolve, reject) => {
       fetch('https://api.sapling.ai/api/v1/tone', {

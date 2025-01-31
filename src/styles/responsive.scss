@@ -119,9 +119,6 @@
         &.home {
           height: auto;
         }
-        &.login {
-          margin: 0 auto;
-        }
       }
 
       // DOCUMENTS
@@ -145,10 +142,7 @@
           margin: 0;
           height: 100vh;
           background: white;
-
-          #login-container {
-            max-width: 60vw;
-          }
+          width: 100vw;
         }
         #forgot-password-container {
           margin-top: 15px;
@@ -160,6 +154,11 @@
         }
         #login-container {
           padding-top: 15px;
+
+          .form-container {
+            width: 55vw;
+            margin: 0 auto;
+          }
 
           #forgot-password-link {
             max-width: 180px;
@@ -231,7 +230,7 @@
           height: 50px !important;
 
           &.Mui-selected {
-            width: 80px !important;
+            width: 60px !important;
             height: 50px !important;
           }
         }
@@ -274,6 +273,10 @@
                 color: $mainBlue;
                 opacity: 1;
                 cursor: pointer;
+
+                span {
+                  color: $mainBlue;
+                }
               }
             }
             svg {
@@ -283,8 +286,11 @@
             }
 
             label {
-              opacity: 0.75;
-              font-weight: $fwRegular;
+              span {
+                font-weight: $fwRegular;
+                opacity: 0.75;
+                color: black;
+              }
             }
           }
 
@@ -363,6 +369,7 @@
           &#new-event {
             color: $green;
             font-weight: $fwMedium;
+            opacity: 1;
           }
 
           &:not(#new-event) {
@@ -544,6 +551,11 @@
           }
           #relative-wrapper {
             overflow-y: scroll;
+
+            #title-wrapper {
+              top: 0;
+            }
+
             .buttons {
               position: fixed;
               padding: 0;
@@ -651,6 +663,7 @@
           border-radius: $bigBorderRadius;
           border: 1px solid $desktopBorderColor;
           padding: 15px;
+          background-color: white;
 
           #input-wrapper {
             padding: 0;

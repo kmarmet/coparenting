@@ -1,38 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react'
-// import { Accordion } from 'rsuite'
 import globalState from '../../../context'
-import Manager from '../../../managers/manager'
+import Manager from '/src/managers/manager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import { IoCloseOutline } from 'react-icons/io5'
-import {
-  camelCaseToString,
-  contains,
-  formatDbProp,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  lowercaseShouldBeLowercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
-import DB_UserScoped from '../../../database/db_userScoped'
+import DB_UserScoped from '/src/database/db_userScoped'
 import Accordion from '@mui/material/Accordion'
 import Autocomplete from 'react-google-autocomplete'
 import { FaChevronDown } from 'react-icons/fa6'
-import InputWrapper from '../../shared/inputWrapper'
-import AlertManager from '../../../managers/alertManager'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import AlertManager from '/src/managers/alertManager'
 import { MdContactEmergency } from 'react-icons/md'
-import DB from '../../../database/DB'
+import DB from '/src/database/DB'
+import StringManager from '../../../managers/stringManager.coffee'
 
 function General({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
@@ -84,10 +64,10 @@ function General({ activeChild, setActiveChild }) {
     setActiveChild(updatedChild)
   }
 
-  const formatInfoLabel = (infoLabel) => lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(infoLabel)))
+  const formatInfoLabel = (infoLabel) => StringManager.lowercaseShouldBeLowercase(StringManager.uppercaseFirstLetterOfAllWords(infoLabel))
 
   useEffect(() => {
-    setSelectedChild()
+    setSelectedChild().then((r) => r)
   }, [activeChild])
 
   return (
@@ -108,7 +88,7 @@ function General({ activeChild, setActiveChild }) {
                 <div key={index}>
                   {prop[0] !== 'profilePic' && (
                     <div className="flex input">
-                      {contains(infoLabel.toLowerCase(), 'address') && (
+                      {Manager.contains(infoLabel.toLowerCase(), 'address') && (
                         <InputWrapper
                           inputType={'location'}
                           defaultValue={value}
@@ -126,7 +106,7 @@ function General({ activeChild, setActiveChild }) {
                           />
                         </InputWrapper>
                       )}
-                      {!contains(infoLabel.toLowerCase(), 'address') && (
+                      {!Manager.contains(infoLabel.toLowerCase(), 'address') && (
                         <InputWrapper
                           inputType={'input'}
                           labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}

@@ -1,39 +1,39 @@
-import { default as MultiDatePicker } from '@rsuite/multi-date-picker'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
-import EventLengths from '../../constants/eventLengths'
 import globalState from '../../context'
-import Manager from '../../managers/manager'
-import MyConfetti from '../../components/shared/myConfetti.js'
-import CheckboxGroup from '../../components/shared/checkboxGroup'
-import CalendarEvent from '../../models/calendarEvent'
-import CalendarMapper from '../../mappers/calMapper'
-import DatetimePicker from '../../components/shared/datetimePicker.jsx'
-import DateFormats from '../../constants/dateFormats'
-import DatetimePickerViews from '../../constants/datetimePickerViews'
-import DateManager from '../../managers/dateManager'
+import EventLengths from '/src/constants/eventLengths'
+import Manager from '/src/managers/manager'
+import MyConfetti from '/src/components/shared/myConfetti.js'
+import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import CalendarEvent from '/src/models/calendarEvent'
+import CalendarMapper from '/src/mappers/calMapper'
+import DatetimePicker from '/src/components/shared/datetimePicker.jsx'
+import DateFormats from '/src/constants/dateFormats'
+import DatetimePickerViews from '/src/constants/datetimePickerViews'
+import DateManager from '/src/managers/dateManager'
 import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
 import Toggle from 'react-toggle'
-import ModelNames from '../../models/modelNames'
-import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
-import InputWrapper from '../../components/shared/inputWrapper'
-import BottomCard from '../../components/shared/bottomCard'
+import ModelNames from '/src/models/modelNames'
+import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import BottomCard from '/src/components/shared/bottomCard'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
-import AlertManager from '../../managers/alertManager'
+import AlertManager from '/src/managers/alertManager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import validator from 'validator'
-import ObjectManager from '../../managers/objectManager'
-import DatasetManager from '../../managers/datasetManager'
-import _ from 'lodash'
-import CalendarManager from '../../managers/calendarManager.js'
-import NotificationManager from '../../managers/notificationManager.js'
-import DB_UserScoped from '../../database/db_userScoped'
-import ActivityCategory from '../../models/activityCategory'
-import StringManager from '../../managers/stringManager' // COMPONENT
+import ObjectManager from '/src/managers/objectManager'
+import DatasetManager from '/src/managers/datasetManager'
+import CalendarManager from '/src/managers/calendarManager.js'
+import NotificationManager from '/src/managers/notificationManager.js'
+import DB_UserScoped from '/src/database/db_userScoped'
+import ActivityCategory from '/src/models/activityCategory'
+import StringManager from '/src/managers/stringManager'
 import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
+import _ from 'lodash'
+import DomManager from '../../managers/domManager.coffee'
 
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
@@ -55,10 +55,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [eventPhone, setEventPhone] = useState('')
   const [eventShareWith, setEventShareWith] = useState([])
   const [clonedDates, setClonedDates] = useState([])
-  const [inputSuggestions, setInputSuggestions] = useState([])
   const [eventChildren, setEventChildren] = useState([])
   const [eventReminderTimes, setEventReminderTimes] = useState([])
-  const [coparentsToRemind, setCoparentsToRemind] = useState([])
   const [eventIsRepeating, setEventIsRepeating] = useState(false)
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
   const [eventIsCloned, setEventIsCloned] = useState(false)
@@ -71,6 +69,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [isVisitation, setIsVisitation] = useState(false)
 
   const resetForm = async () => {
+    hideCard()
     Manager.resetForm('new-event-form')
     setEventLength(EventLengths.single)
     setEventStartDate('')
@@ -87,7 +86,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     setClonedDates([])
     setEventChildren([])
     setEventReminderTimes([])
-    setCoparentsToRemind([])
     setEventIsDateRange(false)
     setEventIsRepeating(false)
     setIsAllDay(false)
@@ -153,11 +151,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         return false
       }
 
-      if (!Manager.isValid(eventShareWith)) {
-        AlertManager.throwError('Please select who you would like to share with event with')
-        return false
-      }
-
       if (!Manager.isValid(eventStartDate)) {
         AlertManager.throwError('Please select an event date')
         return false
@@ -208,7 +201,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     }
   }
 
-  // await CalendarManager.addMultipleCalEvents(currentUser, repeatingEvents)
   const handleChildSelection = (e) => {
     let childrenArr = []
     Manager.handleCheckboxSelection(
@@ -295,10 +287,15 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
     // CLONED DATES
     if (Manager.isValid(clonedDates)) {
-      datesToIterate = clonedDates
+      let startDate = eventStartDate
+      if (typeof startDate === 'object') {
+        startDate = moment(eventStartDate).format(DateFormats.dateForDb)
+      }
+      datesToIterate = DatasetManager.getUniqueArray([...clonedDates, startDate], true)
       setEventIsCloned(true)
     }
 
+    console.log(datesToIterate)
     datesToIterate.forEach((date) => {
       let dateObject = new CalendarEvent()
       // Required
@@ -319,30 +316,22 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       dateObject.websiteUrl = eventWebsite
       dateObject.isRepeating = eventIsRepeating
       dateObject.isDateRange = eventIsDateRange
-      dateObject.isCloned = eventIsCloned
+      dateObject.isCloned = Manager.isValid(clonedDates)
+
+      // Times
       if (Manager.isValid(eventStartTime)) {
         dateObject.startTime = eventStartTime.format(DateFormats.timeForDb)
       }
       if (Manager.isValid(eventEndTime)) {
         dateObject.endTime = eventEndTime.format(DateFormats.timeForDb)
       }
+
       dateObject.reminderTimes = eventReminderTimes
       dateObject.repeatInterval = repeatInterval
       dateObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
       datesToPush.push(dateObject)
     })
-
-    if (!Manager.isValid(clonedDates)) {
-      // Reset Multidate Picker
-      const multidatePicker = document.querySelector('.multidate-picker')
-      if (multidatePicker) {
-        multidatePicker.classList.remove('active')
-        const addCloneButton = document.querySelector('.add-clone-button')
-        if (addCloneButton) {
-          addCloneButton.style.display = 'block'
-        }
-      }
-    }
+    console.log(datesToPush)
     return datesToPush
   }
 
@@ -355,6 +344,38 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     }, 100)
   }
 
+  const addDateInput = () => {
+    const input = document.createElement('input')
+    const cloneDateWrapper = document.querySelector('.cloned-date-wrapper')
+    const removeInputButton = document.createElement('button')
+    const wrapper = document.createElement('div')
+    wrapper.classList.add('input-wrapper', 'flex')
+
+    input.type = 'date'
+    input.classList.add('date-input')
+    removeInputButton.innerText = 'REMOVE'
+    removeInputButton.classList.add('remove-cloned-date-button')
+
+    input.addEventListener('change', (e) => {
+      const formattedDate = moment(e.target.value).format(DateFormats.dateForDb)
+      setClonedDates([...clonedDates, formattedDate])
+    })
+
+    wrapper.append(input)
+
+    // Delete button
+    removeInputButton.addEventListener('click', (e) => {
+      const inputSibling = e.target.previousSibling
+      const formattedDate = moment(inputSibling.value).format(DateFormats.dateForDb)
+      setClonedDates(clonedDates.filter((x) => x !== moment(formattedDate).format(DateFormats.dateForDb)))
+      inputSibling.remove()
+      e.target.remove()
+    })
+    wrapper.append(removeInputButton)
+
+    cloneDateWrapper.append(wrapper)
+  }
+
   useEffect(() => {
     if (selectedNewEventDay) {
       setEventStartDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
@@ -362,14 +383,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   }, [selectedNewEventDay])
 
   useEffect(() => {
-    // Date Picker Stuff
-    const multiDatePicker = document.querySelector('.rs-picker-popup.rs-picker-popup-date')
-    const multiDateInput = document.querySelector('.rs-input')
-    if (multiDatePicker && multiDateInput) {
-      multiDateInput.onBlur()
-      const screenHeight = window.screen.height
-      multiDatePicker.style.top = `${screenHeight / 4}px`
-    }
     const pickers = document.querySelectorAll('.MuiInputBase-input')
     if (pickers) {
       pickers.forEach((x) => (x.value = ''))
@@ -420,7 +433,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
           {/* FROM DATE */}
           <div className="flex gap">
-            {eventLength === EventLengths.single && (
+            {eventLength === EventLengths.single && !DomManager.isMobile() && (
               <InputWrapper labelText={'Date'} inputType={'date'} required={true}>
                 <MobileDatePicker
                   onOpen={addThemeToDatePickers}
@@ -431,6 +444,16 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   }}
                 />
               </InputWrapper>
+            )}
+            {eventLength === EventLengths.single && DomManager.isMobile() && (
+              <InputWrapper
+                defaultValue={moment(selectedNewEventDay)}
+                onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
+                useNativeDate={true}
+                labelText={'Date'}
+                inputType={'date'}
+                required={true}
+              />
             )}
           </div>
 
@@ -606,32 +629,30 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               {/* CLONE */}
               <div className="share-with-container">
                 <div className="flex">
-                  <p>Copy Event to Other Dates</p>
+                  <p>Copy Event to other Dates</p>
                   <Toggle
                     icons={{
                       checked: <FaClone />,
                       unchecked: null,
                     }}
-                    className={'ml-auto clone-toggle'}
-                    onChange={(e) => setShowCloneInput(!showCloneInput)}
+                    className={'ml-auto clone-toggle clone'}
+                    onChange={(e) => {
+                      setShowCloneInput(e.target.checked)
+                      const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
+                      if (e.target.checked && dateWrapperElements.length === 0) {
+                        addDateInput()
+                      }
+                    }}
                   />
                 </div>
               </div>
 
               {/* CLONED */}
-              {showCloneInput && (
-                <div>
-                  <InputWrapper wrapperClasses="cloned-date-wrapper" labelText={'Other Dates'} required={false} inputType={'date'}>
-                    <MultiDatePicker
-                      className={`${theme} multidate-picker`}
-                      placement="auto"
-                      placeholder={null}
-                      label=""
-                      onOpen={() => Manager.hideKeyboard()}
-                      onChange={(e) => setClonedDates(e)}
-                    />
-                  </InputWrapper>
-                </div>
+              <div className={`cloned-date-wrapper form ${showCloneInput ? 'active' : ''}`}></div>
+              {Manager.isValid(clonedDates) && (
+                <button className="default button" onClick={addDateInput}>
+                  Add Another Date
+                </button>
               )}
             </>
           )}

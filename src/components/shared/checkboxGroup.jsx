@@ -65,19 +65,16 @@ export default function CheckboxGroup({
                   label = formatNameFirstNameOnly(label.toString())
                 }
                 return (
-                  <div
+                  <span
                     key={index}
-                    id="checkbox-container"
                     data-phone={thisPhone ? thisPhone : ''}
                     data-label={label ? label : ''}
                     data-date={thisDate ? thisDate : ''}
-                    className={`flex mb-0 ${containerClass} ${Manager.isValid(defaultLabels) && defaultLabels.includes(label) ? 'active' : ''}`}
+                    className={`pill ${containerClass} ${Manager.isValid(defaultLabels) && defaultLabels.includes(label) ? 'active' : ''}`}
                     onClick={(e) => onCheck(e)}>
-                    <span className="pill">
-                      {label}
-                      <FaCheck />
-                    </span>
-                  </div>
+                    {label}
+                    <FaCheck />
+                  </span>
                 )
               })}
           </div>

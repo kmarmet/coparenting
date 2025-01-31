@@ -2,9 +2,9 @@ import { getDatabase, onValue, ref } from 'firebase/database'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../../context'
-import DB from '../../../database/DB'
-import Manager from '../../../managers/manager'
-import DB_UserScoped from '../../../database/db_userScoped'
+import DB from '/src/database/DB'
+import Manager from '/src/managers/manager'
+import DB_UserScoped from '/src/database/db_userScoped'
 import CustomCoparentInfo from './customCoparentInfo'
 import NewCoparentForm from './newCoparentForm'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
@@ -12,14 +12,15 @@ import { IoPersonRemove } from 'react-icons/io5'
 import { RiParentFill } from 'react-icons/ri'
 import { Fade } from 'react-awesome-reveal'
 import { IoMdRemoveCircle } from 'react-icons/io'
-import NavBar from '../../navBar'
+import NavBar from '/src/components/navBar.jsx'
 import { BsPersonAdd } from 'react-icons/bs'
-import NoDataFallbackText from '../../shared/noDataFallbackText'
-import InputWrapper from '../../shared/inputWrapper'
-import AlertManager from '../../../managers/alertManager'
-import DatasetManager from '../../../managers/datasetManager'
-import DomManager from '../../../managers/domManager'
-import StringManager from '../../../managers/stringManager.coffee'
+import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import AlertManager from '/src/managers/alertManager'
+import DatasetManager from '/src/managers/datasetManager'
+import DomManager from '/src/managers/domManager'
+import StringManager from '/src/managers/stringManager.coffee'
+import { PiUserCircleDuotone } from 'react-icons/pi'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -31,24 +32,30 @@ export default function Coparents() {
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
   const [selectedCoparentRaw, setSelectedCoparentRaw] = useState()
-  const deleteProp = async (prop) => {
-    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
+  const [currentCoparentAddress, setCurrentCoparentAddress] = useState('')
 
-    const coparentPhone = selectedCoparentDataArray.filter((x) => Manager.contains(x, 'phone'))[0][1]
-    const coparent = coparents.filter((x) => x.phone === coparentPhone)[0]
+  const deleteProp = async (prop) => {
+    const coparent = await getCoparent()
     await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), coparent)
+    setSelectedCoparentDataArray(Object.entries(coparent))
+  }
+
+  const getCoparent = async () => {
+    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
+    const coparentPhone = selectedCoparentDataArray.filter((x) => Manager.contains(x, 'phone'))[0][1]
+    return coparents.filter((x) => x.phone === coparentPhone)[0]
   }
 
   const update = async (prop, value) => {
     AlertManager.successAlert('Updated!')
-    const updatedCoparent = await DB_UserScoped.updateCoparent(currentUser, selectedCoparentDataArray, StringManager.formatDbProp(prop), value)
+    const coparent = await getCoparent()
+    await DB_UserScoped.updateCoparent(currentUser, coparent, StringManager.formatDbProp(prop), value)
+    const updatedCoparent = await getCoparent()
     setSelectedCoparentDataArray(Object.entries(updatedCoparent))
   }
 
   const deleteCoparent = async () => {
-    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
-    const coparentPhone = selectedCoparentDataArray.filter((x) => Manager.contains(x, 'phone'))[0][1]
-    const coparent = coparents.filter((x) => x.phone === coparentPhone)[0]
+    const coparent = await getCoparent()
     await DB_UserScoped.deleteCoparent(currentUser, coparent)
     await getCoparents()
   }
@@ -65,19 +72,27 @@ export default function Coparents() {
     }, 300)
   }
 
-  const onValueChange = async () => {
+  const onTableChange = async () => {
     if (currentUser) {
       const dbRef = getDatabase()
       const userRef = ref(dbRef, `${DB.tables.users}/${currentUser?.phone}/coparents`)
       onValue(userRef, async (snapshot) => {
-        await getCoparents(snapshot.val())
+        await getCoparents()
       })
     }
   }
 
   useEffect(() => {
-    onValueChange().then((r) => r)
+    onTableChange().then((r) => r)
   }, [])
+
+  const updateSelectedCoparent = async (coparent) => {
+    const { phone } = coparent
+    const updatedCoparent = await DB.find(`${DB.tables.users}/${currentUser.phone}/coparents`, ['phone', phone], true)
+    console.log(updatedCoparent)
+    setSelectedCoparentDataArray(Object.entries(coparent))
+    setSelectedCoparentRaw(coparent)
+  }
 
   return (
     <>
@@ -104,6 +119,7 @@ export default function Coparents() {
                 return (
                   <div
                     onClick={() => {
+                      setCurrentCoparentAddress(coparent.address)
                       setSelectedCoparentDataArray(Object.entries(coparent))
                       setSelectedCoparentRaw(coparent)
                     }}
@@ -111,8 +127,7 @@ export default function Coparents() {
                     data-phone={coparent.phone}
                     data-name={coparent.name}
                     key={index}>
-                    <RiParentFill />
-                    {/*<span className="material-icons-round">escalator_warning</span>*/}
+                    <PiUserCircleDuotone />
                     <span className="coparent-name">{StringManager.formatNameFirstNameOnly(coparent.name)}</span>
                     <span className="coparent-type">{coparent.parentType}</span>
                   </div>
@@ -129,8 +144,9 @@ export default function Coparents() {
               {Manager.isValid(selectedCoparentDataArray) &&
                 selectedCoparentDataArray.map((propArray, index) => {
                   let infoLabel = propArray[0]
-                  infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
                   infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
+                  infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
+                  infoLabel = StringManager.formatTitleWords(infoLabel)
                   const value = propArray[1]
                   return (
                     <div key={index}>
@@ -149,7 +165,7 @@ export default function Coparents() {
                                   onPlaceSelected={async (place) => {
                                     await update('address', place.formatted_address)
                                   }}
-                                  value={value}
+                                  placeholder={value}
                                 />
                               </InputWrapper>
                             )}
@@ -163,7 +179,7 @@ export default function Coparents() {
                                   await update(infoLabel, `${inputValue}`)
                                 }}
                                 inputType={'input'}
-                                labelText={infoLabel}></InputWrapper>
+                                labelText={StringManager.addSpaceBetweenWords(infoLabel)}></InputWrapper>
                             )}
                             <IoMdRemoveCircle className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
                           </div>

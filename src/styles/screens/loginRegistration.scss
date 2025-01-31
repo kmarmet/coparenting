@@ -1,6 +1,21 @@
 @import '../mixins';
 
 #external-overrides {
+  #app-container {
+    #input-wrapper {
+      input {
+        &.password,
+        &.email {
+          border-radius: $borderRadius;
+          padding: 8px 10px;
+        }
+      }
+
+      &.password {
+        margin-bottom: 8px;
+      }
+    }
+  }
   // REGISTRATION
   #registration-container {
     position: relative;
@@ -238,7 +253,7 @@
 
     .eye-icon {
       position: relative;
-      bottom: 10px;
+      top: 5px;
       @include hover;
     }
 
@@ -331,6 +346,9 @@
       }
 
       .form {
+        input {
+          border-radius: $borderRadius;
+        }
         .inputs {
           align-items: center;
 

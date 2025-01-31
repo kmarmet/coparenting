@@ -252,10 +252,8 @@ const DB_UserScoped = {
   },
   updateCoparent: async (currentUser, coparent, prop, value) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/coparents/`, coparent, 'name')
+    let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.phone}/coparents`, coparent, 'phone')
     await set(child(dbRef, `users/${currentUser?.phone}/coparents/${key}/${formatDbProp(prop)}`), value)
-    const returnChild = await DB.find(currentUser?.coparents, ['phone', coparent?.phone])
-    return returnChild
   },
   updateUserRecord: async (phoneUid, propPath, value) => {
     const dbRef = ref(getDatabase())

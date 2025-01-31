@@ -34,6 +34,9 @@ StringManager = {
   getFileExtension: (fileName) ->
     fileName.split('.').pop()
 
+  lowercaseShouldBeLowercase: (input) ->
+    input.replace('Of', 'of')
+
   removeFileExtension: (input) ->
     input.replace(/\.[^/.]+$/, '')
 

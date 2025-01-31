@@ -33,8 +33,8 @@ ScreenNames =
   docsList: 'docsList'
   editCalendarEvent: 'editCalendarEvent'
   visitation: 'visitation'
-  chatRecovery: 'chatRecovery'
   newCalendarEvent: 'newCalendarEvent'
+  records: "records"
   newChild: 'newChild'
   newMemory: 'newMemory'
   newExpense: 'newExpense'

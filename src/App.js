@@ -15,7 +15,7 @@ import ChildInfo from './components/screens/childInfo/childInfo.jsx'
 import Coparents from './components/screens/coparents/coparents.jsx'
 import DocsList from './components/screens/documents/docsList.jsx'
 import UploadDocuments from './components/screens/documents/uploadDocuments.jsx'
-import ExpenseTracker from './components/expenses/expenseTracker.jsx'
+import ExpenseTracker from './components/screens/expenses/expenseTracker.jsx'
 import ResetPassword from './components/screens/account/resetPassword.jsx'
 import Login from './components/screens/auth/login.jsx'
 import Memories from './components/screens/memories.jsx'
@@ -55,6 +55,7 @@ import DB from './database/DB'
 import Manager from './managers/manager'
 import DomManager from './managers/domManager'
 import AppManager from './managers/appManager.js'
+import Records from './components/screens/records.jsx'
 
 export default function App() {
   // Initialize Firebase
@@ -227,6 +228,7 @@ export default function App() {
             {/* DOCUMENTS */}
             {currentScreen === ScreenNames.docsList && <DocsList />}
             {currentScreen === ScreenNames.docViewer && <DocViewer />}
+            {currentScreen === ScreenNames.records && <Records />}
 
             {/* UPLOAD */}
             {currentScreen === ScreenNames.uploadDocuments && <UploadDocuments />}

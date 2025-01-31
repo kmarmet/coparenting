@@ -35,6 +35,9 @@ StringManager = {
   getFileExtension: function(fileName) {
     return fileName.split('.').pop();
   },
+  lowercaseShouldBeLowercase: function(input) {
+    return input.replace('Of', 'of');
+  },
   removeFileExtension: function(input) {
     return input.replace(/\.[^\/.]+$/, '');
   },

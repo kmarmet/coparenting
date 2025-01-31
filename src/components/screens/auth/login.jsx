@@ -1,20 +1,20 @@
 import React, { useContext, useState } from 'react'
-import ScreenNames from '../../../constants/screenNames'
-import globalState from '../../../context.js'
-import Manager from '../../../managers/manager'
-import CheckboxGroup from '../../../components/shared/checkboxGroup.jsx'
-import InstallAppPopup from '../../../components/installAppPopup.jsx'
+import ScreenNames from '/src/constants/screenNames'
+import globalState from '/src/context.js'
+import Manager from '/src/managers/manager'
+import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
+import InstallAppPopup from '/src/components/installAppPopup.jsx'
 import { browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
-import firebaseConfig from '../../../firebaseConfig'
+import firebaseConfig from '/src/firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import { PiEyeClosedDuotone, PiEyeDuotone } from 'react-icons/pi'
 import validator from 'validator'
 import { MdOutlinePassword } from 'react-icons/md'
 import { Fade } from 'react-awesome-reveal'
-import AlertManager from '../../../managers/alertManager'
+import AlertManager from '/src/managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import { SlLogin } from 'react-icons/sl'
-import DomManager from '../../../managers/domManager'
+import DomManager from '/src/managers/domManager'
 import { GrInstallOption } from 'react-icons/gr'
 
 export default function Login() {
@@ -180,14 +180,21 @@ export default function Login() {
           <div className="flex form-container">
             <div className="form w-80">
               {/* EMAIL */}
-              <InputWrapper inputValueType="email" required={true} labelText={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
+              <InputWrapper
+                inputClasses="email"
+                inputValueType="email"
+                required={true}
+                labelText={'Email Address'}
+                onChange={(e) => setEmail(e.target.value)}
+              />
               {/* PASSWORD */}
               <div className="flex inputs">
                 <InputWrapper
                   inputValueType={viewPassword ? 'text' : 'password'}
                   required={true}
+                  wrapperClasses="password"
                   labelText={'Password'}
-                  inputClasses="mb-0"
+                  inputClasses="password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue eye-icon ml-10'} />}

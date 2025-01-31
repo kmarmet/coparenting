@@ -237,7 +237,7 @@ const Manager = {
   },
   handleCheckboxSelection: (element, onCheck, onCheckRemoval, canSelectAll = false) => {
     const clickedEl = element.currentTarget
-    const labels = clickedEl.closest('#checkbox-group').querySelectorAll(`[data-label]`)
+    const labels = clickedEl.closest('#checkboxes').querySelectorAll(`[data-label]`)
 
     // UNCHECK
     if (clickedEl.classList.contains('active')) {
@@ -260,10 +260,11 @@ const Manager = {
   },
   handleShareWithSelection: (e, currentUser, shareWith) => {
     const clickedEl = e.currentTarget
+    const pill = clickedEl.querySelector('.pill')
     const selectedValue = clickedEl.getAttribute('data-phone')
     // UNCHECK
-    if (clickedEl.classList.contains('active')) {
-      clickedEl.classList.remove('active')
+    if (pill.classList.contains('active')) {
+      pill.classList.remove('active')
       if (Manager.isValid(shareWith)) {
         shareWith = shareWith.filter((x) => x !== selectedValue)
       }
@@ -271,7 +272,7 @@ const Manager = {
 
     // CHECK
     else {
-      clickedEl.classList.add('active')
+      pill.classList.add('active')
       if (currentUser?.accountType === 'parent') {
         currentUser?.coparents?.forEach((coparent) => {
           if (coparent?.phone === selectedValue) {

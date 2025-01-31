@@ -282,35 +282,6 @@
         }
       }
     }
-
-    .profile-pic {
-      font-size: 45px !important;
-      margin-right: 8px;
-      border-radius: 100%;
-      position: relative;
-      opacity: 0.8;
-      color: white;
-    }
-
-    .unread-count {
-      background-color: $red;
-      border-radius: 100%;
-      justify-content: center;
-      align-items: center;
-      font-size: 16px;
-      line-height: 1;
-      width: 25px;
-      height: 25px;
-      padding: 1px 10px 0 10px;
-      font-weight: 500;
-      display: none;
-      color: white;
-      margin-left: auto;
-
-      &.active {
-        display: flex;
-      }
-    }
   }
 }
 
@@ -323,6 +294,7 @@
   height: 100vh;
   position: fixed;
   top: 0;
+  background: white;
   bottom: 0;
   .search-results {
     height: 100vh;
@@ -335,28 +307,6 @@
 
   .flex {
     align-items: center;
-  }
-
-  #tone-wrapper {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 10px;
-    * {
-      line-height: 1;
-      margin: 0;
-    }
-
-    span {
-      padding-left: 5px;
-      font-weight: $fwMedium;
-    }
-
-    svg {
-      margin-left: 5px;
-      position: relative;
-      top: -3px;
-      font-size: 20px;
-    }
   }
 
   .search-input {
@@ -384,14 +334,14 @@
   .top-buttons {
     justify-content: flex-end;
     top: 0;
-    z-index: 1;
+    z-index: 999;
     border-bottom: 1px solid $lightBorder;
     width: 100vw;
     padding: $statusBarHeight 15px 10px 10px;
     backdrop-filter: blur(50px);
     background: none;
     height: 100px;
-    position: fixed;
+    position: absolute;
 
     #user-info {
       justify-content: center;
@@ -436,12 +386,17 @@
     overflow-x: hidden;
     padding: 120px 15px 0 15px;
     height: 100%;
-    max-height: calc(100vh - 226px);
+    max-height: calc(100vh - 106px);
     bottom: 0;
 
     @media screen and (min-width: 800px) {
       min-width: 10%;
       width: 28vw;
+    }
+
+    &#bookmark-messages,
+    &.search-results {
+      z-index: unset;
     }
 
     .timestamp {
@@ -469,31 +424,40 @@
     }
 
     // MESSAGE WRAPPER
-    .message-wrapper {
+    .message-fade-wrapper {
       justify-content: flex-start;
       width: 100%;
       display: flex;
       align-items: center;
-      svg {
-        margin-left: 15px;
-        font-size: 24px;
-        opacity: 0.5;
-        transition: all 0.5s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      font-weight: 400;
+      position: relative;
 
-        &.bookmarked {
+      &.search {
+        display: block;
+      }
+      .flex {
+        width: 100%;
+      }
+      svg {
+        font-size: 26px;
+        opacity: 0.5;
+        transition: all 0.3s ease-in-out;
+        position: relative;
+        right: -10px;
+
+        &.active {
+          transition: all 0.3s ease-in-out;
           color: $mainBlue;
           opacity: 1;
-          font-size: 20px;
         }
       }
-      .message {
-        transition: all 0.2s ease-in-out;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        font-weight: 400;
-        position: relative;
 
+      .message {
+        width: 65%;
         &.animation {
           position: relative;
           opacity: 0;
@@ -533,10 +497,6 @@
               height: 25px;
               background: radial-gradient(30px at top left, #0000 99%, $mainBlue 102%);
             }
-
-            .under-message {
-              float: left;
-            }
           }
 
           &.to {
@@ -551,7 +511,7 @@
               content: '';
               position: absolute;
               bottom: 0;
-              right: -25px;
+              right: 0;
               width: 40px;
               height: 25px;
               background: radial-gradient(30px at top right, #0000 99%, rgb(241, 241, 241) 102%);
@@ -619,111 +579,123 @@
 
   .form {
     width: 100%;
-    background: transparent;
-    padding: 15px 15px 55px 15px;
-    z-index: 100;
-    overflow: hidden;
+    padding: 15px 15px 50px 15px;
+    z-index: 9999;
     position: absolute;
     bottom: 0;
-    backdrop-filter: blur(50px);
+    background: white;
 
     #send-button {
       border-radius: 8px;
       align-self: stretch;
-      width: 0;
       max-height: 45px;
-      padding: 0;
       position: relative;
-      right: -200px;
-      opacity: 0;
-      background: $lightBlueMedium;
-
-      &.filled {
-        opacity: 1;
-        padding: 10px 5px;
-        color: white;
-        width: 100px;
-        right: 0;
-      }
-    }
-
-    #under-message-input {
-      width: 100%;
+      background: $green;
+      opacity: 1;
+      padding: 10px 15px;
+      color: white;
+      width: 100px;
+      right: 0;
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding-top: 10px;
-      #icons {
-        align-items: center;
-        gap: 8px;
-        padding-bottom: 10px;
+      svg {
+        font-size: 18px;
+        margin-left: 8px;
+        position: relative;
+        bottom: 2px;
+      }
 
-        .emoji {
-          font-size: 25px;
-        }
-        #emoji-icon {
-          border: 0;
-          filter: grayscale(100%);
-          font-size: 25px;
-          border-left: 2px solid $lightBorder;
-          padding-left: 5px;
-        }
+      &.red {
+        background: $red;
       }
     }
 
     #message-input-container {
-      &.has-value {
-        gap: 10px;
-      }
-      .message-input {
-        background-color: $lightIconBgBlue;
-        color: black;
-        outline: none;
-        min-height: 45px;
-        line-height: 1.5;
-        vertical-align: middle;
-        border: 1px solid $mainBlue;
-        width: 100%;
-        overflow: auto;
-        padding: 10px;
-        transition: all 0.3s ease-in-out;
-        border-radius: 12px;
+      flex-wrap: wrap;
+
+      #tone-wrapper {
         display: flex;
-        align-items: center;
-        font-style: italic;
+        align-items: flex-start;
+        width: 100vw;
+        justify-content: center;
+        background: white;
+        text-align: center;
+        z-index: -1;
+        opacity: 0;
+        max-height: 0;
+        transition: all 0.3s ease-in-out;
+        margin: 0;
+        background: $bestGreyForWhite;
+        position: relative;
 
-        &:focus {
-          border: 1px solid $mainBlue;
-          border-radius: 15px;
-          background: $lightIconBgBlue;
-          color: black;
-          mask-image: unset;
-
-          &:after {
-            content: '';
-          }
+        p,
+        b,
+        span {
+          font-size: 14px;
         }
-        &:after {
-          content: 'Enter message...';
+
+        .emotion-text {
+          font-style: italic;
+          font-size: 10px;
+          position: absolute;
+          left: 5px;
+          color: black;
           opacity: 0.5;
-          color: black;
+          top: 8px;
         }
 
-        &.has-value {
-          font-style: unset;
-          &:after {
-            content: '';
+        &.active {
+          border-radius: $borderRadius;
+          margin-bottom: 10px;
+          padding: 10px 0;
+          transition: all 0.3s ease-in-out;
+          z-index: 999999;
+          opacity: 1;
+          max-height: unset;
+        }
+
+        * {
+          line-height: 1;
+          margin: 0;
+        }
+
+        span {
+          padding-left: 5px;
+          font-weight: $fwMedium;
+        }
+
+        svg {
+          margin-left: 5px;
+          position: relative;
+          top: -3px;
+          font-size: 20px;
+        }
+      }
+
+      #input-and-send-button {
+        width: 100vw;
+        gap: 15px;
+        .message-input {
+          background-color: $bestGreyForWhite;
+          color: black;
+          outline: none;
+          min-height: 45px;
+          line-height: 1.5;
+          vertical-align: middle;
+          border: 1px solid $darkGrey;
+          width: 100%;
+          overflow: auto;
+          padding: 10px;
+          transition: all 0.3s ease-in-out;
+          border-radius: $borderRadius;
+          display: flex;
+          align-items: center;
+
+          &::placeholder {
+            color: $darkGrey;
           }
         }
       }
-    }
-
-    #message-icon {
-      color: $accent;
-      font-size: 30px;
-      float: right;
-      position: relative;
-      margin-left: 10px;
     }
 
     @media screen and (min-width: 800px) {

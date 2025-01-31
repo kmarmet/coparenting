@@ -3,6 +3,8 @@ import globalState from '../../context'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { CgClose } from 'react-icons/cg'
 import { useSwipeable } from 'react-swipeable'
+import DomManager from '../../managers/domManager.coffee'
+import Manager from '../../managers/manager.js'
 
 export default function BottomCard({
   submitText,
@@ -30,12 +32,12 @@ export default function BottomCard({
       hideCard()
       onClose()
     },
-    // preventScrollOnSwipe: true,
+    preventScrollOnSwipe: true,
     delta: {
       up: 20,
       down: 200,
     },
-    swipeDuration: 250,
+    swipeDuration: 350,
     trackMouse: false,
   })
 
@@ -46,6 +48,7 @@ export default function BottomCard({
     const fadeInUp = 'animate__fadeInUp'
     if (bottomCard) {
       bottomCard.classList.add(fadeOutDown)
+      setState({ ...state, refreshKey: Manager.getUid() })
 
       setTimeout(() => {
         pageOverlay.classList.remove('active')
@@ -112,9 +115,11 @@ export default function BottomCard({
 
   return (
     <div {...handlers} id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
-      <div id="swipe-bar-wrapper">
-        <div id="swipe-bar"></div>
-      </div>
+      {DomManager.isMobile() && (
+        <div id="swipe-bar-wrapper">
+          <div id="swipe-bar"></div>
+        </div>
+      )}
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>

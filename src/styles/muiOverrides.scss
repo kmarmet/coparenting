@@ -419,6 +419,7 @@
       justify-content: center;
       color: black;
       border-radius: $borderRadius !important;
+
       @media screen and (min-width: 650px) {
         &:hover {
           background: $lightIconBgBlue !important;
