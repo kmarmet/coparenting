@@ -22,7 +22,7 @@ import ModelNames from '../../models/modelNames'
 import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
 import BottomCard from '../shared/bottomCard'
 import InputWrapper from '../shared/inputWrapper'
-import ExpenseCategories from '../../constants/expenseCategories'
+import ExpenseCategories from '../../constants/expenseCategories.js'
 import ObjectManager from '../../managers/objectManager'
 import AlertManager from '../../managers/alertManager'
 import ImageManager from '../../managers/imageManager'
@@ -30,6 +30,7 @@ import SelectDropdown from '../shared/selectDropdown'
 import ActivityCategory from '../../models/activityCategory'
 import { MdEventRepeat, MdOutlineFaceUnlock } from 'react-icons/md'
 import StringManager from '../../managers/stringManager.coffee'
+import DomManager from '../../managers/domManager.coffee'
 
 export default function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -41,7 +42,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   const [expenseImage, setExpenseImage] = useState('')
   const [includeChildren, setIncludeChildren] = useState(false)
   const [repeating, setRepeating] = useState(false)
-  const [expenseCategory, setExpenseCategory] = useState('')
+  const [expenseCategory, setExpenseCategory] = useState(ExpenseCategories.General)
   const [payer, setPayer] = useState({
     phone: '',
     name: '',
@@ -384,7 +385,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
 
           {/* EXPENSE TYPE */}
           <SelectDropdown wrapperClasses={'mb-15'} selectValue={expenseCategory} onChange={handleCategorySelection} labelText={'Category'}>
-            {ExpenseCategories.map((type, index) => {
+            {Object.keys(ExpenseCategories).map((type, index) => {
               return (
                 <MenuItem key={index} value={type}>
                   {type}
@@ -397,16 +398,29 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           <InputWrapper onChange={(e) => setExpenseName(e.target.value)} inputType={'input'} labelText={'Name'} required={true}></InputWrapper>
 
           {/* DUE DATE */}
-          <InputWrapper inputType={'date'} labelText={'Due Date'}>
-            <MobileDatePicker
-              onOpen={addThemeToDatePickers}
-              className="mt-0 w-100"
-              yearsPerRow={4}
-              onChange={(e) => {
-                setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
-              }}
-            />
-          </InputWrapper>
+          {!DomManager.isMobile() && (
+            <InputWrapper inputType={'date'} labelText={'Due Date'}>
+              <MobileDatePicker
+                onOpen={addThemeToDatePickers}
+                className="mt-0 w-100"
+                yearsPerRow={4}
+                onChange={(e) => {
+                  setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
+                }}
+              />
+            </InputWrapper>
+          )}
+
+          {DomManager.isMobile() && (
+            <InputWrapper inputType={'date'} labelText={'Due Date'}>
+              <input
+                type="date"
+                onChange={(e) => {
+                  setExpenseDueDate(moment(e.target.value).format('MM/DD/yyyy'))
+                }}
+              />
+            </InputWrapper>
+          )}
 
           <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'}></InputWrapper>
 
@@ -466,18 +480,30 @@ export default function NewExpenseForm({ hideCard, showCard }) {
               {repeating && (
                 <>
                   <CheckboxGroup onCheck={handleRepeatingSelection} checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
-                  <label className="mb-5">Month to end repeating expense</label>
-                  {repeatInterval && (
-                    <MobileDatePicker
-                      onOpen={addThemeToDatePickers}
-                      yearsPerRow={4}
-                      className={'mt-0 w-100'}
-                      format={DateFormats.readableMonth}
-                      closeOnSelect={true}
-                      views={DatetimePickerViews.monthAndYear}
-                      hasAmPm={false}
-                      onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
-                    />
+                  {!DomManager.isMobile() && repeatInterval && (
+                    <>
+                      <label className="mb-5">Month to end repeating expense</label>
+                      <MobileDatePicker
+                        onOpen={addThemeToDatePickers}
+                        yearsPerRow={4}
+                        className={'mt-0 w-100'}
+                        format={DateFormats.readableMonth}
+                        closeOnSelect={true}
+                        views={DatetimePickerViews.monthAndYear}
+                        hasAmPm={false}
+                        onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
+                      />
+                    </>
+                  )}
+                  {DomManager.isMobile() && (
+                    <InputWrapper inputType={'date'} labelText={'Month to end Repeating expense'}>
+                      <input
+                        type="date"
+                        onChange={(e) => {
+                          setExpenseDueDate(moment(e.target.value).format('MM/DD/yyyy'))
+                        }}
+                      />
+                    </InputWrapper>
                   )}
                 </>
               )}

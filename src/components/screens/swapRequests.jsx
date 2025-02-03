@@ -1,34 +1,34 @@
 import React, { useContext, useEffect, useState } from 'react'
-import DB from '../../database/DB'
-import Manager from '../../managers/manager'
 import globalState from '../../context.js'
-import 'rsuite/dist/rsuite.min.css'
+import DB from '/src/database/DB'
+import Manager from '/src/managers/manager'
 import moment from 'moment'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-import SwapDurations from '../../constants/swapDurations.js'
-import NotificationManager from '../../managers/notificationManager'
-import DB_UserScoped from '../../database/db_userScoped'
-import SecurityManager from '../../managers/securityManager'
+import SwapDurations from '/src/constants/swapDurations.js'
+import NotificationManager from '/src/managers/notificationManager'
+import DB_UserScoped from '/src/database/db_userScoped'
+import SecurityManager from '/src/managers/securityManager'
 import NewSwapRequest from '../forms/newSwapRequest'
 import { IoAdd } from 'react-icons/io5'
 import NavBar from '../navBar'
-import AlertManager from '../../managers/alertManager'
+import AlertManager from '/src/managers/alertManager'
 import BottomCard from '../shared/bottomCard'
 import { PiCheckBold, PiSwapDuotone } from 'react-icons/pi'
 import { Fade } from 'react-awesome-reveal'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import Toggle from 'react-toggle'
-import DateManager from '../../managers/dateManager'
+import DateManager from '/src/managers/dateManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
-import DomManager from '../../managers/domManager'
+import DomManager from '/src/managers/domManager'
 import InputWrapper from '../shared/inputWrapper'
-import DateFormats from '../../constants/dateFormats'
+import DateFormats from '/src/constants/dateFormats'
 import CheckboxGroup from '../shared/checkboxGroup'
-import ObjectManager from '../../managers/objectManager'
-import ModelNames from '../../models/modelNames'
-import ActivityCategory from '../../models/activityCategory'
-import StringManager from '../../managers/stringManager'
-
+import ObjectManager from '/src/managers/objectManager'
+import ModelNames from '/src/models/modelNames'
+import ActivityCategory from '/src/models/activityCategory'
+import StringManager from '/src/managers/stringManager'
+import { MdOutlineFaceUnlock } from 'react-icons/md'
+import Label from '../shared/label.jsx'
 const Decisions = {
   approved: 'APPROVED',
   rejected: 'REJECTED',
@@ -51,7 +51,6 @@ export default function SwapRequests() {
   const [startDate, setStartDate] = useState('')
   const [createdBy, setCreatedBy] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [status, setStatus] = useState('pending')
 
   const resetForm = async () => {
@@ -61,8 +60,7 @@ export default function SwapRequests() {
     setIncludeChildren(false)
     setStartDate('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    setState({ ...state, currentUser: updatedCurrentUser })
-    setRefreshKey(Manager.getUid())
+    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
 
   const update = async () => {
@@ -235,12 +233,15 @@ export default function SwapRequests() {
             <Fade direction={'up'} duration={600} triggerOnce={true}>
               {/* SWAP DATE */}
               {Manager.isValid(activeRequest?.startDate) && (
-                <div className="flex flex-start" id="row">
+                <>
                   <p id="title">
-                    <b>Swap Date: </b>
-                    {DateManager.formatDate(activeRequest?.startDate)}
+                    <b>Swap Dates </b>
                   </p>
-                </div>
+                  <p className="mt-0 mb-10">
+                    {moment(activeRequest?.startDate).format(DateFormats.readableMonthAndDay)} to&nbsp;
+                    {moment(activeRequest?.endDate).format(DateFormats.readableMonthAndDay)}
+                  </p>
+                </>
               )}
 
               {/* CREATED BY */}
@@ -365,7 +366,7 @@ export default function SwapRequests() {
                     <p>Include Child(ren)</p>
                     <Toggle
                       icons={{
-                        checked: <span className="material-icons-round">face</span>,
+                        checked: <MdOutlineFaceUnlock />,
                         unchecked: null,
                       }}
                       defaultChecked={activeRequest?.children?.length > 0}
@@ -373,14 +374,13 @@ export default function SwapRequests() {
                       onChange={(e) => setIncludeChildren(!includeChildren)}
                     />
                   </div>
-                  {includeChildren ||
-                    (activeRequest?.children?.length > 0 && (
-                      <CheckboxGroup
-                        defaultLabels={activeRequest?.children?.map((x) => x)}
-                        checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
-                        onCheck={handleChildSelection}
-                      />
-                    ))}
+                  {includeChildren && (
+                    <CheckboxGroup
+                      defaultLabels={activeRequest?.children?.map((x) => x['general']?.name)}
+                      checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
+                      onCheck={handleChildSelection}
+                    />
+                  )}
                 </div>
               )}
 

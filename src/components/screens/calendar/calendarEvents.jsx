@@ -58,13 +58,13 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
   return (
     <>
       <div className="events">
-        {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">No events on this day</p>}
-        {Manager.isValid(eventsOfActiveDay) &&
-          eventsOfActiveDay.map((event, index) => {
-            let dotObjects = getRowDotColor(event.startDate)
-            const dotObject = dotObjects.filter((x) => x.id === event.id)[0]
-            return (
-              <Fade key={index} direction={'up'} delay={0} duration={500} className={'calendar-events-fade-wrapper'} triggerOnce={false}>
+        <Fade direction={'up'} delay={0} duration={800} className={'calendar-events-fade-wrapper'} cascade={false} triggerOnce={false}>
+          {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">No events on this day</p>}
+          {Manager.isValid(eventsOfActiveDay) &&
+            eventsOfActiveDay.map((event, index) => {
+              let dotObjects = getRowDotColor(event.startDate)
+              const dotObject = dotObjects.filter((x) => x.id === event.id)[0]
+              return (
                 <div
                   id="row"
                   onClick={(e) => handleEventRowClick(event)}
@@ -126,9 +126,9 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
                     </div>
                   </div>
                 </div>
-              </Fade>
-            )
-          })}
+              )
+            })}
+        </Fade>
       </div>
     </>
   )

@@ -71,6 +71,7 @@
         border-radius: $borderRadius;
         width: calc(100% / 5);
         padding: 10px 0;
+        border: 0;
         &.pressed {
           border-radius: $borderRadius;
           transform: scale(1.1);
@@ -108,19 +109,64 @@
   }
 
   #expense-tracker {
-    #filter-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: transparent;
-      border: 1px solid $mainBlue;
-      color: $mainBlue;
-      border-radius: $borderRadius;
-      padding: 2px 10px;
+    #filters {
       margin-top: 15px;
-      svg {
-        font-size: 26px;
-        margin-left: 5px;
+      .filter-row {
+        margin-bottom: 15px;
+      }
+
+      label {
+        line-height: 1;
+        font-size: 18px;
+        padding-left: 3px;
+
+        &.sort-by {
+          padding: 0;
+        }
+      }
+
+      .sort-by {
+        .list-item {
+          margin-left: 10px;
+          margin-bottom: 10px;
+          font-weight: $fwBold;
+        }
+      }
+
+      .pills {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+
+        .pill {
+          @include pillButton;
+          color: rgba(0, 0, 0, 0.75);
+          border: unset;
+          background: $bestGreyForWhite;
+          border-radius: 50px;
+          text-align: center;
+          font-weight: $fwRegular;
+          line-height: 1;
+          padding: 6.5px 15px;
+          font-size: 12px;
+          align-items: center;
+          justify-content: center;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+          transition: all 0.3s ease-in-out;
+          letter-spacing: 0.8px;
+          display: inline-flex;
+          margin-right: 8px;
+
+          svg {
+            font-size: 12px;
+            width: 0;
+            transition: all 0.3s linear;
+          }
+        }
       }
     }
 

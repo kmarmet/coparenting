@@ -477,15 +477,24 @@
     }
 
     &#calendar-legend {
-      border-radius: $borderRadius !important;
-      background: #fcfcfc !important;
-      margin: 0 auto !important;
+      border: 0 !important;
       position: relative;
 
+      &.MuiPaper-root {
+        display: none;
+      }
+
       &.open {
+        border-radius: $borderRadius !important;
+        margin: 0 auto !important;
+        background: #fcfcfc !important;
         width: 200px !important;
         border: 1px solid $lightBorder !important;
         padding: 10px 0 40px 10px !important;
+
+        &.MuiPaper-root {
+          display: block;
+        }
       }
 
       .flex {
@@ -649,6 +658,12 @@
   }
   .MuiFormControl-root {
     border-bottom: 1px solid #e3e8ee;
+    width: 100%;
+    position: relative;
+    top: -25px;
+    .MuiInputBase-input {
+      width: 90% !important;
+    }
     &.MuiFormControl-fullWidth {
       border: 0;
     }
@@ -660,6 +675,7 @@
       letter-spacing: 0.4px !important;
       line-height: 1.3 !important;
       font-size: 16px !important;
+      display: none !important;
     }
     .MuiSvgIcon-root {
       font-size: 28px !important;
@@ -668,9 +684,10 @@
     &.css-1b5lkxe-MuiFormControl-root {
       .MuiOutlinedInput-root {
         [role='combobox'] {
-          padding: 10px;
-          background: $buttonGrey;
+          padding: 5px 5px 5px 10px;
+          background: $bestGreyForWhite;
           border-radius: $borderRadius;
+          font-size: 14px !important;
         }
       }
     }
@@ -679,7 +696,7 @@
   // Primary calendar picker container
   .MuiPaper-root {
     background-color: $lightBg;
-    border-radius: 30px;
+    border-radius: $bigBorderRadius;
     width: 95vw !important;
     @include bestShadow;
 
@@ -1024,9 +1041,19 @@
     }
 
     input {
-      border: 0;
       outline: none;
-      padding: 0;
+      display: block !important;
+      outline: 0 !important;
+      font-weight: 400 !important;
+      transition: all 0.2s ease-in-out !important;
+      border: 1px solid $iconGrey !important;
+      border-radius: $borderRadius !important;
+      height: 38px !important;
+      padding: 0 8px !important;
+      max-height: unset !important;
+      position: absolute !important;
+      top: 0 !important;
+      caret-color: $mainBlue !important;
     }
   }
 

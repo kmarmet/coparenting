@@ -10,7 +10,7 @@ import Label from './label.jsx'
 export default function CheckboxGroup({
   checkboxLabels,
   onCheck,
-  containerClass = '',
+  pillClass = '',
   elClass = '',
   dataPhone,
   dataDate,
@@ -70,7 +70,7 @@ export default function CheckboxGroup({
                     data-phone={thisPhone ? thisPhone : ''}
                     data-label={label ? label : ''}
                     data-date={thisDate ? thisDate : ''}
-                    className={`pill ${containerClass} ${Manager.isValid(defaultLabels) && defaultLabels.includes(label) ? 'active' : ''}`}
+                    className={`pill ${pillClass} ${Manager.isValid(defaultLabels) && defaultLabels.includes(label) ? 'active' : ''}`}
                     onClick={(e) => onCheck(e)}>
                     {label}
                     <FaCheck />

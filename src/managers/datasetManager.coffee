@@ -28,13 +28,14 @@ DatasetManager = {
 
   getUniqueArrayFromMultiple: (arrOne, arrTwo) ->
     _.uniqBy(_.flattenDeep(arrOne, arrTwo))
+
   sortByProperty: (arr, prop, direction) ->
 #    arr = arr.filter (x) -> x[prop] isnt ""
     if direction is "asc"
       _.sortBy arr, prop
     else
       _.sortBy(arr, prop).reverse()
-  sortDates: (arr) ->
+  sortDates: (arr, direction = "asc") ->
     _.sortBy arr, (date) -> moment(date).toDate()
   sort: (arr, direction) ->
     if direction == 'asc'

@@ -217,6 +217,17 @@
   .full-menu {
     @include fullMenu;
   }
+  input {
+    @media screen and (max-width: 800px) {
+      &[type='date'] {
+        width: 100%;
+        border: 0;
+        border-bottom: 1px solid #e7e9ee;
+        background: transparent;
+        border-radius: 0;
+      }
+    }
+  }
   #pull-to-refresh-wrapper {
     display: flex;
     align-items: center;
@@ -327,6 +338,18 @@
 
     #checkbox-group {
       @include checkboxGroup;
+
+      &.holiday-checkboxes-wrapper {
+        #checkboxes {
+          flex-wrap: wrap;
+          display: flex;
+          gap: 10px 8px;
+          .pill {
+            display: inline;
+            margin: 0;
+          }
+        }
+      }
     }
 
     .checkbox {

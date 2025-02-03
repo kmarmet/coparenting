@@ -29,8 +29,8 @@ export default function BottomCard({
   const handlers = useSwipeable({
     onSwipedDown: (eventData) => {
       console.log('User Swiped!', eventData)
-      hideCard()
-      onClose()
+      // hideCard()
+      // onClose()
     },
     preventScrollOnSwipe: true,
     delta: {
@@ -48,7 +48,7 @@ export default function BottomCard({
     const fadeInUp = 'animate__fadeInUp'
     if (bottomCard) {
       bottomCard.classList.add(fadeOutDown)
-      setState({ ...state, refreshKey: Manager.getUid() })
+      setState({ ...state, refreshKey: Manager.getUid(), menuIsOpen: false })
 
       setTimeout(() => {
         pageOverlay.classList.remove('active')
@@ -114,12 +114,12 @@ export default function BottomCard({
   }, [showCard])
 
   return (
-    <div {...handlers} id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
-      {DomManager.isMobile() && (
-        <div id="swipe-bar-wrapper">
-          <div id="swipe-bar"></div>
-        </div>
-      )}
+    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
+      {/*{DomManager.isMobile() && (*/}
+      {/*  <div id="swipe-bar-wrapper">*/}
+      {/*    <div id="swipe-bar"></div>*/}
+      {/*  </div>*/}
+      {/*)}*/}
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>

@@ -61,7 +61,7 @@ DatasetManager = {
       return _.sortBy(arr, prop).reverse();
     }
   },
-  sortDates: function(arr) {
+  sortDates: function(arr, direction = "asc") {
     return _.sortBy(arr, function(date) {
       return moment(date).toDate();
     });

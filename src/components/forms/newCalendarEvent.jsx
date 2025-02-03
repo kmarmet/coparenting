@@ -481,25 +481,29 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
           {/* EVENT WITH TIME */}
           {!isAllDay && (
-            <div className={'flex  event-times-wrapper'}>
-              <MobileTimePicker
-                onOpen={addThemeToDatePickers}
-                minutesStep={5}
-                format={'h:mma'}
-                label={'Start Time'}
-                className={`${theme} w-50`}
-                value={moment(eventStartTime)}
-                onAccept={(e) => setEventStartTime(e)}
-              />
-              <MobileTimePicker
-                onOpen={addThemeToDatePickers}
-                format={'h:mma'}
-                minutesStep={5}
-                label={'End Time'}
-                className={`${theme} w-50`}
-                MuiFormLabel-root
-                onAccept={(e) => setEventEndTime(e)}
-              />
+            <div className={'flex event-times-wrapper'}>
+              <InputWrapper labelText={'Start Time'} inputType="date">
+                <MobileTimePicker
+                  onOpen={addThemeToDatePickers}
+                  minutesStep={5}
+                  format={'h:mma'}
+                  label={'Start Time'}
+                  className={`${theme}`}
+                  value={moment(eventStartTime)}
+                  onAccept={(e) => setEventStartTime(e)}
+                />
+              </InputWrapper>
+              <InputWrapper labelText={'End Time'} inputType="date">
+                <MobileTimePicker
+                  onOpen={addThemeToDatePickers}
+                  format={'h:mma'}
+                  minutesStep={5}
+                  label={'End Time'}
+                  className={`${theme}`}
+                  MuiFormLabel-root
+                  onAccept={(e) => setEventEndTime(e)}
+                />
+              </InputWrapper>
             </div>
           )}
 

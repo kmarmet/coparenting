@@ -60,6 +60,8 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   const submit = async () => {
     const invalidInputs = Manager.invalidInputs([startDate, recipientName])
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
+    //#region VALIDATION
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign requests to',
@@ -77,38 +79,38 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     if (invalidInputs.length > 0) {
       AlertManager.throwError('Please fill out required fields')
       return false
-    } else {
-      let newRequest = new SwapRequest()
-
-      newRequest.children = requestChildren
-      newRequest.startDate = startDate
-      newRequest.endDate = endDate
-      newRequest.reason = requestReason
-      newRequest.duration = swapDuration
-      newRequest.fromHour = requestFromHour
-      newRequest.responseDueDate = responseDueDate
-      newRequest.toHour = requestToHour
-      newRequest.ownerPhone = currentUser?.phone
-      newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
-      newRequest.recipientPhone = currentUser?.coparents?.filter((x) => Manager.contains(x?.name, recipientName))[0]?.phone || ''
-
-      const cleanObject = ObjectManager.cleanObject(newRequest, ModelNames.swapRequest)
-
-      // Send Notification
-      await DB.add(`${DB.tables.swapRequests}/${currentUser.phone}`, cleanObject).finally(() => {
-        NotificationManager.sendToShareWith(
-          shareWith,
-          currentUser,
-          'New Swap Request',
-          `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
-          ActivityCategory.swapRequest
-        )
-        setSwapDuration(SwapDurations.single)
-      })
-      AlertManager.successAlert('Swap Request Sent')
-
-      await resetForm()
     }
+    //#endregion VALIDATION
+
+    let newRequest = new SwapRequest()
+    newRequest.children = requestChildren
+    newRequest.startDate = startDate
+    newRequest.endDate = endDate
+    newRequest.reason = requestReason
+    newRequest.duration = swapDuration
+    newRequest.fromHour = requestFromHour
+    newRequest.responseDueDate = responseDueDate
+    newRequest.toHour = requestToHour
+    newRequest.ownerPhone = currentUser?.phone
+    newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
+    newRequest.recipientPhone = currentUser?.coparents?.filter((x) => Manager.contains(x?.name, recipientName))[0]?.phone || ''
+
+    const cleanObject = ObjectManager.cleanObject(newRequest, ModelNames.swapRequest)
+
+    // Send Notification
+    await DB.add(`${DB.tables.swapRequests}/${currentUser.phone}`, cleanObject).finally(() => {
+      NotificationManager.sendToShareWith(
+        shareWith,
+        currentUser,
+        'New Swap Request',
+        `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
+        ActivityCategory.swapRequest
+      )
+      setSwapDuration(SwapDurations.single)
+    })
+    AlertManager.successAlert('Swap Request Sent')
+
+    await resetForm()
   }
 
   const handleChildSelection = (e) => {

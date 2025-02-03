@@ -1,32 +1,31 @@
 import React, { useContext, useEffect, useState } from 'react'
-import DB from '../../database/DB'
-import Manager from '../../managers/manager'
 import globalState from '../../context.js'
-import 'rsuite/dist/rsuite.min.css'
+import DB from '/src/database/DB'
+import Manager from '/src/managers/manager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
-import NotificationManager from '../../managers/notificationManager'
-import DB_UserScoped from '../../database/db_userScoped'
-import DateManager from '../../managers/dateManager.js'
+import NotificationManager from '/src/managers/notificationManager'
+import DB_UserScoped from '/src/database/db_userScoped'
+import DateManager from '/src/managers/dateManager.js'
 import NavBar from '../navBar'
 import { IoAdd } from 'react-icons/io5'
-import SecurityManager from '../../managers/securityManager'
+import SecurityManager from '/src/managers/securityManager'
 import { PiCarProfileDuotone, PiCheckBold } from 'react-icons/pi'
 import { Fade } from 'react-awesome-reveal'
 import { BiSolidNavigation } from 'react-icons/bi'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import Autocomplete from 'react-google-autocomplete'
-import AlertManager from '../../managers/alertManager'
-import BottomCard from '../../components/shared/bottomCard'
-import DomManager from '../../managers/domManager'
-import NoDataFallbackText from '../../components/shared/noDataFallbackText'
-import ActivityCategory from '../../models/activityCategory'
-import DateFormats from '../../constants/dateFormats'
-import InputWrapper from '../../components/shared/inputWrapper'
-import ObjectManager from '../../managers/objectManager'
-import ModelNames from '../../models/modelNames'
-import StringManager from '../../managers/stringManager'
+import AlertManager from '/src/managers/alertManager'
+import BottomCard from '/src/components/shared/bottomCard'
+import DomManager from '/src/managers/domManager'
+import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
+import ActivityCategory from '/src/models/activityCategory'
+import DateFormats from '/src/constants/dateFormats'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import ObjectManager from '/src/managers/objectManager'
+import ModelNames from '/src/models/modelNames'
+import StringManager from '/src/managers/stringManager'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -191,6 +190,7 @@ export default function TransferRequests() {
                 <div className="flex flex-start" id="row">
                   <p id="title">
                     <b>Transfer Date: </b>
+                    <p>{activeRequest.endDate}</p>
                     <span className="low-opacity-text">{DateManager.formatDate(activeRequest?.date)}</span>
                   </p>
                 </div>

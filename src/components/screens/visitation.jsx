@@ -1,34 +1,34 @@
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
-import ScheduleTypes from '../../constants/scheduleTypes'
 import globalState from '../../context'
-import DB from '../../database/DB'
+import ScheduleTypes from '/src/constants/scheduleTypes'
+import DB from '/src/database/DB'
 import { Fade } from 'react-awesome-reveal'
-import CalendarEvent from '../../models/calendarEvent'
-import Manager from '../../managers/manager'
-import CheckboxGroup from '../../components/shared/checkboxGroup'
-import VisitationManager from '../../managers/visitationManager'
-import MyConfetti from '../../components/shared/myConfetti'
-import Note from '../../components/shared/note'
-import DB_UserScoped from '../../database/db_userScoped'
-import VisitationMapper from '../../mappers/visitationMapper'
-import DateFormats from '../../constants/dateFormats'
-import CalendarMapper from '../../mappers/calMapper'
+import CalendarEvent from '/src/models/calendarEvent'
+import Manager from '/src/managers/manager'
+import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import VisitationManager from '/src/managers/visitationManager'
+import MyConfetti from '/src/components/shared/myConfetti'
+import Note from '/src/components/shared/note'
+import DB_UserScoped from '/src/database/db_userScoped'
+import VisitationMapper from '/src/mappers/visitationMapper'
+import DateFormats from '/src/constants/dateFormats'
+import CalendarMapper from '/src/mappers/calMapper'
 import { ImEye } from 'react-icons/im'
-import SecurityManager from '../../managers/securityManager'
+import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../navBar'
-import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
-import InputWrapper from '../../components/shared/inputWrapper'
-import DatasetManager from '../../managers/datasetManager'
-import AlertManager from '../../managers/alertManager'
-import ObjectManager from '../../managers/objectManager'
-import ModelNames from '../../models/modelNames'
-import StringManager from '../../managers/stringManager'
-import FiftyFifty from '../../components/screens/visitation/fiftyFifty'
-import EveryOtherWeekend from '../../components/screens/visitation/everyOtherWeekend'
-import CustomWeekends from '../../components/screens/visitation/customWeekends'
-import DateManager from '../../managers/dateManager.js'
+import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import DatasetManager from '/src/managers/datasetManager'
+import AlertManager from '/src/managers/alertManager'
+import ObjectManager from '/src/managers/objectManager'
+import ModelNames from '/src/models/modelNames'
+import StringManager from '/src/managers/stringManager'
+import FiftyFifty from '/src/components/screens/visitation/fiftyFifty'
+import EveryOtherWeekend from '/src/components/screens/visitation/everyOtherWeekend'
+import CustomWeekends from '/src/components/screens/visitation/customWeekends'
+import DateManager from '/src/managers/dateManager.js'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -62,10 +62,6 @@ export default function Visitation() {
     setState({ ...state, isLoading: false })
     AlertManager.successAlert('Visitation Schedule Removed')
   }
-
-  // Specific Weekends
-
-  // Every Other Weekend
 
   // Every Weekend
   const addEveryWeekendToCalendar = async () => {
@@ -393,6 +389,7 @@ export default function Visitation() {
           )}
           {/* HOLIDAY SELECTION */}
           <CheckboxGroup
+            containerClass="holidays"
             parentLabel={'Select the holidays YOU have the child(ren) this year'}
             elClass={'holiday-checkboxes-wrapper gap-10'}
             onCheck={handleHolidaySelection}

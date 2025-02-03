@@ -1,13 +1,15 @@
-import Label from './label'
 import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
+import InputLabel from '@mui/material/InputLabel'
+import Label from './label.jsx'
+import Manager from '../../managers/manager.js'
 
-export default function SelectDropdown({ wrapperClasses, onChange, labelText, labelClasses, children, selectValue }) {
+export default function SelectDropdown({ wrapperClasses, onChange, labelText, id, children, selectValue }) {
   return (
     <div className={wrapperClasses}>
-      <Label isBold={true} text={labelText} classes={labelClasses}></Label>
+      {Manager.isValid(labelText) && <Label text={labelText} />}
       <FormControl fullWidth>
-        <Select className={'w-100'} value={selectValue} onChange={onChange}>
+        <Select id={id} className={'w-100'} value={selectValue} onChange={onChange}>
           {children}
         </Select>
       </FormControl>

@@ -1,5 +1,5 @@
 import Manager from '../managers/manager'
-import { child, get, getDatabase, ref, remove, set } from 'firebase/database'
+import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
 import _ from 'lodash'
 import LogManager from '../managers/logManager'
 
@@ -245,21 +245,18 @@ const DB = {
     }
   },
   updateEntireRecord: async (path, updatedRow, id) => {
-    const dbRef = getDatabase()
-    let key = null
-    const tableRecords = await DB.getTable(path)
-    console.log(path)
-    console.log(tableRecords)
-    for (const record of tableRecords) {
-      console.log(record.id)
-      if (record?.id === id) {
-        key = await DB.getSnapshotKey(path, record, 'id')
-      }
-    }
-
     try {
+      const dbRef = getDatabase()
+      let key = null
+      const tableRecords = await DB.getTable(path)
+      for (const record of tableRecords) {
+        if (record?.id === id) {
+          key = await DB.getSnapshotKey(path, record, 'id')
+        }
+      }
+
       console.log(key)
-      // update(ref(dbRef, `${path}/${key}`), updatedRow)
+      update(ref(dbRef, `${path}/${key}`), updatedRow)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }

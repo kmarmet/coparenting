@@ -1,23 +1,23 @@
 import React, { useContext, useState } from 'react'
 import globalState from '../../context'
-import Manager from '../../managers/manager'
+import Manager from '/src/managers/manager'
 import Autocomplete from 'react-google-autocomplete'
-import CheckboxGroup from '../../components/shared/checkboxGroup'
-import TransferChangeRequest from '../../models/transferChangeRequest'
+import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import TransferChangeRequest from '/src/models/transferChangeRequest.js'
 import moment from 'moment'
-import DB from '../../database/DB'
-import NotificationManager from '../../managers/notificationManager.js'
-import DB_UserScoped from '../../database/db_userScoped'
+import DB from '/src/database/DB'
+import NotificationManager from '/src/managers/notificationManager.js'
+import DB_UserScoped from '/src/database/db_userScoped'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import { ImEye } from 'react-icons/im'
-import DateFormats from '../../constants/dateFormats'
-import DateManager from '../../managers/dateManager'
+import DateFormats from '/src/constants/dateFormats'
+import DateManager from '/src/managers/dateManager'
 import BottomCard from '../shared/bottomCard'
 import InputWrapper from '../shared/inputWrapper'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
-import AlertManager from '../../managers/alertManager'
-import StringManager from '../../managers/stringManager'
-import ActivityCategory from '../../models/activityCategory'
+import AlertManager from '/src/managers/alertManager'
+import StringManager from '/src/managers/stringManager'
+import ActivityCategory from '/src/models/activityCategory'
 
 export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -30,7 +30,6 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const [directionsLink, setDirectionsLink] = useState('')
   const [requestRecipientPhone, setRequestRecipientPhone] = useState('')
   const [preferredLocation, setPreferredLocation] = useState('')
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [responseDueDate, setResponseDueDate] = useState('')
 
   const resetForm = async () => {
@@ -51,6 +50,8 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
   const submit = async () => {
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+
+    //#region VALIDATION
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign requests to',
@@ -76,6 +77,8 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
         return false
       }
     }
+    //#endregion VALIDATION
+
     const requestTimeIsValid = DateManager.dateIsValid(moment(requestTime, DateFormats.timeForDb).format(DateFormats.timeForDb))
     let newRequest = new TransferChangeRequest()
     newRequest.reason = requestReason
@@ -83,7 +86,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
     newRequest.time = requestTimeIsValid ? requestTime : ''
     newRequest.location = requestLocation
-    newRequest.date = moment(requestDate).format(DateFormats.dateForDb)
+    newRequest.startDate = moment(requestDate).format(DateFormats.dateForDb)
     newRequest.directionsLink = Manager.getDirectionsLink(requestLocation)
     newRequest.recipientPhone = requestRecipientPhone
     newRequest.status = 'pending'
@@ -96,18 +99,18 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
       await DB_UserScoped.updateUserRecord(currentUser?.phone, `coparents/${key}/preferredTransferLocation`, requestLocation)
     }
 
+    // // Add record
+    await DB.add(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, newRequest)
+    AlertManager.successAlert('Transfer Change Request Sent')
+
     // Notify
-    NotificationManager.sendNotification(
+    await NotificationManager.sendNotification(
       `Transfer Change Request`,
       `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
       requestRecipientPhone,
       currentUser,
       ActivityCategory.transferRequest
     )
-
-    // // Add record
-    await DB.add(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, newRequest)
-    AlertManager.successAlert('Transfer Change Request Sent')
 
     await resetForm()
   }
@@ -157,7 +160,6 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     <BottomCard
       onSubmit={submit}
       submitText={'Send Request'}
-      refreshKey={refreshKey}
       wrapperClass="new-transfer-request"
       title={'New Request'}
       showCard={showCard}

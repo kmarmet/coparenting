@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Manager from '/src/managers/manager'
 import globalState from '../../../context.js'
-import 'rsuite/dist/rsuite.min.css'
 import DB_UserScoped from '/src/database/db_userScoped'
 import { BiMessageRoundedAdd } from 'react-icons/bi'
 import { child, getDatabase, onValue, ref } from 'firebase/database'

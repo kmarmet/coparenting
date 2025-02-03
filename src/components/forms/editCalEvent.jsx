@@ -207,7 +207,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     updatedEvent.title = eventName
     updatedEvent.reminderTimes = eventReminderTimes
     updatedEvent.shareWith = eventShareWith
-    console.log(eventStartDate)
     updatedEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
     updatedEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
     updatedEvent.phone = eventPhone
@@ -281,6 +280,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
       // Update Single Event
       else {
+        console.log(cleanedEvent)
         await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updatedEvent.id)
         await afterUpdateCallback()
       }
@@ -572,7 +572,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                         <p>{event?.location}</p>
                       </div>
                       <a className="low-opacity-text nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
-                        <BiSolidNavigation /> Nav
+                        <BiSolidNavigation /> Navigation
                       </a>
                     </>
                   )}
@@ -675,33 +675,29 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   {/* EVENT START/END TIME */}
                   <div className="flex gap">
                     {/* START TIME */}
-                    <div>
-                      <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
-                        <MobileTimePicker
-                          onOpen={addThemeToDatePickers}
-                          format={'h:mma'}
-                          placeholder={''}
-                          value={moment(event?.startTime, 'hh:mma')}
-                          minutesStep={5}
-                          className={`${theme} m-0`}
-                          onAccept={(e) => setEventStartTime(e)}
-                        />
-                      </InputWrapper>
-                    </div>
+                    <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
+                      <MobileTimePicker
+                        onOpen={addThemeToDatePickers}
+                        format={'h:mma'}
+                        placeholder={''}
+                        value={moment(event?.startTime, 'hh:mma')}
+                        minutesStep={5}
+                        className={`${theme} m-0`}
+                        onAccept={(e) => setEventStartTime(e)}
+                      />
+                    </InputWrapper>
 
                     {/* END TIME */}
-                    <div>
-                      <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
-                        <MobileTimePicker
-                          onOpen={addThemeToDatePickers}
-                          format={'h:mma'}
-                          value={moment(event?.endTime, 'hh:mma')}
-                          minutesStep={5}
-                          className={`${theme} m-0`}
-                          onAccept={(e) => setEventEndTime(e)}
-                        />
-                      </InputWrapper>
-                    </div>
+                    <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
+                      <MobileTimePicker
+                        onOpen={addThemeToDatePickers}
+                        format={'h:mma'}
+                        value={moment(event?.endTime, 'hh:mma')}
+                        minutesStep={5}
+                        className={`${theme} m-0`}
+                        onAccept={(e) => setEventEndTime(e)}
+                      />
+                    </InputWrapper>
                   </div>
                   {/* Share with */}
                   {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (

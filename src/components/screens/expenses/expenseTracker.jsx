@@ -26,6 +26,7 @@ import Label from '../../shared/label.jsx'
 import ExpenseCategories from '/src/constants/expenseCategories'
 import DatasetManager from '/src/managers/datasetManager'
 import AlertManager from '/src/managers/alertManager'
+import MenuItem from '@mui/material/MenuItem'
 import SelectDropdown from '../../shared/selectDropdown.jsx'
 import InputWrapper from '../../shared/inputWrapper.jsx'
 import DomManager from '/src/managers/domManager'
@@ -36,6 +37,7 @@ import ModelNames from '/src/models/modelNames'
 import StringManager from '/src/managers/stringManager'
 import ExpenseManager from '/src/managers/expenseManager.js'
 import PaymentOptions from './paymentOptions.jsx'
+import DB_UserScoped from '../../../database/db_userScoped.js'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -50,9 +52,6 @@ export default function ExpenseTracker() {
   const [expenses, setExpenses] = useState([])
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
-  const [showFilterCard, setShowFilterCard] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
-  const [filterApplied, setFilterApplied] = useState(false)
   const [categoriesInUse, setCategoriesInUse] = useState([])
   const [activeExpense, setActiveExpense] = useState(null)
   const [showDetails, setShowDetails] = useState(false)
@@ -68,7 +67,9 @@ export default function ExpenseTracker() {
   const [imageName, setImageName] = useState('')
   const [recipientName, setRecipientName] = useState('')
   const [name, setName] = useState('')
-
+  const [sortMethod, setSortMethod] = useState(SortByTypes.recentlyAdded)
+  const [categoriesAsArray, setCategoriesAsArray] = useState([])
+  const [expenseDateType, setExpenseDateType] = useState('all')
   const update = async () => {
     // Fill/overwrite
     let updatedExpense = { ...activeExpense }
@@ -102,7 +103,7 @@ export default function ExpenseTracker() {
     await ExpenseManager.updateExpense(currentUser, activeExpense, activeExpense.id).then(async () => {
       NotificationManager.sendNotification(
         `Expense Paid`,
-        `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${activeExpense.name} \nYou can delete the expense now`,
+        `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${activeExpense.name}`,
         activeExpense?.ownerPhone,
         currentUser,
         activeExpense.category
@@ -112,44 +113,11 @@ export default function ExpenseTracker() {
     })
   }
 
-  const deleteExpense = async (expense) => {
-    let existing = await getSecuredExpenses()
-
-    if (Manager.isValid(expense)) {
-      existing = existing.filter((x) => x.name === expense?.name)
-
-      // Delete in Firebase Storage
-      if (Manager.isValid(expense) && Manager.isValid(expense?.imageName)) {
-        await FirebaseStorage.delete(FirebaseStorage.directories.expenseImages, currentUser?.id, expense?.imageName, expense)
-      }
-
-      // Delete Multiple
-      if (existing.length > 1) {
-        AlertManager.confirmAlert('Are you sure you would like to delete ALL expenses with the same details?', "I'm Sure", true, async () => {
-          let existingMultipleExpenses = existing.filter((x) => x.name === expense?.name && x.repeating === true)
-          if (Manager.isValid(existingMultipleExpenses)) {
-            await DB.deleteMultipleRows(DB.tables.expenses, existingMultipleExpenses)
-            AlertManager.successAlert(`All ${expense?.name} expenses have been deleted`)
-          }
-        })
-      }
-
-      // Delete Single
-      else {
-        AlertManager.confirmAlert(`Are you sure you would like to delete the ${activeExpense?.name} expense?`, "I'm Sure", true, async () => {
-          await DB.deleteById(`${DB.tables.expenses}/${currentUser.phone}`, expense?.id)
-        })
-      }
-    }
-  }
-
   const getSecuredExpenses = async () => {
     let allExpenses = await SecurityManager.getExpenses(currentUser)
     allExpenses = DatasetManager.getUniqueArray(allExpenses, 'id')
     const categories = allExpenses.map((x) => x.category).filter((x) => x !== '')
     setCategoriesInUse(categories)
-    setFilterApplied(false)
-    setShowFilterCard(false)
     setExpenses(allExpenses)
     return allExpenses
   }
@@ -174,61 +142,63 @@ export default function ExpenseTracker() {
     const allExpenses = await getSecuredExpenses()
     if (type === 'single') {
       setExpenses(allExpenses.filter((x) => x.repeating === false))
+      setExpenseDateType('single')
     }
     if (type === 'repeating') {
       setExpenses(allExpenses.filter((x) => x.repeating === true))
+      setExpenseDateType('repeating')
     }
     if (type === 'all') {
       setExpenses(allExpenses)
+      setExpenseDateType('all')
     }
-    setShowFilterCard(false)
-    setFilterApplied(true)
   }
 
   const handlePaidStatusSelection = async (status) => {
     const allExpenses = await getSecuredExpenses()
-    setExpenses(allExpenses.filter((x) => x.paidStatus === status))
-    setShowFilterCard(false)
-    setFilterApplied(true)
-  }
 
-  const setToUnpaidAsDefault = async () => {
-    const allExpenses = await getSecuredExpenses()
-    setExpenses(allExpenses.filter((x) => x.paidStatus === 'unpaid'))
-    setShowFilterCard(false)
-    setFilterApplied(true)
+    if (status === 'all') {
+      setExpenses(allExpenses)
+    } else {
+      setExpenses(allExpenses.filter((x) => x.paidStatus === status))
+    }
   }
 
   const handleSortBySelection = (e) => {
     const sortByName = e.target.value
+    const expensesAsNumbers = expenses.map((expense) => {
+      expense.amount = parseInt(expense?.amount)
+      return expense
+    })
+    if (sortByName === SortByTypes.recentlyAdded) {
+      setExpenses(expenses.sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded)).reverse())
+      setSortMethod(SortByTypes.recentlyAdded)
+    }
     if (sortByName === SortByTypes.recentlyAdded) {
       const sortedByDateAsc = DatasetManager.sortByProperty(expenses, 'dateAdded', 'asc', true)
       setExpenses(sortedByDateAsc)
-      setFilterApplied(true)
     }
     if (sortByName === SortByTypes.nearestDueDate) {
       const sortedByDueDateDesc = DatasetManager.sortByProperty(expenses, 'dueDate', 'desc', true)
       setExpenses(sortedByDueDateDesc)
-      setFilterApplied(true)
     }
+    // High -> Low
     if (sortByName === SortByTypes.amountDesc) {
-      const sortByAmountDesc = DatasetManager.sortByProperty(expenses, 'amount', 'desc')
+      const sortByAmountDesc = DatasetManager.sortByProperty(expensesAsNumbers, 'amount', 'desc')
       setExpenses(sortByAmountDesc)
-      setFilterApplied(true)
+      setSortMethod(SortByTypes.amountDesc)
     }
+    // Low -> High
     if (sortByName === SortByTypes.amountAsc) {
-      const sortedByAmountAsc = DatasetManager.sortByProperty(expenses, 'amount', 'asc')
+      const sortedByAmountAsc = DatasetManager.sortByProperty(expensesAsNumbers, 'amount', 'asc')
       setExpenses(sortedByAmountAsc)
-      setFilterApplied(true)
+      setSortMethod(SortByTypes.amountAsc)
     }
-    setShowFilterCard(false)
   }
 
   const handleCategorySelection = async (category) => {
     const expensesByCategory = expenses.filter((x) => x.category === category)
     setExpenses(expensesByCategory)
-    setFilterApplied(true)
-    setShowFilterCard(false)
   }
 
   const setDefaults = () => {
@@ -254,79 +224,15 @@ export default function ExpenseTracker() {
   useEffect(() => {
     onTableChange().then((r) => r)
     setView('details')
-    setToUnpaidAsDefault('unpaid').then((r) => r)
+    const catsAsArray = Object.keys(ExpenseCategories)
+    console.log(catsAsArray)
+    setCategoriesAsArray(catsAsArray)
   }, [])
 
   return (
     <>
       {/* NEW EXPENSE FORM */}
       <NewExpenseForm showCard={showNewExpenseCard} hideCard={(e) => setShowNewExpenseCard(false)} />
-
-      {/* CARDS */}
-      {/* FILTER CARD */}
-      <BottomCard
-        refreshKey={refreshKey}
-        hasSubmitButton={false}
-        className="filter-card"
-        wrapperClass="filter-card"
-        title={'Filter Expenses'}
-        submitIcon={<BsFilter />}
-        showCard={showFilterCard}
-        onClose={() => {
-          setShowFilterCard(false)
-          setRefreshKey(Manager.getUid())
-        }}
-        submitText={'View Expenses'}>
-        <>
-          <div className="filter-row">
-            <Label isBold={true} text={'Expense Type'} classes="mb-5"></Label>
-            <div className="pills type">
-              <div className="pill" onClick={() => handleExpenseTypeSelection('all')}>
-                All
-              </div>
-              <div className="pill" onClick={() => handleExpenseTypeSelection('single')}>
-                Single Date
-              </div>
-              <div className="pill" onClick={() => handleExpenseTypeSelection('repeating')}>
-                Repeating
-              </div>
-            </div>
-          </div>
-          <div className="filter-row">
-            <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
-            <div className="pills type">
-              <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
-                Unpaid
-              </div>
-              <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
-                Paid
-              </div>
-            </div>
-          </div>
-          {categoriesInUse.length > 0 && <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>}
-          <div className="filter-row">
-            <div className="pills category">
-              {ExpenseCategories.sort().map((cat, index) => {
-                return (
-                  <div key={index}>
-                    {categoriesInUse.includes(cat) && (
-                      <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
-                        {cat}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-          <SelectDropdown selectValue={SortByTypes.recentlyAdded} labelText={'Sort by'} onChange={handleSortBySelection}>
-            <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
-            <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
-            <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
-            <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
-          </SelectDropdown>
-        </>
-      </BottomCard>
 
       {/* PAYMENT OPTIONS */}
       <PaymentOptions onClose={() => setShowPaymentOptionsCard(false)} showPaymentOptionsCard={showPaymentOptionsCard} />
@@ -491,7 +397,7 @@ export default function ExpenseTracker() {
                 selectValue={category}
                 onChange={(e) => setCategory(e.target.value)}
                 labelText={'Category'}>
-                {ExpenseCategories.map((cat, index) => {
+                {categoriesAsArray.map((cat, index) => {
                   return (
                     <MenuItem key={index} value={cat}>
                       {cat}
@@ -520,19 +426,6 @@ export default function ExpenseTracker() {
                   </button>
                 )}
 
-                {/* DELETE */}
-                {activeExpense?.ownerPhone === currentUser?.phone && (
-                  <button
-                    onClick={async () => {
-                      await deleteExpense(activeExpense)
-                      setShowDetails(false)
-                    }}
-                    className="default red"
-                    id="delete-button">
-                    Delete
-                  </button>
-                )}
-                {/*{activeExpense?.paidStatus === 'unpaid' && activeExpense?.ownerPhone === currentUser?.phone && (*/}
                 <button className="button default submit blue center" onClick={() => sendReminder(activeExpense)}>
                   Send Reminder
                 </button>
@@ -559,19 +452,62 @@ export default function ExpenseTracker() {
             Bill Payment & Money Transfer Options
           </p>
 
-          {/* FILTER BUTTON */}
-          {!filterApplied && expenses.length > 0 && (
-            <button onClick={() => setShowFilterCard(true)} id="filter-button">
-              Filter <BsFilter />
-            </button>
-          )}
-
-          {/* CLEAR FILTER BUTTON */}
-          {filterApplied && (
-            <button onClick={async () => await getSecuredExpenses()} id="filter-button">
-              Clear Filter <MdOutlineFilterAltOff />
-            </button>
-          )}
+          {/* FILTERS */}
+          <div id="filters">
+            <div className="filter-row">
+              <Label isBold={true} text={'Expense Type'} classes="mb-5"></Label>
+              <div className="pills type">
+                <div className={`${expenseDateType === 'all' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('all')}>
+                  All
+                </div>
+                <div className={`${expenseDateType === 'single' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('single')}>
+                  Single Date
+                </div>
+                <div className={`${expenseDateType === 'repeating' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('repeating')}>
+                  Repeating
+                </div>
+              </div>
+            </div>
+            <div className="filter-row">
+              <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
+              <div className="pills type">
+                <div className="pill" onClick={() => handlePaidStatusSelection('all')}>
+                  All
+                </div>
+                <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
+                  Unpaid
+                </div>
+                <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
+                  Paid
+                </div>
+              </div>
+            </div>
+            {categoriesInUse.length > 0 && <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>}
+            <div className="filter-row">
+              <div className="pills category">
+                {Object.keys(ExpenseCategories)
+                  .sort()
+                  .map((cat, index) => {
+                    return (
+                      <div key={index}>
+                        {categoriesInUse.includes(cat) && (
+                          <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
+                            {cat}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+              </div>
+            </div>
+            <Label text={'Sorting'} />
+            <SelectDropdown selectValue={sortMethod} labelText={'Sort by'} onChange={handleSortBySelection}>
+              <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
+              <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
+              <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
+              <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
+            </SelectDropdown>
+          </div>
 
           {/* LOOP EXPENSES */}
           <div id="expenses-container">
@@ -625,7 +561,7 @@ export default function ExpenseTracker() {
           </div>
         </Fade>
       </div>
-      {!showNewExpenseCard && !showPaymentOptionsCard && !showFilterCard && !showDetails && (
+      {!showNewExpenseCard && !showPaymentOptionsCard && !showDetails && (
         <NavBar navbarClass={'child-info'}>
           <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />
         </NavBar>

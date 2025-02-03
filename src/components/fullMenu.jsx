@@ -72,14 +72,14 @@ export default function FullMenu() {
       hasSubmitButton={false}>
       <div id="full-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
         {/* ADMIN DASHBOARD */}
-        {currentUser?.email === 'kmarmet1@gmail.com' && (
-          <div
-            className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
-            onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>
-            <PiToolboxDuotone />
-            <p>Admin Dashboard</p>
-          </div>
-        )}
+        {/*{currentUser?.email === 'kmarmet1@gmail.com' && (*/}
+        {/*  <div*/}
+        {/*    className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}*/}
+        {/*    onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>*/}
+        {/*    <PiToolboxDuotone />*/}
+        {/*    <p>Admin Dashboard</p>*/}
+        {/*  </div>*/}
+        {/*)}*/}
         {/* CALENDAR */}
         <div
           className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
@@ -175,13 +175,6 @@ export default function FullMenu() {
             </div>
           </>
         )}
-        {/* ACCOUNT */}
-        <div
-          className={`menu-item account ${currentScreen === ScreenNames.account ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.account)}>
-          <MdOutlineManageAccounts />
-          <p>Account</p>
-        </div>
 
         {/* RECORDS */}
         <div
@@ -189,6 +182,14 @@ export default function FullMenu() {
           onClick={() => changeCurrentScreen(ScreenNames.records)}>
           <PiArchiveDuotone />
           <p>Records</p>
+        </div>
+
+        {/* ACCOUNT */}
+        <div
+          className={`menu-item account ${currentScreen === ScreenNames.account ? 'active' : ''}`}
+          onClick={() => changeCurrentScreen(ScreenNames.account)}>
+          <MdOutlineManageAccounts />
+          <p>Account</p>
         </div>
 
         {/* SETTINGS */}

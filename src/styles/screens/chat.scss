@@ -579,7 +579,7 @@
 
   .form {
     width: 100%;
-    padding: 15px 15px 50px 15px;
+    padding: 15px 15px 60px 15px;
     z-index: 9999;
     position: absolute;
     bottom: 0;
@@ -598,6 +598,7 @@
       right: 0;
       display: flex;
       align-items: center;
+      border: 0;
       svg {
         font-size: 18px;
         margin-left: 8px;

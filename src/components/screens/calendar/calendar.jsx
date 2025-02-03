@@ -406,64 +406,62 @@ export default function EventCalendar() {
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme} `}>
         <p className="screen-title">Calendar</p>
-        <Fade direction={'up'} className={'page-container-fade-wrapper'} duration={1000} triggerOnce={true} cascade={true}>
-          {/* STATIC CALENDAR */}
-          <div id="static-calendar" className={theme}>
-            <StaticDatePicker
-              showDaysOutsideCurrentMonth={true}
-              defaultValue={moment(selectedDate)}
-              views={['month', 'day']}
-              minDate={moment(`${moment().year()}-01-01`)}
-              maxDate={moment(`${moment().year()}-12-31`)}
-              onMonthChange={async (month) => {
-                await getSecuredEvents()
-              }}
-              onChange={async (day) => {
-                setSelectedDate(day)
-                await getSecuredEvents(day).then((r) => r)
-              }}
-              slotProps={{
-                actionBar: {
-                  actions: ['today'],
-                },
-              }}
-            />
-          </div>
+        {/* STATIC CALENDAR */}
+        <div id="static-calendar" className={theme}>
+          <StaticDatePicker
+            showDaysOutsideCurrentMonth={true}
+            defaultValue={moment(selectedDate)}
+            views={['month', 'day']}
+            minDate={moment(`${moment().year()}-01-01`)}
+            maxDate={moment(`${moment().year()}-12-31`)}
+            onMonthChange={async (month) => {
+              await getSecuredEvents()
+            }}
+            onChange={async (day) => {
+              setSelectedDate(day)
+              await getSecuredEvents(day).then((r) => r)
+            }}
+            slotProps={{
+              actionBar: {
+                actions: ['today'],
+              },
+            }}
+          />
+        </div>
 
-          {/* LEGEND */}
-          <Legend />
+        {/* LEGEND */}
+        <Legend />
 
-          {/* BELOW CALENDAR BUTTONS */}
-          {!showHolidays && !showSearchCard && (
-            <div id="below-calendar" className={`${theme} mt-10 flex`}>
-              {/* LEGEND BUTTON */}
-              <div className="flex" id="legend-wrapper" onClick={() => setShowLegend(true)}>
-                <span className="dot currentUser"></span>
-                <span className="dot coparent"></span>
-                <span className="dot standard"></span>
-                <p id="legend-button">Legend</p>
-              </div>
-
-              {/* SEARCH BUTTON */}
-              <p id="search-button">Search</p>
-
-              {/* HOLIDAY BUTTON */}
-              <p id="holidays-button">Holidays</p>
+        {/* BELOW CALENDAR BUTTONS */}
+        {!showHolidays && !showSearchCard && (
+          <div id="below-calendar" className={`${theme} mt-10 flex`}>
+            {/* LEGEND BUTTON */}
+            <div className="flex" id="legend-wrapper" onClick={() => setShowLegend(true)}>
+              <span className="dot currentUser"></span>
+              <span className="dot coparent"></span>
+              <span className="dot standard"></span>
+              <p id="legend-button">Legend</p>
             </div>
-          )}
 
-          {/* CONTENT WITH PADDING */}
-          <div className="with-padding">
-            {/* MAP/LOOP EVENTS */}
-            <CalendarEvents
-              eventsOfActiveDay={eventsOfActiveDay}
-              setEventToEdit={(ev) => {
-                setEventToEdit(ev)
-                setShowEditCard(true)
-              }}
-            />
+            {/* SEARCH BUTTON */}
+            <p id="search-button">Search</p>
+
+            {/* HOLIDAY BUTTON */}
+            <p id="holidays-button">Holidays</p>
           </div>
-        </Fade>
+        )}
+
+        {/* CONTENT WITH PADDING */}
+        <div className="with-padding">
+          {/* MAP/LOOP EVENTS */}
+          <CalendarEvents
+            eventsOfActiveDay={eventsOfActiveDay}
+            setEventToEdit={(ev) => {
+              setEventToEdit(ev)
+              setShowEditCard(true)
+            }}
+          />
+        </div>
       </div>
 
       {/* DESKTOP SIDEBAR */}

@@ -21,10 +21,12 @@
         <item url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/domManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/emailManager.js" />
+        <item url="file://$PROJECT_DIR$/src/managers/expenseManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/imageManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/logManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/objectManager.js" />
+        <item url="file://$PROJECT_DIR$/src/managers/recordsManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/smsManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/stringManager.js" />
@@ -34,6 +36,7 @@
         <item url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
         <item url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
         <item url="file://$PROJECT_DIR$/src/models/chat/chatRecoveryRequest.js" />
+        <item url="file://$PROJECT_DIR$/src/models/chat/chatThread.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/child.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/general.js" />
@@ -74,10 +77,12 @@
       <root url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/domManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/emailManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/expenseManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/imageManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/logManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/objectManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/recordsManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/smsManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/stringManager.js" />

@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import moment from 'moment'
-import 'rsuite/dist/rsuite.min.css'
 import ScreenNames from '/src/constants/screenNames'
 import globalState from '/src/context.js'
 import DB from '/src/database/DB'
@@ -379,7 +378,7 @@ const Chat = () => {
                     timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
                   }
                   return (
-                    <Fade direction={'left'} duration={900} className={'message-fade-wrapper '}>
+                    <Fade direction={'up'} duration={900} className={'message-fade-wrapper'}>
                       <div className="flex">
                         <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
                           {message.message}

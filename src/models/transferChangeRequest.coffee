@@ -3,7 +3,8 @@ import Manager from "../managers/manager"
 export default class TransferChangeRequest
   constructor: (
     @id = Manager.getUid()
-    @date = ''
+    @startDate = ''
+    @endDate = ''
     @time = ''
     @ownerPhone = ''
     @location = ''
