@@ -225,7 +225,6 @@ export default function ExpenseTracker() {
     onTableChange().then((r) => r)
     setView('details')
     const catsAsArray = Object.keys(ExpenseCategories)
-    console.log(catsAsArray)
     setCategoriesAsArray(catsAsArray)
   }, [])
 
@@ -485,19 +484,17 @@ export default function ExpenseTracker() {
             {categoriesInUse.length > 0 && <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>}
             <div className="filter-row">
               <div className="pills category">
-                {Object.keys(ExpenseCategories)
-                  .sort()
-                  .map((cat, index) => {
-                    return (
-                      <div key={index}>
-                        {categoriesInUse.includes(cat) && (
-                          <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
-                            {cat}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
+                {categoriesAsArray.sort().map((cat, index) => {
+                  return (
+                    <div key={index}>
+                      {categoriesInUse.includes(cat) && (
+                        <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
+                          {cat}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             </div>
             <Label text={'Sorting'} />

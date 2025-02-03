@@ -1,6 +1,11 @@
 @import '../mixins';
 
 #external-overrides {
+  #visitation-container {
+    .holiday-checkboxes-wrapper {
+      margin-top: 25px;
+    }
+  }
   #coparenting-setup-container {
     z-index: 1000000;
 

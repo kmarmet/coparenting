@@ -367,7 +367,7 @@ export default function Visitation() {
               />
 
               {/* LOCATION */}
-              <InputWrapper wrapperClasses="mt-15 mb-15" inputType={'location'} labelText={'Preferred Transfer Location (with biological co-parent)'}>
+              <InputWrapper wrapperClasses="mt-15 mb-15" inputType={'location'} labelText={'Preferred Transfer Location'}>
                 <Autocomplete
                   defaultValue={currentUser?.defaultTransferLocation}
                   placeholder={''}

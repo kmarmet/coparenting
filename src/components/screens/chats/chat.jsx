@@ -378,7 +378,7 @@ const Chat = () => {
                     timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
                   }
                   return (
-                    <Fade direction={'up'} duration={900} className={'message-fade-wrapper'}>
+                    <Fade direction={'left'} duration={900} className={'message-fade-wrapper'}>
                       <div className="flex">
                         <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
                           {message.message}

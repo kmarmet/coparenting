@@ -2,7 +2,7 @@ import Manager from '../../managers/manager'
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import { formatNameFirstNameOnly, stringHasNumbers } from '../../globalFunctions'
-import { FaCheck } from 'react-icons/fa6'
+import { IoCloseOutline } from 'react-icons/io5'
 import DB_UserScoped from '../../database/db_userScoped'
 import ScreenNames from '../../constants/screenNames'
 import Label from './label.jsx'
@@ -73,7 +73,7 @@ export default function CheckboxGroup({
                     className={`pill ${pillClass} ${Manager.isValid(defaultLabels) && defaultLabels.includes(label) ? 'active' : ''}`}
                     onClick={(e) => onCheck(e)}>
                     {label}
-                    <FaCheck />
+                    <IoCloseOutline />
                   </span>
                 )
               })}

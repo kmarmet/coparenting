@@ -64,7 +64,7 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  font-weight: $fwMediumBold;
+  font-weight: $fwRegular;
   padding-bottom: 10px;
   text-align: center;
   opacity: 0.85;
@@ -165,13 +165,12 @@
   }
 }
 @mixin fontType() {
-  font-weight: $fwRegular;
+  font-weight: $fwLight;
   font-size: 16px;
   line-height: 1.4;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', serif;
   font-optical-sizing: auto;
   font-style: normal;
-  letter-spacing: 0.6px;
 }
 @mixin lengthSelection {
   .action-pills {
@@ -381,7 +380,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 500;
+  font-weight: $fwRegular;
   color: white;
   line-height: 1;
   @include buttonPress;
@@ -934,6 +933,7 @@
   gap: 15px;
   margin-bottom: 15px;
   border-bottom: 1px solid $lightBorder;
+  width: 100%;
 
   * {
     line-height: 1;
@@ -947,11 +947,12 @@
     opacity: 0.65;
     padding-bottom: 4px;
     @include hover;
+    width: 50%;
 
     &.active {
       padding-bottom: 3px;
       font-size: 16px;
-      color: $purple;
+      color: $darkPurple;
       font-weight: $fwMedium;
       opacity: 1;
       &:after {
@@ -959,8 +960,8 @@
         position: relative;
         top: 4px;
         display: block;
-        border-bottom: 1px solid $purple;
-        background: $purple;
+        border-bottom: 1px solid $darkPurple;
+        background: $darkPurple;
       }
     }
   }
@@ -1107,9 +1108,7 @@
     width: 100%;
     line-height: 1;
     font-size: 14px;
-    font-weight: $fwRegular;
     color: black;
-    opacity: 0.85;
 
     &.calendar {
       margin-left: 20px;
@@ -1180,17 +1179,10 @@
   }
 }
 @mixin label {
-  margin-bottom: 5px;
+  margin-bottom: 0;
   label {
-    //    background: #7663e1;
-
-    //    border-left: 3px solid #4c3694;
-    //    padding: 3px 3px 3px 8px;
-    //    border-radius: 0 $borderRadius $borderRadius 0;
     span:not(.asterisk) {
-      font-weight: $fwMedium;
-      //      color: white;
-      //      opacity: 0.6;
+      font-weight: $fwRegular;
       margin: 0;
       letter-spacing: 0.4px;
       line-height: 1.3;
@@ -1242,7 +1234,9 @@
     padding: 0 10px;
     z-index: 9;
     span {
-      color: $mainBlue;
+      color: #5b84ff;
+      font-weight: $fwRegular;
+      opacity: 1;
       text-transform: uppercase;
       font-size: 12px;
       .asterisk {
@@ -1539,6 +1533,8 @@
   #label-wrapper {
     label {
       span {
+        color: $mainBlue;
+        font-size: 16px;
       }
     }
   }
@@ -1595,12 +1591,12 @@
       white-space: nowrap;
       mask-image: linear-gradient(to right, black 95%, transparent 100%);
       min-height: 30px;
-      padding: 5px 0;
     }
 
     .pill {
-      color: rgba(0, 0, 0, 0.75);
-      background: $bestGreyForWhite;
+      color: $darkPurple;
+      background: transparent;
+      border: 1px solid $darkPurple;
       border-radius: 50px;
       text-align: center;
       font-weight: $fwRegular;
@@ -1632,17 +1628,19 @@
       }
 
       &.active {
-        background: $purple;
-        color: white;
+        background: $lightPurple;
+        color: $darkPurple;
+        border: 1px solid $darkPurple;
         font-weight: $fwMedium;
         line-height: 1;
-        padding: 6.5px 15px;
+        padding: 8px 15px;
         text-align: center;
         transition: all 0.3s ease-in-out;
 
         svg {
           width: auto;
           position: unset;
+          transform: scale(1.5);
           margin-left: 5px;
         }
       }
@@ -2570,6 +2568,7 @@
       }
     }
   }
+
   /*#region  CARDS BY CLASS*/
   // NEW CALENDAR EVENT
   &.new-calendar-event {
@@ -2650,7 +2649,8 @@
   }
 
   // EDIT CALENDAR EVENT
-  &.edit-calendar-event {
+  &.edit-cal-event-container {
+    width: 100%;
     #relative-wrapper {
       textarea {
         height: 150px;
@@ -2858,6 +2858,15 @@
   &.full-menu {
     background: $lightBg;
     min-height: 90vh;
+
+    #relative-wrapper {
+      overflow: auto;
+      height: 100vh;
+      #content {
+        padding-top: 0;
+        max-height: unset;
+      }
+    }
 
     #title-wrapper {
       background-color: $lightBg !important;
@@ -3124,9 +3133,11 @@
 
   #relative-wrapper {
     position: relative;
-    padding: 0 20px 200px 20px;
-    overflow-x: hidden;
-    max-height: calc(100% - 80px);
+    padding: 0 15px;
+    overflow: hidden;
+    height: 100%;
+    min-height: 70vh;
+
     #subtitle {
       font-size: 18px;
       opacity: 0.85;
@@ -3139,7 +3150,15 @@
     }
 
     #content {
-      padding-top: 15px;
+      max-height: calc(100% - 130px);
+      padding: 15px 0 100px 0;
+      overflow: auto;
+      overflow-x: hidden;
+      position: absolute;
+      top: 45px;
+      height: 100%;
+      bottom: 0;
+      width: calc(100% - 30px);
     }
 
     #title-wrapper {

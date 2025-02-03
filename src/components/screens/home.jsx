@@ -18,8 +18,9 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import AppManager from '/src/managers/appManager.js'
 import HomescreenSections from '/src/models/homescreenSections.js'
-import { IoIosArrowUp } from 'react-icons/io'
+import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
+import { TbArrowBadgeRight } from 'react-icons/tb'
 
 export default function Home() {
   const { state, setState } = useContext(globalState)
@@ -72,6 +73,19 @@ export default function Home() {
   }
 
   useEffect(() => {
+    const scrollDownButton = document.querySelector('#scroll-down-button-wrapper')
+    const scrollWrapper = document.querySelector('#wrapper')
+
+    if (scrollDownButton) {
+      scrollDownButton.addEventListener('click', () => {
+        const section = document.querySelector('[data-section="1"]')
+        scrollWrapper.scrollBy({
+          top: screen.height - 100,
+          left: 0,
+          behavior: 'smooth',
+        })
+      })
+    }
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         // console.log(user)
@@ -104,6 +118,9 @@ export default function Home() {
       {/* ABOVE FOLD WRAPPER */}
       <div id="scroll-to-top-button-wrapper" className="hide" onClick={scrollToTop}>
         <IoIosArrowUp id={'scroll-to-top-button'} />
+      </div>
+      <div id="scroll-down-button-wrapper">
+        <IoIosArrowDown id={'scroll-down-button'} />
       </div>
       <div id="above-fold-wrapper" className="section above-fold">
         <Fade>
@@ -151,7 +168,7 @@ export default function Home() {
         {/* BELOW FOLD */}
         <div id="below-fold-wrapper">
           <Fade direction={'up'} duration={1000} triggerOnce={true}>
-            <div className="flex boxes section">
+            <div className="flex boxes section" data-section={1}>
               <div className="text-box">
                 <PiCalendarDotsDuotone />
                 <p className="text-box-title"> Streamline your Parenting Schedule </p>
@@ -173,8 +190,9 @@ export default function Home() {
             </div>
           </Fade>
 
+          {/* UNIQUE FEATURES */}
           <Fade direction={'up'} duration={1000} triggerOnce={true}>
-            <div className="section full-width-box unique-features">
+            <div className="section full-width-box unique-features" data-section={2}>
               <div id="text-content">
                 <p className="title">
                   Why <span>Choose</span> <span>Peace</span>ful Co-Parenting?
@@ -186,9 +204,7 @@ export default function Home() {
                 <p id="unique-features-title">
                   <b>Features Exclusive to Peaceful Co-Parenting</b>
                   <br />
-                  <span>{DomManager.tapOrClick(true)} any feature to see exactly how it will improve your co-parenting experience. </span>
-                  <br />
-                  <span>{DomManager.tapOrClick(true)} again to close the feature's details.</span>
+                  <span>{DomManager.tapOrClick(true)} any feature to view or hide details</span>
                 </p>
               </div>
 
@@ -209,7 +225,7 @@ export default function Home() {
                   <div className="content">
                     <ul>
                       <li className="list-title">
-                        Simple (2-step) Installation
+                        <TbArrowBadgeRight /> Simple (2-step) Installation
                         <ul>
                           <li>You do not have to us an app store to install the application</li>
                           <li>
@@ -263,7 +279,9 @@ export default function Home() {
                       <li className="list-title">
                         Fair Pricing that Everyone can Afford
                         <ul>
-                          <li>$4.99 per month</li>
+                          <li>
+                            <b>Only $4.99 per month!</b>
+                          </li>
                           <li>
                             For example: The OurFamilyWizard application costs $150 per year - <b>PER co-parent/user!</b>
                             <ul>
@@ -558,28 +576,7 @@ export default function Home() {
             </div>
           </Fade>
 
-          <Fade direction={'up'} duration={1000} triggerOnce={true}>
-            <div id="collaboration" className="section text-box flex">
-              <FaRegHandshake />
-              <div className="text-wrapper">
-                <p className="title">Collaborate on Decisions that Matter Most</p>
-                <p className="text subtitle">
-                  From medical appointments to school choices, collaborate effectively through our platform’s decision-making tools, keeping your
-                  child’s best interests at the forefront.
-                </p>
-                <p className="text">
-                  Co-parenting peacefully requires a lot of tools and resources. With that in mind, everything you need can be found in our menu - no
-                  time spent looking for anything!
-                </p>
-                <p>
-                  Our mission is to provide a supportive space where you and your co-parent can reduce stress and focus on creating a harmonious
-                  environment for your children.
-                </p>
-              </div>
-              <LazyLoadImage src={require('/src/img/homepage/menu.png')} alt="Menu" effect="blur" delay={1000} />
-            </div>
-          </Fade>
-
+          {/* EXPENSES */}
           <Fade direction={'up'} duration={1000} triggerOnce={true}>
             <div id="expenses-wrapper" className="section expenses">
               <PiMoneyWavyDuotone />
@@ -595,6 +592,49 @@ export default function Home() {
             </div>
           </Fade>
 
+          {/* COLLABORATION */}
+          <Fade direction={'up'} duration={1000} triggerOnce={true}>
+            <div id="collaboration" className="section text-box flex">
+              <FaRegHandshake />
+              <div className="text-wrapper">
+                <p className="title">Collaborate on Decisions that Matter Most</p>
+                <p className="text">
+                  From medical appointments to school choices, collaborate effectively through our platform’s decision-making tools, keeping your
+                  child’s best interests at the forefront.
+                </p>
+                <p className="text">
+                  Co-parenting peacefully requires a lot of tools and resources. With that in mind, everything you need can be found in our menu - no
+                  time spent looking for anything!
+                </p>
+                <p className="text">
+                  Our mission is to provide a supportive space where you and your co-parent can reduce stress and focus on creating a harmonious
+                  environment for your children.
+                </p>
+              </div>
+              <LazyLoadImage src={require('/src/img/homepage/menu.png')} alt="Menu" effect="blur" delay={1000} />
+            </div>
+          </Fade>
+
+          {/* SECURITY & PRIVACY */}
+          <Fade direction={'up'} duration={1000} triggerOnce={true}>
+            <div className="box section security-and-privacy with-bg">
+              <AiTwotoneSafetyCertificate />
+              <div className="content">
+                <p className="title">Security & Privacy</p>
+                <p className="text subtitle center">Transparency in Shared Financial Responsibilities</p>
+                <p className="text">
+                  <b>Custom Sharing: </b> Keep control over what co-parents see by selecting the "share with" checkbox for events, expenses , and
+                  important information.
+                </p>
+                <p className="text">
+                  <b>Enhanced Protection: </b> Enjoy peace of mind with SMS code verification for password recovery, and secure registration for both
+                  parents and children.
+                </p>
+              </div>
+            </div>
+          </Fade>
+
+          {/* COMPATIBLE */}
           <Fade direction={'up'} duration={1000} triggerOnce={true}>
             <div className="section text-box all-devices" id="all-devices">
               <TbSunMoon />
@@ -635,24 +675,6 @@ export default function Home() {
             </div>
           </Fade>
 
-          {/* FOOTER WRAPPER */}
-          <div id="footer-wrapper">
-            <Fade direction={'up'} duration={1000} triggerOnce={true}>
-              <div className="box section security-and-privacy with-bg">
-                <AiTwotoneSafetyCertificate />
-                <p className="title">Security & Privacy</p>
-                <p className="text subtitle">Transparency in Shared Financial Responsibilities</p>
-                <p className="text">
-                  <b>Custom Sharing: </b> Keep control over what co-parents see by selecting the "share with" checkbox for events, expenses , and
-                  important information.
-                </p>
-                <p className="text">
-                  <b>Enhanced Protection: </b> Enjoy peace of mind with SMS code verification for password recovery, and secure registration for both
-                  parents and children.
-                </p>
-              </div>
-            </Fade>
-          </div>
           <Fade direction={'up'} duration={1000} triggerOnce={true}>
             <div className="flex" id="double">
               <div className="text-wrapper text-only box">

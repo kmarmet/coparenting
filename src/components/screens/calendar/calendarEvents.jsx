@@ -58,7 +58,7 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
   return (
     <>
       <div className="events">
-        <Fade direction={'up'} delay={0} duration={800} className={'calendar-events-fade-wrapper'} cascade={false} triggerOnce={false}>
+        <Fade direction={'up'} delay={0} duration={800} className={'calendar-events-fade-wrapper'} cascade={false} triggerOnce={true}>
           {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">No events on this day</p>}
           {Manager.isValid(eventsOfActiveDay) &&
             eventsOfActiveDay.map((event, index) => {

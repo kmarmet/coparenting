@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import Label from './label'
 import DB from '../../database/DB'
-import { FaCheck } from 'react-icons/fa6'
+import { IoCloseOutline } from 'react-icons/io5'
 import StringManager from '../../managers/stringManager.coffee'
 
 export default function ShareWithCheckboxes({
@@ -85,8 +85,8 @@ export default function ShareWithCheckboxes({
                     data-phone={phone ? phone : ''}
                     className={`flex ${containerClass} ${defaultActiveShareWith.includes(phone) ? 'active' : ''}`}
                     onClick={onCheck}>
-                    <span className="pill">
-                      {StringManager.formatNameFirstNameOnly(name)} <FaCheck />
+                    <span className="pill share-with">
+                      {StringManager.formatNameFirstNameOnly(name)} <IoCloseOutline />
                     </span>
                   </div>
                 )

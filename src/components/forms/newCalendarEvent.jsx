@@ -518,7 +518,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {/* REMINDER */}
           {!isAllDay && (
             <>
-              <div className="share-with-container">
+              <div>
                 <Accordion id={'checkboxes'} expanded={showReminders}>
                   <AccordionSummary>
                     <div className="flex">
@@ -548,7 +548,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           )}
 
           {/* IS VISITATION? */}
-          <div className="share-with-container">
+          <div>
             <div className="flex">
               <p>Visitation Event</p>
               <Toggle
@@ -563,7 +563,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.isValid(currentUser?.children) && (
-            <div className="share-with-container">
+            <div>
               <Accordion id={'checkboxes'} expanded={includeChildren}>
                 <AccordionSummary>
                   <div className="flex">
@@ -593,7 +593,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
             <>
               {/* REPEATING */}
-              <div className="share-with-container" id="repeating-container">
+              <div id="repeating-container">
                 <Accordion id={'checkboxes'} expanded={eventIsRepeating}>
                   <AccordionSummary>
                     <div className="flex">
@@ -631,7 +631,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               </div>
 
               {/* CLONE */}
-              <div className="share-with-container">
+              <div>
                 <div className="flex">
                   <p>Copy Event to other Dates</p>
                   <Toggle

@@ -300,14 +300,11 @@
 
     p {
       color: black;
-      opacity: 0.75;
-      letter-spacing: 0.6px;
     }
 
     b {
-      font-weight: $fwBold;
+      font-weight: $fwRegular;
       color: black;
-      opacity: 0.85;
     }
     /*#endregion ELEMENT DEFAULTS*/
 
@@ -414,10 +411,6 @@
     /*#region  CLASS/ID DEFAULTS*/
     .green {
       color: $green;
-    }
-
-    .low-opacity-text {
-      opacity: 0.85;
     }
 
     .views-wrapper {
@@ -719,7 +712,7 @@
       width: 100%;
       font-size: 25px;
       opacity: 1;
-      font-weight: $fwBold;
+      font-weight: $fwLight;
       line-height: 1.2;
     }
 

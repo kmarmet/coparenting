@@ -3,7 +3,7 @@ import globalState from '../../context'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { CgClose } from 'react-icons/cg'
 import { useSwipeable } from 'react-swipeable'
-import DomManager from '../../managers/domManager.coffee'
+import { Fade } from 'react-awesome-reveal'
 import Manager from '../../managers/manager.js'
 
 export default function BottomCard({
