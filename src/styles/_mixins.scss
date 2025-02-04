@@ -298,6 +298,13 @@
 /*#region  FORM*/
 @mixin form {
   &.transfer-change {
+    #checkbox-group {
+      margin-bottom: 25px;
+
+      &.sending-to {
+        margin-top: 85px;
+      }
+    }
     input {
       &:first-child {
         margin-bottom: 0;
@@ -311,13 +318,13 @@
       display: block;
       width: 100%;
       border: 0;
-      background-color: transparent !important;
       border-radius: 0;
       outline: 0;
       font-weight: 400;
       padding-left: 0;
       min-height: 25px;
-      opacity: 0.8;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
     }
   }
 
@@ -953,7 +960,7 @@
       padding-bottom: 3px;
       font-size: 16px;
       color: $darkPurple;
-      font-weight: $fwMedium;
+      font-weight: $fwRegular;
       opacity: 1;
       &:after {
         content: '';
@@ -1049,6 +1056,11 @@
   * {
     line-height: 1;
   }
+  .at-symbol {
+    font-size: 12px;
+    position: relative;
+    bottom: 2px;
+  }
   .divider {
     padding: 0 5px;
     opacity: 0.7;
@@ -1077,7 +1089,7 @@
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 12px;
-    font-weight: $fwMedium;
+    font-weight: $fwLight;
     display: flex;
     align-items: center;
     line-height: 1;
@@ -1109,6 +1121,7 @@
     line-height: 1;
     font-size: 14px;
     color: black;
+    opacity: 0.9;
 
     &.calendar {
       margin-left: 20px;
@@ -1135,7 +1148,7 @@
     span,
     p {
       color: $mainBlue;
-      font-size: 15px;
+      font-size: 13px;
       font-weight: $fwMedium;
     }
   }
@@ -1190,7 +1203,8 @@
     }
     &.bold {
       span {
-        font-weight: bold;
+        font-weight: $fwMedium;
+        opacity: 0.9;
       }
     }
   }
@@ -1528,13 +1542,16 @@
 @mixin checkboxGroup {
   padding: 0;
   display: block;
-  margin-bottom: 10px;
 
   #label-wrapper {
     label {
       span {
         color: $mainBlue;
         font-size: 16px;
+
+        &.asterisk {
+          color: $red;
+        }
       }
     }
   }
@@ -1590,7 +1607,13 @@
       overflow: auto;
       white-space: nowrap;
       mask-image: linear-gradient(to right, black 95%, transparent 100%);
-      min-height: 30px;
+      max-height: unset;
+
+      .pill {
+        &.active {
+          padding: 10px 15px;
+        }
+      }
     }
 
     .pill {
@@ -1601,7 +1624,7 @@
       text-align: center;
       font-weight: $fwRegular;
       line-height: 1;
-      padding: 6.5px 15px;
+      padding: 8px 15px;
       font-size: 12px;
       align-items: center;
       justify-content: center;
@@ -1628,20 +1651,22 @@
       }
 
       &.active {
-        background: $lightPurple;
-        color: $darkPurple;
+        background: $darkPurple;
+        color: white;
         border: 1px solid $darkPurple;
         font-weight: $fwMedium;
         line-height: 1;
-        padding: 8px 15px;
+        padding: 10px 15px;
         text-align: center;
         transition: all 0.3s ease-in-out;
 
         svg {
           width: auto;
-          position: unset;
+          position: relative;
+          top: 0;
           transform: scale(1.5);
           margin-left: 5px;
+          opacity: 0.9;
         }
       }
     }
@@ -2423,14 +2448,56 @@
   }
 
   #details {
-    a {
-      max-width: 90%;
-      word-break: break-all;
-      font-size: 14px;
-      opacity: 0.85;
+    .flex {
+      gap: 10px;
+      align-items: center;
+      //          margin-bottom: 10px;
+      justify-content: space-between;
+      border-bottom: 1px solid $lightBorder;
+      padding: 12px 0;
+      margin-bottom: 0;
+
+      p,
+      b {
+        line-height: 1;
+        margin: 0;
+      }
+
+      &.no-gap {
+        gap: 0;
+        p {
+          opacity: 1;
+        }
+      }
     }
-    .low-opacity-text {
-      font-size: 15px;
+
+    #children {
+      .divider {
+        padding: 0 5px;
+        color: $lightBorder;
+      }
+    }
+    a {
+      &.nav-detail {
+        display: flex;
+        font-size: 14px;
+        align-items: center;
+        margin: 15px 0;
+        text-align: right;
+        width: 100%;
+        justify-content: flex-end;
+        text-decoration: none;
+        color: $linkColor;
+        max-width: unset;
+        &:visited {
+          color: $linkColor;
+        }
+        svg {
+          font-size: 20px;
+          margin-right: 5px;
+          color: $linkColor;
+        }
+      }
     }
   }
 
@@ -2443,19 +2510,6 @@
   .divider {
     padding: 0 5px;
     opacity: 0.6;
-  }
-  .nav-detail {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    text-decoration: none;
-    &:visited {
-      color: $linkColor;
-    }
-    svg {
-      font-size: 20px;
-      margin-right: 5px;
-    }
   }
 
   // BUTTONS
@@ -2527,7 +2581,7 @@
         border: 0;
         left: 0;
         color: $mainBlue;
-        font-weight: $fwBold;
+        font-weight: $fwMedium;
         font-size: 17px;
 
         svg {
@@ -2649,40 +2703,12 @@
   }
 
   // EDIT CALENDAR EVENT
-  &.edit-cal-event-container {
+  &.edit-calendar-event {
     width: 100%;
     #relative-wrapper {
       textarea {
         height: 150px;
         max-height: 150px;
-      }
-
-      #details {
-        .flex {
-          gap: 10px;
-          align-items: center;
-          margin-bottom: 10px;
-
-          p,
-          b {
-            line-height: 1;
-            margin: 0;
-          }
-
-          &.no-gap {
-            gap: 0;
-            p {
-              opacity: 1;
-            }
-          }
-        }
-
-        #children {
-          .divider {
-            padding: 0 5px;
-            color: $lightBorder;
-          }
-        }
       }
     }
   }
@@ -2717,6 +2743,12 @@
         font-size: 16px;
         font-weight: $fwRegular;
         line-height: 1;
+        display: flex;
+        align-items: center;
+        b {
+          min-width: 100px;
+          display: block;
+        }
       }
     }
 
@@ -3159,6 +3191,24 @@
       height: 100%;
       bottom: 0;
       width: calc(100% - 30px);
+
+      #details {
+        .flex {
+          b {
+            min-width: 120px;
+            line-height: 1;
+          }
+          span {
+            text-align: right;
+          }
+
+          &.no-gap {
+            span {
+              padding-top: 5px;
+            }
+          }
+        }
+      }
     }
 
     #title-wrapper {

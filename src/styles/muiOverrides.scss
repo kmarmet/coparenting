@@ -9,6 +9,12 @@
       font-size: 20px !important;
     }
   }
+
+  .MuiCollapse-entered {
+    display: flex !important;
+    margin-bottom: 15px;
+    align-items: center !important;
+  }
   // EVENT ROW
   .event-row {
     .text {
@@ -222,6 +228,11 @@
 
       .MuiAccordion-heading {
         max-height: 40px;
+        .react-toggle {
+          margin-left: auto !important;
+          position: relative;
+          right: -10px;
+        }
       }
 
       .MuiAccordionDetails-root {
@@ -343,7 +354,7 @@
     &.payday-emoji {
       color: $green !important;
       font-size: 14px;
-      font-weight: bold !important;
+      vertical-align: super !important;
     }
   }
 
@@ -488,7 +499,7 @@
         border-radius: $borderRadius !important;
         margin: 0 auto !important;
         background: #fcfcfc !important;
-        width: 200px !important;
+        width: calc(100vw - 30px) !important;
         border: 1px solid $lightBorder !important;
         padding: 10px 0 40px 10px !important;
 
@@ -572,7 +583,7 @@
     border-radius: 0;
 
     .MuiPickersCalendarHeader-label {
-      font-weight: $fwMedium !important;
+      font-weight: $fwLight !important;
       opacity: 0.8;
     }
     .MuiPickersCalendarHeader-switchViewIcon {
@@ -657,12 +668,13 @@
     }
   }
   .MuiFormControl-root {
-    border-bottom: 1px solid #e3e8ee;
+    //    border-bottom: 1px solid #e3e8ee;
     width: 100%;
     position: relative;
     top: -25px;
     .MuiInputBase-input {
-      width: 90% !important;
+      width: calc(100% - 20px) !important;
+      padding-top: 5px !important;
     }
     &.MuiFormControl-fullWidth {
       border: 0;

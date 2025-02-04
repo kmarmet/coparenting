@@ -57,12 +57,10 @@ function InputWrapper({
       )}
 
       {/* DATE/LOCATION */}
-      {noInputTypes.includes(inputType) && (
-        <>
-          {useNativeDate && <input value={moment(defaultValue).format('yyyy-MM-DD')} type="date" onChange={onChange} />}
-          {!useNativeDate && <div className={`w-100`}>{children}</div>}
-        </>
+      {noInputTypes.includes(inputType) && useNativeDate && (
+        <input value={moment(defaultValue).format('yyyy-MM-DD')} type="date" onChange={onChange} />
       )}
+      {noInputTypes.includes(inputType) && !useNativeDate && <>{children}</>}
 
       {/* TEXTAREA */}
       {inputType === 'textarea' && (

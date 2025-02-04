@@ -360,7 +360,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       const formattedDate = moment(e.target.value).format(DateFormats.dateForDb)
       setClonedDates([...clonedDates, formattedDate])
     })
-
     wrapper.append(input)
 
     // Delete button
@@ -438,7 +437,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 <MobileDatePicker
                   onOpen={addThemeToDatePickers}
                   value={moment(selectedNewEventDay)}
-                  className={`${theme} m-0 w-100 event-from-date mui-input`}
+                  className={`${theme} m-0  event-from-date mui-input`}
                   onAccept={(e) => {
                     setEventStartDate(e)
                   }}
@@ -461,7 +460,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {eventLength === EventLengths.multiple && (
             <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
               <MobileDateRangePicker
-                className={'w-100'}
+                className={''}
                 onOpen={() => {
                   Manager.hideKeyboard('date-range-input')
                   addThemeToDatePickers()
@@ -509,7 +508,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
           {/* Share with */}
           {Manager.isValid(currentUser?.coparents) && (
-            <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
+            <ShareWithCheckboxes
+              checkboxGroupClass="mb-15"
+              required={false}
+              onCheck={handleShareWithSelection}
+              containerClass={'share-with-coparents'}
+            />
           )}
           {Manager.isValid(currentUser?.parents) && (
             <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
@@ -535,8 +539,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   </AccordionSummary>
                   <AccordionDetails>
                     <CheckboxGroup
-                      containerClass={'reminder-times'}
-                      elClass={`${theme}`}
+                      elClass={`${theme} reminder-times`}
                       skipNameFormatting={true}
                       checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                       onCheck={handleReminderSelection}
@@ -597,7 +600,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 <Accordion id={'checkboxes'} expanded={eventIsRepeating}>
                   <AccordionSummary>
                     <div className="flex">
-                      <p>Repeating</p>
+                      <p>Recurring</p>
                       <Toggle
                         icons={{
                           checked: <MdEventRepeat />,
@@ -610,20 +613,30 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   </AccordionSummary>
                   <AccordionDetails>
                     <CheckboxGroup
-                      elClass={`${theme} `}
+                      elClass={`${theme} mb-15`}
                       onCheck={handleRepeatingSelection}
                       defaultLabels={[]}
                       checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
                     />
                     {Manager.isValid(repeatInterval) && (
                       <InputWrapper inputType={'date'} labelText={'Month to End Repeating Events'} required={true}>
-                        <DatetimePicker
-                          className={`mt-0 w-100`}
-                          format={DateFormats.readableMonth}
-                          views={DatetimePickerViews.monthAndYear}
-                          hasAmPm={false}
-                          onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
-                        />
+                        {!DomManager.isMobile() && (
+                          <DatetimePicker
+                            className={`mt-0 `}
+                            format={DateFormats.readableMonth}
+                            views={DatetimePickerViews.monthAndYear}
+                            hasAmPm={false}
+                            onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
+                          />
+                        )}
+                        {DomManager.isMobile() && (
+                          <input
+                            type="date"
+                            onChange={(e) => {
+                              setRepeatingEndDate(moment(e.target.value).format('MM-DD-yyyy'))
+                            }}
+                          />
+                        )}
                       </InputWrapper>
                     )}
                   </AccordionDetails>
@@ -663,7 +676,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
           {/* URL/WEBSITE */}
           <InputWrapper
-            wrapperClasses="mt-15"
             labelText={'Website'}
             required={false}
             inputType={'input'}

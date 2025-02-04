@@ -1,6 +1,6 @@
 import { child, getDatabase, ref, set } from 'firebase/database'
 import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../context'
 import DB from '/src/database/DB'
@@ -33,10 +33,19 @@ import StringManager from '/src/managers/stringManager'
 import { LuCalendarCheck } from 'react-icons/lu'
 import { MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
 import DomManager from '../../managers/domManager.coffee'
+import { setKey, fromAddress } from 'react-geocode'
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api'
+
+const mapStyle = {
+  width: '100%',
+  height: '400px',
+  borderRadius: '8px',
+  border: '2px solid #547eff',
+}
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, refreshKey } = state
 
   // Event Details
   const [eventStartDate, setEventStartDate] = useState('')
@@ -62,11 +71,20 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [view, setView] = useState('details')
   const [isDateRange, setIsDateRange] = useState(false)
   const [shareWithNames, setShareWithNames] = useState([])
   const [dataIsLoading, setDataIsLoading] = useState(true)
+  const [mapCenter, setMapCenter] = useState({
+    lat: 43.3318,
+    lng: 5.055,
+  })
+  const [map, setMap] = useState(null)
+
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: 'AIzaSyAQ00ABShz89UmanYeyQgCHghWlZ07xN6U',
+  })
 
   const resetForm = async () => {
     Manager.resetForm('edit-event-form')
@@ -90,7 +108,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setIsVisitation(false)
     setEventIsRepeating(false)
     setEventIsCloned(false)
-    setRefreshKey(Manager.getUid())
     onClose(moment(event.startDate))
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
     setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
@@ -441,9 +458,29 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     }
   }, [document.querySelector('.swal2-confirm')])
 
+  useEffect(() => {
+    setKey(process.env.REACT_GOOGLE_MAPS_API_KEY)
+  }, [])
+
+  const onLoad = useCallback(async function callback(map) {
+    setMap(map)
+  }, [])
+
+  useEffect(() => {
+    if (Manager.isValid(event?.location)) {
+      fromAddress(event?.location).then(({ results }) => {
+        const location = results[0].geometry.location
+        setMapCenter({
+          lat: location.lat,
+          lng: location.lng,
+        })
+        setMap(map)
+      })
+    }
+  }, [event?.id])
+
   return (
     <BottomCard
-      refreshKey={refreshKey}
       onDelete={() => {
         AlertManager.confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
           await deleteEvent()
@@ -457,9 +494,10 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       hasSubmitButton={view === 'edit'}
       onClose={async () => {
         onClose(moment(event.startDate))
+        setState({ ...state, refreshKey: Manager.getUid() })
         await resetForm()
       }}
-      title={'Edit Event'}
+      title={StringManager.uppercaseFirstLetterOfAllWords(event?.title)}
       showCard={showCard}
       className="edit-calendar-event"
       wrapperClass="edit-calendar-event">
@@ -478,20 +516,16 @@ export default function EditCalEvent({ event, showCard, onClose }) {
             {view === 'details' && (
               <Fade direction={'up'} duration={600} triggerOnce={true}>
                 <div id="details">
-                  <div className="flex">
-                    <b>Event Name:</b>
-                    <span className="low-opacity-text">{StringManager.uppercaseFirstLetterOfAllWords(event?.title)}</span>
-                  </div>
                   {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
                     <div className="flex">
-                      <b>Date:</b>
-                      <span className="low-opacity-text">{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</span>
+                      <b>Date</b>
+                      <span className="">{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</span>
                     </div>
                   )}
                   {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
                     <div className="flex wrap no-gap">
                       <b className="w-100">Dates</b>
-                      <span className="low-opacity-text">
+                      <span className="">
                         {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}&nbsp;to&nbsp;
                         {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
                       </span>
@@ -499,23 +533,33 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   )}
                   {DateManager.isValidDate(event?.startTime) && DateManager.isValidDate(event?.endTime) && (
                     <div className="flex">
-                      <b>Time:</b>
-                      <span className="low-opacity-text">
+                      <b>Time</b>
+                      <span className="">
                         {event?.startTime} to {event?.endTime}
                       </span>
                     </div>
                   )}
                   {DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime) && (
                     <div className="flex">
-                      <b>Time:</b>
-                      <span className="low-opacity-text">{event?.startTime}</span>
+                      <b>Time</b>
+                      <span className="">{event?.startTime}</span>
                     </div>
                   )}
+
+                  {Manager.isValid(eventShareWith) && (
+                    <div className="flex">
+                      <b>Shared with</b>
+                      <span className="">{shareWithNames?.join(', ')}</span>
+                    </div>
+                  )}
+
+                  {/* REMINDERS */}
                   {Manager.isValid(event?.reminderTimes) && (
-                    <div className="flex wrap no-gap">
-                      <b className="w-100">Reminders</b>
+                    <div className="flex">
+                      <b>Reminders</b>
+
                       <span
-                        className="low-opacity-text"
+                        className="pill"
                         dangerouslySetInnerHTML={{
                           __html: `${event?.reminderTimes
                             .map((x) => CalendarMapper.readableReminderBeforeTimeframes(x))
@@ -524,12 +568,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                         }}></span>
                     </div>
                   )}
-                  {Manager.isValid(eventShareWith) && (
-                    <div className="flex mt-10">
-                      <b>Shared with:</b>
-                      <span className="low-opacity-text">{shareWithNames?.join(', ')}</span>
-                    </div>
-                  )}
+
                   {Manager.isValid(event?.children) && (
                     <div className="flex wrap no-gap">
                       <b className="w-100">Children</b>
@@ -544,15 +583,15 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                       <p className="w-100">
                         <b>Website</b>
                       </p>
-                      <a className="low-opacity-text" href={decodeURIComponent(event?.websiteUrl)} target="_blank">
+                      <a className="" href={decodeURIComponent(event?.websiteUrl)} target="_blank">
                         {decodeURIComponent(event?.websiteUrl)}
                       </a>
                     </div>
                   )}
                   {Manager.isValid(event?.phone) && (
                     <div className="flex">
-                      <b>Phone:</b>
-                      <a className="low-opacity-text" href={`tel:${event?.phone}`} target="_blank">
+                      <b>Phone</b>
+                      <a className="" href={`tel:${event?.phone}`} target="_blank">
                         {StringManager.getReadablePhoneNumber(event?.phone)}
                       </a>
                     </div>
@@ -562,24 +601,31 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                       <p className="w-100">
                         <b>Notes</b>
                       </p>
-                      <span className="low-opacity-text">{event?.notes}</span>
+                      <span className="">{event?.notes}</span>
                     </div>
                   )}
                   {Manager.isValid(event?.location) && (
                     <>
-                      <div className="flex wrap location">
-                        <b className="w-100">Location</b>
-                        <p>{event?.location}</p>
+                      <div className="flex">
+                        <b>Location</b>
+                        <span>{event?.location}</span>
                       </div>
-                      <a className="low-opacity-text nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
+                      <a className=" nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
                         <BiSolidNavigation /> Navigation
                       </a>
+                      <GoogleMap key={event?.id} mapContainerStyle={mapStyle} onLoad={onLoad} center={mapCenter} zoom={15}>
+                        <MarkerF
+                          position={{ lat: mapCenter.lat, lng: mapCenter.lng }}
+                          onClick={() => {
+                            AlertManager.oneButtonAlert(`This is where ${event?.title} is located`)
+                          }}></MarkerF>
+                      </GoogleMap>
                     </>
                   )}
                   {Manager.isValid(event?.repeatInterval) && (
                     <div className="flex">
-                      <b>Repeat Interval:</b>
-                      <span className="low-opacity-text">{StringManager.uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</span>
+                      <b>Repeat Interval</b>
+                      <span className="">{StringManager.uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</span>
                     </div>
                   )}
                 </div>

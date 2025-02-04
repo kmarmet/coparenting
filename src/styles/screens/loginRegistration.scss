@@ -4,6 +4,25 @@
   #app-container {
     #input-wrapper {
       input {
+        display: block;
+        width: 100%;
+        outline: 0;
+        font-weight: 400;
+        transition: all 0.2s ease-in-out;
+        border: 1px solid $iconGrey;
+        border-radius: $borderRadius;
+        height: 100%;
+        max-height: unset;
+        position: absolute;
+        top: 0;
+        caret-color: $mainBlue;
+        padding: 0 8px;
+
+        &:focus {
+          border-radius: $borderRadius;
+          border: 1px solid $mainBlue;
+        }
+
         &.password,
         &.email {
           border-radius: $borderRadius;
@@ -12,7 +31,7 @@
       }
 
       &.password {
-        margin-bottom: 8px;
+        margin-bottom: 25px;
       }
     }
   }

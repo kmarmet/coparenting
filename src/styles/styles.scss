@@ -7,13 +7,25 @@
   padding: 20px;
   overflow: scroll;
 
-  #screen-title {
+  #screen-title-wrapper {
     font-weight: bold;
     font-size: 22px;
     line-height: 1.3;
   }
 
+  * {
+    @include fontType;
+  }
+
+  button {
+    border: 0;
+  }
+
   #text-container {
+    margin-bottom: 10px;
+    background: $bestGreyForWhite;
+    padding: 15px;
+    border-radius: $borderRadius;
     p {
       &.heading {
         font-weight: bold;
@@ -712,7 +724,7 @@
       width: 100%;
       font-size: 25px;
       opacity: 1;
-      font-weight: $fwLight;
+      font-weight: $fwRegular;
       line-height: 1.2;
     }
 

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import globalState from '../../context.js'
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
@@ -26,6 +26,15 @@ import InputWrapper from '/src/components/shared/inputWrapper'
 import ObjectManager from '/src/managers/objectManager'
 import ModelNames from '/src/models/modelNames'
 import StringManager from '/src/managers/stringManager'
+import { setKey, fromAddress } from 'react-geocode'
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api'
+
+const mapStyle = {
+  width: '100%',
+  height: '400px',
+  borderRadius: '8px',
+  border: '2px solid #547eff',
+}
 
 const Decisions = {
   approved: 'APPROVED',
@@ -35,7 +44,7 @@ const Decisions = {
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, refreshKey } = state
   const [existingRequests, setExistingRequests] = useState([])
   const [rejectionReason, setRejectionReason] = useState('')
   const [showNewRequestCard, setShowNewRequestCard] = useState(false)
@@ -46,7 +55,16 @@ export default function TransferRequests() {
   const [requestLocation, setRequestLocation] = useState('')
   const [requestDate, setRequestDate] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const [mapCenter, setMapCenter] = useState({
+    lat: 43.3318,
+    lng: 5.055,
+  })
+  const [map, setMap] = useState(null)
+
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: 'AIzaSyAQ00ABShz89UmanYeyQgCHghWlZ07xN6U',
+  })
 
   const resetForm = async () => {
     Manager.resetForm('edit-event-form')
@@ -54,7 +72,6 @@ export default function TransferRequests() {
     setRequestLocation('')
     setRequestDate('')
     setResponseDueDate('')
-    setRefreshKey(Manager.getUid())
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
     setState({ ...state, currentUser: updatedCurrentUser })
   }
@@ -156,6 +173,26 @@ export default function TransferRequests() {
     onTableChange().then((r) => r)
   }, [])
 
+  useEffect(() => {
+    setKey(process.env.REACT_GOOGLE_MAPS_API_KEY)
+  }, [])
+
+  const onLoad = useCallback(async function callback(map) {
+    setMap(map)
+  }, [])
+
+  useEffect(() => {
+    if (Manager.isValid(activeRequest?.location)) {
+      fromAddress(activeRequest?.location).then(({ results }) => {
+        const location = results[0].geometry.location
+        setMapCenter({
+          lat: location.lat,
+          lng: location.lng,
+        })
+      })
+    }
+  }, [activeRequest?.location])
+
   return (
     <>
       <NewTransferChangeRequest showCard={showNewRequestCard} hideCard={() => setShowNewRequestCard(false)} />
@@ -187,31 +224,25 @@ export default function TransferRequests() {
             <>
               {/* TRANSFER DATE */}
               {Manager.isValid(activeRequest?.date) && (
-                <div className="flex flex-start" id="row">
-                  <p id="title">
-                    <b>Transfer Date: </b>
-                    <p>{activeRequest.endDate}</p>
-                    <span className="low-opacity-text">{DateManager.formatDate(activeRequest?.date)}</span>
-                  </p>
+                <div className="flex">
+                  <b>Transfer Date: </b>
+                  <p>{activeRequest.endDate}</p>
+                  <span>{DateManager.formatDate(activeRequest?.date)}</span>
                 </div>
               )}
 
               {/* RESPOND BY */}
               {Manager.isValid(activeRequest?.responseDueDate) && (
-                <div className="flex" id="row">
-                  {!Manager.isValid(activeRequest?.endDate) && (
-                    <p id="title" className="mr-auto">
-                      <b>Respond by: </b>
-                      <span className="low-opacity-text">
-                        {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
-                        {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
-                      </span>
-                    </p>
-                  )}
+                <div className="flex">
+                  <b>Respond by: </b>
+                  <span>
+                    {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
+                    {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                  </span>
                   {Manager.isValid(activeRequest?.endDate) && (
                     <p id="title">
                       <b>Respond by:</b>
-                      <span className="low-opacity-text">
+                      <span>
                         {DateManager.formatDate(activeRequest?.responseDueDate)}&nbsp;to&nbsp;{DateManager.formatDate(activeRequest?.endDate)}
                         {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
                       </span>
@@ -222,36 +253,36 @@ export default function TransferRequests() {
 
               {/* TIME */}
               {Manager.isValid(activeRequest?.time) && (
-                <div className="flex" id="row">
-                  <p id="title" className="mr-auto">
-                    <b>Time: </b>
-                    <span className="low-opacity-text">{activeRequest?.time}</span>
-                  </p>
+                <div className="flex">
+                  <b>Time: </b>
+                  <span>{activeRequest?.time}</span>
                 </div>
               )}
 
               {/* STATUS */}
-              <div className="flex flex-start" id="row">
-                <p id="title">
-                  <b>Status: </b>
-                  <span className="low-opacity-text">{StringManager.uppercaseFirstLetterOfAllWords(activeRequest?.status)}</span>
-                </p>
+              <div className="flex">
+                <b>Status: </b>
+                <span>{StringManager.uppercaseFirstLetterOfAllWords(activeRequest?.status)}</span>
               </div>
 
               {/* LOCATION */}
               {Manager.isValid(activeRequest?.location) && (
-                <div className="flex-start wrap no-gap" id="row">
-                  <p id="title" className="mr-auto w-100">
+                <>
+                  <div className="flex">
                     <b>Location</b>
-                  </p>
-                  <span className="low-opacity-text">{activeRequest?.location}</span>
-                </div>
-              )}
-
-              {Manager.isValid(activeRequest?.location) && (
-                <a className="nav-detail" href={Manager.getDirectionsLink(activeRequest?.location)} target="_blank" rel="noreferrer">
-                  <BiSolidNavigation /> Nav
-                </a>
+                    <span>{activeRequest?.location}</span>
+                  </div>
+                  <a className="nav-detail" href={activeRequest?.directionsLink} target="_blank" rel="noreferrer">
+                    <BiSolidNavigation /> Navigation
+                  </a>
+                  <GoogleMap key={activeRequest?.id} mapContainerStyle={mapStyle} onLoad={onLoad} center={mapCenter} zoom={15}>
+                    <MarkerF
+                      position={{ lat: mapCenter.lat, lng: mapCenter.lng }}
+                      onClick={() => {
+                        AlertManager.oneButtonAlert(`This is where ${activeRequest?.title} is located`)
+                      }}></MarkerF>
+                  </GoogleMap>
+                </>
               )}
 
               {/* REASON */}
@@ -260,7 +291,7 @@ export default function TransferRequests() {
                   <p id="title" className="mr-auto wrap no-gap w-100">
                     <b>Reason</b>
                     <br />
-                    <span className="low-opacity-text">{activeRequest?.reason}</span>
+                    <span>{activeRequest?.reason}</span>
                   </p>
                 </div>
               )}
@@ -390,7 +421,7 @@ export default function TransferRequests() {
                           <p id="subtitle">From {StringManager.formatNameFirstNameOnly(request?.createdBy)}</p>
                         )}
                         {request?.recipientPhone !== currentUser.phone && (
-                          <p id="subtitle" className="low-opacity-text">
+                          <p id="subtitle">
                             Request Sent to&nbsp;
                             {StringManager.formatNameFirstNameOnly(
                               currentUser?.coparents?.filter((x) => x?.phone === request?.recipientPhone)[0]?.name

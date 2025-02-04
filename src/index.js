@@ -109,17 +109,14 @@ root.render(
         </p>
         <div id="text-container" className="mb-20">
           <div className="flex support-email">
-            <p>Feel free to send us an email to get help with this issue, at any time @ </p>
+            <p>Feel free to send us an email at any time to get help with this issue at </p>
             <a href="mailto:support@peaceful-coparenting.app">support@peaceful-coparenting.app</a>
           </div>
         </div>
 
-        <div id="text-container">
-          <p className="heading mb-5">Try this first</p>
-        </div>
-
         {/* REFRESH THE APP */}
         <div id="text-container">
+          <p className="heading mb-5">Try this first</p>
           <div className="flex mb-5" id="steps">
             <span className="step-number">1.</span>
             <button

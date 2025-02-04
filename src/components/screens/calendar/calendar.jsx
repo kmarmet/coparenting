@@ -109,7 +109,7 @@ export default function EventCalendar() {
       let isPayday = payEvents.includes(dayEvent.startDate)
 
       if (isPayday) {
-        const payDayIcon = document.createElement('span')
+        const payDayIcon = document.createElement('sup')
         payDayIcon.classList.add('payday-emoji')
         payDayIcon.innerText = '$'
         dayElement.append(payDayIcon)

@@ -159,7 +159,9 @@ export default function ExpenseTracker() {
 
     if (status === 'all') {
       setExpenses(allExpenses)
+      setPaidStatus('all')
     } else {
+      setPaidStatus(status)
       setExpenses(allExpenses.filter((x) => x.paidStatus === status))
     }
   }
@@ -198,6 +200,7 @@ export default function ExpenseTracker() {
 
   const handleCategorySelection = async (category) => {
     const expensesByCategory = expenses.filter((x) => x.category === category)
+    setCategory(category)
     setExpenses(expensesByCategory)
   }
 
@@ -265,21 +268,21 @@ export default function ExpenseTracker() {
               {/* NAME */}
               <div id="row" className="flex-start">
                 <p id="title">
-                  <b>Name</b>: {StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name)}
+                  <b>Name:</b> <span>{StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name)}</span>
                 </p>
               </div>
               {/* AMOUNT */}
               <div id="row" className="flex-start">
                 <p id="title">
-                  <b>Amount</b>: ${activeExpense?.amount}
+                  <b>Amount:</b> <span>${activeExpense?.amount}</span>
                 </p>
               </div>
 
               {/* CATEGORY */}
               {Manager.isValid(activeExpense?.category) && (
                 <div id="row" className="flex-start">
-                  <p id="category">
-                    <b>Category</b>: {activeExpense?.category}
+                  <p id="title">
+                    <b>Category:</b> <span>{activeExpense?.category}</span>
                   </p>
                 </div>
               )}
@@ -288,7 +291,9 @@ export default function ExpenseTracker() {
               <div id="row" className="flex-start">
                 <p id="title">
                   <b>Sent to: </b>
-                  {StringManager.formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
+                  <span>
+                    {StringManager.formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
+                  </span>
                 </p>
               </div>
 
@@ -296,7 +301,7 @@ export default function ExpenseTracker() {
               <div id="row" className="flex-start">
                 <p id="title">
                   <b>Pay to: </b>
-                  {StringManager.formatNameFirstNameOnly(activeExpense?.recipientName)}
+                  <span> {StringManager.formatNameFirstNameOnly(activeExpense?.recipientName)}</span>
                 </p>
               </div>
 
@@ -454,41 +459,43 @@ export default function ExpenseTracker() {
           {/* FILTERS */}
           <div id="filters">
             <div className="filter-row">
-              <Label isBold={true} text={'Expense Type'} classes="mb-5"></Label>
+              <Label isBold={true} text={'Type'} classes="mb-5"></Label>
               <div className="pills type">
                 <div className={`${expenseDateType === 'all' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('all')}>
                   All
                 </div>
                 <div className={`${expenseDateType === 'single' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('single')}>
-                  Single Date
+                  One-time
                 </div>
                 <div className={`${expenseDateType === 'repeating' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('repeating')}>
-                  Repeating
+                  Recurring
                 </div>
               </div>
             </div>
             <div className="filter-row">
               <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
               <div className="pills type">
-                <div className="pill" onClick={() => handlePaidStatusSelection('all')}>
+                <div className={paidStatus === 'all' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('all')}>
                   All
                 </div>
-                <div className="pill" onClick={() => handlePaidStatusSelection('unpaid')}>
+                <div className={paidStatus === 'unpaid' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('unpaid')}>
                   Unpaid
                 </div>
-                <div className="pill" onClick={() => handlePaidStatusSelection('paid')}>
+                <div className={paidStatus === 'paid' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('paid')}>
                   Paid
                 </div>
               </div>
             </div>
-            {categoriesInUse.length > 0 && <Label isBold={true} text={'Expense Category'} classes="mb-5"></Label>}
+            {categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5"></Label>}
+
+            {/* CATEGORIES */}
             <div className="filter-row">
               <div className="pills category">
                 {categoriesAsArray.sort().map((cat, index) => {
                   return (
                     <div key={index}>
                       {categoriesInUse.includes(cat) && (
-                        <div onClick={() => handleCategorySelection(cat)} key={index} className="pill">
+                        <div onClick={() => handleCategorySelection(cat)} key={index} className={category === cat ? 'pill active' : 'pill'}>
                           {cat}
                         </div>
                       )}
@@ -497,7 +504,7 @@ export default function ExpenseTracker() {
                 })}
               </div>
             </div>
-            <Label text={'Sorting'} />
+            <Label text={'Sorting'} classes="sorting" />
             <SelectDropdown selectValue={sortMethod} labelText={'Sort by'} onChange={handleSortBySelection}>
               <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
               <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
@@ -511,6 +518,9 @@ export default function ExpenseTracker() {
             {Manager.isValid(expenses) &&
               expenses.map((expense, index) => {
                 let dueDate = moment(expense?.dueDate).format(DateFormats.readableMonthAndDay) ?? ''
+                const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
+                let overdue = Manager.contains(readableDueDate, 'ago')
+
                 if (!Manager.isValid(dueDate)) {
                   dueDate = ''
                 }
@@ -540,7 +550,7 @@ export default function ExpenseTracker() {
                       <div className="flex" id="below-title">
                         {Manager.isValid(dueDate, true) && (
                           <>
-                            <p className="due-date">
+                            <p className={`due-date ${overdue ? 'red' : ''}`}>
                               {DateManager.formatDate(expense?.dueDate)} ({moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()})
                             </p>
                           </>

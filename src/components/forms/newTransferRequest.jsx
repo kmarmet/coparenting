@@ -18,6 +18,7 @@ import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import AlertManager from '/src/managers/alertManager'
 import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
+import DomManager from '../../managers/domManager.coffee'
 
 export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -168,13 +169,23 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
         <div id="transfer-change-container" className={`${theme} form`}>
           <div className="form transfer-change">
             <div className="flex gap">
-              <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
-                <MobileDatePicker
-                  onOpen={addThemeToDatePickers}
-                  className={`${theme}  mt-0 w-100`}
-                  onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
-                />
-              </InputWrapper>
+              {/* DAY */}
+              {!DomManager.isMobile() && (
+                <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
+                  <MobileDatePicker
+                    onOpen={addThemeToDatePickers}
+                    className={`${theme}  mt-0 w-100`}
+                    onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
+                  />
+                </InputWrapper>
+              )}
+              {DomManager.isMobile() && (
+                <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
+                  <input type="date" onChange={(e) => setRequestDate(moment(e.target.value).format(DateFormats.dateForDb))} />
+                </InputWrapper>
+              )}
+
+              {/* TIME */}
               <InputWrapper inputType={'date'} labelText={'New Time'}>
                 <MobileTimePicker
                   onOpen={addThemeToDatePickers}
@@ -185,18 +196,25 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
             </div>
 
             {/* RESPONSE DUE DATE */}
-            <InputWrapper inputType={'date'} labelText={'Respond by'}>
-              <MobileDatePicker
-                onOpen={addThemeToDatePickers}
-                className={`${theme}  w-100`}
-                onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
-              />
-            </InputWrapper>
+            {!DomManager.isMobile() && (
+              <InputWrapper inputType={'date'} labelText={'Respond by'}>
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  className={`${theme}  w-100`}
+                  onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+                />
+              </InputWrapper>
+            )}
+
+            {DomManager.isMobile() && (
+              <InputWrapper inputType={'date'} labelText={'Respond by'} required={true}>
+                <input type="date" onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))} />
+              </InputWrapper>
+            )}
 
             {/*  NEW LOCATION*/}
             <InputWrapper inputType={'location'} labelText={'New Location'}>
               <Autocomplete
-                placeholder={currentUser?.defaultTransferLocation || 'New Location'}
                 apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
                 options={{
                   types: ['geocode', 'establishment'],
@@ -223,6 +241,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
             {/* SEND REQUEST TO */}
             <CheckboxGroup
+              elClass="sending-to"
               parentLabel={'Who is the request being sent to?'}
               dataPhone={currentUser?.coparents?.map((x) => x.phone)}
               checkboxLabels={currentUser?.coparents?.map((x) => x.name)}

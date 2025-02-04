@@ -23,6 +23,7 @@ import {
 } from '../globalFunctions'
 import DatasetManager from '../managers/datasetManager'
 import _ from 'lodash'
+import StringManager from '../managers/stringManager.coffee'
 
 const DB_UserScoped = {
   // GET
@@ -94,7 +95,7 @@ const DB_UserScoped = {
       if (!Array.isArray(users)) {
         users = Manager.convertToArray(users)
       }
-      user = users.filter((x) => x.name.formatNameFirstNameOnly() === userName.formatNameFirstNameOnly())[0].phone
+      user = users.filter((x) => StringManager.formatNameFirstNameOnly(x.name) === StringManager.formatNameFirstNameOnly(userName))[0]?.phone
     })
 
     return user

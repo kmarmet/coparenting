@@ -3,7 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvid
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import globalState from './context.js'
 import 'react-toggle/style.css'
-
+import { APIProvider, Map, MapCameraChangedEvent } from '@vis.gl/react-google-maps'
 // Screens
 import Activity from '/src/components/screens/activity'
 import EventCalendar from './components/screens/calendar/calendar.jsx'
@@ -136,7 +136,7 @@ export default function App() {
         const user = auth.currentUser
         const _currentUser = await DB_UserScoped.getCurrentUser(user.email, 'email')
         const oneSignalInitialized = localStorage.getItem('oneSignalInitialized')
-        AppManager.clearAppBadge()
+        await AppManager.clearAppBadge()
         // Delete scoped permission codes if they exist and OneSignal not already initted
         // if (!Manager.isValid(oneSignalInitialized) || oneSignalInitialized === 'false') {
         //   localStorage.setItem('oneSignalInitialized', 'true')
@@ -259,7 +259,6 @@ export default function App() {
             {currentScreen === ScreenNames.chats && <Chat />}
             {currentScreen === ScreenNames.visitation && <Visitation />}
             {currentScreen === ScreenNames.childSelector && <ChildSelector />}
-            {currentScreen === ScreenNames.chatRecovery && <ChatRecovery />}
             {currentScreen === ScreenNames.contactUs && <ContactUs />}
           </div>
         </globalState.Provider>

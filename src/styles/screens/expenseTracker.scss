@@ -11,6 +11,7 @@
         font-weight: $fwRegular;
         font-style: italic;
         font-size: 14px;
+        opacity: 0.75;
       }
     }
   }
@@ -111,17 +112,47 @@
   #expense-tracker {
     #filters {
       margin-top: 15px;
+      background: #f6f8f9;
+      padding: 10px 15px;
+      border-radius: $borderRadius;
       .filter-row {
-        margin-bottom: 15px;
+        margin-bottom: 10px;
+        #label-wrapper {
+          label {
+            line-height: 1;
+
+            span {
+              padding: 0;
+              font-weight: $fwMedium;
+            }
+          }
+        }
       }
 
-      label {
-        line-height: 1;
-        font-size: 18px;
-        padding-left: 3px;
+      .MuiFormControl-root {
+        .MuiOutlinedInput-root {
+          [role='combobox'] {
+            background: #eaeaea !important;
+            padding: 10px !important;
+            margin-top: 5px !important;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
 
-        &.sort-by {
-          padding: 0;
+      #label-wrapper {
+        &.sorting {
+          label {
+            line-height: 1;
+
+            span {
+              padding: 0;
+              font-weight: $fwMedium;
+              opacity: 0.9;
+            }
+          }
         }
       }
 
@@ -141,8 +172,8 @@
 
         .pill {
           @include pillButton;
-          color: rgba(0, 0, 0, 0.75);
-          border: unset;
+          color: $darkPurple;
+          border: 1px solid $darkPurple;
           background: $bestGreyForWhite;
           border-radius: 50px;
           text-align: center;
@@ -160,6 +191,11 @@
           letter-spacing: 0.8px;
           display: inline-flex;
           margin-right: 8px;
+
+          &.active {
+            background: $darkPurple;
+            color: white;
+          }
 
           svg {
             font-size: 12px;
@@ -285,7 +321,7 @@
         }
         .name {
           line-height: 1;
-          font-weight: 600;
+          font-weight: $fwMedium;
           width: 100%;
           display: inline;
         }
