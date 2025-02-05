@@ -24,7 +24,7 @@
       }
 
       #legend-title {
-        font-weight: $fwMediumBold;
+        font-weight: $fwMedium;
       }
 
       svg {
@@ -116,12 +116,13 @@
           }
 
           .card-title {
-            font-weight: $fwMediumBold;
+            font-weight: $fwMedium;
             line-height: 1;
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: flex-start;
+            color: $mainBlue;
 
             svg {
               margin-right: 10px;
@@ -143,15 +144,15 @@
 
           #date {
             opacity: 0.7;
-            font-size: 13px;
+            font-size: 14px;
             color: black;
             margin: 0;
-            font-style: italic;
           }
           .text {
             margin: 2px 0 0 0;
             opacity: 0.7;
-            font-size: 15px;
+            font-size: 14px;
+            font-weight: $fwRegular;
           }
         }
       }

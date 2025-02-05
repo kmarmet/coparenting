@@ -5,6 +5,7 @@ import Label from './label'
 import DB from '../../database/DB'
 import { IoCloseOutline } from 'react-icons/io5'
 import StringManager from '../../managers/stringManager.coffee'
+import Checkbox from './checkbox.jsx'
 
 export default function ShareWithCheckboxes({
   defaultActiveShareWith = [],
@@ -85,9 +86,7 @@ export default function ShareWithCheckboxes({
                     data-phone={phone ? phone : ''}
                     className={`flex ${containerClass} ${defaultActiveShareWith.includes(phone) ? 'active' : ''}`}
                     onClick={onCheck}>
-                    <span className="pill share-with">
-                      {StringManager.formatNameFirstNameOnly(name)} <IoCloseOutline />
-                    </span>
+                    <Checkbox text={StringManager.formatNameFirstNameOnly(name)} onClick={() => console.log(true)} />
                   </div>
                 )
               })}

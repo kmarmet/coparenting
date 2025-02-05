@@ -3,7 +3,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvid
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import globalState from './context.js'
 import 'react-toggle/style.css'
-import { APIProvider, Map, MapCameraChangedEvent } from '@vis.gl/react-google-maps'
 // Screens
 import Activity from '/src/components/screens/activity'
 import EventCalendar from './components/screens/calendar/calendar.jsx'
@@ -24,7 +23,6 @@ import Visitation from './components/screens/visitation.jsx'
 import Settings from './components/screens/settings/settings.jsx'
 import SwapRequests from './components/screens/swapRequests.jsx'
 import TransferRequests from './components/screens/transferRequests.jsx'
-import ChatRecovery from './components/screens/account/chatRecovery'
 import EditCalEvent from './components/forms/editCalEvent.jsx'
 import NewCalendarEvent from './components/forms/newCalendarEvent.jsx'
 import NewChildForm from './components/screens/childInfo/newChildForm.jsx'
@@ -135,30 +133,14 @@ export default function App() {
       if (user) {
         const user = auth.currentUser
         const _currentUser = await DB_UserScoped.getCurrentUser(user.email, 'email')
-        const oneSignalInitialized = localStorage.getItem('oneSignalInitialized')
         await AppManager.clearAppBadge()
-        // Delete scoped permission codes if they exist and OneSignal not already initted
-        // if (!Manager.isValid(oneSignalInitialized) || oneSignalInitialized === 'false') {
-        //   localStorage.setItem('oneSignalInitialized', 'true')
-        // }
         NotificationManager.init(_currentUser)
         const permissionCodes = await DB.getTable(DB.tables.parentPermissionCodes)
         const scopedCodes = permissionCodes.filter((x) => x.parentPhone === _currentUser.phone || x.childPhone === _currentUser.phone)
 
-        const subId = await NotificationManager.getUserSubId(_currentUser.phone, 'phone')
-
         if (Manager.isValid(scopedCodes)) {
           await DB.deleteMultipleRows(DB.tables.parentPermissionCodes, scopedCodes, _currentUser)
         }
-
-        // Add TEST activity
-        // if (_currentUser && _currentUser.hasOwnProperty('phone')) {
-        //   const act = new Activity()
-        //   act.category = ActivityCategory.chats
-        //   act.text = 'Some text'
-        //   act.title = 'some title'
-        //   await DB.add(`${DB.tables.activities}/${_currentUser.phone}`, act)
-        // }
 
         const activities = await DB.getTable(`${DB.tables.activities}/${_currentUser.phone}`)
 
@@ -177,6 +159,7 @@ export default function App() {
           })
         }
       } else {
+        setState({ ...state, isLoading: false })
         console.log('signed out or user doesn"t exist')
       }
     })
@@ -243,7 +226,7 @@ export default function App() {
             {currentScreen === ScreenNames.newCoparent && <NewCoparentForm />}
 
             {/* STANDARD */}
-            {currentScreen === ScreenNames.home && <Home />}
+            {currentScreen === ScreenNames.home && !isLoading && <Home />}
             {currentScreen === ScreenNames.activity && <Activity />}
             {currentScreen === ScreenNames.calendar && <EventCalendar />}
             {currentScreen === ScreenNames.settings && <Settings />}

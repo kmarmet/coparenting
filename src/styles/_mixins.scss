@@ -67,7 +67,7 @@
   font-weight: $fwRegular;
   padding-bottom: 10px;
   text-align: center;
-  opacity: 0.85;
+  opacity: 1;
 
   &.active {
     transform: scale(1);
@@ -751,11 +751,11 @@
   &:before {
     display: none;
     top: -75%;
-    background-image: radial-gradient(circle, #fc76ae 20%, transparent 20%), radial-gradient(circle, transparent 20%, #fc76ae 20%, transparent 30%),
-      radial-gradient(circle, #fc76ae 20%, transparent 20%), radial-gradient(circle, #fc76ae 20%, transparent 20%),
-      radial-gradient(circle, transparent 10%, #fc76ae 15%, transparent 20%), radial-gradient(circle, #fc76ae 20%, transparent 20%),
-      radial-gradient(circle, #fc76ae 20%, transparent 20%), radial-gradient(circle, #fc76ae 20%, transparent 20%),
-      radial-gradient(circle, #fc76ae 20%, transparent 20%);
+    background-image: radial-gradient(circle, $mainBlue 50%, transparent 50%),
+      radial-gradient(circle, transparent 50%, $mainBlue 50%, transparent 30%), radial-gradient(circle, $mainBlue 50%, transparent 50%),
+      radial-gradient(circle, $mainBlue 50%, transparent 50%), radial-gradient(circle, transparent 10%, $mainBlue 15%, transparent 50%),
+      radial-gradient(circle, $mainBlue 50%, transparent 50%), radial-gradient(circle, $mainBlue 50%, transparent 50%),
+      radial-gradient(circle, $mainBlue 50%, transparent 50%), radial-gradient(circle, $mainBlue 50%, transparent 50%);
     background-size:
       10% 10%,
       20% 20%,
@@ -771,10 +771,10 @@
   &:after {
     display: none;
     bottom: -75%;
-    background-image: radial-gradient(circle, #fc76ae 20%, transparent 20%), radial-gradient(circle, #fc76ae 20%, transparent 20%),
-      radial-gradient(circle, transparent 10%, #fc76ae 15%, transparent 20%), radial-gradient(circle, #fc76ae 20%, transparent 20%),
-      radial-gradient(circle, #fc76ae 20%, transparent 20%), radial-gradient(circle, #fc76ae 20%, transparent 20%),
-      radial-gradient(circle, #fc76ae 20%, transparent 20%);
+    background-image: radial-gradient(circle, $mainBlue 50%, transparent 50%), radial-gradient(circle, $mainBlue 50%, transparent 50%),
+      radial-gradient(circle, transparent 10%, $mainBlue 15%, transparent 50%), radial-gradient(circle, $mainBlue 50%, transparent 50%),
+      radial-gradient(circle, $mainBlue 50%, transparent 50%), radial-gradient(circle, $mainBlue 50%, transparent 50%),
+      radial-gradient(circle, $mainBlue 50%, transparent 50%);
     background-size:
       15% 15%,
       20% 20%,
@@ -783,11 +783,20 @@
       15% 15%,
       10% 10%,
       20% 20%;
-    //background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    background-position:
+      5% 90%,
+      10% 90%,
+      10% 90%,
+      15% 90%,
+      25% 90%,
+      25% 90%,
+      40% 90%,
+      55% 90%,
+      70% 90%;
   }
   &:active {
-    transform: scale(0.9);
-    background-color: darken(#6447f5, 5%);
+    transform: scale(2);
+    background-color: darken($lightIconBgBlue, 15%);
   }
   &.animate {
     &:before {
@@ -955,20 +964,21 @@
     padding-bottom: 4px;
     @include hover;
     width: 50%;
-
+    font-weight: $fwRegular;
+    color: #787878;
     &.active {
-      padding-bottom: 3px;
+      padding-bottom: 6px;
       font-size: 16px;
-      color: $darkPurple;
+      color: #5b5b5b;
       font-weight: $fwRegular;
       opacity: 1;
       &:after {
         content: '';
         position: relative;
-        top: 4px;
+        top: 8px;
         display: block;
-        border-bottom: 1px solid $darkPurple;
-        background: $darkPurple;
+        border-bottom: 1px solid $darkGrey;
+        background: $darkGrey;
       }
     }
   }
@@ -1141,7 +1151,7 @@
     justify-content: center;
 
     #primary-row-icon {
-      font-size: 28px;
+      font-size: 27px;
       color: $mainBlue;
     }
 
@@ -1194,18 +1204,13 @@
 @mixin label {
   margin-bottom: 0;
   label {
-    span:not(.asterisk) {
-      font-weight: $fwRegular;
-      margin: 0;
-      letter-spacing: 0.4px;
-      line-height: 1.3;
-      font-size: 14px;
-    }
+    font-weight: $fwRegular;
+    margin: 0;
+    line-height: 1.3;
+    font-size: 14px;
     &.bold {
-      span {
-        font-weight: $fwMedium;
-        opacity: 0.9;
-      }
+      font-weight: $fwMedium;
+      opacity: 0.9;
     }
   }
 }
@@ -1247,7 +1252,7 @@
     background: white;
     padding: 0 10px;
     z-index: 9;
-    span {
+    label {
       color: #5b84ff;
       font-weight: $fwRegular;
       opacity: 1;
@@ -1504,44 +1509,103 @@
     }
   }
 }
-@mixin checkbox {
-  height: 22px;
-  width: 22px;
-  border: 1px solid #cccc;
-  display: flex;
+@mixin checkboxWrapper {
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   transition: all 0.5s ease-out;
-  border-radius: 100%;
-  min-width: 22px;
-  .checkmark-icon {
-    display: none;
-    color: white;
+  margin-top: 5px;
+  display: inline-flex;
+  gap: 5px;
+  &.center {
+    justify-content: center;
+    width: 100%;
   }
-  &.active {
-    background-color: $purple;
-    //    -webkit-box-shadow: 0 0 12px 0 $purple;
-    //    -moz-box-shadow: 0 0 12px 0 $purple;
-    //    box-shadow: 0 0 12px 0 $purple;
-    border: 0;
 
-    &.delete {
-      background-color: $red;
-      //      -webkit-box-shadow: 0 0 12px 0 $red;
-      //      -moz-box-shadow: 0 0 12px 0 $red;
-      //      box-shadow: 0 0 12px 0 $red;
+  #label-wrapper {
+    label {
+      line-height: 1;
+      font-weight: $fwRegular;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      align-self: stretch;
+      color: black;
+      opacity: 0.7;
     }
 
-    .checkmark-icon {
-      display: block;
-      margin: 0 auto;
-      font-size: 18px;
+    &.active {
+      label {
+        transition: all 0.3s ease-in-out;
+        color: $mainBlue;
+        opacity: 1;
+      }
+    }
+  }
+
+  #checkbox {
+    height: 16px;
+    width: 16px;
+    min-width: 16px;
+    border: 1px solid black;
+    opacity: 0.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease-in-out;
+
+    &:after {
+      content: '';
+      position: absolute;
+      height: 7px;
+      width: 7px;
+      border-radius: 50%;
+      color: $mainBlue;
+      left: 50%;
+      background-color: $mainBlue;
+      bottom: 50%;
+      transition: all 0.3s ease-in-out;
+      right: 50%;
+      z-index: 9999;
+      opacity: 0;
+      top: 50%;
+
+      transform: scale(0);
+    }
+
+    @include sparkleButton;
+
+    &.active {
+      background-color: $lightIconBgBlue;
+      border: 1px solid $mainBlue;
+      opacity: 1;
+
+      &:after {
+        opacity: 1;
+        content: '';
+        position: absolute;
+        height: 7px;
+        width: 7px;
+        border-radius: 50%;
+        color: $mainBlue;
+        top: 50%;
+        left: 50%;
+        background-color: $mainBlue;
+        bottom: 50%;
+        transition: all 0.6s ease-in-out;
+        right: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        z-index: 9999;
+      }
     }
   }
 }
 @mixin checkboxGroup {
   padding: 0;
   display: block;
+  gap: 10px;
 
   #label-wrapper {
     label {
@@ -1608,6 +1672,9 @@
       white-space: nowrap;
       mask-image: linear-gradient(to right, black 95%, transparent 100%);
       max-height: unset;
+      display: flex;
+      gap: 15px;
+      padding-right: 20px;
 
       .pill {
         &.active {
@@ -1636,6 +1703,7 @@
       letter-spacing: 0.8px;
       display: inline-flex;
       margin-right: 8px;
+      margin-top: 3px;
 
       svg {
         font-size: 12px;
@@ -2409,7 +2477,7 @@
   left: 0;
   width: 100vw;
   max-height: 70vh;
-  min-height: 30vh;
+  min-height: 50vh;
   bottom: -100vh;
   z-index: -1;
   box-shadow: rgba(0, 0, 0, 0.56) 0 2px 30px 14px;
@@ -2451,11 +2519,16 @@
     .flex {
       gap: 10px;
       align-items: center;
-      //          margin-bottom: 10px;
       justify-content: space-between;
       border-bottom: 1px solid $lightBorder;
       padding: 12px 0;
       margin-bottom: 0;
+
+      &#checkbox-wrapper {
+        border: 0;
+        padding: 0;
+        justify-content: flex-start;
+      }
 
       p,
       b {
@@ -2463,10 +2536,13 @@
         margin: 0;
       }
 
-      &.no-gap {
-        gap: 0;
-        p {
-          opacity: 1;
+      a {
+        color: $linkColor;
+        text-decoration: none;
+        font-size: 15px;
+
+        svg {
+          font-size: 16px;
         }
       }
     }
@@ -2482,7 +2558,7 @@
         display: flex;
         font-size: 14px;
         align-items: center;
-        margin: 15px 0;
+        margin: 25px 0;
         text-align: right;
         width: 100%;
         justify-content: flex-end;
@@ -2705,7 +2781,25 @@
   // EDIT CALENDAR EVENT
   &.edit-calendar-event {
     width: 100%;
+    min-height: 70vh;
+    #map-wrapper {
+      border-radius: $bigBorderRadius;
+      width: 100%;
+      overflow: hidden;
+      border: 2px solid rgb(231, 233, 238);
+      * {
+        width: 100% !important;
+      }
+      img {
+        width: 100% !important;
+      }
+    }
     #relative-wrapper {
+      min-height: 70vh;
+      #content {
+        padding-bottom: 300px;
+        min-height: 70vh;
+      }
       textarea {
         height: 150px;
         max-height: 150px;
@@ -3165,7 +3259,7 @@
 
   #relative-wrapper {
     position: relative;
-    padding: 0 15px;
+    padding: 0 15px 100px 15px;
     overflow: hidden;
     height: 100%;
     min-height: 70vh;
@@ -3182,29 +3276,61 @@
     }
 
     #content {
-      max-height: calc(100% - 130px);
-      padding: 15px 0 100px 0;
       overflow: auto;
       overflow-x: hidden;
       position: absolute;
       top: 45px;
-      height: 100%;
       bottom: 0;
       width: calc(100% - 30px);
+      height: 100vh;
+      padding-bottom: 300px;
+      max-height: 70vh;
 
       #details {
         .flex {
+          margin-bottom: 0;
+          align-items: center;
+
+          &.children,
+          &.reminders {
+            #children,
+            #reminder-times {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              flex-wrap: wrap;
+
+              span {
+                padding-bottom: 3px;
+              }
+            }
+          }
+
+          svg {
+            font-size: 20px;
+            margin: 0 5px 0 0;
+            color: $mainBlue;
+
+            &.external-icon {
+              font-size: 16px;
+              position: relative;
+              top: 3px;
+              margin-left: 5px;
+            }
+          }
           b {
             min-width: 120px;
             line-height: 1;
+            display: flex;
+            align-items: center;
           }
           span {
             text-align: right;
-          }
+            font-size: 15px;
 
-          &.no-gap {
-            span {
-              padding-top: 5px;
+            &.notes {
+              text-align: left;
+              line-height: 1.6;
             }
           }
         }
@@ -3233,6 +3359,15 @@
         padding: 3px 5px;
         background: $bestGreyForWhite;
         border-radius: 100%;
+      }
+    }
+
+    .MuiPaper-root {
+      border-radius: 0;
+      margin-bottom: 5px !important;
+
+      .flex {
+        margin: 0;
       }
     }
 
@@ -3402,19 +3537,18 @@
     flex-wrap: wrap;
     position: relative;
     overflow: auto;
-    height: 100%;
     transition: all 0.6s ease-in-out;
     justify-content: flex-start;
     padding: 15px 0;
     margin: 0 auto;
-    gap: 10px 5px;
+    gap: 10px;
     width: 100%;
 
     .menu-item {
       opacity: 0;
       transform: scale(0);
       transition: all 0.6s ease-in-out;
-      width: calc((100% / 3) - 5px);
+      width: calc((100% / 3) - 10px);
       background-color: transparent;
       height: 110px;
       border-radius: $bigBorderRadius;
@@ -3428,7 +3562,9 @@
       &.chats,
       &.calendar,
       &.admin,
-      &.activity {
+      &.activity,
+      &.expenses,
+      &.swap-request {
         border: 1px solid #557fff;
 
         * {
@@ -3436,7 +3572,7 @@
         }
 
         &.active {
-          border: 1px solid #557fff;
+          border: 0;
           background: rgba(85, 127, 255, 0.11);
         }
 
@@ -3449,9 +3585,12 @@
         }
       }
 
-      &.expenses,
       &.transfer-change,
-      &.swap-request {
+      &.documents,
+      &.memories,
+      &.child-info,
+      &.records,
+      &.coparents {
         border: 1px solid #931414;
 
         * {
@@ -3459,54 +3598,29 @@
         }
 
         &.active {
-          border: 1px solid #931414;
+          border: 0;
           background: rgba(147, 20, 20, 0.11);
         }
       }
 
-      &.coparents,
       &.account,
       &.settings,
-      &.records {
-        border: 1px solid #213bc7;
-
-        * {
-          color: #213bc7;
-        }
-
-        &.active {
-          border: 1px solid #213bc7;
-          background: rgba(33, 59, 199, 0.11);
-        }
-      }
-
-      &.documents,
-      &.memories,
-      &.child-info {
-        border: 1px solid #2d8813;
-
-        * {
-          color: #2d8813;
-        }
-
-        &.active {
-          border: 1px solid #2d8813;
-          background: rgba(45, 136, 19, 0.11);
-        }
-      }
-
       &.contact-us,
       &.theme,
       &.logout {
-        border: 1px solid #5b3bdc;
+        border: 1px solid $purple;
 
         * {
-          color: #5b3bdc;
+          color: $purple;
         }
 
         &.active {
-          border: 1px solid #5b3bdc;
-          background: rgba(91, 59, 220, 0.11);
+          background: $purple;
+          border: 0;
+
+          * {
+            color: white;
+          }
         }
       }
 
@@ -3568,7 +3682,7 @@
 
         p,
         svg {
-          font-weight: bold;
+          font-weight: $fwMedium;
           opacity: 1;
         }
       }

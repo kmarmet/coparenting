@@ -1,6 +1,18 @@
 import Manager from "./manager"
 
 DomManager = {
+  toggleActive: (element) ->
+    if element.classList.contains("active")
+      element.classList.remove("active")
+    else
+      element.classList.add('active')
+
+  toggleAnimateClass: (element) ->
+    if element.classList.contains("animate")
+      element.classList.remove("animate")
+    else
+      element.classList.add('animate')
+
   hasClass: (element, className) ->
     if !element
       return false

@@ -104,7 +104,7 @@ export default function Activity() {
         {activities.length === 0 && <NoDataFallbackText text={'No current activity'} />}
         <p className="screen-title">Activity Log</p>
         <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
-          <p className="intro-text mb-15">Stay informed with all co-parenting and child-related updates and activity.</p>
+          <p className="intro-text mb-15">Stay informed in real-time with all updates and activity.</p>
 
           <div className="flex">
             <Accordion id={'legend'} expanded={legendIsExpanded}>

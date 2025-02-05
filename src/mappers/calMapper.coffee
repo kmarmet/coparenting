@@ -24,6 +24,16 @@ CalendarMapper =
     if Manager.contains(timeframe,'timeOfEvent', false)
       return  'At time of event'
 
+  unformattedToReadableTimeframe: (timeframe) ->
+    if Manager.contains(timeframe,'hour', false)
+      return '1 hour before'
+    if Manager.contains(timeframe,'fiveMinutes', false)
+      return  '5 minutes before'
+    if Manager.contains(timeframe,'halfHour', false)
+      return  '30 minutes before'
+    if Manager.contains(timeframe,'timeOfEvent', false)
+      return  'At time of event'
+
   readableRepeatIntervals: (selectedInterval) ->
     interval = null
     if selectedInterval.indexOf('hour') > -1

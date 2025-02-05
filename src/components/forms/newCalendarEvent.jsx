@@ -34,6 +34,7 @@ import StringManager from '/src/managers/stringManager'
 import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
 import _ from 'lodash'
 import DomManager from '../../managers/domManager.coffee'
+import Spacer from '../shared/spacer.jsx'
 
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
@@ -130,6 +131,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     newEvent.isDateRange = eventIsDateRange
     //#endregion FILL NEW EVENT
 
+    console.log(newEvent)
+
     if (Manager.isValid(eventPhone, true)) {
       if (!validator.isMobilePhone(eventPhone)) {
         AlertManager.throwError('Phone number is not valid')
@@ -208,7 +211,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       (e) => {
         childrenArr = [...eventChildren, e]
       },
-      (e) => {},
+      (e) => {
+        childrenArr = childrenArr.filter((x) => x !== e)
+      },
       true
     )
     setEventChildren(childrenArr)
@@ -223,6 +228,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     Manager.handleCheckboxSelection(
       e,
       (e) => {
+        const value = e.textContent
         let timeframe = CalendarMapper.reminderTimes(e)
         setEventReminderTimes([...eventReminderTimes, timeframe])
       },
@@ -405,6 +411,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         title={'Add New Event'}>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           {/* Event Length */}
+          <Spacer height={5} />
           <div className="calendar views-wrapper">
             <p className={`view  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
               Single Day
@@ -508,16 +515,13 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
           {/* Share with */}
           {Manager.isValid(currentUser?.coparents) && (
-            <ShareWithCheckboxes
-              checkboxGroupClass="mb-15"
-              required={false}
-              onCheck={handleShareWithSelection}
-              containerClass={'share-with-coparents'}
-            />
+            <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
           {Manager.isValid(currentUser?.parents) && (
             <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           )}
+
+          <Spacer height={5} />
 
           {/* REMINDER */}
           {!isAllDay && (
@@ -541,6 +545,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     <CheckboxGroup
                       elClass={`${theme} reminder-times`}
                       skipNameFormatting={true}
+                      defaultLabels={[]}
                       checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                       onCheck={handleReminderSelection}
                     />
@@ -550,6 +555,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </>
           )}
 
+          <Spacer height={3} />
           {/* IS VISITATION? */}
           <div>
             <div className="flex">
@@ -563,6 +569,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               />
             </div>
           </div>
+          <Spacer height={5} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.isValid(currentUser?.children) && (
@@ -613,16 +620,16 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   </AccordionSummary>
                   <AccordionDetails>
                     <CheckboxGroup
-                      elClass={`${theme} mb-15`}
+                      elClass={`${theme}`}
                       onCheck={handleRepeatingSelection}
                       defaultLabels={[]}
                       checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
                     />
+                    <Spacer height={5} />
                     {Manager.isValid(repeatInterval) && (
                       <InputWrapper inputType={'date'} labelText={'Month to End Repeating Events'} required={true}>
                         {!DomManager.isMobile() && (
                           <DatetimePicker
-                            className={`mt-0 `}
                             format={DateFormats.readableMonth}
                             views={DatetimePickerViews.monthAndYear}
                             hasAmPm={false}
@@ -642,6 +649,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   </AccordionDetails>
                 </Accordion>
               </div>
+
+              <Spacer height={2} />
 
               {/* CLONE */}
               <div>
@@ -673,6 +682,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               )}
             </>
           )}
+          <Spacer height={2} />
 
           {/* URL/WEBSITE */}
           <InputWrapper

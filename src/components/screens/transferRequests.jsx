@@ -4,7 +4,7 @@ import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
-import NotificationManager from '/src/managers/notificationManager'
+import NotificationManager from '/src/managers/notificationManager.js'
 import DB_UserScoped from '/src/database/db_userScoped'
 import DateManager from '/src/managers/dateManager.js'
 import NavBar from '../navBar'
@@ -26,15 +26,13 @@ import InputWrapper from '/src/components/shared/inputWrapper'
 import ObjectManager from '/src/managers/objectManager'
 import ModelNames from '/src/models/modelNames'
 import StringManager from '/src/managers/stringManager'
-import { setKey, fromAddress } from 'react-geocode'
-import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api'
-
-const mapStyle = {
-  width: '100%',
-  height: '400px',
-  borderRadius: '8px',
-  border: '2px solid #547eff',
-}
+import Spacer from '../shared/spacer.jsx'
+import Map from '/src/components/shared/map.jsx'
+import { setKey, fromLatLng, fromAddress } from 'react-geocode'
+import LocationManager from '../../managers/locationManager.js'
+import { IoLocationOutline } from 'react-icons/io5'
+import Checkbox from '../shared/checkbox.jsx'
+import Label from '../shared/label.jsx'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -55,17 +53,8 @@ export default function TransferRequests() {
   const [requestLocation, setRequestLocation] = useState('')
   const [requestDate, setRequestDate] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
-  const [mapCenter, setMapCenter] = useState({
-    lat: 43.3318,
-    lng: 5.055,
-  })
-  const [map, setMap] = useState(null)
-
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: 'AIzaSyAQ00ABShz89UmanYeyQgCHghWlZ07xN6U',
-  })
-
+  const [address, setAddress] = useState(null)
+  const [sendWithAddress, setSendWithAddress] = useState(false)
   const resetForm = async () => {
     Manager.resetForm('edit-event-form')
     setRequestTime('')
@@ -119,7 +108,7 @@ export default function TransferRequests() {
     if (decision === Decisions.rejected) {
       await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, activeRequest, activeRequest.id)
       const notifMessage = NotificationManager.templates.transferRequestRejection(activeRequest, recipientName)
-      NotificationManager.sendNotification(
+      await NotificationManager.sendNotification(
         'Transfer Request Decision',
         notifMessage,
         activeRequest?.ownerPhone,
@@ -134,7 +123,7 @@ export default function TransferRequests() {
       await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, activeRequest, activeRequest.id)
       const notifMessage = NotificationManager.templates.transferRequestApproval(activeRequest, recipientName)
       setShowDetails(false)
-      NotificationManager.sendNotification(
+      await NotificationManager.sendNotification(
         'Transfer Request Decision',
         notifMessage,
         activeRequest?.ownerPhone,
@@ -163,6 +152,22 @@ export default function TransferRequests() {
     }, 100)
   }
 
+  const checkIn = async () => {
+    await NotificationManager.sendNotification(
+      'Transfer Check In',
+      `Check in at ${activeRequest?.location}`,
+      '3307494534',
+      currentUser,
+      ActivityCategory.expenses
+    )
+    console.log(sendWithAddress)
+  }
+
+  const getCurrentUserAddress = async () => {
+    const address = await LocationManager.getAddress()
+    setAddress(address)
+  }
+
   useEffect(() => {
     if (activeRequest) {
       setDefaults()
@@ -171,27 +176,9 @@ export default function TransferRequests() {
 
   useEffect(() => {
     onTableChange().then((r) => r)
+    getCurrentUserAddress().then((r) => r)
+    setKey(process.env.REACT_GOOGLE_MAPS_API_KEY) // Your API key here.
   }, [])
-
-  useEffect(() => {
-    setKey(process.env.REACT_GOOGLE_MAPS_API_KEY)
-  }, [])
-
-  const onLoad = useCallback(async function callback(map) {
-    setMap(map)
-  }, [])
-
-  useEffect(() => {
-    if (Manager.isValid(activeRequest?.location)) {
-      fromAddress(activeRequest?.location).then(({ results }) => {
-        const location = results[0].geometry.location
-        setMapCenter({
-          lat: location.lat,
-          lng: location.lng,
-        })
-      })
-    }
-  }, [activeRequest?.location])
 
   return (
     <>
@@ -199,7 +186,6 @@ export default function TransferRequests() {
 
       {/* DETAILS CARD */}
       <BottomCard
-        refreshKey={refreshKey}
         submitText={'Approve'}
         onDelete={() => deleteRequest('deleted')}
         title={'Request Details'}
@@ -212,6 +198,7 @@ export default function TransferRequests() {
         onClose={() => setShowDetails(false)}
         showCard={showDetails}>
         <div id="details" className={`content ${activeRequest?.reason.length > 20 ? 'long-text' : ''}`}>
+          <Spacer height={8} />
           <div className="views-wrapper">
             <p onClick={() => setView('details')} className={view === 'details' ? 'view active' : 'view'}>
               Details
@@ -225,7 +212,7 @@ export default function TransferRequests() {
               {/* TRANSFER DATE */}
               {Manager.isValid(activeRequest?.date) && (
                 <div className="flex">
-                  <b>Transfer Date: </b>
+                  <b>Transfer Date</b>
                   <p>{activeRequest.endDate}</p>
                   <span>{DateManager.formatDate(activeRequest?.date)}</span>
                 </div>
@@ -234,7 +221,7 @@ export default function TransferRequests() {
               {/* RESPOND BY */}
               {Manager.isValid(activeRequest?.responseDueDate) && (
                 <div className="flex">
-                  <b>Respond by: </b>
+                  <b>Respond by </b>
                   <span>
                     {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
                     {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
@@ -254,14 +241,14 @@ export default function TransferRequests() {
               {/* TIME */}
               {Manager.isValid(activeRequest?.time) && (
                 <div className="flex">
-                  <b>Time: </b>
+                  <b>Time </b>
                   <span>{activeRequest?.time}</span>
                 </div>
               )}
 
               {/* STATUS */}
               <div className="flex">
-                <b>Status: </b>
+                <b>Status </b>
                 <span>{StringManager.uppercaseFirstLetterOfAllWords(activeRequest?.status)}</span>
               </div>
 
@@ -272,16 +259,24 @@ export default function TransferRequests() {
                     <b>Location</b>
                     <span>{activeRequest?.location}</span>
                   </div>
+                  <Spacer height={5} />
+
+                  <p className="center fs-14 op-7">notify your co-parent that you have arrived at the transfer location</p>
+                  <Spacer height={5} />
+                  {/* ARRIVED */}
+                  <button className="button default center" onClick={checkIn}>
+                    We're Here <IoLocationOutline />
+                  </button>
+                  <Spacer height={5} />
+                  <Checkbox wrapperClass="center" text={'Include Current Address'} onClick={() => setSendWithAddress(!sendWithAddress)} />
+
                   <a className="nav-detail" href={activeRequest?.directionsLink} target="_blank" rel="noreferrer">
                     <BiSolidNavigation /> Navigation
                   </a>
-                  <GoogleMap key={activeRequest?.id} mapContainerStyle={mapStyle} onLoad={onLoad} center={mapCenter} zoom={15}>
-                    <MarkerF
-                      position={{ lat: mapCenter.lat, lng: mapCenter.lng }}
-                      onClick={() => {
-                        AlertManager.oneButtonAlert(`This is where ${activeRequest?.title} is located`)
-                      }}></MarkerF>
-                  </GoogleMap>
+                  <Label text={'Transfer Location'} classes="center-text" />
+                  <Spacer height={3} />
+                  {/* MAP */}
+                  <Map locationString={activeRequest?.location} />
                 </>
               )}
 
@@ -387,9 +382,7 @@ export default function TransferRequests() {
             {!DomManager.isMobile() && <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />}
           </div>
           <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>
-
-          {existingRequests.length > 0 && <p id="page-title">All Requests</p>}
-
+          <Spacer height={10} />
           {/* LOOP REQUESTS */}
           {!showNewRequestCard && (
             <div id="all-transfer-requests-container" className="mt-15">

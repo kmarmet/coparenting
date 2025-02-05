@@ -67,6 +67,7 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
               return (
                 <div
                   id="row"
+                  key={index}
                   onClick={(e) => handleEventRowClick(event)}
                   data-from-date={event?.startDate}
                   className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className} ${index === eventsOfActiveDay.length - 2 ? 'last-child' : ''}`}>

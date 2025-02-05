@@ -31,6 +31,7 @@ import ActivityCategory from '../../models/activityCategory'
 import { MdEventRepeat, MdOutlineFaceUnlock } from 'react-icons/md'
 import StringManager from '../../managers/stringManager.coffee'
 import DomManager from '../../managers/domManager.coffee'
+import Spacer from '../shared/spacer.jsx'
 
 export default function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -134,7 +135,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
 
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
-    if (activeRepeatIntervals.length > 0 && !expenseDueDate) {
+    if (Manager.isValid(activeRepeatIntervals) && activeRepeatIntervals.length > 0 && !expenseDueDate) {
       AlertManager.throwError('If you have chosen a repeat interval, you must also set a due date')
       return false
     }
@@ -243,6 +244,10 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   }
 
   const handleRepeatingSelection = async (e) => {
+    const repeatingWrapper = document.getElementById('repeating-container')
+    const checkboxWrappers = repeatingWrapper.querySelectorAll('#checkbox-wrapper, #label-wrapper')
+    console.log(checkboxWrappers)
+    checkboxWrappers.forEach((wrapper) => wrapper.classList.remove('active'))
     Manager.handleCheckboxSelection(
       e,
       (e) => {
@@ -422,7 +427,10 @@ export default function NewExpenseForm({ hideCard, showCard }) {
             </InputWrapper>
           )}
 
+          {/* NOTES */}
           <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'}></InputWrapper>
+
+          <Spacer height={40} />
 
           {/* PAYER */}
           <CheckboxGroup
@@ -433,6 +441,8 @@ export default function NewExpenseForm({ hideCard, showCard }) {
             onCheck={handlePayerSelection}
           />
 
+          <Spacer height={10} />
+
           {/* SHARE WITH */}
           <ShareWithCheckboxes
             shareWith={currentUser?.coparents?.map((x) => x.phone)}
@@ -442,6 +452,8 @@ export default function NewExpenseForm({ hideCard, showCard }) {
             dataPhone={currentUser?.coparents?.map((x) => x.phone)}
             checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
           />
+
+          <Spacer height={10} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {currentUser && currentUser?.children !== undefined && (
@@ -462,12 +474,13 @@ export default function NewExpenseForm({ hideCard, showCard }) {
               )}
             </div>
           )}
+          <Spacer height={5} />
 
           {/* REPEATING? */}
           <div className="share-with-container" id="repeating-container">
             <div className="share-with-container ">
               <div className="flex">
-                <p>Repeating</p>
+                <p>Recurring</p>
                 <Toggle
                   icons={{
                     checked: <MdEventRepeat />,
@@ -480,6 +493,8 @@ export default function NewExpenseForm({ hideCard, showCard }) {
               {repeating && (
                 <>
                   <CheckboxGroup onCheck={handleRepeatingSelection} checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
+                  <Spacer height={5} />
+
                   {!DomManager.isMobile() && repeatInterval && (
                     <>
                       <label className="mb-5">Month to end repeating expense</label>

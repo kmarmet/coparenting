@@ -20,7 +20,7 @@ if ('serviceWorker' in navigator) {
     } else {
       // handle offline status
       console.log('offline')
-      AlertManager.throwError('App is Offline', 'Please find an area with a stronger network connection and reopen the app.')
+      AlertManager.throwError('No Internet', 'Please find an area with a stronger network connection and reopen the app.')
     }
   }
   window.addEventListener('offline', handleConnection)

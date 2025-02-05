@@ -4,6 +4,20 @@ var DomManager;
 import Manager from "./manager";
 
 DomManager = {
+  toggleActive: function(element) {
+    if (element.classList.contains("active")) {
+      return element.classList.remove("active");
+    } else {
+      return element.classList.add('active');
+    }
+  },
+  toggleAnimateClass: function(element) {
+    if (element.classList.contains("animate")) {
+      return element.classList.remove("animate");
+    } else {
+      return element.classList.add('animate');
+    }
+  },
   hasClass: function(element, className) {
     if (!element) {
       return false;

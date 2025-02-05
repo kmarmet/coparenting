@@ -15,6 +15,17 @@
   }
 
   #all-transfer-requests-container {
+    #row {
+      .request {
+        #title {
+          &.row-title {
+            font-weight: $fwRegular;
+            color: black;
+            opacity: 1;
+          }
+        }
+      }
+    }
     .request {
       &.active {
         margin-top: 0;

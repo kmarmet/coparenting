@@ -6,11 +6,11 @@ import { IoCloseOutline } from 'react-icons/io5'
 import DB_UserScoped from '../../database/db_userScoped'
 import ScreenNames from '../../constants/screenNames'
 import Label from './label.jsx'
+import Checkbox from './checkbox.jsx'
 
 export default function CheckboxGroup({
   checkboxLabels,
   onCheck,
-  pillClass = '',
   elClass = '',
   dataPhone,
   dataDate,
@@ -22,6 +22,7 @@ export default function CheckboxGroup({
   const { state, setState } = useContext(globalState)
   const { theme, currentUser, currentScreen } = state
   const [showCheckboxes, setShowCheckboxes] = useState(false)
+
   const setCheckboxVisibility = async () => {
     const numberOfValidAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
     if (numberOfValidAccounts > 0) {
@@ -34,6 +35,7 @@ export default function CheckboxGroup({
   }
   useEffect(() => {
     setCheckboxVisibility().then((r) => r)
+    console.log(defaultLabels)
   }, [])
 
   return (
@@ -65,16 +67,18 @@ export default function CheckboxGroup({
                   label = formatNameFirstNameOnly(label.toString())
                 }
                 return (
-                  <span
+                  <Checkbox
                     key={index}
-                    data-phone={thisPhone ? thisPhone : ''}
-                    data-label={label ? label : ''}
-                    data-date={thisDate ? thisDate : ''}
-                    className={`pill ${pillClass} ${Manager.isValid(defaultLabels) && defaultLabels.includes(label) ? 'active' : ''}`}
-                    onClick={(e) => onCheck(e)}>
-                    {label}
+                    text={label}
+                    dataPhone={thisPhone ? thisPhone : ''}
+                    dataLabel={label ? label : ''}
+                    dataDate={thisDate ? thisDate : ''}
+                    defaultLabels={defaultLabels}
+                    onClick={(e) => {
+                      onCheck(e)
+                    }}>
                     <IoCloseOutline />
-                  </span>
+                  </Checkbox>
                 )
               })}
           </div>

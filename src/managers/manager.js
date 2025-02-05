@@ -236,11 +236,12 @@ const Manager = {
     return directionsLink
   },
   handleCheckboxSelection: (element, onCheck, onCheckRemoval, canSelectAll = false) => {
-    const clickedEl = element.currentTarget
-    const labels = clickedEl.closest('#checkboxes').querySelectorAll(`[data-label]`)
-
+    const clickedEl = element
+    const labels = clickedEl.querySelectorAll(`[data-label]`)
+    console.log(canSelectAll)
     // UNCHECK
     if (clickedEl.classList.contains('active')) {
+      console.log('uncheck')
       clickedEl.classList.remove('active')
       const label = clickedEl.dataset['label']
       if (onCheckRemoval) onCheckRemoval(label)
@@ -248,8 +249,10 @@ const Manager = {
     // CHECK
     else {
       const label = clickedEl.dataset['label']
+      console.log(clickedEl)
       if (canSelectAll === false) {
         labels.forEach((labelEl) => {
+          console.log('here')
           labelEl.classList.remove('active')
         })
       }
@@ -260,11 +263,11 @@ const Manager = {
   },
   handleShareWithSelection: (e, currentUser, shareWith) => {
     const clickedEl = e.currentTarget
-    const pill = clickedEl.querySelector('.pill')
+    const checkbox = clickedEl.querySelector('#checkbox')
     const selectedValue = clickedEl.getAttribute('data-phone')
+
     // UNCHECK
-    if (pill.classList.contains('active')) {
-      pill.classList.remove('active')
+    if (!checkbox.classList.contains('active')) {
       if (Manager.isValid(shareWith)) {
         shareWith = shareWith.filter((x) => x !== selectedValue)
       }
@@ -272,7 +275,7 @@ const Manager = {
 
     // CHECK
     else {
-      pill.classList.add('active')
+      // PARENTS
       if (currentUser?.accountType === 'parent') {
         currentUser?.coparents?.forEach((coparent) => {
           if (coparent?.phone === selectedValue) {
@@ -285,6 +288,8 @@ const Manager = {
             }
           }
         })
+
+        // CHILDREN
         currentUser?.children?.forEach((child) => {
           if (child?.general?.phone === selectedValue) {
             if (shareWith?.length === 0) {

@@ -1,6 +1,6 @@
 import { child, getDatabase, ref, set } from 'firebase/database'
 import moment from 'moment'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../context'
 import DB from '/src/database/DB'
@@ -9,7 +9,12 @@ import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import NotificationManager from '/src/managers/notificationManager'
 import CalendarMapper from '/src/mappers/calMapper'
 import DateFormats from '/src/constants/dateFormats'
+import { PiCalendarDotDuotone, PiGlobeDuotone, PiUserCircleDuotone } from 'react-icons/pi'
+import { PiBellSimpleRingingDuotone } from 'react-icons/pi'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
+import { FaExternalLinkSquareAlt } from 'react-icons/fa'
+import { LiaMapMarkedAltSolid } from 'react-icons/lia'
+import { IoTimeOutline } from 'react-icons/io5'
 import CalendarManager from '/src/managers/calendarManager.js'
 import Toggle from 'react-toggle'
 import Accordion from '@mui/material/Accordion'
@@ -33,15 +38,10 @@ import StringManager from '/src/managers/stringManager'
 import { LuCalendarCheck } from 'react-icons/lu'
 import { MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
 import DomManager from '../../managers/domManager.coffee'
-import { setKey, fromAddress } from 'react-geocode'
-import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api'
-
-const mapStyle = {
-  width: '100%',
-  height: '400px',
-  borderRadius: '8px',
-  border: '2px solid #547eff',
-}
+import Map from '../shared/map.jsx'
+import { FaChildren } from 'react-icons/fa6'
+import CalMapper from '/src/mappers/calMapper'
+import Spacer from '../shared/spacer.jsx'
 
 export default function EditCalEvent({ event, showCard, onClose }) {
   const { state, setState } = useContext(globalState)
@@ -75,16 +75,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const [isDateRange, setIsDateRange] = useState(false)
   const [shareWithNames, setShareWithNames] = useState([])
   const [dataIsLoading, setDataIsLoading] = useState(true)
-  const [mapCenter, setMapCenter] = useState({
-    lat: 43.3318,
-    lng: 5.055,
-  })
-  const [map, setMap] = useState(null)
-
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: 'AIzaSyAQ00ABShz89UmanYeyQgCHghWlZ07xN6U',
-  })
 
   const resetForm = async () => {
     Manager.resetForm('edit-event-form')
@@ -458,27 +448,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     }
   }, [document.querySelector('.swal2-confirm')])
 
-  useEffect(() => {
-    setKey(process.env.REACT_GOOGLE_MAPS_API_KEY)
-  }, [])
-
-  const onLoad = useCallback(async function callback(map) {
-    setMap(map)
-  }, [])
-
-  useEffect(() => {
-    if (Manager.isValid(event?.location)) {
-      fromAddress(event?.location).then(({ results }) => {
-        const location = results[0].geometry.location
-        setMapCenter({
-          lat: location.lat,
-          lng: location.lng,
-        })
-        setMap(map)
-      })
-    }
-  }, [event?.id])
-
   return (
     <BottomCard
       onDelete={() => {
@@ -502,6 +471,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       className="edit-calendar-event"
       wrapperClass="edit-calendar-event">
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
+        <Spacer height={10} />
         <div className="views-wrapper flex">
           <p className={view === 'details' ? 'view active' : 'view'} onClick={() => setView('details')}>
             Details
@@ -518,7 +488,9 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                 <div id="details">
                   {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
                     <div className="flex">
-                      <b>Date</b>
+                      <b>
+                        <PiCalendarDotDuotone /> Date
+                      </b>
                       <span className="">{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</span>
                     </div>
                   )}
@@ -531,63 +503,93 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                       </span>
                     </div>
                   )}
+
+                  {/* START TIME */}
                   {DateManager.isValidDate(event?.startTime) && DateManager.isValidDate(event?.endTime) && (
                     <div className="flex">
-                      <b>Time</b>
+                      <b>
+                        <IoTimeOutline />
+                        Time
+                      </b>
                       <span className="">
                         {event?.startTime} to {event?.endTime}
                       </span>
                     </div>
                   )}
+
+                  {/* END TIME */}
                   {DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime) && (
                     <div className="flex">
-                      <b>Time</b>
+                      <b>
+                        <IoTimeOutline />
+                        Time
+                      </b>
                       <span className="">{event?.startTime}</span>
                     </div>
                   )}
 
+                  {/* SHARE WITH */}
                   {Manager.isValid(eventShareWith) && (
                     <div className="flex">
-                      <b>Shared with</b>
+                      <b>
+                        <PiUserCircleDuotone />
+                        Shared with
+                      </b>
                       <span className="">{shareWithNames?.join(', ')}</span>
                     </div>
                   )}
 
                   {/* REMINDERS */}
                   {Manager.isValid(event?.reminderTimes) && (
-                    <div className="flex">
-                      <b>Reminders</b>
-
-                      <span
-                        className="pill"
-                        dangerouslySetInnerHTML={{
-                          __html: `${event?.reminderTimes
-                            .map((x) => CalendarMapper.readableReminderBeforeTimeframes(x))
-                            .join('|')
-                            .replaceAll('|', '<span class="divider">|</span>')}`,
-                        }}></span>
+                    <div className="flex reminders">
+                      <b>
+                        <PiBellSimpleRingingDuotone />
+                        Reminders
+                      </b>
+                      <div id="reminder-times">
+                        {Manager.isValid(event?.reminderTimes) &&
+                          event?.reminderTimes.map((time, index) => {
+                            time = CalMapper.unformattedToReadableTimeframe(time)
+                            time = StringManager.uppercaseFirstLetterOfAllWords(time).replaceAll('Of', 'of')
+                            return <span key={index}>{time}</span>
+                          })}
+                      </div>
                     </div>
                   )}
 
+                  {/* CHILDREN */}
                   {Manager.isValid(event?.children) && (
-                    <div className="flex wrap no-gap">
-                      <b className="w-100">Children</b>
-                      <p
-                        dangerouslySetInnerHTML={{
-                          __html: `${event?.children.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                        }}></p>
+                    <div className="flex children">
+                      <b>
+                        <FaChildren />
+                        Children
+                      </b>
+                      <div id="children">
+                        {Manager.isValid(event?.children) &&
+                          event?.children.map((child, index) => {
+                            return <span key={index}>{child}</span>
+                          })}
+                      </div>
                     </div>
                   )}
+
+                  {/* WEBSITE */}
                   {Manager.isValid(event?.websiteUrl) && (
-                    <div className="flex wrap no-gap">
-                      <p className="w-100">
-                        <b>Website</b>
+                    <div className="flex" id="website">
+                      <p>
+                        <b>
+                          <PiGlobeDuotone />
+                          Website
+                        </b>
                       </p>
                       <a className="" href={decodeURIComponent(event?.websiteUrl)} target="_blank">
                         {decodeURIComponent(event?.websiteUrl)}
+                        <FaExternalLinkSquareAlt className={'external-icon'} />
                       </a>
                     </div>
                   )}
+
+                  {/* PHONE */}
                   {Manager.isValid(event?.phone) && (
                     <div className="flex">
                       <b>Phone</b>
@@ -596,32 +598,35 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                       </a>
                     </div>
                   )}
+
+                  {/* NOTES */}
                   {Manager.isValid(event?.notes) && (
                     <div className="flex wrap no-gap">
                       <p className="w-100">
                         <b>Notes</b>
                       </p>
-                      <span className="">{event?.notes}</span>
+                      <span className="notes">{event?.notes}</span>
                     </div>
                   )}
+
+                  {/* LOCATION */}
                   {Manager.isValid(event?.location) && (
                     <>
                       <div className="flex">
-                        <b>Location</b>
+                        <b>
+                          <LiaMapMarkedAltSolid />
+                          Location
+                        </b>
                         <span>{event?.location}</span>
                       </div>
                       <a className=" nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
                         <BiSolidNavigation /> Navigation
                       </a>
-                      <GoogleMap key={event?.id} mapContainerStyle={mapStyle} onLoad={onLoad} center={mapCenter} zoom={15}>
-                        <MarkerF
-                          position={{ lat: mapCenter.lat, lng: mapCenter.lng }}
-                          onClick={() => {
-                            AlertManager.oneButtonAlert(`This is where ${event?.title} is located`)
-                          }}></MarkerF>
-                      </GoogleMap>
+                      <Map key={event?.id} locationString={event?.location} />
                     </>
                   )}
+
+                  {/* REPEAT INTERVAL */}
                   {Manager.isValid(event?.repeatInterval) && (
                     <div className="flex">
                       <b>Repeat Interval</b>
@@ -646,7 +651,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   {/*    <p>Multiple Days</p>*/}
                   {/*  </div>*/}
                   {/*</div>*/}
-
+                  <Spacer height={15} />
                   {/* EVENT NAME */}
                   <div className="title-suggestion-wrapper">
                     <InputWrapper
@@ -754,6 +759,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                       containerClass={`share-with-coparents`}
                     />
                   )}
+                  <Spacer height={5} />
                   {/* ALL DAY / HAS END DATE */}
                   <div className={!DateManager.isValidDate(event?.startTime) ? 'flex all-day-toggle default-checked' : 'flex all-day-toggle'}>
                     <p>All Day</p>

@@ -139,6 +139,13 @@
     }
   }
 }
+.react-toggle-thumb {
+  width: 20px !important;
+  height: 20px !important;
+}
+.react-toggle-track {
+  height: 22px !important;
+}
 .react-toggle--checked,
 .react-toggle--focus,
 .react-toggle-thumb {
@@ -240,6 +247,12 @@
       }
     }
   }
+  #spacer {
+    height: 1px;
+    width: 100%;
+    display: block;
+  }
+
   #pull-to-refresh-wrapper {
     display: flex;
     align-items: center;
@@ -361,10 +374,6 @@
       }
     }
 
-    .checkbox {
-      @include checkbox;
-    }
-
     #menu-overlay {
       &.dark {
         position: fixed;
@@ -423,6 +432,10 @@
     /*#region  CLASS/ID DEFAULTS*/
     .green {
       color: $green;
+    }
+
+    #checkbox-wrapper {
+      @include checkboxWrapper;
     }
 
     .views-wrapper {

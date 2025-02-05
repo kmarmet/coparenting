@@ -46,7 +46,6 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     setPreferredLocation('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
     setState({ ...state, currentUser: updatedCurrentUser })
-    setRefreshKey(Manager.getUid())
   }
 
   const submit = async () => {

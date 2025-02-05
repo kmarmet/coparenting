@@ -150,9 +150,30 @@ export default function Home() {
           </div>
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.image'}>
             <div className="flex" id="images">
-              <LazyLoadImage className={'image'} delay={1000} src={require('/src/img/homepage/memories.png')} alt="Menu" effect="blur" />
-              <LazyLoadImage className={'image'} delay={1000} src={require('/src/img/homepage/calendar.png')} alt="Menu" effect="blur" />
-              <LazyLoadImage className={'image'} delay={1000} src={require('/src/img/homepage/childInfo.png')} alt="Menu" effect="blur" />
+              <LazyLoadImage
+                data-src={'/src/img/homepage/memories.png'}
+                className={'image'}
+                delay={1000}
+                src={require('/src/img/homepage/memories.png')}
+                alt="Menu"
+                effect="blur"
+              />
+              <LazyLoadImage
+                data-src={'/src/img/homepage/calendar.png'}
+                className={'image'}
+                delay={1000}
+                src={require('/src/img/homepage/calendar.png')}
+                alt="Menu"
+                effect="blur"
+              />
+              <LazyLoadImage
+                data-src={'/src/img/homepage/childInfo.png'}
+                className={'image'}
+                delay={1000}
+                src={require('/src/img/homepage/childInfo.png')}
+                alt="Menu"
+                effect="blur"
+              />
             </div>
           </LightGallery>
         </Fade>

@@ -5,7 +5,8 @@ export default function Label({ labelId = '', classes = '', children, text, requ
     <div id="label-wrapper" className={classes}>
       <label className={`${isBold ? 'bold' : ''}`} id={labelId}>
         {icon ? icon : ''}
-        <span dangerouslySetInnerHTML={{ __html: `${text}${required ? '<span class="asterisk">*</span>' : ''}` }}></span>
+        {text}
+        {required && <span className="asterisk">*</span>}
       </label>
       {children}
     </div>
