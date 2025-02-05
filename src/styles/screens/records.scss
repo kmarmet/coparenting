@@ -81,8 +81,8 @@
     .sorting-dropdown {
       margin-bottom: 15px;
       [role='combobox'] {
-        border-radius: 50px !important;
-        padding: 8px 15px;
+        padding: 8px;
+        height: auto !important;
       }
     }
 

@@ -14,6 +14,7 @@ import { Fade } from 'react-awesome-reveal'
 import { RiFileExcel2Fill } from 'react-icons/ri'
 import globalState from '../../context'
 import NavBar from '../navBar'
+import Spacer from '../shared/spacer'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -138,6 +139,8 @@ export default function Records() {
             onCheck={handleRecordTypeSelection}
           />
 
+          <Spacer height={5} />
+
           {/* PAYERS */}
           {currentUser?.coparents.length > 1 && (
             <>
@@ -152,6 +155,8 @@ export default function Records() {
               />
             </>
           )}
+
+          <Spacer height={10} />
 
           {/* SORTING */}
           <div id="sorting-wrapper">
