@@ -1,22 +1,27 @@
-import React, { useContext, useState } from 'react'
-import Label from './label.jsx'
+import React, { useContext } from 'react'
+import globalState from '../../context.js'
 import DomManager from '../../managers/domManager.coffee'
 import Manager from '../../managers/manager.js'
-import globalState from '../../context.js'
+import Label from './label.jsx'
 
 export default function Checkbox({ defaultLabels, text, onClick, wrapperClass = '', dataPhone, dataDate, dataLabel }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser, refreshKey } = state
+
   const toggleActive = (e) => {
     const checkboxWrapper = e.currentTarget
     const label = checkboxWrapper.querySelector('#label-wrapper')
     const checkbox = checkboxWrapper.querySelector('#checkbox')
     DomManager.toggleActive(label)
     DomManager.toggleActive(checkbox)
-    DomManager.toggleAnimateClass(checkbox)
-    const labelText = checkbox.nextSibling.textContent
+    checkboxWrapper.classList.add('animate')
+
+    setTimeout(function () {
+      checkboxWrapper.classList.remove('animate')
+    }, 700)
     onClick(e.currentTarget)
   }
+
   return (
     <div
       key={refreshKey}

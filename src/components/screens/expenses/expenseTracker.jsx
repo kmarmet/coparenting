@@ -10,17 +10,15 @@ import DateFormats from '/src/constants/dateFormats.js'
 import moment from 'moment'
 import BottomCard from '../../shared/bottomCard.jsx'
 import { AiOutlineFileAdd } from 'react-icons/ai'
-import { MdOutlineFilterAltOff } from 'react-icons/md'
+import { FaChildren } from 'react-icons/fa6'
 import SecurityManager from '/src/managers/securityManager'
 import NewExpenseForm from '../../forms/newExpenseForm.jsx'
-import FirebaseStorage from '/src/database/firebaseStorage'
 import LightGallery from 'lightgallery/react'
 import MenuItem from '@mui/material/MenuItem'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import { Fade } from 'react-awesome-reveal'
 import { RxUpdate } from 'react-icons/rx'
 import 'lightgallery/css/lightgallery.css'
-import { BsFilter } from 'react-icons/bs'
 import NavBar from '../../navBar.jsx'
 import Label from '../../shared/label.jsx'
 import ExpenseCategories from '/src/constants/expenseCategories'
@@ -37,7 +35,6 @@ import ModelNames from '/src/models/modelNames'
 import StringManager from '/src/managers/stringManager'
 import ExpenseManager from '/src/managers/expenseManager.js'
 import PaymentOptions from './paymentOptions.jsx'
-import DB_UserScoped from '../../../database/db_userScoped.js'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -266,85 +263,88 @@ export default function ExpenseTracker() {
           {view === 'details' && (
             <>
               {/* NAME */}
-              <div id="row" className="flex-start">
-                <p id="title">
-                  <b>Name:</b> <span>{StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name)}</span>
-                </p>
+              <div className="flex">
+                <b>Name</b> <span>{StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name)}</span>
               </div>
+
               {/* AMOUNT */}
-              <div id="row" className="flex-start">
-                <p id="title">
-                  <b>Amount:</b> <span>${activeExpense?.amount}</span>
-                </p>
+              <div className="flex">
+                <b>Amount</b> <span>${activeExpense?.amount}</span>
               </div>
+
+              {activeExpense?.repeating && (
+                <>
+                  {/* IS RECURRING */}
+                  <div className="flex">
+                    <b>Recurring</b> <span>{activeExpense?.repeating ? 'Yes' : 'No'}</span>
+                  </div>
+
+                  {/* RECURRING INTERVAL */}
+                  <div className="flex">
+                    <b>Recurring Frequency</b> <span>{StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.repeatInterval)}</span>
+                  </div>
+                </>
+              )}
 
               {/* CATEGORY */}
               {Manager.isValid(activeExpense?.category) && (
-                <div id="row" className="flex-start">
-                  <p id="title">
-                    <b>Category:</b> <span>{activeExpense?.category}</span>
-                  </p>
+                <div className="flex">
+                  <b>Category</b> <span>{activeExpense?.category}</span>
                 </div>
               )}
 
               {/* SENT TO */}
-              <div id="row" className="flex-start">
-                <p id="title">
-                  <b>Sent to: </b>
-                  <span>
-                    {StringManager.formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
-                  </span>
-                </p>
+              <div className="flex">
+                <b>Sent to: </b>
+                <span>
+                  {StringManager.formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
+                </span>
               </div>
 
               {/* PAY TO */}
-              <div id="row" className="flex-start">
-                <p id="title">
-                  <b>Pay to: </b>
-                  <span> {StringManager.formatNameFirstNameOnly(activeExpense?.recipientName)}</span>
-                </p>
+              <div className="flex">
+                <b>Pay to: </b>
+                <span> {StringManager.formatNameFirstNameOnly(activeExpense?.recipientName)}</span>
               </div>
 
               {/* DUE DATE */}
               {activeExpense?.dueDate && activeExpense?.dueDate?.length > 0 && (
-                <div className="flex-start" id="row">
-                  <p id="title">
-                    <b>Due Date: </b>
-                    <span>
-                      {DateManager.formatDate(activeExpense?.dueDate)} ({moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString()})
-                    </span>
-                  </p>
+                <div className="flex">
+                  <b>Due Date: </b>
+                  <span>
+                    {DateManager.formatDate(activeExpense?.dueDate)} ({moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString()})
+                  </span>
                 </div>
               )}
 
               {/* CHILDREN */}
               {Manager.isValid(activeExpense?.children) && (
-                <div className="flex wrap" id="row">
-                  <p id="title" className="mr-auto">
-                    <b>Children</b>
-                  </p>
-                  <p
-                    className="w-100 mb-5"
-                    dangerouslySetInnerHTML={{
-                      __html: `${activeExpense?.children?.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                    }}></p>
+                <div className="flex children">
+                  <b>
+                    <FaChildren />
+                    Children
+                  </b>
+                  <div id="children">
+                    {Manager.isValid(activeExpense?.children) &&
+                      activeExpense?.children.map((child, index) => {
+                        return <span key={index}>{child}</span>
+                      })}
+                  </div>
                 </div>
               )}
 
               {/* DATE ADDED */}
-              <div id="row" className="flex-start flex">
-                <p id="title">
-                  <b>Created on: </b> <span>{moment(activeExpense?.dateAdded).format(DateFormats.monthDayYear)}</span>
-                </p>
+              <div className="flex">
+                <b>Created on: </b> <span>{moment(activeExpense?.dateAdded).format(DateFormats.monthDayYear)}</span>
               </div>
 
               {/* NOTES */}
-              {activeExpense?.notes && activeExpense?.notes?.length > 0 && (
-                <div className="flex wrap" id="row">
-                  <p id="title" className="mr-auto mb-5">
-                    <b>Notes: </b>
+              {Manager.isValid(activeExpense?.notes) && (
+                <div className="flex wrap no-gap">
+                  <p className="w-100">
+                    <b>Notes</b>
                   </p>
-                  <p className="notes neg-10">{activeExpense?.notes}</p>
+                  <span className="notes">{activeExpense?.notes}</span>
                 </div>
               )}
 
@@ -539,9 +539,7 @@ export default function ExpenseTracker() {
                     <div id="content" data-expense-id={expense?.id} className={`expense wrap`}>
                       {/* EXPENSE NAME */}
                       <div id="name-wrapper" className="flex align-center">
-                        <p id="title" className="name row-title">
-                          {StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}
-                        </p>
+                        <p className="name row-title">{StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}</p>
                         <span className={`${expense?.paidStatus} status`} id="request-status">
                           {StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
                         </span>

@@ -153,14 +153,17 @@ export default function TransferRequests() {
   }
 
   const checkIn = async () => {
+    let notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} at ${activeRequest?.location}`
+    if (!sendWithAddress) {
+      notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} has Arrived`
+    }
     await NotificationManager.sendNotification(
-      'Transfer Check In',
-      `Check in at ${activeRequest?.location}`,
-      '3307494534',
+      'Transfer Destination Arrival',
+      notificationMessage,
+      activeRequest?.recipientPhone,
       currentUser,
       ActivityCategory.expenses
     )
-    console.log(sendWithAddress)
   }
 
   const getCurrentUserAddress = async () => {

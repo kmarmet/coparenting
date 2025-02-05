@@ -1,9 +1,9 @@
+import moment from 'moment'
 import React, { useContext, useEffect } from 'react'
 import { DebounceInput } from 'react-debounce-input'
-import Label from './label'
-import Manager from '../../managers/manager'
 import globalState from '../../context.js'
-import moment from 'moment'
+import Manager from '../../managers/manager'
+import Label from './label'
 
 function InputWrapper({
   wrapperClasses = '',
@@ -35,7 +35,14 @@ function InputWrapper({
   }, [])
 
   return (
-    <div id="input-wrapper" className={`${wrapperClasses} ${inputType}  input-container form`}>
+    <div
+      onClick={(e) => {
+        const wrapper = e.currentTarget
+        wrapper.classList.add('active')
+        wrapper.querySelector('#label-wrapper').classList.add('active')
+      }}
+      id="input-wrapper"
+      className={`${wrapperClasses} ${inputType}  input-container form`}>
       {Manager.isValid(labelText) && <Label text={`${labelText}`} required={required} />}
       {!noInputTypes.includes(inputType) && (
         <>
@@ -43,7 +50,7 @@ function InputWrapper({
             value={defaultValue}
             element={inputType}
             minLength={2}
-            placeholder={placeholder}
+            placeholder={labelText}
             className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
             onChange={onChange}
             debounceTimeout={isDebounced ? 800 : 0}
@@ -51,28 +58,26 @@ function InputWrapper({
             type={inputValueType}
             pattern={inputValueType === 'tel' ? '[0-9]{3} [0-9]{3} [0-9]{4}' : ''}
             maxLength={inputValueType === 'tel' ? 12 : 100}
-            onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
           />
         </>
       )}
 
       {/* DATE/LOCATION */}
       {noInputTypes.includes(inputType) && useNativeDate && (
-        <input value={moment(defaultValue).format('yyyy-MM-DD')} type="date" onChange={onChange} />
+        <input
+          onClick={(e) => {
+            console.log(e)
+          }}
+          value={moment(defaultValue).format('yyyy-MM-DD')}
+          type="date"
+          onChange={onChange}
+        />
       )}
       {noInputTypes.includes(inputType) && !useNativeDate && <>{children}</>}
 
       {/* TEXTAREA */}
       {inputType === 'textarea' && (
-        <textarea
-          onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
-          onChange={onChange}
-          className={inputClasses}
-          cols="30"
-          defaultValue={defaultValue}
-          key={refreshKey}
-          rows="10"
-        />
+        <textarea onChange={onChange} className={inputClasses} cols="30" defaultValue={defaultValue} key={refreshKey} rows="10" />
       )}
     </div>
   )

@@ -130,12 +130,14 @@ export default function Login() {
 
   const togglePersistence = (e) => {
     const clickedEl = e.currentTarget
-    if (clickedEl.classList.contains('active')) {
-      clickedEl.classList.remove('active')
-      setIsPersistent(false)
-    } else {
-      clickedEl.classList.add('active')
-      setIsPersistent(true)
+    if (clickedEl) {
+      if (clickedEl.classList.contains('active')) {
+        clickedEl.classList.remove('active')
+        setIsPersistent(false)
+      } else {
+        clickedEl.classList.add('active')
+        setIsPersistent(true)
+      }
     }
   }
 

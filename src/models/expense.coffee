@@ -17,6 +17,7 @@ export default class Expense
     @notes = '',
     @recipientName = '',
     @repeating = false,
+    @repeatInterval = ''
     @category = '',
     @payer =  {
       phone: '',

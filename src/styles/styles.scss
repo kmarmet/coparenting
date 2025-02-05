@@ -446,10 +446,11 @@
       align-items: flex-start;
 
       svg {
-        font-size: 36px;
+        transform: scale(1.7);
         color: $green;
         position: relative;
         bottom: 6px;
+        right: 5px;
 
         &.swap-requests {
           font-size: 28px;

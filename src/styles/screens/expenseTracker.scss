@@ -18,7 +18,15 @@
   #add-expense-form {
     margin: 0;
     position: relative;
+    .MuiFormControl-root {
+      .MuiInputBase-input {
+        height: auto !important;
 
+        &[role='combobox'] {
+          padding: 10px !important;
+        }
+      }
+    }
     #amount-input-wrapper {
       margin: 0 auto;
       width: 200px;

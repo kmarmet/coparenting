@@ -1,37 +1,37 @@
-import React, { useContext, useRef, useState } from 'react'
-import DB from '../../database/DB'
-import Manager from '../../managers/manager'
-import globalState from '../../context'
-import moment from 'moment'
-import CheckboxGroup from '../../components/shared/checkboxGroup'
-import Expense from '../../models/expense'
-import FirebaseStorage from '../../database/firebaseStorage'
-import NotificationManager from '../../managers/notificationManager'
-import DB_UserScoped from '../../database/db_userScoped'
-import CalendarMapper from '../../mappers/calMapper'
-import DateFormats from '../../constants/dateFormats'
-import { MobileDatePicker } from '@mui/x-date-pickers-pro'
-import DatetimePickerViews from '../../constants/datetimePickerViews'
-import Numpad from '../../components/shared/numpad'
-import Toggle from 'react-toggle'
-import { PiMoneyWavyDuotone } from 'react-icons/pi'
 import MenuItem from '@mui/material/MenuItem'
-import UploadInputs from '../../components/shared/uploadInputs'
-import DateManager from '../../managers/dateManager'
-import ModelNames from '../../models/modelNames'
-import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
-import BottomCard from '../shared/bottomCard'
-import InputWrapper from '../shared/inputWrapper'
-import ExpenseCategories from '../../constants/expenseCategories.js'
-import ObjectManager from '../../managers/objectManager'
-import AlertManager from '../../managers/alertManager'
-import ImageManager from '../../managers/imageManager'
-import SelectDropdown from '../shared/selectDropdown'
-import ActivityCategory from '../../models/activityCategory'
+import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import moment from 'moment'
+import globalState from '../../context'
+import React, { useContext, useRef, useState } from 'react'
 import { MdEventRepeat, MdOutlineFaceUnlock } from 'react-icons/md'
-import StringManager from '../../managers/stringManager.coffee'
-import DomManager from '../../managers/domManager.coffee'
-import Spacer from '../shared/spacer.jsx'
+import { PiMoneyWavyDuotone } from 'react-icons/pi'
+import Toggle from 'react-toggle'
+import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import Numpad from '/src/components/shared/numpad'
+import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import UploadInputs from '/src/components/shared/uploadInputs'
+import DateFormats from '/src/constants/dateFormats'
+import DatetimePickerViews from '/src/constants/datetimePickerViews'
+import ExpenseCategories from '/src/constants/expenseCategories.js'
+import DB from '/src/database/DB'
+import DB_UserScoped from '/src/database/db_userScoped'
+import FirebaseStorage from '/src/database/firebaseStorage'
+import AlertManager from '/src/managers/alertManager'
+import DateManager from '/src/managers/dateManager'
+import DomManager from '/src/managers/domManager.coffee'
+import ImageManager from '/src/managers/imageManager'
+import Manager from '/src/managers/manager'
+import NotificationManager from '/src/managers/notificationManager'
+import ObjectManager from '/src/managers/objectManager'
+import StringManager from '/src/managers/stringManager.coffee'
+import CalendarMapper from '/src/mappers/calMapper'
+import ActivityCategory from '/src/models/activityCategory'
+import Expense from '/src/models/expense'
+import ModelNames from '/src/models/modelNames'
+import BottomCard from '/src/components/shared/bottomCard'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import SelectDropdown from '/src/components/shared/selectDropdown'
+import Spacer from '/src/components/shared/spacer.jsx'
 
 export default function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -120,6 +120,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     newExpense.paidStatus = 'unpaid'
     newExpense.imageName = expenseImage.name || ''
     newExpense.payer = payer
+    newExpense.repeatInterval = repeatInterval
     newExpense.ownerPhone = currentUser?.phone
     newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
     newExpense.repeating = repeating
@@ -220,7 +221,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   }
 
   const handlePayerSelection = async (e) => {
-    const checkboxContainer = e.target.closest('#checkbox-container')
+    const checkboxContainer = e.closest('#checkbox-wrapper')
     Manager.handleCheckboxSelection(
       e,
       async (e) => {
@@ -246,8 +247,9 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   const handleRepeatingSelection = async (e) => {
     const repeatingWrapper = document.getElementById('repeating-container')
     const checkboxWrappers = repeatingWrapper.querySelectorAll('#checkbox-wrapper, #label-wrapper')
-    console.log(checkboxWrappers)
-    checkboxWrappers.forEach((wrapper) => wrapper.classList.remove('active'))
+    checkboxWrappers.forEach((wrapper) => {
+      wrapper.classList.remove('active')
+    })
     Manager.handleCheckboxSelection(
       e,
       (e) => {
@@ -389,7 +391,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           </>
 
           {/* EXPENSE TYPE */}
-          <SelectDropdown wrapperClasses={'mb-15'} selectValue={expenseCategory} onChange={handleCategorySelection} labelText={'Category'}>
+          <SelectDropdown selectValue={expenseCategory} onChange={handleCategorySelection} labelText={'Category'}>
             {Object.keys(ExpenseCategories).map((type, index) => {
               return (
                 <MenuItem key={index} value={type}>
@@ -430,7 +432,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           {/* NOTES */}
           <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'}></InputWrapper>
 
-          <Spacer height={40} />
+          <Spacer height={45} />
 
           {/* PAYER */}
           <CheckboxGroup
@@ -515,6 +517,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
                       <input
                         type="date"
                         onChange={(e) => {
+                          setIsRecurring(true)
                           setExpenseDueDate(moment(e.target.value).format('MM/DD/yyyy'))
                         }}
                       />

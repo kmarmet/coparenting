@@ -1,27 +1,28 @@
-import UploadInputs from '../../components/shared/uploadInputs'
-import DB from '../../database/DB'
-import FirebaseStorage from '../../database/firebaseStorage'
-import AppManager from '../../managers/appManager'
-import MyConfetti from '../../components/shared/myConfetti'
-import globalState from '../../context'
-import Manager from '../../managers/manager'
-import NotificationManager from '../../managers/notificationManager'
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import DateFormats from '../../constants/dateFormats'
+import globalState from '../../context'
+import Spacer from '/src/components/shared/spacer.jsx'
+import UploadInputs from '/src/components/shared/uploadInputs'
+import DB from '/src/database/DB'
+import FirebaseStorage from '/src/database/firebaseStorage'
+import AppManager from '/src/managers/appManager'
+import MyConfetti from '/src/components/shared/myConfetti'
+import Manager from '/src/managers/manager'
+import NotificationManager from '/src/managers/notificationManager'
+import DateFormats from '/src/constants/dateFormats'
 import moment from 'moment'
-import Memory from '../../models/memory.js'
+import Memory from '/src/models/memory.js'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
-import SecurityManager from '../../managers/securityManager'
-import ModelNames from '../../models/modelNames'
+import SecurityManager from '/src/managers/securityManager'
+import ModelNames from '/src/models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
 import BottomCard from '../shared/bottomCard'
-import ObjectManager from '../../managers/objectManager'
-import ImageManager from '../../managers/imageManager'
-import AlertManager from '../../managers/alertManager'
-import DB_UserScoped from '../../database/db_userScoped'
-import ActivityCategory from '../../models/activityCategory'
-import StringManager from '../../managers/stringManager'
+import ObjectManager from '/src/managers/objectManager'
+import ImageManager from '/src/managers/imageManager'
+import AlertManager from '/src/managers/alertManager'
+import DB_UserScoped from '/src/database/db_userScoped'
+import ActivityCategory from '/src/models/activityCategory'
+import StringManager from '/src/managers/stringManager'
 
 export default function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -193,9 +194,8 @@ export default function NewMemoryForm({ hideCard, showCard }) {
               refreshKey={resetKey}
               onChange={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, notes: e.target.value }))}
               inputType={'textarea'}
-              defaultValue="Image Description/Notes"
               labelText={'Image Description/Notes'}></InputWrapper>
-
+            <Spacer height={40} />
             {/* UPLOAD BUTTON */}
             <UploadInputs
               onClose={hideCard}

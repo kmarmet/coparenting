@@ -1,4 +1,4 @@
-// @ts-ignore
+import doc from '/src/models/doc.js'
 import DB from '../database/DB'
 import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
@@ -237,11 +237,9 @@ const Manager = {
   },
   handleCheckboxSelection: (element, onCheck, onCheckRemoval, canSelectAll = false) => {
     const clickedEl = element
-    const labels = clickedEl.querySelectorAll(`[data-label]`)
-    console.log(canSelectAll)
+    const labels = document.querySelectorAll(`[data-label]`)
     // UNCHECK
     if (clickedEl.classList.contains('active')) {
-      console.log('uncheck')
       clickedEl.classList.remove('active')
       const label = clickedEl.dataset['label']
       if (onCheckRemoval) onCheckRemoval(label)
@@ -249,10 +247,12 @@ const Manager = {
     // CHECK
     else {
       const label = clickedEl.dataset['label']
-      console.log(clickedEl)
       if (canSelectAll === false) {
         labels.forEach((labelEl) => {
-          console.log('here')
+          const thisLabel = labelEl.dataset.label
+          if (thisLabel !== label) {
+            labelEl.querySelector('#checkbox').classList.remove('active')
+          }
           labelEl.classList.remove('active')
         })
       }

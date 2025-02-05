@@ -2,7 +2,6 @@
 @import './animations';
 @import './variables';
 @import './palette';
-
 // PAGE CONTAINER
 @mixin pageContainer {
   max-width: 100vw;
@@ -18,35 +17,30 @@
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 99999;
-
   &.home {
     //    overflow: hidden;
     //    max-height: unset;
     position: relative;
     padding-top: 0;
   }
-
   &.documents {
     padding-bottom: 300px;
   }
-
   &.active {
     z-index: 1;
+
     &.conversation {
       padding-bottom: 0;
       background-color: white;
       overflow: hidden;
     }
   }
-
   &.disable-scroll {
     overflow: hidden;
   }
-
   &.calendar {
     padding: 44pt 0 0 0;
   }
-
   &.login {
     max-height: 100vh;
   }
@@ -68,13 +62,11 @@
   padding-bottom: 10px;
   text-align: center;
   opacity: 1;
-
   &.active {
     transform: scale(1);
     opacity: 1;
     left: 0;
   }
-
   &.conversation {
     position: fixed;
     top: 0;
@@ -83,23 +75,19 @@
     max-width: 100vw;
     margin-top: 0;
   }
-
   &.shadow {
     max-width: 100vw;
     font-weight: 500;
   }
-
   &.hide {
     display: none;
   }
-
   &.documents {
     font-family: 'Varela Round', sans-serif;
     letter-spacing: 0;
     font-size: 25px;
     margin: 0;
   }
-
   @media screen and (min-width: 768px) {
     text-align: center;
     justify-content: center;
@@ -143,27 +131,26 @@
     font-size: 22px;
   }
 }
+
 @mixin hideScrollbars() {
   /* width */
   &::-webkit-scrollbar {
     display: none;
   }
-
   /* Track */
   &::-webkit-scrollbar-track {
     display: none;
   }
-
   /* Handle */
   &::-webkit-scrollbar-thumb {
     display: none;
   }
-
   /* Handle on hover */
   &::-webkit-scrollbar-thumb:hover {
     display: none;
   }
 }
+
 @mixin fontType() {
   font-weight: $fwLight;
   font-size: 16px;
@@ -172,6 +159,7 @@
   font-optical-sizing: auto;
   font-style: normal;
 }
+
 @mixin lengthSelection {
   .action-pills {
     width: 100%;
@@ -251,6 +239,7 @@
           border: 0;
           background-color: transparent;
           border-radius: 0;
+
           p {
             transform: scale(1.1);
             color: $accent;
@@ -282,13 +271,13 @@
     }
   }
 }
+
 @mixin text($color: black, $fontWeight: $fwRegular, $lineHeight: 1.4, $fontSize: 16px, $opacity: 1) {
   color: $color;
   font-weight: $fontWeight;
   line-height: $lineHeight;
   font-size: $fontSize;
   opacity: $opacity;
-
   @if $color == black {
     color: black;
     opacity: 0.85;
@@ -305,13 +294,13 @@
         margin-top: 85px;
       }
     }
+
     input {
       &:first-child {
         margin-bottom: 0;
       }
     }
   }
-
   input {
     &:is(:-webkit-autofill, :-webkit-autofill:focus) {
       margin: 0 auto;
@@ -327,7 +316,6 @@
       background-clip: text !important;
     }
   }
-
   input,
   textarea {
     &.rs-input {
@@ -349,23 +337,22 @@
       padding: 10px;
     }
   }
-
   label {
     svg {
       font-size: 22px;
       margin-right: 8px;
       color: $lightDarkGrey;
     }
+
     @include label;
   }
-
   .button-group {
     margin: 0 auto;
     justify-content: center;
   }
 }
-/*#endregion  FORM*/
 
+/*#endregion  FORM*/
 /*#region  BUTTONS*/
 @mixin pillButton {
   font-size: 14px;
@@ -381,6 +368,7 @@
   }
   @include hover;
 }
+
 @mixin defaultButton() {
   border-radius: 50px;
   padding: 8px 20px;
@@ -391,31 +379,25 @@
   color: white;
   line-height: 1;
   @include buttonPress;
-
   * {
     line-height: 1;
   }
-
   svg {
     font-size: 18px;
     margin-left: 5px;
   }
-
   &.green {
     background-color: $green;
     color: white;
   }
-
   &.white {
     background-color: white;
     color: black;
   }
-
   &.default {
     color: $mainBlue;
     border: 1px solid $mainBlue;
     background: transparent;
-
     @media screen and (min-width: 800px) {
       &:hover {
         background: $mainBlue;
@@ -439,29 +421,23 @@
       color: white;
     }
   }
-
   &.glow {
     -webkit-box-shadow: 0px 0px 12px 0px rgba(124, 117, 255, 1);
     -moz-box-shadow: 0px 0px 12px 0px rgba(124, 117, 255, 1);
     box-shadow: 0px 0px 12px 0px rgba(124, 117, 255, 1);
   }
-
   &.no-radius {
     border-radius: 0;
   }
-
   &.no-border {
     border: 0;
   }
-
   &.green-text {
     color: $green;
   }
-
   &.red-text {
     color: $red;
   }
-
   &.no-border {
     border-radius: 0;
   }
@@ -475,31 +451,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   span {
     font-size: 20px;
   }
-
   &.default {
     opacity: 1;
   }
-
   &.red {
     color: rgba(232, 62, 113, 0.849);
     border: 1px solid rgba(232, 62, 113, 0.849);
   }
-
   &.white {
     background-color: white;
     color: black;
   }
-
   &.glow {
     -webkit-box-shadow: 0px 0px 12px 0px rgba(124, 117, 255, 1);
     -moz-box-shadow: 0px 0px 12px 0px rgba(124, 117, 255, 1);
     box-shadow: 0px 0px 12px 0px rgba(124, 117, 255, 1);
   }
-
   &.bottom {
     padding: 15px 0;
     background-color: $green;
@@ -591,34 +561,32 @@
     @media screen and (min-width: 768px) {
       right: 25px;
       bottom: 100px;
-
       &.default {
         bottom: 180px;
       }
-
       &.red {
         bottom: 160px;
       }
-
       &.add-new-button {
         bottom: 100px;
       }
     }
   }
-
   &.no-border {
     border-radius: 0;
   }
 }
-/*#endregion  BUTTONS*/
 
+/*#endregion  BUTTONS*/
 /*#region  EFFECTS*/
 @mixin fadeEdges {
   box-shadow: 0 0 5px 5px white inset;
 }
+
 @mixin zIndex($depth: 9999) {
   z-index: $depth;
 }
+
 @mixin hover {
   @media screen and (min-width: 650px) {
     &:hover {
@@ -626,6 +594,7 @@
     }
   }
 }
+
 @mixin hoverBlue($transform: true) {
   @media screen and (min-width: 650px) {
     &:hover {
@@ -636,12 +605,14 @@
         transition: all 0.3s ease-in-out;
         padding-left: 10px;
       }
+
       * {
         color: $mainBlue;
       }
     }
   }
 }
+
 @mixin transformHover {
   @media screen and (min-width: 650px) {
     &:hover {
@@ -649,6 +620,7 @@
     }
   }
 }
+
 @mixin hoverShadow {
   @media screen and (min-width: 650px) {
     transition: all 0.3s ease-in-out;
@@ -659,6 +631,7 @@
     }
   }
 }
+
 @mixin darkBg($darkAmount: 0.9) {
   position: fixed;
   left: 0;
@@ -673,9 +646,11 @@
   transition: opacity 0.3s ease-in-out;
   z-index: -1;
 }
+
 @mixin transBg {
   background-color: rgba(255, 255, 255, 0.2);
 }
+
 @mixin buttonPress() {
   transition: all 0.5s linear;
   &:active {
@@ -684,6 +659,7 @@
     border: 0;
   }
 }
+
 @mixin fadeAndExpand($vertOrHorizOrAll: 'all') {
   opacity: 0;
   max-height: 0;
@@ -701,16 +677,19 @@
     }
   }
 }
+
 @mixin bgEffect {
   background: linear-gradient(-45deg, $translucent, $lightBlue, $mainBlue);
   background-size: 400% 400%;
   animation: gradient 7s ease infinite;
 }
+
 @mixin blurredBg() {
   backdrop-filter: blur(50px);
   background: none;
   transition: all 0.5s ease-in-out;
 }
+
 @mixin gradientButtonBg {
   background-image: linear-gradient(to right, $darkBlue 0%, $mainBlue 51%, $lightBlue 100%);
   text-align: center;
@@ -719,6 +698,7 @@
   background-size: 200% auto;
   box-shadow: 0 0 5px $mainBlue;
 }
+
 @mixin sparkleOnClickButton {
   position: relative;
   transition: all 0.7s linear;
@@ -732,12 +712,9 @@
     transition: all 0.5s ease-in-out;
   }
 }
+
 @mixin sparkleButton() {
-  &:focus {
-    outline: 0;
-  }
-  &:before,
-  &:after {
+  &:before {
     position: absolute;
     content: '';
     display: block;
@@ -747,15 +724,13 @@
     z-index: -1000;
     transition: all ease-in-out 0.5s;
     background-repeat: no-repeat;
-  }
-  &:before {
-    display: none;
+    //    display: none;
     top: -75%;
-    background-image: radial-gradient(circle, $mainBlue 50%, transparent 50%),
-      radial-gradient(circle, transparent 50%, $mainBlue 50%, transparent 30%), radial-gradient(circle, $mainBlue 50%, transparent 50%),
-      radial-gradient(circle, $mainBlue 50%, transparent 50%), radial-gradient(circle, transparent 10%, $mainBlue 15%, transparent 50%),
-      radial-gradient(circle, $mainBlue 50%, transparent 50%), radial-gradient(circle, $mainBlue 50%, transparent 50%),
-      radial-gradient(circle, $mainBlue 50%, transparent 50%), radial-gradient(circle, $mainBlue 50%, transparent 50%);
+    background-image: radial-gradient(circle, $mainBlue 20%, transparent 20%),
+      radial-gradient(circle, transparent 20%, $mainBlue 20%, transparent 30%), radial-gradient(circle, $mainBlue 20%, transparent 20%),
+      radial-gradient(circle, $mainBlue 20%, transparent 20%), radial-gradient(circle, transparent 10%, $mainBlue 15%, transparent 20%),
+      radial-gradient(circle, $mainBlue 20%, transparent 20%), radial-gradient(circle, $mainBlue 20%, transparent 20%),
+      radial-gradient(circle, $mainBlue 20%, transparent 20%), radial-gradient(circle, $mainBlue 20%, transparent 20%);
     background-size:
       10% 10%,
       20% 20%,
@@ -766,15 +741,23 @@
       15% 15%,
       10% 10%,
       18% 18%;
-    //background-position: 0% 80%, -5% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 85% 30%;
   }
   &:after {
-    display: none;
+    position: absolute;
+    content: '';
+    display: block;
+    width: 140%;
+    height: 100%;
+    left: -20%;
+    z-index: -1000;
+    transition: all ease-in-out 0.5s;
+    background-repeat: no-repeat;
+    //    display: none;
     bottom: -75%;
-    background-image: radial-gradient(circle, $mainBlue 50%, transparent 50%), radial-gradient(circle, $mainBlue 50%, transparent 50%),
-      radial-gradient(circle, transparent 10%, $mainBlue 15%, transparent 50%), radial-gradient(circle, $mainBlue 50%, transparent 50%),
-      radial-gradient(circle, $mainBlue 50%, transparent 50%), radial-gradient(circle, $mainBlue 50%, transparent 50%),
-      radial-gradient(circle, $mainBlue 50%, transparent 50%);
+    background-image: radial-gradient(circle, $mainBlue 20%, transparent 20%), radial-gradient(circle, $mainBlue 20%, transparent 20%),
+      radial-gradient(circle, transparent 10%, $mainBlue 15%, transparent 20%), radial-gradient(circle, $mainBlue 20%, transparent 20%),
+      radial-gradient(circle, $mainBlue 20%, transparent 20%), radial-gradient(circle, $mainBlue 20%, transparent 20%),
+      radial-gradient(circle, $mainBlue 20%, transparent 20%);
     background-size:
       15% 15%,
       20% 20%,
@@ -783,20 +766,11 @@
       15% 15%,
       10% 10%,
       20% 20%;
-    background-position:
-      5% 90%,
-      10% 90%,
-      10% 90%,
-      15% 90%,
-      25% 90%,
-      25% 90%,
-      40% 90%,
-      55% 90%,
-      70% 90%;
   }
   &:active {
-    transform: scale(2);
-    background-color: darken($lightIconBgBlue, 15%);
+    transform: scale(0.9);
+    //    background-color: $green;
+    box-shadow: 0 2px 25px rgba(255, 215, 52, 0.2);
   }
   &.animate {
     &:before {
@@ -810,45 +784,55 @@
     }
   }
 }
+
 @mixin translucentBgWithBorder {
   background-color: rgba(38, 38, 38, 0.3);
 }
+
 @mixin glow {
   -webkit-box-shadow: 0px 0px 12px 0px $green;
   -moz-box-shadow: 0px 0px 12px 0px $green;
   box-shadow: 0px 0px 12px 0px $green;
 }
+
 @mixin blueGlow {
   -webkit-box-shadow: 0px 0px 12px 0px $mainBlue;
   -moz-box-shadow: 0px 0px 12px 0px $mainBlue;
   box-shadow: 0px 0px 12px 0px $mainBlue;
 }
+
 @mixin fadeBottom {
   mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
 }
+
 @mixin shadow {
   box-shadow:
     0 3px 6px rgba(0, 0, 0, 0.16),
     0 3px 6px rgba(0, 0, 0, 0.23);
 }
+
 @mixin bestShadow {
   // box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
   // box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 100px 54px;
   box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 30px 14px;
 }
+
 @mixin topShadow {
   box-shadow:
     0px 50px 25px rgba(0, 0, 0, 0.56),
     00px -25px 15px rgba(0, 0, 0, 0.56);
 }
+
 @mixin blackGlow {
   -webkit-box-shadow: 0px 0px 12px 0px rgb(0, 0, 0);
   -moz-box-shadow: 0px 0px 12px 0px rgb(0, 0, 0);
   box-shadow: 0px 0px 12px 0px rgb(0, 0, 0);
 }
+
 @mixin translucent($amount: 0.2) {
   background-color: rgba(255, 255, 255, $amount);
 }
+
 @mixin long-shadow($type, $color, $length, $fadeout: true, $skew: false, $direction: right) {
   $shadow: '';
   @if $skew ==false or $type ==text {
@@ -900,17 +884,19 @@
     text-shadow: $shadow;
   }
 }
-/*#endregion  EFFECTS*/
 
+/*#endregion  EFFECTS*/
 /*#region  POSITIONING*/
 @mixin centerHoriz() {
   left: 50%;
   transform: translateX(-50%);
 }
+
 @mixin centerVert() {
   top: 50%;
   transform: translateY(-50%);
 }
+
 @mixin deadCenter() {
   position: absolute;
   top: 50%;
@@ -922,12 +908,14 @@
   margin: 0;
   padding: 0;
 }
+
 @mixin horizCenter {
   position: fixed;
   left: 50%;
   right: 50%;
   transform: translate(-50%, -50%);
 }
+
 @mixin extraClickableSpace {
   &::after {
     padding: 30px;
@@ -939,8 +927,8 @@
     transform: translate(-50%, -50%);
   }
 }
-/*#endregion  POSITIONING*/
 
+/*#endregion  POSITIONING*/
 /*#region  COMPONENTS*/
 @mixin viewsWrapper {
   display: flex;
@@ -950,13 +938,11 @@
   margin-bottom: 15px;
   border-bottom: 1px solid $lightBorder;
   width: 100%;
-
   * {
     line-height: 1;
     transition: all 0.3s ease-in-out;
     margin: 0;
   }
-
   .view {
     font-size: 14px;
     text-align: center;
@@ -966,12 +952,14 @@
     width: 50%;
     font-weight: $fwRegular;
     color: #787878;
+
     &.active {
       padding-bottom: 6px;
       font-size: 16px;
       color: #5b5b5b;
       font-weight: $fwRegular;
       opacity: 1;
+
       &:after {
         content: '';
         position: relative;
@@ -983,6 +971,7 @@
     }
   }
 }
+
 @mixin brandBar {
   width: 100vw;
   padding: 10px 0;
@@ -1045,8 +1034,10 @@
     }
   }
 }
+
 @mixin table {
 }
+
 @mixin row {
   margin-bottom: 10px;
   border-bottom: 1px solid rgba(214, 219, 222, 0.45);
@@ -1201,19 +1192,27 @@
     }
   }
 }
+
 @mixin label {
   margin-bottom: 0;
+  &.sorting {
+    label {
+      font-weight: $fwMedium;
+    }
+  }
   label {
     font-weight: $fwRegular;
     margin: 0;
     line-height: 1.3;
     font-size: 14px;
+
     &.bold {
       font-weight: $fwMedium;
       opacity: 0.9;
     }
   }
 }
+
 @mixin inputWrapper {
   position: relative;
   display: flex;
@@ -1223,8 +1222,17 @@
   width: 100%;
   margin-bottom: 25px;
   top: 10px;
-
   height: 42px;
+
+  &.start-time,
+  &.end-time {
+    .MuiOutlinedInput-input {
+      &::placeholder {
+        opacity: 1;
+        font-size: 14px !important;
+      }
+    }
+  }
   textarea {
     max-height: 30px;
     height: 30px;
@@ -1237,30 +1245,38 @@
       border-radius: 15px;
     }
   }
-  input {
-    &:focus {
-      border-radius: 50px;
-      outline: none;
-      padding: 8px;
-    }
-  }
-
   #label-wrapper {
     position: relative;
-    top: -12px;
-    left: 15px;
     background: white;
     padding: 0 10px;
     z-index: 9;
+    opacity: 0;
+    top: -12px;
+    left: -100px;
+
+    &.active {
+      left: 15px;
+      transition: all 0.5s ease-in-out;
+      opacity: 1;
+    }
+
     label {
       color: #5b84ff;
       font-weight: $fwRegular;
       opacity: 1;
       text-transform: uppercase;
       font-size: 12px;
+
       .asterisk {
         color: $red;
       }
+    }
+  }
+  input {
+    &:focus {
+      border-radius: 50px;
+      outline: none;
+      padding: 8px;
     }
   }
   input,
@@ -1279,16 +1295,24 @@
     caret-color: $mainBlue;
     padding: 0 8px;
 
+    &::placeholder {
+      font-size: 14px;
+    }
+
     &[type='date'] {
       border: 1px solid $iconGrey;
-      padding: 0 8px;
+      padding: 10px 8px;
       border-radius: $borderRadius;
-      height: 40px;
+      height: auto;
     }
 
     &:focus {
       border-radius: $borderRadius;
       border: 1px solid $mainBlue;
+
+      &::placeholder {
+        opacity: 0;
+      }
     }
   }
   textarea {
@@ -1304,11 +1328,12 @@
       width: 100%;
 
       &::placeholder {
-        color: transparent;
+        opacity: 0;
       }
     }
   }
 }
+
 @mixin inputSuggestionDropdown {
   transition: all 0.3s ease-in-out;
   opacity: 1;
@@ -1348,6 +1373,7 @@
     display: block;
   }
 }
+
 @mixin numpad {
   border-radius: $borderRadius;
   height: 0;
@@ -1413,6 +1439,7 @@
     width: 100%;
   }
 }
+
 @mixin actionPills() {
   display: flex;
   align-items: center;
@@ -1509,6 +1536,7 @@
     }
   }
 }
+
 @mixin checkboxWrapper {
   align-items: center;
   justify-content: flex-start;
@@ -1516,6 +1544,7 @@
   margin-top: 5px;
   display: inline-flex;
   gap: 5px;
+
   &.center {
     justify-content: center;
     width: 100%;
@@ -1524,8 +1553,8 @@
   #label-wrapper {
     label {
       line-height: 1;
-      font-weight: $fwRegular;
-      font-size: 13px;
+      font-weight: $fwLight;
+      font-size: 14px;
       display: flex;
       align-items: center;
       align-self: stretch;
@@ -1541,7 +1570,6 @@
       }
     }
   }
-
   #checkbox {
     height: 16px;
     width: 16px;
@@ -1571,12 +1599,8 @@
       z-index: 9999;
       opacity: 0;
       top: 50%;
-
-      transform: scale(0);
     }
-
     @include sparkleButton;
-
     &.active {
       background-color: $lightIconBgBlue;
       border: 1px solid $mainBlue;
@@ -1601,25 +1625,32 @@
       }
     }
   }
+
+  &.active {
+    #label-wrapper {
+      label {
+        transition: all 0.3s ease-in-out;
+        color: $mainBlue;
+        opacity: 1;
+      }
+    }
+  }
 }
+
 @mixin checkboxGroup {
   padding: 0;
   display: block;
   gap: 10px;
-
   #label-wrapper {
     label {
-      span {
-        color: $mainBlue;
-        font-size: 16px;
+      font-size: 16px;
+      font-weight: $fwLight;
 
-        &.asterisk {
-          color: $red;
-        }
+      &.asterisk {
+        color: $red;
       }
     }
   }
-
   svg {
     position: relative;
     bottom: 4px;
@@ -1659,6 +1690,7 @@
     @include hover;
     transition: all 0.3s ease-in-out;
     border-radius: 50px;
+
     &.active {
       opacity: 1;
       transition: all 0.3s ease-in-out;
@@ -1676,66 +1708,8 @@
       gap: 15px;
       padding-right: 20px;
 
-      .pill {
-        &.active {
-          padding: 10px 15px;
-        }
-      }
-    }
-
-    .pill {
-      color: $darkPurple;
-      background: transparent;
-      border: 1px solid $darkPurple;
-      border-radius: 50px;
-      text-align: center;
-      font-weight: $fwRegular;
-      line-height: 1;
-      padding: 8px 15px;
-      font-size: 12px;
-      align-items: center;
-      justify-content: center;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      transition: all 0.3s ease-in-out;
-      letter-spacing: 0.8px;
-      display: inline-flex;
-      margin-right: 8px;
-      margin-top: 3px;
-
-      svg {
-        font-size: 12px;
-        width: 0;
-        transition: all 0.3s linear;
-      }
-
-      @media screen and (min-width: 800px) {
-        &:hover {
-          background: rgba(231, 233, 238, 0.78);
-          color: rgba(0, 0, 0, 0.8);
-        }
-      }
-
-      &.active {
-        background: $darkPurple;
-        color: white;
-        border: 1px solid $darkPurple;
-        font-weight: $fwMedium;
-        line-height: 1;
-        padding: 10px 15px;
-        text-align: center;
-        transition: all 0.3s ease-in-out;
-
-        svg {
-          width: auto;
-          position: relative;
-          top: 0;
-          transform: scale(1.5);
-          margin-left: 5px;
-          opacity: 0.9;
-        }
+      label {
+        font-size: 14px;
       }
     }
 
@@ -1744,6 +1718,7 @@
     }
   }
 }
+
 @mixin uploadInputs() {
   &.new-expense-card,
   &.new-memory-card,
@@ -1757,17 +1732,19 @@
   }
   #upload-input {
     width: 100%;
-
     &::file-selector-button {
-      padding: 5px 15px;
+      border: 0;
+      padding: 8px 15px;
       border-radius: 50px;
       background: $bestGreyForWhite;
       margin-right: 10px;
+      margin-top: 5px;
       font-size: 14px;
       font-weight: $fwMediumBold;
     }
   }
 }
+
 @mixin accordionList {
   .accordion-header {
     color: white;
@@ -1811,6 +1788,7 @@
     background-color: #f0f0f0;
   }
 }
+
 @mixin popupCardContainer {
   // Variables
   $cardRed: #cf436e;
@@ -2263,6 +2241,7 @@
     }
   }
 }
+
 @mixin popupContainers {
   border-radius: $borderRadius;
   width: 90vw;
@@ -2468,6 +2447,7 @@
     }
   }
 }
+
 @mixin bottomCard {
   background-color: white;
   position: fixed;
@@ -2484,13 +2464,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
   // ANIMATION
   &.animate__fadeInUp {
     @include zIndex(999999);
     bottom: 0;
   }
-
   // ACTIVE
   &.active {
     &.view-holidays {
@@ -2499,19 +2477,11 @@
     }
   }
 
-  #swipe-bar-wrapper {
-    width: 100%;
-    height: 15px;
-    position: fixed;
-    top: 0;
-    z-index: 100000000;
-    background: white;
-    #swipe-bar {
-      width: 80px;
-      height: 4px;
-      background: #b9b9b9;
-      border-radius: 50px;
-      margin: 10px auto 0 auto;
+  .flex {
+    .MuiFormControl-root {
+      .MuiInputBase-input {
+        width: 100% !important;
+      }
     }
   }
 
@@ -2553,6 +2523,7 @@
         color: $lightBorder;
       }
     }
+
     a {
       &.nav-detail {
         display: flex;
@@ -2565,9 +2536,11 @@
         text-decoration: none;
         color: $linkColor;
         max-width: unset;
+
         &:visited {
           color: $linkColor;
         }
+
         svg {
           font-size: 20px;
           margin-right: 5px;
@@ -2576,7 +2549,6 @@
       }
     }
   }
-
   #bottom-card-loading-gif {
     transform: scale(0.3);
   }
@@ -2587,7 +2559,6 @@
     padding: 0 5px;
     opacity: 0.6;
   }
-
   // BUTTONS
   .buttons {
     position: fixed;
@@ -2698,7 +2669,6 @@
       }
     }
   }
-
   /*#region  CARDS BY CLASS*/
   // NEW CALENDAR EVENT
   &.new-calendar-event {
@@ -2723,9 +2693,11 @@
           align-items: center;
           gap: 15px;
           margin-bottom: 25px;
+
           &:first-child {
             margin-top: 15px;
           }
+
           button {
             font-weight: $fwMedium;
             line-height: 1;
@@ -2737,6 +2709,7 @@
             border: 0;
             @include hover;
           }
+
           input {
             &.date-input {
               width: 100%;
@@ -2747,8 +2720,10 @@
           }
         }
       }
+
       .flex {
         gap: 10px;
+
         &.event-times-wrapper {
           margin-bottom: 25px;
           position: relative;
@@ -2763,6 +2738,7 @@
               margin: 0;
               top: 0;
             }
+
             .MuiFormControl-root {
               position: relative;
               top: -10px;
@@ -2777,36 +2753,40 @@
       }
     }
   }
-
   // EDIT CALENDAR EVENT
   &.edit-calendar-event {
     width: 100%;
     min-height: 70vh;
+
     #map-wrapper {
       border-radius: $bigBorderRadius;
       width: 100%;
       overflow: hidden;
       border: 2px solid rgb(231, 233, 238);
+
       * {
         width: 100% !important;
       }
+
       img {
         width: 100% !important;
       }
     }
+
     #relative-wrapper {
       min-height: 70vh;
+
       #content {
         padding-bottom: 300px;
         min-height: 70vh;
       }
+
       textarea {
         height: 150px;
         max-height: 150px;
       }
     }
   }
-
   // TRANSFER/SWAP/EXPENSES
   &.transfer-change,
   &.expense-tracker,
@@ -2839,6 +2819,7 @@
         line-height: 1;
         display: flex;
         align-items: center;
+
         b {
           min-width: 100px;
           display: block;
@@ -2848,6 +2829,7 @@
 
     &.expense-tracker {
       min-height: 70vh;
+
       .action-buttons {
         button {
           width: calc(100% / 3);
@@ -2876,6 +2858,7 @@
         svg {
           margin-left: 5px;
         }
+
         @media screen and (min-width: 800px) {
           &:hover {
             background: $mainBlue;
@@ -2903,17 +2886,16 @@
       }
     }
   }
-
   // UPLOAD DOCUMENT
   &.upload-document-card {
     min-height: 80vh;
+
     #convert-doc-link {
       padding: 0;
       margin-bottom: 15px;
       display: block;
     }
   }
-
   // VIEW HOLIDAYS
   &.view-holidays {
     min-height: 250px;
@@ -2925,7 +2907,6 @@
       top: 5px;
     }
   }
-
   // CHILD SELECTOR
   &.child-selector {
     #child-selector {
@@ -2954,6 +2935,7 @@
           height: 115px;
           @include fadeEdges;
           border-radius: 50%;
+
           p {
             font-size: 50px;
             color: $mainBlue;
@@ -2979,7 +2961,6 @@
       }
     }
   }
-
   // FULL MENU
   &.full-menu {
     background: $lightBg;
@@ -2988,6 +2969,7 @@
     #relative-wrapper {
       overflow: auto;
       height: 100vh;
+
       #content {
         padding-top: 0;
         max-height: unset;
@@ -3004,7 +2986,6 @@
       display: none !important;
     }
   }
-
   // CUSTOM CHILD INFO
   &.custom-child-info-wrapper {
     #checkbox-group {
@@ -3031,13 +3012,11 @@
       }
     }
   }
-
   // CONVERSATION SEARCH CARD
   &.conversation-search-card {
     min-height: 200px;
     max-height: 200px;
   }
-
   // DOC VIEWER SEARCH
   &.search-card {
     max-height: 25vh;
@@ -3063,7 +3042,6 @@
       }
     }
   }
-
   // NEW CONVERSATION
   &.new-conversation {
     .coparent-name {
@@ -3072,14 +3050,17 @@
 
     #content {
       margin-top: 10px;
+
       #users-wrapper {
         @include row;
+
         .user-wrapper {
           position: relative;
           display: flex;
           width: 100%;
           align-items: center;
           justify-content: flex-start;
+
           svg {
             font-size: 24px;
             width: unset;
@@ -3099,7 +3080,6 @@
       }
     }
   }
-
   // DOC TIPS
   &.doc-tips-card {
     .text-highlight {
@@ -3110,6 +3090,7 @@
       padding: 0 5px;
       font-weight: $fwBold;
     }
+
     #toc-button-inline {
       font-size: 22px;
       position: relative;
@@ -3117,16 +3098,17 @@
       color: $mainBlue;
     }
   }
-
   // TABLE OF CONTENTS
   &.toc {
     #toc-header-wrapper {
       margin: 12px 0;
+
       span {
         font-size: 25px;
         color: $mainBlue;
         margin-right: 8px;
       }
+
       .toc-header {
         color: black;
         font-weight: $fwMedium;
@@ -3147,7 +3129,6 @@
       }
     }
   }
-
   // PAYMENT OPTIONS
   &.payment-options-card {
     max-height: 80vh;
@@ -3181,6 +3162,7 @@
           font-size: 22px;
           justify-content: center;
         }
+
         &.zelle {
           background: #6d1fd4;
         }
@@ -3256,7 +3238,6 @@
     }
   }
   /*#endregion  CARDS BY CLASS*/
-
   #relative-wrapper {
     position: relative;
     padding: 0 15px 100px 15px;
@@ -3318,12 +3299,14 @@
               margin-left: 5px;
             }
           }
+
           b {
             min-width: 120px;
             line-height: 1;
             display: flex;
             align-items: center;
           }
+
           span {
             text-align: right;
             font-size: 15px;
@@ -3430,8 +3413,8 @@
     }
   }
 }
-/*#endregion  COMPONENTS*/
 
+/*#endregion  COMPONENTS*/
 /*#region  MENU*/
 @mixin sideNavbar {
   height: 100%;
@@ -3531,6 +3514,7 @@
     }
   }
 }
+
 @mixin fullMenu {
   #full-menu {
     display: flex;
@@ -3572,7 +3556,6 @@
         }
 
         &.active {
-          border: 0;
           background: rgba(85, 127, 255, 0.11);
         }
 
@@ -3598,7 +3581,6 @@
         }
 
         &.active {
-          border: 0;
           background: rgba(147, 20, 20, 0.11);
         }
       }
@@ -3616,7 +3598,6 @@
 
         &.active {
           background: $purple;
-          border: 0;
 
           * {
             color: white;
@@ -3689,6 +3670,7 @@
     }
   }
 }
+
 @mixin navBar {
   width: 100vw;
   background-color: $lightBg;
@@ -3776,6 +3758,7 @@
     width: 100vw;
     padding: 15px 15px 0 15px;
     box-shadow: 0 0 5px 5px white inset;
+
     .menu-item {
       opacity: 0.8;
       flex-wrap: wrap;
@@ -3887,4 +3870,5 @@
     }
   }
 }
+
 /*#endregion  MENU*/

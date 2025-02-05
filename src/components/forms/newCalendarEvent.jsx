@@ -1,45 +1,47 @@
+import BottomCard from '/src/components/shared/bottomCard'
+import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import DatetimePicker from '/src/components/shared/datetimePicker.jsx'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import MyConfetti from '/src/components/shared/myConfetti.js'
+import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import DateFormats from '/src/constants/dateFormats'
+import DatetimePickerViews from '/src/constants/datetimePickerViews'
+import EventLengths from '/src/constants/eventLengths'
+import DB_UserScoped from '/src/database/db_userScoped'
+import AlertManager from '/src/managers/alertManager'
+import CalendarManager from '/src/managers/calendarManager.js'
+import DatasetManager from '/src/managers/datasetManager'
+import DateManager from '/src/managers/dateManager'
+import Manager from '/src/managers/manager'
+import NotificationManager from '/src/managers/notificationManager.js'
+import ObjectManager from '/src/managers/objectManager'
+import StringManager from '/src/managers/stringManager'
+import CalendarMapper from '/src/mappers/calMapper'
+import ActivityCategory from '/src/models/activityCategory'
+import CalendarEvent from '/src/models/calendarEvent'
+import ModelNames from '/src/models/modelNames'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
+import _ from 'lodash'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
-import globalState from '../../context'
-import EventLengths from '/src/constants/eventLengths'
-import Manager from '/src/managers/manager'
-import MyConfetti from '/src/components/shared/myConfetti.js'
-import CheckboxGroup from '/src/components/shared/checkboxGroup'
-import CalendarEvent from '/src/models/calendarEvent'
-import CalendarMapper from '/src/mappers/calMapper'
-import DatetimePicker from '/src/components/shared/datetimePicker.jsx'
-import DateFormats from '/src/constants/dateFormats'
-import DatetimePickerViews from '/src/constants/datetimePickerViews'
-import DateManager from '/src/managers/dateManager'
 import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
-import Toggle from 'react-toggle'
-import ModelNames from '/src/models/modelNames'
-import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
-import InputWrapper from '/src/components/shared/inputWrapper'
-import BottomCard from '/src/components/shared/bottomCard'
-import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
-import AlertManager from '/src/managers/alertManager'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import validator from 'validator'
-import ObjectManager from '/src/managers/objectManager'
-import DatasetManager from '/src/managers/datasetManager'
-import CalendarManager from '/src/managers/calendarManager.js'
-import NotificationManager from '/src/managers/notificationManager.js'
-import DB_UserScoped from '/src/database/db_userScoped'
-import ActivityCategory from '/src/models/activityCategory'
-import StringManager from '/src/managers/stringManager'
 import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
-import _ from 'lodash'
+import Toggle from 'react-toggle'
+import validator from 'validator'
+import globalState from '../../context'
 import DomManager from '../../managers/domManager.coffee'
 import Spacer from '../shared/spacer.jsx'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, refreshKey } = state
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
@@ -246,16 +248,16 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       e,
       (e) => {
         let selection = ''
-        if (e.toLowerCase().indexOf('week') > -1) {
+        if (e.toLowerCase()?.indexOf('week') > -1) {
           selection = 'weekly'
         }
-        if (e.toLowerCase().indexOf('bi') > -1) {
+        if (e.toLowerCase()?.indexOf('bi') > -1) {
           selection = 'biweekly'
         }
-        if (e.toLowerCase().indexOf('daily') > -1) {
+        if (e.toLowerCase()?.indexOf('daily') > -1) {
           selection = 'daily'
         }
-        if (e.toLowerCase().indexOf('monthly') > -1) {
+        if (e.toLowerCase()?.indexOf('monthly') > -1) {
           selection = 'monthly'
         }
         setRepeatInterval(selection)
@@ -388,10 +390,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   }, [selectedNewEventDay])
 
   useEffect(() => {
-    const pickers = document.querySelectorAll('.MuiInputBase-input')
-    if (pickers) {
-      pickers.forEach((x) => (x.value = ''))
-    }
     if (selectedNewEventDay) {
       setEventStartDate(moment().format(DateFormats.dateForDb))
     }
@@ -421,13 +419,13 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </p>
           </div>
 
-          {/* CALENDAR FORM */}
           {/* EVENT NAME */}
           <InputWrapper
             inputClasses="event-title-input"
             inputType={'input'}
             labelText={'Event Name'}
             defaultValue={eventTitle}
+            placeholder="Event Name"
             required={true}
             isDebounced={false}
             inputValue={eventTitle}
@@ -488,27 +486,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           {/* EVENT WITH TIME */}
           {!isAllDay && (
             <div className={'flex event-times-wrapper'}>
-              <InputWrapper labelText={'Start Time'} inputType="date">
-                <MobileTimePicker
-                  onOpen={addThemeToDatePickers}
-                  minutesStep={5}
-                  format={'h:mma'}
-                  label={'Start Time'}
-                  className={`${theme}`}
-                  value={moment(eventStartTime)}
-                  onAccept={(e) => setEventStartTime(e)}
-                />
+              <InputWrapper labelText={'Start Time'} wrapperClasses="start-time" inputType="date">
+                <MobileTimePicker onOpen={addThemeToDatePickers} minutesStep={5} key={refreshKey} onAccept={(e) => setEventStartTime(e)} />
               </InputWrapper>
-              <InputWrapper labelText={'End Time'} inputType="date">
-                <MobileTimePicker
-                  onOpen={addThemeToDatePickers}
-                  format={'h:mma'}
-                  minutesStep={5}
-                  label={'End Time'}
-                  className={`${theme}`}
-                  MuiFormLabel-root
-                  onAccept={(e) => setEventEndTime(e)}
-                />
+              <InputWrapper labelText={'End Time'} wrapperClasses="end-time" inputType="date">
+                <MobileTimePicker key={refreshKey} onOpen={addThemeToDatePickers} minutesStep={5} onAccept={(e) => setEventEndTime(e)} />
               </InputWrapper>
             </div>
           )}
@@ -569,7 +551,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               />
             </div>
           </div>
-          <Spacer height={5} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.isValid(currentUser?.children) && (
@@ -703,7 +684,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               onPlaceSelected={(place) => {
                 setEventLocation(place.formatted_address)
               }}
-              placeholder={''}
+              placeholder={'Address'}
             />
           </InputWrapper>
 

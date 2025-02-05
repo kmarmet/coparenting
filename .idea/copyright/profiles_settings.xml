@@ -1,7 +1,10 @@
 <component name="CopyrightManager">
   <settings>
     <LanguageOptions name="SCSS">
+      <option name="fileTypeOverride" value="3" />
+      <option name="addBlankBefore" value="true" />
       <option name="block" value="false" />
+      <option name="separateBefore" value="true" />
     </LanguageOptions>
   </settings>
 </component>
