@@ -35,6 +35,10 @@ import ModelNames from '/src/models/modelNames'
 import StringManager from '/src/managers/stringManager'
 import ExpenseManager from '/src/managers/expenseManager.js'
 import PaymentOptions from './paymentOptions.jsx'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import { HiMiniChevronDown, HiMiniChevronUp } from 'react-icons/hi2'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -67,6 +71,7 @@ export default function ExpenseTracker() {
   const [sortMethod, setSortMethod] = useState(SortByTypes.recentlyAdded)
   const [categoriesAsArray, setCategoriesAsArray] = useState([])
   const [expenseDateType, setExpenseDateType] = useState('all')
+  const [showFilters, setShowFilters] = useState(false)
   const update = async () => {
     // Fill/overwrite
     let updatedExpense = { ...activeExpense }
@@ -113,7 +118,8 @@ export default function ExpenseTracker() {
   const getSecuredExpenses = async () => {
     let allExpenses = await SecurityManager.getExpenses(currentUser)
     allExpenses = DatasetManager.getUniqueArray(allExpenses, 'id')
-    const categories = allExpenses.map((x) => x.category).filter((x) => x !== '')
+    let categories = allExpenses.map((x) => x.category).filter((x) => x !== '')
+    categories.unshift('None')
     setCategoriesInUse(categories)
     setExpenses(allExpenses)
     return allExpenses
@@ -135,17 +141,18 @@ export default function ExpenseTracker() {
     })
   }
 
-  const handleExpenseTypeSelection = async (type) => {
+  const handleExpenseTypeSelection = async (selectionType) => {
     const allExpenses = await getSecuredExpenses()
-    if (type === 'single') {
-      setExpenses(allExpenses.filter((x) => x.repeating === false))
+
+    if (selectionType === 'single') {
+      setExpenses(allExpenses.filter((x) => x.isRepeating === false))
       setExpenseDateType('single')
     }
-    if (type === 'repeating') {
-      setExpenses(allExpenses.filter((x) => x.repeating === true))
+    if (selectionType === 'repeating') {
+      setExpenses(allExpenses.filter((x) => x.isRepeating === true))
       setExpenseDateType('repeating')
     }
-    if (type === 'all') {
+    if (selectionType === 'all') {
       setExpenses(allExpenses)
       setExpenseDateType('all')
     }
@@ -153,7 +160,6 @@ export default function ExpenseTracker() {
 
   const handlePaidStatusSelection = async (status) => {
     const allExpenses = await getSecuredExpenses()
-
     if (status === 'all') {
       setExpenses(allExpenses)
       setPaidStatus('all')
@@ -195,10 +201,22 @@ export default function ExpenseTracker() {
     }
   }
 
-  const handleCategorySelection = async (category) => {
-    const expensesByCategory = expenses.filter((x) => x.category === category)
+  const handleCategorySelection = async (element) => {
+    const allExpenses = await getSecuredExpenses()
+    const categoryPills = document.querySelectorAll('.category .pill')
+    const category = element.target.textContent
+    let expensesByCategory = allExpenses.filter((x) => x.category === category)
+    if (element.target.classList.contains('active')) {
+      expensesByCategory = allExpenses.filter((x) => x.category !== category)
+    }
+    DomManager.toggleActive(element.target)
+    console.log(category)
+    if (category === 'None') {
+      setExpenses(allExpenses)
+    } else {
+      setExpenses(expensesByCategory)
+    }
     setCategory(category)
-    setExpenses(expensesByCategory)
   }
 
   const setDefaults = () => {
@@ -225,6 +243,7 @@ export default function ExpenseTracker() {
     onTableChange().then((r) => r)
     setView('details')
     const catsAsArray = Object.keys(ExpenseCategories)
+    catsAsArray.unshift('None')
     setCategoriesAsArray(catsAsArray)
   }, [])
 
@@ -262,11 +281,6 @@ export default function ExpenseTracker() {
           {/* DETAILS */}
           {view === 'details' && (
             <>
-              {/* NAME */}
-              <div className="flex">
-                <b>Name</b> <span>{StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name)}</span>
-              </div>
-
               {/* AMOUNT */}
               <div className="flex">
                 <b>Amount</b> <span>${activeExpense?.amount}</span>
@@ -295,7 +309,7 @@ export default function ExpenseTracker() {
 
               {/* SENT TO */}
               <div className="flex">
-                <b>Sent to: </b>
+                <b>Sent to</b>
                 <span>
                   {StringManager.formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
                 </span>
@@ -303,14 +317,14 @@ export default function ExpenseTracker() {
 
               {/* PAY TO */}
               <div className="flex">
-                <b>Pay to: </b>
+                <b>Pay to</b>
                 <span> {StringManager.formatNameFirstNameOnly(activeExpense?.recipientName)}</span>
               </div>
 
               {/* DUE DATE */}
               {activeExpense?.dueDate && activeExpense?.dueDate?.length > 0 && (
                 <div className="flex">
-                  <b>Due Date: </b>
+                  <b>Due Date</b>
                   <span>
                     {DateManager.formatDate(activeExpense?.dueDate)} ({moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString()})
                   </span>
@@ -335,7 +349,7 @@ export default function ExpenseTracker() {
 
               {/* DATE ADDED */}
               <div className="flex">
-                <b>Created on: </b> <span>{moment(activeExpense?.dateAdded).format(DateFormats.monthDayYear)}</span>
+                <b>Created on </b> <span>{moment(activeExpense?.dateAdded).format(DateFormats.monthDayYear)}</span>
               </div>
 
               {/* NOTES */}
@@ -455,63 +469,77 @@ export default function ExpenseTracker() {
           <p className="payment-options-link mt-10" onClick={() => setShowPaymentOptionsCard(true)}>
             Bill Payment & Money Transfer Options
           </p>
-
-          {/* FILTERS */}
-          <div id="filters">
-            <div className="filter-row">
-              <Label isBold={true} text={'Type'} classes="mb-5"></Label>
-              <div className="pills type">
-                <div className={`${expenseDateType === 'all' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('all')}>
-                  All
-                </div>
-                <div className={`${expenseDateType === 'single' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('single')}>
-                  One-time
-                </div>
-                <div className={`${expenseDateType === 'repeating' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('repeating')}>
-                  Recurring
-                </div>
+          <Accordion expanded={showFilters} id={'filters-accodrdion'} className={showFilters ? 'open' : 'closed'}>
+            <AccordionSummary onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'open' : 'closed'}>
+              <div className="flex">
+                <span>Filters</span>
+                {showFilters && <HiMiniChevronUp />}
+                {!showFilters && <HiMiniChevronDown />}
               </div>
-            </div>
-            <div className="filter-row">
-              <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
-              <div className="pills type">
-                <div className={paidStatus === 'all' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('all')}>
-                  All
-                </div>
-                <div className={paidStatus === 'unpaid' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('unpaid')}>
-                  Unpaid
-                </div>
-                <div className={paidStatus === 'paid' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('paid')}>
-                  Paid
-                </div>
-              </div>
-            </div>
-            {categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5"></Label>}
-
-            {/* CATEGORIES */}
-            <div className="filter-row">
-              <div className="pills category">
-                {categoriesAsArray.sort().map((cat, index) => {
-                  return (
-                    <div key={index}>
-                      {categoriesInUse.includes(cat) && (
-                        <div onClick={() => handleCategorySelection(cat)} key={index} className={category === cat ? 'pill active' : 'pill'}>
-                          {cat}
-                        </div>
-                      )}
+            </AccordionSummary>
+            <AccordionDetails>
+              <div id="filters">
+                <div className="filter-row">
+                  <Label isBold={true} text={'Type'} classes="mb-5"></Label>
+                  <div className="pills type">
+                    <div className={`${expenseDateType === 'all' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('all')}>
+                      All
                     </div>
-                  )
-                })}
+                    <div className={`${expenseDateType === 'single' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('single')}>
+                      One-time
+                    </div>
+                    <div
+                      className={`${expenseDateType === 'repeating' ? 'active' : ''} pill`}
+                      onClick={() => handleExpenseTypeSelection('repeating')}>
+                      Recurring
+                    </div>
+                  </div>
+                </div>
+                <div className="filter-row">
+                  <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
+                  <div className="pills type">
+                    <div className={paidStatus === 'all' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('all')}>
+                      All
+                    </div>
+                    <div className={paidStatus === 'unpaid' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('unpaid')}>
+                      Unpaid
+                    </div>
+                    <div className={paidStatus === 'paid' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('paid')}>
+                      Paid
+                    </div>
+                  </div>
+                </div>
+                {categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5"></Label>}
+
+                {/* CATEGORIES */}
+                {Manager.isValid(categoriesInUse) && (
+                  <div className="filter-row">
+                    <div className="pills category">
+                      {categoriesAsArray.sort().map((cat, index) => {
+                        return (
+                          <div key={index}>
+                            {categoriesInUse.includes(cat) && (
+                              <div onClick={handleCategorySelection} key={index} className={category === cat ? 'pill active' : 'pill'}>
+                                {cat}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+                <Label text={'Sorting'} classes="sorting" />
+                <SelectDropdown selectValue={sortMethod} labelText={'Sort by'} onChange={handleSortBySelection}>
+                  <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
+                  <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
+                  <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
+                  <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
+                </SelectDropdown>
               </div>
-            </div>
-            <Label text={'Sorting'} classes="sorting" />
-            <SelectDropdown selectValue={sortMethod} labelText={'Sort by'} onChange={handleSortBySelection}>
-              <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
-              <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
-              <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
-              <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
-            </SelectDropdown>
-          </div>
+            </AccordionDetails>
+          </Accordion>
+          {/* FILTERS */}
 
           {/* LOOP EXPENSES */}
           <div id="expenses-container">

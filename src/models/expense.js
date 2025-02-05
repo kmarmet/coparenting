@@ -8,7 +8,7 @@ import moment from "moment";
 import DateFormats from "../constants/dateFormats";
 
 export default Expense = class Expense {
-  constructor(id = Manager.getUid(), name = '', imageName = '', shareWith = [], amount = 0, dateAdded = moment().format(DateFormats.dateForDb), paidStatus = 'unpaid', children = [], dueDate = '', ownerPhone = '', notes = '', recipientName = '', repeating = false, repeatInterval = '', category = '', payer = {
+  constructor(id = Manager.getUid(), name = '', imageName = '', shareWith = [], amount = 0, dateAdded = moment().format(DateFormats.dateForDb), paidStatus = 'unpaid', children = [], dueDate = '', ownerPhone = '', notes = '', recipientName = '', isRepeating = false, repeatInterval = '', category = '', payer = {
       phone: '',
       name: ''
     }) {
@@ -24,7 +24,7 @@ export default Expense = class Expense {
     this.ownerPhone = ownerPhone;
     this.notes = notes;
     this.recipientName = recipientName;
-    this.repeating = repeating;
+    this.isRepeating = isRepeating;
     this.repeatInterval = repeatInterval;
     this.category = category;
     this.payer = payer;

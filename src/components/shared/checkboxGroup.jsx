@@ -33,9 +33,9 @@ export default function CheckboxGroup({
       }
     }
   }
+
   useEffect(() => {
     setCheckboxVisibility().then((r) => r)
-    console.log(defaultLabels)
   }, [])
 
   return (

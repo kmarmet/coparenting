@@ -77,7 +77,15 @@ function InputWrapper({
 
       {/* TEXTAREA */}
       {inputType === 'textarea' && (
-        <textarea onChange={onChange} className={inputClasses} cols="30" defaultValue={defaultValue} key={refreshKey} rows="10" />
+        <textarea
+          placeholder={labelText}
+          onChange={onChange}
+          className={inputClasses}
+          cols="30"
+          defaultValue={defaultValue}
+          key={refreshKey}
+          rows="10"
+        />
       )}
     </div>
   )

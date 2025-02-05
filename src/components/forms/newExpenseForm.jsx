@@ -26,12 +26,13 @@ import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager.coffee'
 import CalendarMapper from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
-import Expense from '/src/models/expense'
+import Expense from '/src/models/expense.js'
 import ModelNames from '/src/models/modelNames'
 import BottomCard from '/src/components/shared/bottomCard'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import SelectDropdown from '/src/components/shared/selectDropdown'
 import Spacer from '/src/components/shared/spacer.jsx'
+import DatasetManager from '../../managers/datasetManager.coffee'
 
 export default function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -42,7 +43,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   const [expenseNotes, setExpenseNotes] = useState('')
   const [expenseImage, setExpenseImage] = useState('')
   const [includeChildren, setIncludeChildren] = useState(false)
-  const [repeating, setRepeating] = useState(false)
+  const [isRepeating, setIsRepeating] = useState(false)
   const [expenseCategory, setExpenseCategory] = useState(ExpenseCategories.General)
   const [payer, setPayer] = useState({
     phone: '',
@@ -63,7 +64,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     setExpenseNotes('')
     setExpenseImage('')
     setIncludeChildren(false)
-    setRepeating(false)
+    setIsRepeating(false)
     setExpenseCategory('')
     setPayer({
       phone: '',
@@ -80,6 +81,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   }
 
   const submitNewExpense = async () => {
+    //#region VALIDATION
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
     if (validAccounts === 0) {
       AlertManager.throwError(
@@ -107,23 +109,23 @@ export default function NewExpenseForm({ hideCard, showCard }) {
         return false
       }
     }
+    //#endregion VALIDATIONconst newExpense = new Expense()
 
     const newExpense = new Expense()
-    newExpense.id = Manager.getUid()
     newExpense.name = expenseName
     newExpense.children = expenseChildren
     newExpense.amount = parseInt(expenseAmount)
     newExpense.category = expenseCategory
-    newExpense.dueDate = DateManager.dateIsValid(expenseDueDate) ? moment(expenseDueDate).format(DateFormats.dateForDb) : ''
+    newExpense.dueDate = Manager.isValid(expenseDueDate) ? moment(expenseDueDate).format(DateFormats.dateForDb) : ''
     newExpense.dateAdded = Manager.getCurrentDate()
     newExpense.notes = expenseNotes
     newExpense.paidStatus = 'unpaid'
-    newExpense.imageName = expenseImage.name || ''
+    newExpense.imageName = expenseImage.name ?? ''
     newExpense.payer = payer
     newExpense.repeatInterval = repeatInterval
     newExpense.ownerPhone = currentUser?.phone
-    newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
-    newExpense.repeating = repeating
+    newExpense.shareWith = DatasetManager.getUniqueArray(shareWith, true)
+    newExpense.isRepeating = isRepeating
 
     // If expense has image
     if (expenseImage) {
@@ -430,8 +432,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           )}
 
           {/* NOTES */}
-          <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'}></InputWrapper>
-
+          <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'} />
           <Spacer height={45} />
 
           {/* PAYER */}
@@ -481,48 +482,23 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           {/* REPEATING? */}
           <div className="share-with-container" id="repeating-container">
             <div className="share-with-container ">
-              <div className="flex">
-                <p>Recurring</p>
-                <Toggle
-                  icons={{
-                    checked: <MdEventRepeat />,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setRepeating(!repeating)}
-                />
-              </div>
-              {repeating && (
+              {Manager.isValid(expenseDueDate, true) && (
+                <div className="flex">
+                  <p>Recurring</p>
+                  <Toggle
+                    icons={{
+                      checked: <MdEventRepeat />,
+                      unchecked: null,
+                    }}
+                    className={'ml-auto reminder-toggle'}
+                    onChange={(e) => setIsRepeating(!isRepeating)}
+                  />
+                </div>
+              )}
+              {isRepeating && (
                 <>
                   <CheckboxGroup onCheck={handleRepeatingSelection} checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
                   <Spacer height={5} />
-
-                  {!DomManager.isMobile() && repeatInterval && (
-                    <>
-                      <label className="mb-5">Month to end repeating expense</label>
-                      <MobileDatePicker
-                        onOpen={addThemeToDatePickers}
-                        yearsPerRow={4}
-                        className={'mt-0 w-100'}
-                        format={DateFormats.readableMonth}
-                        closeOnSelect={true}
-                        views={DatetimePickerViews.monthAndYear}
-                        hasAmPm={false}
-                        onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
-                      />
-                    </>
-                  )}
-                  {DomManager.isMobile() && (
-                    <InputWrapper inputType={'date'} labelText={'Month to end Repeating expense'}>
-                      <input
-                        type="date"
-                        onChange={(e) => {
-                          setIsRecurring(true)
-                          setExpenseDueDate(moment(e.target.value).format('MM/DD/yyyy'))
-                        }}
-                      />
-                    </InputWrapper>
-                  )}
                 </>
               )}
             </div>
