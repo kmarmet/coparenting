@@ -15,6 +15,7 @@
     "@mui/x-license": "^7.21.0",
     "@react-google-maps/api": "^2.20.5",
     "@rsuite/multi-date-picker": "1.0.0",
+    "@stream-io/video-react-sdk": "^1.11.4",
     "@theme-toggles/react": "4.1.0",
     "@vis.gl/react-google-maps": "^1.5.1",
     "add": "2.0.6",
