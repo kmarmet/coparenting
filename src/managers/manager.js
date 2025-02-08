@@ -194,6 +194,15 @@ const Manager = {
         return false
       }
     }
+
+    // Date check
+    if (typeof variable === 'object') {
+      if (variable.hasOwnProperty('_isAMomentObject')) {
+        if (variable['_isValid'] === false) {
+          return false
+        }
+      }
+    }
     return !(typeof variable === 'string' && variable.indexOf('Invalid') > -1)
   },
   isIos: () => {

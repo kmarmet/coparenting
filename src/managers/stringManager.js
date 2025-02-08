@@ -32,6 +32,16 @@ StringManager = {
     input = input.toString().replace(/-/g, '').replace(/\s+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\+/g, '').replace(/\+1/g, '');
     return input;
   },
+  spaceBetweenWords: function(input) {
+    return input.toString().replace(/([a-z])([A-Z])/g, '$1 $2');
+  },
+  addLongTextClass: function(text) {
+    if (StringManager.wordCount(text) > 10) {
+      return "long-text";
+    } else {
+      return '';
+    }
+  },
   getFileExtension: function(fileName) {
     return fileName.split('.').pop();
   },

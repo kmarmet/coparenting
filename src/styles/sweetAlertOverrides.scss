@@ -1,7 +1,9 @@
 @import './palette';
 @import './_variables.scss';
 @import './_mixins.scss';
-
+* {
+  @include fontType;
+}
 .swal2-icon-error {
   background: rgb(248, 229, 231);
   background: linear-gradient(to bottom, $red, #d53f3f, #711e18);

@@ -103,6 +103,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const submit = async () => {
     //#region FILL NEW EVENT
     const newEvent = new CalendarEvent()
+
     // Required
     newEvent.title = eventTitle
     if (Manager.contains(eventTitle, 'birthday')) {
@@ -111,13 +112,14 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     if (isVisitation) {
       newEvent.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Visitation`
     }
-    newEvent.startDate = Manager.isValid(eventStartDate) ? moment(eventStartDate).format(DateFormats.dateForDb) : ''
-    newEvent.endDate = Manager.isValid(eventEndDate) ? moment(eventEndDate).format(DateFormats.dateForDb) : ''
-    newEvent.startTime = Manager.isValid(eventStartTime) ? moment(eventStartTime).format(DateFormats.timeForDb) : ''
-    newEvent.endTime = Manager.isValid(eventEndTime) ? moment(eventEndTime).format(DateFormats.timeForDb) : ''
+    newEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
+
+    newEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
+    newEvent.startTime = moment(eventStartTime).format(DateFormats.timeForDb)
+    newEvent.endTime = moment(eventEndTime).format(DateFormats.timeForDb)
     // Not Required
     newEvent.id = Manager.getUid()
-    newEvent.directionsLink = !_.isEmpty(eventLocation) ? Manager.getDirectionsLink(eventLocation) : ''
+    newEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
     newEvent.location = eventLocation
     newEvent.children = eventChildren
     newEvent.ownerPhone = currentUser?.phone
@@ -288,7 +290,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       datesToIterate = CalendarMapper.repeatingEvents(
         repeatInterval,
         moment(eventStartDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
-        repeatingEndDate
+        eventEndDate
       )
       setEventIsRepeating(true)
     }
@@ -303,7 +305,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       setEventIsCloned(true)
     }
 
-    console.log(datesToIterate)
     datesToIterate.forEach((date) => {
       let dateObject = new CalendarEvent()
       // Required
@@ -311,6 +312,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       dateObject.id = Manager.getUid()
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       dateObject.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
+      if (eventIsDateRange || eventIsRepeating) {
+        dateObject.staticStartDate = moment(datesToIterate[0]).format(DateFormats.dateForDb)
+      }
 
       // Not Required
       dateObject.directionsLink = Manager.getDirectionsLink(eventLocation)
@@ -608,20 +612,20 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     />
                     <Spacer height={5} />
                     {Manager.isValid(repeatInterval) && (
-                      <InputWrapper inputType={'date'} labelText={'Month to End Repeating Events'} required={true}>
+                      <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
                         {!DomManager.isMobile() && (
                           <DatetimePicker
                             format={DateFormats.readableMonth}
                             views={DatetimePickerViews.monthAndYear}
                             hasAmPm={false}
-                            onAccept={(e) => setRepeatingEndDate(moment(e).format('MM-DD-yyyy'))}
+                            onAccept={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))}
                           />
                         )}
                         {DomManager.isMobile() && (
                           <input
                             type="date"
                             onChange={(e) => {
-                              setRepeatingEndDate(moment(e.target.value).format('MM-DD-yyyy'))
+                              setEventEndDate(moment(e.target.value).format('MM-DD-yyyy'))
                             }}
                           />
                         )}

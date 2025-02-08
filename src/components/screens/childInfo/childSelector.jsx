@@ -1,23 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
-import Manager from '../../../managers/manager'
-import {
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
-import DB from '../../../database/DB'
-import BottomCard from '../../shared/bottomCard'
+import Manager from '/src/managers/manager'
+import DB from '/src/database/DB'
+import BottomCard from '/src/components/shared/bottomCard'
+import StringManager from '../../../managers/stringManager'
 
 function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) {
   const { state, setState } = useContext(globalState)
@@ -56,7 +42,7 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
                   </div>
                 )}
                 <p className={`child-name ${child?.general?.name === child?.general?.name ? 'active' : ''}`}>
-                  {formatNameFirstNameOnly(child?.general?.name)}
+                  {StringManager.formatNameFirstNameOnly(child?.general?.name)}
                 </p>
               </div>
             )

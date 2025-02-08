@@ -156,18 +156,18 @@ const DB = {
       }
     }
   },
-  deleteMultipleRows: async function (table, rows, currentUser) {
+  deleteMultipleRows: async function (path, rows, currentUser) {
     rows = Manager.convertToArray(rows)
     let dbRef = ref(getDatabase())
     let idToDelete
     if (Manager.isValid(rows)) {
       for (let row of rows) {
-        idToDelete = await DB.getSnapshotKey(table, row, 'id')
-        console.log(`${table} | ID to delete: ${idToDelete}`)
+        idToDelete = await DB.getSnapshotKey(path, row, 'id')
+        console.log(`${path} | ID to delete: ${idToDelete}`)
         if (Manager.isValid(idToDelete)) {
           try {
-            await remove(child(dbRef, `${table}/${idToDelete}/`))
-            console.log(`${table} record deleted`)
+            await remove(child(dbRef, `${path}/${idToDelete}/`))
+            console.log(`${path} record deleted`)
           } catch (error) {
             LogManager.log(error.message, LogManager.logTypes.error, error.stack)
           }
@@ -254,9 +254,7 @@ const DB = {
           key = await DB.getSnapshotKey(path, record, 'id')
         }
       }
-
-      console.log(key)
-      update(ref(dbRef, `${path}/${key}`), updatedRow)
+      await update(ref(dbRef, `${path}/${key}`), updatedRow)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }

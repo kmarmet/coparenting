@@ -8,10 +8,13 @@ import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import NotificationManager from '/src/managers/notificationManager'
 import CalendarMapper from '/src/mappers/calMapper'
+import CalMapper from '/src/mappers/calMapper'
 import DateFormats from '/src/constants/dateFormats'
-import { PiCalendarDotDuotone, PiGlobeDuotone, PiUserCircleDuotone } from 'react-icons/pi'
-import { PiBellSimpleRingingDuotone } from 'react-icons/pi'
-import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
+import { PiBellSimpleRingingDuotone, PiCalendarDotDuotone, PiGlobeDuotone, PiUserCircleDuotone } from 'react-icons/pi'
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
+import { MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
+import { MdEventRepeat } from 'react-icons/md'
+import { CgDetailsMore } from 'react-icons/cg'
 import { FaExternalLinkSquareAlt } from 'react-icons/fa'
 import { LiaMapMarkedAltSolid } from 'react-icons/lia'
 import { IoTimeOutline } from 'react-icons/io5'
@@ -36,14 +39,12 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import ActivityCategory from '/src/models/activityCategory'
 import StringManager from '/src/managers/stringManager'
 import { LuCalendarCheck } from 'react-icons/lu'
-import { MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
 import DomManager from '../../managers/domManager.coffee'
 import Map from '../shared/map.jsx'
 import { FaChildren } from 'react-icons/fa6'
-import CalMapper from '/src/mappers/calMapper'
 import Spacer from '../shared/spacer.jsx'
 
-export default function EditCalEvent({ event, showCard, onClose }) {
+export default function EditCalEvent({ event, showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, refreshKey } = state
 
@@ -63,6 +64,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
   const [eventIsRepeating, setEventIsRepeating] = useState(false)
   const [eventIsCloned, setEventIsCloned] = useState(false)
+  const [recurInterval, setRecurInterval] = useState('')
 
   // State
   const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
@@ -72,7 +74,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const [showReminders, setShowReminders] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
   const [view, setView] = useState('details')
-  const [isDateRange, setIsDateRange] = useState(false)
   const [shareWithNames, setShareWithNames] = useState([])
   const [dataIsLoading, setDataIsLoading] = useState(true)
 
@@ -98,7 +99,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setIsVisitation(false)
     setEventIsRepeating(false)
     setEventIsCloned(false)
-    onClose(moment(event.startDate))
+    hideCard()
+    await afterUpdateCallback()
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
     setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
@@ -217,6 +219,7 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     updatedEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
     updatedEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
     updatedEvent.phone = eventPhone
+    updatedEvent.repeatInterval = recurInterval
     updatedEvent.isDateRange = eventIsDateRange
     updatedEvent.isCloned = eventIsCloned
     updatedEvent.isRepeating = eventIsRepeating
@@ -261,13 +264,14 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
       // Events with multiple days
       if (event?.isRepeating || event?.isDateRange || event?.isCloned) {
-        // Get record key
-        const key = await DB.getSnapshotKey(dbPath, event, 'id')
+        const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`)
+        const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
 
-        // Update DB
-        // await set(child(dbRef, `${DB.tables.calendarEvents}/${key}`), cleanedObject).finally(async () => {
-        //   await afterUpdateCallback()
-        // })
+        if (!Manager.isValid(existing)) {
+          return false
+        }
+
+        hideCard()
 
         // Add cloned dates
         if (Manager.isValid(clonedDatesToSubmit)) {
@@ -275,19 +279,24 @@ export default function EditCalEvent({ event, showCard, onClose }) {
         }
 
         if (eventIsDateRange) {
-          const dates = DateManager.getDateRangeDates(updatedEvent.startDate, eventEndDate)
-          // await CalendarManager.addMultipleCalEvents(currentUser, dates)
+          const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'range')
+          await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
 
         // Add repeating dates
-        if (Manager.isValid(repeatingDatesToSubmit)) {
-          // await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+        if (eventIsRepeating) {
+          console.log(eventEndDate)
+          const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'recurring', existing[0]?.startDate, eventEndDate)
+          console.log(dates)
+          await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
+
+        // Delete all before updated
+        await DB.deleteMultipleRows(`${DB.tables.calendarEvents}/${currentUser.phone}`, existing, currentUser)
       }
 
       // Update Single Event
       else {
-        console.log(cleanedEvent)
         await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updatedEvent.id)
         await afterUpdateCallback()
       }
@@ -300,10 +309,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
   const afterUpdateCallback = async () => {
     // Share with Notifications
     NotificationManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventName} has been updated`, ActivityCategory.calendar)
-
-    if (navigator.setAppBadge) {
-      await navigator.setAppBadge(1)
-    }
   }
 
   // CHECKBOX HANDLERS
@@ -360,8 +365,10 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     setEventEndTime(event?.endTime)
     setEventNotes(event?.notes)
     setEventShareWith(event?.shareWith ?? [])
+    setEventIsRepeating(event?.isRepeating)
     setView('details')
-    setIsDateRange(event?.isDateRange)
+    setRecurInterval(event?.repeatInterval)
+    setEventIsDateRange(event?.isDateRange)
     setIncludeChildren(Manager.isValid(event?.children))
     setShowReminders(Manager.isValid(event?.reminderTimes))
 
@@ -406,6 +413,14 @@ export default function EditCalEvent({ event, showCard, onClose }) {
     }
 
     return message
+  }
+
+  const getTime = (time) => {
+    if (Manager.isValid(moment(time, 'hh:mma'))) {
+      return moment(time, 'hh:mma')
+    } else {
+      return null
+    }
   }
 
   const addThemeToDatePickers = () => {
@@ -462,8 +477,6 @@ export default function EditCalEvent({ event, showCard, onClose }) {
       submitIcon={<LuCalendarCheck />}
       hasSubmitButton={view === 'edit'}
       onClose={async () => {
-        onClose(moment(event.startDate))
-        setState({ ...state, refreshKey: Manager.getUid() })
         await resetForm()
       }}
       title={StringManager.uppercaseFirstLetterOfAllWords(event?.title)}
@@ -495,8 +508,8 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                     </div>
                   )}
                   {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
-                    <div className="flex wrap no-gap">
-                      <b className="w-100">Dates</b>
+                    <div className="flex">
+                      <b>Dates</b>
                       <span className="">
                         {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}&nbsp;to&nbsp;
                         {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
@@ -576,12 +589,10 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   {/* WEBSITE */}
                   {Manager.isValid(event?.websiteUrl) && (
                     <div className="flex" id="website">
-                      <p>
-                        <b>
-                          <PiGlobeDuotone />
-                          Website
-                        </b>
-                      </p>
+                      <b>
+                        <PiGlobeDuotone />
+                        Website
+                      </b>
                       <a className="" href={decodeURIComponent(event?.websiteUrl)} target="_blank">
                         {decodeURIComponent(event?.websiteUrl)}
                         <FaExternalLinkSquareAlt className={'external-icon'} />
@@ -601,10 +612,11 @@ export default function EditCalEvent({ event, showCard, onClose }) {
 
                   {/* NOTES */}
                   {Manager.isValid(event?.notes) && (
-                    <div className="flex wrap no-gap">
-                      <p className="w-100">
-                        <b>Notes</b>
-                      </p>
+                    <div className={`${StringManager.addLongTextClass(event?.notes)} flex`}>
+                      <b>
+                        <CgDetailsMore />
+                        Notes
+                      </b>
                       <span className="notes">{event?.notes}</span>
                     </div>
                   )}
@@ -629,7 +641,10 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   {/* REPEAT INTERVAL */}
                   {Manager.isValid(event?.repeatInterval) && (
                     <div className="flex">
-                      <b>Repeat Interval</b>
+                      <b>
+                        <MdEventRepeat />
+                        Recurrence Interval
+                      </b>
                       <span className="">{StringManager.uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</span>
                     </div>
                   )}
@@ -653,23 +668,21 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                   {/*</div>*/}
                   <Spacer height={15} />
                   {/* EVENT NAME */}
-                  <div className="title-suggestion-wrapper">
-                    <InputWrapper
-                      inputType={'input'}
-                      labelText={'Event Name'}
-                      defaultValue={event?.title}
-                      required={true}
-                      onChange={async (e) => {
-                        const inputValue = e.target.value
-                        if (inputValue.length > 1) {
-                          setEventName(inputValue)
-                        }
-                      }}
-                    />
-                  </div>
+                  <InputWrapper
+                    inputType={'input'}
+                    labelText={'Event Name'}
+                    defaultValue={event?.title}
+                    required={true}
+                    onChange={async (e) => {
+                      const inputValue = e.target.value
+                      if (inputValue.length > 1) {
+                        setEventName(inputValue)
+                      }
+                    }}
+                  />
                   {/* DATE */}
                   <div className="flex" id={'date-input-container'}>
-                    {!isDateRange && (
+                    {!eventIsDateRange && (
                       <>
                         {!DomManager.isMobile() && (
                           <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
@@ -697,59 +710,60 @@ export default function EditCalEvent({ event, showCard, onClose }) {
                       </>
                     )}
 
-                    {/* DATE RANGE */}
-                    {isDateRange && (
-                      <div className="w-100">
-                        <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
-                          <MobileDateRangePicker
-                            className={'w-100'}
-                            onOpen={() => {
-                              Manager.hideKeyboard('date-range-input')
-                              addThemeToDatePickers()
-                            }}
-                            defaultValue={[moment(event?.startDate), moment(event?.endDate)]}
-                            onAccept={(dateArray) => {
-                              if (Manager.isValid(dateArray)) {
-                                setEventStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
-                                setEventEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
-                                setEventIsDateRange(true)
-                              }
-                            }}
-                            slots={{ field: SingleInputDateRangeField }}
-                            name="allowedRange"
-                          />
-                        </InputWrapper>
-                      </div>
-                    )}
+                    {/*/!* DATE RANGE *!/*/}
+                    {/*{isDateRange && (*/}
+                    {/*  <div className="w-100">*/}
+                    {/*    <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>*/}
+                    {/*      <MobileDateRangePicker*/}
+                    {/*        className={'w-100'}*/}
+                    {/*        onOpen={() => {*/}
+                    {/*          Manager.hideKeyboard('date-range-input')*/}
+                    {/*          addThemeToDatePickers()*/}
+                    {/*        }}*/}
+                    {/*        defaultValue={[moment(event?.startDate), moment(event?.endDate)]}*/}
+                    {/*        onAccept={(dateArray) => {*/}
+                    {/*          if (Manager.isValid(dateArray)) {*/}
+                    {/*            setEventStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))*/}
+                    {/*            setEventEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))*/}
+                    {/*            setEventIsDateRange(true)*/}
+                    {/*          }*/}
+                    {/*        }}*/}
+                    {/*        slots={{ field: SingleInputDateRangeField }}*/}
+                    {/*        name="allowedRange"*/}
+                    {/*      />*/}
+                    {/*    </InputWrapper>*/}
+                    {/*  </div>*/}
+                    {/*)}*/}
                   </div>
 
                   {/* EVENT START/END TIME */}
-                  <div className="flex gap">
-                    {/* START TIME */}
-                    <InputWrapper labelText={'Start Time'} required={false} inputType={'date'}>
-                      <MobileTimePicker
-                        onOpen={addThemeToDatePickers}
-                        format={'h:mma'}
-                        placeholder={''}
-                        value={moment(event?.startTime, 'hh:mma')}
-                        minutesStep={5}
-                        className={`${theme} m-0`}
-                        onAccept={(e) => setEventStartTime(e)}
-                      />
-                    </InputWrapper>
+                  {!eventIsDateRange && (
+                    <div className="flex gap">
+                      {/* START TIME */}
+                      <InputWrapper wrapperClasses="start-time" labelText={'Start Time'} required={false} inputType={'date'}>
+                        <MobileTimePicker
+                          onOpen={addThemeToDatePickers}
+                          value={getTime(event?.startTime)}
+                          minutesStep={5}
+                          key={refreshKey}
+                          className={`${theme}`}
+                          onAccept={(e) => setEventStartTime(e)}
+                        />
+                      </InputWrapper>
 
-                    {/* END TIME */}
-                    <InputWrapper labelText={'End Time'} required={false} inputType={'date'}>
-                      <MobileTimePicker
-                        onOpen={addThemeToDatePickers}
-                        format={'h:mma'}
-                        value={moment(event?.endTime, 'hh:mma')}
-                        minutesStep={5}
-                        className={`${theme} m-0`}
-                        onAccept={(e) => setEventEndTime(e)}
-                      />
-                    </InputWrapper>
-                  </div>
+                      {/* END TIME */}
+                      <InputWrapper wrapperClasses="end-time" labelText={'End Time'} required={false} inputType={'date'}>
+                        <MobileTimePicker
+                          key={refreshKey}
+                          onOpen={addThemeToDatePickers}
+                          value={getTime(event?.endTime)}
+                          minutesStep={5}
+                          className={`${theme}`}
+                          onAccept={(e) => setEventEndTime(e)}
+                        />
+                      </InputWrapper>
+                    </div>
+                  )}
                   {/* Share with */}
                   {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
                     <ShareWithCheckboxes

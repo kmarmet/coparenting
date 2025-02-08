@@ -126,7 +126,7 @@ export default function Home() {
       <div id="above-fold-wrapper" className="section above-fold">
         <Fade>
           <div id="home-navbar" className="flex">
-            <img src={Logo} id="logo" {...bind()} />
+            <img src={Logo} id="logo" {...bind()} alt="Logo" />
             <div id="login-buttons">
               {/*<button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
               {/*  Sign Up <IoPersonAddOutline />*/}

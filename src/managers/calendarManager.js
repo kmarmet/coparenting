@@ -16,18 +16,105 @@ import Manager from "./manager";
 
 import LogManager from "./logManager";
 
+import DateFormats from "../constants/dateFormats";
+
+import moment from "moment";
+
+import DateManager from "./dateManager";
+
+import CalendarMapper from "../mappers/calMapper";
+
+import DatasetManager from "./datasetManager";
+
+import CalendarEvent from "../models/calendarEvent";
+
+import ObjectManager from "./objectManager";
+
+import ModelNames from "../models/modelNames";
+
 export default CalendarManager = {
-  addMultipleCalEvents: async function(currentUser, newEvents) {
-    var currentEvents, dbRef, error, toAdd;
+  addMultipleCalEvents: async function(currentUser, newEvents, isRangeClonedOrRecurring = false) {
+    var currentEvents, dbRef, error, event, i, len, multipleDatesId, toAdd;
     dbRef = ref(getDatabase());
     currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`));
-    toAdd = [...currentEvents, ...newEvents];
+    multipleDatesId = Manager.getUid();
+    if (isRangeClonedOrRecurring = true) {
+      for (i = 0, len = newEvents.length; i < len; i++) {
+        event = newEvents[i];
+        event.multipleDatesId = multipleDatesId;
+      }
+    }
+    if (!Manager.isValid(currentEvents)) {
+      toAdd = [...newEvents];
+    } else {
+      toAdd = [...currentEvents, ...newEvents];
+    }
     try {
       return (await set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/`), toAdd));
     } catch (error1) {
       error = error1;
       return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
     }
+  },
+  buildArrayOfEvents: function(currentUser, eventObject, arrayType = "recurring", startDate, endDate) {
+    var date, dateObject, dates, datesToIterate, datesToPush, i, len;
+    datesToPush = [];
+    datesToIterate = [];
+    dates = [];
+    // DATE RANGE
+    if (arrayType === "range") {
+      datesToIterate = DateManager.getDateRangeDates(startDate, endDate);
+    }
+    // REPEATING
+    if (arrayType === "recurring") {
+      datesToIterate = CalendarMapper.repeatingEvents(eventObject.repeatInterval, moment(startDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear), endDate);
+    }
+    // CLONED DATES
+    if (arrayType === "cloned") {
+      if (typeof startDate === 'object') {
+        startDate = moment(startDate).format(DateFormats.dateForDb);
+      }
+    }
+//      datesToIterate = DatasetManager.getUniqueArray([...clonedDates, true], true)
+    for (i = 0, len = datesToIterate.length; i < len; i++) {
+      date = datesToIterate[i];
+      dateObject = new CalendarEvent();
+      // Required
+      dateObject.title = eventObject.title;
+      dateObject.id = Manager.getUid();
+      dateObject.startDate = moment(date).format(DateFormats.dateForDb);
+      dateObject.endDate = moment(endDate).format(DateFormats.dateForDb);
+      if (arrayType === "range") {
+        dateObject.staticStartDate = moment(datesToIterate[0]).format(DateFormats.dateForDb);
+      }
+      // Not Required
+      dateObject.directionsLink = Manager.getDirectionsLink(eventObject.location);
+      dateObject.location = eventObject.location;
+      dateObject.children = eventObject.children;
+      dateObject.ownerPhone = currentUser != null ? currentUser.phone : void 0;
+      dateObject.createdBy = currentUser != null ? currentUser.name : void 0;
+      dateObject.phone = eventObject.phone;
+      dateObject.shareWith = DatasetManager.getUniqueArray(eventObject.shareWith, true);
+      dateObject.notes = eventObject.notes;
+      dateObject.websiteUrl = eventObject.websiteUrl;
+      dateObject.isRepeating = eventObject.isRepeating;
+      dateObject.isDateRange = eventObject.isDateRange;
+      //      dateObject.isCloned = Manager.isValid(clonedDates)
+
+      // Times
+      if (Manager.isValid(eventObject.startTime)) {
+        dateObject.startTime = moment(eventObject.startTime).format(DateFormats.timeForDb);
+      }
+      if (Manager.isValid(eventObject.endTime)) {
+        dateObject.endTime = moment(eventObject.endTime).format(DateFormats.timeForDb);
+      }
+      dateObject.reminderTimes = eventObject.reminderTimes;
+      dateObject.recurrenceInterval = eventObject.repeatInterval;
+      dateObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent);
+      datesToPush.push(dateObject);
+    }
+    console.log(datesToPush);
+    return datesToPush;
   },
   setHolidays: async function(holidays) {
     var currentEvents, dbRef, error, eventsToAdd;
@@ -82,6 +169,35 @@ export default CalendarManager = {
     } catch (error1) {
       error = error1;
       return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
+    }
+  },
+  updateMultipleEvents: async function(events, currentUser) {
+    var dbRef, event, existingEvents, i, key, len, path, results, updatedEvent;
+    dbRef = getDatabase();
+    path = `${DB.tables.calendarEvents}/${currentUser.phone}`;
+    existingEvents = (await DB.getTable(path));
+    if (Manager.isValid(events)) {
+      results = [];
+      for (i = 0, len = events.length; i < len; i++) {
+        updatedEvent = events[i];
+        results.push((await (async function() {
+          var j, len1, results1;
+          results1 = [];
+          for (j = 0, len1 = existingEvents.length; j < len1; j++) {
+            event = existingEvents[j];
+            if (event.id === updatedEvent.id) {
+              key = (await DB.getSnapshotKey(path, event, 'id'));
+              await DB.deleteByPath(`${path}/${key}`);
+              await DB.add(`${path}/${key}`, event);
+              results1.push((await update(ref(dbRef, `${path}/${key}`), updatedEvent)));
+            } else {
+              results1.push(void 0);
+            }
+          }
+          return results1;
+        })()));
+      }
+      return results;
     }
   },
   deleteMultipleEvents: async function(events, currentUser) {

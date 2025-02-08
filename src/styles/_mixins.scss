@@ -930,6 +930,108 @@
 
 /*#endregion  POSITIONING*/
 /*#region  COMPONENTS*/
+@mixin accordion {
+  .MuiCollapse-root {
+    border-radius: $borderRadius;
+    background: $lightIconBgBlue;
+    transition: all 0.3s ease-in-out;
+    .buttons {
+      padding: 15px;
+      &.flex {
+        gap: 10px;
+        padding: 0;
+      }
+      button {
+        &.button {
+          &.default {
+            font-size: 14px;
+            padding: 8px 15px;
+            min-width: 0;
+            width: unset;
+            background: white;
+            color: $lightDarkGrey;
+            border: 0;
+            margin-bottom: 8px;
+            opacity: 1;
+            font-weight: $fwMediumBold;
+
+            &.active {
+              color: $mainBlue;
+            }
+          }
+        }
+      }
+    }
+    &.MuiCollapse-entered {
+    }
+  }
+  .MuiPaper-elevation {
+    .MuiAccordionSummary-gutters {
+      &.MuiAccordionSummary-root {
+        width: 100%;
+        #toggle-button {
+          font-weight: $fwLight;
+          &.active {
+            font-weight: $fwRegular;
+          }
+        }
+        #actions-button {
+          @include accordionHeader;
+          margin: 0 auto;
+          align-items: center;
+          justify-content: space-between;
+          line-height: 1;
+
+          &.expenses {
+            margin-left: 0;
+          }
+          svg {
+            margin-left: 10px;
+            margin-right: 0;
+            position: relative;
+            top: 0;
+          }
+          &.active {
+            background: $lightIconBgBlue;
+            color: $mainBlue;
+            width: 100%;
+            opacity: 1;
+            margin: 0;
+            font-weight: $fwMediumBold;
+            border-radius: $borderRadius $borderRadius 0 0;
+
+            svg {
+              color: $mainBlue;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@mixin accordionHeader {
+  padding: 10px;
+  background-color: $bestGreyForWhite;
+  display: flex;
+  font-weight: 500;
+  flex-wrap: wrap;
+  opacity: 0.75;
+  border-radius: $borderRadius;
+  transition: all 0.3s ease-in-out;
+
+  svg {
+    margin-left: auto;
+    align-self: flex-end;
+    color: $mediumGrey;
+    font-size: 22px;
+    max-height: 20px;
+    display: flex;
+    position: relative;
+    top: -2px;
+    align-items: center;
+    justify-content: center;
+  }
+}
 @mixin viewsWrapper {
   display: flex;
   justify-content: flex-start;
@@ -2494,6 +2596,14 @@
       padding: 12px 0;
       margin-bottom: 0;
 
+      &.views-wrapper {
+        padding: 0;
+      }
+
+      &.long-text {
+        flex-wrap: wrap;
+      }
+
       &#checkbox-wrapper {
         border: 0;
         padding: 0;
@@ -3288,7 +3398,7 @@
           }
 
           svg {
-            font-size: 20px;
+            font-size: 24px;
             margin: 0 5px 0 0;
             color: $mainBlue;
 

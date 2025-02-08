@@ -6,6 +6,7 @@ import StringManager from '/src/managers/stringManager'
 import { Fade } from 'react-awesome-reveal'
 import DatasetManager from '../../../managers/datasetManager.coffee'
 import globalState from '../../../context.js'
+import DB from '../../../database/DB'
 
 export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = function (event) {} }) {
   const { state, setState } = useContext(globalState)
@@ -62,6 +63,11 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
           {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">No events on this day</p>}
           {Manager.isValid(eventsOfActiveDay) &&
             eventsOfActiveDay.map((event, index) => {
+              let startDate = event?.startDate
+              if (event?.isDateRange) {
+                startDate = event?.staticStartDate
+                console.log(startDate)
+              }
               let dotObjects = getRowDotColor(event.startDate)
               const dotObject = dotObjects.filter((x) => x.id === event.id)[0]
               return (
@@ -69,7 +75,7 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
                   id="row"
                   key={index}
                   onClick={(e) => handleEventRowClick(event)}
-                  data-from-date={event?.startDate}
+                  data-from-date={startDate}
                   className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className} ${index === eventsOfActiveDay.length - 2 ? 'last-child' : ''}`}>
                   <div className="text flex space-between">
                     {/* EVENT NAME */}
@@ -84,23 +90,23 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
                       <div id="date-container">
                         {Manager.isValid(searchResults) && (
                           <span className="start-date" id="subtitle">
-                            {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}
+                            {moment(startDate).format(DateFormats.readableMonthAndDay)}
                           </span>
                         )}
                         {/* FROM DATE */}
-                        {!Manager.isValid(searchResults) && !Manager.contains(event?.startDate, 'Invalid') && event?.startDate?.length > 0 && (
+                        {!Manager.isValid(searchResults) && !Manager.contains(startDate, 'Invalid') && startDate?.length > 0 && (
                           <span className="start-date" id="subtitle">
-                            {moment(event?.startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
+                            {moment(startDate).format(showHolidays ? DateFormats.readableMonthAndDay : DateFormats.readableDay)}
                           </span>
                         )}
                         {/* TO WORD */}
-                        {!Manager.contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                        {!Manager.contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== startDate && (
                           <span className="end-date" id="subtitle">
-                            &nbsp;to&nbsp;{' '}
+                            &nbsp;to&nbsp;
                           </span>
                         )}
                         {/* TO DATE */}
-                        {!Manager.contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== event?.startDate && (
+                        {!Manager.contains(event?.endDate, 'Invalid') && event?.endDate?.length > 0 && event?.endDate !== startDate && (
                           <span id="subtitle">{moment(event?.endDate).format(DateFormats.readableDay)}</span>
                         )}
                         {/* ALL DAY */}

@@ -1,25 +1,66 @@
-import { StreamCall, StreamVideo, StreamVideoClient, generateUserToken } from '@stream-io/video-react-sdk'
-import { useCallStateHooks, ParticipantView } from '@stream-io/video-react-sdk'
+import { useEffect, useState } from 'react'
+import {
+  useCallStateHooks,
+  ParticipantView,
+  useCallCallingState,
+  Call,
+  CallControls,
+  CallingState,
+  StreamCall,
+  useCall,
+  StreamVideo,
+  SpeakerLayout,
+  StreamVideoClient,
+} from '@stream-io/video-react-sdk'
+import { StreamClient } from '@stream-io/node-sdk'
+import Manager from '/src/managers/manager.js'
 
-// const userId = 'Kevin'
-// // const client = new StreamVideoClient({ process.env.REACT_STREAM_VIDEO_API_KEY, user, token })
-// // const token = client.generateUserToken({ user_id: userId });
-// const user = { id: userId }
-// const call = client.call('default', 'my-first-call')
-// call.join({ create: true })
-//
-// export default function VideoCall() {
-//   const { useParticipants } = useCallStateHooks();
-//   const participants = useParticipants();
-//   return (
-//     <StreamVideo client={client}>
-//       <StreamCall call={call}>
-//         <>
-//           {participants.map((p) => (
-//             <ParticipantView participant={p} key={p.sessionId} />
-//           ))}
-//         </>
-//       </StreamCall>
-//     </StreamVideo>
-//   )
-// }
+const apiKey = 'mzwp8k4jeyqn'
+const token =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3Byb250by5nZXRzdHJlYW0uaW8iLCJzdWIiOiJ1c2VyL0phaW5hX1NvbG8iLCJ1c2VyX2lkIjoiSmFpbmFfU29sbyIsInZhbGlkaXR5X2luX3NlY29uZHMiOjYwNDgwMCwiaWF0IjoxNzM4ODQyNjcyLCJleHAiOjE3Mzk0NDc0NzJ9.4CFB_byVYEPBY6_EEvzXIj4eh24_xR7vL0klnNtlVt4'
+const userId = Manager.getUid()
+const callId = '1234'
+
+const newUser = {
+  id: userId,
+  name: 'Lindsay',
+}
+
+const client = new StreamVideoClient({ apiKey, newUser, token })
+const call = client.call('default', callId)
+
+function VideoCall() {
+  const call = useCall()
+  const { useCallCallingState, useParticipantCount } = useCallStateHooks()
+  const callingState = useCallCallingState()
+  const participantCount = useParticipantCount()
+
+  if (callingState !== callingState.JOINED) {
+    return <div>Loading...</div>
+  }
+
+  useEffect(() => {
+    console.log(true)
+    console.log(callingState)
+  }, [])
+
+  return (
+    <div>
+      Call {call?.id} has {participantCount} participants
+      <Video />
+    </div>
+  )
+}
+
+export default function Video() {
+  console.log(true)
+  return (
+    <StreamVideo client={client}>
+      <StreamCall call={call}>
+        <VideoCall />
+        {/*<SpeakerLayout />*/}
+        {/*<CallControls />*/}
+      </StreamCall>
+    </StreamVideo>
+  )
+}

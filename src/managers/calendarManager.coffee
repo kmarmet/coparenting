@@ -2,16 +2,95 @@ import DB from "../database/DB"
 import { child, getDatabase, ref, remove, set, update } from 'firebase/database'
 import Manager from "./manager"
 import LogManager from "./logManager"
+import DateFormats from "../constants/dateFormats"
+import moment from "moment"
+import DateManager from "./dateManager"
+import CalendarMapper from "../mappers/calMapper"
+import DatasetManager from "./datasetManager"
+import CalendarEvent from "../models/calendarEvent"
+import ObjectManager from "./objectManager"
+import ModelNames from "../models/modelNames"
 
 export default CalendarManager =
-  addMultipleCalEvents: (currentUser, newEvents) ->
+  addMultipleCalEvents: (currentUser, newEvents, isRangeClonedOrRecurring = false) ->
     dbRef = ref(getDatabase())
     currentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}")
-    toAdd = [currentEvents..., newEvents...]
+    multipleDatesId = Manager.getUid()
+
+    if isRangeClonedOrRecurring = true
+      for event in newEvents
+        event.multipleDatesId = multipleDatesId
+
+    if !Manager.isValid(currentEvents)
+      toAdd = [...newEvents]
+    else
+      toAdd = [currentEvents..., newEvents...]
     try
       await set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/"), toAdd)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+
+  buildArrayOfEvents: (currentUser, eventObject, arrayType = "recurring", startDate, endDate) ->
+    datesToPush = []
+    datesToIterate = []
+    dates = []
+
+  # DATE RANGE
+    if arrayType == "range"
+      datesToIterate = DateManager.getDateRangeDates(startDate, endDate)
+
+  # REPEATING
+    if arrayType == "recurring"
+      datesToIterate = CalendarMapper.repeatingEvents(
+        eventObject.repeatInterval,
+        moment(startDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
+        endDate
+      )
+
+  # CLONED DATES
+    if arrayType == "cloned"
+      if typeof startDate is 'object'
+        startDate = moment(startDate).format(DateFormats.dateForDb)
+#      datesToIterate = DatasetManager.getUniqueArray([...clonedDates, true], true)
+
+    for date in datesToIterate
+      dateObject = new CalendarEvent()
+      # Required
+      dateObject.title = eventObject.title
+      dateObject.id = Manager.getUid()
+      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
+      dateObject.endDate = moment(endDate).format(DateFormats.dateForDb)
+
+      if arrayType == "range"
+        dateObject.staticStartDate = moment(datesToIterate[0]).format(DateFormats.dateForDb)
+
+      # Not Required
+      dateObject.directionsLink = Manager.getDirectionsLink(eventObject.location)
+      dateObject.location = eventObject.location
+      dateObject.children = eventObject.children
+      dateObject.ownerPhone = currentUser?.phone
+      dateObject.createdBy = currentUser?.name
+      dateObject.phone = eventObject.phone
+      dateObject.shareWith = DatasetManager.getUniqueArray(eventObject.shareWith, true)
+      dateObject.notes = eventObject.notes
+      dateObject.websiteUrl = eventObject.websiteUrl
+      dateObject.isRepeating = eventObject.isRepeating
+      dateObject.isDateRange = eventObject.isDateRange
+#      dateObject.isCloned = Manager.isValid(clonedDates)
+
+      # Times
+      if Manager.isValid(eventObject.startTime)
+        dateObject.startTime = moment(eventObject.startTime).format(DateFormats.timeForDb)
+      if Manager.isValid(eventObject.endTime)
+        dateObject.endTime = moment(eventObject.endTime).format(DateFormats.timeForDb)
+
+      dateObject.reminderTimes = eventObject.reminderTimes
+      dateObject.recurrenceInterval = eventObject.repeatInterval
+      dateObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
+      datesToPush.push dateObject
+
+    console.log datesToPush
+    return datesToPush
 
   setHolidays: (holidays) ->
     dbRef = ref(getDatabase())
@@ -51,6 +130,19 @@ export default CalendarManager =
       update(ref(dbRef, "#{DB.tables.calendarEvents}/#{userPhone}/#{key}"), recordToUpdate)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+
+  updateMultipleEvents: (events, currentUser) ->
+    dbRef = getDatabase()
+    path = "#{DB.tables.calendarEvents}/#{currentUser.phone}";
+    existingEvents = await DB.getTable(path)
+    if Manager.isValid(events)
+      for updatedEvent in events
+        for event in existingEvents
+          if event.id == updatedEvent.id
+            key = await DB.getSnapshotKey(path, event, 'id')
+            await DB.deleteByPath("#{path}/#{key}")
+            await DB.add("#{path}/#{key}", event)
+            await update(ref(dbRef, "#{path}/#{key}"), updatedEvent)
 
   deleteMultipleEvents: (events, currentUser) ->
     dbRef = ref(getDatabase())

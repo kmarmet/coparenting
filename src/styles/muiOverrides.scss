@@ -713,6 +713,10 @@
     width: 95vw !important;
     @include bestShadow;
 
+    &.MuiPaper-elevation:not(.MuiPopover-paper) {
+      border-radius: 0;
+    }
+
     &[role='dialog'] {
       .MuiPickersLayout-root {
         background-color: white !important;

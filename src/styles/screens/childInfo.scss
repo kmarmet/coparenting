@@ -19,11 +19,17 @@
     }
   }
   #child-info-container {
-    .button {
-      &.default {
-        &.center {
-          min-width: 50%;
-        }
+    @include accordion;
+
+    .MuiAccordionSummary-content {
+      #toggle-button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0 !important;
+        font-size: 20px !important;
+        color: $lightBlackLight;
       }
     }
 
@@ -276,19 +282,24 @@
 
     #child-info {
       overflow: hidden;
+
+      .MuiCollapse-root {
+        background: transparent;
+      }
       .rs-panel-body {
         padding: 0 10px;
       }
 
       .form {
         .flex {
+          align-items: center;
           &.input {
             .delete-icon {
               color: $lightDarkGrey;
-              font-size: 26px;
+              transform: scale(1.4);
               position: relative;
               margin-left: 10px;
-              bottom: 10px;
+              bottom: 3px;
             }
           }
         }

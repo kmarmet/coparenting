@@ -15,6 +15,7 @@
     "@mui/x-license": "^7.21.0",
     "@react-google-maps/api": "^2.20.5",
     "@rsuite/multi-date-picker": "1.0.0",
+    "@stream-io/node-sdk": "^0.4.12",
     "@stream-io/video-react-sdk": "^1.11.4",
     "@theme-toggles/react": "4.1.0",
     "@vis.gl/react-google-maps": "^1.5.1",
@@ -123,6 +124,8 @@
     "@parcel/transformer-webmanifest": "^2.13.3",
     "parcel": "^2.13.3",
     "sass": "1.77.4",
-    "uglify-js": "^3.19.3"
+    "stream-browserify": "^3.0.0",
+    "uglify-js": "^3.19.3",
+    "util": "^0.12.5"
   }
 }

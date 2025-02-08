@@ -400,7 +400,7 @@ export default function EventCalendar() {
         <NewCalendarEvent selectedNewEventDay={selectedDate} showCard={showNewEventCard} hideCard={() => setShowNewEventCard(false)} />
 
         {/* EDIT EVENT */}
-        <EditCalEvent showCard={showEditCard} onClose={() => setShowEditCard(false)} event={eventToEdit} />
+        <EditCalEvent showCard={showEditCard} hideCard={() => setShowEditCard(false)} event={eventToEdit} />
       </>
 
       {/* PAGE CONTAINER */}

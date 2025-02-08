@@ -8,10 +8,15 @@ import MyConfetti from '/src/components/shared/myConfetti.js'
 import DateManager from '/src/managers/dateManager.js'
 import DateFormats from '/src/constants/dateFormats.js'
 import moment from 'moment'
+import { PiUserCircleDuotone } from 'react-icons/pi'
+import { AiTwotoneTag } from 'react-icons/ai'
 import BottomCard from '../../shared/bottomCard.jsx'
+import { FaPlus, FaMinus } from 'react-icons/fa6'
+
 import { AiOutlineFileAdd } from 'react-icons/ai'
 import { FaChildren } from 'react-icons/fa6'
 import SecurityManager from '/src/managers/securityManager'
+import { TbCalendarDollar } from 'react-icons/tb'
 import NewExpenseForm from '../../forms/newExpenseForm.jsx'
 import LightGallery from 'lightgallery/react'
 import MenuItem from '@mui/material/MenuItem'
@@ -39,7 +44,9 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { HiMiniChevronDown, HiMiniChevronUp } from 'react-icons/hi2'
-
+import { GiMoneyStack } from 'react-icons/gi'
+import { TbCalendarCheck } from 'react-icons/tb'
+import Spacer from '../../shared/spacer'
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
   recentlyAdded: 'Recently Added',
@@ -210,7 +217,6 @@ export default function ExpenseTracker() {
       expensesByCategory = allExpenses.filter((x) => x.category !== category)
     }
     DomManager.toggleActive(element.target)
-    console.log(category)
     if (category === 'None') {
       setExpenses(allExpenses)
     } else {
@@ -283,7 +289,11 @@ export default function ExpenseTracker() {
             <>
               {/* AMOUNT */}
               <div className="flex">
-                <b>Amount</b> <span>${activeExpense?.amount}</span>
+                <b>
+                  <GiMoneyStack />
+                  Amount
+                </b>
+                <span>${activeExpense?.amount}</span>
               </div>
 
               {activeExpense?.repeating && (
@@ -303,13 +313,20 @@ export default function ExpenseTracker() {
               {/* CATEGORY */}
               {Manager.isValid(activeExpense?.category) && (
                 <div className="flex">
-                  <b>Category</b> <span>{activeExpense?.category}</span>
+                  <b>
+                    <AiTwotoneTag />
+                    Category
+                  </b>{' '}
+                  <span>{activeExpense?.category}</span>
                 </div>
               )}
 
               {/* SENT TO */}
               <div className="flex">
-                <b>Sent to</b>
+                <b>
+                  <PiUserCircleDuotone />
+                  Sent to
+                </b>
                 <span>
                   {StringManager.formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
                 </span>
@@ -317,14 +334,20 @@ export default function ExpenseTracker() {
 
               {/* PAY TO */}
               <div className="flex">
-                <b>Pay to</b>
+                <b>
+                  <PiUserCircleDuotone />
+                  Pay to
+                </b>
                 <span> {StringManager.formatNameFirstNameOnly(activeExpense?.recipientName)}</span>
               </div>
 
               {/* DUE DATE */}
               {activeExpense?.dueDate && activeExpense?.dueDate?.length > 0 && (
                 <div className="flex">
-                  <b>Due Date</b>
+                  <b>
+                    <TbCalendarDollar />
+                    Due Date
+                  </b>
                   <span>
                     {DateManager.formatDate(activeExpense?.dueDate)} ({moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString()})
                   </span>
@@ -349,7 +372,11 @@ export default function ExpenseTracker() {
 
               {/* DATE ADDED */}
               <div className="flex">
-                <b>Created on </b> <span>{moment(activeExpense?.dateAdded).format(DateFormats.monthDayYear)}</span>
+                <b>
+                  <TbCalendarCheck />
+                  Created on{' '}
+                </b>{' '}
+                <span>{moment(activeExpense?.dateAdded).format(DateFormats.monthDayYear)}</span>
               </div>
 
               {/* NOTES */}
@@ -469,44 +496,54 @@ export default function ExpenseTracker() {
           <p className="payment-options-link mt-10" onClick={() => setShowPaymentOptionsCard(true)}>
             Bill Payment & Money Transfer Options
           </p>
-          <Accordion expanded={showFilters} id={'filters-accodrdion'} className={showFilters ? 'open' : 'closed'}>
+          <Spacer height={8} />
+          <Accordion expanded={showFilters} id={'filters-accordion'} className={showFilters ? 'open' : 'closed'}>
             <AccordionSummary onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'open' : 'closed'}>
-              <div className="flex">
-                <span>Filters</span>
-                {showFilters && <HiMiniChevronUp />}
-                {!showFilters && <HiMiniChevronDown />}
-              </div>
+              <p id="actions-button" className="expenses">
+                Filters {showFilters && <FaMinus />}
+                {!showFilters && <FaPlus />}
+              </p>
             </AccordionSummary>
             <AccordionDetails>
               <div id="filters">
                 <div className="filter-row">
                   <Label isBold={true} text={'Type'} classes="mb-5"></Label>
-                  <div className="pills type">
-                    <div className={`${expenseDateType === 'all' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('all')}>
+                  <div className="buttons flex type">
+                    <button
+                      className={`${expenseDateType === 'all' ? 'active' : ''} button default`}
+                      onClick={() => handleExpenseTypeSelection('all')}>
                       All
-                    </div>
-                    <div className={`${expenseDateType === 'single' ? 'active' : ''} pill`} onClick={() => handleExpenseTypeSelection('single')}>
+                    </button>
+                    <button
+                      className={`${expenseDateType === 'single' ? 'active' : ''} button default`}
+                      onClick={() => handleExpenseTypeSelection('single')}>
                       One-time
-                    </div>
-                    <div
-                      className={`${expenseDateType === 'repeating' ? 'active' : ''} pill`}
+                    </button>
+                    <button
+                      className={`${expenseDateType === 'repeating' ? 'active' : ''} button default`}
                       onClick={() => handleExpenseTypeSelection('repeating')}>
                       Recurring
-                    </div>
+                    </button>
                   </div>
                 </div>
                 <div className="filter-row">
                   <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
-                  <div className="pills type">
-                    <div className={paidStatus === 'all' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('all')}>
+                  <div className="buttons type flex">
+                    <button
+                      className={paidStatus === 'all' ? 'active button default' : 'button default'}
+                      onClick={() => handlePaidStatusSelection('all')}>
                       All
-                    </div>
-                    <div className={paidStatus === 'unpaid' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('unpaid')}>
+                    </button>
+                    <button
+                      className={paidStatus === 'unpaid' ? 'active button default' : 'button default'}
+                      onClick={() => handlePaidStatusSelection('unpaid')}>
                       Unpaid
-                    </div>
-                    <div className={paidStatus === 'paid' ? 'active pill' : 'pill'} onClick={() => handlePaidStatusSelection('paid')}>
+                    </button>
+                    <button
+                      className={paidStatus === 'paid' ? 'active button default' : 'button default'}
+                      onClick={() => handlePaidStatusSelection('paid')}>
                       Paid
-                    </div>
+                    </button>
                   </div>
                 </div>
                 {categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5"></Label>}
@@ -514,23 +551,26 @@ export default function ExpenseTracker() {
                 {/* CATEGORIES */}
                 {Manager.isValid(categoriesInUse) && (
                   <div className="filter-row">
-                    <div className="pills category">
+                    <div className="buttons flex category">
                       {categoriesAsArray.sort().map((cat, index) => {
                         return (
-                          <div key={index}>
-                            {categoriesInUse.includes(cat) && (
-                              <div onClick={handleCategorySelection} key={index} className={category === cat ? 'pill active' : 'pill'}>
+                          <>
+                            {categoriesInUse.includes(cat) && Manager.isValid(cat, true) && (
+                              <button
+                                key={index}
+                                onClick={handleCategorySelection}
+                                className={category === cat ? 'button default active' : 'button default'}>
                                 {cat}
-                              </div>
+                              </button>
                             )}
-                          </div>
+                          </>
                         )
                       })}
                     </div>
                   </div>
                 )}
                 <Label text={'Sorting'} classes="sorting" />
-                <SelectDropdown selectValue={sortMethod} labelText={'Sort by'} onChange={handleSortBySelection}>
+                <SelectDropdown wrapperClasses={'sorting-accordion'} selectValue={sortMethod} labelText={'Sort by'} onChange={handleSortBySelection}>
                   <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
                   <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
                   <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>

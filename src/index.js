@@ -25,15 +25,12 @@ if ('serviceWorker' in navigator) {
   }
   window.addEventListener('offline', handleConnection)
   navigator.serviceWorker
-
     .register(`${process.env.PUBLIC_URL}/OneSignalSDKWorker.js`)
-
     .then((registration) => {
       // console.log(registration);
 
       console.log('[SW] service Worker is registered at', registration.scope)
     })
-
     .catch((err) => {
       console.error('[SW] service Worker registration failed:', err)
     })

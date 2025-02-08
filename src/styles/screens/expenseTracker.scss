@@ -119,48 +119,8 @@
 
   #expense-tracker {
     // Filters Accordion
-    .MuiPaper-elevation {
-      margin-top: 15px;
-      padding-bottom: 1px;
-      background: $bestGreyForWhite;
-
-      &.open {
-        background: white;
-        margin-top: 20px !important;
-        border: 2px solid $bestGreyForWhite;
-        .MuiAccordion-heading {
-          .MuiButtonBase-root {
-            .MuiAccordionSummary-content {
-              border-radius: $borderRadius $borderRadius 0 0;
-            }
-          }
-        }
-      }
-      .MuiAccordion-heading {
-        .MuiButtonBase-root {
-          width: 100% !important;
-          .MuiAccordionSummary-content {
-            width: 100% !important;
-            background: $bestGreyForWhite;
-            padding: 8px 12px;
-            border-radius: $borderRadius;
-            .flex {
-              width: 100%;
-              justify-content: space-between;
-              align-items: center;
-              span {
-                font-weight: $fwMedium;
-                opacity: 0.85;
-              }
-              svg {
-                opacity: 0.85;
-                transform: scale(0.9);
-                margin: 0;
-              }
-            }
-          }
-        }
-      }
+    @include accordion;
+    #filters-accordion {
     }
 
     #filters {
@@ -183,7 +143,7 @@
       .MuiFormControl-root {
         .MuiOutlinedInput-root {
           [role='combobox'] {
-            background: #eaeaea !important;
+            background: white !important;
             padding: 0 8px !important;
             margin-top: 5px !important;
             line-height: 1;

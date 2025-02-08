@@ -161,6 +161,7 @@ const DateManager = {
     return biweeklyEvents
   },
   getWeeklyDates: (startDate, endDate) => {
+    console.log(startDate, endDate)
     const durationInDays = DateManager.getDuration('days', startDate, endDate)
     let weeklyEvents = []
 

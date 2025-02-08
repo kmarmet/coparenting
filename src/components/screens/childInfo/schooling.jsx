@@ -1,40 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
-import Manager from '../../../managers/manager'
-import {
-  camelCaseToString,
-  contains,
-  formatDbProp,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  lowercaseShouldBeLowercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
-import DB_UserScoped from '../../../database/db_userScoped'
+import Manager from '/src/managers/manager'
+import DB_UserScoped from '/src/database/db_userScoped'
 import { FaChevronDown } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
-import InputWrapper from '../../shared/inputWrapper'
-import AlertManager from '../../../managers/alertManager'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import AlertManager from '/src/managers/alertManager'
 import { IoCloseOutline, IoSchool } from 'react-icons/io5'
-import DB from '../../../database/DB'
-
+import DB from '/src/database/DB'
+import StringManager from '../../../managers/stringManager'
+import { FaPlus, FaMinus } from 'react-icons/fa6'
 export default function Schooling({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [schoolingValues, setSchoolingValues] = useState([])
+  const [showInputs, setShowInputs] = useState(false)
 
   const deleteProp = async (prop) => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
@@ -87,17 +69,22 @@ export default function Schooling({ activeChild, setActiveChild }) {
 
   return (
     <div className="info-section section schooling">
-      <Accordion className={theme} disabled={Manager.isValid(activeChild?.schooling) ? false : true}>
+      <Accordion className={theme} disabled={!Manager.isValid(activeChild?.schooling)}>
         <AccordionSummary
-          expandIcon={<FaChevronDown />}
+          onClick={() => setShowInputs(!showInputs)}
           className={!Manager.isValid(activeChild.schooling) ? 'disabled header schooling' : 'header schooling'}>
           <IoSchool className={'svg'} />
-          Schooling {!Manager.isValid(activeChild.schooling) ? '- No Info' : ''}
+          <p id="toggle-button" className={showInputs ? 'active' : ''}>
+            Schooling
+            {showInputs && Manager.isValid(activeChild?.behavior) && <FaMinus />}
+            {!showInputs && <FaPlus />}
+          </p>{' '}
+          {!Manager.isValid(activeChild.schooling) ? '- No Info' : ''}
         </AccordionSummary>
         <AccordionDetails>
           {Manager.isValid(schoolingValues) &&
             schoolingValues.map((prop, index) => {
-              const infoLabel = lowercaseShouldBeLowercase(spaceBetweenWords(uppercaseFirstLetterOfAllWords(prop[0])))
+              let infoLabel = StringManager.spaceBetweenWords(prop[0])
               const value = prop.flat()[1]
               return (
                 <div key={index}>

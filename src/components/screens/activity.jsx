@@ -19,6 +19,7 @@ import ActivityCategory from '../../models/activityCategory'
 import { PiSealWarningDuotone } from 'react-icons/pi'
 import StringManager from '../../managers/stringManager'
 import AppManager from '../../managers/appManager.coffee'
+import { FaPlus, FaMinus } from 'react-icons/fa6'
 
 export default function Activity() {
   const { state, setState } = useContext(globalState)
@@ -108,9 +109,9 @@ export default function Activity() {
 
           <div className="flex">
             <Accordion id={'legend'} expanded={legendIsExpanded}>
-              <AccordionSummary expandIcon={<FaChevronDown />}>
+              <AccordionSummary>
                 <p id="legend-title" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
-                  Legend
+                  Legend {legendIsExpanded ? <FaMinus /> : <FaPlus />}
                 </p>
               </AccordionSummary>
               <AccordionDetails>
@@ -118,6 +119,7 @@ export default function Activity() {
                   <div className="box medical"></div>
                   <p>Child Info - Medical</p>
                 </div>
+
                 <div className="flex">
                   <div className="box expenses"></div>
                   <p>Expenses</p>

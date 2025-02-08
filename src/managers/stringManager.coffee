@@ -31,6 +31,15 @@ StringManager = {
       .replace(/\+1/g, '')
     input
 
+  spaceBetweenWords: (input) ->
+    input.toString().replace(/([a-z])([A-Z])/g, '$1 $2')
+
+  addLongTextClass: (text) ->
+     if StringManager.wordCount(text) > 10
+       return "long-text"
+     else
+      return ''
+
   getFileExtension: (fileName) ->
     fileName.split('.').pop()
 

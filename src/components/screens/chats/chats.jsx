@@ -66,6 +66,7 @@ const Chats = () => {
   return (
     <>
       {/* NEW THREAD FORM */}
+
       <BottomCard
         hasSubmitButton={false}
         className="new-conversation"
@@ -123,6 +124,7 @@ const Chats = () => {
 
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
+        {/*<VideoCall />*/}
         {!showNewThreadForm && chats.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
         <Fade direction={'up'} duration={1000} triggerOnce={true} className={'chats-fade-wrapper'}>
           <div className="flex" id="screen-title-wrapper">

@@ -12,13 +12,14 @@ import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
 import { MdContactEmergency } from 'react-icons/md'
 import DB from '/src/database/DB'
-import StringManager from '../../../managers/stringManager.coffee'
+import StringManager from '/src/managers/stringManager.coffee'
+import { FaPlus, FaMinus } from 'react-icons/fa6'
 
 function General({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [generalValues, setGeneralValues] = useState([])
-
+  const [showInputs, setShowInputs] = useState(false)
   const deleteProp = async (prop) => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
 
@@ -60,11 +61,9 @@ function General({ activeChild, setActiveChild }) {
 
   const update = async (section, prop, value, isArray) => {
     AlertManager.successAlert('Updated!')
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', formatDbProp(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', StringManager.formatDbProp(prop), value)
     setActiveChild(updatedChild)
   }
-
-  const formatInfoLabel = (infoLabel) => StringManager.lowercaseShouldBeLowercase(StringManager.uppercaseFirstLetterOfAllWords(infoLabel))
 
   useEffect(() => {
     setSelectedChild().then((r) => r)
@@ -72,17 +71,21 @@ function General({ activeChild, setActiveChild }) {
 
   return (
     <div className="info-section section general form">
-      <Accordion className={theme}>
+      <Accordion className={`${theme} child-info`} expanded={showInputs}>
         <AccordionSummary
-          expandIcon={<FaChevronDown />}
+          onClick={() => setShowInputs(!showInputs)}
           className={!Manager.isValid(activeChild.general) ? 'disabled header general' : 'header general'}>
           <MdContactEmergency className={'svg'} />
-          General
+          <p id="toggle-button" className={showInputs ? 'active' : ''}>
+            General
+            {showInputs && Manager.isValid(activeChild?.behavior) && <FaMinus />}
+            {!showInputs && <FaPlus />}
+          </p>
         </AccordionSummary>
         <AccordionDetails>
           {Manager.isValid(generalValues) &&
             generalValues.map((prop, index) => {
-              const infoLabel = formatInfoLabel(prop[0])
+              let infoLabel = StringManager.spaceBetweenWords(prop[0]).replaceAll('OF', ' of ')
               const value = prop[1]
               return (
                 <div key={index}>

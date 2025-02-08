@@ -1,40 +1,31 @@
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import globalState from '../../../context'
-import DB from '../../../database/DB'
-import FirebaseStorage from '../../../database/firebaseStorage'
-import Manager from '../../../managers/manager'
+import DB from '/src/database/DB'
+import FirebaseStorage from '/src/database/firebaseStorage'
+import Manager from '/src/managers/manager'
 import CustomChildInfo from '../../shared/customChildInfo'
-import Behavior from '../childInfo/behavior'
-import General from '../childInfo/general'
-import Medical from '../childInfo/medical'
-import Schooling from '../childInfo/schooling'
+import Behavior from '/src/components/screens/childInfo/behavior'
+import General from '/src/components/screens/childInfo/general'
+import Medical from '/src/components/screens/childInfo/medical'
+import Schooling from '/src/components/screens/childInfo/schooling'
 import { FaCameraRotate, FaWandMagicSparkles } from 'react-icons/fa6'
 import { BiFace, BiImageAdd } from 'react-icons/bi'
 import { Fade } from 'react-awesome-reveal'
-import {
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
-import NewChildForm from '../childInfo/newChildForm'
-import ChildSelector from './childSelector'
-import DB_UserScoped from '../../../database/db_userScoped'
+import NewChildForm from '/src/components/screens/childInfo/newChildForm'
+import ChildSelector from '/src/components/screens/childInfo/childSelector'
+import DB_UserScoped from '/src/database/db_userScoped'
 import { IoPersonAddOutline } from 'react-icons/io5'
-import NavBar from '../../navBar'
-import AlertManager from '../../../managers/alertManager'
-import NoDataFallbackText from '../../shared/noDataFallbackText'
-import DomManager from '../../../managers/domManager'
+import NavBar from '/src/components/navBar'
+import AlertManager from '/src/managers/alertManager'
+import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
+import DomManager from '/src/managers/domManager'
+import StringManager from '/src/managers/stringManager'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import { FaPlus, FaMinus } from 'react-icons/fa6'
+import { MdChecklistRtl } from 'react-icons/md'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
@@ -45,7 +36,7 @@ export default function ChildInfo() {
   const [showSelectorCard, setShowSelectorCard] = useState(false)
   const [activeInfoChild, setActiveInfoChild] = useState(null)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
-
+  const [showActions, setShowActions] = useState(false)
   const uploadProfilePic = async () => {
     // setState({ ...state, isLoading: true })
     const imgFiles = document.getElementById('upload-image-input').files
@@ -157,10 +148,49 @@ export default function ChildInfo() {
               </>
             )}
 
-            <span className="child-name">{formatNameFirstNameOnly(activeInfoChild?.general?.name)}</span>
+            <span className="child-name">{StringManager.formatNameFirstNameOnly(activeInfoChild?.general?.name)}</span>
           </div>
-
+          {/* BUTTONS */}
+          {Manager.isValid(currentUser?.children) && (
+            <div>
+              <Accordion expanded={showActions} id={'checkboxes'}>
+                <AccordionSummary onClick={() => setShowActions(!showActions)}>
+                  <p id={`actions-button`} className={`${showActions ? 'active' : ''}`}>
+                    Actions
+                    {showActions && <FaMinus />}
+                    {!showActions && <FaPlus />}
+                  </p>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <div className="buttons">
+                    <button
+                      className="button default"
+                      onClick={() => {
+                        setShowInfoCard(true)
+                        setShowActions(false)
+                      }}>
+                      Add Your Own Info <FaWandMagicSparkles />
+                    </button>
+                    {currentUser?.children?.length > 1 && (
+                      <button
+                        onClick={() => {
+                          setShowActions(false)
+                          setShowSelectorCard(true)
+                        }}
+                        className="button default">
+                        View Another Child <BiFace className={'child-info'} />
+                      </button>
+                    )}
+                    <button className="default button">
+                      Create Transfer Checklist <MdChecklistRtl />
+                    </button>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+            </div>
+          )}
           {/* INFO */}
+
           <div id="child-info">
             {activeInfoChild && (
               <div className="form">
@@ -171,20 +201,6 @@ export default function ChildInfo() {
               </div>
             )}
           </div>
-
-          {/* BUTTONS */}
-          {Manager.isValid(currentUser?.children) && (
-            <div>
-              <button className="button default center green white-text mt-20" onClick={() => setShowInfoCard(true)}>
-                Add Your Own Info <FaWandMagicSparkles />
-              </button>
-              {currentUser?.children?.length > 1 && (
-                <button onClick={() => setShowSelectorCard(true)} className="button default mt-5 center">
-                  View Another Child <BiFace className={'child-info'} />
-                </button>
-              )}
-            </div>
-          )}
         </Fade>
       </div>
       {!showNewChildForm && !showSelectorCard && !showInfoCard && (

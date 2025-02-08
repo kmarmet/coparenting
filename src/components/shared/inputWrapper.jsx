@@ -18,6 +18,7 @@ function InputWrapper({
   placeholder = '',
   isDebounced = true,
   useNativeDate = false,
+  customDebounceDelay = 800,
 }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, refreshKey } = state
@@ -53,7 +54,7 @@ function InputWrapper({
             placeholder={labelText}
             className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
             onChange={onChange}
-            debounceTimeout={isDebounced ? 800 : 0}
+            debounceTimeout={isDebounced ? (customDebounceDelay ? customDebounceDelay : 800) : 0}
             key={refreshKey}
             type={inputValueType}
             pattern={inputValueType === 'tel' ? '[0-9]{3} [0-9]{3} [0-9]{4}' : ''}

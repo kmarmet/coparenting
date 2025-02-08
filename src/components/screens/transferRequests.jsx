@@ -55,6 +55,8 @@ export default function TransferRequests() {
   const [responseDueDate, setResponseDueDate] = useState('')
   const [address, setAddress] = useState(null)
   const [sendWithAddress, setSendWithAddress] = useState(false)
+  const [recipientName, setRecipientName] = useState('')
+
   const resetForm = async () => {
     Manager.resetForm('edit-event-form')
     setRequestTime('')
@@ -157,6 +159,7 @@ export default function TransferRequests() {
     if (!sendWithAddress) {
       notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} has Arrived`
     }
+    const notifPhone = activeRequest?.ownerPhone === currentUser.phone ? activeRequest.recipientPhone : currentUser.phone
     await NotificationManager.sendNotification(
       'Transfer Destination Arrival',
       notificationMessage,

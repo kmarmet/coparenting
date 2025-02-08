@@ -1170,7 +1170,7 @@
       font-weight: 500;
       flex-wrap: wrap;
 
-      span {
+      svg {
         margin-left: auto;
         align-self: flex-end;
         color: $accent;
@@ -1181,8 +1181,6 @@
         top: -2px;
         align-items: center;
         justify-content: center;
-      }
-      & + .rs-panel-in {
       }
     }
     /*#endregion  CLASS/ID DEFAULTS*/
