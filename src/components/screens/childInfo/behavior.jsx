@@ -77,8 +77,7 @@ export default function Behavior({ activeChild, setActiveChild }) {
           <GiBrain className={'svg'} />{' '}
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Behavior {!Manager.isValid(activeChild.behavior) ? '- No Info' : ''}
-            {showInputs && <FaMinus />}
-            {!showInputs && Manager.isValid(activeChild?.behavior) && <FaPlus />}
+            {Manager.isValid(activeChild?.behavior) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>

@@ -3,23 +3,6 @@ import globalState from '../../context'
 import Manager from '../../managers/manager'
 import DB_UserScoped from '../../database/db_userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '.././../globalFunctions'
 import moment from 'moment'
 import CheckboxGroup from './checkboxGroup'
 import Autocomplete from 'react-google-autocomplete'
@@ -29,15 +12,16 @@ import AlertManager from '../../managers/alertManager'
 import ShareWithCheckboxes from './shareWithCheckboxes'
 import NotificationManager from '../../managers/notificationManager.js'
 import DateFormats from '../../constants/dateFormats'
+import StringManager from '../../managers/stringManager'
+import Spacer from './spacer'
 
 export default function CustomChildInfo({ hideCard, showCard, setActiveChild, activeChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, refreshKey } = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
   const [infoSection, setInfoSection] = useState('general')
   const [infoType, setInfoType] = useState('text')
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [shareWith, setShareWith] = useState([])
 
   const add = async () => {
@@ -45,19 +29,26 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       AlertManager.throwError('Please fill/select required fields')
       return false
     }
-    const updatedChild = await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, toCamelCase(title), value, shareWith)
+    const updatedChild = await DB_UserScoped.addUserChildProp(
+      currentUser,
+      activeChild,
+      infoSection,
+      StringManager.toCamelCase(title),
+      value,
+      shareWith
+    )
 
     if (Manager.isValid(shareWith)) {
       await NotificationManager.sendToShareWith(
         shareWith,
         currentUser,
-        `${uppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,
+        `${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,
         `${title} - ${value}`,
         infoSection
       )
     }
 
-    AlertManager.successAlert(`${uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`)
+    AlertManager.successAlert(`${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`)
     resetForm()
     setActiveChild(updatedChild)
   }
@@ -66,6 +57,7 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
     Manager.handleCheckboxSelection(
       e,
       (e) => {
+        console.log(e)
         setInfoType(e.toLowerCase())
       },
       (e) => {
@@ -87,7 +79,6 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
     setValue('')
     setInfoSection('')
     hideCard()
-    setRefreshKey(Manager.getUid())
   }
 
   return (
@@ -116,9 +107,9 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
             Behavior
           </p>
         </div>
-
+        <Spacer height={5} />
         <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with (optional)" required={false} />
-
+        <Spacer height={10} />
         {/* INFO TYPE */}
         <CheckboxGroup
           parentLabel="Type"

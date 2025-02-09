@@ -15,7 +15,7 @@ function InputWrapper({
   defaultValue = '',
   inputClasses = '',
   inputValueType = 'text',
-  placeholder = '',
+  childrenOnly = false,
   isDebounced = true,
   useNativeDate = false,
   customDebounceDelay = 800,
@@ -74,7 +74,8 @@ function InputWrapper({
           onChange={onChange}
         />
       )}
-      {noInputTypes.includes(inputType) && !useNativeDate && <>{children}</>}
+      {noInputTypes.includes(inputType) && !useNativeDate && <> {children}</>}
+      {childrenOnly && <>{children}</>}
 
       {/* TEXTAREA */}
       {inputType === 'textarea' && (

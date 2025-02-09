@@ -158,6 +158,7 @@
   font-family: 'Inter', serif;
   font-optical-sizing: auto;
   font-style: normal;
+  letter-spacing: 0.5px;
 }
 
 @mixin lengthSelection {
@@ -932,7 +933,7 @@
 /*#region  COMPONENTS*/
 @mixin accordion {
   .MuiCollapse-root {
-    border-radius: $borderRadius;
+    border-radius: 0 0 $borderRadius $borderRadius;
     background: $lightIconBgBlue;
     transition: all 0.3s ease-in-out;
     .buttons {
@@ -962,8 +963,6 @@
         }
       }
     }
-    &.MuiCollapse-entered {
-    }
   }
   .MuiPaper-elevation {
     .MuiAccordionSummary-gutters {
@@ -981,6 +980,8 @@
           align-items: center;
           justify-content: space-between;
           line-height: 1;
+          font-size: 14px;
+          padding: 8px 15px;
 
           &.expenses {
             margin-left: 0;
@@ -988,6 +989,9 @@
           svg {
             margin-left: 10px;
             margin-right: 0;
+            font-size: 14px;
+            color: black;
+            opacity: 0.75;
             position: relative;
             top: 0;
           }
@@ -999,6 +1003,7 @@
             margin: 0;
             font-weight: $fwMediumBold;
             border-radius: $borderRadius $borderRadius 0 0;
+            font-size: 16px;
 
             svg {
               color: $mainBlue;
@@ -1046,30 +1051,31 @@
     margin: 0;
   }
   .view {
-    font-size: 14px;
     text-align: center;
     opacity: 0.65;
-    padding-bottom: 4px;
     @include hover;
     width: 50%;
     font-weight: $fwRegular;
     color: #787878;
-
+    padding-bottom: 6px;
     &.active {
-      padding-bottom: 6px;
       font-size: 16px;
       color: #5b5b5b;
-      font-weight: $fwRegular;
+      font-weight: $fwMedium;
       opacity: 1;
 
       &:after {
         content: '';
         position: relative;
-        top: 8px;
+        top: 7px;
         display: block;
         border-bottom: 1px solid $darkGrey;
         background: $darkGrey;
       }
+    }
+
+    &.hide {
+      display: none;
     }
   }
 }
@@ -1322,7 +1328,7 @@
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   top: 10px;
   height: 42px;
 
@@ -2780,6 +2786,58 @@
     }
   }
   /*#region  CARDS BY CLASS*/
+  // CHILD INFO CHECKLISTS
+  &.child-info-checklists {
+    #checklist-item-wrapper {
+      align-items: center;
+      .delete-icon {
+        color: $red;
+        margin-left: 10px;
+        font-size: 26px;
+      }
+      #row {
+        border-bottom: 0;
+        background: $bestGreyForWhite;
+        padding: 10px;
+        border-radius: $borderRadius;
+        justify-content: flex-start;
+        margin-bottom: 0;
+
+        &.active {
+          background: $green;
+          color: white;
+          svg {
+            color: white;
+          }
+        }
+
+        svg {
+          color: $green;
+          font-size: 24px;
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+
+  // NEW CHECKLIST
+  &.new-checklist {
+    #inputs {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      width: 100%;
+      margin-bottom: 25px;
+      top: 10px;
+
+      input {
+        margin-bottom: 10px;
+      }
+    }
+  }
+
   // NEW CALENDAR EVENT
   &.new-calendar-event {
     #relative-wrapper {
@@ -3355,11 +3413,6 @@
     height: 100%;
     min-height: 70vh;
 
-    #subtitle {
-      font-size: 18px;
-      opacity: 0.85;
-    }
-
     #share-with-checkbox-group {
       .flex {
         margin-bottom: 0;
@@ -3370,7 +3423,7 @@
       overflow: auto;
       overflow-x: hidden;
       position: absolute;
-      top: 45px;
+      top: 55px;
       bottom: 0;
       width: calc(100% - 30px);
       height: 100vh;
@@ -3437,8 +3490,8 @@
       z-index: 10000000;
       right: 0;
       left: 0;
-      padding-top: 15px;
       margin: 0;
+      padding: 15px 0;
 
       #large-title {
         justify-content: center;
@@ -3635,7 +3688,7 @@
     justify-content: flex-start;
     padding: 15px 0;
     margin: 0 auto;
-    gap: 10px;
+    gap: 5px;
     width: 100%;
 
     .menu-item {
@@ -3814,9 +3867,7 @@
       display: none;
     }
   }
-  // Custom Colors
-  &.calendar {
-  }
+
   &.child-info {
     #svg-wrapper {
       #add-new-button {

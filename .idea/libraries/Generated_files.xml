@@ -38,6 +38,7 @@
         <item url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
         <item url="file://$PROJECT_DIR$/src/models/chat/chatRecoveryRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/chat/chatThread.js" />
+        <item url="file://$PROJECT_DIR$/src/models/checklistItem.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/child.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/childUser.js" />
         <item url="file://$PROJECT_DIR$/src/models/child/general.js" />
@@ -115,6 +116,7 @@
       <root url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
+      <root url="file://$PROJECT_DIR$/src/models/checklist.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

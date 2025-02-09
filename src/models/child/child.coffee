@@ -12,4 +12,5 @@ export default class Child
     @schooling = new Schooling()
     @behavior = new Behavior()
     @sharing = []
+    @checklists = []
   ) ->

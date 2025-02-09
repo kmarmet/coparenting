@@ -30,7 +30,7 @@ function General({ activeChild, setActiveChild }) {
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByPhone)
       await setSelectedChild()
     } else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', formatDbProp(prop))
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', StringManager.formatDbProp(prop))
       setActiveChild(updatedChild)
       await setSelectedChild()
     }
@@ -78,8 +78,8 @@ function General({ activeChild, setActiveChild }) {
           <MdContactEmergency className={'svg'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             General
-            {showInputs && Manager.isValid(activeChild?.behavior) && <FaMinus />}
-            {!showInputs && <FaPlus />}
+            {!Manager.isValid(activeChild.general) ? '- No Info' : ''}
+            {Manager.isValid(activeChild?.general) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>

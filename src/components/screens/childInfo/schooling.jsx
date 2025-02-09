@@ -35,7 +35,7 @@ export default function Schooling({ activeChild, setActiveChild }) {
   }
 
   const update = async (section, prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', formatDbProp(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', StringManager.formatDbProp(prop), value)
     AlertManager.successAlert('Updated!')
     setActiveChild(updatedChild)
   }
@@ -76,8 +76,8 @@ export default function Schooling({ activeChild, setActiveChild }) {
           <IoSchool className={'svg'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Schooling
-            {showInputs && Manager.isValid(activeChild?.behavior) && <FaMinus />}
-            {!showInputs && <FaPlus />}
+            {!Manager.isValid(activeChild.schooling) ? '- No Info' : ''}
+            {Manager.isValid(activeChild?.schooling) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
           </p>{' '}
           {!Manager.isValid(activeChild.schooling) ? '- No Info' : ''}
         </AccordionSummary>

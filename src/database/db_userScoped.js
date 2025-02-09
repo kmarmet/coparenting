@@ -1,7 +1,7 @@
 import Manager from '../managers/manager'
 import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
 import FirebaseStorage from './firebaseStorage'
-import DB from '../database/DB'
+import DB from '/src/database/DB'
 import {
   contains,
   displayAlert,
@@ -20,10 +20,10 @@ import {
   uniqueArray,
   uppercaseFirstLetterOfAllWords,
   wordCount,
-} from '../globalFunctions'
-import DatasetManager from '../managers/datasetManager'
+} from '/src/globalFunctions'
+import DatasetManager from '/src/managers/datasetManager'
 import _ from 'lodash'
-import StringManager from '../managers/stringManager.coffee'
+import StringManager from '/src/managers/stringManager.coffee'
 
 const DB_UserScoped = {
   // GET

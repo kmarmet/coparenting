@@ -9,7 +9,7 @@ import Behavior from '/src/components/screens/childInfo/behavior'
 import General from '/src/components/screens/childInfo/general'
 import Medical from '/src/components/screens/childInfo/medical'
 import Schooling from '/src/components/screens/childInfo/schooling'
-import { FaCameraRotate, FaWandMagicSparkles } from 'react-icons/fa6'
+import { FaCameraRotate, FaMinus, FaPlus, FaWandMagicSparkles } from 'react-icons/fa6'
 import { BiFace, BiImageAdd } from 'react-icons/bi'
 import { Fade } from 'react-awesome-reveal'
 import NewChildForm from '/src/components/screens/childInfo/newChildForm'
@@ -24,12 +24,13 @@ import StringManager from '/src/managers/stringManager'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
 import { MdChecklistRtl } from 'react-icons/md'
+import NewTransferChecklist from './newTransferChecklist'
+import Checklists from './checklists'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, navbarButton } = state
+  const { currentUser, theme, refreshKey } = state
   const [showCard, setShowCard] = useState(false)
   const imgRef = useRef()
   const [showInfoCard, setShowInfoCard] = useState(false)
@@ -37,6 +38,9 @@ export default function ChildInfo() {
   const [activeInfoChild, setActiveInfoChild] = useState(null)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showActions, setShowActions] = useState(false)
+  const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
+  const [currentDestinations, setCurrentDestinations] = useState('')
+  const [showChecklistsCard, setShowChecklistsCard] = useState(false)
   const uploadProfilePic = async () => {
     // setState({ ...state, isLoading: true })
     const imgFiles = document.getElementById('upload-image-input').files
@@ -85,6 +89,20 @@ export default function ChildInfo() {
     onTableChange().then((r) => r)
   }, [])
 
+  useEffect(() => {
+    if (activeInfoChild) {
+      const fromDestination = activeInfoChild?.checklists?.filter((x) => x && x.fromOrTo === 'from')[0]
+      const toDestination = activeInfoChild?.checklists?.filter((x) => x && x.fromOrTo === 'to')[0]
+
+      if (fromDestination) {
+        setCurrentDestinations([...currentDestinations, 'From Co-Parent'])
+      }
+      if (toDestination) {
+        setCurrentDestinations([...currentDestinations, 'To Co-Parent'])
+      }
+    }
+  }, [activeInfoChild])
+
   return (
     <>
       {/* CHILD SELECTOR */}
@@ -97,7 +115,6 @@ export default function ChildInfo() {
           setShowSelectorCard(false)
         }}
       />
-
       {/* CUSTOM INFO FORM */}
       <CustomChildInfo
         showCard={showInfoCard}
@@ -105,9 +122,17 @@ export default function ChildInfo() {
         activeChild={activeInfoChild}
         hideCard={() => setShowInfoCard(false)}
       />
-
       {/* NEW CHILD + */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
+
+      <NewTransferChecklist
+        visibleDestinations={currentDestinations}
+        activeChild={activeInfoChild}
+        showCard={showNewChecklistCard}
+        hideCard={() => setShowNewChecklistCard(false)}
+      />
+
+      <Checklists showCard={showChecklistsCard} hideCard={() => setShowChecklistsCard(false)} activeChild={activeInfoChild} />
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
@@ -181,9 +206,19 @@ export default function ChildInfo() {
                         View Another Child <BiFace className={'child-info'} />
                       </button>
                     )}
-                    <button className="default button">
+                    <button className="default button" onClick={() => setShowNewChecklistCard(true)}>
                       Create Transfer Checklist <MdChecklistRtl />
                     </button>
+                    {Manager.isValid(activeInfoChild?.checklists) && (
+                      <button
+                        className="default button"
+                        onClick={() => {
+                          console.log(true)
+                          setShowChecklistsCard(true)
+                        }}>
+                        View Transfer Checklists <MdChecklistRtl />
+                      </button>
+                    )}
                   </div>
                 </AccordionDetails>
               </Accordion>

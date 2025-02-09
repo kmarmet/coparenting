@@ -12,13 +12,14 @@ import Schooling from './schooling';
 import Behavior from './behavior';
 
 export default Child = class Child {
-  constructor(id = Manager.getUid(), general = new General(), medical = new Medical(), schooling = new Schooling(), behavior = new Behavior(), sharing = []) {
+  constructor(id = Manager.getUid(), general = new General(), medical = new Medical(), schooling = new Schooling(), behavior = new Behavior(), sharing = [], checklists = []) {
     this.id = id;
     this.general = general;
     this.medical = medical;
     this.schooling = schooling;
     this.behavior = behavior;
     this.sharing = sharing;
+    this.checklists = checklists;
   }
 
 };

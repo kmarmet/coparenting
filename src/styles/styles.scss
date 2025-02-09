@@ -434,6 +434,42 @@
       color: $green;
     }
 
+    .dynamic-input {
+      display: block;
+      width: 100%;
+      outline: 0;
+      font-weight: 400;
+      transition: all 0.2s ease-in-out;
+      border: 1px solid $iconGrey;
+      border-radius: $borderRadius;
+      height: 40px;
+      max-height: unset;
+      caret-color: $mainBlue;
+      padding: 0 8px;
+
+      &::placeholder {
+        font-style: italic;
+        font-size: 14px;
+        opacity: 0.7;
+      }
+
+      &[type='date'] {
+        border: 1px solid $iconGrey;
+        padding: 10px 8px;
+        border-radius: $borderRadius;
+        height: auto;
+      }
+
+      &:focus {
+        border-radius: $borderRadius;
+        border: 1px solid $mainBlue;
+
+        &::placeholder {
+          opacity: 0;
+        }
+      }
+    }
+
     #checkbox-wrapper {
       @include checkboxWrapper;
     }

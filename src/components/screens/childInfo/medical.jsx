@@ -33,7 +33,7 @@ export default function Medical({ activeChild, setActiveChild }) {
 
     // Delete NOT shared
     else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', formatDbProp(prop))
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', StringManager.formatDbProp(prop))
       setActiveChild(updatedChild)
       await setSelectedChild()
     }
@@ -81,8 +81,8 @@ export default function Medical({ activeChild, setActiveChild }) {
           <FaBriefcaseMedical className={'svg medical'} /> {!Manager.isValid(activeChild.medical) ? '- No Info' : ''}
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Medical
-            {showInputs && Manager.isValid(activeChild?.behavior) && <FaMinus />}
-            {!showInputs && <FaPlus />}
+            {!Manager.isValid(activeChild.medical) ? '- No Info' : ''}
+            {Manager.isValid(activeChild?.medical) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>

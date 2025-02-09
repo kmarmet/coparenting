@@ -257,6 +257,7 @@ const Manager = {
     else {
       const label = clickedEl.dataset['label']
       if (canSelectAll === false) {
+        console.log(labels)
         labels.forEach((labelEl) => {
           const thisLabel = labelEl.dataset.label
           if (thisLabel !== label) {
