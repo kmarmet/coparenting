@@ -63,6 +63,17 @@
   }
 
   @media screen and (max-width: 800px) {
+    #login-container {
+      .form-container {
+        .form {
+          .buttons {
+            button {
+              width: 50%;
+            }
+          }
+        }
+      }
+    }
     .MuiYearCalendar-root {
       border-radius: $bigBorderRadius;
       background: $bestGreyForWhite !important;
@@ -94,9 +105,14 @@
   }
   /*#endregion OUTSIDE APP CONTAINER */
 
-  /*#region  800px APP CONTAINER*/
+  /*#region  > 800px PHONE CONTAINER*/
   #app-container {
     @media screen and (min-width: 800px) {
+      #screen-title-wrapper {
+        svg {
+          transform: scale(1.4);
+        }
+      }
       .page-container:not(.home):not(.login) {
         padding: 20px 20px 200px 20px;
         max-height: calc(100vh - 110px);
@@ -636,7 +652,6 @@
         }
       }
       #message-thread-container {
-        position: unset;
         margin-right: auto;
         border-radius: $bigBorderRadius;
         flex-direction: row;
@@ -714,7 +729,7 @@
           border-right: 1px solid $desktopBorderColor;
           border-bottom: 1px solid $desktopBorderColor;
           border-radius: 0 0 $bigBorderRadius $bigBorderRadius;
-          position: fixed;
+          //          position: fixed;
 
           .message-input {
             backdrop-filter: blur(20px);
@@ -820,21 +835,5 @@
       }
     }
   }
-  /*#endregion  800px APP CONTAINER*/
-
-  /*#region  600PX PHONE CONTAINER*/
-  @media screen and (max-width: 600px) {
-    #login-container {
-      .form-container {
-        .form {
-          .buttons {
-            button {
-              width: 50%;
-            }
-          }
-        }
-      }
-    }
-  }
-  /*#endregion  600PX PHONE CONTAINER*/
+  /*#endregion  > 800px PHONE CONTAINER*/
 }

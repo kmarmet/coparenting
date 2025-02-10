@@ -33,10 +33,9 @@ export default CalendarManager =
   buildArrayOfEvents: (currentUser, eventObject, arrayType = "recurring", startDate, endDate) ->
     datesToPush = []
     datesToIterate = []
-    dates = []
 
-  # DATE RANGE
-    if arrayType == "range"
+  # DATE RANGE / CLONED
+    if arrayType == "range" || arrayType == "cloned"
       datesToIterate = DateManager.getDateRangeDates(startDate, endDate)
 
   # REPEATING
@@ -46,12 +45,6 @@ export default CalendarManager =
         moment(startDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
         endDate
       )
-
-  # CLONED DATES
-    if arrayType == "cloned"
-      if typeof startDate is 'object'
-        startDate = moment(startDate).format(DateFormats.dateForDb)
-#      datesToIterate = DatasetManager.getUniqueArray([...clonedDates, true], true)
 
     for date in datesToIterate
       dateObject = new CalendarEvent()

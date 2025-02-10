@@ -292,7 +292,7 @@
   overflow: hidden;
   max-height: 100vh;
   height: 100vh;
-  position: fixed;
+  position: relative;
   top: 0;
   background: white;
   bottom: 0;
@@ -302,32 +302,6 @@
 
     &.active {
       display: block;
-    }
-  }
-
-  .flex {
-    align-items: center;
-  }
-
-  .search-input {
-    border: 0;
-    border-radius: $borderRadius;
-    width: 100%;
-    padding: 8px;
-    @include bestShadow;
-    margin-bottom: 5px;
-
-    &:focus,
-    &:active,
-    &:focus-visible {
-      outline: none;
-    }
-
-    &::placeholder {
-      position: relative;
-      top: -2px;
-      opacity: 0.6;
-      font-size: 14px;
     }
   }
 
@@ -346,7 +320,6 @@
     #user-info {
       justify-content: center;
       width: 100%;
-      //      margin-right: auto;
       svg {
         color: $mainBlue;
         font-size: 25px;
@@ -373,6 +346,32 @@
           color: $mainBlue;
         }
       }
+    }
+  }
+
+  .flex {
+    align-items: center;
+  }
+
+  .search-input {
+    border: 0;
+    border-radius: $borderRadius;
+    width: 100%;
+    padding: 8px;
+    @include bestShadow;
+    margin-bottom: 5px;
+
+    &:focus,
+    &:active,
+    &:focus-visible {
+      outline: none;
+    }
+
+    &::placeholder {
+      position: relative;
+      top: -2px;
+      opacity: 0.6;
+      font-size: 14px;
     }
   }
 
@@ -414,7 +413,8 @@
       &.to {
         float: right;
         text-align: right;
-        padding-right: 35px;
+        padding-right: 30px;
+        margin-right: 0;
       }
     }
 
@@ -425,10 +425,7 @@
 
     // MESSAGE WRAPPER
     .message-fade-wrapper {
-      justify-content: flex-start;
       width: 100%;
-      display: flex;
-      align-items: center;
       transition: all 0.2s ease-in-out;
       -webkit-user-select: none;
       -ms-user-select: none;
@@ -613,7 +610,7 @@
 
     #message-input-container {
       flex-wrap: wrap;
-
+      margin-right: auto;
       #tone-wrapper {
         display: flex;
         align-items: flex-start;

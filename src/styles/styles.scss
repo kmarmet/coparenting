@@ -594,7 +594,8 @@
       transform: scale(0.4);
     }
 
-    #side-navbar {
+    #side-navbar,
+    .chats-desktop-sidebar {
       @include sideNavbar;
     }
 
@@ -747,14 +748,14 @@
         font-size: 22px;
         font-weight: $fwMedium;
         color: $mainBlue;
-        background-color: white;
+        //        background-color: white;
         padding: 20px;
         text-align: center;
         max-width: 80vw;
         opacity: 1;
         border-radius: $bigBorderRadius;
         margin-bottom: 15px;
-        @include bestShadow;
+        //        @include bestShadow;
       }
 
       img {

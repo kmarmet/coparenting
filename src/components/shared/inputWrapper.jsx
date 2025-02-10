@@ -39,8 +39,10 @@ function InputWrapper({
     <div
       onClick={(e) => {
         const wrapper = e.currentTarget
-        wrapper.classList.add('active')
-        wrapper.querySelector('#label-wrapper').classList.add('active')
+        if (wrapper) {
+          wrapper.classList.add('active')
+          wrapper.querySelector('#label-wrapper').classList.add('active')
+        }
       }}
       id="input-wrapper"
       className={`${wrapperClasses} ${inputType}  input-container form`}>
@@ -54,25 +56,26 @@ function InputWrapper({
             placeholder={labelText}
             className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
             onChange={onChange}
+            onBlur={(e) => {
+              const input = e.target
+              const labelWrapper = input.parentNode.querySelector('#label-wrapper')
+              if (input.value.length === 0) {
+                labelWrapper.classList.remove('active')
+                input.placeholder = labelText
+              }
+            }}
             debounceTimeout={isDebounced ? (customDebounceDelay ? customDebounceDelay : 800) : 0}
             key={refreshKey}
             type={inputValueType}
-            pattern={inputValueType === 'tel' ? '[0-9]{3} [0-9]{3} [0-9]{4}' : ''}
-            maxLength={inputValueType === 'tel' ? 12 : 100}
+            pattern={inputValueType && inputValueType === 'tel' ? '[0-9]{3} [0-9]{3} [0-9]{4}' : ''}
+            maxLength={inputValueType && inputValueType === 'tel' ? 12 : 100}
           />
         </>
       )}
 
       {/* DATE/LOCATION */}
       {noInputTypes.includes(inputType) && useNativeDate && (
-        <input
-          onClick={(e) => {
-            console.log(e)
-          }}
-          value={moment(defaultValue).format('yyyy-MM-DD')}
-          type="date"
-          onChange={onChange}
-        />
+        <input onClick={(e) => {}} defaultValue={moment(defaultValue).format('yyyy-MM-DD')} type="date" onChange={onChange} />
       )}
       {noInputTypes.includes(inputType) && !useNativeDate && <> {children}</>}
       {childrenOnly && <>{children}</>}
@@ -87,6 +90,14 @@ function InputWrapper({
           defaultValue={defaultValue}
           key={refreshKey}
           rows="10"
+          onBlur={(e) => {
+            const input = e.target
+            const labelWrapper = input.parentNode.querySelector('#label-wrapper')
+            if (input.value.length === 0) {
+              labelWrapper.classList.remove('active')
+              input.placeholder = labelText
+            }
+          }}
         />
       )}
     </div>

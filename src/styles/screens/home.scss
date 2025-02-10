@@ -122,19 +122,22 @@
   #home-navbar {
     justify-content: space-between;
     transition: all 0.3s ease-in-out;
-    padding: 20px;
+    padding: 20px 10px;
 
     #choose-peace-text {
       color: black;
       font-style: italic;
       font-weight: $fwRegular;
-      line-height: 1.4;
-      opacity: 1;
-
+      width: 80%;
+      margin-left: auto;
+      b {
+        text-align: center;
+        line-height: 1.4;
+        opacity: 1;
+        font-weight: $fwBold;
+      }
       span {
-        font-style: italic;
-        font-weight: $fwMedium;
-        color: $mainBlue;
+        opacity: 0.8;
       }
     }
 

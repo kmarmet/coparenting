@@ -70,7 +70,9 @@ export default function Account() {
   const updateUserEmail = async () => {
     AlertManager.successAlert('Email has been updated!')
     if (!Manager.isValid(email)) {
-      AlertManager.throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'number' : 'Address'}`)
+      AlertManager.throwError(
+        `Please enter your new ${StringManager.uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'number' : 'Address'}`
+      )
       return false
     }
     if (!validator.isEmail(email)) {
@@ -87,6 +89,7 @@ export default function Account() {
             email: email,
           })
           await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/email`, email)
+          setState({ ...state, isLoading: false })
           logout()
         })
         .catch((error) => {
@@ -99,7 +102,7 @@ export default function Account() {
 
   const updateUserPhone = async () => {
     if (!Manager.isValid(phone)) {
-      AlertManager.throwError(`Please enter your new ${uppercaseFirstLetterOfAllWords(updateType)} Number`)
+      AlertManager.throwError(`Please enter your new ${StringManager.uppercaseFirstLetterOfAllWords(updateType)} Number`)
       return false
     }
     if (!validator.isMobilePhone(phone)) {
@@ -119,6 +122,10 @@ export default function Account() {
     AlertManager.inputAlert('Enter Your Password', 'Your password is required to confirm account deletion', (e) => {
       const user = auth.currentUser
       const credential = EmailAuthProvider.credential(user.email, e.value)
+      if (!Manager.isValid(e.value, true)) {
+        AlertManager.throwError('Password is required')
+        return false
+      }
       reauthenticateWithCredential(auth.currentUser, credential)
         .then(async () => {
           // // Delete from Firebase Storage

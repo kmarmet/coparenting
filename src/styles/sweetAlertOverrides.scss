@@ -71,10 +71,9 @@ div {
 
 .swal2-title {
   @include fontType;
-  font-size: 25px;
+  font-size: 22px;
   font-weight: $fwMedium;
   line-height: 1.3;
-  color: $mainBlue;
 }
 
 .swal2-icon {

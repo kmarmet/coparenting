@@ -1366,6 +1366,7 @@
       left: 15px;
       transition: all 0.5s ease-in-out;
       opacity: 1;
+      border-radius: 5px 5px 0 0;
     }
 
     label {
@@ -1436,7 +1437,7 @@
       width: 100%;
 
       &::placeholder {
-        opacity: 0;
+        //        opacity: 0;
       }
     }
   }
@@ -3584,9 +3585,24 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   @media screen and (max-width: 800px) {
     display: none;
   }
+
+  // CHATS
+  &.chats-desktop-sidebar {
+    height: auto;
+    border-radius: $bigBorderRadius;
+    background: white;
+    padding: 20px;
+    border: 1px solid $desktopBorderColor;
+    #user-name {
+      font-weight: $fwMedium;
+      padding-bottom: 5px;
+    }
+  }
+
   #top,
   #bottom {
     border-radius: $bigBorderRadius;
@@ -3613,11 +3629,16 @@
     }
 
     &.activity {
+      opacity: 1;
       p {
-        justify-content: space-between;
         opacity: 0.75;
+        justify-content: space-between;
         width: 100%;
         align-items: center;
+
+        span {
+          opacity: 1;
+        }
       }
 
       span {

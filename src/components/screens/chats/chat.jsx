@@ -409,7 +409,6 @@ const Chat = () => {
                     debounceTimeout={200}
                     value={messageText}
                     rows={'1'}
-                    onClick={(e) => e.target.scrollIntoView({ block: 'center' })}
                   />
                   <button className={toneObject?.color} onClick={sendMessage} id="send-button">
                     Send <IoSend />
@@ -419,43 +418,42 @@ const Chat = () => {
             </div>
           </>
         )}
-
-        {/* DESKTOP SIDEBAR */}
-        {!DomManager.isMobile() && (
-          <Fade direction={'up'} duration={1000} className={'conversation-sidebar-fade-wrapper'} triggerOnce={true}>
-            <div className="top-buttons">
-              <p id="user-name">{StringManager.formatNameFirstNameOnly(messageRecipient.name)}</p>
-              <p id="view-bookmarks" className="item" onClick={(e) => viewBookmarks(e)}>
-                <PiBookmarksSimpleDuotone
-                  id="conversation-bookmark-icon"
-                  className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
-                />
-                {showBookmarks && <span>Hide Bookmarks</span>}
-                {!showBookmarks && bookmarks.length > 0 && <span>View Bookmarks</span>}
-                {bookmarks.length === 0 && !showBookmarks && <span>No Bookmarks</span>}
-              </p>
-              <InputWrapper
-                placeholder="Find a message..."
-                inputType={'input'}
-                onChange={async (e) => {
-                  const inputValue = e.target.value
-                  if (inputValue.length === 0) {
-                    setSearchResults([])
-                    await getExistingMessages()
-                  }
-                  if (inputValue.length > 2) {
-                    setSearchInputQuery(inputValue)
-                    const results = messagesToLoop.filter((x) => x.message.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
-                    setBookmarks([])
-                    setSearchResults(results)
-                  }
-                }}
-                inputClasses="sidebar-search-input"
-              />
-            </div>
-          </Fade>
-        )}
       </div>
+      {/* DESKTOP SIDEBAR */}
+      {!DomManager.isMobile() && (
+        <Fade direction={'up'} duration={1000} className={'conversation-sidebar-fade-wrapper chats-desktop-sidebar'} triggerOnce={true}>
+          <div className="top-buttons top">
+            <p id="user-name">{StringManager.formatNameFirstNameOnly(messageRecipient.name)}</p>
+            <p id="view-bookmarks" className="item menu-item" onClick={(e) => viewBookmarks(e)}>
+              <PiBookmarksSimpleDuotone
+                id="conversation-bookmark-icon"
+                className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
+              />
+              {showBookmarks && <p>Hide Bookmarks</p>}
+              {!showBookmarks && bookmarks.length > 0 && <p>View Bookmarks</p>}
+              {bookmarks.length === 0 && !showBookmarks && <p>No Bookmarks</p>}
+            </p>
+            <InputWrapper
+              inputType={'input'}
+              labelText={'Find a message...'}
+              onChange={async (e) => {
+                const inputValue = e.target.value
+                if (inputValue.length === 0) {
+                  setSearchResults([])
+                  await getExistingMessages()
+                }
+                if (inputValue.length > 2) {
+                  setSearchInputQuery(inputValue)
+                  const results = messagesToLoop.filter((x) => x.message.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+                  setBookmarks([])
+                  setSearchResults(results)
+                }
+              }}
+              inputClasses="sidebar-search-input"
+            />
+          </div>
+        </Fade>
+      )}
     </>
   )
 }

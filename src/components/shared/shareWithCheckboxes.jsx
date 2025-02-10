@@ -86,7 +86,7 @@ export default function ShareWithCheckboxes({
                     data-phone={phone ? phone : ''}
                     className={`flex ${containerClass} ${defaultActiveShareWith.includes(phone) ? 'active' : ''}`}
                     onClick={onCheck}>
-                    <Checkbox text={StringManager.formatNameFirstNameOnly(name)} onClick={() => console.log(true)} />
+                    <Checkbox text={StringManager.formatNameFirstNameOnly(name)} onClick={() => console.log('')} />
                   </div>
                 )
               })}

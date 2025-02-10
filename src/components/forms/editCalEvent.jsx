@@ -43,6 +43,7 @@ import DomManager from '../../managers/domManager.coffee'
 import Map from '../shared/map.jsx'
 import { FaChildren } from 'react-icons/fa6'
 import Spacer from '../shared/spacer.jsx'
+import ViewSelector from '../shared/viewSelector'
 
 export default function EditCalEvent({ event, showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -67,7 +68,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   const [recurInterval, setRecurInterval] = useState('')
 
   // State
-  const [clonedDatesToSubmit, setClonedDatesToSubmit] = useState([])
+  const [clonedDates, setClonedDates] = useState([])
   const [repeatingDatesToSubmit, setRepeatingDatesToSubmit] = useState([])
   const [isAllDay, setIsAllDay] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
@@ -91,7 +92,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     setEventReminderTimes([])
     setEventShareWith(event?.shareWith || [])
     setEventIsDateRange(false)
-    setClonedDatesToSubmit([])
+    setClonedDates([])
     setRepeatingDatesToSubmit([])
     setIsAllDay(false)
     setIncludeChildren(false)
@@ -114,7 +115,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     updatedEvent.id = Manager.getUid()
     updatedEvent.title = eventName
     updatedEvent.reminderTimes = eventReminderTimes
-    updatedEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith).flat() || []
+    updatedEvent.shareWith = eventShareWith
     updatedEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
     updatedEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
 
@@ -134,6 +135,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     updatedEvent.phone = eventPhone
     updatedEvent.isDateRange = eventIsDateRange
     updatedEvent.isCloned = eventIsCloned
+    updatedEvent.repeatInterval = recurInterval
     updatedEvent.isRepeating = eventIsRepeating
 
     // Add birthday cake
@@ -146,7 +148,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
 
     if (Manager.isValid(updatedEvent)) {
       if (!Manager.isValid(eventName)) {
-        AlertManager.throwError('Event title is required')
+        AlertManager.throwError('Event name is required')
         return false
       }
 
@@ -160,6 +162,13 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
 
       // Update dates with multiple dates
       if (event?.isRepeating || event?.isDateRange || event?.isCloned) {
+        const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`)
+        const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
+        if (!Manager.isValid(existing)) {
+          return false
+        }
+
+        hideCard()
         // Get record key
         const key = await DB.getSnapshotKey(dbPath, event, 'id')
 
@@ -169,20 +178,24 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         })
 
         // Events with multiple dates
-        if (Manager.isValid(clonedDatesToSubmit)) {
-          await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+        if (Manager.isValid(clonedDates)) {
+          await CalendarManager.addMultipleCalEvents(currentUser, clonedDates)
         }
 
         // Date range
         if (eventIsDateRange) {
-          const dates = DateManager.getDateRangeDates(updatedEvent.startDate, eventEndDate)
-          await CalendarManager.addMultipleCalEvents(currentUser, dates)
+          const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'range', existing[0].startDate, eventEndDate)
+          await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
 
         // Add repeating dates
         if (Manager.isValid(repeatingDatesToSubmit)) {
-          await CalendarManager.addMultipleCalEvents(currentUser, repeatingDatesToSubmit)
+          const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'recurring', existing[0]?.startDate, eventEndDate)
+          await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
+
+        // Delete all before updated
+        await DB.deleteMultipleRows(`${DB.tables.calendarEvents}/${currentUser.phone}`, existing, currentUser)
       }
 
       // Update Single Event
@@ -239,7 +252,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     updatedEvent.location = eventLocation
 
     // Add birthday cake
-    if (Manager.contains(updatedEvent, 'birthday')) {
+    if (Manager.contains(eventName, 'birthday')) {
       updatedEvent.title += ' 🎂'
     }
     updatedEvent.websiteUrl = eventWebsiteUrl
@@ -274,20 +287,18 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         hideCard()
 
         // Add cloned dates
-        if (Manager.isValid(clonedDatesToSubmit)) {
+        if (Manager.isValid(clonedDates)) {
           // await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
         }
 
         if (eventIsDateRange) {
-          const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'range')
+          const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'range', existing[0].startDate, eventEndDate)
           await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
 
         // Add repeating dates
         if (eventIsRepeating) {
-          console.log(eventEndDate)
           const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'recurring', existing[0]?.startDate, eventEndDate)
-          console.log(dates)
           await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
 
@@ -298,7 +309,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       // Update Single Event
       else {
         await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updatedEvent.id)
-        await afterUpdateCallback()
       }
     }
 
@@ -484,15 +494,12 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       className="edit-calendar-event"
       wrapperClass="edit-calendar-event">
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
-        <Spacer height={10} />
-        <div className="views-wrapper flex">
-          <p className={view === 'details' ? 'view active' : 'view'} onClick={() => setView('details')}>
-            Details
-          </p>
-          <p className={view === 'edit' ? 'view active' : 'view'} onClick={() => setView('edit')}>
-            Edit
-          </p>
-        </div>
+        <ViewSelector
+          labels={['details', 'edit']}
+          updateState={(labelText) => {
+            setView(labelText)
+          }}
+        />
 
         {!dataIsLoading && (
           <>
@@ -655,18 +662,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
             {view === 'edit' && (
               <Fade direction={'up'} duration={600} triggerOnce={true}>
                 <div className="content">
-                  {/* SINGLE DAY / MULTIPLE DAYS */}
-                  {/*<div id="duration-options" className="action-pills calendar">*/}
-                  {/*  <div className={`duration-option  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>*/}
-                  {/*    <p>Single Day</p>*/}
-                  {/*  </div>*/}
-                  {/*  <div*/}
-                  {/*    className={`duration-option  ${eventLength === 'multiple' ? 'active' : ''}`}*/}
-                  {/*    onClick={() => setEventLength(EventLengths.multiple)}>*/}
-                  {/*    <p>Multiple Days</p>*/}
-                  {/*  </div>*/}
-                  {/*</div>*/}
-                  <Spacer height={15} />
                   {/* EVENT NAME */}
                   <InputWrapper
                     inputType={'input'}
@@ -709,31 +704,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                         )}
                       </>
                     )}
-
-                    {/*/!* DATE RANGE *!/*/}
-                    {/*{isDateRange && (*/}
-                    {/*  <div className="w-100">*/}
-                    {/*    <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>*/}
-                    {/*      <MobileDateRangePicker*/}
-                    {/*        className={'w-100'}*/}
-                    {/*        onOpen={() => {*/}
-                    {/*          Manager.hideKeyboard('date-range-input')*/}
-                    {/*          addThemeToDatePickers()*/}
-                    {/*        }}*/}
-                    {/*        defaultValue={[moment(event?.startDate), moment(event?.endDate)]}*/}
-                    {/*        onAccept={(dateArray) => {*/}
-                    {/*          if (Manager.isValid(dateArray)) {*/}
-                    {/*            setEventStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))*/}
-                    {/*            setEventEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))*/}
-                    {/*            setEventIsDateRange(true)*/}
-                    {/*          }*/}
-                    {/*        }}*/}
-                    {/*        slots={{ field: SingleInputDateRangeField }}*/}
-                    {/*        name="allowedRange"*/}
-                    {/*      />*/}
-                    {/*    </InputWrapper>*/}
-                    {/*  </div>*/}
-                    {/*)}*/}
                   </div>
 
                   {/* EVENT START/END TIME */}

@@ -16,7 +16,6 @@ import SecurityManager from '/src/managers/securityManager'
 import globalState from '/src/context.js'
 import moment from 'moment'
 import { CgClose } from 'react-icons/cg'
-import { Fade } from 'react-awesome-reveal'
 import { LuCalendarSearch } from 'react-icons/lu'
 import { PiCalendarPlusDuotone, PiCalendarXDuotone } from 'react-icons/pi'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
@@ -491,7 +490,7 @@ export default function EventCalendar() {
           <DesktopLegend />
 
           <InputWrapper
-            placeholder="Find events..."
+            labelText="Find events..."
             refreshKey={refreshKey}
             inputType={'input'}
             inputValue={searchQuery}

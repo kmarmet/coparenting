@@ -110,6 +110,7 @@ const DateManager = {
   },
   getDateRangeDates: (startDate, endDate) => {
     const daysInRange = DateManager.getDaysInRange(startDate, endDate)
+    console.log(daysInRange)
     let dailyEvents = []
     for (let i = 0; i <= daysInRange; i++) {
       let nextDay = moment(startDate).add(i * 1, 'days')

@@ -161,6 +161,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
       showCard={showCard}>
       <div className="new-memory-wrapper">
         <div id="new-memory-form-container" className={`${theme} form`}>
+          <Spacer height={5} />
           <div className="form">
             {/* SHARE WITH */}
             {currentUser && (

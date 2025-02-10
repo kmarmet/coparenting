@@ -137,9 +137,12 @@ export default function Home() {
               {/*<button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>*/}
               {/*  Get Started*/}
               {/*</button>*/}
-              <p id="choose-peace-text">
-                <span>Choose Peace</span>ful <br /> Co-Parenting
-              </p>
+              <div id="choose-peace-text" className="flex">
+                <p id="choose-peace-text">
+                  <b>Choose Peace</b>
+                  <span>ful Co-Parenting</span>
+                </p>
+              </div>
             </div>
           </div>
           <div className="section page-title">

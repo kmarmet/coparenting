@@ -37,6 +37,7 @@ import DomManager from '../../managers/domManager.coffee'
 import Spacer from '../shared/spacer.jsx'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import ViewSelector from '../shared/viewSelector'
 
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
@@ -135,8 +136,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     newEvent.isDateRange = eventIsDateRange
     //#endregion FILL NEW EVENT
 
-    console.log(newEvent)
-
     if (Manager.isValid(eventPhone, true)) {
       if (!validator.isMobilePhone(eventPhone)) {
         AlertManager.throwError('Phone number is not valid')
@@ -173,20 +172,20 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       //#region MULTIPLE DATES
       // Date Range
       if (eventIsDateRange) {
-        const dateObjects = createEventList()
-        await CalendarManager.addMultipleCalEvents(currentUser, dateObjects)
+        const dates = await CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'range', eventStartDate, eventEndDate)
+        await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
 
       // Add cloned dates
       if (Manager.isValid(clonedDates)) {
-        const clonedDatesList = createEventList()
-        await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesList)
+        const dates = await CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'cloned', clonedDates[0], clonedDates[clonedDates.length - 1])
+        await CalendarManager.addMultipleCalEvents(currentUser, dates)
       }
 
       // Repeating
       if (eventIsRepeating) {
-        const repeatingDates = createEventList('repeating')
-        await CalendarManager.addMultipleCalEvents(currentUser, repeatingDates)
+        const dates = await CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'recurring', eventStartDate, eventEndDate)
+        await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
       //#endregion MULTIPLE DATES
 
@@ -275,78 +274,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     )
   }
 
-  const createEventList = () => {
-    let datesToPush = []
-    let datesToIterate = []
-
-    // DATE RANGE
-    if (eventLength === 'multiple') {
-      datesToIterate = DateManager.getDateRangeDates(eventStartDate, eventEndDate)
-      setEventIsDateRange(true)
-    }
-
-    // REPEATING
-    if (eventIsRepeating) {
-      datesToIterate = CalendarMapper.repeatingEvents(
-        repeatInterval,
-        moment(eventStartDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
-        eventEndDate
-      )
-      setEventIsRepeating(true)
-    }
-
-    // CLONED DATES
-    if (Manager.isValid(clonedDates)) {
-      let startDate = eventStartDate
-      if (typeof startDate === 'object') {
-        startDate = moment(eventStartDate).format(DateFormats.dateForDb)
-      }
-      datesToIterate = DatasetManager.getUniqueArray([...clonedDates, startDate], true)
-      setEventIsCloned(true)
-    }
-
-    datesToIterate.forEach((date) => {
-      let dateObject = new CalendarEvent()
-      // Required
-      dateObject.title = eventTitle
-      dateObject.id = Manager.getUid()
-      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
-      dateObject.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
-      if (eventIsDateRange || eventIsRepeating) {
-        dateObject.staticStartDate = moment(datesToIterate[0]).format(DateFormats.dateForDb)
-      }
-
-      // Not Required
-      dateObject.directionsLink = Manager.getDirectionsLink(eventLocation)
-      dateObject.location = eventLocation
-      dateObject.children = eventChildren
-      dateObject.ownerPhone = currentUser?.phone
-      dateObject.createdBy = currentUser?.name
-      dateObject.phone = eventPhone
-      dateObject.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
-      dateObject.notes = eventNotes
-      dateObject.websiteUrl = eventWebsite
-      dateObject.isRepeating = eventIsRepeating
-      dateObject.isDateRange = eventIsDateRange
-      dateObject.isCloned = Manager.isValid(clonedDates)
-
-      // Times
-      if (Manager.isValid(eventStartTime)) {
-        dateObject.startTime = eventStartTime.format(DateFormats.timeForDb)
-      }
-      if (Manager.isValid(eventEndTime)) {
-        dateObject.endTime = eventEndTime.format(DateFormats.timeForDb)
-      }
-
-      dateObject.reminderTimes = eventReminderTimes
-      dateObject.repeatInterval = repeatInterval
-      dateObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
-      datesToPush.push(dateObject)
-    })
-    console.log(datesToPush)
-    return datesToPush
-  }
-
   const addThemeToDatePickers = () => {
     setTimeout(() => {
       const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
@@ -414,14 +341,16 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           {/* Event Length */}
           <Spacer height={5} />
-          <div className="calendar views-wrapper">
-            <p className={`view  ${eventLength === 'single' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.single)}>
-              Single Day
-            </p>
-            <p className={`view  ${eventLength === 'multiple' ? 'active' : ''}`} onClick={() => setEventLength(EventLengths.multiple)}>
-              Multiple Days
-            </p>
-          </div>
+          <ViewSelector
+            labels={['Single Day', 'Multiple Days']}
+            updateState={(labelText) => {
+              if (Manager.contains(labelText, 'Single')) {
+                setEventLength(EventLengths.single)
+              } else {
+                setEventLength(EventLengths.multiple)
+              }
+            }}
+          />
 
           {/* EVENT NAME */}
           <InputWrapper

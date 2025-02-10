@@ -57,25 +57,17 @@ export default CalendarManager = {
     }
   },
   buildArrayOfEvents: function(currentUser, eventObject, arrayType = "recurring", startDate, endDate) {
-    var date, dateObject, dates, datesToIterate, datesToPush, i, len;
+    var date, dateObject, datesToIterate, datesToPush, i, len;
     datesToPush = [];
     datesToIterate = [];
-    dates = [];
-    // DATE RANGE
-    if (arrayType === "range") {
+    // DATE RANGE / CLONED
+    if (arrayType === "range" || arrayType === "cloned") {
       datesToIterate = DateManager.getDateRangeDates(startDate, endDate);
     }
     // REPEATING
     if (arrayType === "recurring") {
       datesToIterate = CalendarMapper.repeatingEvents(eventObject.repeatInterval, moment(startDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear), endDate);
     }
-    // CLONED DATES
-    if (arrayType === "cloned") {
-      if (typeof startDate === 'object') {
-        startDate = moment(startDate).format(DateFormats.dateForDb);
-      }
-    }
-//      datesToIterate = DatasetManager.getUniqueArray([...clonedDates, true], true)
     for (i = 0, len = datesToIterate.length; i < len; i++) {
       date = datesToIterate[i];
       dateObject = new CalendarEvent();
