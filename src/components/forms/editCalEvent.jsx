@@ -164,22 +164,23 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       if (event?.isRepeating || event?.isDateRange || event?.isCloned) {
         const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`)
         const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
+
         if (!Manager.isValid(existing)) {
           return false
         }
 
         hideCard()
-        // Get record key
-        const key = await DB.getSnapshotKey(dbPath, event, 'id')
 
-        // Update DB
-        await set(child(dbRef, `${dbPath}/${key}`), cleanedObject).finally(async () => {
-          await afterUpdateCallback()
-        })
-
-        // Events with multiple dates
+        // Add cloned dates
         if (Manager.isValid(clonedDates)) {
-          await CalendarManager.addMultipleCalEvents(currentUser, clonedDates)
+          const dates = await CalendarManager.buildArrayOfEvents(
+            currentUser,
+            updatedEvent,
+            'cloned',
+            clonedDates[0],
+            clonedDates[clonedDates.length - 1]
+          )
+          await CalendarManager.addMultipleCalEvents(currentUser, dates)
         }
 
         // Date range
