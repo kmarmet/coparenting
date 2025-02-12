@@ -257,12 +257,12 @@ const Manager = {
     else {
       const label = clickedEl.dataset['label']
       if (canSelectAll === false) {
-        console.log(labels)
         labels.forEach((labelEl) => {
           const thisLabel = labelEl.dataset.label
           if (thisLabel !== label) {
             labelEl.querySelector('#checkbox').classList.remove('active')
           }
+          labelEl.querySelector('#label-wrapper').classList.remove('active')
           labelEl.classList.remove('active')
         })
       }

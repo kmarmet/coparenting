@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context.js'
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
@@ -8,14 +8,17 @@ import NotificationManager from '/src/managers/notificationManager.js'
 import DB_UserScoped from '/src/database/db_userScoped'
 import DateManager from '/src/managers/dateManager.js'
 import NavBar from '../navBar'
-import { IoAdd } from 'react-icons/io5'
+import { GrMapLocation } from 'react-icons/gr'
+import { IoAdd, IoLocationOutline } from 'react-icons/io5'
 import SecurityManager from '/src/managers/securityManager'
 import { PiCarProfileDuotone, PiCheckBold } from 'react-icons/pi'
 import { Fade } from 'react-awesome-reveal'
 import { BiSolidNavigation } from 'react-icons/bi'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import Autocomplete from 'react-google-autocomplete'
+import { TbCalendarCheck } from 'react-icons/tb'
+import { IoHourglassOutline } from 'react-icons/io5'
+import { MdOutlineAccessTime } from 'react-icons/md'
 import AlertManager from '/src/managers/alertManager'
 import BottomCard from '/src/components/shared/bottomCard'
 import DomManager from '/src/managers/domManager'
@@ -28,11 +31,14 @@ import ModelNames from '/src/models/modelNames'
 import StringManager from '/src/managers/stringManager'
 import Spacer from '../shared/spacer.jsx'
 import Map from '/src/components/shared/map.jsx'
-import { setKey, fromLatLng, fromAddress } from 'react-geocode'
+import { setKey } from 'react-geocode'
 import LocationManager from '../../managers/locationManager.js'
-import { IoLocationOutline } from 'react-icons/io5'
 import Checkbox from '../shared/checkbox.jsx'
 import Label from '../shared/label.jsx'
+import StringAsHtmlElement from '../shared/stringAsHtmlElement'
+import AddressInput from '../shared/addressInput'
+import { CgDetailsMore } from 'react-icons/cg'
+import ViewSelector from '../shared/viewSelector'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -163,10 +169,11 @@ export default function TransferRequests() {
     await NotificationManager.sendNotification(
       'Transfer Destination Arrival',
       notificationMessage,
-      activeRequest?.recipientPhone,
+      notifPhone,
       currentUser,
       ActivityCategory.expenses
     )
+    AlertManager.successAlert('Arrival notification sent!')
   }
 
   const getCurrentUserAddress = async () => {
@@ -183,7 +190,7 @@ export default function TransferRequests() {
   useEffect(() => {
     onTableChange().then((r) => r)
     getCurrentUserAddress().then((r) => r)
-    setKey(process.env.REACT_GOOGLE_MAPS_API_KEY) // Your API key here.
+    setKey(process.env.REACT_GOOGLE_MAPS_API_KEY)
   }, [])
 
   return (
@@ -205,20 +212,16 @@ export default function TransferRequests() {
         showCard={showDetails}>
         <div id="details" className={`content ${activeRequest?.reason.length > 20 ? 'long-text' : ''}`}>
           <Spacer height={8} />
-          <div className="views-wrapper">
-            <p onClick={() => setView('details')} className={view === 'details' ? 'view active' : 'view'}>
-              Details
-            </p>
-            <p onClick={() => setView('edit')} className={view === 'edit' ? 'view active' : 'view'}>
-              Edit
-            </p>
-          </div>
+          <ViewSelector labels={['Details', 'Edit']} updateState={(e) => setView(e.toLowerCase())} />
           {view === 'details' && (
             <>
               {/* TRANSFER DATE */}
               {Manager.isValid(activeRequest?.date) && (
                 <div className="flex">
-                  <b>Transfer Date</b>
+                  <b>
+                    <TbCalendarCheck />
+                    Transfer Date
+                  </b>
                   <p>{activeRequest.endDate}</p>
                   <span>{DateManager.formatDate(activeRequest?.date)}</span>
                 </div>
@@ -227,19 +230,25 @@ export default function TransferRequests() {
               {/* RESPOND BY */}
               {Manager.isValid(activeRequest?.responseDueDate) && (
                 <div className="flex">
-                  <b>Respond by </b>
+                  <b>
+                    <IoHourglassOutline />
+                    Respond by
+                  </b>
                   <span>
                     {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
                     {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
                   </span>
                   {Manager.isValid(activeRequest?.endDate) && (
-                    <p id="title">
-                      <b>Respond by:</b>
+                    <>
+                      <b>
+                        <IoHourglassOutline />
+                        Respond by
+                      </b>
                       <span>
                         {DateManager.formatDate(activeRequest?.responseDueDate)}&nbsp;to&nbsp;{DateManager.formatDate(activeRequest?.endDate)}
                         {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
                       </span>
-                    </p>
+                    </>
                   )}
                 </div>
               )}
@@ -247,28 +256,38 @@ export default function TransferRequests() {
               {/* TIME */}
               {Manager.isValid(activeRequest?.time) && (
                 <div className="flex">
-                  <b>Time </b>
+                  <b>
+                    <MdOutlineAccessTime />
+                    Time
+                  </b>
                   <span>{activeRequest?.time}</span>
                 </div>
               )}
 
-              {/* STATUS */}
-              <div className="flex">
-                <b>Status </b>
-                <span>{StringManager.uppercaseFirstLetterOfAllWords(activeRequest?.status)}</span>
-              </div>
+              {/* REASON */}
+              {Manager.isValid(activeRequest?.reason) && (
+                <div className="flex">
+                  <b>
+                    <CgDetailsMore />
+                    Reason
+                  </b>
+                  <StringAsHtmlElement text={activeRequest?.reason} />
+                </div>
+              )}
 
               {/* LOCATION */}
               {Manager.isValid(activeRequest?.location) && (
                 <>
                   <div className="flex">
-                    <b>Location</b>
+                    <b>
+                      <GrMapLocation />
+                      Location
+                    </b>
                     <span>{activeRequest?.location}</span>
                   </div>
-                  <Spacer height={5} />
-
-                  <p className="center fs-14 op-7">notify your co-parent that you have arrived at the transfer location</p>
-                  <Spacer height={5} />
+                  <a className="nav-detail" href={activeRequest?.directionsLink} target="_blank" rel="noreferrer">
+                    <BiSolidNavigation /> Navigation
+                  </a>
                   {/* ARRIVED */}
                   <button className="button default center" onClick={checkIn}>
                     We're Here <IoLocationOutline />
@@ -276,25 +295,12 @@ export default function TransferRequests() {
                   <Spacer height={5} />
                   <Checkbox wrapperClass="center" text={'Include Current Address'} onClick={() => setSendWithAddress(!sendWithAddress)} />
 
-                  <a className="nav-detail" href={activeRequest?.directionsLink} target="_blank" rel="noreferrer">
-                    <BiSolidNavigation /> Navigation
-                  </a>
+                  <Spacer height={10} />
                   <Label text={'Transfer Location'} classes="center-text" />
-                  <Spacer height={3} />
+                  <Spacer height={5} />
                   {/* MAP */}
                   <Map locationString={activeRequest?.location} />
                 </>
-              )}
-
-              {/* REASON */}
-              {Manager.isValid(activeRequest?.reason) && (
-                <div className="flex" id="row">
-                  <p id="title" className="mr-auto wrap no-gap w-100">
-                    <b>Reason</b>
-                    <br />
-                    <span>{activeRequest?.reason}</span>
-                  </p>
-                </div>
               )}
             </>
           )}
@@ -323,18 +329,7 @@ export default function TransferRequests() {
 
               {/*  NEW LOCATION*/}
               <InputWrapper inputType={'location'} labelText={'Location'}>
-                <Autocomplete
-                  defaultValue={requestLocation}
-                  apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                  options={{
-                    types: ['geocode', 'establishment'],
-                    componentRestrictions: { country: 'usa' },
-                  }}
-                  className=""
-                  onPlaceSelected={(place) => {
-                    setRequestLocation(place.formatted_address)
-                  }}
-                />
+                <AddressInput defaultValue={requestLocation} onSelection={(address) => setRequestLocation(address)} />
               </InputWrapper>
               {/* RESPONSE DUE DATE */}
               <InputWrapper inputType={'date'} labelText={'Respond by'}>
@@ -397,8 +392,7 @@ export default function TransferRequests() {
                   return (
                     <div
                       key={index}
-                      className="flex"
-                      id="row"
+                      className="flex row"
                       onClick={() => {
                         setActiveRequest(request)
                         setTimeout(() => {
@@ -411,7 +405,7 @@ export default function TransferRequests() {
                       <div data-request-id={request.id} className="request " id="content">
                         {/* DATE */}
                         <p id="title" className="flex date row-title">
-                          {DateManager.formatDate(request.date)}
+                          {moment(request.date).format(DateFormats.readableMonthAndDay)}
                           <span className={`${request.status} status`} id="request-status">
                             {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
                           </span>

@@ -8,13 +8,14 @@ import { MdOutlineChecklist } from 'react-icons/md'
 import DB from '/src/database/DB'
 import Checklist from '/src/models/checklist.js'
 import DatasetManager from '../../../managers/datasetManager'
+import MyConfetti from '../../shared/myConfetti'
+import AlertManager from '../../../managers/alertManager'
 export default function NewTransferChecklist({ showCard, hideCard, activeChild, visibleDestinations }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, refreshKey } = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
   const [view, setView] = useState('from')
-  const [currentChecklistDestinations, setCurrentChecklistDestinations] = useState([])
-  const [visibleLabels, setVisibleLabels] = useState([])
+  const [existingChecklists, setExistingChecklists] = useState([])
 
   const addInput = () => {
     const inputs = document.getElementById('inputs')
@@ -33,11 +34,13 @@ export default function NewTransferChecklist({ showCard, hideCard, activeChild, 
   const addToDb = async () => {
     const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
     const newChecklist = new Checklist()
-    newChecklist.checklistItems = checkboxTextList
+    newChecklist.checklistItems = DatasetManager.getUniqueArray(checkboxTextList, true)
     newChecklist.ownerPhone = currentUser.phone
     newChecklist.fromOrTo = view
     await DB.add(`${DB.tables.users}/${currentUser.phone}/children/${childKey}/checklists`, newChecklist)
     hideCard()
+    MyConfetti.fire()
+    AlertManager.successAlert('Checklist Created!')
   }
 
   // On View Change
@@ -45,12 +48,34 @@ export default function NewTransferChecklist({ showCard, hideCard, activeChild, 
     const inputs = document.getElementById('inputs')
     inputs.innerHTML = ''
     setCheckboxTextList([])
+    const fromDest = activeChild?.checklists?.filter((x) => x.fromOrTo === 'from')[0]
+    const toDest = activeChild?.checklists?.filter((x) => x.fromOrTo === 'to')[0]
+    let existingChecklistsArr = []
+    if (fromDest) {
+      existingChecklistsArr.push('from')
+    }
+    if (toDest) {
+      existingChecklistsArr.push('to')
+    }
+    setExistingChecklists(existingChecklistsArr)
   }, [view])
 
-  // On Page Load
-  useEffect(() => {
-    addInput()
-  }, [])
+  const checkForExisting = (_view) => {
+    const fromDest = activeChild?.checklists?.filter((x) => x.fromOrTo === 'from')[0]
+    const toDest = activeChild?.checklists?.filter((x) => x.fromOrTo === 'to')[0]
+    if (_view.includes('from')) {
+      if (fromDest) {
+        AlertManager.throwError("Transfer Checklist when transferring from co-parent's home already exists")
+        return false
+      }
+    }
+    if (_view.includes('to')) {
+      if (toDest) {
+        AlertManager.throwError("Transfer Checklist when transferring to co-parent's home already exists")
+        return false
+      }
+    }
+  }
 
   return (
     <BottomCard
@@ -67,21 +92,23 @@ export default function NewTransferChecklist({ showCard, hideCard, activeChild, 
         updateState={(text) => {
           const _view = text.toLowerCase()
           if (Manager.contains(_view, 'to')) {
+            checkForExisting(_view)
             setView('to')
           } else {
+            checkForExisting(_view)
             setView('from')
           }
         }}
-        visibleLabels={visibleDestinations}
         wrapperClasses={'child-info'}
-        labelOneText={'From Co-Parent'}
-        labelTwoText={'To Co-Parent'}
+        labels={['From Co-Parent', 'To-Coparent']}
       />
 
       <div id="inputs" key={refreshKey}></div>
-      <button className="button default center" onClick={addInput}>
-        Add Item
-      </button>
+      {!existingChecklists.includes(view) && (
+        <button className="button default center" onClick={addInput}>
+          Add Item
+        </button>
+      )}
     </BottomCard>
   )
 }

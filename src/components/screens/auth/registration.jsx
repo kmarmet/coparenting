@@ -1,39 +1,39 @@
 import { child, getDatabase, ref, set } from 'firebase/database'
 import React, { useContext, useEffect, useState } from 'react'
 import PasswordChecklist from 'react-password-checklist'
-import ScreenNames from '../../../constants/screenNames'
-import globalState from '../../../context.js'
-import User from '../../../models/user.js'
-import Manager from '../../../managers/manager'
-import ChildrenInput from '../../childrenInput.jsx'
-import CoparentInputs from '../../coparentInput.jsx'
-import CheckboxGroup from '../../../components/shared/checkboxGroup.jsx'
-import SmsManager from '../../../managers/smsManager.js'
-import NotificationManager from '../../../managers/notificationManager'
-import ChildUser from '../../../models/child/childUser.js'
-import ParentInput from '../../parentInput'
+import globalState from '/src/context.js'
+import ScreenNames from '/src/constants/screenNames'
+import User from '/src/models/user.js'
+import Manager from '/src/managers/manager'
+import ChildrenInput from '/src/components/childrenInput.jsx'
+import CoparentInputs from '/src/components/coparentInput.jsx'
+import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
+import SmsManager from '/src/managers/smsManager.js'
+import NotificationManager from '/src/managers/notificationManager'
+import ChildUser from '/src/models/child/childUser.js'
+import ParentInput from '/src/components/parentInput'
 import { MdOutlineSecurity, MdOutlineSystemSecurityUpdateGood } from 'react-icons/md'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
-import ModelNames from '../../../models/modelNames'
+import ModelNames from '/src/models/modelNames'
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
-import firebaseConfig from '../../../firebaseConfig'
+import firebaseConfig from '/src/firebaseConfig'
 import { initializeApp } from 'firebase/app'
-import InstallAppPopup from '../../installAppPopup'
-import BottomCard from '../../shared/bottomCard'
+import InstallApp from '/src/components/screens/installApp'
+import BottomCard from '/src/components/shared/bottomCard'
 import { PiInfoDuotone } from 'react-icons/pi'
 import validator from 'validator'
-import Label from '../../shared/label'
-import ObjectManager from '../../../managers/objectManager'
-import AlertManager from '../../../managers/alertManager'
-import InputWrapper from '../../shared/inputWrapper'
-import LogManager from '../../../managers/logManager'
+import Label from '/src/components/shared/label'
+import ObjectManager from '/src/managers/objectManager'
+import AlertManager from '/src/managers/alertManager'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import LogManager from '/src/managers/logManager'
 import { TbDeviceMobileMessage } from 'react-icons/tb'
-import DateFormats from '../../../constants/dateFormats'
+import DateFormats from '/src/constants/dateFormats'
 import moment from 'moment'
-import DomManager from '../../../managers/domManager'
-import StringManager from '../../../managers/stringManager'
+import DomManager from '/src/managers/domManager'
+import StringManager from '/src/managers/stringManager'
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -62,6 +62,7 @@ export default function Registration() {
   const user = auth.currentUser
 
   // SEND VERIFICATION CODE
+  // TODO MOVE TO INITIAL SCREEN
   const sendChildVerificationCode = async () => {
     const requiredInputs = [userPhone, email, parentPhone, userName, password, confirmedPassword, parents]
     const isInvalid = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length == 0).length > 0
@@ -71,7 +72,7 @@ export default function Registration() {
     }
     if (validator.isMobilePhone(userPhone)) {
       const permissionCode = Manager.getUid().slice(0, 6)
-      SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, permissionCode))
+      await SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, permissionCode))
 
       localStorage.setItem('parentPermissionCode', permissionCode)
 
@@ -134,17 +135,15 @@ export default function Registration() {
 
   // SUBMIT CHILD
   const submitChild = async () => {
-    const requiredInputs = [userPhone, email, parentPhone, userName, password, confirmedPassword, parents]
+    const requiredInputs = [userPhone, email, userName, password, confirmedPassword]
     const isInvalid = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length == 0).length > 0
     if (isInvalid) {
       AlertManager.throwError('Please complete all fields')
       return false
     }
     let childUser = new ChildUser()
-    childUser.id = Manager.getUid()
     childUser.name = StringManager.uppercaseFirstLetterOfAllWords(userName).trim()
     childUser.accountType = 'child'
-    childUser.parents = parents
     childUser.email = email
     childUser.settings.notificationsEnabled = true
     childUser.settings.theme = 'light'
@@ -155,6 +154,7 @@ export default function Registration() {
     childUser.phone = StringManager.formatPhone(userPhone)
     const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
     const dbRef = ref(getDatabase())
+
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         // Signed up successfully
@@ -167,16 +167,9 @@ export default function Registration() {
       })
 
     // SEND SMS MESSAGES
-    // Send to parent
-    const parentSubId = await NotificationManager.getUserSubId(parentPhone, 'phone')
-    NotificationManager.sendNotification(
-      'Child Registration',
-      `${userName} is now signed up. If you would like to be able to provide viewing access for them, add them in the Child Info section of the app. Including their phone number is required.`,
-      parentSubId
-    )
     // Send to child
     const childSubId = await NotificationManager.getUserSubId(userPhone, 'phone')
-    NotificationManager.sendNotification('Welcome Aboard!', 'You are now signed up!', childSubId)
+    NotificationManager.sendNotification('Welcome Aboard!', 'You are now registered!', childSubId)
     // Send to me
     const mySubId = await NotificationManager.getUserSubId('3307494534', 'phone')
     NotificationManager.sendNotification('New Registration', `Phone: ${userPhone}`, mySubId)
@@ -366,27 +359,15 @@ export default function Registration() {
               It is <b>HIGHLY</b> recommended to install the application for the best experience. You can register/login once the application is
               installed as well.
             </p>
-            <p>
-              {DomManager.tapOrClick(true)} <b>Install App</b> button below to read the extremely fast installation steps.
-            </p>
-            {/* INSTALL BUTTON */}
-            <p
-              id="install-button"
-              className="mb-20 button mt-20"
-              onClick={() => {
-                setState({ ...state, menuIsOpen: false })
-                document.querySelector('.install-app').classList.add('active')
-                Manager.showPageContainer('hide')
-              }}>
-              Install App <span className="material-icons">install_mobile</span>
-            </p>
-            <InstallAppPopup />
-            <Label text={'Choose your Account Type'} required={true} />
+            <button className="button default green center mt-15" onClick={() => setState({ ...state, currentScreen: ScreenNames.installApp })}>
+              Install App First
+            </button>
+            <Label text={'Choose your Account Type'} classes="mt-15" required={true} />
             <div className="button-group flex mt-10">
-              <button className="button default w-50 mr-10" onClick={() => setAccountType('parent')}>
+              <button className="button parent default green w-50 mr-10" onClick={() => setAccountType('parent')}>
                 Parent
               </button>
-              <button className="w-50 default button" onClick={() => setAccountType('child')}>
+              <button className="w-50 child default button" onClick={() => setAccountType('child')}>
                 Child
               </button>
             </div>
@@ -414,13 +395,6 @@ export default function Registration() {
             />
             <InputWrapper
               inputType={'input'}
-              inputValueType="number"
-              required={true}
-              labelText={'Phone Number of Parent that has the App'}
-              onChange={(e) => setParentPhone(StringManager.formatPhone(e.target.value))}
-            />
-            <InputWrapper
-              inputType={'input'}
               inputValueType="password"
               required={true}
               labelText={'Password'}
@@ -445,27 +419,30 @@ export default function Registration() {
                 }
               }}
             />
-            {parentInputs.map((input, index) => {
-              return <span key={index}>{input}</span>
-            })}
-            {parents.length > 0 && (
-              <button id="add-parent-button" className="button default" onClick={addParentInput}>
-                Add Another Parent
-              </button>
-            )}
+            {/*{parentInputs.map((input, index) => {*/}
+            {/*  return <span key={index}>{input}</span>*/}
+            {/*})}*/}
+            {/*{parents.length > 0 && (*/}
+            {/*  <button id="add-parent-button" className="button default" onClick={addParentInput}>*/}
+            {/*    Add Another Parent*/}
+            {/*  </button>*/}
+            {/*)}*/}
 
-            <Label classes="mt-20" text={'Request Parent Sharing Permissions'} />
-            <p>For privacy and security, your parent must provide a code to give you access to view items within the app.</p>
-            <p>
-              A text message will be sent to your parent with the code. Once they provide the code to you, you will have access to the application.
-            </p>
+            {/*<Label classes="mt-20" text={'Request Parent Sharing Permissions'} />*/}
+            {/*<p>For privacy and security, your parent must provide a code to give you access to view items within the app.</p>*/}
+            {/*<p>*/}
+            {/*  A text message will be sent to your parent with the code. Once they provide the code to you, you will have access to the application.*/}
+            {/*</p>*/}
 
-            <button
-              className="button default mt-20 green"
-              onClick={async () => {
-                await sendChildVerificationCode()
-              }}>
-              Send Message <TbDeviceMobileMessage />
+            {/*<button*/}
+            {/*  className="button default mt-20 green"*/}
+            {/*  onClick={async () => {*/}
+            {/*    await sendChildVerificationCode()*/}
+            {/*  }}>*/}
+            {/*  Send Message <TbDeviceMobileMessage />*/}
+            {/*</button>*/}
+            <button className="button mt-15 default green" onClick={submitChild}>
+              Register
             </button>
             <button className="button default" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
               Back to Login

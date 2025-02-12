@@ -25,6 +25,7 @@ import _ from 'lodash'
 import Label from '../../shared/label.jsx'
 import DatasetManager from '../../../managers/datasetManager.coffee'
 import reactStringReplace from 'react-string-replace'
+import Spacer from '../../shared/spacer'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
@@ -344,7 +345,6 @@ export default function DocViewer() {
 
                 // Handle user headers
                 for (let userHeader of userHeaders) {
-                  console.log(elementText, userHeader)
                   if (elementText.includes(userHeader)) {
                     const _span = document.createElement('span')
                     const deleteIcon = document.createElement('p')
@@ -383,6 +383,22 @@ export default function DocViewer() {
         }
       }
       //#endregion NOT PDF
+
+      const docText = document.getElementById('doc-text')
+      const elements = docText.querySelectorAll('*')
+      for (let element of elements) {
+        if (
+          !element.hasChildNodes() ||
+          element?.innerHTML?.length === 0 ||
+          element?.textContent?.length === 0 ||
+          element?.value?.length === 0 ||
+          element?.textContent === '\n\n'
+        ) {
+          element.style.display = 'none'
+          console.log(element)
+          element.remove()
+        }
+      }
 
       setIsFormatting(false)
       // setState({ ...state, isLoading: false })
@@ -488,13 +504,13 @@ export default function DocViewer() {
             {DomManager.tapOrClick(true)} the search button and start typing the word/words you would like to find. Found results will be&nbsp;
             <span className="text-highlight">highlighted</span>&nbsp;.
           </p>
-          <Label text={'Table of Contents'} classes="mt-15" isBold={true} />
+          <Label text={'Table of Contents'} isBold={true} />
           <p className="tip-text">
             {DomManager.tapOrClick(true)} the <IoListOutline id="toc-button-inline" className={`${theme}`} /> icon to view the Table of Contents.
           </p>
           <p className="tip-text">When you click on an item you will be taken directly to that header in the document.</p>
           <p>If the document has a lot of text, it may take a few moments for the table of contents button to appear.</p>
-          <Label text={'Create Your Own Headers'} classes="mt-15" isBold={true} />
+          <Label text={'Create Your Own Headers'} isBold={true} />
           <p className="tip-text">
             There are headers (dark blue text with a light blue background) that are predefined that you may see. But you will likely want to define
             your own custom headers so that certain texts stands out to you.

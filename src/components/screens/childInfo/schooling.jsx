@@ -84,7 +84,7 @@ export default function Schooling({ activeChild, setActiveChild }) {
         <AccordionDetails>
           {Manager.isValid(schoolingValues) &&
             schoolingValues.map((prop, index) => {
-              let infoLabel = StringManager.spaceBetweenWords(prop[0])
+              let infoLabel = StringManager.uppercaseFirstLetterOfAllWords(StringManager.spaceBetweenWords(prop[0]))
               const value = prop.flat()[1]
               return (
                 <div key={index}>

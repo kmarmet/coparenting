@@ -9,26 +9,33 @@ import NotificationManager from '/src/managers/notificationManager'
 import DB_UserScoped from '/src/database/db_userScoped'
 import SecurityManager from '/src/managers/securityManager'
 import NewSwapRequest from '../forms/newSwapRequest'
-import { IoAdd } from 'react-icons/io5'
 import NavBar from '../navBar'
+import { IoHourglassOutline } from 'react-icons/io5'
 import AlertManager from '/src/managers/alertManager'
-import BottomCard from '../shared/bottomCard'
+import BottomCard from '/src/components/shared/bottomCard'
 import { PiCheckBold, PiSwapDuotone } from 'react-icons/pi'
+import { MdOutlineFaceUnlock } from 'react-icons/md'
+import { IoAdd } from 'react-icons/io5'
+import { CgDetailsMore } from 'react-icons/cg'
 import { Fade } from 'react-awesome-reveal'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import Toggle from 'react-toggle'
 import DateManager from '/src/managers/dateManager'
-import NoDataFallbackText from '../shared/noDataFallbackText'
+import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import DomManager from '/src/managers/domManager'
-import InputWrapper from '../shared/inputWrapper'
+import InputWrapper from '/src/components/shared/inputWrapper'
 import DateFormats from '/src/constants/dateFormats'
-import CheckboxGroup from '../shared/checkboxGroup'
+import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import ObjectManager from '/src/managers/objectManager'
 import ModelNames from '/src/models/modelNames'
 import ActivityCategory from '/src/models/activityCategory'
 import StringManager from '/src/managers/stringManager'
-import { MdOutlineFaceUnlock } from 'react-icons/md'
-import Label from '../shared/label.jsx'
+import { PiUserCircleDuotone } from 'react-icons/pi'
+import { FaChildren } from 'react-icons/fa6'
+import { TbCalendarCheck } from 'react-icons/tb'
+import ViewSelector from '../shared/viewSelector'
+import StringAsHtmlElement from '../shared/stringAsHtmlElement'
+
 const Decisions = {
   approved: 'APPROVED',
   rejected: 'REJECTED',
@@ -83,7 +90,7 @@ export default function SwapRequests() {
   }
 
   const getSecuredRequests = async () => {
-    let allRequests = await SecurityManager.getSwapRequests(currentUser).then((r) => r)
+    let allRequests = await SecurityManager.getSwapRequests(currentUser)
     console.log(allRequests)
     setExistingRequests(allRequests)
   }
@@ -93,7 +100,8 @@ export default function SwapRequests() {
     const recipientName = recipient.name
     // Rejected
     if (decision === Decisions.rejected) {
-      await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser.phone}`, activeRequest, activeRequest.id)
+      activeRequest.status = 'rejected'
+      await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerPhone}`, activeRequest, activeRequest.id)
 
       const notifMessage = NotificationManager.templates.swapRequestRejection(activeRequest, recipientName)
       NotificationManager.sendNotification(
@@ -106,11 +114,11 @@ export default function SwapRequests() {
       setStatus('rejected')
       setShowDetails(false)
     }
-
     // Approved
     if (decision === Decisions.approved) {
       const notifMessage = NotificationManager.templates.swapRequestApproval(activeRequest, recipientName)
-      await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser.phone}`, activeRequest, activeRequest.id)
+      activeRequest.status = 'approved'
+      await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerPhone}`, activeRequest, activeRequest.id)
 
       NotificationManager.sendNotification(
         'Swap Request Decision',
@@ -125,7 +133,7 @@ export default function SwapRequests() {
   }
 
   const setCurrentRequest = async (request) => {
-    const coparent = await DB_UserScoped.getCoparentByPhone(request.ownerPhone, currentUser)
+    const coparent = await DB_UserScoped.getCoparentByPhone(request?.ownerPhone, currentUser)
     setCreatedBy(StringManager.formatNameFirstNameOnly(coparent.name))
     setShowDetails(true)
     setActiveRequest(request)
@@ -134,7 +142,7 @@ export default function SwapRequests() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
-      await getSecuredRequests().then((r) => r)
+      await getSecuredRequests()
     })
   }
 
@@ -156,19 +164,14 @@ export default function SwapRequests() {
   const handleChildSelection = (e) => {
     const clickedEl = e.currentTarget
     const selectedValue = clickedEl.getAttribute('data-label')
-    if (clickedEl.classList.contains('active')) {
-      clickedEl.classList.remove('active')
-      if (requestChildren.length > 0) {
-        setRequestChildren(requestChildren.filter((x) => x !== selectedValue))
-      }
+    DomManager.toggleActive(clickedEl)
+    if (requestChildren.length > 0) {
+      setRequestChildren(requestChildren.filter((x) => x !== selectedValue))
+    }
+    if (Manager.isValid(requestChildren)) {
+      setRequestChildren([...requestChildren, selectedValue])
     } else {
-      clickedEl.classList.add('active')
-
-      if (Manager.isValid(requestChildren)) {
-        setRequestChildren([...requestChildren, selectedValue])
-      } else {
-        setRequestChildren([selectedValue])
-      }
+      setRequestChildren([selectedValue])
     }
   }
 
@@ -219,202 +222,202 @@ export default function SwapRequests() {
           setActiveRequest(null)
         }}
         showCard={showDetails}>
-        <div id="details" className={`content ${activeRequest?.reason?.length > 20 ? 'long-text' : ''}`}>
-          <div className="views-wrapper">
-            <p onClick={() => setView('details')} className={view === 'details' ? 'view active' : 'view'}>
-              Details
-            </p>
-            <p onClick={() => setView('edit')} className={view === 'edit' ? 'view active' : 'view'}>
-              Edit
-            </p>
-          </div>
-          {/* DETAILS */}
-          {view === 'details' && (
-            <Fade direction={'up'} duration={600} triggerOnce={true}>
+        <ViewSelector labels={['Details', 'Edit']} visibleLabels={['Details']} updateState={(e) => setView(e.toLowerCase())} />
+        {/* DETAILS */}
+        {view === 'details' && (
+          <Fade direction={'up'} duration={600} triggerOnce={true}>
+            <div id="details" className={`content`}>
               {/* SWAP DATE */}
               {Manager.isValid(activeRequest?.startDate) && (
-                <>
-                  <p id="title">
-                    <b>Swap Dates </b>
-                  </p>
-                  <p className="mt-0 mb-10">
-                    {moment(activeRequest?.startDate).format(DateFormats.readableMonthAndDay)} to&nbsp;
-                    {moment(activeRequest?.endDate).format(DateFormats.readableMonthAndDay)}
-                  </p>
-                </>
+                <div className="flex">
+                  <b>
+                    <TbCalendarCheck />
+                    Swap Date(s)
+                  </b>
+                  <span>
+                    {moment(activeRequest?.startDate).format(DateFormats.readableMonthAndDay)}
+                    <>{Manager.isValid(activeRequest?.endDate) && ` to ${moment(activeRequest?.endDate).format(DateFormats.readableMonthAndDay)}`}</>
+                  </span>
+                </div>
               )}
 
               {/* CREATED BY */}
-              <div id="row" className="flex-start">
-                <div className="flex mb-0">
-                  <p id="title" className="fromHour">
-                    <b>Created by: </b>
-                    {createdBy}
-                  </p>
-                </div>
-              </div>
-
-              {/* STATUS */}
-              <div className="flex flex-start" id="row">
-                <p id="title">
-                  <b>Status: </b>
-                  {StringManager.uppercaseFirstLetterOfAllWords(activeRequest?.status)}
-                </p>
+              <div className="flex">
+                <b>
+                  {' '}
+                  <PiUserCircleDuotone />
+                  Created by
+                </b>
+                <span>{createdBy}</span>
               </div>
 
               {/* RESPOND BY */}
               {Manager.isValid(activeRequest?.responseDueDate) && (
-                <div className="flex flex-start" id="row">
+                <>
                   {!Manager.isValid(activeRequest?.endDate) && (
-                    <p id="title">
-                      <b>Respond by: </b>
-                      {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
-                      {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
-                    </p>
+                    <div className="flex">
+                      <b>
+                        <IoHourglassOutline />
+                        <TbCalendarCheck /> Respond by
+                      </b>
+                      <span>
+                        {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
+                        {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                      </span>
+                    </div>
                   )}
                   {Manager.isValid(activeRequest?.endDate) && (
-                    <p id="title">
-                      <b>Respond by:</b>
-                      {DateManager.formatDate(activeRequest?.responseDueDate)}&nbsp;to&nbsp;{DateManager.formatDate(activeRequest?.endDate)}
-                      {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
-                    </p>
+                    <div className="flex">
+                      <b>
+                        <TbCalendarCheck />
+                        Respond by
+                      </b>
+                      <span>
+                        {DateManager.formatDate(activeRequest?.responseDueDate)}&nbsp;to&nbsp;{DateManager.formatDate(activeRequest?.endDate)}&nbsp;,
+                        {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                      </span>
+                    </div>
                   )}
-                </div>
+                </>
               )}
 
               {/* TIME */}
               {activeRequest?.fromHour && activeRequest?.fromHour?.length > 0 && (
-                <div id="row" className="flex-start">
-                  <div className="flex mb-0">
-                    <p id="title" className="fromHour">
-                      <b>Start time: </b>
-                      {activeRequest?.fromHour}
-                    </p>
-                    <span id="title">&nbsp;to&nbsp;</span>
-                    <p id="title" className="toHour">
-                      <b>End time: </b>
-                      {activeRequest?.toHour}
-                    </p>
-                  </div>
+                <div className="flex">
+                  <b>Start time </b>
+                  <span>{activeRequest?.fromHour}</span>
+                  <span>&nbsp;to&nbsp;</span>
+                  <b>End time </b>
+                  <span>{activeRequest?.toHour}</span>
                 </div>
               )}
 
               {/* SENT TO */}
-              <div id="row" className="flex-start">
+              <div className="flex">
                 {activeRequest?.ownerPhone === currentUser?.phone && (
-                  <p id="title">
-                    <b>Sent to: </b>
-                    {StringManager.formatNameFirstNameOnly(
-                      currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name
-                    )}
-                  </p>
+                  <>
+                    <b>
+                      <PiUserCircleDuotone />
+                      Sent to
+                    </b>
+                    <span>
+                      {StringManager.formatNameFirstNameOnly(
+                        currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name
+                      )}
+                    </span>
+                  </>
                 )}
               </div>
 
-              {/* REASON */}
-              {Manager.isValid(activeRequest?.reason) && (
-                <div className="flex flex-start wrap no-gap" id="row">
-                  <p id="title" className="w-100">
-                    <b>Reason </b>
-                  </p>
-                  <span>{activeRequest?.reason}</span>
-                </div>
-              )}
               {/* CHILDREN */}
               {Manager.isValid(activeRequest?.children) && (
-                <div className="flex flex-start wrap no-gap" id="row">
-                  <p id="title" className="w-100">
-                    <b>Children</b>
-                  </p>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: `${activeRequest?.children?.join('|').replaceAll('|', '<span class="divider">|</span>')}`,
-                    }}></span>
+                <div className="flex children">
+                  <b>
+                    <FaChildren />
+                    Children
+                  </b>
+                  <div id="children">
+                    {Manager.isValid(activeRequest?.children) &&
+                      activeRequest?.children.map((child, index) => {
+                        return <span key={index}>{child}</span>
+                      })}
+                  </div>
                 </div>
               )}
-            </Fade>
-          )}
-
-          {view === 'edit' && (
-            <Fade direction={'up'} duration={600} triggerOnce={true}>
-              {/* SINGLE DATE */}
-              {swapDuration === SwapDurations.single && (
-                <InputWrapper inputType={'date'} labelText={'Date'}>
-                  <MobileDatePicker
-                    defaultValue={moment(activeRequest?.startDate)}
-                    onOpen={addThemeToDatePickers}
-                    className={`${theme} w-100`}
-                    onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
-                  />
-                </InputWrapper>
+              {/* REASON */}
+              {Manager.isValid(activeRequest?.reason) && (
+                <div className={`flex ${StringManager.addLongTextClass(activeRequest?.reason)}`}>
+                  <b>
+                    <CgDetailsMore />
+                    Reason
+                  </b>
+                  <StringAsHtmlElement text={activeRequest?.reason} />
+                </div>
               )}
+            </div>
+          </Fade>
+        )}
 
-              {/* RESPONSE DUE DATE */}
-              <InputWrapper inputType={'date'} labelText={'Respond by'}>
+        {/* EDIT */}
+        {view === 'edit' && (
+          <Fade direction={'up'} duration={600} triggerOnce={true}>
+            {/* SINGLE DATE */}
+            {swapDuration === SwapDurations.single && (
+              <InputWrapper inputType={'date'} labelText={'Date'}>
                 <MobileDatePicker
+                  defaultValue={moment(activeRequest?.startDate)}
                   onOpen={addThemeToDatePickers}
-                  className={`${theme}  w-100`}
-                  defaultValue={moment(activeRequest?.responseDueDate)}
-                  onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+                  className={`${theme} w-100`}
+                  onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
                 />
               </InputWrapper>
+            )}
 
-              {/* INCLUDE CHILDREN */}
-              {Manager.isValid(currentUser?.children) && (
-                <div className="share-with-container ">
-                  <div className="flex">
-                    <p>Include Child(ren)</p>
-                    <Toggle
-                      icons={{
-                        checked: <MdOutlineFaceUnlock />,
-                        unchecked: null,
-                      }}
-                      defaultChecked={activeRequest?.children?.length > 0}
-                      className={'ml-auto reminder-toggle'}
-                      onChange={(e) => setIncludeChildren(!includeChildren)}
-                    />
-                  </div>
-                  {includeChildren && (
-                    <CheckboxGroup
-                      defaultLabels={activeRequest?.children?.map((x) => x['general']?.name)}
-                      checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
-                      onCheck={handleChildSelection}
-                    />
-                  )}
+            {/* RESPONSE DUE DATE */}
+            <InputWrapper inputType={'date'} labelText={'Respond by'}>
+              <MobileDatePicker
+                onOpen={addThemeToDatePickers}
+                className={`${theme}  w-100`}
+                defaultValue={moment(activeRequest?.responseDueDate)}
+                onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+              />
+            </InputWrapper>
+
+            {/* INCLUDE CHILDREN */}
+            {Manager.isValid(currentUser?.children) && (
+              <div className="share-with-container">
+                <div className="flex">
+                  <p>Include Child(ren)</p>
+                  <Toggle
+                    icons={{
+                      checked: <MdOutlineFaceUnlock />,
+                      unchecked: null,
+                    }}
+                    defaultChecked={activeRequest?.children?.length > 0}
+                    className={'ml-auto reminder-toggle'}
+                    onChange={(e) => setIncludeChildren(!includeChildren)}
+                  />
                 </div>
-              )}
-
-              {/* BUTTONS */}
-              <div className="card-buttons">
-                <>
-                  <button className="button default submit center mt-15 mb-10" data-request-id={activeRequest?.id} onClick={update}>
-                    Update Request
-                  </button>
-                  {activeRequest?.ownerPhone !== currentUser?.phone && (
-                    <button
-                      className="button default red center mt-5"
-                      data-request-id={activeRequest?.id}
-                      onClick={async (e) => {
-                        AlertManager.inputAlert(
-                          'Rejection Reason',
-                          'Please enter a rejection reason.',
-                          (e) => {
-                            setRejectionReason(e.value)
-                            selectDecision(Decisions.rejected)
-                          },
-                          true,
-                          true,
-                          'textarea'
-                        )
-                      }}>
-                      Reject Request
-                    </button>
-                  )}
-                </>
+                {(activeRequest?.children?.length > 0 || includeChildren) && (
+                  <CheckboxGroup
+                    defaultLabels={activeRequest?.children?.map((x) => x['general']?.name)}
+                    checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
+                    onCheck={handleChildSelection}
+                  />
+                )}
               </div>
-            </Fade>
-          )}
-        </div>
+            )}
+
+            {/* BUTTONS */}
+            <div className="card-buttons">
+              <>
+                <button className="button default submit center mt-15 mb-10" data-request-id={activeRequest?.id} onClick={update}>
+                  Update Request
+                </button>
+                {activeRequest?.ownerPhone !== currentUser?.phone && (
+                  <button
+                    className="button default red center mt-5"
+                    data-request-id={activeRequest?.id}
+                    onClick={async (e) => {
+                      AlertManager.inputAlert(
+                        'Rejection Reason',
+                        'Please enter a rejection reason.',
+                        (e) => {
+                          setRejectionReason(e.value)
+                          selectDecision(Decisions.rejected)
+                        },
+                        true,
+                        true,
+                        'textarea'
+                      )
+                    }}>
+                    Reject Request
+                  </button>
+                )}
+              </>
+            </div>
+          </Fade>
+        )}
       </BottomCard>
 
       {/* PAGE CONTAINER */}
@@ -425,14 +428,14 @@ export default function SwapRequests() {
             <p className="screen-title">Swap Requests </p>
             {!DomManager.isMobile() && <IoAdd id={'add-new-button'} className={'swap-requests'} onClick={() => setShowCard(true)} />}
           </div>
-          <p className="text-screen-intro">A request for your child(ren) to stay with you during your co-parent's scheduled visitation time.</p>
+          <p className="text-screen-intro">A request for your child(ren) to stay with you during your co-parent's scheduled visitation period.</p>
 
           {/* LOOP REQUESTS */}
           <div id="swap-requests-container">
             {Manager.isValid(existingRequests) &&
               existingRequests.map((request, index) => {
                 return (
-                  <div onClick={() => setCurrentRequest(request)} key={index} id="row" className="request w-100 mb-10 flex-start">
+                  <div onClick={() => setCurrentRequest(request)} key={index} className="row">
                     {/* REQUEST DATE */}
                     <div id="primary-icon-wrapper" className="mr-10">
                       <PiSwapDuotone id={'primary-row-icon'} />
@@ -440,43 +443,43 @@ export default function SwapRequests() {
 
                     <div id="content" className={`${request?.reason?.length > 20 ? 'long-text' : ''}`}>
                       {/* MULTIPLE */}
-                      {request.duration === SwapDurations.multiple && (
+                      {request?.duration === SwapDurations.multiple && (
                         <div className="flex">
-                          <p id="title" className="row-title">
-                            {moment(request.startDate).format('dddd, MMM Do')} to {moment(request.endDate).format('dddd, MMM Do')}
+                          <p id="title">
+                            {moment(request?.startDate).format('dddd, MMM Do')} to {moment(request?.endDate).format('dddd, MMM Do')}
                           </p>
-                          <span className={`${request.status} status`} id="request-status">
-                            {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
+                          <span className={`${request?.status} status`} id="request-status">
+                            {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
                           </span>
                         </div>
                       )}
                       {/* SINGLE */}
                       <div className="flex">
-                        {request.duration === SwapDurations.single && moment(request.startDate).format('dddd, MMM Do') && (
+                        {request?.duration === SwapDurations.single && moment(request?.startDate).format('dddd, MMM Do') && (
                           <>
                             <p id="title" className="row-title">
-                              {moment(request.startDate).format('dddd, MMM Do')}
+                              {moment(request?.startDate).format('dddd, MMM Do')}
                             </p>
-                            <span className={`${request.status} status`} id="request-status">
-                              {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
+                            <span className={`${request?.status} status`} id="request-status">
+                              {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
                             </span>
                           </>
                         )}
                         {/* HOURS */}
-                        {request.duration === SwapDurations.intra && (
+                        {request?.duration === SwapDurations.intra && (
                           <>
                             <p id="title" className="row-title">
-                              {moment(request.startDate).format('dddd, MMM Do')}
+                              {moment(request?.startDate).format('dddd, MMM Do')}
                             </p>
-                            <span className={`${request.status} status`} id="request-status">
-                              {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
+                            <span className={`${request?.status} status`} id="request-status">
+                              {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
                             </span>
                           </>
                         )}
                       </div>
-                      {request.duration === SwapDurations.intra && (
+                      {request?.duration === SwapDurations.intra && (
                         <p id="subtitle">
-                          {request.fromHour.replace(' ', '')} to {request.toHour.replace(' ', '')}
+                          {request?.fromHour.replace(' ', '')} to {request?.toHour.replace(' ', '')}
                         </p>
                       )}
                     </div>

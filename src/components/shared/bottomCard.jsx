@@ -2,7 +2,8 @@ import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { CgClose } from 'react-icons/cg'
-import Manager from '../../managers/manager.js'
+import Manager from '/src/managers/manager.js'
+import DomManager from '../../managers/domManager'
 
 export default function BottomCard({
   submitText,
@@ -83,6 +84,8 @@ export default function BottomCard({
         }
       }
     }
+
+    // Set MUI datetime picker placeholders
     const startTimeInput = document.querySelector('#input-wrapper.start-time .MuiInputBase-input')
     const endTimeInput = document.querySelector('#input-wrapper.end-time .MuiInputBase-input')
     if (startTimeInput && endTimeInput) {

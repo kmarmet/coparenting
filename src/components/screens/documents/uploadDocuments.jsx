@@ -24,6 +24,7 @@ import StringManager from '/src/managers/stringManager'
 import DocumentConversionManager from '/src/managers/documentConversionManager.js'
 import { ref, uploadString, getStorage } from 'firebase/storage'
 import documentConversionManager from '/src/managers/documentConversionManager.js'
+import Spacer from '../../shared/spacer'
 
 export default function UploadDocuments({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -145,6 +146,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
 
     AlertManager.successAlert('Document Uploaded!')
     setState({ ...state, isLoading: false })
+    hideCard()
     // resetForm()
   }
 
@@ -195,7 +197,9 @@ export default function UploadDocuments({ hideCard, showCard }) {
           <div className="form">
             <>
               <InputWrapper labelText={'Document Name'} onChange={(e) => setDocName(e.target.value)} />
+              <Spacer height={5} />
               <CheckboxGroup parentLabel={'Document Type'} required={true} checkboxLabels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
+              <Spacer height={5} />
               <ShareWithCheckboxes onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
             </>
           </div>

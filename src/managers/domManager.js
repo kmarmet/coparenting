@@ -65,6 +65,43 @@ DomManager = {
       return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
     }
   },
+  showInputLabels: function(wrapperClass) {
+    var i, input, inputs, labelWrapper, len, parent, results;
+    inputs = wrapperClass.querySelectorAll('input,textarea');
+    results = [];
+    for (i = 0, len = inputs.length; i < len; i++) {
+      input = inputs[i];
+      if (input) {
+        if (input.value.length > 0 || (input != null ? input.textContent.length : void 0) > 0) {
+          if (!input.classList.contains("react-toggle-screenreader-only")) {
+            if (!input.classList.contains("MuiBase-input")) {
+              parent = input.parentNode;
+              if (parent) {
+                parent.classList.add('active');
+                labelWrapper = parent.querySelector("#label-wrapper");
+                if (labelWrapper) {
+                  results.push(labelWrapper.classList.add("active"));
+                } else {
+                  results.push(void 0);
+                }
+              } else {
+                results.push(void 0);
+              }
+            } else {
+              results.push(void 0);
+            }
+          } else {
+            results.push(void 0);
+          }
+        } else {
+          results.push(void 0);
+        }
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  },
   mostIsInViewport: function(scrollWrapper, el) {
     var pxCloseToEl, rect, scrollWrapperHeight;
     if (Manager.isValid(el)) {

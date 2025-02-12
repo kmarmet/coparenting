@@ -179,7 +179,7 @@ export default function Records() {
             Manager.isValid(expenses) &&
             expenses.map((expense, index) => {
               return (
-                <div id="row" className={recordType.toLowerCase()}>
+                <div className={`${recordType.toLowerCase()} row`}>
                   <p className="title">
                     {expense.name} <span>${expense.amount}</span>
                   </p>

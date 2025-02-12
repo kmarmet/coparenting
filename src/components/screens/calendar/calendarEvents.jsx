@@ -72,11 +72,10 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
               const dotObject = dotObjects.filter((x) => x.id === event.id)[0]
               return (
                 <div
-                  id="row"
                   key={index}
                   onClick={(e) => handleEventRowClick(event)}
                   data-from-date={startDate}
-                  className={`${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className} ${index === eventsOfActiveDay.length - 2 ? 'last-child' : ''}`}>
+                  className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className} ${index === eventsOfActiveDay.length - 2 ? 'last-child' : ''}`}>
                   <div className="text flex space-between">
                     {/* EVENT NAME */}
                     <div className="flex space-between" id="title-wrapper">

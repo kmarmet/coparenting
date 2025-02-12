@@ -44,6 +44,8 @@ import Map from '../shared/map.jsx'
 import { FaChildren } from 'react-icons/fa6'
 import Spacer from '../shared/spacer.jsx'
 import ViewSelector from '../shared/viewSelector'
+import StringAsHtmlElement from '../shared/stringAsHtmlElement'
+import AddressInput from '../shared/addressInput'
 
 export default function EditCalEvent({ event, showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -474,6 +476,11 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     }
   }, [document.querySelector('.swal2-confirm')])
 
+  useEffect(() => {
+    const pageContainer = document.querySelector('.edit-calendar-event')
+    DomManager.showInputLabels(pageContainer)
+  }, [view])
+
   return (
     <BottomCard
       onDelete={() => {
@@ -504,6 +511,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
 
         {!dataIsLoading && (
           <>
+            {/* DETAILS */}
             {view === 'details' && (
               <Fade direction={'up'} duration={600} triggerOnce={true}>
                 <div id="details">
@@ -625,7 +633,9 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                         <CgDetailsMore />
                         Notes
                       </b>
-                      <span className="notes">{event?.notes}</span>
+                      <pre>
+                        <StringAsHtmlElement text={event?.notes} />
+                      </pre>
                     </div>
                   )}
 
@@ -709,7 +719,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
 
                   {/* EVENT START/END TIME */}
                   {!eventIsDateRange && (
-                    <div className="flex gap">
+                    <div className="flex gap time-inputs-wrapper">
                       {/* START TIME */}
                       <InputWrapper wrapperClasses="start-time" labelText={'Start Time'} required={false} inputType={'date'}>
                         <MobileTimePicker
@@ -735,6 +745,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                       </InputWrapper>
                     </div>
                   )}
+                  <Spacer height={10} />
                   {/* Share with */}
                   {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
                     <ShareWithCheckboxes
@@ -851,18 +862,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
 
                 {/* LOCATION/ADDRESS */}
                 <InputWrapper defaultValue={event?.location} labelText={'Location'} required={false} inputType={'location'}>
-                  <Autocomplete
-                    defaultValue={Manager.isValid(event?.location, true) ? event?.location : ''}
-                    apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                    options={{
-                      types: ['geocode', 'establishment'],
-                      componentRestrictions: { country: 'usa' },
-                    }}
-                    placeholder={''}
-                    onPlaceSelected={(place) => {
-                      setEventLocation(place.formatted_address)
-                    }}
-                  />
+                  <AddressInput defaultValue={event?.location} onSelection={(address) => setEventLocation(address)} />
                 </InputWrapper>
 
                 {/* PHONE */}

@@ -1,14 +1,15 @@
+import { useContext, useState } from 'react'
 import StringManager from '/src/managers/stringManager.coffee'
 import AlertManager from '/src/managers/alertManager.coffee'
 import Manager from '/src/managers/manager.js'
 import { HiMiniBellAlert, HiPause } from 'react-icons/hi2'
-import { useContext, useState } from 'react'
 import { PiChatCircleTextDuotone } from 'react-icons/pi'
 import ChatManager from '/src/managers/chatManager.js'
 import globalState from '/src/context.js'
 import DB_UserScoped from '/src/database/db_userScoped.js'
 import ScreenNames from '/src/constants/screenNames.coffee'
 import { FaPlay } from 'react-icons/fa'
+
 export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
@@ -22,18 +23,18 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
         'This co-parent may have closed their account, however, you can still view the messages',
         null,
         () => {
-          setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: coparent })
+          setState({ ...state, currentScreen: ScreenNames.chat, messageRecipient: coparent })
         }
       )
     } else {
-      setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: userCoparent })
+      setState({ ...state, currentScreen: ScreenNames.chat, messageRecipient: userCoparent })
     }
   }
 
   const pauseChat = async (coparent) => {
     if (Manager.isValid(coparent)) {
       await ChatManager.pauseChat(currentUser, coparent)
-      AlertManager.successAlert('Chat Paused')
+      AlertManager.successAlert('Chats Paused')
     }
   }
 
@@ -48,14 +49,13 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
       onClick={(e) => {
         e.stopPropagation()
         if (e.target.tagName === 'path' || e.target.tagName === 'svg') return false
-        if (e.currentTarget.id === 'row') {
+        if (e.currentTarget.classList.contains('row')) {
           openChat(coparent).then((r) => r)
         }
         if (e.target !== e.currentTarget) return
       }}
       data-thread-id={chat?.id}
-      id="row"
-      className="chats"
+      className="chats row"
       key={index}>
       {/* THREAD ITEM */}
       <div className={`flex thread-item wrap`}>

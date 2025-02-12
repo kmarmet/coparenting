@@ -26,7 +26,7 @@ import ChatThread from '/src/models/chat/chatThread'
 import StringManager from '/src/managers/stringManager.coffee'
 import { IoSend } from 'react-icons/io5'
 
-const Chat = () => {
+const Chats = () => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, messageRecipient } = state
   const [existingChat, setExistingChat] = useState(null)
@@ -65,7 +65,7 @@ const Chat = () => {
     const chatMessage = new ChatMessage()
     const uid = Manager.getUid()
 
-    // Chat
+    // Chats
     const memberTwo = {
       name: currentUser.name,
       phone: currentUser.phone,
@@ -458,4 +458,4 @@ const Chat = () => {
   )
 }
 
-export default Chat
+export default Chats

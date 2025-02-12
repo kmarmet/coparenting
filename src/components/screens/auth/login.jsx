@@ -3,7 +3,7 @@ import ScreenNames from '/src/constants/screenNames'
 import globalState from '/src/context.js'
 import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
-import InstallAppPopup from '/src/components/installAppPopup.jsx'
+import InstallApp from '/src/components/screens/installApp.jsx'
 import { browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
 import firebaseConfig from '/src/firebaseConfig'
 import { initializeApp } from 'firebase/app'
@@ -12,7 +12,7 @@ import validator from 'validator'
 import { MdOutlinePassword } from 'react-icons/md'
 import { Fade } from 'react-awesome-reveal'
 import AlertManager from '/src/managers/alertManager'
-import InputWrapper from '../../shared/inputWrapper'
+import InputWrapper from '/src/components/shared/inputWrapper'
 import { SlLogin } from 'react-icons/sl'
 import DomManager from '/src/managers/domManager'
 import { GrInstallOption } from 'react-icons/gr'
@@ -144,7 +144,7 @@ export default function Login() {
   return (
     <>
       {/* INSTALL APP MODAL */}
-      <InstallAppPopup />
+      <InstallApp />
 
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`page-container form login`}>
@@ -168,12 +168,7 @@ export default function Login() {
             id="install-button"
             className="mb-10 button mt-20"
             onClick={() => {
-              setState({ ...state, menuIsOpen: false })
-              document.querySelector('.install-app').classList.add('active')
-              const pageOverlay = document.getElementById('page-overlay')
-              if (pageOverlay) {
-                pageOverlay.classList.add('active')
-              }
+              setState({ ...state, menuIsOpen: false, currentScreen: ScreenNames.installApp })
             }}>
             Install App <GrInstallOption className={'fs-18 ml-10'} />
           </p>
@@ -215,9 +210,10 @@ export default function Login() {
                 <button className="button default green" onClick={signIn}>
                   Login <SlLogin />
                 </button>
-                {/*<button className="button default light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
-                {/*  Sign Up <IoPersonAddOutline />*/}
-                {/*</button>*/}
+                <button className="button default light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
+                  {/*Sign Up <IoPersonAddOutline />*/}
+                  Sign Up
+                </button>
               </div>
             </div>
 

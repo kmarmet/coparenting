@@ -116,7 +116,7 @@ function ChatRecovery() {
     }
   }
 
-  const saveImageLocal = () => ImageManager.saveImageFromUrl('#image-wrapper', convoImageUrl, 'Chat Recovery Chat')
+  const saveImageLocal = () => ImageManager.saveImageFromUrl('#image-wrapper', convoImageUrl, 'Chats Recovery Chats')
 
   const handleMessageTypeSelection = async (e) => {
     Manager.handleCheckboxSelection(
@@ -171,7 +171,7 @@ function ChatRecovery() {
                   inputType={'input'}
                   inputValueType="number"
                   required={true}
-                  labelText={'Phone Number of Chat Co-parent'}
+                  labelText={'Phone Number of Chats Co-parent'}
                   onChange={async (e) => {
                     const inputValue = e.target.value
                     if (inputValue.length > 1) {

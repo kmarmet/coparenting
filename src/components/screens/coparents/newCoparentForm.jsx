@@ -1,36 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../../context'
-import Coparent from '../../../models/coparent'
-import Manager from '../../../managers/manager'
-import CheckboxGroup from '../../../components/shared/checkboxGroup'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  formatPhone,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
+import Coparent from '/src/models/coparent'
+import Manager from '/src/managers/manager'
+import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import { RiUserAddLine } from 'react-icons/ri'
-import ModelNames from '../../../models/modelNames'
-import ObjectManager from '../../../managers/objectManager'
-import InputWrapper from '../../../components/shared/inputWrapper'
-import BottomCard from '../../../components/shared/bottomCard'
-import AlertManager from '../../../managers/alertManager'
-import LogManager from '../../../managers/logManager'
-import DB_UserScoped from '../../../database/db_userScoped'
+import ModelNames from '/src/models/modelNames'
+import ObjectManager from '/src/managers/objectManager'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import BottomCard from '/src/components/shared/bottomCard'
+import AlertManager from '/src/managers/alertManager'
+import LogManager from '/src/managers/logManager'
+import DB_UserScoped from '/src/database/db_userScoped'
 import validator from 'validator'
+import StringManager from '../../../managers/stringManager'
+import Spacer from '../../shared/spacer'
 
 const NewCoparentForm = ({ showCard, hideCard }) => {
   const { state, setState } = useContext(globalState)
@@ -67,8 +51,8 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       const newCoparent = new Coparent()
       newCoparent.id = Manager.getUid()
       newCoparent.address = address
-      newCoparent.phone = formatPhone(phoneNumber)
-      newCoparent.name = uppercaseFirstLetterOfAllWords(name)
+      newCoparent.phone = StringManager.formatPhone(phoneNumber)
+      newCoparent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
       newCoparent.parentType = parentType
       newCoparent.relationshipToMe = relationshipType
 
@@ -78,8 +62,8 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       } catch (error) {
         LogManager.log(error.message, LogManager.logTypes.error)
       }
-      AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
-      resetForm()
+      AlertManager.successAlert(`${StringManager.formatNameFirstNameOnly(name)} Added!`)
+      await resetForm()
     }
   }
 
@@ -107,15 +91,11 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
     )
   }
 
-  useEffect(() => {
-    Manager.showPageContainer()
-  }, [])
-
   return (
     <BottomCard
       refreshKey={refreshKey}
       onSubmit={submit}
-      submitText={name.length > 0 ? `Add ${uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
+      submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
       title={'New Co-Parent'}
       wrapperClass="new-coparent-card"
       showCard={showCard}
@@ -137,7 +117,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
                 onPlaceSelected={(place) => setAddress(place.formatted_address)}
               />
             </InputWrapper>
-
+            <Spacer height={10} />
             {/* PARENT TYPE */}
             <CheckboxGroup
               parentLabel={'Parent Type'}

@@ -28,7 +28,7 @@ export default NotificationManager =
 
 # Template for swap request decision
     swapRequestApproval: (request, recipientName) ->
-      "Swap Request decision for #{request.startDate} has been APPROVED by #{recipientName}#{NotificationManager.lineBreak}#{NotificationManager.lineBreak}"
+      "Swap Request for #{request.startDate} has been APPROVED by #{recipientName}#{NotificationManager.lineBreak}#{NotificationManager.lineBreak}"
 
     swapRequestRejection: (request, recipientName) ->
       "Swap Request for #{request.startDate} has been REJECTED.#{NotificationManager.lineBreak}#{NotificationManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the
@@ -36,7 +36,7 @@ export default NotificationManager =
   you can communicate with #{recipientName} to come to an agreement on the request."
 
     transferRequestApproval: (request, recipientName) ->
-      "Transfer Change Request decision for #{request.date} has been APPROVED by #{recipientName}#{NotificationManager.lineBreak}#{NotificationManager.lineBreak}"
+      "Transfer Change Request for #{request.date} has been APPROVED by #{recipientName}#{NotificationManager.lineBreak}#{NotificationManager.lineBreak}"
 
     transferRequestRejection: (request, recipientName) ->
       "Transfer Change Request for #{request.date} has been REJECTED.#{NotificationManager.lineBreak}#{NotificationManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed

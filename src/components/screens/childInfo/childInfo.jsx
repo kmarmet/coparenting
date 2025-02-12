@@ -68,12 +68,15 @@ export default function ChildInfo() {
 
     onValue(child(dbRef, `${DB.tables.users}/${currentUser?.phone}/children`), async (snapshot) => {
       const kiddos = Manager.convertToArray(snapshot.val())
-      if (Manager.isValid(kiddos)) {
-        if (!activeInfoChild) {
-          setActiveInfoChild(kiddos[0])
-        } else {
-          const newActiveChild = kiddos.filter((x) => x.id === activeInfoChild.id)[0]
-          setActiveInfoChild(newActiveChild)
+      const checklistBottomCard = document.querySelector('.child-info-checklists')
+      if (checklistBottomCard && !checklistBottomCard.classList.contains('animate__fadeInUp')) {
+        if (Manager.isValid(kiddos)) {
+          if (!activeInfoChild) {
+            setActiveInfoChild(kiddos[0])
+          } else {
+            const newActiveChild = kiddos.filter((x) => x.id === activeInfoChild.id)[0]
+            setActiveInfoChild(newActiveChild)
+          }
         }
       }
     })
@@ -88,20 +91,6 @@ export default function ChildInfo() {
   useEffect(() => {
     onTableChange().then((r) => r)
   }, [])
-
-  useEffect(() => {
-    if (activeInfoChild) {
-      const fromDestination = activeInfoChild?.checklists?.filter((x) => x && x.fromOrTo === 'from')[0]
-      const toDestination = activeInfoChild?.checklists?.filter((x) => x && x.fromOrTo === 'to')[0]
-
-      if (fromDestination) {
-        setCurrentDestinations([...currentDestinations, 'From Co-Parent'])
-      }
-      if (toDestination) {
-        setCurrentDestinations([...currentDestinations, 'To Co-Parent'])
-      }
-    }
-  }, [activeInfoChild])
 
   return (
     <>
@@ -125,12 +114,7 @@ export default function ChildInfo() {
       {/* NEW CHILD + */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
-      <NewTransferChecklist
-        visibleDestinations={currentDestinations}
-        activeChild={activeInfoChild}
-        showCard={showNewChecklistCard}
-        hideCard={() => setShowNewChecklistCard(false)}
-      />
+      <NewTransferChecklist activeChild={activeInfoChild} showCard={showNewChecklistCard} hideCard={() => setShowNewChecklistCard(false)} />
 
       <Checklists showCard={showChecklistsCard} hideCard={() => setShowChecklistsCard(false)} activeChild={activeInfoChild} />
 
@@ -177,7 +161,7 @@ export default function ChildInfo() {
           </div>
           {/* BUTTONS */}
           {Manager.isValid(currentUser?.children) && (
-            <div>
+            <div key={refreshKey}>
               <Accordion expanded={showActions} id={'checkboxes'}>
                 <AccordionSummary onClick={() => setShowActions(!showActions)}>
                   <p id={`actions-button`} className={`${showActions ? 'active' : ''}`}>
@@ -213,7 +197,6 @@ export default function ChildInfo() {
                       <button
                         className="default button"
                         onClick={() => {
-                          console.log(true)
                           setShowChecklistsCard(true)
                         }}>
                         View Transfer Checklists <MdChecklistRtl />

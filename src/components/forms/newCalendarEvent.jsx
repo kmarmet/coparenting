@@ -38,6 +38,7 @@ import Spacer from '../shared/spacer.jsx'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import ViewSelector from '../shared/viewSelector'
+import AddressInput from '../shared/addressInput'
 
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
@@ -118,6 +119,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     newEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
     newEvent.startTime = moment(eventStartTime).format(DateFormats.timeForDb)
     newEvent.endTime = moment(eventEndTime).format(DateFormats.timeForDb)
+    console.log(eventLocation, 'location')
     // Not Required
     newEvent.id = Manager.getUid()
     newEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
@@ -166,7 +168,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
       hideCard()
       MyConfetti.fire()
-
       const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
 
       //#region MULTIPLE DATES
@@ -416,6 +417,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </InputWrapper>
           )}
 
+          <Spacer height={10} />
+
           {/* EVENT WITH TIME */}
           {!isAllDay && (
             <div className={'flex event-times-wrapper'}>
@@ -470,7 +473,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </>
           )}
 
-          <Spacer height={3} />
           {/* IS VISITATION? */}
           <div>
             <div className="flex">
@@ -484,7 +486,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               />
             </div>
           </div>
-
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.isValid(currentUser?.children) && (
             <div>
@@ -564,8 +565,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 </Accordion>
               </div>
 
-              <Spacer height={2} />
-
               {/* CLONE */}
               <div>
                 <div className="flex">
@@ -606,19 +605,9 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             inputValueType="url"
             onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
 
-          {/* LOCATION/ADDRESS */}
+          {/* ADDRESS */}
           <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
-            <Autocomplete
-              apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-              options={{
-                types: ['geocode', 'establishment'],
-                componentRestrictions: { country: 'usa' },
-              }}
-              onPlaceSelected={(place) => {
-                setEventLocation(place.formatted_address)
-              }}
-              placeholder={'Address'}
-            />
+            <AddressInput onSelection={(address) => setEventLocation(address)} />
           </InputWrapper>
 
           {/* PHONE */}

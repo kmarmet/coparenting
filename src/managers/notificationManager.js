@@ -36,13 +36,13 @@ export default NotificationManager = {
     },
     // Template for swap request decision
     swapRequestApproval: function(request, recipientName) {
-      return `Swap Request decision for ${request.startDate} has been APPROVED by ${recipientName}${NotificationManager.lineBreak}${NotificationManager.lineBreak}`;
+      return `Swap Request for ${request.startDate} has been APPROVED by ${recipientName}${NotificationManager.lineBreak}${NotificationManager.lineBreak}`;
     },
     swapRequestRejection: function(request, recipientName) {
       return `Swap Request for ${request.startDate} has been REJECTED.${NotificationManager.lineBreak}${NotificationManager.lineBreak} Reason: ${request.reason}. If you would still prefer to proceed with the request, you can communicate with ${recipientName} to come to an agreement on the request.`;
     },
     transferRequestApproval: function(request, recipientName) {
-      return `Transfer Change Request decision for ${request.date} has been APPROVED by ${recipientName}${NotificationManager.lineBreak}${NotificationManager.lineBreak}`;
+      return `Transfer Change Request for ${request.date} has been APPROVED by ${recipientName}${NotificationManager.lineBreak}${NotificationManager.lineBreak}`;
     },
     transferRequestRejection: function(request, recipientName) {
       return `Transfer Change Request for ${request.date} has been REJECTED.${NotificationManager.lineBreak}${NotificationManager.lineBreak} Reason: ${request.reason}. If you would still prefer to proceed with the request, you can communicate with ${recipientName} to come to an agreement on the request.`;

@@ -4,6 +4,7 @@ import { DebounceInput } from 'react-debounce-input'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager'
 import Label from './label'
+import DomManager from '../../managers/domManager'
 
 function InputWrapper({
   wrapperClasses = '',
@@ -23,8 +24,10 @@ function InputWrapper({
   const { state, setState } = useContext(globalState)
   const { currentUser, refreshKey } = state
   const noInputTypes = ['location', 'textarea', 'date']
+
   useEffect(() => {
     const inputWrapper = document.getElementById('input-wrapper')
+
     if (inputWrapper) {
       inputWrapper.addEventListener('blur', (el) => {
         el.classList.remove('active')
@@ -41,12 +44,12 @@ function InputWrapper({
         const wrapper = e.currentTarget
         if (wrapper) {
           wrapper.classList.add('active')
-          wrapper.querySelector('#label-wrapper').classList.add('active')
+          wrapper.querySelector('#label-wrapper')?.classList?.add('active')
         }
       }}
       id="input-wrapper"
-      className={`${wrapperClasses} ${inputType}  input-container form`}>
-      {Manager.isValid(labelText) && <Label text={`${labelText}`} required={required} />}
+      className={`${wrapperClasses} ${inputType} input-container form`}>
+      {Manager.isValid(labelText) && <Label classes={`${inputType === 'date' ? 'active' : ''}`} text={`${labelText}`} required={required} />}
       {!noInputTypes.includes(inputType) && (
         <>
           <DebounceInput
@@ -75,7 +78,7 @@ function InputWrapper({
 
       {/* DATE/LOCATION */}
       {noInputTypes.includes(inputType) && useNativeDate && (
-        <input onClick={(e) => {}} defaultValue={moment(defaultValue).format('yyyy-MM-DD')} type="date" onChange={onChange} />
+        <input className="date-input" defaultValue={moment(defaultValue).format('yyyy-MM-DD')} type="date" onChange={onChange} />
       )}
       {noInputTypes.includes(inputType) && !useNativeDate && <> {children}</>}
       {childrenOnly && <>{children}</>}

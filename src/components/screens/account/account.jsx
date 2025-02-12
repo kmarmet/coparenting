@@ -262,7 +262,7 @@ export default function Account() {
             {/*{currentUser && currentUser?.accountType === 'parent' && (*/}
             {/*  <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.chatRecovery })}>*/}
             {/*    <PiChatsCircleDuotone className={'mr-10'} />*/}
-            {/*    Chat Recovery*/}
+            {/*    Chats Recovery*/}
             {/*  </p>*/}
             {/*)}*/}
             <p className="section close-account" onClick={closeAccount}>

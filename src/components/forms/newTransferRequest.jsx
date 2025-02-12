@@ -19,6 +19,9 @@ import AlertManager from '/src/managers/alertManager'
 import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
 import DomManager from '../../managers/domManager.coffee'
+import AddressInput from '../shared/addressInput'
+import Spacer from '../shared/spacer'
+import StringAsHtmlElement from '../shared/stringAsHtmlElement'
 
 export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -138,9 +141,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
-        if (e.indexOf('Set') > -1) {
-          setPreferredLocation(requestLocation)
-        }
+        setPreferredLocation(requestLocation)
       },
       (e) => {
         setPreferredLocation('')
@@ -166,6 +167,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
       onClose={resetForm}>
       <div className="transfer-request-wrapper">
         <div id="transfer-change-container" className={`${theme} form`}>
+          <Spacer height={5} />
           <div className="form transfer-change">
             <div className="flex gap">
               {/* DAY */}
@@ -213,16 +215,10 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
             {/*  NEW LOCATION*/}
             <InputWrapper inputType={'location'} labelText={'New Location'}>
-              <Autocomplete
-                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                options={{
-                  types: ['geocode', 'establishment'],
-                  componentRestrictions: { country: 'usa' },
-                }}
-                className=""
-                onPlaceSelected={(place) => {
-                  setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`)
-                  setRequestLocation(place.formatted_address)
+              <AddressInput
+                onSelection={(address) => {
+                  setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(address)}`)
+                  setRequestLocation(address)
                 }}
               />
             </InputWrapper>
@@ -234,7 +230,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
               checkboxLabels={['Set as Preferred Transfer Location']}
               onCheck={handlePreferredLocation}
             />
-
+            <Spacer height={5} />
             {/* REASON */}
             <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
 
@@ -247,8 +243,9 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
               onCheck={handleRequestRecipient}
               required={true}
             />
+
+            <Spacer height={5} />
             <ShareWithCheckboxes
-              icon={<ImEye />}
               shareWith={currentUser?.coparents?.map((x) => x.phone)}
               onCheck={handleShareWithSelection}
               labelText={'Share with'}

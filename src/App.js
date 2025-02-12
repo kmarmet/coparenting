@@ -1,59 +1,59 @@
 import React, { useEffect, useState } from 'react'
 import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import globalState from './context.js'
+import globalState from '/src/context.js'
 import 'react-toggle/style.css'
 // Screens
 import Activity from '/src/components/screens/activity'
-import EventCalendar from './components/screens/calendar/calendar.jsx'
-import InstallAppPopup from './components/installAppPopup.jsx'
-import Account from './components/screens/account/account.jsx'
-import Chat from './components/screens/chats/chats.jsx'
-import Conversation from './components/screens/chats/chat.jsx'
-import ChildInfo from './components/screens/childInfo/childInfo.jsx'
-import Coparents from './components/screens/coparents/coparents.jsx'
-import DocsList from './components/screens/documents/docsList.jsx'
-import UploadDocuments from './components/screens/documents/uploadDocuments.jsx'
-import ExpenseTracker from './components/screens/expenses/expenseTracker.jsx'
-import ResetPassword from './components/screens/account/resetPassword.jsx'
-import Login from './components/screens/auth/login.jsx'
-import Memories from './components/screens/memories.jsx'
-import Registration from './components/screens/auth/registration.jsx'
-import Visitation from './components/screens/visitation.jsx'
-import Settings from './components/screens/settings/settings.jsx'
-import SwapRequests from './components/screens/swapRequests.jsx'
-import TransferRequests from './components/screens/transferRequests.jsx'
-import EditCalEvent from './components/forms/editCalEvent.jsx'
-import NewCalendarEvent from './components/forms/newCalendarEvent.jsx'
-import NewChildForm from './components/screens/childInfo/newChildForm.jsx'
-import NewMemoryForm from './components/forms/newMemoryForm.jsx'
-import NewExpenseForm from './components/forms/newExpenseForm.jsx'
-import NewSwapRequest from './components/forms/newSwapRequest.jsx'
-import NewTransferChangeRequest from './components/forms/newTransferRequest.jsx'
-import NewCoparentForm from './components/screens/coparents/newCoparentForm.jsx'
-import ChildSelector from './components/screens/childInfo/childSelector.jsx'
-import Loading from './components/shared/loading'
-import DocViewer from './components/screens/documents/docViewer'
+import EventCalendar from '/src/components/screens/calendar/calendar.jsx'
+import InstallApp from '/src/components/screens/installApp.jsx'
+import Account from '/src/components/screens/account/account.jsx'
+import Chat from '/src/components/screens/chats/chat.jsx'
+import ChildInfo from '/src/components/screens/childInfo/childInfo.jsx'
+import Coparents from '/src/components/screens/coparents/coparents.jsx'
+import DocsList from '/src/components/screens/documents/docsList.jsx'
+import UploadDocuments from '/src/components/screens/documents/uploadDocuments.jsx'
+import ExpenseTracker from '/src/components/screens/expenses/expenseTracker.jsx'
+import ResetPassword from '/src/components/screens/account/resetPassword.jsx'
+import Login from '/src/components/screens/auth/login.jsx'
+import Memories from '/src/components/screens/memories.jsx'
+import Registration from '/src/components/screens/auth/registration.jsx'
+import Visitation from '/src/components/screens/visitation.jsx'
+import Settings from '/src/components/screens/settings/settings.jsx'
+import SwapRequests from '/src/components/screens/swapRequests.jsx'
+import TransferRequests from '/src/components/screens/transferRequests.jsx'
+import EditCalEvent from '/src/components/forms/editCalEvent.jsx'
+import NewCalendarEvent from '/src/components/forms/newCalendarEvent.jsx'
+import NewChildForm from '/src/components/screens/childInfo/newChildForm.jsx'
+import NewMemoryForm from '/src/components/forms/newMemoryForm.jsx'
+import NewExpenseForm from '/src/components/forms/newExpenseForm.jsx'
+import NewSwapRequest from '/src/components/forms/newSwapRequest.jsx'
+import NewTransferChangeRequest from '/src/components/forms/newTransferRequest.jsx'
+import NewCoparentForm from '/src/components/screens/coparents/newCoparentForm.jsx'
+import ChildSelector from '/src/components/screens/childInfo/childSelector.jsx'
+import Loading from '/src/components/shared/loading'
+import DocViewer from '/src/components/screens/documents/docViewer'
 import emailjs from '@emailjs/browser'
-import StateObj from './constants/stateObj' // Menus
-import FullMenu from './components/fullMenu'
-import AdminDashboard from './components/screens/admin/adminDashboard'
+import StateObj from '/src/constants/stateObj' // Menus
+import FullMenu from '/src/components/fullMenu'
+import AdminDashboard from '/src/components/screens/admin/adminDashboard'
 import { initializeApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { LicenseInfo } from '@mui/x-license'
-import ScreenNames from './constants/screenNames'
-import firebaseConfig from './firebaseConfig.js'
-import ContactUs from './components/screens/contactUs'
-import NotificationManager from './managers/notificationManager.js'
-import Home from './components/screens/home'
-import BrandBar from './components/shared/brandBar'
-import SideNavbar from './components/shared/sideNavbar'
-import DB_UserScoped from './database/db_userScoped'
-import DB from './database/DB'
-import Manager from './managers/manager'
-import DomManager from './managers/domManager'
-import AppManager from './managers/appManager.js'
-import Records from './components/screens/records.jsx'
+import ScreenNames from '/src/constants/screenNames'
+import firebaseConfig from '/src/firebaseConfig.js'
+import ContactUs from '/src/components/screens/contactUs'
+import NotificationManager from '/src/managers/notificationManager.js'
+import Home from '/src/components/screens/home'
+import BrandBar from '/src/components/shared/brandBar'
+import SideNavbar from '/src/components/shared/sideNavbar'
+import DB_UserScoped from '/src/database/db_userScoped'
+import DB from '/src/database/DB'
+import Manager from '/src/managers/manager'
+import DomManager from '/src/managers/domManager'
+import AppManager from '/src/managers/appManager.js'
+import Records from '/src/components/screens/records.jsx'
+import Chats from '/src/components/screens/chats/chats.jsx'
 
 export default function App() {
   // Initialize Firebase
@@ -183,9 +183,6 @@ export default function App() {
 
         <div id="page-overlay"></div>
 
-        {/* INSTALL APP MODAL */}
-        <InstallAppPopup />
-
         <globalState.Provider value={stateToUpdate}>
           {/* FULL MENU */}
           <FullMenu />
@@ -226,6 +223,7 @@ export default function App() {
             {currentScreen === ScreenNames.newCoparent && <NewCoparentForm />}
 
             {/* STANDARD */}
+            {currentScreen === ScreenNames.installApp && <InstallApp />}
             {currentScreen === ScreenNames.home && !isLoading && <Home />}
             {currentScreen === ScreenNames.activity && <Activity />}
             {currentScreen === ScreenNames.calendar && <EventCalendar />}
@@ -238,8 +236,8 @@ export default function App() {
             {currentScreen === ScreenNames.memories && <Memories />}
             {currentScreen === ScreenNames.childInfo && <ChildInfo />}
             {currentScreen === ScreenNames.coparents && <Coparents />}
-            {currentScreen === ScreenNames.conversation && <Conversation />}
-            {currentScreen === ScreenNames.chats && <Chat />}
+            {currentScreen === ScreenNames.chat && <Chat />}
+            {currentScreen === ScreenNames.chats && <Chats />}
             {currentScreen === ScreenNames.visitation && <Visitation />}
             {currentScreen === ScreenNames.childSelector && <ChildSelector />}
             {currentScreen === ScreenNames.contactUs && <ContactUs />}

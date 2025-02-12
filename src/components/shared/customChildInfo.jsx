@@ -14,6 +14,7 @@ import NotificationManager from '../../managers/notificationManager.js'
 import DateFormats from '../../constants/dateFormats'
 import StringManager from '../../managers/stringManager'
 import Spacer from './spacer'
+import ViewSelector from './viewSelector'
 
 export default function CustomChildInfo({ hideCard, showCard, setActiveChild, activeChild }) {
   const { state, setState } = useContext(globalState)
@@ -93,22 +94,9 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       showCard={showCard}>
       <div className="form">
         {/* INFO SECTIONS */}
-        <div className="flex views-wrapper" id="info-type">
-          <p onClick={() => setInfoSection('general')} className={infoSection === 'general' ? 'active item view' : 'item view'}>
-            General
-          </p>
-          <p onClick={() => setInfoSection('medical')} className={infoSection === 'medical' ? 'active item view' : 'item view'}>
-            Medical
-          </p>
-          <p onClick={() => setInfoSection('schooling')} className={infoSection === 'schooling' ? 'active item view' : 'item view'}>
-            Schooling
-          </p>
-          <p onClick={() => setInfoSection('behavior')} className={infoSection === 'behavior' ? 'active item view' : 'item view'}>
-            Behavior
-          </p>
-        </div>
+        <ViewSelector labels={['General', 'Medical', 'Schooling', 'Behavior']} updateState={(e) => setInfoSection(e)} />
         <Spacer height={5} />
-        <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with (optional)" required={false} />
+        <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with" required={false} />
         <Spacer height={10} />
         {/* INFO TYPE */}
         <CheckboxGroup

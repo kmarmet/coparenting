@@ -39,52 +39,64 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
     DomManager.toggleActive(el.target)
   }
 
-  // On View Change
-  useEffect(() => {
-    const inputs = document.getElementById('inputs')
-    inputs.innerHTML = ''
-    setCheckboxTextList([])
-  }, [view])
-
-  // On Page Load
-  useEffect(() => {
-    if (activeChild && Manager.isValid(activeChild?.checklists)) {
-      setChecklist(activeChild?.checklists?.filter((x) => x && x.fromOrTo === 'from')[0])
-    }
-  }, [activeChild])
-
   const deleteItem = async (el) => {
     const element = el.currentTarget
     const checklistItem = element.previousElementSibling
-    const activeChecklist = activeChild?.checklists?.filter((x) => x && x.fromOrTo === view)[0]
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
+    const path = `${DB.tables.users}/${currentUser.phone}/children/${childKey}/checklists`
+    const childChecklists = await DB.getTable(path)
+    const activeChecklist = childChecklists.filter((x) => x.fromOrTo === view)[0]
     if (activeChecklist) {
       const items = activeChecklist.checklistItems
       const text = checklistItem.textContent.toLowerCase()
       const filteredText = items.filter((x) => x.toLowerCase() !== text.toLowerCase())
-      const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
-      const path = `${DB.tables.users}/${currentUser.phone}/children/${childKey}/checklists`
-      const checklistKey = await DB.getSnapshotKey(path, activeChecklist, 'id')
       const newChecklist = { ...activeChecklist }
       newChecklist.checklistItems = filteredText
       const updated = { ...activeChecklist, ...newChecklist }
       if (filteredText.length === 0) {
         await DB.delete(`${path}`, activeChecklist.id)
+        setState({ ...state, refreshKey: Manager.getUid() })
         hideCard()
       } else {
         await DB.updateEntireRecord(`${path}`, updated, activeChecklist.id)
+      }
+      checklistItem.remove()
+      element.remove()
+    }
+  }
+
+  const getActiveChildChecklists = async () => {
+    if (activeChild) {
+      const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
+      const path = `${DB.tables.users}/${currentUser.phone}/children/${childKey}/checklists`
+      return await DB.getTable(path)
+    } else {
+      return {}
+    }
+  }
+
+  const setActiveChildChecklist = async () => {
+    const checklists = await getActiveChildChecklists()
+    if (Manager.isValid(checklists)) {
+      const checklist = checklists?.filter((x) => x.fromOrTo === view)[0]
+      if (checklist) {
+        setCheckboxTextList(checklist.checklistItems)
+        setChecklist(checklist)
+      } else {
+        setCheckboxTextList([])
+        setChecklist(null)
       }
     }
   }
 
   // Change list depending on view
   useEffect(() => {
-    if (view === 'from') {
-      setChecklist(activeChild?.checklists?.filter((x) => x.fromOrTo === 'from')[0])
-    }
-    if (view === 'to') {
-      setChecklist(activeChild?.checklists?.filter((x) => x.fromOrTo === 'to')[0])
-    }
+    setActiveChildChecklist().then((r) => r)
   }, [view])
+
+  useEffect(() => {
+    setActiveChildChecklist().then((r) => r)
+  }, [activeChild])
 
   return (
     <BottomCard
@@ -107,8 +119,7 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
           }
         }}
         wrapperClasses={'child-info'}
-        labelOneText={'From Co-Parent'}
-        labelTwoText={'To Co-Parent'}
+        labels={['From Co-Parent', 'To Co-Parent']}
       />
 
       {Manager.isValid(checklist) &&
@@ -116,7 +127,7 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
         checklist?.checklistItems?.map((item, index) => {
           return (
             <div key={index} id="checklist-item-wrapper" className="flex">
-              <p id="row" onClick={toggleActive}>
+              <p onClick={toggleActive} className="row">
                 {activeItems.includes(item.toLowerCase()) && <IoCheckmarkCircleSharp />}
                 {StringManager.uppercaseFirstLetterOfAllWords(item)}
               </p>

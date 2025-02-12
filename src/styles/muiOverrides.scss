@@ -713,6 +713,12 @@
     width: 95vw !important;
     @include bestShadow;
 
+    .MuiCollapse-vertical {
+      &.MuiCollapse-hidden {
+        display: none !important;
+      }
+    }
+
     &.MuiPaper-elevation:not(.MuiPopover-paper) {
       border-radius: 0;
     }

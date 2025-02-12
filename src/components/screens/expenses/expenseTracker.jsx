@@ -8,13 +8,15 @@ import MyConfetti from '/src/components/shared/myConfetti.js'
 import DateManager from '/src/managers/dateManager.js'
 import DateFormats from '/src/constants/dateFormats.js'
 import moment from 'moment'
-import { PiUserCircleDuotone } from 'react-icons/pi'
-import { AiTwotoneTag } from 'react-icons/ai'
-import BottomCard from '../../shared/bottomCard.jsx'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
 
+import { PiUserCircleDuotone } from 'react-icons/pi'
+import BottomCard from '../../shared/bottomCard.jsx'
+import { AiTwotoneTag } from 'react-icons/ai'
+import { FaPlus, FaMinus } from 'react-icons/fa6'
 import { AiOutlineFileAdd } from 'react-icons/ai'
 import { FaChildren } from 'react-icons/fa6'
+import { TbCalendarCheck } from 'react-icons/tb'
+import { RxUpdate } from 'react-icons/rx'
 import SecurityManager from '/src/managers/securityManager'
 import { TbCalendarDollar } from 'react-icons/tb'
 import NewExpenseForm from '../../forms/newExpenseForm.jsx'
@@ -22,7 +24,6 @@ import LightGallery from 'lightgallery/react'
 import MenuItem from '@mui/material/MenuItem'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import { Fade } from 'react-awesome-reveal'
-import { RxUpdate } from 'react-icons/rx'
 import 'lightgallery/css/lightgallery.css'
 import NavBar from '../../navBar.jsx'
 import Label from '../../shared/label.jsx'
@@ -43,9 +44,7 @@ import PaymentOptions from './paymentOptions.jsx'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import { HiMiniChevronDown, HiMiniChevronUp } from 'react-icons/hi2'
 import { GiMoneyStack } from 'react-icons/gi'
-import { TbCalendarCheck } from 'react-icons/tb'
 import Spacer from '../../shared/spacer'
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -374,17 +373,15 @@ export default function ExpenseTracker() {
               <div className="flex">
                 <b>
                   <TbCalendarCheck />
-                  Created on{' '}
-                </b>{' '}
+                  Created on
+                </b>
                 <span>{moment(activeExpense?.dateAdded).format(DateFormats.monthDayYear)}</span>
               </div>
 
               {/* NOTES */}
               {Manager.isValid(activeExpense?.notes) && (
-                <div className="flex wrap no-gap">
-                  <p className="w-100">
-                    <b>Notes</b>
-                  </p>
+                <div className={`flex ${StringManager.addLongTextClass(activeExpense?.notes)}`}>
+                  <b>Notes</b>
                   <span className="notes">{activeExpense?.notes}</span>
                 </div>
               )}
@@ -595,8 +592,7 @@ export default function ExpenseTracker() {
                 return (
                   <div
                     key={expense?.id}
-                    className="mt-20"
-                    id="row"
+                    className="mt-20 row"
                     onClick={() => {
                       setActiveExpense(expense)
                       setShowDetails(true)

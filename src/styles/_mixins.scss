@@ -289,8 +289,6 @@
 @mixin form {
   &.transfer-change {
     #checkbox-group {
-      margin-bottom: 25px;
-
       &.sending-to {
         margin-top: 85px;
       }
@@ -1004,6 +1002,7 @@
             font-weight: $fwMediumBold;
             border-radius: $borderRadius $borderRadius 0 0;
             font-size: 16px;
+            padding-top: 15px;
 
             svg {
               color: $mainBlue;
@@ -1267,7 +1266,7 @@
   }
   .row-title {
     color: $lightBlackLight;
-    font-weight: $fwMedium;
+    font-weight: $fwRegular;
   }
   #details {
     max-height: 0;
@@ -1312,7 +1311,6 @@
     font-weight: $fwRegular;
     margin: 0;
     line-height: 1.3;
-    font-size: 14px;
 
     &.bold {
       font-weight: $fwMedium;
@@ -1328,7 +1326,7 @@
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   top: 10px;
   height: 42px;
 
@@ -1650,8 +1648,7 @@
   align-items: center;
   justify-content: flex-start;
   transition: all 0.5s ease-out;
-  margin-top: 5px;
-  display: inline-flex;
+  display: flex;
   gap: 5px;
 
   &.center {
@@ -1809,13 +1806,18 @@
       border-radius: 0;
       max-width: 100%;
       width: 100%;
-      overflow: auto;
+      overflow-y: hidden;
+      overflow-x: auto;
       white-space: nowrap;
       mask-image: linear-gradient(to right, black 95%, transparent 100%);
       max-height: unset;
       display: flex;
       gap: 15px;
       padding-right: 20px;
+      align-items: center;
+      padding-top: 3px;
+      padding-bottom: 5px;
+      height: 20px;
 
       label {
         font-size: 14px;
@@ -1898,96 +1900,51 @@
   }
 }
 
-@mixin popupCardContainer {
-  // Variables
+@mixin installApp {
   $cardRed: #cf436e;
-  position: fixed;
-  height: 100vh;
-  width: 100vw;
-  z-index: -1;
-  opacity: 0;
-  //  background: black;
   transition: all 0.5s ease-in-out;
-  &.has-image {
-    #card {
-      background-color: transparent;
-      padding: 0;
-      box-shadow: none;
 
-      #subtitle {
-        margin: 0;
-      }
+  .steps {
+    svg {
+      font-size: 22px;
+      color: $mainBlue;
+    }
+  }
 
-      #title {
-        p {
-          color: white;
-          padding: 0 0 10px 0;
-          margin: 0 auto;
-        }
-      }
+  .back-arrow {
+    color: $mainBlue;
+    position: fixed;
+    top: 10px;
+  }
+
+  .accordion-header {
+    opacity: 1;
+    color: white;
+    border-radius: $borderRadius;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    &.android {
+      background: #a4c639;
     }
 
-    img {
-      max-height: 80vh;
-      margin: 0 auto;
-      width: auto;
-      border-radius: 20px;
+    &.desktop {
+      background: $darkestBg;
+      padding: 11px;
     }
 
-    &.multiple {
-      #card {
-        .image-wrapper {
-          opacity: 0;
-          transition: all 0.4s ease-in-out;
-          position: relative;
-          top: 200px;
+    svg {
+      color: white;
+      margin-left: 5px;
+      position: unset;
 
-          &.active {
-            opacity: 1;
-            top: 0;
-          }
-        }
+      &:last-child {
+        margin-left: auto;
       }
 
-      img {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        right: 50%;
-        bottom: 0;
-        transform: translate(-50%, -50%);
-      }
-
-      #memory-notes {
-        // position: fixed;
-        font-size: 22px;
-        opacity: 0.7;
-        text-align: center;
-        width: 100%;
-        // bottom: -245px;
-        height: 200px;
-        overflow: auto;
-      }
-
-      #left-arrow,
-      #right-arrow {
-        position: fixed;
-        font-size: 30px;
-        left: -15px;
-        border-radius: 100%;
-        height: 40px;
-        width: 40px;
-        padding: 5px;
-        color: $accent;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        top: -25px;
-
-        &#right-arrow {
-          right: -15px;
-          left: auto;
-        }
+      &.apple-logo {
+        margin-left: 5px;
       }
     }
   }
@@ -2026,23 +1983,6 @@
         }
       }
     }
-
-    &.success {
-      #card {
-        p {
-          color: $green;
-        }
-      }
-    }
-
-    &.error {
-      #card {
-        p {
-          color: $red;
-          text-align: center;
-        }
-      }
-    }
   }
   &.error-boundary {
     background-color: white;
@@ -2067,6 +2007,12 @@
     opacity: 0.6;
     @include centerHoriz();
   }
+  // Install App
+  .rs-panel-body,
+  .rs-panel-header {
+    padding: 0;
+  }
+
   #card {
     @include deadCenter();
     width: 90vw;
@@ -2081,270 +2027,88 @@
     top: 100vh;
     transition: all 0.5s ease-in-out;
     text-align: left;
-
-    #button-group {
-      width: 100%;
-      margin-top: 10px;
-
-      button {
-        border-radius: 8px;
-        padding: 8px 0;
-        font-weight: 500;
-
-        &:first-child {
-          margin-right: 8px;
-        }
-
-        &.single {
-          margin: 0 auto;
-        }
-
-        &.green {
-          background-color: $green;
-        }
-
-        &.approve {
-          background-color: $green;
-        }
-
-        &.reject {
-          background-color: $cardRed;
-        }
-      }
+    .rs-panel-in {
+      background-color: transparent;
+      padding: 15px 0 10px 0;
     }
 
-    #title {
-      width: calc(100% - 15px);
+    .accordion-header {
+      color: white;
+      font-weight: 500;
+      background-color: black;
+      border-radius: 10px;
+      text-align: center;
+      padding: 10px;
+      text-align-last: center;
+      display: flex;
+      align-items: center;
+      font-size: 18px;
 
-      p {
-        color: $mainBlue;
-        font-weight: bold;
-        text-align: left;
+      svg {
+        margin-left: 8px;
         font-size: 20px;
-        justify-content: space-between;
-        align-items: center;
+
+        &:last-child {
+          margin-left: auto;
+        }
+      }
+
+      &.android {
+        background-color: #359948;
+
+        span {
+          color: white;
+        }
+      }
+
+      &.desktop {
+        background-color: $mainBlue;
+      }
+
+      span {
+        position: relative;
+        top: 2px;
       }
     }
+  }
 
-    #subtitle {
-      font-size: 16px;
-      opacity: 0.8;
+  .os-container {
+    .while-viewing {
       text-align-last: left;
-      font-weight: 400;
-      font-style: italic;
-      margin-bottom: 15px;
+      font-weight: 500;
+      margin-bottom: 5px;
+      font-size: 15px;
     }
 
-    #text-container {
-      p {
-        &.heading {
-          font-weight: bold;
-        }
+    .emphasize {
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      padding: 3px 10px;
+      font-weight: 500;
+      font-size: 14px;
+
+      &.no-bold {
+        font-weight: 400;
       }
 
-      #steps {
-        display: flex;
+      &.more-padding {
+        padding: 8px;
+      }
+    }
+  }
+
+  .flex {
+    &.steps {
+      flex-wrap: wrap;
+
+      .flex {
         width: 100%;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
         align-items: center;
-
-        &#wrap {
-          flex-wrap: wrap;
-        }
-
-        .settings-icon {
-          height: 22px;
-        }
+        margin-bottom: 10px;
 
         .step-number {
           font-weight: bold;
           margin-right: 10px;
-        }
-
-        span {
-          text-align: left;
-        }
-
-        p {
-          text-align: left;
-          display: flex;
-          flex-wrap: nowrap;
-          justify-content: flex-start;
-          align-items: center;
-        }
-      }
-    }
-
-    @include accordionList();
-
-    p,
-    .emphasize {
-      font-size: 14px;
-      font-weight: 400;
-
-      &.message {
-        line-height: 1.7;
-      }
-
-      &.emphasize {
-        background-color: #f0f0f0;
-        border-radius: 5px;
-        padding: 3px 10px;
-        font-weight: bold;
-        font-size: 13px;
-      }
-
-      &.accordion-header {
-        color: white;
-        font-weight: 500;
-        margin-bottom: 10px;
-        background-color: #2b3881;
-        border-radius: 10px;
-        padding: 10px 0;
-        text-align: center;
-        text-align-last: center;
-      }
-
-      span {
-        color: $linkColor;
-      }
-    }
-
-    input,
-    textarea {
-      background-color: rgba(139, 139, 139, 0.25);
-      border: 0;
-      border-radius: $borderRadius;
-      padding: 10px 10px;
-      font-size: 14px;
-
-      &::placeholder {
-        font-size: 14px;
-        opacity: 0.9;
-      }
-    }
-
-    .rs-panel {
-      .item {
-        font-size: 14px;
-        text-align: center;
-        width: 100px;
-        padding-bottom: 5px;
-        margin: 0 auto 10px auto;
-      }
-    }
-
-    .rs-panel-body,
-    .rs-panel-header {
-      padding: 0;
-      margin-bottom: 10px;
-    }
-
-    .rs-panel-in {
-      background-color: #f0f0f0;
-      padding: 15px 0 10px 0;
-    }
-  }
-  // Install App
-  &.install-app {
-    .rs-panel-body,
-    .rs-panel-header {
-      padding: 0;
-    }
-
-    &.active {
-      @include zIndex(999999);
-    }
-
-    p {
-      opacity: 1;
-    }
-
-    #card {
-      .rs-panel-in {
-        background-color: transparent;
-        padding: 15px 0 10px 0;
-      }
-
-      .accordion-header {
-        color: white;
-        font-weight: 500;
-        background-color: black;
-        border-radius: 10px;
-        text-align: center;
-        padding: 10px;
-        text-align-last: center;
-        display: flex;
-        align-items: center;
-        font-size: 18px;
-
-        svg {
-          margin-left: 8px;
-          font-size: 20px;
-
-          &:last-child {
-            margin-left: auto;
-          }
-        }
-
-        &.android {
-          background-color: #359948;
-
-          span {
-            color: white;
-          }
-        }
-
-        &.desktop {
-          background-color: $mainBlue;
-        }
-
-        span {
-          position: relative;
-          top: 2px;
-        }
-      }
-    }
-
-    .os-container {
-      .while-viewing {
-        text-align-last: left;
-        font-weight: 500;
-        margin-bottom: 5px;
-        font-size: 15px;
-      }
-
-      .emphasize {
-        background-color: #f0f0f0;
-        border-radius: 5px;
-        padding: 3px 10px;
-        font-weight: 500;
-        font-size: 14px;
-
-        &.no-bold {
-          font-weight: 400;
-        }
-
-        &.more-padding {
-          padding: 8px;
-        }
-      }
-    }
-
-    .flex {
-      &.steps {
-        flex-wrap: wrap;
-
-        .flex {
-          width: 100%;
-          align-items: center;
-          margin-bottom: 10px;
-
-          .step-number {
-            font-weight: bold;
-            margin-right: 10px;
-          }
         }
       }
     }
@@ -2589,7 +2353,6 @@
   .flex {
     .MuiFormControl-root {
       .MuiInputBase-input {
-        width: 100% !important;
       }
     }
   }
@@ -2621,6 +2384,10 @@
       b {
         line-height: 1;
         margin: 0;
+      }
+
+      b {
+        font-weight: $fwRegular;
       }
 
       a {
@@ -2787,6 +2554,8 @@
     }
   }
   /*#region  CARDS BY CLASS*/
+  // DOC TIPS
+
   // CHILD INFO CHECKLISTS
   &.child-info-checklists {
     #checklist-item-wrapper {
@@ -2796,13 +2565,13 @@
         margin-left: 10px;
         font-size: 26px;
       }
-      #row {
+      .row {
         border-bottom: 0;
         background: $bestGreyForWhite;
         padding: 10px;
         border-radius: $borderRadius;
         justify-content: flex-start;
-        margin-bottom: 0;
+        margin-bottom: 10px;
 
         &.active {
           background: $green;
@@ -3251,6 +3020,17 @@
   }
   // DOC TIPS
   &.doc-tips-card {
+    #label-wrapper {
+      margin-top: 20px;
+      label {
+        font-size: 18px;
+        color: $mainBlue;
+        font-weight: $fwRegular;
+      }
+    }
+    p {
+      margin-bottom: 8px;
+    }
     .text-highlight {
       color: white;
       background: $mainBlue;
@@ -3465,7 +3245,7 @@
           }
 
           b {
-            min-width: 120px;
+            min-width: 150px;
             line-height: 1;
             display: flex;
             align-items: center;
@@ -3478,6 +3258,8 @@
             &.notes {
               text-align: left;
               line-height: 1.6;
+              max-width: 50%;
+              white-space: pre-wrap;
             }
           }
         }
@@ -3511,7 +3293,7 @@
 
     .MuiPaper-root {
       border-radius: 0;
-      margin-bottom: 5px !important;
+      //      margin-bottom: 5px !important;
 
       .flex {
         margin: 0;
@@ -3519,8 +3301,6 @@
     }
 
     .flex {
-      margin-bottom: 8px;
-
       &.gap {
         margin-bottom: 0;
       }
@@ -3709,7 +3489,7 @@
     justify-content: flex-start;
     padding: 15px 0;
     margin: 0 auto;
-    gap: 5px;
+    gap: 10px;
     width: 100%;
 
     .menu-item {
@@ -3718,13 +3498,14 @@
       transition: all 0.6s ease-in-out;
       width: calc((100% / 3) - 10px);
       background-color: transparent;
-      height: 110px;
+      height: 105px;
       border-radius: $bigBorderRadius;
       padding: 8px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+
       /*#region  ROWS*/
       &.visitation,
       &.chats,
@@ -3745,7 +3526,7 @@
 
         &.activity {
           svg {
-            font-size: 26px;
+            transform: scale(0.8);
             margin-bottom: 5px;
             margin-top: 5px;
           }
@@ -3773,15 +3554,16 @@
       &.settings,
       &.contact-us,
       &.theme,
-      &.logout {
-        border: 1px solid $purple;
+      &.logout,
+      &.install-app {
+        border: 1px solid #5a4eff;
 
         * {
-          color: $purple;
+          color: #5a4eff;
         }
 
         &.active {
-          background: $purple;
+          background: #5a4eff;
 
           * {
             color: white;
@@ -3816,6 +3598,7 @@
         width: 35px;
         display: block;
         margin: 0 auto;
+        height: 35px;
       }
 
       p {

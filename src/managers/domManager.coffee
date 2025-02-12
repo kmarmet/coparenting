@@ -50,6 +50,20 @@ DomManager = {
         rect.bottom <= (window.innerHeight or document.documentElement.clientHeight) and
         rect.right <= (window.innerWidth or document.documentElement.clientWidth)
 
+  showInputLabels: (wrapperClass) ->
+    inputs = wrapperClass.querySelectorAll('input,textarea')
+    for input in inputs
+      if (input)
+        if input.value.length > 0 || input?.textContent.length > 0
+          if !input.classList.contains("react-toggle-screenreader-only")
+            if !input.classList.contains("MuiBase-input")
+              parent = input.parentNode
+              if parent
+                parent.classList.add('active')
+                labelWrapper = parent.querySelector("#label-wrapper")
+                if labelWrapper
+                  labelWrapper.classList.add("active")
+
   mostIsInViewport: (scrollWrapper, el) ->
     if Manager.isValid(el)
       rect = el.getBoundingClientRect()

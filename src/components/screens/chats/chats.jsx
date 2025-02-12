@@ -24,6 +24,7 @@ const Chats = () => {
   const [selectedCoparent, setSelectedCoparent] = useState(null)
   const [activeChatPhones, setActiveChatPhones] = useState([])
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
+
   const openMessageThread = async (coparent) => {
     // Check if thread member (coparent) account exists in DB
     let userCoparent = await DB_UserScoped.getCoparentByPhone(coparent?.phone, currentUser)
@@ -33,11 +34,12 @@ const Chats = () => {
         'This co-parent may have closed their account, however, you can still view the messages',
         null,
         () => {
-          setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: coparent })
+          setState({ ...state, currentScreen: ScreenNames.chat, messageRecipient: coparent })
         }
       )
     } else {
-      setState({ ...state, currentScreen: ScreenNames.conversation, messageRecipient: userCoparent })
+      console.log(userCoparent)
+      setState({ ...state, currentScreen: ScreenNames.chat, messageRecipient: userCoparent })
     }
   }
 
@@ -73,7 +75,7 @@ const Chats = () => {
         wrapperClass="new-conversation"
         onClose={() => setShowNewConvoCard(false)}
         showCard={showNewConvoCard}
-        title={'New Chat'}>
+        title={'New Chats'}>
         {/* COPARENTS */}
         {currentUser?.accountType === 'parent' &&
           Manager.isValid(currentUser?.coparents) &&
@@ -137,7 +139,7 @@ const Chats = () => {
             chats.length > 0 &&
             chats.map((chat, index) => {
               const coparent = chat?.members?.filter((x) => x.phone !== currentUser?.phone)[0]
-              return <ChatRow coparent={coparent} chat={chat} index={index} openChat={() => openMessageThread(coparent)} />
+              return <ChatRow coparent={coparent} chat={chat} index={index} />
             })}
         </Fade>
       </div>

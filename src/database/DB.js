@@ -252,6 +252,7 @@ const DB = {
       for (const record of tableRecords) {
         if (record?.id === id) {
           key = await DB.getSnapshotKey(path, record, 'id')
+          console.log(key)
         }
       }
       await update(ref(dbRef, `${path}/${key}`), updatedRow)

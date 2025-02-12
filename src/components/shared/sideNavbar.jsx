@@ -97,7 +97,7 @@ export default function SideNavbar() {
 
               {/* CHATS */}
               <div
-                className={`menu-item chats ${currentScreen === ScreenNames.chats || currentScreen === ScreenNames.conversation ? 'active' : ''}`}
+                className={`menu-item chats ${currentScreen === ScreenNames.chats || currentScreen === ScreenNames.chat ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.chats)}>
                 <PiChatsCircleDuotone />
                 <p className="text">Chats</p>

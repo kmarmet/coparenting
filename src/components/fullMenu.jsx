@@ -6,9 +6,8 @@ import AppManager from '../managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
 import { VscSettings } from 'react-icons/vsc'
 import { RxActivityLog } from 'react-icons/rx'
-import { PiArchiveDuotone } from 'react-icons/pi'
-// ICONS
 import {
+  PiArchiveDuotone,
   PiCalendarDotsDuotone,
   PiCarProfileDuotone,
   PiChatsCircleDuotone,
@@ -19,8 +18,8 @@ import {
   PiSignOutDuotone,
   PiSunDuotone,
   PiSwapDuotone,
-  PiToolboxDuotone,
 } from 'react-icons/pi'
+import { GrInstallOption } from 'react-icons/gr'
 import DB_UserScoped from '../database/db_userScoped'
 import { RiMailSendLine } from 'react-icons/ri'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
@@ -120,7 +119,7 @@ export default function FullMenu() {
               className={`menu-item expenses ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.expenseTracker)}>
               <PiMoneyWavyDuotone />
-              <p>Expense Tracker</p>
+              <p>Expenses</p>
             </div>
 
             {/* SWAP REQUESTS */}
@@ -128,7 +127,7 @@ export default function FullMenu() {
               className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.swapRequests)}>
               <PiSwapDuotone />
-              <p>Swap Requests</p>
+              <p>Swaps</p>
             </div>
 
             {/* TRANSFER CHANGE */}
@@ -136,7 +135,7 @@ export default function FullMenu() {
               className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.transferRequests)}>
               <PiCarProfileDuotone />
-              <p>Transfer Change</p>
+              <p>Transfers</p>
             </div>
 
             {/* DOCUMENTS */}
@@ -171,7 +170,7 @@ export default function FullMenu() {
               className={`menu-item coparents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.coparents)}>
               <BsPeople />
-              <p>Coparents</p>
+              <p>Co-Parents</p>
             </div>
           </>
         )}
@@ -221,6 +220,13 @@ export default function FullMenu() {
             <p onClick={() => changeTheme('dark')}> Dark Mode</p>
           </div>
         )}
+        {/* INSTALL APP BUTTON */}
+        <div
+          className={`menu-item install-app ${currentScreen === ScreenNames.installApp ? 'active' : ''}`}
+          onClick={() => changeCurrentScreen(ScreenNames.installApp)}>
+          <GrInstallOption />
+          <p>Install</p>
+        </div>
         {/* LOGOUT BUTTON */}
         <div className={`menu-item logout`} onClick={logout}>
           <PiSignOutDuotone />

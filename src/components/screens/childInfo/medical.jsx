@@ -96,7 +96,7 @@ export default function Medical({ activeChild, setActiveChild }) {
                   <div className="flex input">
                     <InputWrapper
                       inputType={'input'}
-                      labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}
+                      labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}
                       defaultValue={value}
                       value={value}
                       debounceTimeout={1000}

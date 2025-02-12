@@ -85,7 +85,7 @@ function General({ activeChild, setActiveChild }) {
         <AccordionDetails>
           {Manager.isValid(generalValues) &&
             generalValues.map((prop, index) => {
-              let infoLabel = StringManager.spaceBetweenWords(prop[0]).replaceAll('OF', ' of ')
+              let infoLabel = StringManager.uppercaseFirstLetterOfAllWords(StringManager.spaceBetweenWords(prop[0]).replaceAll('OF', ' of '))
               const value = prop[1]
               return (
                 <div key={index}>
