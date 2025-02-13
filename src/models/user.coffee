@@ -7,10 +7,11 @@ export default class User
     @email = ''
     @phone = ''
     @children = []
+    @childAccounts = []
     @coparents = []
     @parentType = ''
     @accountType = ''
-    @allowNotifications = ''
+    @notificationsEnabled = ''
     @settings = {
       theme: 'light'
     }
@@ -19,13 +20,11 @@ export default class User
       eveningSentDate: ''
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'
-      notificationsEnabled: true
     }
     @visitation = {
       transferLocation: ''
       transferLocationNavLink: ''
       visitationSchedule: ''
       visitationHolidays: []
-
     }
   ) ->

@@ -11,7 +11,7 @@ LogManager = {
       redirect: 'follow'
     #fetch("https://peaceful-coparenting.app:5000/log?errorMessage=#{message}&messageType=#{type}&stackTrace=#{stackTrace}", requestOptions)
     console.log(message)
-    fetch("https://peaceful-coparenting.app:5000/log?errorMessage=#{message}&messageType=#{type}", requestOptions)
+    # fetch("https://peaceful-coparenting.app:5000/log?errorMessage=#{message}&messageType=#{type}", requestOptions)
 }
 
 export default LogManager

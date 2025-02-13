@@ -23,5 +23,3 @@ export default Child = class Child {
   }
 
 };
-
-//# sourceMappingURL=child.js.map

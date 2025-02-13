@@ -87,7 +87,8 @@
     "workbox-cli": "7.1.0"
   },
   "scripts": {
-    "dev": "parcel src/index.html",
+    "start": "parcel src/index.html",
+    "watch-coffee": "coffee --watch --compile src",
     "build": "npm run deleteBuild && cd src && parcel build index.html --no-source-maps && cd .. && npm run deleteImagesFromBuild && cd dist && compress-cra",
     "deleteImagesFromBuild": "cd dist && del /S /F *.jpg && del /S /F *.ico && del /S /F *.png && del /S /F *.ttf && del /S /F *.gif && del /S /F *.woff && del /S /F *.woff2 && del /S /F *.svg",
     "deleteBuild": "del /S /F /Q dist && npm run removeParcelCache",

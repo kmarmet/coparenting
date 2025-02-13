@@ -1,4 +1,3 @@
-import doc from '/src/models/doc.js'
 import DB from '../database/DB'
 import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'

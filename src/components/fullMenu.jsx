@@ -172,16 +172,18 @@ export default function FullMenu() {
               <BsPeople />
               <p>Co-Parents</p>
             </div>
+
+            {/* RECORDS */}
+            <div
+              className={`menu-item records ${currentScreen === ScreenNames.records ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.records)}>
+              <PiArchiveDuotone />
+              <p>Records</p>
+            </div>
           </>
         )}
 
-        {/* RECORDS */}
-        <div
-          className={`menu-item records ${currentScreen === ScreenNames.records ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.records)}>
-          <PiArchiveDuotone />
-          <p>Records</p>
-        </div>
+
 
         {/* ACCOUNT */}
         <div
@@ -195,7 +197,6 @@ export default function FullMenu() {
         <div
           className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
           onClick={() => changeCurrentScreen(ScreenNames.settings)}>
-          {/*<span className="material-icons-round">settings</span>*/}
           <VscSettings /> <p>Settings</p>
         </div>
 

@@ -129,5 +129,3 @@ DomManager = {
 };
 
 export default DomManager;
-
-//# sourceMappingURL=domManager.js.map

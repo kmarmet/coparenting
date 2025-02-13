@@ -247,5 +247,3 @@ export default CalendarManager = {
     return results;
   }
 };
-
-//# sourceMappingURL=calendarManager.js.map

@@ -1,17 +1,14 @@
-import { child, getDatabase, ref, set } from 'firebase/database'
 import React, { useContext, useEffect, useState } from 'react'
+import { child, getDatabase, ref, set } from 'firebase/database'
 import PasswordChecklist from 'react-password-checklist'
 import globalState from '/src/context.js'
 import ScreenNames from '/src/constants/screenNames'
 import User from '/src/models/user.js'
-import Manager from '/src/managers/manager'
 import ChildrenInput from '/src/components/childrenInput.jsx'
 import CoparentInputs from '/src/components/coparentInput.jsx'
 import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
-import SmsManager from '/src/managers/smsManager.js'
-import NotificationManager from '/src/managers/notificationManager'
+import SmsManager from '/src/managers/smsManager'
 import ChildUser from '/src/models/child/childUser.js'
-import ParentInput from '/src/components/parentInput'
 import { MdOutlineSecurity, MdOutlineSystemSecurityUpdateGood } from 'react-icons/md'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
@@ -20,7 +17,6 @@ import ModelNames from '/src/models/modelNames'
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
 import firebaseConfig from '/src/firebaseConfig'
 import { initializeApp } from 'firebase/app'
-import InstallApp from '/src/components/screens/installApp'
 import BottomCard from '/src/components/shared/bottomCard'
 import { PiInfoDuotone } from 'react-icons/pi'
 import validator from 'validator'
@@ -28,12 +24,13 @@ import Label from '/src/components/shared/label'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import LogManager from '/src/managers/logManager'
-import { TbDeviceMobileMessage } from 'react-icons/tb'
-import DateFormats from '/src/constants/dateFormats'
+import LogManager from '/src/managers/logManager.js'
+import DateFormats from '../../../constants/dateFormats.js'
 import moment from 'moment'
-import DomManager from '/src/managers/domManager'
-import StringManager from '/src/managers/stringManager'
+import DB from '../../../database/DB'
+import Manager from '../../../managers/manager.js'
+import StringManager from '../../../managers/stringManager.js'
+
 
 export default function Registration() {
   const { state, setState } = useContext(globalState)
@@ -45,8 +42,6 @@ export default function Registration() {
   const [children, setChildren] = useState([])
   const [parentType, setParentType] = useState('')
   const [accountType, setAccountType] = useState('')
-  const [parentPhone, setParentPhone] = useState('')
-  const [parents, setParents] = useState([])
   const [coparents, setCoparents] = useState([])
   const [parentTypeAccExpanded, setParentTypeAccExpanded] = useState(false)
   const [accountAlreadyExists, setAccountAlreadyExists] = useState(false)
@@ -61,32 +56,6 @@ export default function Registration() {
   const auth = getAuth(app)
   const user = auth.currentUser
 
-  // SEND VERIFICATION CODE
-  // TODO MOVE TO INITIAL SCREEN
-  const sendChildVerificationCode = async () => {
-    const requiredInputs = [userPhone, email, parentPhone, userName, password, confirmedPassword, parents]
-    const isInvalid = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length == 0).length > 0
-    if (isInvalid) {
-      AlertManager.throwError('Please complete all fields')
-      return false
-    }
-    if (validator.isMobilePhone(userPhone)) {
-      const permissionCode = Manager.getUid().slice(0, 6)
-      await SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, permissionCode))
-
-      localStorage.setItem('parentPermissionCode', permissionCode)
-
-      // Enter code alert
-      AlertManager.inputAlert('Enter the code provided by your parent', ``, async (e) => {
-        const localStorageCode = localStorage.getItem('parentPermissionCode')
-        console.log(e)
-        if (localStorageCode === e) {
-          await submitChild()
-        }
-        localStorage.removeItem('parentPermissionCode')
-      })
-    }
-  }
 
   // SUBMIT PARENT
   const submitParent = async () => {
@@ -107,7 +76,7 @@ export default function Registration() {
       newUser.dailySummaries.eveningReminderSummaryHour = '8pm'
       newUser.dailySummaries.morningReminderSummaryHour = '10am'
       newUser.dailySummaries.eveningSentDate = moment().format(DateFormats.dateForDb)
-      newUser.dailySummaries.morningSentDateSentDate = moment().format(DateFormats.dateForDb)
+      newUser.dailySummaries.morningSentDate = moment().format(DateFormats.dateForDb)
       createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
           try {
@@ -136,7 +105,7 @@ export default function Registration() {
   // SUBMIT CHILD
   const submitChild = async () => {
     const requiredInputs = [userPhone, email, userName, password, confirmedPassword]
-    const isInvalid = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length == 0).length > 0
+    const isInvalid = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length === 0).length > 0
     if (isInvalid) {
       AlertManager.throwError('Please complete all fields')
       return false
@@ -150,7 +119,7 @@ export default function Registration() {
     childUser.dailySummaries.eveningReminderSummaryHour = '8pm'
     childUser.dailySummaries.morningReminderSummaryHour = '10am'
     childUser.dailySummaries.eveningSentDate = moment().format(DateFormats.dateForDb)
-    childUser.dailySummaries.morningSentDateSentDate = moment().format(DateFormats.dateForDb)
+    childUser.dailySummaries.morningSentDate = moment().format(DateFormats.dateForDb)
     childUser.phone = StringManager.formatPhone(userPhone)
     const cleanChild = ObjectManager.cleanObject(childUser, ModelNames.childUser)
     const dbRef = ref(getDatabase())
@@ -161,33 +130,25 @@ export default function Registration() {
         const user = userCredential.user
         console.log('Signed up as:', user.email)
         await set(child(dbRef, `users/${cleanChild.phone}`), cleanChild)
+        AlertManager.successAlert(`Welcome Aboard ${StringManager.formatNameFirstNameOnly(userName)}!`)
+        setState({ ...state, currentScreen: ScreenNames.login })
       })
       .catch((error) => {
         console.error('Sign up error:', error.message)
       })
-
-    // SEND SMS MESSAGES
-    // Send to child
-    const childSubId = await NotificationManager.getUserSubId(userPhone, 'phone')
-    NotificationManager.sendNotification('Welcome Aboard!', 'You are now registered!', childSubId)
-    // Send to me
-    const mySubId = await NotificationManager.getUserSubId('3307494534', 'phone')
-    NotificationManager.sendNotification('New Registration', `Phone: ${userPhone}`, mySubId)
-    AlertManager.successAlert(`Welcome Aboard ${StringManager.formatNameFirstNameOnly(userName)}!`)
-    setState({ ...state, currentScreen: ScreenNames.login })
   }
 
   const formIsValid = async () => {
     let isValid = true
-    // await DB.getTable(DB.tables.users).then((users) => {
-    //   users = Manager.convertToArray(users)
-    //   const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
-    //   if (foundUser) {
-    //     AlertManager.throwError('Account already exists, please login')
-    //     setAccountAlreadyExists(true)
-    //     isValid = false
-    //   }
-    // })
+    await DB.getTable(DB.tables.users).then((users) => {
+      users = Manager.convertToArray(users)
+      const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
+      if (foundUser) {
+        AlertManager.throwError('Account already exists, please login')
+        setAccountAlreadyExists(true)
+        isValid = false
+      }
+    })
 
     if (!validator.isMobilePhone(userPhone)) {
       AlertManager.throwError('Phone number is not valid')
@@ -249,11 +210,6 @@ export default function Registration() {
   const addCoparentInput = () =>
     setCoparentInputs([...coparentInputs, <CoparentInputs add={addCoparent} coparentsLength={coparentInputs.length + 1} />])
   const [coparentInputs, setCoparentInputs] = useState([<CoparentInputs add={addCoparent} />])
-
-  // PARENTS
-  const addParent = (parentObject) => setParents([...parents, parentObject])
-  const addParentInput = () => setParentInputs([...parentInputs, <ParentInput add={addParent} parentsLength={parentInputs.length + 1} />])
-  const [parentInputs, setParentInputs] = useState([<ParentInput add={addParent} />])
 
   // SEND VERIFICATION CODE
   const sendPhoneVerificationCode = async () => {

@@ -152,5 +152,3 @@ ImageManager = {
 };
 
 export default ImageManager;
-
-//# sourceMappingURL=imageManager.js.map

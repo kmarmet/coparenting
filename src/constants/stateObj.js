@@ -5,10 +5,11 @@ import ScreenNames from "./screenNames";
 
 StateObj = {
   activeInfoChild: null,
+  activeInfoCoparent: [],
   activityCount: 0,
+  childAccessGranted: false,
   currentScreen: ScreenNames.home,
   currentUser: {},
-  activeInfoCoparent: [],
   docToView: '',
   firebaseUser: null,
   isLoading: true,
@@ -16,12 +17,13 @@ StateObj = {
   menuIsOpen: false,
   messageToUser: null,
   modalIsOpen: false,
+  parentAccessGranted: false,
   refreshKey: 0,
   selectedChild: null,
   selectedNewEventDay: null,
-  swapRequestToRevise: null,
-  showNavbar: true,
   showCenterNavbarButton: true,
+  showNavbar: true,
+  swapRequestToRevise: null,
   theme: 'light',
   transferRequestToEdit: {},
   unreadMessageCount: 0,
@@ -30,9 +32,10 @@ StateObj = {
   viewExpenseForm: false,
   viewSwapRequestForm: false,
   viewTransferRequestForm: false,
-  setActivityCount: function(count) {},
   setActiveInfoChild: function(child) {},
   setActiveInfoCoparent: function(coparent) {},
+  setActivityCount: function(count) {},
+  setChildAccessGranted: function(bool) {},
   setContactInfoToUpdateType: function() {},
   setCurrentScreen: function(screen) {},
   setCurrentUser: function(user) {},
@@ -45,12 +48,13 @@ StateObj = {
   setMenuIsOpen: function(isOpen) {},
   setMessageToUser: function(user) {},
   setModalIsOpen: function(bool) {},
+  setParentAccessGranted: function(bool) {},
   setRefreshKey: function(num) {},
   setSelectedChild: function(child) {},
   setSelectedNewEventDay: function(day) {},
-  setSwapRequestToRevise: function(request) {},
   setShowCenterNavbarButton: function(bool) {},
   setShowOverlay: function(bool) {},
+  setSwapRequestToRevise: function(request) {},
   setTheme: function(theme) {},
   setTransferRequestToEdit: function(request) {},
   setUnreadMessageCount: function(num) {},
@@ -62,5 +66,3 @@ StateObj = {
 };
 
 export default StateObj;
-
-//# sourceMappingURL=stateObj.js.map

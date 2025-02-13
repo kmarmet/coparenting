@@ -38,5 +38,3 @@ export default CalendarEvent = class CalendarEvent {
   }
 
 };
-
-//# sourceMappingURL=calendarEvent.js.map

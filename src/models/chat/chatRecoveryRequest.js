@@ -12,5 +12,3 @@ export default ChatRecoveryRequest = class ChatRecoveryRequest {
   }
 
 };
-
-//# sourceMappingURL=chatRecoveryRequest.js.map

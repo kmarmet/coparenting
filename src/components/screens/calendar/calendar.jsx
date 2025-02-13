@@ -24,10 +24,14 @@ import { BsStars } from 'react-icons/bs'
 import CalendarEvents from './calendarEvents.jsx'
 import Legend from './legend.jsx'
 import DesktopLegend from './desktopLegend.jsx'
+import ScreenNames from '../../../constants/screenNames'
+import firebaseConfig from '/src/firebaseConfig.js'
+import { initializeApp } from 'firebase/app'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser, isLoading } = state
+  const { theme, currentUser, isLoading, parentAccessGranted } = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
   const [searchResults, setSearchResults] = useState([])
@@ -44,7 +48,8 @@ export default function EventCalendar() {
   const [loadingDisabled, setLoadingDisabled] = useState(false)
   const [showLegend, setShowLegend] = useState(false)
   const [eventsSetOnPageLoad, setEventsSetOnPageLoad] = useState(false)
-
+  const app = initializeApp(firebaseConfig)
+  const auth = getAuth(app)
   // GET EVENTS
   const getSecuredEvents = async (activeDay) => {
     let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
@@ -265,8 +270,20 @@ export default function EventCalendar() {
     })
   }
 
+  // Check if parent access is granted -> if not, show request parent access screen
+  const redirectChildIfNecessary = async () => {
+    const users = await DB.getTable(`${DB.tables.users}`)
+    const user = users.find(x => x.email === auth.currentUser.email)
+    if (user && !user.parentAccessGranted) {
+      setState({ ...state, currentScreen: ScreenNames.requestParentAccess, currentUser: user })
+    }
+  }
+
   useEffect(() => {
+
+    redirectChildIfNecessary().then(r => r)
     if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
+
       setLoadingDisabled(true)
       const appContentWithSidebar = document.getElementById('app-content-with-sidebar')
       if (appContentWithSidebar) {
@@ -293,8 +310,10 @@ export default function EventCalendar() {
     }
   }, [showHolidays])
 
+
   // ON PAGE LOAD
   useEffect(() => {
+
     // Append Holidays/Search Cal Buttons
     const staticCalendar = document.querySelector('.MuiDialogActions-root')
     const holidaysButton = document.getElementById('holidays-button')

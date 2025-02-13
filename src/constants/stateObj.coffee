@@ -2,10 +2,11 @@ import ScreenNames from "./screenNames"
 
 StateObj =
   activeInfoChild: null
+  activeInfoCoparent: [],
   activityCount: 0,
+  childAccessGranted: false,
   currentScreen: ScreenNames.home
   currentUser: {}
-  activeInfoCoparent: [],
   docToView: ''
   firebaseUser: null,
   isLoading: true
@@ -13,12 +14,13 @@ StateObj =
   menuIsOpen: false
   messageToUser: null
   modalIsOpen: false
+  parentAccessGranted: false
   refreshKey: 0,
   selectedChild: null
   selectedNewEventDay: null
-  swapRequestToRevise: null
-  showNavbar: true
   showCenterNavbarButton: true
+  showNavbar: true
+  swapRequestToRevise: null
   theme: 'light'
   transferRequestToEdit: {}
   unreadMessageCount: 0
@@ -27,9 +29,10 @@ StateObj =
   viewExpenseForm: false
   viewSwapRequestForm: false
   viewTransferRequestForm: false
-  setActivityCount: (count) ->
   setActiveInfoChild: (child) ->
   setActiveInfoCoparent: (coparent) ->
+  setActivityCount: (count) ->
+  setChildAccessGranted: (bool) ->
   setContactInfoToUpdateType: ->
   setCurrentScreen: (screen) ->
   setCurrentUser: (user) ->
@@ -42,12 +45,13 @@ StateObj =
   setMenuIsOpen: (isOpen) ->
   setMessageToUser: (user) ->
   setModalIsOpen: (bool) ->
+  setParentAccessGranted: (bool) ->
   setRefreshKey: (num) ->
   setSelectedChild: (child) ->
   setSelectedNewEventDay: (day) ->
-  setSwapRequestToRevise: (request) ->
   setShowCenterNavbarButton: (bool) ->
   setShowOverlay: (bool) ->
+  setSwapRequestToRevise: (request) ->
   setTheme: (theme) ->
   setTransferRequestToEdit: (request) ->
   setUnreadMessageCount: (num) ->

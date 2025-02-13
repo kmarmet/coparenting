@@ -1,21 +1,6 @@
+import StringManager from "./stringManager"
+
 apiKey = process.env.REACT_APP_SMS_API_KEY
-import {
-  contains,
-  displayAlert,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount
-} from "../globalFunctions"
 
 export default SmsManager =
   lineBreak: '\r\n'
@@ -42,14 +27,20 @@ export default SmsManager =
     "This is a reminder to make a decision for the Swap Request on #{request.startDate} created by #{request.createdBy} on #{request.dateAdded}. #{SmsManager.lineBreak}#{SmsManager.signature}"
   getTransferRequestTemplate: (request, createdBy) ->
     "A new Child Transfer Request has been created by #{createdBy} for #{request.date} at #{request.time} #{SmsManager.lineBreak}#{SmsManager.signature}"
+    ###*
+ * Function to calculate cube of input
+ * @param {number} Number to operate on
+ * @return {number} Cube of input
+ ###
   getParentVerificationTemplate: (childName, verificationCode) ->
-    "#{uppercaseFirstLetterOfAllWords(childName)} is registering for an account and requires your permission
+    "#{StringManager.uppercaseFirstLetterOfAllWords(childName)} is registering for an account and requires your permission
    for access. #{SmsManager.lineBreak}#{SmsManager.lineBreak}If you accept, please share this code with them: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getRegistrationVerificationTemplate: (userName, verificationCode) ->
     "#{userName} ,please enter this code to continue registration: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getPhoneVerificationTemplate: (verificationCode) ->    "Please enter this code for Peaceful coParenting registration #{SmsManager.lineBreak} #{verificationCode}"
 
   send: (phoneNumber, message) ->
+      console.log('sent')
       formData = new FormData()
       formData.append 'phone', phoneNumber
       formData.append 'message', message

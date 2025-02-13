@@ -187,5 +187,3 @@ CalendarMapper = {
 };
 
 export default CalendarMapper;
-
-//# sourceMappingURL=calMapper.js.map

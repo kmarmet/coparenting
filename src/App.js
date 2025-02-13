@@ -54,6 +54,8 @@ import DomManager from '/src/managers/domManager'
 import AppManager from '/src/managers/appManager.js'
 import Records from '/src/components/screens/records.jsx'
 import Chats from '/src/components/screens/chats/chats.jsx'
+import RequestParentAccess from './components/screens/auth/requestParentAccess'
+import DatasetManager from './managers/datasetManager'
 
 export default function App() {
   // Initialize Firebase
@@ -132,35 +134,41 @@ export default function App() {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const user = auth.currentUser
-        const _currentUser = await DB_UserScoped.getCurrentUser(user.email, 'email')
+        const users = await DB.getTable(`${DB.tables.users}`)
+        const _currentUser = users?.find((u) => u.email === user.email)
         await AppManager.clearAppBadge()
         NotificationManager.init(_currentUser)
-        const permissionCodes = await DB.getTable(DB.tables.parentPermissionCodes)
-        const scopedCodes = permissionCodes.filter((x) => x.parentPhone === _currentUser.phone || x.childPhone === _currentUser.phone)
+        const activities = await DB.getTable(`${DB.tables.activities}/${_currentUser?.phone}`)
+        const activityCount = activities?.length ?? 0
 
-        if (Manager.isValid(scopedCodes)) {
-          await DB.deleteMultipleRows(DB.tables.parentPermissionCodes, scopedCodes, _currentUser)
-        }
-
-        const activities = await DB.getTable(`${DB.tables.activities}/${_currentUser.phone}`)
-
-        AppManager.deleteExpiredCalendarEvents(_currentUser).then((r) => r)
-        AppManager.deleteExpiredMemories(_currentUser).then((r) => r)
+        // AppManager.deleteExpiredCalendarEvents(_currentUser).then((r) => r)
+        // AppManager.deleteExpiredMemories(_currentUser).then((r) => r)
         // Update currentUser in state
+
         if (user.emailVerified) {
+          console.log(_currentUser)
+          console.log(_currentUser?.parentAccessGranted)
+          console.log(_currentUser?.parentAccessGranted === true)
           setState({
             ...state,
             currentUser: _currentUser,
             theme: _currentUser?.settings?.theme,
-            currentScreen: ScreenNames.calendar,
+            currentScreen: _currentUser?.parentAccessGranted === true ? ScreenNames.calendar : ScreenNames.requestParentAccess,
             userIsLoggedIn: true,
             loadingText: '',
-            activityCount: activities.length,
+            parentAccessGranted: true,
+            isLoading: false,
+            activityCount: activityCount,
           })
         }
-      } else {
+        else {
+          setState({ ...state, isLoading: false, currentScreen: ScreenNames.login })
+
+        }
+      }
+      else {
         setState({ ...state, isLoading: false })
-        console.log('signed out or user doesn"t exist')
+        console.log('signed out or user doesnt exist')
       }
     })
     LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
@@ -201,6 +209,7 @@ export default function App() {
             {/* AUTHENTICATION */}
             {currentScreen === ScreenNames.login && <Login />}
             {currentScreen === ScreenNames.registration && <Registration />}
+            {currentScreen === ScreenNames.requestParentAccess && <RequestParentAccess />}
 
             {/* UPDATE/EDIT */}
             {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}

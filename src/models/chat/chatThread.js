@@ -17,5 +17,3 @@ export default ChatThread = class ChatThread {
   }
 
 };
-
-//# sourceMappingURL=chatThread.js.map

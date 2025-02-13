@@ -54,7 +54,7 @@ export default function Login() {
                 'Email Address Verification Needed',
                 `For security purposes, we need to verify ${user.email}. Please ${DomManager.tapOrClick()} the link sent to your email and login.`,
                 'info',
-                () => {}
+                () => { }
               )
               sendEmailVerification(user)
               setState({ ...state, isLoading: false })
@@ -98,7 +98,7 @@ export default function Login() {
             'Email Address Verification Needed',
             `For security purposes, we need to verify ${user.email}. Please ${DomManager.tapOrClick()} the link sent to your email and then login.`,
             'info',
-            () => {}
+            () => { }
           )
           sendEmailVerification(user)
           setState({ ...state, isLoading: false })
@@ -122,10 +122,16 @@ export default function Login() {
             `No account with email ${email} found.`,
             `If you have forgotten your password, please ${DomManager.tapOrClick()} Reset Password`
           )
+          setErrorAlertTextColor()
         } else {
           AlertManager.throwError(`Incorrect password`, `Please ${DomManager.tapOrClick()} Reset Password.`)
         }
       })
+  }
+
+  const setErrorAlertTextColor = () => {
+    const text = document.getElementById('swal2-html-container')
+    text.style.color = 'white'
   }
 
   const togglePersistence = (e) => {
@@ -144,7 +150,7 @@ export default function Login() {
   return (
     <>
       {/* INSTALL APP MODAL */}
-      <InstallApp />
+      {/* <InstallApp /> */}
 
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`page-container form login`}>

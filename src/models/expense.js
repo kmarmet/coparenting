@@ -31,5 +31,3 @@ export default Expense = class Expense {
   }
 
 };
-
-//# sourceMappingURL=expense.js.map

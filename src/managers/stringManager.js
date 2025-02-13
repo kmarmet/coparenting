@@ -119,5 +119,3 @@ StringManager = {
 };
 
 export default StringManager;
-
-//# sourceMappingURL=stringManager.js.map

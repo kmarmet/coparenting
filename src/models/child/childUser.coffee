@@ -8,10 +8,14 @@ export default class ChildUser
     @accountType = ''
     @notificationsEnabled = true
     @id = Manager.getUid()
+    @settings = {
+      theme: 'light'
+    }
     @dailySummaries = {
       morningSentDate: ''
       eveningSentDate: ''
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'
     }
+    @parentAccessGranted = false
   ) ->

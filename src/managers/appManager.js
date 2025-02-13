@@ -132,5 +132,3 @@ export default AppManager = {
     }
   }
 };
-
-//# sourceMappingURL=appManager.js.map

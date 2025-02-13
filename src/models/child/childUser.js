@@ -4,21 +4,23 @@ var ChildUser;
 import Manager from '../../managers/manager.js';
 
 export default ChildUser = class ChildUser {
-  constructor(parents = [], name = '', email = '', accountType = '', notificationsEnabled = true, id = Manager.getUid(), dailySummaries = {
+  constructor(parents = [], name = '', email = '', accountType = '', notificationsEnabled = true, id = Manager.getUid(), settings = {
+      theme: 'light'
+    }, dailySummaries = {
       morningSentDate: '',
       eveningSentDate: '',
       morningReminderSummaryHour: '10am',
       eveningReminderSummaryHour: '8pm'
-    }) {
+    }, parentAccessGranted = false) {
     this.parents = parents;
     this.name = name;
     this.email = email;
     this.accountType = accountType;
     this.notificationsEnabled = notificationsEnabled;
     this.id = id;
+    this.settings = settings;
     this.dailySummaries = dailySummaries;
+    this.parentAccessGranted = parentAccessGranted;
   }
 
 };
-
-//# sourceMappingURL=childUser.js.map

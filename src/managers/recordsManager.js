@@ -33,5 +33,3 @@ export default RecordsManager = {
     return results;
   }
 };
-
-//# sourceMappingURL=recordsManager.js.map

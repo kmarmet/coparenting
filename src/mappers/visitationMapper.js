@@ -23,5 +23,3 @@ VisitationMapper = {
 };
 
 export default VisitationMapper;
-
-//# sourceMappingURL=visitationMapper.js.map

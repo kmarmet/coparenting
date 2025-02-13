@@ -45,5 +45,3 @@ export default LocationManager = {
     });
   }
 };
-
-//# sourceMappingURL=locationManager.js.map

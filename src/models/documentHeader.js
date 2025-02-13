@@ -11,5 +11,3 @@ export default DocumentHeader = class DocumentHeader {
   }
 
 };
-
-//# sourceMappingURL=documentHeader.js.map

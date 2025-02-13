@@ -10,4 +10,7 @@ export default class ActivitySet
     @creatorPhone = ''
     @title = ''
     @text = ''
+  
+
   ) ->
+  

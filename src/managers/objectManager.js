@@ -87,5 +87,3 @@ ObjectManager = {
 };
 
 export default ObjectManager;
-
-//# sourceMappingURL=objectManager.js.map

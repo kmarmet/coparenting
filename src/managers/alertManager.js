@@ -131,5 +131,3 @@ animate__faster`
 };
 
 export default AlertManager;
-
-//# sourceMappingURL=alertManager.js.map

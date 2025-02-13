@@ -20,5 +20,3 @@ export default TransferChangeRequest = class TransferChangeRequest {
   }
 
 };
-
-//# sourceMappingURL=transferChangeRequest.js.map

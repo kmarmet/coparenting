@@ -2,37 +2,18 @@ import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import moment from 'moment'
 import { child, getDatabase, ref, set, update } from 'firebase/database'
-
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  formatPhone,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
-import AppManager from '../../../managers/appManager'
-import DB from '../../../database/DB'
-import Manager from '../../../managers/manager'
-import DateFormats from '../../../constants/dateFormats'
+import AppManager from '/src/managers/appManager'
+import DB from '/src/database/DB'
+import Manager from '/src/managers/manager'
+import DateFormats from '/src/constants/dateFormats'
 import CheckboxGroup from '../../shared/checkboxGroup'
-import DateManager from '../../../managers/dateManager'
-import NavBar from '../../navBar'
-import AlertManager from '../../../managers/alertManager'
+import DateManager from '/src/managers/dateManager'
+import NavBar from '/src/components/navBar'
+import AlertManager from '/src/managers/alertManager'
 
 export default function AdminDashboard() {
   const { state, setState, currentUser } = useContext(globalState)
@@ -62,7 +43,7 @@ export default function AdminDashboard() {
     }
     const allRequests = Manager.convertToArray(await DB.getTable(DB.tables.chatRecoveryRequests))
 
-    if (allRequests.length == 0) {
+    if (allRequests.length === 0) {
       AlertManager.throwError('No requests for that email currently')
       return false
     }
@@ -95,7 +76,6 @@ export default function AdminDashboard() {
     if (getRecordsTable === 'Calendar') {
       const events = await DB.getTable(DB.tables.calendarEvents)
       const scoped = events.filter((x) => x.title.toLowerCase().contains(getRecordsSearchValue.toLowerCase()))
-      console.log(scoped)
       scoped.forEach((event) => {
         Object.entries(event).forEach(([key, value], index) => {
           const el = document.createElement('p')
@@ -208,6 +188,9 @@ export default function AdminDashboard() {
       .then((data) => {
         const { quotaRemaining } = data
         setRemainingTextBeltTexts(quotaRemaining)
+      })
+      .catch((error) => {
+        AlertManager.throwError(error.message)
       })
   }
 

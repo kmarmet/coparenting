@@ -107,33 +107,38 @@ export default function Activity() {
         <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
           <p className="intro-text mb-15">Stay informed in real-time with all updates and activity.</p>
 
-          <div className="flex">
-            <Accordion id={'legend'} expanded={legendIsExpanded}>
-              <AccordionSummary>
-                <p id="legend-title" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
-                  Legend {legendIsExpanded ? <FaMinus /> : <FaPlus />}
-                </p>
-              </AccordionSummary>
-              <AccordionDetails>
-                <div className="flex">
-                  <div className="box medical"></div>
-                  <p>Child Info - Medical</p>
-                </div>
+          {currentUser?.accountType === 'parent' &&
+            <>
+              {/* LEGENDS */}
+              < div className="flex">
+                <Accordion id={'legend'} expanded={legendIsExpanded}>
+                  <AccordionSummary>
+                    <p id="legend-title" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
+                      Legend {legendIsExpanded ? <FaMinus /> : <FaPlus />}
+                    </p>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <div className="flex">
+                      <div className="box medical"></div>
+                      <p>Child Info - Medical</p>
+                    </div>
 
-                <div className="flex">
-                  <div className="box expenses"></div>
-                  <p>Expenses</p>
-                </div>
-              </AccordionDetails>
-            </Accordion>
+                    <div className="flex">
+                      <div className="box expenses"></div>
+                      <p>Expenses</p>
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+              </div>
+            </>
+          }
 
-            {/* CLEAR ALL BUTTON */}
-            {activities.length > 0 && (
-              <button className="clear-all button green center default" onClick={clearAll}>
-                Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
-              </button>
-            )}
-          </div>
+          {/* CLEAR ALL BUTTON */}
+          {activities.length > 0 && (
+            <button className="clear-all button green center default" onClick={clearAll}>
+              Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
+            </button>
+          )}
 
           {/* LOOP ACTIVITIES */}
           <div id="activity-cards">
@@ -159,8 +164,8 @@ export default function Activity() {
                 )
               })}
           </div>
-        </Fade>
-      </div>
+        </Fade >
+      </div >
       <NavBar navbarClass={'activity no-add-new-button'}></NavBar>
     </>
   )

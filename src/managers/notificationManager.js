@@ -232,5 +232,3 @@ export default NotificationManager = {
     }
   }
 };
-
-//# sourceMappingURL=notificationManager.js.map

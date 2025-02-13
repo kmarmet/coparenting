@@ -12,5 +12,3 @@ export default Checklist = class Checklist {
   }
 
 };
-
-//# sourceMappingURL=checklist.js.map

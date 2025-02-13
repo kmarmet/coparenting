@@ -232,5 +232,3 @@ SecurityManager = {
 };
 
 export default SecurityManager;
-
-//# sourceMappingURL=securityManager.js.map

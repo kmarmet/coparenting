@@ -2,8 +2,10 @@
 @import '../palette';
 @import '../variables';
 @import '../mixins';
+
 #external-overrides {
   #calendar-container {
+
     .events {
       //      padding: 20px 15px 200px 15px;
       padding: 15px 15px 0 15px;
@@ -24,6 +26,7 @@
         font-size: 18px;
         margin-right: 8px;
       }
+
       .event-row {
         transition: all 0.3s ease-in;
         @include row;
@@ -43,10 +46,12 @@
         #children {
           margin-bottom: 5px;
           margin-left: auto;
+
           svg {
             font-size: 18px;
             opacity: 0.4;
           }
+
           p {
             font-size: 13px;
             font-weight: $fwRegular;
@@ -69,6 +74,7 @@
               justify-content: flex-start;
               margin-bottom: 5px;
               width: 100%;
+
               * {
                 align-self: stretch;
                 display: flex;
@@ -87,15 +93,18 @@
               }
             }
           }
+
           #title-wrapper {
             width: 100%;
             justify-content: space-between;
             display: flex;
+
             &:after {
               top: 0;
               left: 0;
               transform: none;
             }
+
             // REMINDERS
             .reminders {
               svg {
@@ -105,6 +114,7 @@
               }
 
               .reminder-times {
+
                 p,
                 span {
                   font-size: 13px;
@@ -112,11 +122,13 @@
                   font-weight: $fwRegular;
                   color: black;
                 }
+
                 .divider {
                   padding: 0 5px;
                 }
               }
             }
+
             .title {
               padding: 0;
               opacity: 1;
@@ -133,21 +145,26 @@
                 align-self: flex-start;
                 position: relative;
                 top: 3px;
+
                 &.holiday-event-dot {
                   background: $orange;
                 }
+
                 &.coparent-event-dot {
                   background: $coparentPurple;
                 }
+
                 &.current-user-event-dot {
                   background: $currentUserGreen;
                 }
+
                 &.current-user-visitation {
                   background: $accentBlue;
                 }
               }
             }
           }
+
           // DATE CONTAINER
           #date-container-and-edit-button {
             width: 100%;
@@ -159,6 +176,7 @@
             * {
               display: inline;
             }
+
             #date-container {
               align-items: center;
               display: block;

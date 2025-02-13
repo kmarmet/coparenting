@@ -16,5 +16,3 @@ ExpenseCategories = {
 };
 
 export default ExpenseCategories;
-
-//# sourceMappingURL=expenseCategories.js.map

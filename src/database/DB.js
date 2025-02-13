@@ -1,7 +1,7 @@
 import Manager from '../managers/manager'
 import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
 import _ from 'lodash'
-import LogManager from '../managers/logManager'
+import LogManager from '../managers/logManager.js'
 
 const DB = {
   tables: {
@@ -13,7 +13,6 @@ const DB = {
     documents: 'documents',
     suggestions: 'suggestions',
     memories: 'memories',
-    parentPermissionCodes: 'parentPermissionCodes',
     notificationSubscribers: 'notificationSubscribers',
     activities: 'activities',
     sharedChildInfo: 'sharedChildInfo',
@@ -219,10 +218,10 @@ const DB = {
     tableAsArray = tableAsArray.filter((x) => x)
     return returnObject ? tableData : tableAsArray
   },
-  updateByPath: (path, newValue) => {
+  updateByPath: async (path, newValue) => {
     const dbRef = ref(getDatabase())
     try {
-      set(child(dbRef, path), newValue)
+      await set(child(dbRef, path), newValue)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }

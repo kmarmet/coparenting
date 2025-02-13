@@ -98,5 +98,3 @@ DatasetManager = {
 };
 
 export default DatasetManager;
-
-//# sourceMappingURL=datasetManager.js.map
