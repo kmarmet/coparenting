@@ -2,29 +2,31 @@ import Manager from '../managers/manager'
 import DB from "../database/DB"
 import DateManager from "../managers/dateManager"
 import _ from "lodash"
-
+import DB_UserScoped from "../database/DB_UserScoped"
 SecurityManager =
   getShareWithItems: (currentUser, table) ->
     coparentAndChildEvents  = []
     if Manager.isValid(currentUser) && Manager.isValid(currentUser?.coparents)
       for coparent in currentUser?.coparents
-        coparentItems = await DB.getTable("#{table}/#{coparent.phone}")
+        coparentItems = await DB.getTable("#{table}/#{coparent?.key}")
         for item in coparentItems
           if Manager.isValid(item?.shareWith)
-            if item?.shareWith?.includes currentUser?.phone
+            if item?.shareWith?.includes currentUser?.key
               coparentAndChildEvents.push(item)
 
     coparentAndChildEvents = _.flattenDeep(coparentAndChildEvents)
     coparentAndChildEvents
 
   getCalendarEvents: (currentUser) ->
+    users = await DB.getTable(DB.tables.users)
+    currentUser = users.find (x) -> x.email == currentUser?.email
     returnRecords = []
-    allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.phone}")
+    allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
     sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents);
     if Manager.isValid(allEvents)
       for event in allEvents
         if DateManager.isValidDate(event.startDate)
-          if (event.ownerPhone == currentUser?.phone)
+          if (event.ownerKey == currentUser?.key)
             returnRecords.push(event)
 
     if Manager.isValid(sharedEvents)
@@ -34,12 +36,12 @@ SecurityManager =
 
   getUserVisitationHolidays: (currentUser) ->
     returnRecords = []
-    allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.phone}")
+    allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
     sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents);
     if Manager.isValid(allEvents)
       for event in allEvents
         if DateManager.isValidDate(event.startDate)
-          if (event.ownerPhone == currentUser?.phone)
+          if (event.ownerKey == currentUser?.key)
             returnRecords.push(event)
 
     if Manager.isValid(sharedEvents)
@@ -49,12 +51,12 @@ SecurityManager =
 
   getExpenses: (currentUser) ->
     returnRecords = []
-    allExpenses = Manager.convertToArray(await DB.getTable("#{DB.tables.expenses}/#{currentUser?.phone}")).flat()
+    allExpenses = Manager.convertToArray(await DB.getTable("#{DB.tables.expenses}/#{currentUser?.key}")).flat()
     sharedExpenses = await SecurityManager.getShareWithItems(currentUser, DB.tables.expenses);
 
     if Manager.isValid(allExpenses)
       for expense in allExpenses
-        if (expense.ownerPhone == currentUser?.phone)
+        if (expense.ownerKey == currentUser?.key)
           returnRecords.push(expense)
     if Manager.isValid(sharedExpenses)
       returnRecords = [sharedExpenses..., returnRecords...]
@@ -67,7 +69,7 @@ SecurityManager =
 
     if Manager.isValid(allRequests)
       for request in allRequests
-        if (request.ownerPhone == currentUser?.phone)
+        if (request.ownerKey == currentUser?.key)
           returnRecords.push(request)
 
     if Manager.isValid(sharedSwaps)
@@ -81,7 +83,7 @@ SecurityManager =
 
     if Manager.isValid(allRequests)
       for request in allRequests
-        if (request.ownerPhone == currentUser?.phone)
+        if (request.ownerKey == currentUser?.key)
           returnRecords.push(request)
 
     if Manager.isValid(sharedTransfers)
@@ -95,7 +97,7 @@ SecurityManager =
 
     if Manager.isValid(allDocs)
       for doc in allDocs
-        if (doc.ownerPhone == currentUser?.phone)
+        if (doc.ownerKey == currentUser?.key)
           returnRecords.push(doc)
 
     if Manager.isValid(sharedDocs)
@@ -104,12 +106,12 @@ SecurityManager =
 
   getMemories: (currentUser) ->
     returnRecords = []
-    allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}/#{currentUser?.phone}")).flat()
+    allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}/#{currentUser?.key}")).flat()
     sharedMemories = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
 
     if Manager.isValid(allMemories)
       for memory in allMemories
-        if (memory.ownerPhone == currentUser?.phone)
+        if (memory.ownerKey == currentUser?.key)
           returnRecords.push(memory)
     if Manager.isValid(sharedMemories)
       returnRecords = [sharedMemories..., returnRecords...]
@@ -122,7 +124,7 @@ SecurityManager =
     if Manager.isValid(allArchivedChats,true)
       for chatArray in allArchivedChats
         for chat in chatArray
-          if (chat.ownerPhone == currentUser?.phone)
+          if (chat.ownerKey == currentUser?.key)
             returnRecords.push(chat)
     return returnRecords.flat()
 
@@ -131,18 +133,18 @@ SecurityManager =
     suggestions = Manager.convertToArray(await DB.getTable(DB.tables.suggestions)).flat()
     if Manager.isValid(suggestions)
       for suggestion in suggestions
-        if suggestion.ownerPhone == currentUser?.phone
+        if suggestion.ownerKey == currentUser?.key
           returnRecords.push(suggestion)
     return returnRecords.flat()
 
   getChats: (currentUser) ->
-    chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}/#{currentUser?.phone}")).flat()
+    chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}/#{currentUser?.key}")).flat()
     securedChats = []
     # User does not have a chat with root access by phone
     if Manager.isValid(chats)
       for chat in chats
         members = chat?.members?.map (x) -> x.phone
-        if currentUser?.phone in members
+        if currentUser?.key in members
           securedChats.push(chat)
     return securedChats.flat()
 
@@ -153,7 +155,7 @@ SecurityManager =
     if Manager.isValid(allChatsFlattened)
       for chat in allChatsFlattened
         members = chat.members.map (x) -> x.phone
-        if currentUser?.phone in members
+        if currentUser?.key in members
           activeChats.push chat
     return activeChats
 

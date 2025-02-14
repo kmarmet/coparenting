@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
 import Manager from '../managers/manager'
@@ -27,16 +27,17 @@ import { BsPeople } from 'react-icons/bs'
 import { MdOutlineManageAccounts } from 'react-icons/md'
 import { BiFace } from 'react-icons/bi'
 import BottomCard from './shared/bottomCard'
+import DB from '../database/DB'
 
 export default function FullMenu() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, theme, currentUser } = state
+  const { currentScreen, menuIsOpen, theme, currentUser, authUser } = state
+  const [user, setUser] = useState()
 
   const auth = getAuth()
 
   const changeCurrentScreen = (screen) => {
     setState({ ...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false })
-    Manager.showPageContainer('show')
   }
 
   const changeTheme = async (theme) => {
@@ -46,6 +47,10 @@ export default function FullMenu() {
 
   const logout = () => {
     const pageOverlay = document.getElementById('page-overlay')
+    const currentUserFromLocalStorage = JSON.parse(localStorage.getItem('currentUser'))
+    if (currentUserFromLocalStorage) {
+      localStorage.removeItem('currentUser')
+    }
     if (pageOverlay) {
       pageOverlay.classList.remove('active')
     }
@@ -60,12 +65,24 @@ export default function FullMenu() {
       })
   }
 
+  const setCurrentUser = async () => {
+    const allUsers = await DB.getTable(DB.tables.users)
+    // const _user = allUsers.find((user) => user.email === authUser.email)
+    const _user = await DB_UserScoped.getCurrentUser(authUser?.email)
+    console.log(_user)
+    setState({ ...state, currentUser: _user })
+    // setCurrentUser(_user)
+    return _user
+  }
+
   return (
     <BottomCard
       wrapperClass="full-menu"
       title={'Menu'}
       className={`full-menu ${theme}`}
-      onClose={() => setState({ ...state, menuIsOpen: false, refreshKey: Manager.getUid() })}
+      onClose={async () => {
+        await setCurrentUser()
+      }}
       showCard={menuIsOpen}
       hasDelete={false}
       hasSubmitButton={false}>
@@ -96,7 +113,7 @@ export default function FullMenu() {
         </div>
 
         {/* PARENTS ONLY */}
-        {AppManager.getAccountType(currentUser) === 'parent' && (
+        {AppManager.getAccountType(user) === 'parent' && (
           <>
             {/* VISITATION */}
             <div
@@ -147,7 +164,7 @@ export default function FullMenu() {
             </div>
           </>
         )}
-        {AppManager.getAccountType(currentUser) === 'parent' && (
+        {AppManager.getAccountType(user) === 'parent' && (
           <>
             {/* MEMORIES */}
             <div
@@ -182,8 +199,6 @@ export default function FullMenu() {
             </div>
           </>
         )}
-
-
 
         {/* ACCOUNT */}
         <div

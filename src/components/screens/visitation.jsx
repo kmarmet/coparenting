@@ -29,7 +29,7 @@ import FiftyFifty from '/src/components/screens/visitation/fiftyFifty'
 import EveryOtherWeekend from '/src/components/screens/visitation/everyOtherWeekend'
 import CustomWeekends from '/src/components/screens/visitation/customWeekends'
 import DateManager from '/src/managers/dateManager.js'
-
+import AddressInput from '../../components/shared/addressInput'
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
@@ -49,9 +49,10 @@ export default function Visitation() {
   const [selectedHolidayDates, setSelectedHolidayDates] = useState([])
   const [holidaysFromApi, setHolidaysFromApi] = useState([])
   const [dataDates, setDataDates] = useState([])
+
   const updateDefaultTransferLocation = async (location, link) => {
-    await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/defaultTransferNavLink`, link)
-    await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/defaultTransferLocation`, location)
+    await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/visitation/transferNavLink`, link)
+    await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/visitation/transferAddress`, location)
   }
 
   const deleteSchedule = async () => {
@@ -368,20 +369,12 @@ export default function Visitation() {
 
               {/* LOCATION */}
               <InputWrapper wrapperClasses="mt-15 mb-15" inputType={'location'} labelText={'Preferred Transfer Location'}>
-                <Autocomplete
-                  defaultValue={currentUser?.defaultTransferLocation}
-                  placeholder={''}
-                  apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                  options={{
-                    types: ['geocode', 'establishment'],
-                    componentRestrictions: { country: 'usa' },
-                  }}
-                  className={`${theme}`}
-                  onPlaceSelected={(place) => {
-                    updateDefaultTransferLocation(
-                      place.formatted_address,
-                      `https://www.google.com/maps?daddr=7${encodeURIComponent(place.formatted_address)}`
-                    ).then((r) => AlertManager.successAlert('Preferred Transfer Location Set'))
+                <AddressInput
+                  efaultValue={currentUser?.defaultTransferLocation}
+                  onSelection={(place) => {
+                    updateDefaultTransferLocation(place, `https://www.google.com/maps?daddr=7${encodeURIComponent(place)}`).then((r) =>
+                      AlertManager.successAlert('Preferred Transfer Location Set')
+                    )
                   }}
                 />
               </InputWrapper>

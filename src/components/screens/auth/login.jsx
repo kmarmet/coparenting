@@ -16,6 +16,7 @@ import InputWrapper from '/src/components/shared/inputWrapper'
 import { SlLogin } from 'react-icons/sl'
 import DomManager from '/src/managers/domManager'
 import { GrInstallOption } from 'react-icons/gr'
+import { useEffect } from 'react'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
@@ -54,7 +55,7 @@ export default function Login() {
                 'Email Address Verification Needed',
                 `For security purposes, we need to verify ${user.email}. Please ${DomManager.tapOrClick()} the link sent to your email and login.`,
                 'info',
-                () => { }
+                () => {}
               )
               sendEmailVerification(user)
               setState({ ...state, isLoading: false })
@@ -62,11 +63,12 @@ export default function Login() {
 
             // Persistent AND Email is Verified
             else {
+              const userFromStorage = JSON.parse(localStorage.getItem('currentUser'))
               setState({
                 ...state,
                 userIsLoggedIn: true,
                 isLoading: false,
-                currentScreen: ScreenNames.calendar,
+                currentScreen: Manager.isValid(userFromStorage) ? ScreenNames.calendar : ScreenNames.userDetails,
               })
             }
           })
@@ -98,7 +100,7 @@ export default function Login() {
             'Email Address Verification Needed',
             `For security purposes, we need to verify ${user.email}. Please ${DomManager.tapOrClick()} the link sent to your email and then login.`,
             'info',
-            () => { }
+            () => {}
           )
           sendEmailVerification(user)
           setState({ ...state, isLoading: false })
@@ -106,11 +108,13 @@ export default function Login() {
 
         // EMAIL IS VERIFIED
         else {
+          const userFromStorage = JSON.parse(localStorage.getItem('currentUser'))
+          console.log(userFromStorage, 'userFromStorage')
           setState({
             ...state,
             userIsLoggedIn: true,
             isLoading: false,
-            currentScreen: ScreenNames.calendar,
+            currentScreen: Manager.isValid(userFromStorage) ? ScreenNames.calendar : ScreenNames.userDetails,
           })
         }
       })

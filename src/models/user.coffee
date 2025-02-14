@@ -1,8 +1,11 @@
 import Manager from "../managers/manager"
+import moment from 'moment'
+import DateFormats from '../constants/dateFormats'
 
 export default class User
   constructor: (
     @id = Manager.getUid()
+    @key = ''
     @name = ''
     @email = ''
     @phone = ''
@@ -11,19 +14,19 @@ export default class User
     @coparents = []
     @parentType = ''
     @accountType = ''
-    @notificationsEnabled = ''
     @settings = {
       theme: 'light'
+      notificationsEnabled: true
     }
     @dailySummaries = {
-      morningSentDate: ''
-      eveningSentDate: ''
+      morningSentDate:moment().format(DateFormats.dateForDb)
+      eveningSentDate: moment().format(DateFormats.dateForDb)
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'
     }
     @visitation = {
-      transferLocation: ''
-      transferLocationNavLink: ''
+      transferAddress: ''
+      transferNavLink: ''
       visitationSchedule: ''
       visitationHolidays: []
     }

@@ -21,6 +21,7 @@ import DatasetManager from '/src/managers/datasetManager'
 import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager.coffee'
 import { PiUserCircleDuotone } from 'react-icons/pi'
+import AddressInput from '../../shared/addressInput'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -41,9 +42,9 @@ export default function Coparents() {
   }
 
   const getCoparent = async () => {
-    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
+    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.key}/coparents`)
     const coparentPhone = selectedCoparentDataArray.filter((x) => Manager.contains(x, 'phone'))[0][1]
-    return coparents.filter((x) => x.phone === coparentPhone)[0]
+    return coparents.filter((x) => x.key === coparentPhone)[0]
   }
 
   const update = async (prop, value) => {
@@ -61,7 +62,7 @@ export default function Coparents() {
   }
 
   const getCoparents = async () => {
-    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.phone}/coparents`)
+    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.key}/coparents`)
     coparents = DatasetManager.getValidArray(coparents)
     setUserCoparents(coparents)
     setTimeout(() => {
@@ -75,7 +76,7 @@ export default function Coparents() {
   const onTableChange = async () => {
     if (currentUser) {
       const dbRef = getDatabase()
-      const userRef = ref(dbRef, `${DB.tables.users}/${currentUser?.phone}/coparents`)
+      const userRef = ref(dbRef, `${DB.tables.users}/${currentUser?.key}/coparents`)
       onValue(userRef, async (snapshot) => {
         await getCoparents()
       })
@@ -88,8 +89,7 @@ export default function Coparents() {
 
   const updateSelectedCoparent = async (coparent) => {
     const { phone } = coparent
-    const updatedCoparent = await DB.find(`${DB.tables.users}/${currentUser.phone}/coparents`, ['phone', phone], true)
-    console.log(updatedCoparent)
+    const updatedCoparent = await DB.find(`${DB.tables.users}/${currentUser.key}/coparents`, ['phone', phone], true)
     setSelectedCoparentDataArray(Object.entries(coparent))
     setSelectedCoparentRaw(coparent)
   }
@@ -123,8 +123,8 @@ export default function Coparents() {
                       setSelectedCoparentDataArray(Object.entries(coparent))
                       setSelectedCoparentRaw(coparent)
                     }}
-                    className={coparentPhone && coparentPhone === coparent.phone ? 'active coparent' : 'coparent'}
-                    data-phone={coparent.phone}
+                    className={coparentPhone && coparentPhone === coparent.key ? 'active coparent' : 'coparent'}
+                    data-phone={coparent.key}
                     data-name={coparent.name}
                     key={index}>
                     <PiUserCircleDuotone />
@@ -135,7 +135,7 @@ export default function Coparents() {
               })}
           </div>
 
-          {selectedCoparentDataArray?.length === 0 && <NoDataFallbackText text={'You do not have any co-parents currently'} />}
+          {!Manager.isValid(selectedCoparentDataArray) && <NoDataFallbackText text={'You have not added any co-parents yet'} />}
 
           {/* COPARENT INFO */}
           <div id="coparent-info">
@@ -156,16 +156,10 @@ export default function Coparents() {
                             {/* LOCATION */}
                             {infoLabel.toLowerCase().includes('address') && (
                               <InputWrapper inputType={'date'} labelText={infoLabel}>
-                                <Autocomplete
-                                  apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                                  options={{
-                                    types: ['geocode', 'establishment'],
-                                    componentRestrictions: { country: 'usa' },
+                                <AddressInput
+                                  onSelection={async (place) => {
+                                    await update('address', place)
                                   }}
-                                  onPlaceSelected={async (place) => {
-                                    await update('address', place.formatted_address)
-                                  }}
-                                  placeholder={value}
                                 />
                               </InputWrapper>
                             )}

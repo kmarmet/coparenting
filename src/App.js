@@ -1,61 +1,61 @@
-import React, { useEffect, useState } from 'react'
 import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import globalState from '/src/context.js'
+import React, { useEffect, useState } from 'react'
 import 'react-toggle/style.css'
+import globalState from '/src/context.js'
 // Screens
-import Activity from '/src/components/screens/activity'
-import EventCalendar from '/src/components/screens/calendar/calendar.jsx'
-import InstallApp from '/src/components/screens/installApp.jsx'
+import emailjs from '@emailjs/browser'
+import { LicenseInfo } from '@mui/x-license'
+import { initializeApp } from 'firebase/app'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import RequestParentAccess from './components/screens/auth/requestParentAccess'
+import UserDetails from './components/screens/auth/userDetails'
+import EditCalEvent from '/src/components/forms/editCalEvent.jsx'
+import NewCalendarEvent from '/src/components/forms/newCalendarEvent.jsx'
+import NewExpenseForm from '/src/components/forms/newExpenseForm.jsx'
+import NewMemoryForm from '/src/components/forms/newMemoryForm.jsx'
+import NewSwapRequest from '/src/components/forms/newSwapRequest.jsx'
+import NewTransferChangeRequest from '/src/components/forms/newTransferRequest.jsx'
+import FullMenu from '/src/components/fullMenu'
 import Account from '/src/components/screens/account/account.jsx'
+import ResetPassword from '/src/components/screens/account/resetPassword.jsx'
+import Activity from '/src/components/screens/activity'
+import AdminDashboard from '/src/components/screens/admin/adminDashboard'
+import Login from '/src/components/screens/auth/login.jsx'
+import Registration from '/src/components/screens/auth/registration.jsx'
+import EventCalendar from '/src/components/screens/calendar/calendar.jsx'
 import Chat from '/src/components/screens/chats/chat.jsx'
+import Chats from '/src/components/screens/chats/chats.jsx'
 import ChildInfo from '/src/components/screens/childInfo/childInfo.jsx'
+import ChildSelector from '/src/components/screens/childInfo/childSelector.jsx'
+import NewChildForm from '/src/components/screens/childInfo/newChildForm.jsx'
+import ContactUs from '/src/components/screens/contactUs'
 import Coparents from '/src/components/screens/coparents/coparents.jsx'
+import NewCoparentForm from '/src/components/screens/coparents/newCoparentForm.jsx'
 import DocsList from '/src/components/screens/documents/docsList.jsx'
+import DocViewer from '/src/components/screens/documents/docViewer'
 import UploadDocuments from '/src/components/screens/documents/uploadDocuments.jsx'
 import ExpenseTracker from '/src/components/screens/expenses/expenseTracker.jsx'
-import ResetPassword from '/src/components/screens/account/resetPassword.jsx'
-import Login from '/src/components/screens/auth/login.jsx'
+import Home from '/src/components/screens/home'
+import InstallApp from '/src/components/screens/installApp.jsx'
 import Memories from '/src/components/screens/memories.jsx'
-import Registration from '/src/components/screens/auth/registration.jsx'
-import Visitation from '/src/components/screens/visitation.jsx'
+import Records from '/src/components/screens/records.jsx'
 import Settings from '/src/components/screens/settings/settings.jsx'
 import SwapRequests from '/src/components/screens/swapRequests.jsx'
 import TransferRequests from '/src/components/screens/transferRequests.jsx'
-import EditCalEvent from '/src/components/forms/editCalEvent.jsx'
-import NewCalendarEvent from '/src/components/forms/newCalendarEvent.jsx'
-import NewChildForm from '/src/components/screens/childInfo/newChildForm.jsx'
-import NewMemoryForm from '/src/components/forms/newMemoryForm.jsx'
-import NewExpenseForm from '/src/components/forms/newExpenseForm.jsx'
-import NewSwapRequest from '/src/components/forms/newSwapRequest.jsx'
-import NewTransferChangeRequest from '/src/components/forms/newTransferRequest.jsx'
-import NewCoparentForm from '/src/components/screens/coparents/newCoparentForm.jsx'
-import ChildSelector from '/src/components/screens/childInfo/childSelector.jsx'
-import Loading from '/src/components/shared/loading'
-import DocViewer from '/src/components/screens/documents/docViewer'
-import emailjs from '@emailjs/browser'
-import StateObj from '/src/constants/stateObj' // Menus
-import FullMenu from '/src/components/fullMenu'
-import AdminDashboard from '/src/components/screens/admin/adminDashboard'
-import { initializeApp } from 'firebase/app'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { LicenseInfo } from '@mui/x-license'
-import ScreenNames from '/src/constants/screenNames'
-import firebaseConfig from '/src/firebaseConfig.js'
-import ContactUs from '/src/components/screens/contactUs'
-import NotificationManager from '/src/managers/notificationManager.js'
-import Home from '/src/components/screens/home'
+import Visitation from '/src/components/screens/visitation.jsx'
 import BrandBar from '/src/components/shared/brandBar'
+import Loading from '/src/components/shared/loading'
 import SideNavbar from '/src/components/shared/sideNavbar'
+import ScreenNames from '/src/constants/screenNames'
+import StateObj from '/src/constants/stateObj' // Menus
 import DB_UserScoped from '/src/database/db_userScoped'
-import DB from '/src/database/DB'
-import Manager from '/src/managers/manager'
-import DomManager from '/src/managers/domManager'
+import firebaseConfig from '/src/firebaseConfig.js'
 import AppManager from '/src/managers/appManager.js'
-import Records from '/src/components/screens/records.jsx'
-import Chats from '/src/components/screens/chats/chats.jsx'
-import RequestParentAccess from './components/screens/auth/requestParentAccess'
-import DatasetManager from './managers/datasetManager'
+import DomManager from '/src/managers/domManager'
+import Manager from '/src/managers/manager'
+import DB from './database/DB'
+import NotificationManager from './managers/notificationManager'
 
 export default function App() {
   // Initialize Firebase
@@ -106,7 +106,7 @@ export default function App() {
   }
 
   const updateCurrentUser = async () => {
-    const _currentUser = await DB_UserScoped.getCurrentUser(currentUser?.email, 'email')
+    const _currentUser = await DB_UserScoped.getCurrentUser(auth.currentUser?.email)
     setState({ ...state, currentUser: _currentUser, isLoading: false })
   }
 
@@ -134,39 +134,34 @@ export default function App() {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const user = auth.currentUser
-        const users = await DB.getTable(`${DB.tables.users}`)
-        const _currentUser = users?.find((u) => u.email === user.email)
         await AppManager.clearAppBadge()
-        NotificationManager.init(_currentUser)
-        const activities = await DB.getTable(`${DB.tables.activities}/${_currentUser?.phone}`)
-        const activityCount = activities?.length ?? 0
 
         // AppManager.deleteExpiredCalendarEvents(_currentUser).then((r) => r)
         // AppManager.deleteExpiredMemories(_currentUser).then((r) => r)
-        // Update currentUser in state
-
+        const users = await DB.getTable(`${DB.tables.users}`)
+        let activities = []
+        let currentUserFromDb
+        currentUserFromDb = users?.find((u) => u?.email === user?.email)
+        if (currentUserFromDb) {
+          NotificationManager.init(currentUserFromDb)
+          activities = await DB.getTable(`${DB.tables.activities}/${currentUserFromDb?.phone}`)
+        }
+        let userDetailsExist = Manager.isValid(currentUserFromDb) ? true : false
         if (user.emailVerified) {
-          console.log(_currentUser)
-          console.log(_currentUser?.parentAccessGranted)
-          console.log(_currentUser?.parentAccessGranted === true)
           setState({
             ...state,
-            currentUser: _currentUser,
-            theme: _currentUser?.settings?.theme,
-            currentScreen: _currentUser?.parentAccessGranted === true ? ScreenNames.calendar : ScreenNames.requestParentAccess,
+            authUser: user,
+            currentUser: currentUserFromDb,
+            currentScreen: userDetailsExist ? ScreenNames.calendar : ScreenNames.userDetails,
             userIsLoggedIn: true,
             loadingText: '',
-            parentAccessGranted: true,
             isLoading: false,
-            activityCount: activityCount,
+            activityCount: activities.length ?? 0,
           })
+        } else {
+          setState({ ...state, isLoading: false, authUser: user, currentScreen: ScreenNames.login })
         }
-        else {
-          setState({ ...state, isLoading: false, currentScreen: ScreenNames.login })
-
-        }
-      }
-      else {
+      } else {
         setState({ ...state, isLoading: false })
         console.log('signed out or user doesnt exist')
       }
@@ -210,6 +205,7 @@ export default function App() {
             {currentScreen === ScreenNames.login && <Login />}
             {currentScreen === ScreenNames.registration && <Registration />}
             {currentScreen === ScreenNames.requestParentAccess && <RequestParentAccess />}
+            {currentScreen === ScreenNames.userDetails && <UserDetails />}
 
             {/* UPDATE/EDIT */}
             {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}

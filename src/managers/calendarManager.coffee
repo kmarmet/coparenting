@@ -14,7 +14,7 @@ import ModelNames from "../models/modelNames"
 export default CalendarManager =
   addMultipleCalEvents: (currentUser, newEvents, isRangeClonedOrRecurring = false) ->
     dbRef = ref(getDatabase())
-    currentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}")
+    currentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
     multipleDatesId = Manager.getUid()
 
     if isRangeClonedOrRecurring = true
@@ -26,7 +26,7 @@ export default CalendarManager =
     else
       toAdd = [currentEvents..., newEvents...]
     try
-      await set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/"), toAdd)
+      await set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.key}/"), toAdd)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
@@ -96,7 +96,7 @@ export default CalendarManager =
 
   addCalendarEvent: (currentUser, newEvent) ->
     dbRef = ref(getDatabase())
-    currentEvents =  await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}")
+    currentEvents =  await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
     currentEvents = currentEvents.filter (n) -> n
 
     toAdd = []
@@ -105,28 +105,28 @@ export default CalendarManager =
         toAdd = [currentEvents..., newEvent]
       else
         toAdd = [newEvent]
-      set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/"), toAdd)
+      set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.key}/"), toAdd)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
-  updateEvent: (userPhone, prop, value, id) ->
+  updateEvent: (userKey, prop, value, id) ->
     dbRef = getDatabase()
     key = null
     recordToUpdate
-    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{userPhone}")
+    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{userKey}")
     for record in tableRecords
       if record?.id is id
-        key = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{userPhone}", record, 'id')
+        key = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{userKey}", record, 'id')
         record[prop] = value;
         recordToUpdate = record
     try
-      update(ref(dbRef, "#{DB.tables.calendarEvents}/#{userPhone}/#{key}"), recordToUpdate)
+      update(ref(dbRef, "#{DB.tables.calendarEvents}/#{userKey}/#{key}"), recordToUpdate)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
   updateMultipleEvents: (events, currentUser) ->
     dbRef = getDatabase()
-    path = "#{DB.tables.calendarEvents}/#{currentUser.phone}";
+    path = "#{DB.tables.calendarEvents}/#{currentUser.key}";
     existingEvents = await DB.getTable(path)
     if Manager.isValid(events)
       for updatedEvent in events
@@ -139,7 +139,7 @@ export default CalendarManager =
 
   deleteMultipleEvents: (events, currentUser) ->
     dbRef = ref(getDatabase())
-    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}")
+    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
     idsToDelete = events.map (x) -> x.id
     if Manager.isValid(tableRecords)
       for record in tableRecords
@@ -156,11 +156,11 @@ export default CalendarManager =
   deleteEvent: (currentUser, id) ->
     dbRef = ref(getDatabase())
     idToDelete = null
-    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}/")
+    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}/")
     for record in tableRecords
       if record?.id is id
-        idToDelete = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{currentUser.phone}/", record, 'id')
+        idToDelete = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{currentUser.key}/", record, 'id')
         try
-          remove(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.phone}/#{idToDelete}"))
+          remove(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.key}/#{idToDelete}"))
         catch error
           LogManager.log(error.message, LogManager.logTypes.error, error.stack)

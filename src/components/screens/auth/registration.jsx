@@ -58,25 +58,10 @@ export default function Registration() {
 
 
   // SUBMIT PARENT
-  const submitParent = async () => {
+  const submit = async () => {
     const validForm = await formIsValid() // Check for existing account
 
     if (validForm) {
-      let newUser = new User()
-      newUser.id = Manager.getUid()
-      newUser.email = email
-      newUser.name = StringManager.uppercaseFirstLetterOfAllWords(userName).trim()
-      newUser.accountType = 'parent'
-      newUser.children = children
-      newUser.phone = StringManager.formatPhone(userPhone)
-      newUser.coparents = coparents
-      newUser.parentType = parentType
-      newUser.settings.notificationsEnabled = true
-      newUser.settings.theme = 'light'
-      newUser.dailySummaries.eveningReminderSummaryHour = '8pm'
-      newUser.dailySummaries.morningReminderSummaryHour = '10am'
-      newUser.dailySummaries.eveningSentDate = moment().format(DateFormats.dateForDb)
-      newUser.dailySummaries.morningSentDate = moment().format(DateFormats.dateForDb)
       createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
           try {
@@ -84,8 +69,6 @@ export default function Registration() {
             // Signed up successfully
             const user = userCredential.user
             console.log('Signed up as:', user.email)
-            const cleanUser = ObjectManager.cleanObject(newUser, ModelNames.user)
-            await set(child(dbRef, `users/${cleanUser.phone}`), cleanUser)
             AlertManager.successAlert(`Welcome aboard ${newUser.name}!`)
             setState({ ...state, currentScreen: ScreenNames.login })
           } catch (error) {
@@ -140,26 +123,6 @@ export default function Registration() {
 
   const formIsValid = async () => {
     let isValid = true
-    await DB.getTable(DB.tables.users).then((users) => {
-      users = Manager.convertToArray(users)
-      const foundUser = users?.filter((x) => x?.email === email || x?.phone === userPhone)[0]
-      if (foundUser) {
-        AlertManager.throwError('Account already exists, please login')
-        setAccountAlreadyExists(true)
-        isValid = false
-      }
-    })
-
-    if (!validator.isMobilePhone(userPhone)) {
-      AlertManager.throwError('Phone number is not valid')
-      isValid = false
-      return false
-    }
-
-    if (parentType.length === 0) {
-      AlertManager.throwError('Please select your parent type')
-      isValid = false
-    }
 
     if (!validator.isEmail(email)) {
       AlertManager.throwError('Email address is not valid')
@@ -167,18 +130,8 @@ export default function Registration() {
       return false
     }
 
-    if (userName.length === 0 || parentType.length === 0) {
+    if (userName.length === 0) {
       AlertManager.throwError('Please fill out all fields')
-      isValid = false
-    }
-
-    if (children.length === 0) {
-      AlertManager.throwError('Please enter at least one child')
-      isValid = false
-    }
-
-    if (coparents?.length === 0) {
-      AlertManager.throwError('Please enter at least one co-parent')
       isValid = false
     }
 
@@ -197,19 +150,6 @@ export default function Registration() {
       }
     )
   }
-
-  // CHILDREN
-  const addChild = (childObject) => setChildren([...children, childObject])
-  const [childrenInputs, setChildrenInputs] = useState([
-    <ChildrenInput add={addChild} childrenCount={1} onChange={(e) => setChildren([...children, e.target.value])} />,
-  ])
-  const addChildInput = () => setChildrenInputs([...childrenInputs, <ChildrenInput childrenCount={childrenInputs.length + 1} add={addChild} />])
-
-  // COPARENTS
-  const addCoparent = (parentObject) => setCoparents([...coparents, parentObject])
-  const addCoparentInput = () =>
-    setCoparentInputs([...coparentInputs, <CoparentInputs add={addCoparent} coparentsLength={coparentInputs.length + 1} />])
-  const [coparentInputs, setCoparentInputs] = useState([<CoparentInputs add={addCoparent} />])
 
   // SEND VERIFICATION CODE
   const sendPhoneVerificationCode = async () => {
@@ -234,7 +174,7 @@ export default function Registration() {
     }
     if (phoneVerificationCode === enteredPhoneCode) {
       setPhoneIsVerified(true)
-      await submitParent()
+      await submit()
     } else {
       AlertManager.throwError('Verification code is incorrect, please try again')
     }
@@ -309,7 +249,7 @@ export default function Registration() {
           </button>
         )}
         {/* SET ACCOUNT TYPE */}
-        {!accountType && (
+        {/* {!accountType && (
           <>
             <p className="mt-15">
               It is <b>HIGHLY</b> recommended to install the application for the best experience. You can register/login once the application is
@@ -328,7 +268,7 @@ export default function Registration() {
               </button>
             </div>
           </>
-        )}
+        )} */}
 
         {/* CHILD FORM */}
         {!accountAlreadyExists && accountType && accountType === 'child' && (
@@ -407,98 +347,69 @@ export default function Registration() {
         )}
 
         {/* PARENT FORM */}
-        {!accountAlreadyExists && accountType && accountType === 'parent' && (
-          <div className="form mb-20">
-            <Accordion id={'checkboxes'} expanded={parentTypeAccExpanded}>
-              <AccordionSummary>
-                <Label classes="flex" text={'Which type of parent are you?'} required={true}>
-                  <PiInfoDuotone className={'ml-auto fs-24'} onClick={() => setParentTypeAccExpanded(!parentTypeAccExpanded)} />
-                </Label>
-              </AccordionSummary>
-              <AccordionDetails>
-                <p className="caption">
-                  <i>
-                    If you are primarily using the app for your biological children, select Biological. Otherwise, select Step-Parent, if it is
-                    relevant for you.
-                  </i>
-                </p>
-                <p className="caption">
-                  <i>If you will be using the app as both Step-Parent and Biological, select Biological and we will handle the rest. </i>
-                </p>
-              </AccordionDetails>
-            </Accordion>
-            <CheckboxGroup
-              skipNameFormatting={true}
-              elClass={'parent-type '}
-              checkboxLabels={['Biological Parent', 'Step-Parent']}
-              onCheck={handleParentType}
-            />
-            <InputWrapper inputType={'input'} required={true} labelText={'Name'} onChange={(e) => setUserName(e.target.value)} />
-            <InputWrapper
-              inputType={'input'}
-              inputValueType="email"
-              required={true}
-              labelText={'Email Address'}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <InputWrapper
-              inputType={'input'}
-              inputValueType="number"
-              required={true}
-              labelText={'Phone Number'}
-              onChange={(e) => setUserPhone(e.target.value)}
-            />
-            <InputWrapper
-              inputType={'input'}
-              inputValueType="password"
-              required={true}
-              labelText={'Password'}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <InputWrapper
-              inputType={'input'}
-              inputValueType="password"
-              required={true}
-              labelText={'Confirm Password'}
-              onChange={(e) => setConfirmedPassword(e.target.value)}
-            />
-            <PasswordChecklist
-              rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'notEmpty']}
-              minLength={5}
-              className={'password-validation'}
-              value={password}
-              valueAgain={confirmedPassword}
-              onChange={(isValid) => {
-                if (isValid) {
-                  setPassword(password)
-                }
-              }}
-            />
-            {coparentInputs.map((input, index) => {
-              return <span key={index}>{input}</span>
-            })}
+        <div className="form mb-20">
+          {/* <Accordion id={'checkboxes'} expanded={parentTypeAccExpanded}>
+            <AccordionSummary>
+              <Label classes="flex" text={'Which type of parent are you?'} required={true}>
+                <PiInfoDuotone className={'ml-auto fs-24'} onClick={() => setParentTypeAccExpanded(!parentTypeAccExpanded)} />
+              </Label>
+            </AccordionSummary>
+            <AccordionDetails>
+              <p className="caption">
+                <i>
+                  If you are primarily using the app for your biological children, select Biological. Otherwise, select Step-Parent, if it is
+                  relevant for you.
+                </i>
+              </p>
+              <p className="caption">
+                <i>If you will be using the app as both Step-Parent and Biological, select Biological and we will handle the rest. </i>
+              </p>
+            </AccordionDetails>
+          </Accordion> */}
+          {/* <CheckboxGroup
+            skipNameFormatting={true}
+            elClass={'parent-type '}
+            checkboxLabels={['Biological Parent', 'Step-Parent']}
+            onCheck={handleParentType}
+          /> */}
+          <InputWrapper inputType={'input'} required={true} labelText={'Name'} onChange={(e) => setUserName(e.target.value)} />
+          <InputWrapper
+            inputType={'input'}
+            inputValueType="email"
+            required={true}
+            labelText={'Email Address'}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <InputWrapper
+            inputType={'input'}
+            inputValueType="password"
+            required={true}
+            labelText={'Password'}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <InputWrapper
+            inputType={'input'}
+            inputValueType="password"
+            required={true}
+            labelText={'Confirm Password'}
+            onChange={(e) => setConfirmedPassword(e.target.value)}
+          />
+          <PasswordChecklist
+            rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'notEmpty']}
+            minLength={5}
+            className={'password-validation'}
+            value={password}
+            valueAgain={confirmedPassword}
+            onChange={(isValid) => {
+              if (isValid) {
+                setPassword(password)
+              }
+            }}
+          />
 
-            {/* COPARENTS */}
-            {coparents?.length > 0 && (
-              <button id="add-coparent-button" className="button default " onClick={addCoparentInput}>
-                Add Another Co-Parent
-              </button>
-            )}
 
-            {/* CHILDREN */}
-            <div className="children">
-              {childrenInputs.map((input, index) => {
-                return <span key={index}>{input}</span>
-              })}
-            </div>
-            {children?.length > 0 && (
-              <button id="add-child-button" className="button default " onClick={addChildInput}>
-                Add Another Child
-              </button>
-            )}
-
-            {/* VERIFY PHONE BUTTON */}
-            {userPhone.length > 0 &&
+          {/* VERIFY PHONE BUTTON */}
+          {/* {userPhone.length > 0 &&
               userName.length > 0 &&
               email.length > 0 &&
               password.length > 0 &&
@@ -514,12 +425,12 @@ export default function Registration() {
                   }}>
                   Verify Phone <MdOutlineSecurity />
                 </button>
-              )}
-            <button id="back-to-login-button" className="button default " onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
-              Back to Login
-            </button>
-          </div>
-        )}
+              )} */}
+          <button className="button mt-15 default green" onClick={submit}>Submit</button>
+          <button id="back-to-login-button" className="button default " onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+            Back to Login
+          </button>
+        </div>
       </div>
     </>
   )

@@ -3,21 +3,27 @@ var User;
 
 import Manager from "../managers/manager";
 
+import moment from 'moment';
+
+import DateFormats from '../constants/dateFormats';
+
 export default User = class User {
-  constructor(id = Manager.getUid(), name = '', email = '', phone = '', children = [], childAccounts = [], coparents = [], parentType = '', accountType = '', notificationsEnabled = '', settings = {
-      theme: 'light'
+  constructor(id = Manager.getUid(), key = '', name = '', email = '', phone = '', children = [], childAccounts = [], coparents = [], parentType = '', accountType = '', settings = {
+      theme: 'light',
+      notificationsEnabled: true
     }, dailySummaries = {
-      morningSentDate: '',
-      eveningSentDate: '',
+      morningSentDate: moment().format(DateFormats.dateForDb),
+      eveningSentDate: moment().format(DateFormats.dateForDb),
       morningReminderSummaryHour: '10am',
       eveningReminderSummaryHour: '8pm'
     }, visitation = {
-      transferLocation: '',
-      transferLocationNavLink: '',
+      transferAddress: '',
+      transferNavLink: '',
       visitationSchedule: '',
       visitationHolidays: []
     }) {
     this.id = id;
+    this.key = key;
     this.name = name;
     this.email = email;
     this.phone = phone;
@@ -26,7 +32,6 @@ export default User = class User {
     this.coparents = coparents;
     this.parentType = parentType;
     this.accountType = accountType;
-    this.notificationsEnabled = notificationsEnabled;
     this.settings = settings;
     this.dailySummaries = dailySummaries;
     this.visitation = visitation;

@@ -48,9 +48,10 @@ export default NotificationManager =
   appId: 'b243a232-3072-4fa8-9395-b1475054c531'
 
 # LOCALHOST
-#  apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
-#  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
+  # apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
+  # appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
   init: (currentUser) ->
+    console.log(NotificationManager.appId)
     NotificationManager.currentUser = currentUser
     window.OneSignalDeferred = window.OneSignalDeferred or []
     OneSignalDeferred.push ->
@@ -62,9 +63,13 @@ export default NotificationManager =
   eventListener:  (event) ->
     userSubscribed = OneSignal.User.PushSubscription.optedIn
     subId =  event?.current?.id
+    console.log(OneSignal.User)
+    console.log(subId)
+    console.log(userSubscribed)
     if userSubscribed && subId
       newSubscriber = new NotificationSubscriber()
       setTimeout  ->
+        console.log(NotificationManager?.currentUser)
         newSubscriber.email = NotificationManager?.currentUser?.email
         newSubscriber.phone = NotificationManager?.currentUser?.phone
         newSubscriber.id = Manager.getUid()
@@ -80,6 +85,8 @@ export default NotificationManager =
               deleteKey = await DB.getSnapshotKey("#{DB.tables.notificationSubscribers}", existingSubscriber, "id")
               await DB.deleteByPath("#{DB.tables.notificationSubscribers}/#{deleteKey}")
             await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
+          .catch (error) -> 
+            console.error error
       , 500
 
   getUserSubId: (currentUserPhoneOrEmail, phoneOrEmail = "email") ->

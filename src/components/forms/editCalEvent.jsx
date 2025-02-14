@@ -1,51 +1,47 @@
-import { child, getDatabase, ref, set } from 'firebase/database'
-import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
-import Autocomplete from 'react-google-autocomplete'
-import globalState from '../../context'
-import DB from '/src/database/DB'
-import Manager from '/src/managers/manager'
-import CheckboxGroup from '/src/components/shared/checkboxGroup'
-import NotificationManager from '/src/managers/notificationManager'
-import CalendarMapper from '/src/mappers/calMapper'
-import CalMapper from '/src/mappers/calMapper'
-import DateFormats from '/src/constants/dateFormats'
-import { PiBellSimpleRingingDuotone, PiCalendarDotDuotone, PiGlobeDuotone, PiUserCircleDuotone } from 'react-icons/pi'
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
-import { MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
-import { MdEventRepeat } from 'react-icons/md'
-import { CgDetailsMore } from 'react-icons/cg'
-import { FaExternalLinkSquareAlt } from 'react-icons/fa'
-import { LiaMapMarkedAltSolid } from 'react-icons/lia'
-import { IoTimeOutline } from 'react-icons/io5'
-import CalendarManager from '/src/managers/calendarManager.js'
-import Toggle from 'react-toggle'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import { BiSolidNavigation } from 'react-icons/bi'
-import 'react-toggle/style.css'
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
+import { getDatabase, ref } from 'firebase/database'
+import moment from 'moment'
+import React, { useContext, useEffect, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
-import SecurityManager from '/src/managers/securityManager'
-import ModelNames from '/src/models/modelNames'
-import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
-import InputWrapper from '/src/components/shared/inputWrapper'
-import DateManager from '/src/managers/dateManager'
-import BottomCard from '/src/components/shared/bottomCard'
-import ObjectManager from '/src/managers/objectManager'
-import DatasetManager from '/src/managers/datasetManager'
-import AlertManager from '/src/managers/alertManager'
-import DB_UserScoped from '/src/database/db_userScoped'
-import ActivityCategory from '/src/models/activityCategory'
-import StringManager from '/src/managers/stringManager'
-import { LuCalendarCheck } from 'react-icons/lu'
-import DomManager from '../../managers/domManager.coffee'
-import Map from '../shared/map.jsx'
+import { BiSolidNavigation } from 'react-icons/bi'
+import { CgDetailsMore } from 'react-icons/cg'
+import { FaExternalLinkSquareAlt } from 'react-icons/fa'
 import { FaChildren } from 'react-icons/fa6'
-import Spacer from '../shared/spacer.jsx'
-import ViewSelector from '../shared/viewSelector'
-import StringAsHtmlElement from '../shared/stringAsHtmlElement'
+import { IoTimeOutline } from 'react-icons/io5'
+import { LiaMapMarkedAltSolid } from 'react-icons/lia'
+import { LuCalendarCheck } from 'react-icons/lu'
+import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
+import { PiBellSimpleRingingDuotone, PiCalendarDotDuotone, PiGlobeDuotone, PiUserCircleDuotone } from 'react-icons/pi'
+import Toggle from 'react-toggle'
+import 'react-toggle/style.css'
+import globalState from '../../context'
+import DomManager from '../../managers/domManager.coffee'
 import AddressInput from '../shared/addressInput'
+import Map from '../shared/map.jsx'
+import Spacer from '../shared/spacer.jsx'
+import StringAsHtmlElement from '../shared/stringAsHtmlElement'
+import ViewSelector from '../shared/viewSelector'
+import BottomCard from '/src/components/shared/bottomCard'
+import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import DateFormats from '/src/constants/dateFormats'
+import DB from '/src/database/DB'
+import DB_UserScoped from '/src/database/db_userScoped'
+import AlertManager from '/src/managers/alertManager'
+import CalendarManager from '/src/managers/calendarManager.js'
+import DateManager from '/src/managers/dateManager'
+import Manager from '/src/managers/manager'
+import NotificationManager from '/src/managers/notificationManager'
+import ObjectManager from '/src/managers/objectManager'
+import SecurityManager from '/src/managers/securityManager'
+import StringManager from '/src/managers/stringManager'
+import { default as CalendarMapper, default as CalMapper } from '/src/mappers/calMapper'
+import ActivityCategory from '/src/models/activityCategory'
+import ModelNames from '/src/models/modelNames'
 
 export default function EditCalEvent({ event, showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -104,8 +100,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     setEventIsCloned(false)
     hideCard()
     await afterUpdateCallback()
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
 
   const nonOwnerSubmit = async () => {
@@ -114,7 +108,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     // Fill/overwrite
     // Required
     const updatedEvent = { ...event }
-    updatedEvent.id = Manager.getUid()
     updatedEvent.title = eventName
     updatedEvent.reminderTimes = eventReminderTimes
     updatedEvent.shareWith = eventShareWith
@@ -127,7 +120,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     }
 
     // Not Required
-    updatedEvent.ownerPhone = currentUser?.phone
+    updatedEvent.ownerKey = currentUser?.key
     updatedEvent.createdBy = currentUser?.name
     updatedEvent.notes = eventNotes
     updatedEvent.reminderTimes = eventReminderTimes || []
@@ -160,11 +153,11 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       }
 
       const cleanedObject = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
-      const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}`
+      const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
       // Update dates with multiple dates
       if (event?.isRepeating || event?.isDateRange || event?.isCloned) {
-        const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`)
+        const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
         const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
 
         if (!Manager.isValid(existing)) {
@@ -198,7 +191,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         }
 
         // Delete all before updated
-        await DB.deleteMultipleRows(`${DB.tables.calendarEvents}/${currentUser.phone}`, existing, currentUser)
+        await DB.deleteMultipleRows(`${DB.tables.calendarEvents}/${currentUser?.key}`, existing, currentUser)
       }
 
       // Update Single Event
@@ -218,8 +211,8 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     if (Manager.isValid(event?.shareWith)) {
       // Add cloned event for currentUser
       await CalendarManager.addCalendarEvent(currentUser, newEvent)
-      const filteredShareWith = event?.shareWith.filter((x) => x !== currentUser?.phone)
-      await CalendarManager.updateEvent(event?.ownerPhone, 'shareWith', filteredShareWith, event?.id)
+      const filteredShareWith = event?.shareWith.filter((x) => x !== currentUser?.key)
+      await CalendarManager.updateEvent(event?.ownerKey, 'shareWith', filteredShareWith, event?.id)
     }
   }
 
@@ -246,7 +239,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     }
 
     // Not Required
-    updatedEvent.ownerPhone = event.ownerPhone === currentUser?.phone ? currentUser.phone : event.ownerPhone
+    updatedEvent.ownerKey = event.ownerKey === currentUser?.key ? currentUser?.key : event.ownerKey
     updatedEvent.createdBy = currentUser?.name
     updatedEvent.notes = eventNotes
     updatedEvent.reminderTimes = eventReminderTimes || []
@@ -276,11 +269,11 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       }
 
       const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
-      const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}`
+      const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
       // Events with multiple days
       if (event?.isRepeating || event?.isDateRange || event?.isCloned) {
-        const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`)
+        const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
         const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
 
         if (!Manager.isValid(existing)) {
@@ -306,11 +299,12 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         }
 
         // Delete all before updated
-        await DB.deleteMultipleRows(`${DB.tables.calendarEvents}/${currentUser.phone}`, existing, currentUser)
+        await DB.deleteMultipleRows(`${DB.tables.calendarEvents}/${currentUser?.key}`, existing, currentUser)
       }
 
       // Update Single Event
       else {
+        console.log(cleanedEvent)
         await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updatedEvent.id)
       }
     }
@@ -401,7 +395,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   }
 
   const deleteEvent = async () => {
-    const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}`
+    const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventName).length
@@ -489,13 +483,14 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
           AlertManager.successAlert('Event Deleted')
         })
       }}
-      hasDelete={view === 'edit' && currentUser?.phone === event?.ownerPhone}
-      onSubmit={currentUser?.phone === event?.ownerPhone ? submit : nonOwnerSubmit}
+      hasDelete={view === 'edit' && currentUser?.key === event?.ownerKey}
+      onSubmit={currentUser?.key === event?.ownerKey ? submit : nonOwnerSubmit}
       submitText={'Update'}
       submitIcon={<LuCalendarCheck />}
       hasSubmitButton={view === 'edit'}
       onClose={async () => {
-        await resetForm()
+        // await resetForm()
+        hideCard()
       }}
       title={StringManager.uppercaseFirstLetterOfAllWords(event?.title)}
       showCard={showCard}

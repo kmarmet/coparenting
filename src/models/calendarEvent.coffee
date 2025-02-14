@@ -11,7 +11,7 @@ export default class CalendarEvent
     @startDate = ''
     @staticStartDate = ''
     @startTime = ''
-    @ownerPhone = ''
+    @ownerKey = ''
     @children = []
     @location = ''
     @title = ''

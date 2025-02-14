@@ -1,3 +1,18 @@
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
+import moment from 'moment'
+import React, { useContext, useEffect, useState } from 'react'
+import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
+import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
+import Toggle from 'react-toggle'
+import validator from 'validator'
+import globalState from '../../context'
+import DomManager from '../../managers/domManager.coffee'
+import AddressInput from '../shared/addressInput'
+import Spacer from '../shared/spacer.jsx'
+import ViewSelector from '../shared/viewSelector'
 import BottomCard from '/src/components/shared/bottomCard'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import DatetimePicker from '/src/components/shared/datetimePicker.jsx'
@@ -9,9 +24,8 @@ import DatetimePickerViews from '/src/constants/datetimePickerViews'
 import EventLengths from '/src/constants/eventLengths'
 import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
-import CalendarManager from '/src/managers/calendarManager.js'
 import DatasetManager from '/src/managers/datasetManager'
-import DateManager from '/src/managers/dateManager'
+import CalendarManager from '../../managers/calendarManager'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager.js'
 import ObjectManager from '/src/managers/objectManager'
@@ -20,25 +34,6 @@ import CalendarMapper from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import CalendarEvent from '/src/models/calendarEvent'
 import ModelNames from '/src/models/modelNames'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
-import _ from 'lodash'
-import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
-import Autocomplete from 'react-google-autocomplete'
-import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
-import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
-import Toggle from 'react-toggle'
-import validator from 'validator'
-import globalState from '../../context'
-import DomManager from '../../managers/domManager.coffee'
-import Spacer from '../shared/spacer.jsx'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import ViewSelector from '../shared/viewSelector'
-import AddressInput from '../shared/addressInput'
 
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
@@ -98,8 +93,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     setShowReminders(false)
     setIncludeChildren(false)
     setIsVisitation(false)
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
+    // const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    // setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
 
   const submit = async () => {
@@ -125,7 +120,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     newEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
     newEvent.location = eventLocation
     newEvent.children = eventChildren
-    newEvent.ownerPhone = currentUser?.phone
+    newEvent.ownerKey = currentUser?.key
     newEvent.createdBy = currentUser?.name
     newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
     newEvent.notes = eventNotes
@@ -417,7 +412,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </InputWrapper>
           )}
 
-          <Spacer height={10} />
+          <Spacer height={5} />
 
           {/* EVENT WITH TIME */}
           {!isAllDay && (
@@ -463,7 +458,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     <CheckboxGroup
                       elClass={`${theme} reminder-times`}
                       skipNameFormatting={true}
-                      defaultLabels={[]}
                       checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                       onCheck={handleReminderSelection}
                     />
@@ -514,10 +508,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </div>
           )}
 
-          {/* REPEATING/CLONED */}
+          {/* RECURRING/CLONED */}
           {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
             <>
-              {/* REPEATING */}
+              {/* RECURRING */}
               <div id="repeating-container">
                 <Accordion id={'checkboxes'} expanded={eventIsRepeating}>
                   <AccordionSummary>

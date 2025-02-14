@@ -1,16 +1,16 @@
-import { useContext, useEffect, useState } from 'react'
 import moment from 'moment'
+import { useContext, useState } from 'react'
+import { Fade } from 'react-awesome-reveal'
+import globalState from '../../../context.js'
+import DatasetManager from '../../../managers/datasetManager.coffee'
 import DateFormats from '/src/constants/dateFormats'
 import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
-import { Fade } from 'react-awesome-reveal'
-import DatasetManager from '../../../managers/datasetManager.coffee'
-import globalState from '../../../context.js'
-import DB from '../../../database/DB'
-
+import DB_UserScoped from '../../../database/db_userScoped.js'
+import { auth } from 'firebaseui'
 export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = function (event) {} }) {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser } = state
+  const { theme, currentUser, authUser } = state
   const [holidays, setHolidays] = useState([])
   const [showHolidays, setShowHolidays] = useState(false)
   const [searchResults, setSearchResults] = useState([])
@@ -20,8 +20,8 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
     const dayEvents = arr.filter((x) => x.startDate === dayDate)
     let dotObjects = []
     for (let event of dayEvents) {
-      const isCurrentUserDot = event?.ownerPhone === currentUser?.phone
-      if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.isValid(event.ownerPhone)) {
+      const isCurrentUserDot = event?.ownerKey === authUser?.uid
+      if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.isValid(event.ownerKey)) {
         dotObjects.push({
           className: 'holiday-event-dot',
           id: event.id,
@@ -50,7 +50,7 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
     if (clickedEvent.isHoliday) {
       return false
     }
-    if (clickedEvent?.ownerPhone !== currentUser.phone && clickedEvent?.fromVisitationSchedule) {
+    if (clickedEvent?.ownerKey !== currentUser?.key && clickedEvent?.fromVisitationSchedule) {
       return false
     }
     setEventToEdit(clickedEvent)
@@ -66,16 +66,17 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
               let startDate = event?.startDate
               if (event?.isDateRange) {
                 startDate = event?.staticStartDate
-                console.log(startDate)
               }
               let dotObjects = getRowDotColor(event.startDate)
-              const dotObject = dotObjects.filter((x) => x.id === event.id)[0]
+              const dotObject = dotObjects?.filter((x) => x.id === event.id)[0]
               return (
                 <div
                   key={index}
                   onClick={(e) => handleEventRowClick(event)}
                   data-from-date={startDate}
-                  className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className} ${index === eventsOfActiveDay.length - 2 ? 'last-child' : ''}`}>
+                  className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className} ${
+                    index === eventsOfActiveDay.length - 2 ? 'last-child' : ''
+                  }`}>
                   <div className="text flex space-between">
                     {/* EVENT NAME */}
                     <div className="flex space-between" id="title-wrapper">

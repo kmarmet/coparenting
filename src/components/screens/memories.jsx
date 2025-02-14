@@ -39,7 +39,7 @@ export default function Memories() {
           const imageStatusCode = await ImageManager.getStatusCode(memory.url)
           if (imageStatusCode === 404) {
             // Delete memory if no longer in Firebase Storage
-            await DB.deleteMemory(currentUser.phone, memory)
+            await DB.deleteMemory(currentUser?.key, memory)
           }
           if (imageStatusCode === 200) {
             validImages.push(memory)
@@ -73,17 +73,17 @@ export default function Memories() {
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
 
     // Current user is record owner
-    if (record.ownerPhone === currentUser?.phone) {
+    if (record.ownerPhone === currentUser?.key) {
       // Delete from Firebase Realtime DB
-      await DB.deleteMemory(currentUser?.phone, record).then(async () => {
+      await DB.deleteMemory(currentUser?.key, record).then(async () => {
         // Delete from Firebase Storage
         await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.id, imageName)
       })
     }
     // Memory was shared with current user -> hide it
     else {
-      const memoryKey = await DB.getSnapshotKey(`${DB.tables.memories}/${currentUser.phone}`, record, 'id')
-      const updatedShareWith = record.shareWith.filter((x) => x !== currentUser?.phone)
+      const memoryKey = await DB.getSnapshotKey(`${DB.tables.memories}/${currentUser?.key}`, record, 'id')
+      const updatedShareWith = record.shareWith.filter((x) => x !== currentUser?.key)
       await DB.updateByPath(`${DB.tables.memories}/${memoryKey}/shareWith`, updatedShareWith)
     }
   }
@@ -114,7 +114,7 @@ export default function Memories() {
   }
 
   const onTableChange = async () => {
-    onValue(child(dbRef, `${DB.tables.memories}/${currentUser.phone}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.memories}/${currentUser?.key}`), async (snapshot) => {
       await getSecuredMemories(currentUser)
     })
   }

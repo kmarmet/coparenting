@@ -24,8 +24,10 @@ if ('serviceWorker' in navigator) {
     }
   }
   window.addEventListener('offline', handleConnection)
+  const publicUrl = window.location.hostname.indexOf("localhost") > -1 ? "http://localhost:1234" : process.env.REACT_APP_PUBLIC_URL
+  console.log(`${publicUrl}/OneSignalSDKWorker.js`)
   navigator.serviceWorker
-    .register(`${process.env.PUBLIC_URL}/OneSignalSDKWorker.js`)
+    .register(`${publicUrl}/OneSignalSDKWorker.js`)
     .then((registration) => {
       // console.log(registration);
 

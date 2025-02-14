@@ -47,5 +47,6 @@ ScreenNames =
   uploadAgreement: 'uploadAgreement'
   uploadAgreementDocs: 'uploadAgreementDocs'
   uploadDocuments: 'uploadDocuments'
+  userDetails: 'userDetails'
   visitation: 'visitation'
 export default ScreenNames

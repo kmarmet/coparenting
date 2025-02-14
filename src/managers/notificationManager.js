@@ -52,9 +52,10 @@ export default NotificationManager = {
   apiKey: 'os_v2_app_wjb2emrqojh2re4vwfdvavgfgfpm3s3xxaduhlnuiah2weksujvxpesz4fnbclq7b2dch2k3ixixovlaroxcredbec4ghwac4qpcjbi',
   appId: 'b243a232-3072-4fa8-9395-b1475054c531',
   // LOCALHOST
-  //  apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
-  //  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
+  // apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
+  // appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
   init: function(currentUser) {
+    console.log(NotificationManager.appId);
     NotificationManager.currentUser = currentUser;
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     return OneSignalDeferred.push(function() {
@@ -69,10 +70,14 @@ export default NotificationManager = {
     var newSubscriber, ref, subId, userSubscribed;
     userSubscribed = OneSignal.User.PushSubscription.optedIn;
     subId = event != null ? (ref = event.current) != null ? ref.id : void 0 : void 0;
+    console.log(OneSignal.User);
+    console.log(subId);
+    console.log(userSubscribed);
     if (userSubscribed && subId) {
       newSubscriber = new NotificationSubscriber();
       return setTimeout(function() {
         var ref1, ref2;
+        console.log(NotificationManager != null ? NotificationManager.currentUser : void 0);
         newSubscriber.email = NotificationManager != null ? (ref1 = NotificationManager.currentUser) != null ? ref1.email : void 0 : void 0;
         newSubscriber.phone = NotificationManager != null ? (ref2 = NotificationManager.currentUser) != null ? ref2.phone : void 0 : void 0;
         newSubscriber.id = Manager.getUid();
@@ -88,6 +93,8 @@ export default NotificationManager = {
             await DB.deleteByPath(`${DB.tables.notificationSubscribers}/${deleteKey}`);
           }
           return (await DB.add(`/${DB.tables.notificationSubscribers}`, newSubscriber));
+        }).catch(function(error) {
+          return console.error(error);
         });
       }, 500);
     }

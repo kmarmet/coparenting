@@ -1,3 +1,15 @@
+/*#region  BASE COLORS */
+/*#endregion  BASE COLORS */
+/*#region  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROES)*/
+/*#region  GREYS*/
+/*#endregion  GREYS*/
+/*#region  VISITATION COLORS*/
+/*#endregion  VISITATION COLORS*/
+/*#region  Dark Theme*/
+/*#endregion  Dark Theme*/
+/*#region  LIGHT THEME*/
+/*#endregion  LIGHT THEME*/
 @keyframes gradient {
   0% {
     background-position: 0% 50%;
@@ -9,23 +21,162 @@
     background-position: 0% 50%;
   }
 }
+@keyframes sparkles1 {
+  0% {
+    top: 0;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: -200%;
+    left: -50%;
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles2 {
+  0% {
+    top: 0;
+    left: 25%;
+    transform: scale(1);
+  }
+  100% {
+    top: -250%;
+    left: 10%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles3 {
+  0% {
+    top: 0;
+    left: 50%;
+    transform: scale(1);
+  }
+  100% {
+    top: -275%;
+    left: 70%;
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles4 {
+  0% {
+    top: 0;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: -120%;
+    left: 120%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles5 {
+  0% {
+    top: 100%;
+    left: 50%;
+    transform: scale(1);
+  }
+  100% {
+    top: 275%;
+    left: 70%;
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles6 {
+  0% {
+    top: 100%;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: 220%;
+    left: 120%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles7 {
+  0% {
+    top: 100%;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: 200%;
+    left: -50%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles8 {
+  0% {
+    top: 100%;
+    left: 25%;
+    transform: scale(1);
+  }
+  100% {
+    top: 250%;
+    left: 10%;
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@keyframes sparkles9 {
+  0% {
+    top: 50%;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: 60%;
+    left: -100%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles10 {
+  0% {
+    top: 50%;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: 75%;
+    left: 170%;
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
 @keyframes rotate {
   100% {
     transform: rotate(1turn);
   }
 }
-@keyframes pulse {
-  0%,
-  100% {
-    color: '#9d98fc';
+@keyframes enlarge {
+  0% {
+    transform: scale(1);
   }
   50% {
-    color: #2b3563;
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes pulse {
+  0%, 100% {
+    color: "#9d98fc";
+  }
+  50% {
+    color: #5c8df7;
   }
 }
 @keyframes pulseWhite {
-  0%,
-  100% {
+  0%, 100% {
     box-shadow: 0px 0px 20px 0px white;
   }
   50% {
@@ -36,6 +187,20 @@
   0% {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes beatRed {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 #d57179;
   }
   70% {
     transform: scale(1.1);
@@ -108,86 +273,26 @@
 }
 @keyframes topBubbles {
   0% {
-    background-position:
-      5% 90%,
-      10% 90%,
-      10% 90%,
-      15% 90%,
-      25% 90%,
-      25% 90%,
-      40% 90%,
-      55% 90%,
-      70% 90%;
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
   }
   50% {
-    background-position:
-      0% 80%,
-      0% 20%,
-      10% 40%,
-      20% 0%,
-      30% 30%,
-      22% 50%,
-      50% 50%,
-      65% 20%,
-      90% 30%;
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
   }
   100% {
-    background-position:
-      0% 70%,
-      0% 10%,
-      10% 30%,
-      20% -10%,
-      30% 20%,
-      22% 40%,
-      50% 40%,
-      65% 10%,
-      90% 20%;
-    background-size:
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%;
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
   }
 }
 @keyframes bottomBubbles {
   0% {
-    background-position:
-      10% -10%,
-      30% 10%,
-      55% -10%,
-      70% -10%,
-      85% -10%,
-      70% -10%,
-      70% 0%;
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
   }
   50% {
-    background-position:
-      0% 80%,
-      20% 80%,
-      45% 60%,
-      60% 100%,
-      75% 70%,
-      95% 60%,
-      105% 0%;
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
   }
   100% {
-    background-position:
-      0% 90%,
-      20% 90%,
-      45% 70%,
-      60% 110%,
-      75% 80%,
-      95% 70%,
-      110% 10%;
-    background-size:
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%;
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
   }
 }
 @keyframes rotate {
@@ -220,6 +325,56 @@
     transform: rotate(-90deg);
   }
 }
+/*#region  BASE COLORS */
+/*#endregion  BASE COLORS */
+/*#region  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROES)*/
+/*#region  GREYS*/
+/*#endregion  GREYS*/
+/*#region  VISITATION COLORS*/
+/*#endregion  VISITATION COLORS*/
+/*#region  Dark Theme*/
+/*#endregion  Dark Theme*/
+/*#region  LIGHT THEME*/
+/*#endregion  LIGHT THEME*/
+/*#region  FORM*/
+/*#endregion  FORM*/
+/*#region  BUTTONS*/
+/*#endregion  BUTTONS*/
+/*#region  EFFECTS*/
+/*#endregion  EFFECTS*/
+/*#region  POSITIONING*/
+/*#endregion  POSITIONING*/
+/*#region  COMPONENTS*/
+/*#endregion  COMPONENTS*/
+/*#region  MENU*/
+/*#endregion  MENU*/
+#external-overrides #app-container #input-wrapper input {
+  display: block;
+  width: 100%;
+  outline: 0;
+  font-weight: 400;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid #e3e8ee;
+  border-radius: 8px;
+  height: 100%;
+  max-height: unset;
+  position: absolute;
+  top: 0;
+  caret-color: #547eff;
+  padding: 0 8px;
+}
+#external-overrides #app-container #input-wrapper input:focus {
+  border-radius: 8px;
+  border: 1px solid #547eff;
+}
+#external-overrides #app-container #input-wrapper input.password, #external-overrides #app-container #input-wrapper input.email {
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+#external-overrides #app-container #input-wrapper.password {
+  margin-bottom: 25px;
+}
 #external-overrides #registration-container {
   position: relative;
   width: 100vw;
@@ -229,17 +384,65 @@
   margin-top: 0;
   padding-bottom: 300px;
 }
+#external-overrides #registration-container.page-container.active {
+  background-color: white;
+}
+#external-overrides #registration-container #add-coparent-button,
+#external-overrides #registration-container #add-child-button {
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid #547eff;
+  padding: 3px;
+  min-height: 0;
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
+#external-overrides #registration-container #back-to-login-button {
+  left: 50%;
+  transform: translateX(-50%);
+  border: 0;
+  border-radius: 0;
+  position: fixed;
+  bottom: 0;
+  padding: 8px;
+  min-height: 0;
+  color: rgba(0, 0, 0, 0.44);
+  background-color: white;
+  width: 100%;
+  margin: 0;
+}
+#external-overrides #registration-container #install-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  width: 150px;
+  font-size: 12px;
+  margin: 0 auto 0 auto;
+  min-width: 0;
+  padding: 0 10px;
+  height: 30px;
+  z-index: 10000;
+  color: white;
+  background-color: #b392f0;
+  box-shadow: 0px 0px 12px 0px #2ecc71;
+  border-radius: 8px;
+  animation: beat 2s infinite;
+}
+#external-overrides #registration-container #password-validation {
+  margin: 10px 0 !important;
+}
 #external-overrides #registration-container label {
   font-weight: bold;
+}
+#external-overrides #registration-container label.account-type-label {
+  display: flex;
+  justify-content: center;
 }
 #external-overrides #registration-container .form {
   margin: 0;
 }
-#external-overrides #registration-container .form .children input:last-child {
-  margin-bottom: 10px;
-}
 #external-overrides #registration-container .form #coparent-code-instructions {
-  color: var(--textColor);
   line-height: 1.2;
   font-weight: 300;
   background-color: #fff3cd;
@@ -248,34 +451,56 @@
   border-radius: 8px;
   padding: 10px;
 }
-#external-overrides #registration-container .form .coparent-input-container {
-  -webkit-backdrop-filter: blur(10px);
-  background-color: var(--modalBg);
-  -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
-  transition: all 0.5s ease-in-out;
-  background-color: rgba(255, 255, 255, 0.05);
+#external-overrides #registration-container .form #coparent-input-container,
+#external-overrides #registration-container .form #parent-input-container,
+#external-overrides #registration-container .form #child-input-container {
+  margin: 15px auto;
+  border: 1px solid rgba(33, 59, 199, 0.11);
   padding: 15px;
-  margin: 15px auto 0 auto;
   border-radius: 8px;
+  background: #f2f4f5;
 }
-#external-overrides #registration-container .form .coparent-input-container #coparent-label {
-  color: #cfd9e4;
+#external-overrides #registration-container .form #coparent-input-container input,
+#external-overrides #registration-container .form #parent-input-container input,
+#external-overrides #registration-container .form #child-input-container input {
+  background: transparent;
+  border-bottom: 1px solid rgba(179, 180, 182, 0.49);
+}
+#external-overrides #registration-container .form #coparent-input-container #checkbox-group,
+#external-overrides #registration-container .form #parent-input-container #checkbox-group,
+#external-overrides #registration-container .form #child-input-container #checkbox-group {
+  margin-top: 0;
+}
+#external-overrides #registration-container .form #coparent-input-container button,
+#external-overrides #registration-container .form #parent-input-container button,
+#external-overrides #registration-container .form #child-input-container button {
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid #2ecc71;
+  padding: 3px;
+  min-height: 0;
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+#external-overrides #registration-container .form #coparent-input-container #coparent-label,
+#external-overrides #registration-container .form #coparent-input-container #parent-label,
+#external-overrides #registration-container .form #coparent-input-container #child-label,
+#external-overrides #registration-container .form #parent-input-container #coparent-label,
+#external-overrides #registration-container .form #parent-input-container #parent-label,
+#external-overrides #registration-container .form #parent-input-container #child-label,
+#external-overrides #registration-container .form #child-input-container #coparent-label,
+#external-overrides #registration-container .form #child-input-container #parent-label,
+#external-overrides #registration-container .form #child-input-container #child-label {
+  color: cornflowerblue;
   font-size: 18px;
-  font-weight: 400;
-  margin-bottom: 10px;
+  font-weight: bold;
 }
-#external-overrides #registration-container .form .coparent-input-container #checkbox-group {
+#external-overrides #registration-container .form #coparent-input-container #checkbox-group,
+#external-overrides #registration-container .form #parent-input-container #checkbox-group,
+#external-overrides #registration-container .form #child-input-container #checkbox-group {
   margin: 0;
   border: 0;
   padding: 0;
-}
-#external-overrides #registration-container .form .coparent-input-container #checkbox-group .box.active {
-  background-color: var(--compColor);
-}
-#external-overrides #registration-container .form .coparent-input-container input {
-  margin: 0;
-  margin-bottom: 10px;
 }
 #external-overrides #registration-container .form .button-group {
   margin-bottom: 100px;
@@ -285,7 +510,7 @@
   display: block;
 }
 #external-overrides #registration-container .form ul li span {
-  color: var(--textColor);
+  opacity: 1 !important;
   line-height: 1;
   font-size: 16px;
   margin-bottom: 5px;
@@ -298,22 +523,9 @@
   width: 12px;
 }
 #external-overrides #registration-container .form button {
-  margin: 20px auto 0 auto;
   display: block;
+  margin: 0 auto 10px auto;
   font-size: 16px;
-}
-#external-overrides #registration-container .form button#add-child-button {
-  opacity: 0.8;
-  font-size: 14px;
-  margin: 0 auto;
-  margin-top: 20px;
-}
-#external-overrides #registration-container .form button#add-coparent-button {
-  opacity: 0.8;
-  font-size: 14px;
-  margin: 0 auto;
-  margin-bottom: 20px;
-  margin-top: 20px;
 }
 #external-overrides #registration-container .form #checkbox-group {
   padding-bottom: 10px;
@@ -322,8 +534,12 @@
   width: 100%;
   flex-wrap: wrap;
 }
+#external-overrides #registration-container .form #checkbox-group.parent-type .flex {
+  width: 40%;
+}
 #external-overrides #registration-container .form #checkbox-group .flex {
-  width: 50%;
+  width: 45%;
+  flex-wrap: wrap;
 }
 #external-overrides #registration-container .form #checkbox-group .flex .box.active .checkmark-icon {
   display: block;
@@ -338,6 +554,11 @@
   overflow-y: auto;
   margin-top: 0;
 }
+#external-overrides #login-container img {
+  border-radius: 100%;
+  width: 120px;
+  height: auto;
+}
 #external-overrides #login-container #install-button {
   display: flex;
   align-items: center;
@@ -350,38 +571,62 @@
   padding: 0 10px;
   height: 30px;
   z-index: 10000;
-  background-color: #7b75ff;
   color: white;
-  box-shadow: 0px 0px 12px 0px rgb(124, 117, 255);
-  border-radius: 8px;
+  box-shadow: 0px 0px 12px 0px #547eff;
+  border-radius: 50px;
+  background: #547eff;
   animation: beat 2s infinite;
 }
-#external-overrides #login-container #forgot-password-link {
-  font-size: 16px;
-  text-decoration: underline;
-  color: var(--compColor);
+@media screen and (min-width: 650px) {
+  #external-overrides #login-container #install-button:hover {
+    cursor: pointer;
+  }
 }
-#external-overrides #login-container #forgot-password-link span {
+#external-overrides #login-container .eye-icon {
   position: relative;
-  top: 3px;
-  margin-left: 10px;
-  font-size: 20px;
+  top: 5px;
+}
+@media screen and (min-width: 650px) {
+  #external-overrides #login-container .eye-icon:hover {
+    cursor: pointer;
+  }
+}
+#external-overrides #login-container #contact-support-text {
+  margin-top: 30px;
+  font-size: 15px;
+  width: 80%;
+  opacity: 0.85;
+  font-weight: 400;
+}
+#external-overrides #login-container #contact-support-text a {
+  font-size: 15px;
+}
+#external-overrides #login-container #forgot-password-link {
+  color: #547eff;
+  margin-top: 20px;
+  font-size: 16px;
+  border-bottom: 1px solid #547eff;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#external-overrides #login-container #forgot-password-link svg {
+  font-size: 18px;
+  margin-left: 5px;
 }
 #external-overrides #login-container #quote-container {
   width: 95%;
-  margin: 0 auto;
   position: relative;
-  margin-top: 40px;
+  margin: 15px auto 0;
 }
 #external-overrides #login-container #quote-container b {
   font-weight: 500;
   font-style: italic;
-  color: var(--accent);
   opacity: 0.8;
   font-size: 18px;
 }
 #external-overrides #login-container #quote-container span {
-  color: var(--textColor);
   opacity: 0.1;
   position: absolute;
 }
@@ -395,7 +640,6 @@
 #external-overrides #login-container #quote-container p {
   font-size: 18px;
   width: 100%;
-  color: var(--textColor);
   text-align: center;
   font-style: italic;
 }
@@ -403,6 +647,7 @@
   font-size: 16px;
   width: 100%;
   text-align: center;
+  opacity: 0.6;
 }
 #external-overrides #login-container .screen-title span {
   position: relative;
@@ -412,30 +657,19 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-top: 100px;
+  margin-top: 30px;
 }
 #external-overrides #login-container .form-container p {
   width: 100%;
   text-align: center;
-  color: var(--textColor);
   font-weight: bold;
   font-size: 25px;
 }
+#external-overrides #login-container .form-container .form input {
+  border-radius: 8px;
+}
 #external-overrides #login-container .form-container .form .inputs {
   align-items: center;
-}
-#external-overrides #login-container .form-container .form .inputs span {
-  color: var(--textColor);
-  font-size: 25px;
-  margin-left: 10px;
-}
-#external-overrides #login-container .form-container .form .button-group button {
-  margin: 0 auto;
-  margin-bottom: 10px;
-  margin-right: 10px;
-}
-#external-overrides #login-container .form-container #checkbox-group {
-  margin-top: 10px;
 }
 #external-overrides #login-container .form-container #checkbox-group .flex {
   width: 100%;
@@ -449,4 +683,4 @@
   font-size: 18px;
   text-align: center;
   margin: 0 auto;
-} /*# sourceMappingURL=loginRegistration.css.map */
+}/*# sourceMappingURL=loginRegistration.css.map */

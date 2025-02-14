@@ -36,7 +36,7 @@ export default CalendarManager = {
   addMultipleCalEvents: async function(currentUser, newEvents, isRangeClonedOrRecurring = false) {
     var currentEvents, dbRef, error, event, i, len, multipleDatesId, toAdd;
     dbRef = ref(getDatabase());
-    currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`));
+    currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.key}`));
     multipleDatesId = Manager.getUid();
     if (isRangeClonedOrRecurring = true) {
       for (i = 0, len = newEvents.length; i < len; i++) {
@@ -50,7 +50,7 @@ export default CalendarManager = {
       toAdd = [...currentEvents, ...newEvents];
     }
     try {
-      return (await set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/`), toAdd));
+      return (await set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/`), toAdd));
     } catch (error1) {
       error = error1;
       return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
@@ -125,7 +125,7 @@ export default CalendarManager = {
   addCalendarEvent: async function(currentUser, newEvent) {
     var currentEvents, dbRef, error, toAdd;
     dbRef = ref(getDatabase());
-    currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`));
+    currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.key}`));
     currentEvents = currentEvents.filter(function(n) {
       return n;
     });
@@ -136,28 +136,28 @@ export default CalendarManager = {
       } else {
         toAdd = [newEvent];
       }
-      return set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/`), toAdd);
+      return set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/`), toAdd);
     } catch (error1) {
       error = error1;
       return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
     }
   },
-  updateEvent: async function(userPhone, prop, value, id) {
+  updateEvent: async function(userKey, prop, value, id) {
     var dbRef, error, i, key, len, record, recordToUpdate, tableRecords;
     dbRef = getDatabase();
     key = null;
     recordToUpdate;
-    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${userPhone}`));
+    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${userKey}`));
     for (i = 0, len = tableRecords.length; i < len; i++) {
       record = tableRecords[i];
       if ((record != null ? record.id : void 0) === id) {
-        key = (await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${userPhone}`, record, 'id'));
+        key = (await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${userKey}`, record, 'id'));
         record[prop] = value;
         recordToUpdate = record;
       }
     }
     try {
-      return update(ref(dbRef, `${DB.tables.calendarEvents}/${userPhone}/${key}`), recordToUpdate);
+      return update(ref(dbRef, `${DB.tables.calendarEvents}/${userKey}/${key}`), recordToUpdate);
     } catch (error1) {
       error = error1;
       return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
@@ -166,7 +166,7 @@ export default CalendarManager = {
   updateMultipleEvents: async function(events, currentUser) {
     var dbRef, event, existingEvents, i, key, len, path, results, updatedEvent;
     dbRef = getDatabase();
-    path = `${DB.tables.calendarEvents}/${currentUser.phone}`;
+    path = `${DB.tables.calendarEvents}/${currentUser.key}`;
     existingEvents = (await DB.getTable(path));
     if (Manager.isValid(events)) {
       results = [];
@@ -195,7 +195,7 @@ export default CalendarManager = {
   deleteMultipleEvents: async function(events, currentUser) {
     var dbRef, i, idsToDelete, len, record, results, tableRecords;
     dbRef = ref(getDatabase());
-    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`));
+    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.key}`));
     idsToDelete = events.map(function(x) {
       return x.id;
     });
@@ -228,14 +228,14 @@ export default CalendarManager = {
     var dbRef, error, i, idToDelete, len, record, results, tableRecords;
     dbRef = ref(getDatabase());
     idToDelete = null;
-    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}/`));
+    tableRecords = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.key}/`));
     results = [];
     for (i = 0, len = tableRecords.length; i < len; i++) {
       record = tableRecords[i];
       if ((record != null ? record.id : void 0) === id) {
-        idToDelete = (await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${currentUser.phone}/`, record, 'id'));
+        idToDelete = (await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${currentUser.key}/`, record, 'id'));
         try {
-          results.push(remove(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}/${idToDelete}`)));
+          results.push(remove(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/${idToDelete}`)));
         } catch (error1) {
           error = error1;
           results.push(LogManager.log(error.message, LogManager.logTypes.error, error.stack));

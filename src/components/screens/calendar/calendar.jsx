@@ -28,10 +28,10 @@ import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import { initializeApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-
+import DB_UserScoped from '../../../database/db_userScoped.js'
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser, isLoading, parentAccessGranted } = state
+  const { theme, currentUser, isLoading, authUser } = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
   const [searchResults, setSearchResults] = useState([])
@@ -50,9 +50,12 @@ export default function EventCalendar() {
   const [eventsSetOnPageLoad, setEventsSetOnPageLoad] = useState(false)
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
+
   // GET EVENTS
   const getSecuredEvents = async (activeDay) => {
-    let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
+    const allUsers = await DB.getTable(DB.tables.users)
+    const user = allUsers.find((x) => x.email === auth.currentUser.email)
+    let securedEvents = await SecurityManager.getCalendarEvents(user)
     let _eventsOfDay = []
     setAllEventsFromDb(securedEvents)
     let dateToUse = activeDay
@@ -187,12 +190,12 @@ export default function EventCalendar() {
     let userVisitationHolidays = []
     if (currentUser.accountType === 'parent') {
       userVisitationHolidays = allEvents.filter(
-        (x) => x.isHoliday === true && x.ownerPhone === currentUser?.phone && Manager.contains(x.title.toLowerCase(), 'holiday')
+        (x) => x.isHoliday === true && x.ownerPhone === currentUser?.key && Manager.contains(x.title.toLowerCase(), 'holiday')
       )
     }
     if (currentUser.accountType === 'child') {
       // const parentNumbers = (currentUser?.parents?.userVisitationHolidays = allEvents.filter(
-      //   (x) => x.isHoliday === true && x.ownerPhone === currentUser?.phone && contains(x.title.toLowerCase(), 'holiday')
+      //   (x) => x.isHoliday === true && x.ownerPhone === currentUser?.key && contains(x.title.toLowerCase(), 'holiday')
       // ))
     }
     userVisitationHolidays.forEach((holiday) => {
@@ -223,7 +226,7 @@ export default function EventCalendar() {
     let dotClasses = []
     for (let event of dayEvents) {
       if (Manager.isValid(event)) {
-        const isCurrentUserDot = event?.ownerPhone === currentUser?.phone
+        const isCurrentUserDot = event?.ownerKey === authUser?.uid
         if (
           event?.title.toLowerCase().includes('pay') ||
           event?.title.toLowerCase().includes('paid') ||
@@ -231,7 +234,7 @@ export default function EventCalendar() {
         ) {
           payEvents.push(event.startDate)
         }
-        if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.isValid(event.ownerPhone)) {
+        if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.isValid(event.ownerKey)) {
           dotClasses.push('holiday-event-dot')
         }
         if (!event?.isHoliday && isCurrentUserDot) {
@@ -252,7 +255,7 @@ export default function EventCalendar() {
   }
 
   const setInitialActivities = async () => {
-    const activities = await DB.getTable(`${DB.tables.activities}/${currentUser?.phone}`)
+    const activities = await DB.getTable(`${DB.tables.activities}/${currentUser?.key}`)
     await AppManager.setAppBadge(activities.length)
     setState({ ...state, activityCount: activities.length, isLoading: false })
   }
@@ -260,7 +263,7 @@ export default function EventCalendar() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     await setHolidaysState()
-    onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.phone}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser?.key}`), async (snapshot) => {
       const selectedCalendarElement = document.querySelector('.MuiButtonBase-root.MuiPickersDay-root.Mui-selected')
       if (selectedCalendarElement) {
         const timestampMs = selectedCalendarElement.dataset.timestamp
@@ -273,17 +276,15 @@ export default function EventCalendar() {
   // Check if parent access is granted -> if not, show request parent access screen
   const redirectChildIfNecessary = async () => {
     const users = await DB.getTable(`${DB.tables.users}`)
-    const user = users.find(x => x.email === auth.currentUser.email)
-    if (user && !user.parentAccessGranted) {
+    const user = users.find((x) => x.email === auth.currentUser.email)
+    if (user && user.accountType === 'child' && !user.parentAccessGranted) {
       setState({ ...state, currentScreen: ScreenNames.requestParentAccess, currentUser: user })
     }
   }
 
   useEffect(() => {
-
-    redirectChildIfNecessary().then(r => r)
+    redirectChildIfNecessary().then((r) => r)
     if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
-
       setLoadingDisabled(true)
       const appContentWithSidebar = document.getElementById('app-content-with-sidebar')
       if (appContentWithSidebar) {
@@ -310,10 +311,8 @@ export default function EventCalendar() {
     }
   }, [showHolidays])
 
-
   // ON PAGE LOAD
   useEffect(() => {
-
     // Append Holidays/Search Cal Buttons
     const staticCalendar = document.querySelector('.MuiDialogActions-root')
     const holidaysButton = document.getElementById('holidays-button')

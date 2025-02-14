@@ -32,15 +32,10 @@ export default function ShareWithCheckboxes({
       people = [...people, [...currentUser.parents]].filter((x) => x)
     }
     // CHILDREN
-    if (Manager.isValid(currentUser?.children) > 0) {
+    if (Manager.isValid(currentUser?.childAccounts)) {
       let childrenAccounts = []
-      for (let child of currentUser?.children) {
-        if (child?.phone) {
-          const childAccount = await DB.find(DB.tables.users, ['phone', child?.phone], true)
-          if (Manager.isValid(childAccount)) {
-            childrenAccounts.push(child)
-          }
-        }
+      for (let child of currentUser?.childAccounts) {
+        childrenAccounts.push(child)
       }
       people = [...people, [...childrenAccounts]].filter((x) => x)
     }

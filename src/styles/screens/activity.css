@@ -1,0 +1,507 @@
+/*#region  BASE COLORS */
+/*#endregion  BASE COLORS */
+/*#region  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROES)*/
+/*#region  GREYS*/
+/*#endregion  GREYS*/
+/*#region  VISITATION COLORS*/
+/*#endregion  VISITATION COLORS*/
+/*#region  Dark Theme*/
+/*#endregion  Dark Theme*/
+/*#region  LIGHT THEME*/
+/*#endregion  LIGHT THEME*/
+/*#region  BASE COLORS */
+/*#endregion  BASE COLORS */
+/*#region  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROES)*/
+/*#region  GREYS*/
+/*#endregion  GREYS*/
+/*#region  VISITATION COLORS*/
+/*#endregion  VISITATION COLORS*/
+/*#region  Dark Theme*/
+/*#endregion  Dark Theme*/
+/*#region  LIGHT THEME*/
+/*#endregion  LIGHT THEME*/
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes sparkles1 {
+  0% {
+    top: 0;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: -200%;
+    left: -50%;
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles2 {
+  0% {
+    top: 0;
+    left: 25%;
+    transform: scale(1);
+  }
+  100% {
+    top: -250%;
+    left: 10%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles3 {
+  0% {
+    top: 0;
+    left: 50%;
+    transform: scale(1);
+  }
+  100% {
+    top: -275%;
+    left: 70%;
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles4 {
+  0% {
+    top: 0;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: -120%;
+    left: 120%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles5 {
+  0% {
+    top: 100%;
+    left: 50%;
+    transform: scale(1);
+  }
+  100% {
+    top: 275%;
+    left: 70%;
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles6 {
+  0% {
+    top: 100%;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: 220%;
+    left: 120%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles7 {
+  0% {
+    top: 100%;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: 200%;
+    left: -50%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles8 {
+  0% {
+    top: 100%;
+    left: 25%;
+    transform: scale(1);
+  }
+  100% {
+    top: 250%;
+    left: 10%;
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@keyframes sparkles9 {
+  0% {
+    top: 50%;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: 60%;
+    left: -100%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles10 {
+  0% {
+    top: 50%;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: 75%;
+    left: 170%;
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+@keyframes enlarge {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes pulse {
+  0%, 100% {
+    color: "#9d98fc";
+  }
+  50% {
+    color: #5c8df7;
+  }
+}
+@keyframes pulseWhite {
+  0%, 100% {
+    box-shadow: 0px 0px 20px 0px white;
+  }
+  50% {
+    box-shadow: 0px 0px 10px 0px white;
+  }
+}
+@keyframes beat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes beatRed {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 #d57179;
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes animStar {
+  from {
+    transform: translateX(-100px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+@keyframes shootingStar {
+  0% {
+    transform: rotate(315deg) translateX(250px);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(315deg) translateX(-1500px);
+    opacity: 0;
+  }
+}
+@keyframes starTwinkle {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes topBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes bottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tilt {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes rotateMoon {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+/*#region  BASE COLORS */
+/*#endregion  BASE COLORS */
+/*#region  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROES)*/
+/*#region  GREYS*/
+/*#endregion  GREYS*/
+/*#region  VISITATION COLORS*/
+/*#endregion  VISITATION COLORS*/
+/*#region  Dark Theme*/
+/*#endregion  Dark Theme*/
+/*#region  LIGHT THEME*/
+/*#endregion  LIGHT THEME*/
+/*#region  FORM*/
+/*#endregion  FORM*/
+/*#region  BUTTONS*/
+/*#endregion  BUTTONS*/
+/*#region  EFFECTS*/
+/*#endregion  EFFECTS*/
+/*#region  POSITIONING*/
+/*#endregion  POSITIONING*/
+/*#region  COMPONENTS*/
+/*#endregion  COMPONENTS*/
+/*#region  MENU*/
+/*#endregion  MENU*/
+#external-overrides #activity-wrapper {
+  overflow: hidden;
+}
+#external-overrides #activity-wrapper svg,
+#external-overrides #activity-wrapper button {
+  transition: all 0.5s linear;
+}
+#external-overrides #activity-wrapper svg:active,
+#external-overrides #activity-wrapper button:active {
+  transform: scale(0.7);
+  opacity: 0.5;
+  border: 0;
+}
+#external-overrides #activity-wrapper #legend {
+  border-radius: 0;
+}
+#external-overrides #activity-wrapper #legend.MuiPaper-root .MuiButtonBase-root {
+  width: unset;
+}
+#external-overrides #activity-wrapper #legend .MuiAccordionDetails-root {
+  padding: 0;
+}
+#external-overrides #activity-wrapper #legend #legend-title {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+#external-overrides #activity-wrapper #legend svg {
+  margin-left: 5px !important;
+  font-size: 14px !important;
+  position: relative;
+  top: 1px;
+  opacity: 0.6;
+}
+#external-overrides #activity-wrapper #legend .box {
+  height: 10px;
+  width: 10px;
+  margin-right: 10px;
+}
+#external-overrides #activity-wrapper #legend .box.medical {
+  background-color: #d57179;
+  border-radius: 8px;
+}
+#external-overrides #activity-wrapper #legend .box.expenses {
+  background-color: #ffcb6b;
+  border-radius: 8px;
+}
+#external-overrides #activity-wrapper #legend p {
+  margin: 0;
+}
+#external-overrides #activity-wrapper .clear-all {
+  display: block;
+}
+#external-overrides #activity-wrapper .clear-all.button.default {
+  margin-left: auto;
+  min-width: 100px;
+  font-size: 14px;
+  padding: 3px 10px;
+  width: 180px;
+  max-width: unset;
+}
+#external-overrides #activity-wrapper #activity-cards {
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper {
+  align-items: center;
+  justify-content: space-between;
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper #svg-wrapper {
+  background: #2ecc71;
+  border-radius: 100%;
+  height: 22px;
+  width: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 10px 0 15px;
+  position: relative;
+  bottom: 5px;
+}
+@media screen and (min-width: 650px) {
+  #external-overrides #activity-wrapper #activity-cards #row-wrapper #svg-wrapper:hover {
+    cursor: pointer;
+  }
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper #svg-wrapper svg {
+  color: white;
+  font-size: 16px;
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper .activity-row {
+  margin-bottom: 8px;
+  width: 100%;
+  padding: 10px 10px 10px 0;
+  border-bottom: 1px solid rgba(214, 219, 222, 0.45);
+  flex-wrap: wrap;
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper .activity-row .category {
+  font-size: 12px;
+  background: #f2f4f5;
+  border-radius: 50px;
+  padding: 5px 12px;
+  margin-top: 5px;
+  margin-left: auto;
+  max-width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper .activity-row .card-title {
+  font-weight: 500;
+  line-height: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #547eff;
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper .activity-row .card-title svg {
+  margin-right: 10px;
+  font-size: 26px;
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper .activity-row .card-title.medical svg {
+  color: #d57179;
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper .activity-row .card-title.expenses svg {
+  color: #ffcb6b;
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper .activity-row #date {
+  opacity: 0.7;
+  font-size: 14px;
+  color: black;
+  margin: 0;
+}
+#external-overrides #activity-wrapper #activity-cards #row-wrapper .activity-row .text {
+  margin: 2px 0 0 0;
+  opacity: 0.7;
+  line-height: 1.4;
+  padding-bottom: 5px;
+  font-size: 14px;
+  font-weight: 400;
+}/*# sourceMappingURL=activity.css.map */

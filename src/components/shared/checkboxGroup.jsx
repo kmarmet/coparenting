@@ -7,7 +7,6 @@ import DB_UserScoped from '../../database/db_userScoped'
 import ScreenNames from '../../constants/screenNames'
 import Label from './label.jsx'
 import Checkbox from './checkbox.jsx'
-
 export default function CheckboxGroup({
   checkboxLabels,
   onCheck,
@@ -21,7 +20,7 @@ export default function CheckboxGroup({
 }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser, currentScreen } = state
-  const [showCheckboxes, setShowCheckboxes] = useState(false)
+  const [showCheckboxes, setShowCheckboxes] = useState(true)
 
   const setCheckboxVisibility = async () => {
     const numberOfValidAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)

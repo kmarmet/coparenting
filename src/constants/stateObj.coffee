@@ -4,6 +4,7 @@ StateObj =
   activeInfoChild: null
   activeInfoCoparent: [],
   activityCount: 0,
+  authUser: null
   childAccessGranted: false,
   currentScreen: ScreenNames.home
   currentUser: {}
@@ -32,6 +33,7 @@ StateObj =
   setActiveInfoChild: (child) ->
   setActiveInfoCoparent: (coparent) ->
   setActivityCount: (count) ->
+  setAuthUser: (user) ->
   setChildAccessGranted: (bool) ->
   setContactInfoToUpdateType: ->
   setCurrentScreen: (screen) ->

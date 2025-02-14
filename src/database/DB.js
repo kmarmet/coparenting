@@ -22,6 +22,7 @@ const DB = {
     chatMessages: 'chatMessages',
     holidayEvents: 'holidayEvents',
     documentHeaders: 'documentHeaders',
+    userKeys: 'userKeys',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
     if (filterFunction) {
@@ -126,6 +127,10 @@ const DB = {
         LogManager.log(error.message, LogManager.logTypes.error, error.stack)
       }
     }),
+  addSingleRecord: async (path, record) => {
+    const dbRef = ref(getDatabase())
+    await set(child(dbRef, path), record).catch((error) => {})
+  },
   addSuggestion: async (newSuggestion) => {
     const dbRef = ref(getDatabase())
     let currentSuggestions = await DB.getTable(DB.tables.suggestions)

@@ -148,7 +148,6 @@
 }
 
 @mixin hideScrollbars() {
-
   /* width */
   &::-webkit-scrollbar {
     display: none;
@@ -440,6 +439,12 @@
       background: transparent;
       border: 1px solid $green;
       color: $green;
+
+      &.has-bg {
+        background-color: $green;
+        color: white;
+        border: 0;
+      }
     }
 
     &.red {
@@ -716,7 +721,7 @@
   transition: all 0.4s ease-in-out;
   transform: scale(0);
 
-  @if ($vertOrHorizOrAll =='vert') {
+  @if ($vertOrHorizOrAll == 'vert') {
     transform: scaleY(0);
   }
 
@@ -725,7 +730,7 @@
     opacity: 1;
     max-height: 1000px;
 
-    @if ($vertOrHorizOrAll =='vert') {
+    @if ($vertOrHorizOrAll == 'vert') {
       transform: scaleY(1);
     }
   }
@@ -758,9 +763,7 @@
 
   &:active {
     right: 0;
-    box-shadow:
-      0 10px 15px -5px rgba(#000, 0.1),
-      0 0 0 40px rgba(#fff, 0.2) inset;
+    box-shadow: 0 10px 15px -5px rgba(#000, 0.1), 0 0 0 40px rgba(#fff, 0.2) inset;
     width: calc(100vw - 20px);
     max-width: 100%;
     transition: all 0.5s ease-in-out;
@@ -785,16 +788,7 @@
       radial-gradient(circle, $mainBlue 20%, transparent 20%), radial-gradient(circle, transparent 10%, $mainBlue 15%, transparent 20%),
       radial-gradient(circle, $mainBlue 20%, transparent 20%), radial-gradient(circle, $mainBlue 20%, transparent 20%),
       radial-gradient(circle, $mainBlue 20%, transparent 20%), radial-gradient(circle, $mainBlue 20%, transparent 20%);
-    background-size:
-      10% 10%,
-      20% 20%,
-      15% 15%,
-      20% 20%,
-      18% 18%,
-      10% 10%,
-      15% 15%,
-      10% 10%,
-      18% 18%;
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
   }
 
   &:after {
@@ -813,14 +807,7 @@
       radial-gradient(circle, transparent 10%, $mainBlue 15%, transparent 20%), radial-gradient(circle, $mainBlue 20%, transparent 20%),
       radial-gradient(circle, $mainBlue 20%, transparent 20%), radial-gradient(circle, $mainBlue 20%, transparent 20%),
       radial-gradient(circle, $mainBlue 20%, transparent 20%);
-    background-size:
-      15% 15%,
-      20% 20%,
-      18% 18%,
-      20% 20%,
-      15% 15%,
-      10% 10%,
-      20% 20%;
+    background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 10% 10%, 20% 20%;
   }
 
   &:active {
@@ -863,9 +850,7 @@
 }
 
 @mixin shadow {
-  box-shadow:
-    0 3px 6px rgba(0, 0, 0, 0.16),
-    0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 @mixin bestShadow {
@@ -875,9 +860,7 @@
 }
 
 @mixin topShadow {
-  box-shadow:
-    0px 50px 25px rgba(0, 0, 0, 0.56),
-    00px -25px 15px rgba(0, 0, 0, 0.56);
+  box-shadow: 0px 50px 25px rgba(0, 0, 0, 0.56), 00px -25px 15px rgba(0, 0, 0, 0.56);
 }
 
 @mixin blackGlow {
@@ -945,11 +928,11 @@
 
   $shadow: unquote($shadow);
 
-  @if $type =='box' {
+  @if $type == 'box' {
     box-shadow: $shadow;
   }
 
-  @if $type =='text' {
+  @if $type == 'text' {
     text-shadow: $shadow;
   }
 }
@@ -1228,7 +1211,8 @@
   }
 }
 
-@mixin table {}
+@mixin table {
+}
 
 @mixin row {
   margin-bottom: 10px;
@@ -1518,6 +1502,7 @@
       padding: 10px 8px;
       border-radius: $borderRadius;
       height: auto;
+      min-height: 40px;
     }
 
     &:focus {
@@ -1539,7 +1524,6 @@
   }
 
   &.active {
-
     input,
     textarea {
       width: 100%;
@@ -1739,7 +1723,6 @@
     padding: 0;
 
     &.active {
-
       span,
       svg,
       p {
@@ -1784,7 +1767,7 @@
   #label-wrapper {
     label {
       line-height: 1;
-      font-weight: $fwLight;
+      font-weight: 350;
       font-size: 14px;
       display: flex;
       align-items: center;
@@ -1879,7 +1862,7 @@
   #label-wrapper {
     label {
       font-size: 16px;
-      font-weight: $fwLight;
+      font-weight: $fwRegular;
 
       &.asterisk {
         color: $red;
@@ -1967,7 +1950,6 @@
 }
 
 @mixin uploadInputs() {
-
   &.new-expense-card,
   &.new-memory-card,
   &.new-document-card {
@@ -2512,7 +2494,8 @@
 
   .flex {
     .MuiFormControl-root {
-      .MuiInputBase-input {}
+      .MuiInputBase-input {
+      }
     }
   }
 
@@ -3402,7 +3385,6 @@
 
           &.children,
           &.reminders {
-
             #children,
             #reminder-times {
               display: flex;
@@ -3754,7 +3736,6 @@
 
         &.active {
           background: $lightPurple;
-
         }
       }
 

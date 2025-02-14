@@ -26,6 +26,7 @@
     background: $bestGreyForWhite;
     padding: 15px;
     border-radius: $borderRadius;
+
     p {
       &.heading {
         font-weight: bold;
@@ -106,6 +107,7 @@
 
   button {
     background-color: transparent;
+
     &.link {
       color: $linkColor;
       text-decoration: underline;
@@ -139,13 +141,16 @@
     }
   }
 }
+
 .react-toggle-thumb {
   width: 20px !important;
   height: 20px !important;
 }
+
 .react-toggle-track {
   height: 22px !important;
 }
+
 .react-toggle--checked,
 .react-toggle--focus,
 .react-toggle-thumb {
@@ -156,18 +161,22 @@
     //    border: 0;
     border-color: rgba(0, 0, 0, 0.21);
   }
+
   &.react-toggle--checked {
     .react-toggle-thumb {
       border: 1px solid $lightDarkGrey;
     }
+
     .react-toggle-track {
       background-color: $mainBlue !important;
     }
   }
 }
+
 .react-toggle-track {
   background: $bestGreyForWhite !important;
 }
+
 .react-toggle-track-check {
   margin: 0 !important;
   display: flex !important;
@@ -182,8 +191,10 @@
     font-size: 18px !important;
   }
 }
+
 .react-toggle {
   height: 25px;
+
   &.clone-toggle {
     svg {
       position: relative;
@@ -212,6 +223,7 @@
     .with-padding {
       width: 100%;
     }
+
     @media screen and (max-width: 600px) {
       width: 100%;
     }
@@ -237,6 +249,7 @@
   .full-menu {
     @include fullMenu;
   }
+
   input {
     @media screen and (max-width: 800px) {
       &[type='date'] {
@@ -248,6 +261,7 @@
       }
     }
   }
+
   #spacer {
     height: 1px;
     width: 100%;
@@ -269,6 +283,7 @@
       margin-left: 15px;
     }
   }
+
   #app-container {
     position: relative;
     max-width: 100vw;
@@ -279,6 +294,7 @@
     background: $lightDesktopBg;
     overflow: hidden;
     height: 100vh;
+
     @media screen and (max-width: 800px) {
       background: white;
     }
@@ -310,6 +326,7 @@
       background-color: #fbfeff;
       width: 100%;
       margin: 20px auto;
+
       //      background-image: -webkit-gradient( linear, left bottom, right bottom, color-stop(0.04, #f4f8fb), color-stop(0.5, #9b9b9b), color-stop(0.98, white) );
       &.event-hr {
         margin: 10px auto;
@@ -319,6 +336,7 @@
 
     span {
       color: inherit;
+
       &.link {
         color: $linkColor;
       }
@@ -332,15 +350,18 @@
       font-weight: $fwRegular;
       color: black;
     }
+
     /*#endregion ELEMENT DEFAULTS*/
 
     /*#region MIXINS */
     .row {
       @include row;
     }
+
     .flex-start {
       justify-content: flex-start !important;
     }
+
     .mui-input {
       &::placeholder {
         font-size: 12px !important;
@@ -367,6 +388,7 @@
           flex-wrap: wrap;
           display: flex;
           gap: 10px 8px;
+
           .pill {
             display: inline;
             margin: 0;
@@ -413,6 +435,7 @@
     button,
     .button {
       @include buttonPress;
+
       &.bottom {
         @include button;
       }
@@ -428,7 +451,20 @@
         }
       }
     }
+
     /*#endregion MIXINS */
+
+    /*#region SCREENS */
+    // USER DETAILS SCREEN
+    #user-details {
+      .smiley-icon {
+        color: $mainBlue;
+        font-size: 22px;
+        margin-left: 10px;
+      }
+    }
+
+    /*#endregion SCREENS */
 
     /*#region  CLASS/ID DEFAULTS*/
     .green {
@@ -561,12 +597,14 @@
             max-width: calc(70vw - 80px);
           }
         }
+
         .home {
           width: 70vw;
           max-width: 100vw;
           margin: 0 auto;
         }
       }
+
       @media screen and (max-width: 1100px) {
         #home-screen-wrapper {
           #below-fold-wrapper,
@@ -575,11 +613,13 @@
             max-width: calc(90vw - 80px);
           }
         }
+
         .home {
           width: 90vw;
           max-width: 100vw;
         }
       }
+
       @media screen and (max-width: 800px) {
         #home-screen-wrapper {
           #below-fold-wrapper,
@@ -595,6 +635,7 @@
             }
           }
         }
+
         .home {
           width: 100vw;
           max-width: 100vw;
@@ -626,6 +667,7 @@
         fill: #8693cd !important;
       }
     }
+
     #bottom-card {
       @include bottomCard;
     }
@@ -633,6 +675,7 @@
     #share-with-checkbox-group {
       @include checkboxGroup;
     }
+
     #input-wrapper {
       @include inputWrapper;
     }
@@ -644,6 +687,7 @@
     #page-overlay {
       @include pageOverlay;
     }
+
     .Inter-thin {
       font-family: 'Inter', sans-serif;
       font-weight: 100;
@@ -715,9 +759,11 @@
       font-weight: 900;
       font-style: italic;
     }
+
     .title-suggestion-wrapper {
       @include inputSuggestionDropdown;
     }
+
     .material-icons {
       font-family: 'Material Icons';
     }
@@ -746,6 +792,7 @@
       background: rgba(000, 000, 000, 0.1);
       inset: 0;
       overflow: hidden;
+
       &.dark {
         background: $darkBg;
       }
@@ -911,6 +958,7 @@
         overflow: hidden;
         position: relative;
         top: -3px;
+
         svg {
           font-size: 16px !important;
           margin-left: 8px;
@@ -1145,16 +1193,20 @@
     }
 
     #instructions-wrapper {
-      @include deadCenter;
+      top: 30vh;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
+
       .instructions {
         opacity: 0.7;
         font-style: italic;
         font-weight: 400;
         line-height: 1.5;
         font-size: 16px;
+        max-width: 80%;
+        text-align: center;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1170,6 +1222,7 @@
         }
       }
     }
+
     .sparkle {
       @include sparkleButton;
     }
@@ -1232,6 +1285,7 @@
         justify-content: center;
       }
     }
+
     /*#endregion  CLASS/ID DEFAULTS*/
   }
 }

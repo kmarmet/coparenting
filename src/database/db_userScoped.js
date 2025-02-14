@@ -1,7 +1,7 @@
 import Manager from '../managers/manager'
 import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
 import FirebaseStorage from './firebaseStorage'
-import DB from '/src/database/DB'
+import DB from './DB'
 import {
   contains,
   displayAlert,
@@ -24,7 +24,13 @@ import {
 import DatasetManager from '/src/managers/datasetManager'
 import _ from 'lodash'
 import StringManager from '/src/managers/stringManager.coffee'
-
+import User from '../models/user'
+import moment from 'moment'
+import DateFormats from '../constants/dateFormats'
+import ObjectManager from '/src/managers/objectManager'
+import ModelNames from '../models/modelNames'
+import UserKey from '../models/userKey'
+import user from '../models/user'
 const DB_UserScoped = {
   // GET
   getChildAccounts: async (currentUser) => {
@@ -56,8 +62,8 @@ const DB_UserScoped = {
     }
     return children.length + coparents.length
   },
-  getCurrentUser: async (currentUserPhoneOrEmail, phoneOrEmail = 'phone') => {
-    return await DB.find(DB.tables.users, [phoneOrEmail, currentUserPhoneOrEmail], true)
+  getCurrentUser: async (authUserEmail) => {
+    return await DB.find(DB.tables.users, ['email', authUserEmail], true)
   },
   getCurrentUserRecords: (tableName, currentUser, objectName) => {
     return new Promise((resolve, reject) => {
@@ -230,6 +236,25 @@ const DB_UserScoped = {
     }
     const returnChild = await DB.getTable(`users/${currentUser?.phone}/coparents/${key}`, true)
     return returnChild
+  },
+  createAndInsertUser: async (key, email, name, phone, accountType) => {
+    const dbRef = ref(getDatabase())
+    let newUser = new User()
+    newUser.email = email
+    newUser.key = key
+    newUser.name = StringManager.uppercaseFirstLetterOfAllWords(name).trim()
+    newUser.accountType = accountType.toLowerCase()
+    newUser.phone = StringManager.formatPhone(phone)
+    const cleanUser = ObjectManager.cleanObject(newUser, ModelNames.user)
+    const userKey = new UserKey()
+    userKey.email = email
+    userKey.phone = phone
+    userKey.key = key
+    window.localStorage.setItem('currentUser', JSON.stringify({ key, email }))
+    await set(child(dbRef, `${DB.tables.users}/${key}`), cleanUser).catch((error) => {})
+    await DB.addSingleRecord(`${DB.tables.userKeys}/${key}`, userKey)
+
+    return newUser
   },
 
   // UPDATE

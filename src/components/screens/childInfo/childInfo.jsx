@@ -39,7 +39,7 @@ export default function ChildInfo() {
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showActions, setShowActions] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
-  const [currentDestinations, setCurrentDestinations] = useState('')
+  const [hasChildren, setHasChildren] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
   const uploadProfilePic = async () => {
     // setState({ ...state, isLoading: true })
@@ -66,8 +66,13 @@ export default function ChildInfo() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
 
-    onValue(child(dbRef, `${DB.tables.users}/${currentUser?.phone}/children`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children`), async (snapshot) => {
       const kiddos = Manager.convertToArray(snapshot.val())
+      if (Manager.isValid(kiddos)) {
+        setHasChildren(true)
+      } else {
+        setHasChildren(false)
+      }
       const checklistBottomCard = document.querySelector('.child-info-checklists')
       if (checklistBottomCard && !checklistBottomCard.classList.contains('animate__fadeInUp')) {
         if (Manager.isValid(kiddos)) {
@@ -83,7 +88,7 @@ export default function ChildInfo() {
   }
 
   const updateActiveChild = async (child) => {
-    const children = await DB.getTable(`${DB.tables.users}/${currentUser?.phone}/children`)
+    const children = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children`)
     const thisChild = children.filter((x) => x.id === child.id)[0]
     setActiveInfoChild(thisChild)
   }
@@ -126,7 +131,7 @@ export default function ChildInfo() {
             {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
           </div>
 
-          {!Manager.isValid(currentUser?.children?.[0]) && currentUser?.children?.length <= 0 && (
+          {!hasChildren && (
             <NoDataFallbackText
               text={
                 'No children have been added yet. In order to share events with your children, or store information about them - you will need to add them here.'

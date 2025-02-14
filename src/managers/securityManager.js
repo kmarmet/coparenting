@@ -10,6 +10,8 @@ import DateManager from "../managers/dateManager";
 
 import _ from "lodash";
 
+import DB_UserScoped from "../database/DB_UserScoped";
+
 SecurityManager = {
   getShareWithItems: async function(currentUser, table) {
     var coparent, coparentAndChildEvents, coparentItems, i, item, j, len, len1, ref, ref1;
@@ -18,11 +20,11 @@ SecurityManager = {
       ref = currentUser != null ? currentUser.coparents : void 0;
       for (i = 0, len = ref.length; i < len; i++) {
         coparent = ref[i];
-        coparentItems = (await DB.getTable(`${table}/${coparent.phone}`));
+        coparentItems = (await DB.getTable(`${table}/${coparent != null ? coparent.key : void 0}`));
         for (j = 0, len1 = coparentItems.length; j < len1; j++) {
           item = coparentItems[j];
           if (Manager.isValid(item != null ? item.shareWith : void 0)) {
-            if (item != null ? (ref1 = item.shareWith) != null ? ref1.includes(currentUser != null ? currentUser.phone : void 0) : void 0 : void 0) {
+            if (item != null ? (ref1 = item.shareWith) != null ? ref1.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
               coparentAndChildEvents.push(item);
             }
           }
@@ -33,15 +35,19 @@ SecurityManager = {
     return coparentAndChildEvents;
   },
   getCalendarEvents: async function(currentUser) {
-    var allEvents, event, i, len, returnRecords, sharedEvents;
+    var allEvents, event, i, len, returnRecords, sharedEvents, users;
+    users = (await DB.getTable(DB.tables.users));
+    currentUser = users.find(function(x) {
+      return x.email === (currentUser != null ? currentUser.email : void 0);
+    });
     returnRecords = [];
-    allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.phone : void 0}`));
+    allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.key : void 0}`));
     sharedEvents = (await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents));
     if (Manager.isValid(allEvents)) {
       for (i = 0, len = allEvents.length; i < len; i++) {
         event = allEvents[i];
         if (DateManager.isValidDate(event.startDate)) {
-          if (event.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
+          if (event.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
             returnRecords.push(event);
           }
         }
@@ -55,13 +61,13 @@ SecurityManager = {
   getUserVisitationHolidays: async function(currentUser) {
     var allEvents, event, i, len, returnRecords, sharedEvents;
     returnRecords = [];
-    allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.phone : void 0}`));
+    allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.key : void 0}`));
     sharedEvents = (await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents));
     if (Manager.isValid(allEvents)) {
       for (i = 0, len = allEvents.length; i < len; i++) {
         event = allEvents[i];
         if (DateManager.isValidDate(event.startDate)) {
-          if (event.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
+          if (event.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
             returnRecords.push(event);
           }
         }
@@ -75,12 +81,12 @@ SecurityManager = {
   getExpenses: async function(currentUser) {
     var allExpenses, expense, i, len, returnRecords, sharedExpenses;
     returnRecords = [];
-    allExpenses = Manager.convertToArray((await DB.getTable(`${DB.tables.expenses}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
+    allExpenses = Manager.convertToArray((await DB.getTable(`${DB.tables.expenses}/${currentUser != null ? currentUser.key : void 0}`))).flat();
     sharedExpenses = (await SecurityManager.getShareWithItems(currentUser, DB.tables.expenses));
     if (Manager.isValid(allExpenses)) {
       for (i = 0, len = allExpenses.length; i < len; i++) {
         expense = allExpenses[i];
-        if (expense.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
+        if (expense.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
           returnRecords.push(expense);
         }
       }
@@ -98,7 +104,7 @@ SecurityManager = {
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
-        if (request.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
+        if (request.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
           returnRecords.push(request);
         }
       }
@@ -116,7 +122,7 @@ SecurityManager = {
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
-        if (request.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
+        if (request.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
           returnRecords.push(request);
         }
       }
@@ -134,7 +140,7 @@ SecurityManager = {
     if (Manager.isValid(allDocs)) {
       for (i = 0, len = allDocs.length; i < len; i++) {
         doc = allDocs[i];
-        if (doc.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
+        if (doc.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
           returnRecords.push(doc);
         }
       }
@@ -147,12 +153,12 @@ SecurityManager = {
   getMemories: async function(currentUser) {
     var allMemories, i, len, memory, returnRecords, sharedMemories;
     returnRecords = [];
-    allMemories = Manager.convertToArray((await DB.getTable(`${DB.tables.memories}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
+    allMemories = Manager.convertToArray((await DB.getTable(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`))).flat();
     sharedMemories = (await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests));
     if (Manager.isValid(allMemories)) {
       for (i = 0, len = allMemories.length; i < len; i++) {
         memory = allMemories[i];
-        if (memory.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
+        if (memory.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
           returnRecords.push(memory);
         }
       }
@@ -171,7 +177,7 @@ SecurityManager = {
         chatArray = allArchivedChats[i];
         for (j = 0, len1 = chatArray.length; j < len1; j++) {
           chat = chatArray[j];
-          if (chat.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
+          if (chat.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
             returnRecords.push(chat);
           }
         }
@@ -186,7 +192,7 @@ SecurityManager = {
     if (Manager.isValid(suggestions)) {
       for (i = 0, len = suggestions.length; i < len; i++) {
         suggestion = suggestions[i];
-        if (suggestion.ownerPhone === (currentUser != null ? currentUser.phone : void 0)) {
+        if (suggestion.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
           returnRecords.push(suggestion);
         }
       }
@@ -195,7 +201,7 @@ SecurityManager = {
   },
   getChats: async function(currentUser) {
     var chat, chats, i, len, members, ref, ref1, securedChats;
-    chats = Manager.convertToArray((await DB.getTable(`${DB.tables.chats}/${currentUser != null ? currentUser.phone : void 0}`))).flat();
+    chats = Manager.convertToArray((await DB.getTable(`${DB.tables.chats}/${currentUser != null ? currentUser.key : void 0}`))).flat();
     securedChats = [];
     // User does not have a chat with root access by phone
     if (Manager.isValid(chats)) {
@@ -204,7 +210,7 @@ SecurityManager = {
         members = chat != null ? (ref = chat.members) != null ? ref.map(function(x) {
           return x.phone;
         }) : void 0 : void 0;
-        if (ref1 = currentUser != null ? currentUser.phone : void 0, indexOf.call(members, ref1) >= 0) {
+        if (ref1 = currentUser != null ? currentUser.key : void 0, indexOf.call(members, ref1) >= 0) {
           securedChats.push(chat);
         }
       }
@@ -222,7 +228,7 @@ SecurityManager = {
         members = chat.members.map(function(x) {
           return x.phone;
         });
-        if (ref = currentUser != null ? currentUser.phone : void 0, indexOf.call(members, ref) >= 0) {
+        if (ref = currentUser != null ? currentUser.key : void 0, indexOf.call(members, ref) >= 0) {
           activeChats.push(chat);
         }
       }

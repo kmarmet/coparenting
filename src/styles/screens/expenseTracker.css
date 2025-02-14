@@ -1,3 +1,15 @@
+/*#region  BASE COLORS */
+/*#endregion  BASE COLORS */
+/*#region  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROES)*/
+/*#region  GREYS*/
+/*#endregion  GREYS*/
+/*#region  VISITATION COLORS*/
+/*#endregion  VISITATION COLORS*/
+/*#region  Dark Theme*/
+/*#endregion  Dark Theme*/
+/*#region  LIGHT THEME*/
+/*#endregion  LIGHT THEME*/
 @keyframes gradient {
   0% {
     background-position: 0% 50%;
@@ -9,23 +21,162 @@
     background-position: 0% 50%;
   }
 }
+@keyframes sparkles1 {
+  0% {
+    top: 0;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: -200%;
+    left: -50%;
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles2 {
+  0% {
+    top: 0;
+    left: 25%;
+    transform: scale(1);
+  }
+  100% {
+    top: -250%;
+    left: 10%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles3 {
+  0% {
+    top: 0;
+    left: 50%;
+    transform: scale(1);
+  }
+  100% {
+    top: -275%;
+    left: 70%;
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles4 {
+  0% {
+    top: 0;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: -120%;
+    left: 120%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles5 {
+  0% {
+    top: 100%;
+    left: 50%;
+    transform: scale(1);
+  }
+  100% {
+    top: 275%;
+    left: 70%;
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles6 {
+  0% {
+    top: 100%;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: 220%;
+    left: 120%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles7 {
+  0% {
+    top: 100%;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: 200%;
+    left: -50%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles8 {
+  0% {
+    top: 100%;
+    left: 25%;
+    transform: scale(1);
+  }
+  100% {
+    top: 250%;
+    left: 10%;
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@keyframes sparkles9 {
+  0% {
+    top: 50%;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: 60%;
+    left: -100%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles10 {
+  0% {
+    top: 50%;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: 75%;
+    left: 170%;
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
 @keyframes rotate {
   100% {
     transform: rotate(1turn);
   }
 }
-@keyframes pulse {
-  0%,
-  100% {
-    color: '#9d98fc';
+@keyframes enlarge {
+  0% {
+    transform: scale(1);
   }
   50% {
-    color: #2b3563;
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes pulse {
+  0%, 100% {
+    color: "#9d98fc";
+  }
+  50% {
+    color: #5c8df7;
   }
 }
 @keyframes pulseWhite {
-  0%,
-  100% {
+  0%, 100% {
     box-shadow: 0px 0px 20px 0px white;
   }
   50% {
@@ -36,6 +187,20 @@
   0% {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes beatRed {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 #d57179;
   }
   70% {
     transform: scale(1.1);
@@ -108,86 +273,26 @@
 }
 @keyframes topBubbles {
   0% {
-    background-position:
-      5% 90%,
-      10% 90%,
-      10% 90%,
-      15% 90%,
-      25% 90%,
-      25% 90%,
-      40% 90%,
-      55% 90%,
-      70% 90%;
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
   }
   50% {
-    background-position:
-      0% 80%,
-      0% 20%,
-      10% 40%,
-      20% 0%,
-      30% 30%,
-      22% 50%,
-      50% 50%,
-      65% 20%,
-      90% 30%;
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
   }
   100% {
-    background-position:
-      0% 70%,
-      0% 10%,
-      10% 30%,
-      20% -10%,
-      30% 20%,
-      22% 40%,
-      50% 40%,
-      65% 10%,
-      90% 20%;
-    background-size:
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%;
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
   }
 }
 @keyframes bottomBubbles {
   0% {
-    background-position:
-      10% -10%,
-      30% 10%,
-      55% -10%,
-      70% -10%,
-      85% -10%,
-      70% -10%,
-      70% 0%;
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
   }
   50% {
-    background-position:
-      0% 80%,
-      20% 80%,
-      45% 60%,
-      60% 100%,
-      75% 70%,
-      95% 60%,
-      105% 0%;
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
   }
   100% {
-    background-position:
-      0% 90%,
-      20% 90%,
-      45% 70%,
-      60% 110%,
-      75% 80%,
-      95% 70%,
-      110% 10%;
-    background-size:
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%,
-      0% 0%;
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
   }
 }
 @keyframes rotate {
@@ -220,21 +325,296 @@
     transform: rotate(-90deg);
   }
 }
+/*#region  BASE COLORS */
+/*#endregion  BASE COLORS */
+/*#region  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROES)*/
+/*#region  GREYS*/
+/*#endregion  GREYS*/
+/*#region  VISITATION COLORS*/
+/*#endregion  VISITATION COLORS*/
+/*#region  Dark Theme*/
+/*#endregion  Dark Theme*/
+/*#region  LIGHT THEME*/
+/*#endregion  LIGHT THEME*/
+/*#region  FORM*/
+/*#endregion  FORM*/
+/*#region  BUTTONS*/
+/*#endregion  BUTTONS*/
+/*#region  EFFECTS*/
+/*#endregion  EFFECTS*/
+/*#region  POSITIONING*/
+/*#endregion  POSITIONING*/
+/*#region  COMPONENTS*/
+/*#endregion  COMPONENTS*/
+/*#region  MENU*/
+/*#endregion  MENU*/
+#external-overrides #expenses-container #below-title {
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 5px;
+}
+#external-overrides #expenses-container #below-title .due-date {
+  font-weight: 400;
+  font-style: italic;
+  font-size: 14px;
+  opacity: 0.75;
+}
 #external-overrides #add-expense-form {
   margin: 0;
   position: relative;
 }
-#external-overrides #add-expense-form .rs-picker {
-  margin: 0;
+#external-overrides #add-expense-form .MuiFormControl-root .MuiInputBase-input {
+  height: auto !important;
+}
+#external-overrides #add-expense-form .MuiFormControl-root .MuiInputBase-input[role=combobox] {
+  padding: 10px !important;
+}
+#external-overrides #add-expense-form #amount-input-wrapper {
+  margin: 0 auto;
+  width: 200px;
+}
+#external-overrides #add-expense-form #amount-input-wrapper #dollar-sign {
+  color: #2ecc71;
+}
+#external-overrides #add-expense-form #amount-input-wrapper #dollar-sign sup {
+  font-size: 20px;
+}
+#external-overrides #add-expense-form #amount-input-wrapper #zero {
+  font-size: 30px;
+  opacity: 0.7;
+  margin-right: 15px;
+}
+#external-overrides #add-expense-form #amount-input-wrapper #zero.active {
+  opacity: 1;
+}
+#external-overrides #add-expense-form #amount-input-wrapper .defaults {
+  text-align: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#external-overrides #add-expense-form #amount-input-wrapper .defaults span {
+  text-align: center;
+}
+#external-overrides #add-expense-form.form label.caption {
+  justify-content: center;
+}
+#external-overrides #add-expense-form #default-expense-amounts {
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+#external-overrides #add-expense-form #default-expense-amounts .reset {
+  font-weight: 500;
+}
+#external-overrides #add-expense-form #default-expense-amounts button {
+  border-radius: 8px;
+  width: 20%;
+  padding: 10px 0;
+  border: 0;
+}
+#external-overrides #add-expense-form #default-expense-amounts button.pressed {
+  border-radius: 8px;
+  transform: scale(1.1);
+}
+#external-overrides #add-expense-form #default-expense-amounts .done span {
+  color: #2ecc71;
+  transform: scale(1.8);
+}
+#external-overrides #add-expense-form #or {
+  width: 100%;
+  text-align: center;
+  font-style: italic;
+  font-size: 18px;
+  opacity: 0.7;
 }
 #external-overrides #add-expense-form #upload-inputs {
   margin-bottom: 10px;
 }
-#external-overrides #add-expense-form #upload-inputs span {
-  color: var(--compColor);
-}
 #external-overrides #add-expense-form #upload-inputs #upload-button span {
   color: white;
+}
+#external-overrides #expense-tracker {
+  /*#region  EXPENSE*/
+  /*#endregion  EXPENSE*/
+}
+#external-overrides #expense-tracker .MuiCollapse-root {
+  border-radius: 0 0 8px 8px;
+  background: #dde5ff;
+  transition: all 0.3s ease-in-out;
+}
+#external-overrides #expense-tracker .MuiCollapse-root .buttons {
+  padding: 15px;
+}
+#external-overrides #expense-tracker .MuiCollapse-root .buttons.flex {
+  gap: 10px;
+  padding: 0;
+}
+#external-overrides #expense-tracker .MuiCollapse-root .buttons button.button.default {
+  font-size: 14px;
+  padding: 8px 15px;
+  min-width: 0;
+  width: unset;
+  background: white;
+  color: rgba(0, 0, 0, 0.44);
+  border: 0;
+  margin-bottom: 8px;
+  opacity: 1;
+  font-weight: 600;
+}
+#external-overrides #expense-tracker .MuiCollapse-root .buttons button.button.default.active {
+  color: #547eff;
+}
+#external-overrides #expense-tracker .MuiPaper-elevation .MuiAccordionSummary-gutters.MuiAccordionSummary-root {
+  width: 100%;
+}
+#external-overrides #expense-tracker .MuiPaper-elevation .MuiAccordionSummary-gutters.MuiAccordionSummary-root #toggle-button {
+  font-weight: 300;
+}
+#external-overrides #expense-tracker .MuiPaper-elevation .MuiAccordionSummary-gutters.MuiAccordionSummary-root #toggle-button.active {
+  font-weight: 400;
+}
+#external-overrides #expense-tracker .MuiPaper-elevation .MuiAccordionSummary-gutters.MuiAccordionSummary-root #actions-button {
+  padding: 10px;
+  background-color: #f2f4f5;
+  display: flex;
+  font-weight: 500;
+  flex-wrap: wrap;
+  opacity: 0.75;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1;
+  font-size: 14px;
+  padding: 8px 15px;
+}
+#external-overrides #expense-tracker .MuiPaper-elevation .MuiAccordionSummary-gutters.MuiAccordionSummary-root #actions-button svg {
+  margin-left: auto;
+  align-self: flex-end;
+  color: #b6b6b6;
+  font-size: 22px;
+  max-height: 20px;
+  display: flex;
+  position: relative;
+  top: -2px;
+  align-items: center;
+  justify-content: center;
+}
+#external-overrides #expense-tracker .MuiPaper-elevation .MuiAccordionSummary-gutters.MuiAccordionSummary-root #actions-button.expenses {
+  margin-left: 0;
+}
+#external-overrides #expense-tracker .MuiPaper-elevation .MuiAccordionSummary-gutters.MuiAccordionSummary-root #actions-button svg {
+  margin-left: 10px;
+  margin-right: 0;
+  font-size: 14px;
+  color: black;
+  opacity: 0.75;
+  position: relative;
+  top: 0;
+}
+#external-overrides #expense-tracker .MuiPaper-elevation .MuiAccordionSummary-gutters.MuiAccordionSummary-root #actions-button.active {
+  background: #dde5ff;
+  color: #547eff;
+  width: 100%;
+  opacity: 1;
+  margin: 0;
+  font-weight: 600;
+  border-radius: 8px 8px 0 0;
+  font-size: 16px;
+  padding-top: 15px;
+}
+#external-overrides #expense-tracker .MuiPaper-elevation .MuiAccordionSummary-gutters.MuiAccordionSummary-root #actions-button.active svg {
+  color: #547eff;
+}
+#external-overrides #expense-tracker #filters {
+  margin-top: 15px;
+  border-radius: 8px;
+}
+#external-overrides #expense-tracker #filters .filter-row {
+  margin-bottom: 10px;
+}
+#external-overrides #expense-tracker #filters .filter-row #label-wrapper label {
+  line-height: 1;
+}
+#external-overrides #expense-tracker #filters .filter-row #label-wrapper label span {
+  padding: 0;
+  font-weight: 500;
+}
+#external-overrides #expense-tracker #filters .MuiFormControl-root .MuiOutlinedInput-root [role=combobox] {
+  background: white !important;
+  padding: 0 8px !important;
+  margin-top: 5px !important;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+#external-overrides #expense-tracker #filters #label-wrapper.sorting label {
+  line-height: 1;
+}
+#external-overrides #expense-tracker #filters #label-wrapper.sorting label span {
+  padding: 0;
+  font-weight: 500;
+  opacity: 0.9;
+}
+#external-overrides #expense-tracker #filters .sort-by .list-item {
+  margin-left: 10px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+#external-overrides #expense-tracker #filters .pills {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+#external-overrides #expense-tracker #filters .pills .pill {
+  font-size: 14px;
+  border: 1px solid #547eff;
+  color: #547eff;
+  padding: 2px 15px;
+  border-radius: 20px;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+  color: #547eff;
+  border: 1px solid #547eff;
+  background: #f2f4f5;
+  border-radius: 50px;
+  text-align: center;
+  font-weight: 400;
+  line-height: 1;
+  padding: 6.5px 15px;
+  font-size: 12px;
+  align-items: center;
+  justify-content: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  transition: all 0.3s ease-in-out;
+  letter-spacing: 0.8px;
+  display: inline-flex;
+  margin-right: 8px;
+}
+#external-overrides #expense-tracker #filters .pills .pill.active {
+  background-color: #547eff;
+  color: white;
+}
+@media screen and (min-width: 650px) {
+  #external-overrides #expense-tracker #filters .pills .pill:hover {
+    cursor: pointer;
+  }
+}
+#external-overrides #expense-tracker #filters .pills .pill.active {
+  background: #dde5ff;
+  color: #547eff;
+}
+#external-overrides #expense-tracker #filters .pills .pill svg {
+  font-size: 12px;
+  width: 0;
+  transition: all 0.3s linear;
 }
 #external-overrides #expense-tracker .action-pills .flex {
   padding: 0;
@@ -243,18 +623,21 @@
 #external-overrides #expense-tracker .action-pills .flex span {
   border-radius: 100%;
   font-size: 45px;
-  color: #2b3563;
+  color: #5c8df7;
   padding: 0;
   margin: 0;
-  box-shadow:
-    0 7px 8px rgba(0, 0, 0, 0.1),
-    0 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0 7px 8px rgba(0, 0, 0, 0.1), 0 0px 0px rgba(0, 0, 0, 0);
 }
 #external-overrides #expense-tracker .payment-options-link {
-  color: #0080ff;
+  color: #547eff;
   text-decoration: underline;
-  font-size: 17px;
   font-weight: 500;
+  opacity: 1;
+}
+@media screen and (min-width: 650px) {
+  #external-overrides #expense-tracker .payment-options-link:hover {
+    cursor: pointer;
+  }
 }
 #external-overrides #expense-tracker .payment-options-link span {
   font-size: 25px;
@@ -267,171 +650,157 @@
   height: auto;
   max-height: 100%;
 }
-#external-overrides #expense-tracker #expenses-card-container {
-  margin-top: 10px;
-  background-color: transparent;
+#external-overrides #expense-tracker .expense.active {
+  overflow: auto;
+  max-height: 10000px;
+  transition: all 0.3s ease-in-out;
 }
-#external-overrides #expense-tracker #expenses-card-container .expense {
-  border: 0;
-  border-radius: 15px;
-  box-shadow:
-    0 3px 6px rgba(0, 0, 0, 0.16),
-    0 3px 6px rgba(0, 0, 0, 0.23);
-  display: block;
-  background-color: var(--eventDetails);
-}
-#external-overrides #expense-tracker #expenses-card-container .expense:last-child {
-  border-bottom: 0;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details #button-group {
-  width: 100%;
-  border-top: 1px solid var(--eventDetails);
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details #button-group button {
-  border: 0;
-  height: auto;
-  min-height: 0;
-  padding: 10px 5px;
+#external-overrides #expense-tracker .expense span {
   font-size: 14px;
 }
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details #button-group button:first-child {
-  border-radius: 0 0 0 15px;
+#external-overrides #expense-tracker .expense * {
+  line-height: 1;
 }
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details #button-group button:last-child {
-  border-radius: 0 0 15px 0;
+#external-overrides #expense-tracker .expense p:not(.name) {
+  opacity: 0.85;
+  font-size: 13px;
 }
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details #img-container {
-  width: 100%;
+#external-overrides #expense-tracker .expense #category-and-amount {
+  margin-top: 0;
 }
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details #img-container img {
+#external-overrides #expense-tracker .expense #category-and-amount .amount {
+  font-size: 16px;
+  opacity: 0.85;
+  font-weight: 500;
+  display: inline;
+  margin-left: auto;
   width: auto;
-  height: 100%;
-  border-radius: 8px;
-  margin-right: 5px;
+  float: right;
+  text-align: right;
 }
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details #img-expand-text {
+#external-overrides #expense-tracker .expense #category-and-amount .amount.paid {
+  color: #2ecc71;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+#external-overrides #expense-tracker .expense #category-and-amount #expense-category {
+  display: flex;
+  align-items: center;
+  color: #1c1c1c;
+  transition: all 0.3s ease-in-out;
+}
+#external-overrides #expense-tracker .expense #category-and-amount #expense-category span {
+  margin-left: 5px;
+  color: #4c75a3;
+  line-height: 1;
+}
+#external-overrides #expense-tracker .expense #name-wrapper {
+  width: 100%;
+  margin-top: 0;
+}
+#external-overrides #expense-tracker .expense #name-wrapper .details-toggle-arrow {
+  display: none;
+  opacity: 0.4;
+  position: relative;
+  right: 0;
+  justify-self: flex-end;
+  font-size: 24px;
+}
+#external-overrides #expense-tracker .expense #name-wrapper .details-toggle-arrow.active {
+  display: inherit;
+}
+#external-overrides #expense-tracker .expense #name-wrapper .name {
+  line-height: 1;
+  font-weight: 400;
+  width: 100%;
+  display: inline;
+}
+#external-overrides #expense-tracker .expense #details {
+  padding-left: 10px;
+}
+#external-overrides #expense-tracker .expense #details #due-in {
+  color: #d57179;
+  margin-top: 8px;
+  font-weight: 500;
+}
+#external-overrides #expense-tracker .expense #details #button-group {
+  width: 100%;
+  gap: 15px;
+  border-radius: 15px;
+}
+#external-overrides #expense-tracker .expense #details #button-group button {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  font-size: 14px;
+  background: transparent;
+}
+#external-overrides #expense-tracker .expense #details #button-group button:first-child {
+  color: #2ecc71;
+}
+#external-overrides #expense-tracker .expense #details #button-group button:last-child {
+  color: #547eff;
+}
+#external-overrides #expense-tracker .expense #details #expense-image {
+  position: relative;
+  margin: 20px 0;
+}
+#external-overrides #expense-tracker .expense #details #expense-image img {
+  border-radius: 8px 8px 0 0;
+  height: 50px;
+  width: 50px;
+}
+#external-overrides #expense-tracker .expense #details #expense-image svg {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  font-size: 20px;
+  color: white;
+  opacity: 0.6;
+}
+#external-overrides #expense-tracker .expense #details #repeating-icon {
+  font-size: 22px;
+  position: relative;
+  top: 5px;
+}
+#external-overrides #expense-tracker .expense #img-container {
+  width: 50px;
+  height: 50px;
+  background-size: cover;
+  border-radius: 8px;
+  background-position: center;
+  float: left;
+  justify-self: flex-start;
+}
+#external-overrides #expense-tracker .expense #img-expand-text {
   margin-top: 10px;
   width: 100%;
   text-align: center;
   font-style: italic;
-  color: var(--textColor);
 }
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text {
-  padding: 10px;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text .flex {
-  padding: 8px 10px;
-  margin-bottom: 5px;
-  border-radius: 8px;
-  align-items: center;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text .flex.editable {
-  background-color: var(--eventDetails);
-  justify-content: flex-start;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text .flex.editable.due-date {
-  background-color: #ca436c;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text .flex.editable.due-date p,
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text .flex.editable.due-date span {
-  color: white;
-  font-weight: bold;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text .flex.editable.due-date p b,
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text .flex.editable.due-date span b {
-  font-weight: bold;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text .flex.editable.due-date span {
-  top: -2px;
-  width: calc(100% - 100px);
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text .flex.editable.notes span {
-  width: 100%;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .lower-details-text .flex.editable span {
-  margin: 0;
-  top: -1px;
-  margin-left: 5px;
-  color: var(--textColor);
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .group,
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .due-date {
-  background-color: var(--eventDetails);
-  padding: 8px 10px;
-  border-radius: 8px;
-  margin-bottom: 5px;
-  align-items: center;
-  line-height: 1;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .group.subtexxt p,
-#external-overrides #expense-tracker #expenses-card-container .expense .lower-details .due-date.subtexxt p {
-  padding: 8px 10px;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .content .rs-panel-body {
-  padding: 0;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .content span {
-  margin: 0 auto;
+#external-overrides #expense-tracker .expense #delete-button {
+  font-size: 14px;
+  margin-left: auto;
   display: block;
-  position: relative;
-  top: 5px;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .content p {
-  line-height: 1.3;
-  opacity: 0.9;
-  margin: 0;
-  font-size: 15px;
-  font-weight: 400;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .content p b {
-  font-weight: 600;
-  font-size: 15px;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .content p.due-date {
-  color: #ca436c;
+  color: #d57179;
+  margin-top: 15px;
+  text-align: right;
   font-weight: 500;
 }
-#external-overrides #expense-tracker #expenses-card-container .expense .content p.due-date b {
-  font-weight: 600;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .content .top-details {
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  background-color: transparent;
-  transition: all 0.8s linear;
-  display: flex;
-  width: 100%;
+#external-overrides #expense-tracker .expense .flex {
   align-items: center;
 }
-#external-overrides #expense-tracker #expenses-card-container .expense .content .top-details b {
+#external-overrides #expense-tracker .expense .flex p {
+  margin-right: 10px;
+  min-width: 120px;
   font-weight: 500;
 }
-#external-overrides #expense-tracker #expenses-card-container .expense .content .top-details .flex {
-  width: 100%;
-  border-radius: 15px 15px 0 0;
-  background-color: var(--purple);
-  padding: 8px 10px;
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .content .top-details .flex .name {
-  line-height: 1;
-  line-height: 1;
-  text-transform: uppercase;
-  font-weight: 600;
-  width: 100%;
-  color: var(--textColorWhite);
-  display: flex;
-  justify-content: space-between;
-  font-size: 20px;
-  align-items: center;
-  background-color: var(--purple);
-}
-#external-overrides #expense-tracker #expenses-card-container .expense .content .top-details .flex .amount {
-  margin: 0;
-  color: white;
-  background-color: var(--borderColor);
-  border-radius: 8px;
-  font-size: 18px;
-  padding: 5px 10px;
-  position: relative;
-  top: 0;
-} /*# sourceMappingURL=expenseTracker.css.map */
+#external-overrides #expense-tracker .expense .flex.editable {
+  justify-content: flex-start;
+}/*# sourceMappingURL=expenseTracker.css.map */

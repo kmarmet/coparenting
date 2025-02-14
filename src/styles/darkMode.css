@@ -1,0 +1,891 @@
+/*#region  BASE COLORS */
+/*#endregion  BASE COLORS */
+/*#region  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROES)*/
+/*#region  GREYS*/
+/*#endregion  GREYS*/
+/*#region  VISITATION COLORS*/
+/*#endregion  VISITATION COLORS*/
+/*#region  Dark Theme*/
+/*#endregion  Dark Theme*/
+/*#region  LIGHT THEME*/
+/*#endregion  LIGHT THEME*/
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes sparkles1 {
+  0% {
+    top: 0;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: -200%;
+    left: -50%;
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles2 {
+  0% {
+    top: 0;
+    left: 25%;
+    transform: scale(1);
+  }
+  100% {
+    top: -250%;
+    left: 10%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles3 {
+  0% {
+    top: 0;
+    left: 50%;
+    transform: scale(1);
+  }
+  100% {
+    top: -275%;
+    left: 70%;
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles4 {
+  0% {
+    top: 0;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: -120%;
+    left: 120%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles5 {
+  0% {
+    top: 100%;
+    left: 50%;
+    transform: scale(1);
+  }
+  100% {
+    top: 275%;
+    left: 70%;
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes sparkles6 {
+  0% {
+    top: 100%;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: 220%;
+    left: 120%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles7 {
+  0% {
+    top: 100%;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: 200%;
+    left: -50%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles8 {
+  0% {
+    top: 100%;
+    left: 25%;
+    transform: scale(1);
+  }
+  100% {
+    top: 250%;
+    left: 10%;
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@keyframes sparkles9 {
+  0% {
+    top: 50%;
+    left: 0;
+    transform: scale(1);
+  }
+  100% {
+    top: 60%;
+    left: -100%;
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes sparkles10 {
+  0% {
+    top: 50%;
+    left: 100%;
+    transform: scale(1);
+  }
+  100% {
+    top: 75%;
+    left: 170%;
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+@keyframes enlarge {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes pulse {
+  0%, 100% {
+    color: "#9d98fc";
+  }
+  50% {
+    color: #5c8df7;
+  }
+}
+@keyframes pulseWhite {
+  0%, 100% {
+    box-shadow: 0px 0px 20px 0px white;
+  }
+  50% {
+    box-shadow: 0px 0px 10px 0px white;
+  }
+}
+@keyframes beat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes beatRed {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 #d57179;
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(123, 117, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes animStar {
+  from {
+    transform: translateX(-100px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+@keyframes shootingStar {
+  0% {
+    transform: rotate(315deg) translateX(250px);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(315deg) translateX(-1500px);
+    opacity: 0;
+  }
+}
+@keyframes starTwinkle {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes topBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes bottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tilt {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes rotateMoon {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+/*#region  BASE COLORS */
+/*#endregion  BASE COLORS */
+/*#region  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROES)*/
+/*#region  GREYS*/
+/*#endregion  GREYS*/
+/*#region  VISITATION COLORS*/
+/*#endregion  VISITATION COLORS*/
+/*#region  Dark Theme*/
+/*#endregion  Dark Theme*/
+/*#region  LIGHT THEME*/
+/*#endregion  LIGHT THEME*/
+/*#region  FORM*/
+/*#endregion  FORM*/
+/*#region  BUTTONS*/
+/*#endregion  BUTTONS*/
+/*#region  EFFECTS*/
+/*#endregion  EFFECTS*/
+/*#region  POSITIONING*/
+/*#endregion  POSITIONING*/
+/*#region  COMPONENTS*/
+/*#endregion  COMPONENTS*/
+/*#region  MENU*/
+/*#endregion  MENU*/
+/*#region  BASE COLORS */
+/*#endregion  BASE COLORS */
+/*#region  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROES)*/
+/*#region  GREYS*/
+/*#endregion  GREYS*/
+/*#region  VISITATION COLORS*/
+/*#endregion  VISITATION COLORS*/
+/*#region  Dark Theme*/
+/*#endregion  Dark Theme*/
+/*#region  LIGHT THEME*/
+/*#endregion  LIGHT THEME*/
+#external-overrides #static-calendar.dark .MuiDialogActions-root p,
+#external-overrides #static-calendar.dark .MuiDialogActions-root button {
+  background: transparent !important;
+  color: #5c8df7 !important;
+  border-color: #5c8df7 !important;
+}
+#external-overrides #static-calendar.dark .MuiPickersLayout-root {
+  background: rgba(26, 32, 52, 0.27) !important;
+}
+#external-overrides #static-calendar.dark .MuiPickersLayout-root .MuiPickersCalendarHeader-label {
+  color: white !important;
+  opacity: 0.85 !important;
+}
+#external-overrides #static-calendar.dark .MuiPickersLayout-root svg {
+  color: white !important;
+}
+#external-overrides #static-calendar.dark .MuiPickersLayout-root .MuiDateCalendar-root .MuiDayCalendar-weekDayLabel {
+  color: white !important;
+  opacity: 0.85;
+}
+#external-overrides #static-calendar.dark .MuiPickersLayout-root .MuiDateCalendar-root .MuiPickersDay-root {
+  color: white !important;
+}
+#external-overrides #static-calendar.dark .MuiPickersLayout-root .MuiDateCalendar-root .MuiPickersDay-root.Mui-selected {
+  background: rgba(147, 147, 147, 0.2) !important;
+  border: unset;
+}
+#external-overrides .MuiDialog-root.dark .MuiDateCalendar-root .MuiDayCalendar-weekDayLabel {
+  color: white !important;
+}
+#external-overrides .MuiDialog-root.dark .MuiDateCalendar-root .MuiPickersDay-root.Mui-selected {
+  color: white !important;
+}
+#external-overrides .MuiDialog-root.dark .MuiPickersLayout-root,
+#external-overrides .MuiDialog-root.dark .MuiButtonBase-root {
+  color: white;
+}
+#external-overrides .MuiDialog-root.dark .MuiPaper-root {
+  background: rgba(26, 32, 52, 0.27);
+}
+#external-overrides .MuiDialog-root.dark .MuiPaper-root .MuiClockNumber-root {
+  color: white !important;
+}
+#external-overrides .MuiDialog-root.dark .MuiPaper-root .MuiTimePickerToolbar-ampmSelection span {
+  color: rgba(147, 147, 147, 0.2) !important;
+}
+#external-overrides .MuiDialog-root.dark .MuiPaper-root .MuiTimePickerToolbar-ampmSelection span.Mui-selected {
+  color: #5c8df7 !important;
+}
+#external-overrides .MuiDialog-root.dark .MuiPaper-root .MuiTimePickerToolbar-hourMinuteLabel button {
+  border: 1px solid rgba(147, 147, 147, 0.2) !important;
+}
+#external-overrides .MuiDialog-root.dark .MuiPaper-root .MuiTimePickerToolbar-hourMinuteLabel span {
+  color: white !important;
+}
+#external-overrides .MuiDialog-root.dark .MuiPaper-root .MuiPickersLayout-root {
+  background: rgba(26, 32, 52, 0.27) !important;
+}
+#external-overrides .full-menu.dark #full-menu .menu-item {
+  background: rgba(147, 147, 147, 0.2);
+}
+#external-overrides .full-menu.dark #full-menu .menu-item.active p {
+  opacity: 1;
+}
+#external-overrides #app-container.dark {
+  background: rgba(26, 32, 52, 0.27);
+}
+#external-overrides #app-container.dark .page-container {
+  background: rgba(26, 32, 52, 0.27);
+  border: unset;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+#external-overrides #app-container.dark .screen-title {
+  color: #5c8df7;
+}
+#external-overrides #app-container.dark #app-content-wrapper {
+  background: #0f121e;
+}
+#external-overrides #app-container.dark #calendar-sidebar {
+  background: rgba(26, 32, 52, 0.27);
+}
+#external-overrides #app-container.dark .section {
+  border-bottom: 1px solid rgba(147, 147, 147, 0.2);
+}
+#external-overrides #app-container.dark .MuiPaper-root {
+  background: unset;
+}
+#external-overrides #app-container.dark .MuiAccordion-root .MuiAccordion-heading .MuiButtonBase-root .MuiAccordionSummary-content {
+  color: white;
+}
+#external-overrides #app-container.dark p {
+  color: white;
+  opacity: 0.9;
+}
+#external-overrides #app-container.dark hr {
+  border-color: rgba(255, 255, 255, 0.09);
+}
+#external-overrides #app-container.dark #disclaimer p {
+  color: white;
+}
+#external-overrides #app-container.dark #large-title {
+  color: white;
+}
+#external-overrides #app-container.dark #share-with-checkbox-group svg {
+  color: #ffcb6b;
+}
+#external-overrides #app-container.dark .light-gallery .memory {
+  border: unset;
+  background: unset;
+  padding: 0;
+}
+#external-overrides #app-container.dark .light-gallery .memory .memory-image .delete-icon {
+  background-color: unset;
+  color: #d57179;
+}
+#external-overrides #app-container.dark #memories-container #title-and-date p,
+#external-overrides #app-container.dark #memories-container #below-image p {
+  color: white;
+}
+#external-overrides #app-container.dark #expense-tracker .expense #name-wrapper .name {
+  color: white;
+}
+#external-overrides #app-container.dark #contact-us-container .section {
+  padding-bottom: 10px;
+}
+#external-overrides #app-container.dark #chats-container #row {
+  border: unset;
+}
+#external-overrides #app-container.dark #chats-container #row .thread-actions {
+  margin-top: 10px;
+}
+@media screen and (min-width: 650px) {
+  #external-overrides #app-container.dark #chats-container #row .thread-actions #archive-wrapper:hover,
+  #external-overrides #app-container.dark #chats-container #row .thread-actions #mute-wrapper:hover {
+    cursor: pointer;
+  }
+}
+#external-overrides #app-container.dark #chats-container #row .thread-actions span {
+  color: white;
+  padding-top: 5px;
+  opacity: 0.7;
+}
+#external-overrides #app-container.dark #chats-container .thread-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  padding-bottom: 10px;
+}
+#external-overrides #app-container.dark #chats-container .thread-item #close-thread-actions-icon {
+  color: white;
+  opacity: 0.7;
+}
+@media screen and (min-width: 650px) {
+  #external-overrides #app-container.dark #chats-container .thread-item #close-thread-actions-icon:hover {
+    cursor: pointer;
+  }
+}
+#external-overrides #app-container.dark #chats-container .thread-item #user-initial-wrapper svg {
+  color: #5c8df7;
+}
+#external-overrides #app-container.dark #chats-container .thread-item #edit-icon {
+  color: white;
+  opacity: 0.85;
+}
+@media screen and (min-width: 650px) {
+  #external-overrides #app-container.dark #chats-container .thread-item #edit-icon:hover {
+    cursor: pointer;
+  }
+}
+#external-overrides #app-container.dark #chats-container .thread-item .coparent-name {
+  color: white;
+  opacity: 0.9;
+}
+#external-overrides #app-container.dark #chats-container .thread-item .coparent-name .last-message {
+  color: white;
+}
+#external-overrides #app-container.dark #message-thread-container .top-buttons {
+  background-color: rgba(26, 32, 52, 0.27);
+  padding: 10px;
+  border: unset;
+}
+#external-overrides #app-container.dark #message-thread-container #right-side svg {
+  color: white;
+  opacity: 0.85;
+}
+#external-overrides #app-container.dark #message-thread-container .form {
+  background: transparent;
+}
+#external-overrides #app-container.dark #message-thread-container .form .message-input {
+  background: transparent;
+  border-bottom: 1px solid #5c8df7;
+  color: white;
+}
+#external-overrides #app-container.dark #message-thread-container .form .message-input:focus {
+  background: rgba(26, 32, 52, 0.27);
+}
+#external-overrides #app-container.dark #message-thread-container .form .message-input:after {
+  color: white;
+}
+#external-overrides #app-container.dark #message-thread-container .form #send-button {
+  background: #5c8df7;
+}
+#external-overrides #app-container.dark #message-thread-container #default-messages,
+#external-overrides #app-container.dark #message-thread-container #bookmark-messages {
+  background: rgba(26, 32, 52, 0.27);
+}
+#external-overrides #app-container.dark #message-thread-container #default-messages .timestamp,
+#external-overrides #app-container.dark #message-thread-container #bookmark-messages .timestamp {
+  opacity: 0.6;
+  font-style: italic;
+}
+#external-overrides #app-container.dark #message-thread-container #default-messages .message.from,
+#external-overrides #app-container.dark #message-thread-container #bookmark-messages .message.from {
+  background: rgba(147, 147, 147, 0.2);
+  color: white;
+}
+#external-overrides #app-container.dark #message-thread-container #default-messages .message.from:after,
+#external-overrides #app-container.dark #message-thread-container #bookmark-messages .message.from:after {
+  display: none;
+}
+#external-overrides #app-container.dark #message-thread-container #default-messages .message.to,
+#external-overrides #app-container.dark #message-thread-container #bookmark-messages .message.to {
+  background: #5c8df7;
+  color: white;
+}
+#external-overrides #app-container.dark #message-thread-container #default-messages .message.to:after,
+#external-overrides #app-container.dark #message-thread-container #bookmark-messages .message.to:after {
+  display: none;
+}
+#external-overrides #app-container.dark #brand-bar {
+  background: rgba(26, 32, 52, 0.27);
+  border: unset;
+}
+#external-overrides #app-container.dark #side-navbar #top,
+#external-overrides #app-container.dark #side-navbar #bottom {
+  background: rgba(26, 32, 52, 0.27);
+  border: unset;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+#external-overrides #app-container.dark #side-navbar #top svg,
+#external-overrides #app-container.dark #side-navbar #bottom svg {
+  opacity: 0.7;
+  color: white;
+}
+@media screen and (max-width: 600px) {
+  #external-overrides #app-container.dark #navbar {
+    background: rgba(26, 32, 52, 0.27);
+  }
+}
+#external-overrides #app-container.dark #navbar #svg-wrapper {
+  background: #00c899;
+  border: 0;
+}
+#external-overrides #app-container.dark #navbar #menu-items .menu-item {
+  color: rgba(232, 235, 236, 0.47);
+}
+#external-overrides #app-container.dark #navbar #menu-items .menu-item.active:not(#add-new-button) {
+  color: #5c8df7;
+}
+#external-overrides #app-container.dark #checkbox-group #checkbox-container.flex span {
+  color: white;
+  opacity: 0.9;
+}
+#external-overrides #app-container.dark #checkbox-group #checkbox-container.flex .box {
+  border: 2px solid rgba(147, 147, 147, 0.2);
+}
+#external-overrides #app-container.dark #checkbox-group #checkbox-container.flex .box #inner-circle {
+  border: unset;
+}
+#external-overrides #app-container.dark #checkbox-group #checkbox-container.flex .box.active {
+  border: unset;
+}
+#external-overrides #app-container.dark #checkbox-group #checkbox-container.flex .box.active #inner-circle {
+  background: #5c8df7;
+  border: unset;
+}
+#external-overrides #app-container.dark #share-with-checkbox-group #share-with-checkbox-container.flex span {
+  color: white;
+  opacity: 0.9;
+}
+#external-overrides #app-container.dark #share-with-checkbox-group #share-with-checkbox-container.flex .box {
+  border: 2px solid rgba(147, 147, 147, 0.2);
+}
+#external-overrides #app-container.dark #share-with-checkbox-group #share-with-checkbox-container.flex .box #inner-circle {
+  border: unset;
+}
+#external-overrides #app-container.dark #share-with-checkbox-group #share-with-checkbox-container.flex .box.active {
+  border: unset;
+}
+#external-overrides #app-container.dark #share-with-checkbox-group #share-with-checkbox-container.flex .box.active #inner-circle {
+  background: #5c8df7;
+  border: unset;
+}
+#external-overrides #app-container.dark #label-wrapper label {
+  color: white;
+}
+#external-overrides #app-container.dark #label-wrapper label#medium-title {
+  color: #ffcb6b;
+}
+#external-overrides #app-container.dark #input-wrapper input,
+#external-overrides #app-container.dark #input-wrapper textarea {
+  background: transparent;
+  border: 0;
+  color: white;
+  opacity: 0.9;
+  border-bottom: 1px solid rgba(147, 147, 147, 0.2);
+}
+#external-overrides #app-container.dark #input-wrapper input.rs-date-range-input,
+#external-overrides #app-container.dark #input-wrapper textarea.rs-date-range-input {
+  background: transparent !important;
+  border: 0 !important;
+  color: white !important;
+  opacity: 0.9 !important;
+  border-bottom: 1px solid rgba(147, 147, 147, 0.2) !important;
+}
+#external-overrides #app-container.dark #input-wrapper input:focus,
+#external-overrides #app-container.dark #input-wrapper textarea:focus {
+  outline: none;
+  border: unset;
+  background: rgba(147, 147, 147, 0.2);
+  border-radius: 4px;
+  padding: 10px;
+}
+#external-overrides #app-container.dark #input-wrapper input::-moz-placeholder, #external-overrides #app-container.dark #input-wrapper textarea::-moz-placeholder {
+  color: white;
+  opacity: 0.6;
+}
+#external-overrides #app-container.dark #input-wrapper input::placeholder,
+#external-overrides #app-container.dark #input-wrapper textarea::placeholder {
+  color: white;
+  opacity: 0.6;
+}
+#external-overrides #app-container.dark #input-wrapper.active input,
+#external-overrides #app-container.dark #input-wrapper.active textarea {
+  width: 100%;
+}
+#external-overrides #app-container.dark #input-wrapper.active input::-moz-placeholder, #external-overrides #app-container.dark #input-wrapper.active textarea::-moz-placeholder {
+  opacity: 0;
+}
+#external-overrides #app-container.dark #input-wrapper.active input::placeholder,
+#external-overrides #app-container.dark #input-wrapper.active textarea::placeholder {
+  opacity: 0;
+}
+#external-overrides #app-container.dark #input-wrapper .floating-label {
+  background: transparent;
+}
+#external-overrides #app-container.dark #input-wrapper .floating-label span {
+  opacity: 1;
+}
+#external-overrides #app-container.dark #input-wrapper.date .floating-label {
+  background: transparent;
+}
+#external-overrides #app-container.dark #input-wrapper.date .floating-label span {
+  opacity: 1;
+}
+#external-overrides #app-container.dark #child-info-container .child-name {
+  color: #5c8df7;
+}
+#external-overrides #app-container.dark #child-info-container .profile-pic-container.no-image {
+  background: unset;
+}
+#external-overrides #app-container.dark #child-info-container.active .profile-pic-container {
+  border: unset;
+}
+#external-overrides #app-container.dark .form input {
+  border: 0;
+  background: rgba(255, 255, 255, 0.09);
+}
+#external-overrides #app-container.dark .form label {
+  color: white;
+}
+#external-overrides #app-container.dark .form label span {
+  color: white;
+  opacity: 0.9;
+}
+#external-overrides #app-container.dark .react-toggle * {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  outline: 0 !important;
+}
+#external-overrides #app-container.dark .react-toggle.react-toggle--checked {
+  background: rgba(26, 32, 52, 0.27) !important;
+}
+#external-overrides #app-container.dark .react-toggle.react-toggle--checked .react-toggle-track-check,
+#external-overrides #app-container.dark .react-toggle.react-toggle--checked .react-toggle-track {
+  background: #5c8df7 !important;
+}
+#external-overrides #app-container.dark .react-toggle .react-toggle-track {
+  background: transparent !important;
+  border: 1px solid rgba(147, 147, 147, 0.2);
+}
+#external-overrides #app-container.dark #coparent-container .coparent .coparent-name,
+#external-overrides #app-container.dark #coparent-container .coparent .coparent-type {
+  color: white;
+}
+#external-overrides #app-container.dark #bottom-card {
+  background: rgba(26, 32, 52, 0.27);
+}
+#external-overrides #app-container.dark #bottom-card p {
+  color: white;
+  opacity: 0.7;
+}
+#external-overrides #app-container.dark #bottom-card hr {
+  border-color: rgba(255, 255, 255, 0.09);
+}
+#external-overrides #app-container.dark #bottom-card.custom-child-info-wrapper #info-type {
+  background: rgba(147, 147, 147, 0.2);
+}
+#external-overrides #app-container.dark #bottom-card.custom-child-info-wrapper #info-type .item {
+  color: white;
+  opacity: 0.65;
+}
+#external-overrides #app-container.dark #bottom-card.custom-child-info-wrapper #info-type .item.active {
+  opacity: 1;
+}
+#external-overrides #app-container.dark #bottom-card.expense-tracker #relative-wrapper .buttons .card-button.submit svg {
+  color: white;
+}
+#external-overrides #app-container.dark #bottom-card.expense-tracker #title {
+  color: #547eff;
+  opacity: 1;
+}
+#external-overrides #app-container.dark #bottom-card.new-expense-card #add-expense-form #default-expense-amounts button {
+  background: rgba(147, 147, 147, 0.2);
+  color: white;
+}
+#external-overrides #app-container.dark #bottom-card .action-pills .duration-option p,
+#external-overrides #app-container.dark #bottom-card .action-pills .duration-option svg {
+  color: white;
+}
+#external-overrides #app-container.dark #bottom-card .action-pills .duration-option.active p,
+#external-overrides #app-container.dark #bottom-card .action-pills .duration-option.active svg {
+  color: #5c8df7;
+  opacity: 1;
+}
+#external-overrides #app-container.dark #bottom-card #relative-wrapper #holiday-card-buttons button#view-visitation-holidays-item, #external-overrides #app-container.dark #bottom-card #relative-wrapper #holiday-card-buttons button#view-all-holidays-item {
+  background: rgba(26, 32, 52, 0.27);
+}
+#external-overrides #app-container.dark #bottom-card #relative-wrapper .buttons {
+  background-color: transparent;
+}
+#external-overrides #app-container.dark #bottom-card #relative-wrapper .buttons .card-button.submit {
+  background-color: #5c8df7;
+  color: white;
+}
+#external-overrides #app-container.dark #bottom-card #relative-wrapper .buttons .card-button.submit svg {
+  color: white;
+}
+#external-overrides #app-container.dark #bottom-card #relative-wrapper #title-wrapper {
+  background: rgba(26, 32, 52, 0.27);
+}
+#external-overrides #app-container.dark #bottom-card #relative-wrapper #title-wrapper .close-icon {
+  background: rgba(147, 147, 147, 0.2);
+  color: white;
+}
+#external-overrides #app-container.dark #bottom-card.full-menu #title-wrapper {
+  background: rgba(26, 32, 52, 0.27) !important;
+}
+#external-overrides #app-container.dark #bottom-card.full-menu #full-menu .menu-item.active p,
+#external-overrides #app-container.dark #bottom-card.full-menu #full-menu .menu-item.active svg {
+  opacity: 1;
+}
+#external-overrides #app-container.dark #bottom-card #title {
+  color: #808cf8;
+}
+#external-overrides #app-container.dark #bottom-card .buttons {
+  background: #13112f;
+}
+#external-overrides #app-container.dark #bottom-card .buttons #blur {
+  filter: blur(5px);
+  background: #13112f;
+  width: 100vw;
+  padding-top: 15px;
+  bottom: 10px;
+}
+#external-overrides #app-container.dark #bottom-card .buttons .card-button {
+  background-color: transparent;
+  color: #2ecc71;
+  border: 1px solid #2ecc71;
+}
+#external-overrides #app-container.dark #bottom-card .buttons .card-button.cancel {
+  border: 1px solid white;
+  color: white;
+  opacity: 0.6;
+}
+#external-overrides #app-container.dark #bottom-card .buttons .card-button.delete {
+  border: 1px solid #d57179;
+  color: #d57179;
+}
+#external-overrides #app-container.dark #bottom-card .buttons .card-button.submit svg {
+  color: white;
+}
+#external-overrides #app-container.dark #row {
+  border-bottom: 1px solid rgba(147, 147, 147, 0.2);
+}
+#external-overrides #app-container.dark #row #subtitle {
+  color: white;
+}
+#external-overrides #app-container.dark #calendar-container .events {
+  background: rgba(26, 32, 52, 0.27);
+}
+#external-overrides #app-container.dark #calendar-container .events .event-row .text #title-wrapper .title {
+  color: white;
+}
+#external-overrides #app-container.dark #calendar-container .events .event-row .text #title-wrapper .reminders svg {
+  opacity: 0.7;
+  color: white;
+}
+#external-overrides #app-container.dark #calendar-container .events .event-row .text #title-wrapper .reminders .reminder-times span {
+  color: white;
+}
+#external-overrides #app-container.dark #calendar-container .events .event-row p,
+#external-overrides #app-container.dark #calendar-container .events .event-row b,
+#external-overrides #app-container.dark #calendar-container .events .event-row span:not(.event-type-dot) {
+  color: white;
+  opacity: 0.9;
+}
+#external-overrides #app-container.dark #calendar-container .events .event-row p.start-date, #external-overrides #app-container.dark #calendar-container .events .event-row p#times, #external-overrides #app-container.dark #calendar-container .events .event-row p.reminder-times,
+#external-overrides #app-container.dark #calendar-container .events .event-row b.start-date,
+#external-overrides #app-container.dark #calendar-container .events .event-row b#times,
+#external-overrides #app-container.dark #calendar-container .events .event-row b.reminder-times,
+#external-overrides #app-container.dark #calendar-container .events .event-row span:not(.event-type-dot).start-date,
+#external-overrides #app-container.dark #calendar-container .events .event-row span:not(.event-type-dot)#times,
+#external-overrides #app-container.dark #calendar-container .events .event-row span:not(.event-type-dot).reminder-times {
+  opacity: 0.6;
+}
+#external-overrides #app-container.dark #calendar-container .events .event-row #children p {
+  opacity: 0.5;
+}/*# sourceMappingURL=darkMode.css.map */
