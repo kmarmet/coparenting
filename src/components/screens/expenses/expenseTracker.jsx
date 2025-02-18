@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useState } from 'react'
 // Path: src\components\screens\expenses\expenseTracker.jsx
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -8,7 +9,6 @@ import { child, getDatabase, onValue, ref } from 'firebase/database'
 import 'lightgallery/css/lightgallery.css'
 import LightGallery from 'lightgallery/react'
 import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
 import { AiOutlineFileAdd, AiTwotoneTag } from 'react-icons/ai'
 import { FaChildren, FaMinus, FaPlus } from 'react-icons/fa6'

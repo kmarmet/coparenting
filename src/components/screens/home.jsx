@@ -49,8 +49,6 @@ export default function Home() {
           }
         }
         clickedFeatureElement.classList.add('active')
-
-        clickedFeatureElement.scrollIntoView({ block: 'start', behavior: 'smooth' })
       }
     }
   }
@@ -225,11 +223,7 @@ export default function Home() {
                 Peaceful Co-Parenting offers the same functionalities and features as other applications, yet it stands out with its{' '}
                 <b>DISTINCTIVE FEATURES</b>. These exclusive features are UNAVAILABLE in any other co-parenting application.
               </p>
-              <p id="unique-features-title">
-                <b>Features Exclusive to Peaceful Co-Parenting</b>
-                <br />
-                <span>{DomManager.tapOrClick(true)} any feature to view or hide details</span>
-              </p>
+              <span className="feature-toggle-instructions">{DomManager.tapOrClick(true)} any feature to view or hide details</span>
             </div>
 
             <div className="flex" id="feature-grid">
@@ -269,30 +263,32 @@ export default function Home() {
                       Device Support
                       <ul>
                         <li>
-                          Because you do not need to utilize an app store, you can install our application on any device (phone, tablet, computer,
-                          .etc)
+                          You can install our application on any device, including phones, tablets, and computers, without the need for an app store
                         </li>
-                        <li>If you use more than one device, all of your activity and date will be synced across all devices</li>
+                        <li>All of your activities and data will be synchronized across all devices if you utilize multiple devices</li>
                       </ul>
                     </li>
                     <li className="list-title">
                       Operating System Support
                       <ul>
-                        <li>Whether you use a Windows, Mac, Android or Apple device, you can install our application on that device</li>
+                        <li>You can install our application on any device, whether it is a Windows, Mac, Android, or Apple device</li>
                       </ul>
                     </li>
                     <li className="list-title">
                       Updates
                       <ul>
-                        <li>All updates (feature additions, fixes, .etc) are done in the background, you don't have to do anything!</li>
-                        <li>Every time you open the application it will be fully updated</li>
+                        <li>
+                          All updates, including feature enhancements and bug fixes, are performed automatically in the background, requiring no
+                          action on your part
+                        </li>
+                        <li>Each time you launch the application, it will be completely up to date</li>
                       </ul>
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'one-subscription'}>
-                <p className="feature-title">One Subscription for ALL Features</p>
+                <p className="feature-title">One Subscription = ALL Features</p>
                 <MdOutlineStar className={'star'} />
                 <p className="feature-subtitle">
                   Many co-parenting apps offer various pricing tiers. You receive basic features at one price, but they often upsell for access to
@@ -310,14 +306,14 @@ export default function Home() {
                           For example: The OurFamilyWizard application costs $150 per year - <b>PER co-parent/user!</b>
                           <ul>
                             <li>
-                              The price of Peaceful Co-Parenting per year is <b>85% cheaper!</b>
+                              The annual cost of Peaceful Co-Parenting is significantly reduced, being <b>85% less expensive</b>!
                             </li>
                             <li>
                               $120 for <b>BOTH co-parents</b> instead of $300
                               <ul>
                                 <li>
-                                  That means both you <b>AND</b> you co-parent can utilize our application (and all of its tools) for{' '}
-                                  <b>less than HALF</b> of the cost of <b>ONE</b> OurFamilyWizard subscription
+                                  You and your co-parent can take advantage of our application and all its features for{' '}
+                                  <b>less than half the price of a single OurFamilyWizard subscription</b>
                                 </li>
                               </ul>
                             </li>
@@ -333,17 +329,20 @@ export default function Home() {
                           <ul>
                             <li>That is NOT keeping you in mind</li>
                             <ul>
-                              <li>You deserve access to ALL features for one very affordable price</li>
+                              <li>You should have the opportunity to enjoy all the features at a price that is very budget-friendly</li>
                             </ul>
                           </ul>
                         </li>
                         <li>
                           For the price of a cup of coffee ($4.99) you get <b>ALL</b> features
                           <ul>
-                            <li>Every co-parent needs access to all the resources and tools our application provides</li>
                             <li>
-                              Our goal is to make your co-parenting simple and peaceful, so{' '}
-                              <b>we do not charge you more to access important features</b>
+                              It&#39;s essential for every co-parent to have access to the full range of resources and tools that our application
+                              offers
+                            </li>
+                            <li>
+                              We aim to simplify and bring harmony to your co-parenting experience, which is why we don’t impose extra fees for
+                              accessing essential features
                             </li>
                           </ul>
                         </li>
@@ -374,24 +373,22 @@ export default function Home() {
                             <li>Each item also includes an icon to associate with the text quickly</li>
                           </ul>
                         </li>
-                        <li>
-                          Because it is designed in this way, it makes{' '}
-                          <b>finding where you need to go, or what you need to do, as fast and easy as possible</b>
-                        </li>
+                        <li>The design facilitates quick and effortless navigation to your desired destination or task</li>
                       </ul>
                     </li>
                     <li className="list-title">
                       Straightforward Pages (e.g Expense Tracker, Memories, .etc)
                       <ul>
-                        <li>Each page includes text at the top that indicate exactly what the page can be used for</li>
+                        <li>Each page features a header that clearly states its intended purpose</li>
                         <li>
-                          You will also notice that anything that could lead to a question is typically paired with helpful text and/or visual tools
+                          You will find that any potential questions are usually accompanied by supportive text and visual aids to enhance
+                          understanding{' '}
                           <ul>
                             <li>
                               Viewing the Calendar, for example
                               <ul>
-                                <li>There are color coordinated dots for each day that has events.</li>
-                                <li>Below the calendar there is a legend so that you know exactly what the color of each dot represents</li>
+                                <li>Each day with scheduled events is marked by color-coordinated dots</li>
+                                <li>The calendar is accompanied by a legend that indicates the meaning of each dot&#39;s color</li>
                               </ul>
                             </li>
                           </ul>
@@ -402,7 +399,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'realtime'}>
-                <p className="feature-title">Everything in Realtime</p>
+                <p className="feature-title">Realtime Engagement</p>
                 <MdOutlineStar className={'star'} />
                 <p className="feature-subtitle">
                   You will receive all updates, changes, and notifications <b>instantly</b>, whether the application is open or closed.
@@ -413,8 +410,8 @@ export default function Home() {
                       Notifications
                       <ul>
                         <li>
-                          As soon as a co-parent creates a calendar event, shares a medical record or sends you a message - you will immediately get a
-                          notification
+                          Whenever a co-parent schedules a calendar event, shares a medical record, or sends you a message, you will receive an
+                          instant notification
                         </li>
                       </ul>
                     </li>
@@ -424,11 +421,6 @@ export default function Home() {
                         <li>
                           If you make an update (add a child, update a calendar event, .etc) you will see the updates <b>automatically</b>
                         </li>
-                        <li>
-                          Because you do not need to utilize an app store, you can install our application on any device (phone, tablet, computer,
-                          .etc)
-                        </li>
-                        <li>If you use more than one device, all of your activity and date will be synced across all devices</li>
                       </ul>
                     </li>
                   </ul>
@@ -447,18 +439,25 @@ export default function Home() {
                       Multiple Co-Parents
                       <ul>
                         <li>Add as many co-parents as you need to</li>
-                        <li>Easily utilize all of our application's features for each co-parent</li>
-                        <li>When sharing important information, you can choose to share with individual co-parents or all at once</li>
+                        <li>Easily utilize all of our application&#39;s features for each co-parent</li>
+                        <li>
+                          You have the option to share important information either with individual co-parents or with all of them simultaneously
+                        </li>
                       </ul>
                     </li>
                     <li className="list-title">
                       Children from More than One Parent
                       <ul>
-                        <li>You can add an unlimited number of children to store information for or share updates about</li>
+                        <li>
+                          You have the capability to include an unlimited number of children for the purpose of storing information or sharing updates
+                        </li>
                         <li>
                           Any child (with a valid phone number) can create an account and also use our application
                           <ul>
-                            <li>If your child has their own account, they will have access to areas like the calendar to keep them in the loop</li>
+                            <li>
+                              If your child has their own account, they will be able to access features such as the calendar, ensuring they stay
+                              informed
+                            </li>
                           </ul>
                         </li>
                       </ul>
@@ -467,25 +466,20 @@ export default function Home() {
                 </div>
               </div>
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'messaging'}>
-                <p className="feature-title">Messaging</p>
+                <p className="feature-title">Messaging/Communication</p>
                 <MdOutlineStar className={'star'} />
-                <p className="feature-subtitle">Other applications may include messaging, but not with these features.</p>
+                <p className="feature-subtitle">Other applications might offer messaging capabilities, but they lack these specific features</p>
                 <div className="content">
                   <ul>
                     <li className="list-title">
-                      Archive Conversations
+                      Pause/Resume Conversations
                       <ul>
-                        <li>
-                          At any time you can delete/archive a conversation
-                          <ul>
-                            <li>If you need to (for court or reference), you can recover the conversation at any time</li>
-                          </ul>
-                        </li>
+                        <li>You can pause a conversation and its notifications at any moment, and later resume it whenever you choose.</li>
                         <li>
                           Search
                           <ul>
                             <li>
-                              Enter more than three letters and you will see all messages send or received including the text you are searching for
+                              Enter more than three characters to view all messages sent or received, including the specific text you are looking for
                             </li>
                           </ul>
                         </li>
@@ -495,7 +489,7 @@ export default function Home() {
                             <li>
                               Bookmark any message at any time
                               <ul>
-                                <li>You can view all bookmarks (saved messages) at any time with one button click</li>
+                                <li>You can access all your bookmarks (saved messages) instantly with a single click of a button</li>
                               </ul>
                             </li>
                           </ul>
@@ -642,7 +636,7 @@ export default function Home() {
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="box section security-and-privacy with-bg">
             <AiTwotoneSafetyCertificate />
-            <div className="content">
+            <div className="content text-wrapper">
               <p className="title">Security & Privacy</p>
               <p className="text subtitle center">Transparency in Shared Financial Responsibilities</p>
               <p className="text">

@@ -489,51 +489,6 @@
 }
 /*#endregion Lineheight */
 
-/*#region Text Sizes */
-.text-default {
-  font-size: 16px !important;
-}
-
-.text-small-title {
-  font-size: 17px !important;
-}
-
-.text-description {
-  &.dark {
-    color: $offWhite !important;
-    opacity: 0.7;
-  }
-}
-
-.description {
-  color: $lightBlack !important;
-  font-size: 14px !important;
-  font-style: italic !important;
-
-  &.dark {
-    color: white !important;
-  }
-
-  &.payment-options {
-    font-size: 16px !important;
-  }
-}
-
-.text-screen-intro {
-  /*#region  LIGHT THEME*/
-  &.light {
-    color: $lightBlackLight !important;
-  }
-  /*#endregion  LIGHT THEME*/
-
-  /*#region  DARK THEME*/
-  &.dark {
-    color: $offWhite !important;
-  }
-  /*#endregion  DARK THEME*/
-}
-/*#endregion Text Sizes */
-
 /*#region  FONT STYLE*/
 .italic {
   font-style: italic !important;
@@ -543,13 +498,3 @@
 }
 
 /*#endregion  FONT STYLE*/
-
-.no-border-radius {
-  border-radius: 0 !important;
-}
-.gap-5 {
-  gap: 5px !important;
-}
-.gap-10 {
-  gap: 10px !important;
-}

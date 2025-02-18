@@ -1,4 +1,4 @@
-// Path: src\components\screens\expenses\paymentOptions.jsx
+import React, { useContext } from 'react'
 import BottomCard from '../../shared/bottomCard.jsx'
 import { RxOpenInNewWindow } from 'react-icons/rx'
 import { ImAppleinc } from 'react-icons/im'
@@ -6,7 +6,6 @@ import { IoLogoVenmo } from 'react-icons/io5'
 import { SiCashapp, SiZelle } from 'react-icons/si'
 import { LiaCcPaypal } from 'react-icons/lia'
 import globalState from '../../../context.js'
-import { useContext } from 'react'
 
 const zelleLink = 'https://www.zellepay.com/how-it-works'
 const zelleVideoLink = 'https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO'
@@ -35,13 +34,13 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
             {/* ZELLE */}
             <div className="option zelle">
               <div className="flex brand-name-wrapper zelle">
-                <p className="brand-name accent mr-10">Zelle</p>
                 <SiZelle className={'zelle-icon'} />
+                <p className="brand-name accent">Zelle</p>
               </div>
               <div className="flex">
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Safely send money to co-parent, no matter where they bank.</p>
-                  <a href={zelleLink} target="_blank" className="setup-instructions mb-10">
+                  <a href={zelleLink} target="_blank" className="setup-instructions">
                     Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
                   </a>
                 </div>
@@ -59,13 +58,13 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
             {/* VENMO */}
             <div className="option venmo">
               <div className="flex brand-name-wrapper venmo">
-                <p className="brand-name mr-10">Venmo</p>
                 <IoLogoVenmo className={'venmo-icon'} />
+                <p className="brand-name">Venmo</p>
               </div>
               <div className="flex">
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Fast, safe, social payments.</p>
-                  <a href={venmoLink} target="_blank" className="setup-instructions mb-10">
+                  <a href={venmoLink} target="_blank" className="setup-instructions">
                     Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
                   </a>
                 </div>
@@ -83,13 +82,13 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
             {/* APPLE PAY */}
             <div className="option apple-cash">
               <div className="flex brand-name-wrapper apple">
-                <p className="brand-name mr-10">Apple Cash</p>
                 <ImAppleinc className={'apple-icon'} />
+                <p className="brand-name">Apple Cash</p>
               </div>
               <div className="flex ">
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Use Apple Cash to send and receive money with people you know.</p>
-                  <a href={appleLink} target="_blank" className="setup-instructions mb-10">
+                  <a href={appleLink} target="_blank" className="setup-instructions">
                     Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
                   </a>
                 </div>
@@ -99,13 +98,13 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
             {/* PAYPAL */}
             <div className="option paypal">
               <div className="flex brand-name-wrapper paypal">
-                <p className="brand-name mr-10">PayPal</p>
                 <LiaCcPaypal className={'paypal-icon'} />
+                <p className="brand-name">PayPal</p>
               </div>
               <div className="flex">
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Send and request money, quickly and securely.</p>
-                  <a href={paypalLink} target="_blank" className="setup-instructions mb-10">
+                  <a href={paypalLink} target="_blank" className="setup-instructions">
                     Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
                   </a>
                 </div>
@@ -115,13 +114,13 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
             {/* CASHAPP */}
             <div className="option cashapp">
               <div className="flex brand-name-wrapper cashapp">
-                <p className="brand-name mr-10">CashApp</p>
                 <SiCashapp />
+                <p className="brand-name">CashApp</p>
               </div>
               <div className="flex">
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Pay anyone, instantly.</p>
-                  <a href={cashappLink} target="_blank" className="setup-instructions mb-10">
+                  <a href={cashappLink} target="_blank" className="setup-instructions">
                     Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
                   </a>
                 </div>

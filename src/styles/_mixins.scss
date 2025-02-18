@@ -1464,7 +1464,7 @@
 
   #label-wrapper {
     position: absolute;
-    top: 0;
+    top: 2px;
     left: 0;
     padding: 0 10px;
     z-index: 9;
@@ -1501,7 +1501,7 @@
     padding: 0 8px;
     justify-content: space-between;
     position: absolute;
-    top: 22px;
+    top: 24px;
 
     &::placeholder {
       opacity: 0;
@@ -3239,109 +3239,99 @@
 
   // PAYMENT OPTIONS
   &.payment-options-card {
-    max-height: 80vh;
     overflow: auto;
-    padding-bottom: 200px;
     transition: all 0.3s ease-in-out;
 
-    a {
-      line-height: 1;
-    }
+    #relative-wrapper {
+      a {
+        line-height: 1;
+        display: block;
+        margin-bottom: 25px;
+      }
 
-    .new-tab-icon {
-      font-size: 18px;
-      margin: 0;
-      padding: 0;
-      line-height: 1;
-      position: relative;
-      top: 3px;
-    }
-
-    .option {
-      .brand-name-wrapper {
-        margin-top: 30px;
-        align-items: center;
-        padding: 10px;
-        border-radius: $borderRadius;
-
-        .brand-name {
-          opacity: 1;
-          line-height: 1;
-          font-size: 22px;
-          justify-content: center;
-        }
-
-        &.zelle {
-          background: #6d1fd4;
-        }
-
-        &.venmo {
-          background: #008cff;
-        }
-
-        &.paypal {
-          background: #002991;
-        }
-
-        &.cashapp {
-          background: #00d64f;
-        }
-
-        &.apple {
-          background: #4c4e54;
-        }
-
-        svg,
-        p {
-          color: white;
-          font-size: 22px;
-
-          &.venmo-icon {
-            font-size: 24px;
-          }
-        }
+      .new-tab-icon {
+        font-size: 18px;
+        margin: 0;
+        padding: 0;
+        line-height: 1;
+        position: relative;
+        top: 3px;
       }
 
       .option {
-        margin-top: 25px;
+        .description {
+          padding-top: 5px;
+          padding-bottom: 10px;
+        }
+        .brand-name-wrapper {
+          margin-top: 30px;
+          align-items: center;
+          padding: 10px;
+          border-radius: $borderRadius;
+
+          .brand-name {
+            opacity: 1;
+            line-height: 1;
+            font-size: 22px;
+            justify-content: center;
+          }
+
+          &.zelle {
+            background: #6d1fd4;
+          }
+
+          &.venmo {
+            background: #008cff;
+          }
+
+          &.paypal {
+            background: #002991;
+          }
+
+          &.cashapp {
+            background: #00d64f;
+          }
+
+          &.apple {
+            background: #4c4e54;
+          }
+
+          svg {
+            margin-right: 10px;
+          }
+
+          svg,
+          p {
+            color: white;
+            font-size: 22px;
+
+            &.venmo-icon {
+              font-size: 24px;
+            }
+          }
+        }
+
+        iframe {
+          margin: 10px auto 0 auto;
+          display: block;
+          border-radius: $borderRadius;
+          max-width: 100%;
+          width: 100%;
+          height: auto;
+        }
+
+        img {
+          width: 50px;
+          max-width: 50px;
+        }
       }
 
-      iframe {
-        margin: 10px auto 0 auto;
-        display: block;
-        border-radius: $borderRadius;
-        max-width: 100%;
+      .text {
         width: 100%;
-        height: auto;
-      }
 
-      img {
-        width: 50px;
-        max-width: 50px;
-      }
-    }
-
-    p:not(#title) {
-      background-color: transparent;
-      height: auto;
-      margin: 0;
-      padding: 0;
-      text-align: left;
-      justify-content: flex-start;
-    }
-
-    .text {
-      width: 100%;
-
-      p {
-        margin: 0;
-      }
-    }
-
-    a {
-      span {
-        position: relative;
-        top: 3px;
+        p {
+          margin: 0;
+        }
       }
     }
   }
@@ -3364,7 +3354,7 @@
       overflow: auto;
       overflow-x: hidden;
       position: absolute;
-      top: 55px;
+      top: 65px;
       bottom: 0;
       width: calc(100% - 30px);
       height: 100vh;

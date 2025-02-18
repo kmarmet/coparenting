@@ -277,7 +277,7 @@ export default function EventCalendar() {
   // Check if parent access is granted -> if not, show request parent access screen
   const redirectChildIfNecessary = async () => {
     const users = await DB.getTable(`${DB.tables.users}`)
-    const user = users.find((x) => x.email === authUser.email)
+    const user = users.find((x) => x.email === authUser?.email)
     if (user && user.accountType === 'child' && !user.parentAccessGranted) {
       setState({ ...state, currentScreen: ScreenNames.requestParentAccess, currentUser: user })
     }
