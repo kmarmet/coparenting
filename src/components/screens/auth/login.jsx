@@ -224,7 +224,7 @@ export default function Login() {
               <CheckboxGroup
                 elClass={'light'}
                 onCheck={togglePersistence}
-                checkboxArray={Manager.buildCheckboxGroup(null, 'remember-me', ['Remember Me'])}
+                checkboxArray={Manager.buildCheckboxGroup(null, null, null, ['Remember Me'])}
                 skipNameFormatting={true}
               />
 

@@ -34,7 +34,7 @@ ScreenNames =
   newMemory: 'newMemory'
   newSwapRequest: 'newSwapRequest'
   newTransferRequest: 'newTransferRequest'
-  records: "records"
+  archives: "archives"
   registration: 'registration'
   resetEmail: 'resetEmail'
   resetPassword: 'resetPassword'

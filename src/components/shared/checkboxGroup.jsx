@@ -6,17 +6,9 @@ import StringManager from '../../managers/stringManager.js'
 import { IoCloseOutline } from 'react-icons/io5'
 import Label from './label.jsx'
 import Checkbox from './checkbox.jsx'
-export default function CheckboxGroup({
-  onCheck,
-  elClass = '',
-  skipNameFormatting = false,
-  defaultLabels,
-  required = false,
-  parentLabel = '',
-  checkboxArray = [],
-}) {
+export default function CheckboxGroup({ onCheck, elClass = '', skipNameFormatting = false, required = false, parentLabel = '', checkboxArray = [] }) {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser, currentScreen } = state
+  const { theme } = state
 
   return (
     <>

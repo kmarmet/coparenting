@@ -269,43 +269,59 @@ const Manager = {
       if (onCheckRemoval) onCheckRemoval(label)
     }
   },
-  buildCheckboxGroup: (currentUser, labelType, defaultLabels, holidays = []) => {
+  buildCheckboxGroup: (currentUser, labelType, defaultLabels, manualLabelArray, labelProp, uidProp) => {
     let checkboxLabels = []
-    if (labelType === 'reminder-times') {
-      checkboxLabels = CalMapper.allUnformattedTimes()
-    }
-    if (labelType === 'children') {
-      checkboxLabels = currentUser?.children?.map((x) => x?.general?.name)
-    }
-    if (labelType === 'recurring-intervals') {
-      checkboxLabels = ['Daily', 'Weekly', 'Biweekly', 'Monthly']
-    }
-    if (labelType === 'holidays') {
-      checkboxLabels = holidays
-    }
-    if (labelType === 'record-types') {
-      checkboxLabels = ['Expenses', 'Chats']
-    }
-    if (labelType === 'remember-me') {
-      checkboxLabels = ['Remember Me']
-    }
-    if (labelType === 'expense-payers' && Manager.isValid(currentUser.coparents)) {
-      checkboxLabels = [...currentUser.coparents.map((x) => x.name), 'Me']
+    if (Manager.isValid(labelProp) && Manager.isValid(uidProp)) {
+    } else {
+      if (labelType && labelType === 'reminder-times') {
+        checkboxLabels = CalMapper.allUnformattedTimes()
+      }
+      if (labelType && labelType === 'children') {
+        checkboxLabels = currentUser?.children?.map((x) => x?.general?.name)
+      }
+      if (labelType && labelType === 'recurring-intervals') {
+        checkboxLabels = ['Daily', 'Weekly', 'Biweekly', 'Monthly']
+      }
+      if (labelType && labelType === 'record-types') {
+        checkboxLabels = ['Expenses', 'Chats']
+      }
+      if (labelType && labelType === 'visitation') {
+        checkboxLabels = ['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']
+      }
+      if (labelType && labelType === 'expense-payers' && Manager.isValid(currentUser.coparents)) {
+        checkboxLabels = [...currentUser.coparents.map((x) => x.name), 'Me']
+      }
+      if (!labelType && Manager.isValid(manualLabelArray)) {
+        checkboxLabels = manualLabelArray
+      }
     }
     let checkboxGroup = []
-    for (let label of checkboxLabels) {
-      let isActive = false
-      if (Manager.isValid(defaultLabels) && defaultLabels.includes(label)) {
-        isActive = true
+
+    // ITERATE THROUGH LABELS
+    if (!Manager.isValid(labelProp) && !Manager.isValid(uidProp)) {
+      for (let label of checkboxLabels) {
+        let isActive = false
+        if (Manager.isValid(defaultLabels) && defaultLabels.includes(label)) {
+          isActive = true
+        }
+        if (labelType && labelType === 'reminder-times') {
+          label = CalMapper.readableReminderBeforeTimeframes(label)
+        }
+        checkboxGroup.push({
+          label: label,
+          key: label.replaceAll(' ', ''),
+          isActive,
+        })
       }
-      if (labelType === 'reminder-times') {
-        label = CalMapper.readableReminderBeforeTimeframes(label)
+    }
+    // From Object
+    else {
+      for (const chat of Array.from(manualLabelArray)) {
+        checkboxGroup.push({
+          label: chat[labelProp],
+          key: chat[uidProp],
+        })
       }
-      checkboxGroup.push({
-        label: label,
-        key: label.replaceAll(' ', ''),
-        isActive,
-      })
     }
 
     return checkboxGroup

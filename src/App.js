@@ -40,7 +40,7 @@ import ExpenseTracker from '/src/components/screens/expenses/expenseTracker.jsx'
 import Home from '/src/components/screens/home'
 import InstallApp from '/src/components/screens/installApp.jsx'
 import Memories from '/src/components/screens/memories.jsx'
-import Records from '/src/components/screens/records.jsx'
+import Archives from '/src/components/screens/archives.jsx'
 import Settings from '/src/components/screens/settings/settings.jsx'
 import SwapRequests from '/src/components/screens/swapRequests.jsx'
 import TransferRequests from '/src/components/screens/transferRequests.jsx'
@@ -57,7 +57,6 @@ import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
-import notificationSubscriber from './models/notificationSubscriber'
 
 export default function App() {
   // Initialize Firebase
@@ -138,9 +137,6 @@ export default function App() {
         const user = auth.currentUser
         await AppManager.clearAppBadge()
 
-        // AppManager.deleteExpiredCalendarEvents(_currentUser).then((r) => r)
-        // AppManager.deleteExpiredMemories(_currentUser).then((r) => r)
-
         const users = await DB.getTable(`${DB.tables.users}`)
         let activities = []
         let currentUserFromDb
@@ -158,6 +154,9 @@ export default function App() {
             if (!Manager.isValid(currentUserFromDb?.parentAccessGranted) && currentUserFromDb?.parentAccessGranted === false) {
               screenToNavigateTo = ScreenNames.requestParentAccess
             }
+          } else {
+            AppManager.deleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
+            AppManager.deleteExpiredMemories(currentUserFromDb).then((r) => r)
           }
           NotificationManager.init(currentUserFromDb)
           activities = await DB.getTable(`${DB.tables.activities}/${currentUserFromDb?.key}`)
@@ -229,7 +228,7 @@ export default function App() {
             {/* DOCUMENTS */}
             {currentScreen === ScreenNames.docsList && <DocsList />}
             {currentScreen === ScreenNames.docViewer && <DocViewer />}
-            {currentScreen === ScreenNames.records && <Records />}
+            {currentScreen === ScreenNames.records && <Archives />}
 
             {/* UPLOAD */}
             {currentScreen === ScreenNames.uploadDocuments && <UploadDocuments />}

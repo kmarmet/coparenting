@@ -28,7 +28,7 @@ import { BsPeople } from 'react-icons/bs'
 import { MdOutlineManageAccounts } from 'react-icons/md'
 import { BiFace } from 'react-icons/bi'
 import BottomCard from './shared/bottomCard'
-import DB from '../database/DB'
+import { RiArchive2Fill } from 'react-icons/ri'
 
 export default function FullMenu() {
   const { state, setState } = useContext(globalState)
@@ -62,7 +62,7 @@ export default function FullMenu() {
         console.log('User signed out')
       })
       .catch((error) => {
-        // An error happened.
+        console.log(error)
       })
   }
 
@@ -183,8 +183,8 @@ export default function FullMenu() {
             <div
               className={`menu-item records ${currentScreen === ScreenNames.records ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.records)}>
-              <PiArchiveDuotone />
-              <p>Records</p>
+              <RiArchive2Fill />
+              <p>Archives</p>
             </div>
           </>
         )}

@@ -325,7 +325,6 @@
       p {
         width: 100%;
         text-align: center;
-
         font-weight: bold;
         font-size: 25px;
       }
@@ -336,10 +335,8 @@
         }
         .inputs {
           align-items: center;
-
-          span {
-            //            font-size: 25px;
-            //            margin-left: 10px;
+          svg {
+            align-self: stretch;
           }
         }
       }
@@ -352,7 +349,6 @@
             font-weight: 400;
 
             &.checkmark-icon {
-              // display: flex;
               align-items: center;
               justify-content: center;
               font-size: 18px;

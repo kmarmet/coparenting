@@ -353,7 +353,7 @@ export default function Visitation() {
                   parentLabel={'Choose Visitation Schedule'}
                   onCheck={handleScheduleTypeSelection}
                   skipNameFormatting={true}
-                  checkboxLabels={['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']}
+                  checkboxArray={Manager.buildCheckboxGroup(currentUser, 'visitation', [])}
                 />
               </div>
 
@@ -376,11 +376,11 @@ export default function Visitation() {
           {/* HOLIDAY SELECTION */}
           <CheckboxGroup
             containerClass="holidays"
-            parentLabel={'Select the holidays YOU have the child(ren) this year'}
+            parentLabel={'Select the holidays YOU have your child(ren) this year'}
             elClass={'holiday-checkboxes-wrapper gap-10'}
             onCheck={handleHolidaySelection}
             skipNameFormatting={true}
-            checkboxArray={Manager.buildCheckboxGroup(currentUser, 'holidays', null, holidaysFromApi.map((x) => x.name).sort())}
+            checkboxArray={Manager.buildCheckboxGroup(currentUser, null, null, holidaysFromApi.map((x) => x.name).sort())}
           />
 
           {showUpdateHolidaysButton && (
