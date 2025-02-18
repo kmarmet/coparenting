@@ -220,7 +220,7 @@ export default function Home() {
                 Why <span>Choose</span> <span>Peace</span>ful Co-Parenting?
               </p>
               <p className="text subtitle">
-                Peaceful Co-Parenting offers the same functionalities and features as other applications, yet it stands out with its{' '}
+                Peaceful Co-Parenting offers the same abilities and features as other applications, yet it stands out with its{' '}
                 <b>DISTINCTIVE FEATURES</b>. These exclusive features are UNAVAILABLE in any other co-parenting application.
               </p>
               <span className="feature-toggle-instructions">{DomManager.tapOrClick(true)} any feature to view or hide details</span>
@@ -656,21 +656,21 @@ export default function Home() {
           <div className="section text-box all-devices" id="all-devices">
             <TbSunMoon />
             <p className="title">Compatible & Accessible</p>
-            <div className="flex text">
+            <div className=" text">
               <p className="subtitle">
-                <b>Available on All Devices: </b>
+                <b>Available on All Devices </b>
               </p>
               <span>iOS, Android, Windows, Mac, .etc.</span>
             </div>
-            <div className="flex text">
+            <div className="text">
               <p className="subtitle">
-                <b>Available on All Screen Sizes: </b>
+                <b>Available on All Screen Sizes </b>
               </p>
               <span>Adapts to any screen size (phone, tablet, laptop, .etc) and/or screen orientation.</span>
             </div>
-            <div className="flex text">
+            <div className="text">
               <p className="subtitle">
-                <b>Supports both Light & Dark Modes: </b>
+                <b>Supports both Light & Dark Modes </b>
               </p>
               <span>
                 We understand that visual impairments and glare from lighting can be challenging. That&#39;s why our application offers both Light and

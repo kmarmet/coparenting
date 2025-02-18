@@ -367,7 +367,7 @@
 
       // ALL DEVICES
       &.all-devices {
-        padding: 50px 30px;
+        padding: 20px;
         width: 100%;
         border-radius: $bigBorderRadius;
         border: 0;
@@ -377,36 +377,35 @@
           text-align: center;
         }
 
-        .flex {
-          &.text {
-            justify-content: flex-start;
-            align-items: center;
-            width: 80%;
-            margin: 10px auto 0 auto;
+        .text {
+          justify-content: flex-start;
+          align-items: center;
+          width: 100%;
+          margin: 10px auto 0 auto;
+          text-align: left;
+          border-bottom: 1px solid $darkBorderColor;
+          padding-bottom: 5px;
+
+          .subtitle {
+            padding: 0;
             text-align: left;
-            border-bottom: 1px solid $translucent;
-            padding-bottom: 5px;
+            justify-self: flex-start;
+            color: white;
+            margin-right: 30px;
+            align-self: flex-start;
 
-            .subtitle {
-              margin: 0;
-              padding: 0;
-              min-width: 30%;
-              text-align: left;
-              justify-self: flex-start;
+            b {
               color: white;
-
-              b {
-                color: white;
-              }
+              width: 300px;
             }
+          }
 
-            span {
-              padding: 0;
-              margin: 0;
-              text-align: left;
-              color: white;
-              opacity: 0.7;
-            }
+          span {
+            padding: 0;
+            margin: 0;
+            text-align: left;
+            color: white;
+            opacity: 0.7;
           }
         }
 
@@ -686,7 +685,14 @@
           }
 
           .subtitle {
-            padding-top: 10px;
+            padding-top: 5px;
+          }
+
+          .title,
+          .subtitle {
+            @media screen and (max-width: 800px) {
+              text-align: left;
+            }
           }
 
           #feature-grid {
@@ -794,7 +800,6 @@
                 color: white;
 
                 b {
-                  font-size: 14px;
                   color: white;
                   font-weight: $fwBold;
                   text-decoration: underline;
@@ -811,18 +816,19 @@
 
               ul {
                 padding: 0;
-
                 li:not(.list-title) {
                   margin-left: 25px;
                   margin-bottom: 8px;
-                  width: 70%;
+                  width: calc(100% - 30px);
                   list-style-type: disc;
 
                   ul {
                     li {
                       margin-bottom: 0;
-                      width: 100%;
                       line-height: 1.6;
+                      margin-left: 8px;
+                      width: calc(100% - 25px);
+                      list-style-type: circle;
                     }
                   }
                 }
@@ -832,10 +838,6 @@
                     font-weight: $fwMediumBold;
                     text-decoration: underline;
                     color: rgba(0, 0, 0, 0.66);
-                  }
-
-                  i {
-                    font-size: 14px;
                   }
 
                   &.list-title {
