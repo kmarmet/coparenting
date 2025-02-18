@@ -1,3 +1,4 @@
+// Path: src\components\screens\childInfo\newTransferChecklist.jsx
 import BottomCard from '../../shared/bottomCard'
 import globalState from '../../../context'
 import Spacer from '/src/components/shared/spacer'
@@ -35,7 +36,7 @@ export default function NewTransferChecklist({ showCard, hideCard, activeChild, 
     const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
     const newChecklist = new Checklist()
     newChecklist.checklistItems = DatasetManager.getUniqueArray(checkboxTextList, true)
-    newChecklist.ownerPhone = currentUser.phone
+    newChecklist.ownerKey = currentUser.phone
     newChecklist.fromOrTo = view
     await DB.add(`${DB.tables.users}/${currentUser.phone}/children/${childKey}/checklists`, newChecklist)
     hideCard()

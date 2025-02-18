@@ -1,28 +1,11 @@
+// Path: src\components\parentInput.jsx
 import React, { useContext, useState } from 'react'
 import globalState from '../context'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  formatPhone,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../globalFunctions'
 import { phone } from 'phone'
 import AlertManager from '../managers/alertManager'
 import InputWrapper from './shared/inputWrapper'
 import { RiUserAddLine } from 'react-icons/ri'
-
+import StringManager from '../managers/stringManager'
 export default function ParentInput({ add, parentsLength = 1, labels }) {
   const { state, setState } = useContext(globalState)
   const [userPhone, setUserPhone] = useState('')
@@ -30,7 +13,7 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
   const [showAddButton, setShowAddButton] = useState(true)
 
   const validatePhone = () => {
-    const validatePhone = phone(`+1${formatPhone(userPhone)}`)
+    const validatePhone = phone(`+1${StringManager.formatPhone(userPhone)}`)
     const { isValid } = validatePhone
     return isValid
   }
@@ -38,7 +21,7 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
   return (
     <div id="parent-input-container">
       <p id="parent-label">
-        Parent #{parentsLength} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
+        Parent #{parentsLength} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
       </p>
       <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
       <InputWrapper

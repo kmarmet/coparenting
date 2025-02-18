@@ -20,3 +20,5 @@ LogManager = {
 
 // fetch("https://peaceful-coparenting.app:5000/log?errorMessage=#{message}&messageType=#{type}", requestOptions)
 export default LogManager;
+
+//# sourceMappingURL=logManager.js.map

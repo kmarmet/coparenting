@@ -4,7 +4,7 @@ var CalendarEvent;
 import Manager from "../managers/manager";
 
 export default CalendarEvent = class CalendarEvent {
-  constructor(id = Manager.getUid(), multipleDatesId = '', websiteUrl = '', notes = '', shareWith = [], endDate = '', startDate = '', staticStartDate = '', startTime = '', ownerKey = '', children = [], location = '', title = '', phone = '', createdBy = '', reminderTimes = [], coparentsToRemindPhones = [], directionsLink = '', endTime = '', fromVisitationSchedule = false, repeatInterval = '', sentReminders = [], visitationPeriodEndDate = '', visibleToAll = false, holidayName = '', visitationSchedule = '', isHoliday = false, isRepeating = false, isCloned = false, isDateRange = false) {
+  constructor(id = Manager.getUid(), multipleDatesId = '', websiteUrl = '', notes = '', shareWith = [], endDate = '', startDate = '', staticStartDate = '', startTime = '', ownerKey = '', children = [], location = '', title = '', phone = '', createdBy = '', reminderTimes = [], coparentsToRemindPhones = [], directionsLink = '', endTime = '', fromVisitationSchedule = false, recurringInterval = '', sentReminders = [], visitationPeriodEndDate = '', visibleToAll = false, holidayName = '', visitationSchedule = '', isHoliday = false, isRepeating = false, isCloned = false, isDateRange = false) {
     this.id = id;
     this.multipleDatesId = multipleDatesId;
     this.websiteUrl = websiteUrl;
@@ -25,7 +25,7 @@ export default CalendarEvent = class CalendarEvent {
     this.directionsLink = directionsLink;
     this.endTime = endTime;
     this.fromVisitationSchedule = fromVisitationSchedule;
-    this.repeatInterval = repeatInterval;
+    this.recurringInterval = recurringInterval;
     this.sentReminders = sentReminders;
     this.visitationPeriodEndDate = visitationPeriodEndDate;
     this.visibleToAll = visibleToAll;
@@ -38,3 +38,5 @@ export default CalendarEvent = class CalendarEvent {
   }
 
 };
+
+//# sourceMappingURL=calendarEvent.js.map

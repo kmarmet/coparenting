@@ -40,7 +40,7 @@ export default CalendarManager =
 
   # REPEATING
     if arrayType == "recurring"
-      datesToIterate = CalendarMapper.repeatingEvents(
+      datesToIterate = CalendarMapper.recurringEvents(
         eventObject.repeatInterval,
         moment(startDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
         endDate
@@ -61,7 +61,7 @@ export default CalendarManager =
       dateObject.directionsLink = Manager.getDirectionsLink(eventObject.location)
       dateObject.location = eventObject.location
       dateObject.children = eventObject.children
-      dateObject.ownerPhone = currentUser?.phone
+      dateObject.ownerKey = currentUser?.phone
       dateObject.createdBy = currentUser?.name
       dateObject.phone = eventObject.phone
       dateObject.shareWith = DatasetManager.getUniqueArray(eventObject.shareWith, true)

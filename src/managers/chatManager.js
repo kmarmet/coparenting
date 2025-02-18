@@ -1,3 +1,4 @@
+// Path: src\managers\chatManager.js
 import { child, getDatabase, ref, set } from 'firebase/database'
 import Manager from '../managers/manager'
 import DB from '../database/DB'
@@ -58,13 +59,13 @@ const ChatManager = {
         })
         .catch((error) => reject(error))
     }),
-  getScopedChat: async (currentUser, messageToUserPhone) => {
+  getScopedChat: async (currentUser, messageToUserKey) => {
     try {
       const securedChats = await SecurityManager.getChats(currentUser)
       let chatToReturn = null
       for (let chat of securedChats) {
-        const memberPhones = chat.members.map((x) => x.phone)
-        if (memberPhones.includes(currentUser.phone) && memberPhones.includes(messageToUserPhone)) {
+        const memberKeys = chat.members.map((x) => x.key)
+        if (memberKeys.includes(currentUser.key) && memberKeys.includes(messageToUserKey)) {
           chatToReturn = chat
         }
       }
@@ -119,7 +120,7 @@ const ChatManager = {
     let toAdd = []
 
     const newBookmark = new ChatBookmark()
-    newBookmark.ownerPhone = currentUser.phone
+    newBookmark.ownerKey = currentUser.phone
     newBookmark.messageId = messageId
 
     // Bookmarks exist already

@@ -1,3 +1,4 @@
+// Path: src\components\screens\transferRequests.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context.js'
 import DB from '/src/database/DB'
@@ -5,7 +6,7 @@ import Manager from '/src/managers/manager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
 import NotificationManager from '/src/managers/notificationManager.js'
-import DB_UserScoped from '/src/database/db_userScoped'
+import DB_UserScoped from '../../database/db_userScoped.js'
 import DateManager from '/src/managers/dateManager.js'
 import NavBar from '../navBar'
 import { GrMapLocation } from 'react-icons/gr'
@@ -32,7 +33,6 @@ import StringManager from '/src/managers/stringManager'
 import Spacer from '../shared/spacer.jsx'
 import Map from '/src/components/shared/map.jsx'
 import { setKey } from 'react-geocode'
-import LocationManager from '../../managers/locationManager.js'
 import Checkbox from '../shared/checkbox.jsx'
 import Label from '../shared/label.jsx'
 import StringAsHtmlElement from '../shared/stringAsHtmlElement'
@@ -48,7 +48,7 @@ const Decisions = {
 
 export default function TransferRequests() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+  const { currentUser, theme, refreshKey, authUser } = state
   const [existingRequests, setExistingRequests] = useState([])
   const [rejectionReason, setRejectionReason] = useState('')
   const [showNewRequestCard, setShowNewRequestCard] = useState(false)
@@ -59,9 +59,7 @@ export default function TransferRequests() {
   const [requestLocation, setRequestLocation] = useState('')
   const [requestDate, setRequestDate] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
-  const [address, setAddress] = useState(null)
   const [sendWithAddress, setSendWithAddress] = useState(false)
-  const [recipientName, setRecipientName] = useState('')
 
   const resetForm = async () => {
     Manager.resetForm('edit-event-form')
@@ -69,7 +67,7 @@ export default function TransferRequests() {
     setRequestLocation('')
     setRequestDate('')
     setResponseDueDate('')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({ ...state, currentUser: updatedCurrentUser })
   }
 
@@ -102,7 +100,7 @@ export default function TransferRequests() {
   const deleteRequest = async (action = 'deleted') => {
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
-        await DB.deleteById(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, activeRequest?.id)
+        await DB.deleteById(`${DB.tables.transferChangeRequests}/${currentUser.key}`, activeRequest?.id)
         AlertManager.successAlert(`Transfer Change Request has been deleted.`)
         setShowDetails(false)
       })
@@ -110,16 +108,16 @@ export default function TransferRequests() {
   }
 
   const selectDecision = async (decision) => {
-    const recipient = await DB_UserScoped.getCoparentByPhone(activeRequest.recipientPhone, currentUser)
+    const recipient = await DB_UserScoped.getCoparentByKey(activeRequest.recipientKey, currentUser)
     const recipientName = recipient.name
     // Rejected
     if (decision === Decisions.rejected) {
-      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, activeRequest, activeRequest.id)
+      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser.key}`, activeRequest, activeRequest.id)
       const notifMessage = NotificationManager.templates.transferRequestRejection(activeRequest, recipientName)
       await NotificationManager.sendNotification(
         'Transfer Request Decision',
         notifMessage,
-        activeRequest?.ownerPhone,
+        activeRequest?.ownerKey,
         currentUser,
         ActivityCategory.transferRequest
       )
@@ -128,13 +126,13 @@ export default function TransferRequests() {
 
     // Approved
     if (decision === Decisions.approved) {
-      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, activeRequest, activeRequest.id)
+      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser.key}`, activeRequest, activeRequest.id)
       const notifMessage = NotificationManager.templates.transferRequestApproval(activeRequest, recipientName)
       setShowDetails(false)
       await NotificationManager.sendNotification(
         'Transfer Request Decision',
         notifMessage,
-        activeRequest?.ownerPhone,
+        activeRequest?.ownerKey,
         currentUser,
         ActivityCategory.transferRequest
       )
@@ -143,7 +141,7 @@ export default function TransferRequests() {
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, DB.tables.transferChangeRequests), async (snapshot) => {
+    onValue(child(dbRef, DB.tables.transferChangeRequests), async () => {
       await getSecuredRequests().then((r) => r)
     })
   }
@@ -161,11 +159,13 @@ export default function TransferRequests() {
   }
 
   const checkIn = async () => {
-    let notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} at ${activeRequest?.location}`
+    let notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} at ${
+      activeRequest?.location
+    }`
     if (!sendWithAddress) {
       notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} has Arrived`
     }
-    const notifPhone = activeRequest?.ownerPhone === currentUser.phone ? activeRequest.recipientPhone : currentUser.phone
+    const notifPhone = activeRequest?.ownerKey === currentUser.phone ? activeRequest.recipientPhone : currentUser.phone
     await NotificationManager.sendNotification(
       'Transfer Destination Arrival',
       notificationMessage,
@@ -177,8 +177,7 @@ export default function TransferRequests() {
   }
 
   const getCurrentUserAddress = async () => {
-    const address = await LocationManager.getAddress()
-    setAddress(address)
+    // const address = await LocationManager.getAddress()
   }
 
   useEffect(() => {
@@ -199,11 +198,12 @@ export default function TransferRequests() {
 
       {/* DETAILS CARD */}
       <BottomCard
+        refreshKey={refreshKey}
         submitText={'Approve'}
         onDelete={() => deleteRequest('deleted')}
         title={'Request Details'}
-        hasDelete={activeRequest?.ownerPhone === currentUser?.phone && view === 'edit'}
-        hasSubmitButton={activeRequest?.ownerPhone !== currentUser?.phone}
+        hasDelete={activeRequest?.ownerKey === currentUser?.key && view === 'edit'}
+        hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
         onSubmit={() => selectDecision(Decisions.approved)}
         wrapperClass="transfer-change"
         submitIcon={<PiCheckBold />}
@@ -290,7 +290,7 @@ export default function TransferRequests() {
                   </a>
                   {/* ARRIVED */}
                   <button className="button default center" onClick={checkIn}>
-                    We're Here <IoLocationOutline />
+                    We&apos;re Here <IoLocationOutline />
                   </button>
                   <Spacer height={5} />
                   <Checkbox wrapperClass="center" text={'Include Current Address'} onClick={() => setSendWithAddress(!sendWithAddress)} />
@@ -347,7 +347,7 @@ export default function TransferRequests() {
                   <button className="button default submit center mt-15 mb-10" data-request-id={activeRequest?.id} onClick={update}>
                     Update Request
                   </button>
-                  {activeRequest?.ownerPhone !== currentUser?.phone && (
+                  {activeRequest?.ownerKey !== currentUser?.key && (
                     <button
                       className="button default red center mt-5"
                       data-request-id={activeRequest?.id}
@@ -382,7 +382,7 @@ export default function TransferRequests() {
             <p className="screen-title">Transfer Change Requests</p>
             {!DomManager.isMobile() && <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />}
           </div>
-          <p className="text-screen-intro">A request to change the time and/or location of the child exchange for a specific day.</p>
+          <p className="text-screen-intro">A proposal to modify the time and/or location for the child exchange on a designated day.</p>
           <Spacer height={10} />
           {/* LOOP REQUESTS */}
           {!showNewRequestCard && (
@@ -411,14 +411,12 @@ export default function TransferRequests() {
                           </span>
                         </p>
                         {request?.recipientPhone === currentUser.phone && (
-                          <p id="subtitle">From {StringManager.formatNameFirstNameOnly(request?.createdBy)}</p>
+                          <p id="subtitle">From {StringManager.getFirstNameOnly(request?.createdBy)}</p>
                         )}
                         {request?.recipientPhone !== currentUser.phone && (
                           <p id="subtitle">
                             Request Sent to&nbsp;
-                            {StringManager.formatNameFirstNameOnly(
-                              currentUser?.coparents?.filter((x) => x?.phone === request?.recipientPhone)[0]?.name
-                            )}
+                            {StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === request?.recipientPhone)[0]?.name)}
                           </p>
                         )}
                       </div>

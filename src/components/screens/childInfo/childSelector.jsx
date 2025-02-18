@@ -1,3 +1,4 @@
+// Path: src\components\screens\childInfo\childSelector.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
@@ -11,7 +12,7 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
   const [children, setChildren] = useState(currentUser?.children)
 
   const setUserChildren = async () => {
-    const currentUserChildren = await DB.getTable(`users/${currentUser?.phone}/children`)
+    const currentUserChildren = await DB.getTable(`users/${currentUser?.key}/children`)
     setChildren(currentUserChildren)
   }
 
@@ -32,7 +33,7 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
         {Manager.isValid(children) &&
           children.map((child, index) => {
             return (
-              <div key={index} id="children-container" onClick={(e) => setActiveChild(child)}>
+              <div key={index} id="children-container" onClick={() => setActiveChild(child)}>
                 {Manager.isValid(child?.general['profilePic']) && (
                   <div id="profile-pic-wrapper" style={{ backgroundImage: `url(${child?.general['profilePic']})` }}></div>
                 )}
@@ -42,7 +43,7 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
                   </div>
                 )}
                 <p className={`child-name ${child?.general?.name === child?.general?.name ? 'active' : ''}`}>
-                  {StringManager.formatNameFirstNameOnly(child?.general?.name)}
+                  {StringManager.getFirstNameOnly(child?.general?.name)}
                 </p>
               </div>
             )

@@ -1,28 +1,12 @@
+// Path: src\components\coparentInput.jsx
 import React, { useContext, useState } from 'react'
 import CheckboxGroup from '../components/shared/checkboxGroup'
 import Manager from '../managers/manager'
 import globalState from '../context'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  formatPhone,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../globalFunctions'
 import validator from 'validator'
 import AlertManager from '../managers/alertManager'
 import InputWrapper from '../components/shared/inputWrapper'
+import StringManager from '../managers/stringManager'
 
 export default function CoparentInputs({ add, coparentsLength = 1 }) {
   const { state, setState } = useContext(globalState)
@@ -45,7 +29,7 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
   return (
     <div id="coparent-input-container">
       <p id="coparent-label">
-        Co-Parent #{coparentsLength} {`- ${uppercaseFirstLetterOfAllWords(name)}`}
+        Co-Parent #{coparentsLength} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
       </p>
       <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
       <InputWrapper
@@ -56,7 +40,7 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
         onChange={(e) => setUserPhone(e.target.value)}
       />
       <CheckboxGroup
-        parentLabel={name.length > 0 ? `${uppercaseFirstLetterOfAllWords(name)}'s Parent Type` : 'Parent Type'}
+        parentLabel={name.length > 0 ? `${StringManager.uppercaseFirstLetterOfAllWords(name)}'s Parent Type` : 'Parent Type'}
         className="coparent-type"
         skipNameFormatting={true}
         checkboxLabels={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}
@@ -81,7 +65,7 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
             setShowAddButton(false)
             add({ name, phone: userPhone, parentType })
           }}>
-          Save {uppercaseFirstLetterOfAllWords(name)}
+          Save {StringManager.uppercaseFirstLetterOfAllWords(name)}
         </button>
       )}
     </div>

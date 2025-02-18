@@ -1,3 +1,4 @@
+// Path: src\components\fullMenu.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
@@ -32,12 +33,12 @@ import DB from '../database/DB'
 export default function FullMenu() {
   const { state, setState } = useContext(globalState)
   const { currentScreen, menuIsOpen, theme, currentUser, authUser } = state
-  const [user, setUser] = useState()
 
   const auth = getAuth()
 
-  const changeCurrentScreen = (screen) => {
-    setState({ ...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false })
+  const changeCurrentScreen = async (screen) => {
+    const _user = await DB_UserScoped.getCurrentUser(authUser?.email)
+    setState({ ...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: _user })
   }
 
   const changeTheme = async (theme) => {
@@ -65,25 +66,13 @@ export default function FullMenu() {
       })
   }
 
-  const setCurrentUser = async () => {
-    const allUsers = await DB.getTable(DB.tables.users)
-    // const _user = allUsers.find((user) => user.email === authUser.email)
-    const _user = await DB_UserScoped.getCurrentUser(authUser?.email)
-    console.log(_user)
-    setState({ ...state, currentUser: _user })
-    // setCurrentUser(_user)
-    return _user
-  }
-
   return (
     <BottomCard
       wrapperClass="full-menu"
       title={'Menu'}
       className={`full-menu ${theme}`}
-      onClose={async () => {
-        await setCurrentUser()
-      }}
       showCard={menuIsOpen}
+      onClose={() => {}}
       hasDelete={false}
       hasSubmitButton={false}>
       <div id="full-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
@@ -113,7 +102,7 @@ export default function FullMenu() {
         </div>
 
         {/* PARENTS ONLY */}
-        {AppManager.getAccountType(user) === 'parent' && (
+        {AppManager.getAccountType(currentUser) === 'parent' && (
           <>
             {/* VISITATION */}
             <div
@@ -164,7 +153,7 @@ export default function FullMenu() {
             </div>
           </>
         )}
-        {AppManager.getAccountType(user) === 'parent' && (
+        {AppManager.getAccountType(currentUser) === 'parent' && (
           <>
             {/* MEMORIES */}
             <div

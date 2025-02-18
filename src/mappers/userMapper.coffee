@@ -1,8 +1,9 @@
 import DB from "../database/DB"
 import Manager from "../managers/manager"
-
+import DB_UserScoped from "../database/DB_UserScoped"
 UserMapper = {
-  childrenToChildAccounts: (children) ->
+  childrenToChildAccounts: (authUserEmail) ->
+    currentUser = await DB_UserScoped.getCurrentUser(authUserEmail)
     childAccounts = []
     if Manager.isValid(children)
       for child in children
@@ -10,6 +11,10 @@ UserMapper = {
         if Manager.isValid(thisChild)
           childAccounts.push(thisChild)
     childAccounts
+
+  childAccountToUserRecord: (authUserEmail, childAccountKey) ->
+    currentUser = await DB_UserScoped.getCurrentUser(authUserEmail)
+    
 }
 
 export default UserMapper

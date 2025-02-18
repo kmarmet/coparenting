@@ -1,3 +1,4 @@
+// Path: src\components\shared\inputSuggestionWrapper.jsx
 import Manager from '../../managers/manager'
 import globalState from '../../context'
 import { useContext, useEffect, useState } from 'react'

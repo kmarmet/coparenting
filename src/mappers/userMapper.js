@@ -5,9 +5,12 @@ import DB from "../database/DB";
 
 import Manager from "../managers/manager";
 
+import DB_UserScoped from "../database/DB_UserScoped";
+
 UserMapper = {
-  childrenToChildAccounts: async function(children) {
-    var child, childAccounts, i, len, ref, thisChild;
+  childrenToChildAccounts: async function(authUserEmail) {
+    var child, childAccounts, currentUser, i, len, ref, thisChild;
+    currentUser = (await DB_UserScoped.getCurrentUser(authUserEmail));
     childAccounts = [];
     if (Manager.isValid(children)) {
       for (i = 0, len = children.length; i < len; i++) {
@@ -19,7 +22,13 @@ UserMapper = {
       }
     }
     return childAccounts;
+  },
+  childAccountToUserRecord: async function(authUserEmail, childAccountKey) {
+    var currentUser;
+    return currentUser = (await DB_UserScoped.getCurrentUser(authUserEmail));
   }
 };
 
 export default UserMapper;
+
+//# sourceMappingURL=userMapper.js.map

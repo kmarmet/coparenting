@@ -1,42 +1,22 @@
-import Manager from '../managers/manager'
+// Path: src\database\db_userScoped.js
 import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
-import FirebaseStorage from './firebaseStorage'
-import DB from './DB'
-import {
-  contains,
-  displayAlert,
-  formatDbProp,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '/src/globalFunctions'
-import DatasetManager from '/src/managers/datasetManager'
 import _ from 'lodash'
-import StringManager from '/src/managers/stringManager.coffee'
-import User from '../models/user'
-import moment from 'moment'
-import DateFormats from '../constants/dateFormats'
-import ObjectManager from '/src/managers/objectManager'
+import Manager from '../managers/manager'
 import ModelNames from '../models/modelNames'
+import User from '../models/user'
 import UserKey from '../models/userKey'
-import user from '../models/user'
+import DB from './DB'
+import FirebaseStorage from './firebaseStorage'
+import DatasetManager from '/src/managers/datasetManager'
+import ObjectManager from '/src/managers/objectManager'
+import StringManager from '/src/managers/stringManager.coffee'
+
 const DB_UserScoped = {
   // GET
   getChildAccounts: async (currentUser) => {
     let childrenAccounts = []
     if (Manager.isValid(currentUser?.children, true)) {
-      for (let child of currentUser?.children) {
+      for (let child of currentUser.children) {
         if (child?.phone) {
           const childAccount = await DB.find(DB.tables.users, ['phone', child?.phone], true)
           if (Manager.isValid(childAccount)) {
@@ -51,9 +31,9 @@ const DB_UserScoped = {
     const children = await DB_UserScoped.getChildAccounts(currentUser)
     const coparents = []
     if (Manager.isValid(currentUser?.coparents)) {
-      for (let coparent of currentUser?.coparents) {
-        if (coparent?.phone) {
-          const coparentAccount = await DB.find(DB.tables.users, ['phone', coparent?.phone], true)
+      for (let coparent of currentUser.coparents) {
+        if (coparent?.key) {
+          const coparentAccount = await DB.find(DB.tables.users, ['key', coparent?.key], true)
           if (Manager.isValid(coparentAccount)) {
             coparents.push(child)
           }
@@ -66,7 +46,7 @@ const DB_UserScoped = {
     return await DB.find(DB.tables.users, ['email', authUserEmail], true)
   },
   getCurrentUserRecords: (tableName, currentUser, objectName) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       DB_UserScoped.getRecordsByUser(tableName, currentUser, objectName)
         .then((currentUserRecord) => {
           if (!Array.isArray(currentUserRecord)) {
@@ -83,14 +63,14 @@ const DB_UserScoped = {
           }
         })
         .catch((error) => {
-          //
+          console.log(error)
         })
     })
   },
   getPropFromUserRecord: (tableName, currentUser, propPath) =>
     new Promise(async (resolve) => {
       const dbRef = ref(getDatabase())
-      await get(child(dbRef, `${tableName}/${currentUser?.phone}/${propPath}`)).then((snapshot) => {
+      await get(child(dbRef, `${tableName}/${currentUser?.key}/${propPath}`)).then((snapshot) => {
         let propValue = snapshot.val()
         resolve(propValue || [])
       })
@@ -101,7 +81,7 @@ const DB_UserScoped = {
       if (!Array.isArray(users)) {
         users = Manager.convertToArray(users)
       }
-      user = users.filter((x) => StringManager.formatNameFirstNameOnly(x.name) === StringManager.formatNameFirstNameOnly(userName))[0]?.phone
+      user = users.filter((x) => StringManager.getFirstNameOnly(x.name) === StringManager.getFirstNameOnly(userName))[0]?.phone
     })
 
     return user
@@ -109,7 +89,7 @@ const DB_UserScoped = {
   getUserImages: async (tableName, currentUser, objectName) => {
     const dbRef = ref(getDatabase())
     let tableData = []
-    await get(child(dbRef, `${tableName}/${currentUser?.phone}/${objectName}`)).then((snapshot) => {
+    await get(child(dbRef, `${tableName}/${currentUser?.key}/${objectName}`)).then((snapshot) => {
       tableData = snapshot.val()
     })
     return tableData
@@ -117,7 +97,7 @@ const DB_UserScoped = {
   getRecordsByUser: async (tableName, currentUser, objectName) => {
     return new Promise(async (resolve, reject) => {
       const dbRef = ref(getDatabase())
-      await get(child(dbRef, `${tableName}/${currentUser?.phone}/${objectName}`))
+      await get(child(dbRef, `${tableName}/${currentUser?.key}/${objectName}`))
         .then((snapshot) => {
           if (snapshot.exists()) {
             // console.log("if");
@@ -131,65 +111,76 @@ const DB_UserScoped = {
         })
     })
   },
-  getCoparentByPhone: async (coparentPhone, currentUser, getBioCoparent) => {
+  getCoparentByPhone: async (coparentPhone, currentUser) => {
     let coparent
     if (Manager.isValid(currentUser)) {
       coparent = await DB.find(DB.tables.users, ['phone', coparentPhone], true)
     }
     return coparent
   },
-
+  getCoparentByKey: async (coparentKey, currentUser) => {
+    let coparent
+    if (Manager.isValid(currentUser)) {
+      console.log('Coparent Key: ', coparentKey)
+      coparent = await DB.find(DB.tables.users, ['key', coparentKey], true)
+    }
+    return coparent
+  },
   // ADD
   addMultipleExpenses: async (currentUser, data) => {
     const dbRef = ref(getDatabase())
-    const currentExpenses = await DB.getTable(`${DB.tables.expenses}/${currentUser.phone}`)
+    const currentExpenses = await DB.getTable(`${DB.tables.expenses}/${currentUser.key}`)
     const toAdd = [...currentExpenses, [...data]].filter((x) => x !== undefined).flat()
-    set(child(dbRef, `${DB.tables.expenses}/${currentUser.phone}`), toAdd).catch((error) => {})
+    set(child(dbRef, `${DB.tables.expenses}/${currentUser.key}`), toAdd).catch((error) => {
+      console.log(error)
+    })
   },
   addUser: async (newUser) => {
     const dbRef = ref(getDatabase())
     const currentUsers = await DB.getTable(DB.tables.users)
     const toAdd = [...currentUsers, [...newUser]].filter((x) => x !== undefined).flat()
-    set(child(dbRef, `${DB.tables.users}`), toAdd).catch((error) => {})
+    set(child(dbRef, `${DB.tables.users}`), toAdd).catch((error) => {
+      console.log(error)
+    })
   },
   addCoparent: async (currentUser, newCoparent) => {
     const dbRef = ref(getDatabase())
     let updatedCoparents = []
-    const coparents = await DB.getTable(`${DB.tables.users}/${currentUser?.phone}/coparents`)
+    const coparents = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/coparents`)
     if (Manager.isValid(coparents, true)) {
       updatedCoparents = DatasetManager.getValidArray([...coparents, newCoparent])
     } else {
       updatedCoparents = [newCoparent]
     }
-    await set(child(dbRef, `${DB.tables.users}/${currentUser?.phone}/coparents`), updatedCoparents)
+    await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/coparents`), updatedCoparents)
   },
   addUserChild: async (currentUser, newChild) => {
     const dbRef = ref(getDatabase())
     console.log(newChild)
     const currentChildren = await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'children')
-    await set(child(dbRef, `users/${currentUser?.phone}/children`), [...currentChildren, newChild])
+    await set(child(dbRef, `users/${currentUser?.key}/children`), [...currentChildren, newChild])
   },
   addToUserMemories: async (currentUser, objectName, value, id) => {
     const dbRef = ref(getDatabase())
     let tableRecords = await DB.getTable(DB.tables.users)
     tableRecords = Manager.convertToArray(tableRecords)
-    let toUpdate = tableRecords.filter((x) => x.phone === currentUser?.phone)[0]
+    let toUpdate = tableRecords.filter((x) => x.phone === currentUser?.key)[0]
     if (toUpdate[objectName] !== undefined && toUpdate[objectName].length > 0) {
       toUpdate[objectName] = [...toUpdate[objectName], value]
     } else {
       toUpdate[objectName] = [value]
     }
     if (id) {
-      await push(child(dbRef, `/users/${currentUser?.phone}/${objectName}/${id}/`), value)
+      await push(child(dbRef, `/users/${currentUser?.key}/${objectName}/${id}/`), value)
       return toUpdate[objectName]
     } else {
-      await push(child(dbRef, `/users/${currentUser?.phone}/${objectName}`), value)
+      await push(child(dbRef, `/users/${currentUser?.key}/${objectName}`), value)
       return toUpdate[objectName]
     }
   },
   addProfilePicToChildRecord: async (currentUser, objectName, value, id) => {
     const dbRef = ref(getDatabase())
-    let basePath = `${DB.tables.users}/${currentUser?.phone}/children`
+    let basePath = `${DB.tables.users}/${currentUser?.key}/children`
     await get(child(dbRef, basePath)).then(async (snapshot) => {
       let key = null
       snapshot.forEach((child) => {
@@ -205,7 +196,8 @@ const DB_UserScoped = {
   },
   addUserChildProp: async (currentUser, activeChild, infoSection, prop, value, shareWith) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/children/`, activeChild, 'id')
+    console.log(`users/${currentUser?.key}/children/`, activeChild, 'id')
+    let key = await DB.getSnapshotKey(`users/${currentUser?.key}/children/`, activeChild, 'id')
     if (key !== null) {
       if (Manager.isValid(shareWith, true)) {
         for (let userNumber of shareWith) {
@@ -216,29 +208,34 @@ const DB_UserScoped = {
             infoSection: infoSection,
             childName: activeChild?.general?.name,
             sharedByName: currentUser?.name,
-            sharedByPhone: currentUser?.phone,
+            sharedByOwnerKey: currentUser?.key,
             id: Manager.getUid(),
             value: value,
           }
           await set(child(dbRef, `${DB.tables.sharedChildInfo}/${userNumber}`), [...shareWithSet, sharedObject])
         }
       }
-      await set(child(dbRef, `users/${currentUser?.phone}/children/${key}/${infoSection}/${formatDbProp(prop)}`), `${value}`)
+      await set(child(dbRef, `users/${currentUser?.key}/children/${key}/${infoSection}/${StringManager.formatDbProp(prop)}`), `${value}`)
     }
-    const returnChild = await DB.getTable(`users/${currentUser?.phone}/children/${key}`, true)
+    const returnChild = await DB.getTable(`users/${currentUser?.key}/children/${key}`, true)
     return returnChild
   },
   addCoparentProp: async (currentUser, coparent, prop, value) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/coparents/`, coparent, 'id')
+    let key = await DB.getNestedSnapshotKey(`users/${currentUser?.key}/coparents/`, coparent, 'id')
     if (key !== null) {
-      await set(child(dbRef, `users/${currentUser?.phone}/coparents/${key}/${formatDbProp(prop)}`), `${value}`)
+      await set(child(dbRef, `users/${currentUser?.key}/coparents/${key}/${StringManager.formatDbProp(prop)}`), `${value}`)
     }
-    const returnChild = await DB.getTable(`users/${currentUser?.phone}/coparents/${key}`, true)
+    const returnChild = await DB.getTable(`users/${currentUser?.key}/coparents/${key}`, true)
     return returnChild
   },
-  createAndInsertUser: async (key, email, name, phone, accountType) => {
+  createAndInsertUser: async (userObject) => {
     const dbRef = ref(getDatabase())
+    const { email, key, accountType, phone } = userObject
+
+    console.log(userObject)
+
+    // User Record
     let newUser = new User()
     newUser.email = email
     newUser.key = key
@@ -246,12 +243,17 @@ const DB_UserScoped = {
     newUser.accountType = accountType.toLowerCase()
     newUser.phone = StringManager.formatPhone(phone)
     const cleanUser = ObjectManager.cleanObject(newUser, ModelNames.user)
+
+    // User Key Record
     const userKey = new UserKey()
     userKey.email = email
     userKey.phone = phone
     userKey.key = key
-    window.localStorage.setItem('currentUser', JSON.stringify({ key, email }))
-    await set(child(dbRef, `${DB.tables.users}/${key}`), cleanUser).catch((error) => {})
+
+    // Insert
+    await set(child(dbRef, `${DB.tables.users}/${key}`), cleanUser).catch((error) => {
+      console.log(error)
+    })
     await DB.addSingleRecord(`${DB.tables.userKeys}/${key}`, userKey)
 
     return newUser
@@ -262,24 +264,24 @@ const DB_UserScoped = {
     const database = getDatabase()
     let dbRef
     if (Manager.isValid(parentObjectName)) {
-      console.log(`${DB.tables.users}/${currentUser?.phone}/${parentObjectName}`)
-      dbRef = ref(database, `${DB.tables.users}/${currentUser?.phone}/${parentObjectName}`)
+      console.log(`${DB.tables.users}/${currentUser?.key}/${parentObjectName}`)
+      dbRef = ref(database, `${DB.tables.users}/${currentUser?.key}/${parentObjectName}`)
     } else {
-      dbRef = ref(database, `${DB.tables.users}/${currentUser?.phone}`)
+      dbRef = ref(database, `${DB.tables.users}/${currentUser?.key}`)
     }
-    update(dbRef, { [formatDbProp(prop)]: value })
+    update(dbRef, { [StringManager.formatDbProp(prop)]: value })
   },
   updateUserChild: async (currentUser, activeChild, section, prop, value) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/children/`, activeChild, 'id')
-    await set(child(dbRef, `users/${currentUser?.phone}/children/${key}/${section}/${formatDbProp(prop)}`), value)
-    const returnChild = await DB.getTable(`users/${currentUser?.phone}/children/${key}`, true)
+    let key = await DB.getNestedSnapshotKey(`users/${currentUser?.key}/children/`, activeChild, 'id')
+    await set(child(dbRef, `users/${currentUser?.key}/children/${key}/${section}/${StringManager.formatDbProp(prop)}`), value)
+    const returnChild = await DB.getTable(`users/${currentUser?.key}/children/${key}`, true)
     return returnChild
   },
   updateCoparent: async (currentUser, coparent, prop, value) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.phone}/coparents`, coparent, 'phone')
-    await set(child(dbRef, `users/${currentUser?.phone}/coparents/${key}/${formatDbProp(prop)}`), value)
+    let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/coparents`, coparent, 'phone')
+    await set(child(dbRef, `users/${currentUser?.key}/coparents/${key}/${StringManager.formatDbProp(prop)}`), value)
   },
   updateUserRecord: async (phoneUid, propPath, value) => {
     const dbRef = ref(getDatabase())
@@ -315,7 +317,7 @@ const DB_UserScoped = {
   deleteChildInfoProp: async (tableName, currentUser, prop, parentObjectName, selectedChild) => {
     const dbRef = ref(getDatabase())
     let removalKey
-    await get(child(dbRef, `users/${currentUser?.phone}/children/`)).then(async (snapshot) => {
+    await get(child(dbRef, `users/${currentUser?.key}/children/`)).then(async (snapshot) => {
       if (snapshot.exists()) {
         snapshot.val().forEach((child, index) => {
           if (child.general?.name === selectedChild.general?.name) {
@@ -323,26 +325,25 @@ const DB_UserScoped = {
           }
         })
       }
-      await remove(child(dbRef, `${tableName}/${currentUser?.phone}/children/${removalKey}/${parentObjectName}/${prop.toLowerCase()}`))
+      await remove(child(dbRef, `${tableName}/${currentUser?.key}/children/${removalKey}/${parentObjectName}/${prop.toLowerCase()}`))
     })
   },
   deleteCoparentInfoProp: async (currentUser, prop, coparent) => {
     const dbRef = ref(getDatabase())
-    let removalKey = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/coparents/`, coparent, 'id')
-    await remove(child(dbRef, `users/${currentUser?.phone}/coparents/${removalKey}/${formatDbProp(prop)}`))
+    let removalKey = await DB.getNestedSnapshotKey(`users/${currentUser?.key}/coparents/`, coparent, 'id')
+    await remove(child(dbRef, `users/${currentUser?.key}/coparents/${removalKey}/${StringManager.formatDbProp(prop)}`))
   },
   deleteUserChildPropByPath: async (currentUser, activeChild, section, prop) => {
-    const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/children/`, activeChild, 'id')
-    await DB.deleteByPath(`/users/${currentUser?.phone}/children/${key}/${section}/${prop}`)
-    const returnChild = await DB.getTable(`users/${currentUser?.phone}/children/${key}`, true)
+    let key = await DB.getNestedSnapshotKey(`users/${currentUser?.key}/children/`, activeChild, 'id')
+    await DB.deleteByPath(`/users/${currentUser?.key}/children/${key}/${section}/${prop}`)
+    const returnChild = await DB.getTable(`users/${currentUser?.key}/children/${key}`, true)
     return returnChild
   },
   deleteCoparent: async (currentUser, coparent) => {
     const dbRef = ref(getDatabase())
-    const key = await DB.getSnapshotKey(`users/${currentUser?.phone}/coparents`, coparent, 'id')
-    await remove(child(dbRef, `users/${currentUser?.phone}/coparents/${key}`))
-    const coparents = await DB.getTable(`users/${currentUser?.phone}/coparents`)
+    const key = await DB.getSnapshotKey(`users/${currentUser?.key}/coparents`, coparent, 'id')
+    await remove(child(dbRef, `users/${currentUser?.key}/coparents/${key}`))
+    const coparents = await DB.getTable(`users/${currentUser?.key}/coparents`)
     return coparents
   },
   deleteUserData: async (currentUser) => {
@@ -354,32 +355,32 @@ const DB_UserScoped = {
     const merged = _.concat(events, memories, expenses, suggestions).filter((x) => x)
     const scopedToCurrentUser = merged.filter(
       (x) =>
-        x?.ownerPhone === currentUser?.phone ||
-        x?.phone === currentUser?.phone ||
-        formatNameFirstNameOnly(x?.createdBy) === formatNameFirstNameOnly(currentUser?.name)
+        x?.ownerKey === currentUser?.key ||
+        x?.phone === currentUser?.key ||
+        StringManager.getFirstNameOnly(x?.createdBy) === StringManager.getFirstNameOnly(currentUser?.name)
     )
 
     // Delete subscriber from DB
-    const subscriber = await DB.find(DB.tables.notificationSubscribers, ['phone', currentUser.phone], true)
+    const subscriber = await DB.find(DB.tables.notificationSubscribers, ['phone', currentUser.key], true)
 
     if (Manager.isValid(subscriber)) {
       const notifSubDeleteKey = await DB.getSnapshotKey(DB.tables.notificationSubscribers, subscriber, 'id')
-      await DB.deleteByPath(`${DB.tables.notificationSubscribers}/${notifSubDeleteKey}`)
+      DB.deleteByPath(`${DB.tables.notificationSubscribers}/${notifSubDeleteKey}`)
     }
-
     for (let record of scopedToCurrentUser) {
+      // eslint-disable-next-line no-prototype-builtins
       if (record.hasOwnProperty('fromVisitationSchedule')) {
         await DB.deleteMultipleRows(DB.tables.calendarEvents, events, currentUser)
       }
-
+      // eslint-disable-next-line no-prototype-builtins
       if (record.hasOwnProperty('paidStatus')) {
         await DB.deleteMultipleRows(DB.tables.expenses, expenses, currentUser)
       }
-
+      // eslint-disable-next-line no-prototype-builtins
       if (record.hasOwnProperty('memoryCaptureDate')) {
         // await DB.deleteMultipleRows(DB.tables.memories, memories, currentUser)
       }
-
+      // eslint-disable-next-line no-prototype-builtins
       if (record.hasOwnProperty('suggestion')) {
         console.log(record)
         await DB.deleteMultipleRows(DB.tables.suggestions, suggestions, currentUser)
@@ -387,18 +388,18 @@ const DB_UserScoped = {
     }
 
     // DELETE ROOTED (users, archivedChat)
-    await remove(child(dbRef, `${DB.tables.users}/${currentUser?.phone}`))
-    await remove(child(dbRef, `${DB.tables.archivedChats}/${currentUser?.phone}`))
+    await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}`))
+    await remove(child(dbRef, `${DB.tables.archivedChats}/${currentUser?.key}`))
   },
-  deleteSharedChildInfoProp: async (currentUser, sharedRecordProp, prop, sharedByPhone) => {
+  deleteSharedChildInfoProp: async (currentUser, sharedRecordProp, prop, sharedByOwnerKey) => {
     const dbRef = ref(getDatabase())
     const found = await DB.find(sharedRecordProp, ['prop', prop.toLowerCase()], false)
 
-    if (Manager.isValid(found) && found.hasOwnProperty('sharedByPhone') && found.sharedByPhone === sharedByPhone) {
-      const deleteKey = await DB.getSnapshotKey(`${DB.tables.sharedChildInfo}/${currentUser.phone}`, found)
+    if (Manager.isValid(found) && Object.prototype.hasOwnProperty.call(found, 'sharedByOwnerKey') && found.sharedByOwnerKey === sharedByOwnerKey) {
+      const deleteKey = await DB.getSnapshotKey(`${DB.tables.sharedChildInfo}/${currentUser.key}`, found)
 
       if (Manager.isValid(deleteKey)) {
-        await remove(child(dbRef, `${DB.tables.sharedChildInfo}/${currentUser.phone}/${deleteKey}`))
+        await remove(child(dbRef, `${DB.tables.sharedChildInfo}/${currentUser.key}/${deleteKey}`))
       }
     }
   },
@@ -435,7 +436,7 @@ const DB_UserScoped = {
         obj['users'] = updatedUsers
       }
 
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         const value = obj[key]
         if (value === currentValue) {
           obj[key] = updatedValue

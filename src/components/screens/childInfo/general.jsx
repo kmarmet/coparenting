@@ -1,10 +1,10 @@
+// Path: src\components\screens\childInfo\general.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import { IoCloseOutline } from 'react-icons/io5'
-import DB_UserScoped from '/src/database/db_userScoped'
 import Accordion from '@mui/material/Accordion'
 import Autocomplete from 'react-google-autocomplete'
 import { FaChevronDown } from 'react-icons/fa6'
@@ -14,20 +14,22 @@ import { MdContactEmergency } from 'react-icons/md'
 import DB from '/src/database/DB'
 import StringManager from '/src/managers/stringManager.coffee'
 import { FaPlus, FaMinus } from 'react-icons/fa6'
-
+import DB_UserScoped from '../../../database/db_userScoped'
+import AddressInput from '/src/components/shared/addressInput'
 function General({ activeChild, setActiveChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [generalValues, setGeneralValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
+
   const deleteProp = async (prop) => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
+    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
 
     // Delete Shared
     const sharedProps = sharing?.map((x) => x?.prop)
     if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
       const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
-      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByPhone)
+      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await setSelectedChild()
     } else {
       const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', StringManager.formatDbProp(prop))
@@ -37,14 +39,14 @@ function General({ activeChild, setActiveChild }) {
   }
 
   const setSelectedChild = async () => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
+    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
     let sharedValues = []
     for (let obj of sharing) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
     }
-    if (Manager.isValid(activeChild.general)) {
+    if (Manager.isValid(activeChild?.general)) {
       // Set info
-      let values = Object.entries(activeChild.general)
+      let values = Object.entries(activeChild?.general)
 
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
@@ -59,7 +61,7 @@ function General({ activeChild, setActiveChild }) {
     }
   }
 
-  const update = async (section, prop, value, isArray) => {
+  const update = async (prop, value) => {
     AlertManager.successAlert('Updated!')
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', StringManager.formatDbProp(prop), value)
     setActiveChild(updatedChild)
@@ -74,11 +76,11 @@ function General({ activeChild, setActiveChild }) {
       <Accordion className={`${theme} child-info`} expanded={showInputs}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
-          className={!Manager.isValid(activeChild.general) ? 'disabled header general' : 'header general'}>
+          className={!Manager.isValid(activeChild?.general) ? 'disabled header general' : 'header general'}>
           <MdContactEmergency className={'svg'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             General
-            {!Manager.isValid(activeChild.general) ? '- No Info' : ''}
+            {!Manager.isValid(activeChild?.general) ? '- No Info' : ''}
             {Manager.isValid(activeChild?.general) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
           </p>
         </AccordionSummary>
@@ -95,24 +97,18 @@ function General({ activeChild, setActiveChild }) {
                         <InputWrapper
                           inputType={'location'}
                           defaultValue={value}
-                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}>
-                          <Autocomplete
-                            apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                            options={{
-                              types: ['geocode', 'establishment'],
-                              componentRestrictions: { country: 'usa' },
+                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}>
+                          <AddressInput
+                            onSelection={async (place) => {
+                              await update('address', place)
                             }}
-                            onPlaceSelected={async (place) => {
-                              await update('general', 'address', place.formatted_address, false)
-                            }}
-                            placeholder={Manager.isValid(activeChild?.general?.address) ? activeChild?.general?.address : 'Location'}
                           />
                         </InputWrapper>
                       )}
                       {!Manager.contains(infoLabel.toLowerCase(), 'address') && (
                         <InputWrapper
                           inputType={'input'}
-                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}
+                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
                           defaultValue={value}
                           onChange={async (e) => {
                             const inputValue = e.target.value

@@ -11,17 +11,17 @@ StringManager = {
 
     return formattedPhone
 
-  formatNameFirstNameOnly: (name) ->
+  getFirstNameOnly: (name) ->
     return name if !name
     returnString = name.toString()
     return returnString if !returnString  or returnString.length == 0
     returnString = returnString.split(' ')[0]
     StringManager.uppercaseFirstLetterOfAllWords(returnString)
 
-  isAllUppercase: (input)->
+  isAllUppercase: (input) ->
     return input == input.toUpperCase()
 
-  formatPhone: (input)->
+  formatPhone: (input) ->
     input = input.toString()
       .replace(/-/g, '')
       .replace(/\s+/g, '')
@@ -50,15 +50,15 @@ StringManager = {
     input.replace(/\.[^/.]+$/, '')
 
   wordCount: (input) ->
-    input.trim().split(/\s+/).length
+    input?.trim()?.split(/\s+/)?.length
 
   stringHasNumbers: (input) ->
     return /\d/.test(input)
 
   capitalizeFirstWord: (str) ->
-    firstWord = str.split(' ')[0];
-    capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
-    return capitalizedFirstWord + str.slice(firstWord.length);
+    firstWord = str.split(' ')[0]
+    capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1)
+    return capitalizedFirstWord + str.slice(firstWord.length)
 
   toCamelCase: (str) ->
     str =  str.replace /(?:^\w|[A-Z]|\b\w)/g, (word, index) ->
@@ -100,4 +100,4 @@ StringManager = {
 
 }
 
-export default StringManager;
+export default StringManager

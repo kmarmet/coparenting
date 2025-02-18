@@ -1,3 +1,4 @@
+// Path: App Repo\componentBackups\activityScreen.jsx
 import Manager from '../src/managers/manager'
 import SecurityManager from '../src/managers/securityManager'
 
@@ -25,7 +26,7 @@ const getExpenseCount = async () => {
 
 const getEventCount = async () => {
   const allEvents = await SecurityManager.getCalendarEvents(currentUser)
-  const events = allEvents.filter((x) => x.ownerPhone === currentUser?.phone)
+  const events = allEvents.filter((x) => x.ownerKey === currentUser?.phone)
   return events.length
 }
 

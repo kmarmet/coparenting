@@ -13,7 +13,7 @@ export default class Expense
     @paidStatus = 'unpaid',
     @children = [],
     @dueDate = '',
-    @ownerPhone = '',
+    @ownerKey = '',
     @notes = '',
     @recipientName = '',
     @isRepeating = false,
@@ -21,6 +21,7 @@ export default class Expense
     @category = '',
     @payer =  {
       phone: '',
+      key: '',
       name: ''
     }
   ) ->

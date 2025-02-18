@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+// Path: src\components\forms\newMemoryForm.jsx
+import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import Spacer from '/src/components/shared/spacer.jsx'
 import UploadInputs from '/src/components/shared/uploadInputs'
@@ -20,23 +21,21 @@ import BottomCard from '../shared/bottomCard'
 import ObjectManager from '/src/managers/objectManager'
 import ImageManager from '/src/managers/imageManager'
 import AlertManager from '/src/managers/alertManager'
-import DB_UserScoped from '/src/database/db_userScoped'
 import ActivityCategory from '/src/models/activityCategory'
 import StringManager from '/src/managers/stringManager'
+import DB_UserScoped from '../../database/db_userScoped'
+import DomManager from '../../managers/domManager'
 
 export default function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, navbarButton, updateKey, theme } = state
+  const { currentUser, authUser, refreshKey, theme } = state
   const [images, setImages] = useState([])
-  const [resetKey, setResetKey] = useState(Manager.getUid())
   const [newMemory, setNewMemory] = useState(new Memory())
-  const inputFile = useRef(null)
 
   const resetForm = async () => {
     Manager.resetForm('new-memory-wrapper')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    setState({ ...state, currentUser: updatedCurrentUser, isLoading: false })
-    setResetKey(Manager.getUid())
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
+    setState({ ...state, currentUser: updatedCurrentUser, isLoading: false, refreshKey: Manager.getUid() })
     hideCard()
   }
 
@@ -85,7 +84,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
     // Check for existing memory
     const securedMemories = await SecurityManager.getMemories(currentUser)
     let existingMemoriesFound = false
-    Manager.convertToArray(localImages).forEach((img, index) => {
+    Manager.convertToArray(localImages).forEach((img) => {
       const existingMemory = securedMemories.filter((x) => x.memoryName === img.name)[0]
       if (existingMemory) {
         existingMemoriesFound = true
@@ -118,10 +117,10 @@ export default function NewMemoryForm({ hideCard, showCard }) {
 
             cleanedObject.url = url
             cleanedObject.memoryName = imageName
-            cleanedObject.ownerPhone = currentUser?.phone
+            cleanedObject.ownerKey = currentUser?.key
 
             // Add to Database
-            await DB.add(`${DB.tables.memories}/${currentUser.phone}`, cleanedObject)
+            await DB.add(`${DB.tables.memories}/${currentUser?.key}`, cleanedObject)
           }
 
           // Send Notification
@@ -129,7 +128,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
             newMemory.shareWith,
             currentUser,
             `New Memory`,
-            `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
+            `${StringManager.getFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
             ActivityCategory.memories
           )
         })
@@ -147,14 +146,13 @@ export default function NewMemoryForm({ hideCard, showCard }) {
 
   useEffect(() => {
     Manager.showPageContainer()
-    setResetKey(Manager.getUid())
   }, [])
 
   return (
     <BottomCard
       onSubmit={submit}
       wrapperClass="new-memory"
-      refreshKey={resetKey}
+      refreshKey={refreshKey}
       submitText={'Add Memory'}
       title={'New Memory'}
       onClose={resetForm}
@@ -162,41 +160,53 @@ export default function NewMemoryForm({ hideCard, showCard }) {
       <div className="new-memory-wrapper">
         <div id="new-memory-form-container" className={`${theme} form`}>
           <Spacer height={5} />
+
           <div className="form">
             {/* SHARE WITH */}
             {currentUser && (
               <ShareWithCheckboxes
                 onCheck={handleShareWithSelection}
                 containerClass={'share-with-coparents'}
-                dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+                dataKey={currentUser?.coparents?.map((x) => x.phone)}
                 checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
               />
             )}
 
+            <Spacer height={10} />
+
             {/* TITLE */}
             <InputWrapper
-              refreshKey={resetKey}
+              refreshKey={refreshKey}
               inputType={'input'}
               labelText={'Title'}
               onChange={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, title: e.target.value }))}></InputWrapper>
 
             {/* DATE */}
-            <InputWrapper labelText={'Memory Capture Date'} inputType={'date'}>
-              <MobileDatePicker
-                onOpen={addThemeToDatePickers}
-                value={moment()}
-                className={`${theme} m-0 w-100 mui-input`}
-                onAccept={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, memoryCaptureDate: moment(e).format(DateFormats.dateForDb) }))}
+            {!DomManager.isMobile() && (
+              <InputWrapper labelText={'Memory Capture Date'} inputType={'date'}>
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  value={moment()}
+                  className={`${theme} m-0 w-100 mui-input`}
+                  onAccept={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, memoryCaptureDate: moment(e).format(DateFormats.dateForDb) }))}
+                />
+              </InputWrapper>
+            )}
+            {DomManager.isMobile() && (
+              <InputWrapper
+                inputType={'date'}
+                labelText={'Memory Capture Date'}
+                useNativeDate={true}
+                onChange={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, memoryCaptureDate: moment(e).format(DateFormats.dateForDb) }))}
               />
-            </InputWrapper>
+            )}
 
             {/* NOTES */}
             <InputWrapper
-              refreshKey={resetKey}
+              refreshKey={refreshKey}
               onChange={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, notes: e.target.value }))}
               inputType={'textarea'}
               labelText={'Image Description/Notes'}></InputWrapper>
-            <Spacer height={40} />
             {/* UPLOAD BUTTON */}
             <UploadInputs
               onClose={hideCard}

@@ -1,3 +1,4 @@
+// Path: src\components\forms\newCalendarEvent.jsx
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -22,7 +23,6 @@ import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import DateFormats from '/src/constants/dateFormats'
 import DatetimePickerViews from '/src/constants/datetimePickerViews'
 import EventLengths from '/src/constants/eventLengths'
-import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
 import DatasetManager from '/src/managers/datasetManager'
 import CalendarManager from '../../managers/calendarManager'
@@ -93,7 +93,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     setShowReminders(false)
     setIncludeChildren(false)
     setIsVisitation(false)
-    // const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    // const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     // setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
 
@@ -107,16 +107,15 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       newEvent.title += ' 🎂'
     }
     if (isVisitation) {
-      newEvent.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Visitation`
+      newEvent.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Visitation`
     }
     newEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
 
     newEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
     newEvent.startTime = moment(eventStartTime).format(DateFormats.timeForDb)
     newEvent.endTime = moment(eventEndTime).format(DateFormats.timeForDb)
-    console.log(eventLocation, 'location')
+
     // Not Required
-    newEvent.id = Manager.getUid()
     newEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
     newEvent.location = eventLocation
     newEvent.children = eventChildren
@@ -168,19 +167,19 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       //#region MULTIPLE DATES
       // Date Range
       if (eventIsDateRange) {
-        const dates = await CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'range', eventStartDate, eventEndDate)
+        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'range', eventStartDate, eventEndDate)
         await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
 
       // Add cloned dates
       if (Manager.isValid(clonedDates)) {
-        const dates = await CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'cloned', clonedDates[0], clonedDates[clonedDates.length - 1])
+        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'cloned', clonedDates[0], clonedDates[clonedDates.length - 1])
         await CalendarManager.addMultipleCalEvents(currentUser, dates)
       }
 
       // Repeating
       if (eventIsRepeating) {
-        const dates = await CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'recurring', eventStartDate, eventEndDate)
+        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'recurring', eventStartDate, eventEndDate)
         await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
       //#endregion MULTIPLE DATES
@@ -220,6 +219,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
   const handleShareWithSelection = (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
+    console.log(shareWithNumbers)
     setEventShareWith(shareWithNumbers)
   }
 
@@ -227,7 +227,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     Manager.handleCheckboxSelection(
       e,
       (e) => {
-        const value = e.textContent
         let timeframe = CalendarMapper.reminderTimes(e)
         setEventReminderTimes([...eventReminderTimes, timeframe])
       },
@@ -412,8 +411,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             </InputWrapper>
           )}
 
-          <Spacer height={5} />
-
           {/* EVENT WITH TIME */}
           {!isAllDay && (
             <div className={'flex event-times-wrapper'}>
@@ -427,12 +424,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           )}
 
           {/* Share with */}
-          {Manager.isValid(currentUser?.coparents) && (
-            <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
-          )}
-          {Manager.isValid(currentUser?.parents) && (
-            <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
-          )}
+          <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
 
           <Spacer height={5} />
 
@@ -450,15 +442,16 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                           unchecked: null,
                         }}
                         className={'ml-auto reminder-toggle'}
-                        onChange={(e) => setShowReminders(!showReminders)}
+                        onChange={() => setShowReminders(!showReminders)}
                       />
                     </div>
                   </AccordionSummary>
                   <AccordionDetails>
                     <CheckboxGroup
                       elClass={`${theme} reminder-times`}
+                      checkboxArray={Manager.buildCheckboxGroup(currentUser, 'reminder-times', null)}
+                      containerClass={'reminder-times'}
                       skipNameFormatting={true}
-                      checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                       onCheck={handleReminderSelection}
                     />
                   </AccordionDetails>
@@ -476,10 +469,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   unchecked: null,
                 }}
                 className={'ml-auto visitation-toggle'}
-                onChange={(e) => setIsVisitation(!isVisitation)}
+                onChange={() => setIsVisitation(!isVisitation)}
               />
             </div>
           </div>
+
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.isValid(currentUser?.children) && (
             <div>
@@ -493,14 +487,15 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                         unchecked: null,
                       }}
                       className={'ml-auto reminder-toggle'}
-                      onChange={(e) => setIncludeChildren(!includeChildren)}
+                      onChange={() => setIncludeChildren(!includeChildren)}
                     />
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
                   <CheckboxGroup
-                    elClass={`${theme} `}
-                    checkboxLabels={currentUser?.children?.map((x) => x['general'].name)}
+                    elClass={`${theme} children`}
+                    skipNameFormatting={true}
+                    checkboxArray={Manager.buildCheckboxGroup(currentUser, 'children')}
                     onCheck={handleChildSelection}
                   />
                 </AccordionDetails>
@@ -531,8 +526,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     <CheckboxGroup
                       elClass={`${theme}`}
                       onCheck={handleRepeatingSelection}
-                      defaultLabels={[]}
-                      checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']}
+                      checkboxArray={Manager.buildCheckboxGroup(currentUser, 'recurring-intervals')}
                     />
                     <Spacer height={5} />
                     {Manager.isValid(repeatInterval) && (
@@ -589,7 +583,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               )}
             </>
           )}
-          <Spacer height={2} />
+          <Spacer height={8} />
 
           {/* URL/WEBSITE */}
           <InputWrapper
@@ -608,7 +602,12 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
           <InputWrapper inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
 
           {/* NOTES */}
-          <InputWrapper labelText={'Notes'} required={false} inputType={'textarea'} onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
+          <InputWrapper
+            wrapperClasses="textarea"
+            labelText={'Notes'}
+            required={false}
+            inputType={'textarea'}
+            onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
         </div>
       </BottomCard>
     </>

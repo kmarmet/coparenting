@@ -1,3 +1,4 @@
+// Path: src\components\screens\childInfo\childInfo.jsx
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import globalState from '../../../context'
@@ -9,8 +10,8 @@ import Behavior from '/src/components/screens/childInfo/behavior'
 import General from '/src/components/screens/childInfo/general'
 import Medical from '/src/components/screens/childInfo/medical'
 import Schooling from '/src/components/screens/childInfo/schooling'
-import { FaCameraRotate, FaMinus, FaPlus, FaWandMagicSparkles } from 'react-icons/fa6'
-import { BiFace, BiImageAdd } from 'react-icons/bi'
+import { FaCameraRotate } from 'react-icons/fa6'
+import { BiImageAdd } from 'react-icons/bi'
 import { Fade } from 'react-awesome-reveal'
 import NewChildForm from '/src/components/screens/childInfo/newChildForm'
 import ChildSelector from '/src/components/screens/childInfo/childSelector'
@@ -21,23 +22,18 @@ import AlertManager from '/src/managers/alertManager'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import { MdChecklistRtl } from 'react-icons/md'
 import NewTransferChecklist from './newTransferChecklist'
 import Checklists from './checklists'
+import Spacer from '../../shared/spacer'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, refreshKey } = state
-  const [showCard, setShowCard] = useState(false)
   const imgRef = useRef()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showSelectorCard, setShowSelectorCard] = useState(false)
   const [activeInfoChild, setActiveInfoChild] = useState(null)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
-  const [showActions, setShowActions] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [hasChildren, setHasChildren] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
@@ -53,7 +49,7 @@ export default function ChildInfo() {
     // Upload -> Set child/general/profilePic
     await FirebaseStorage.upload(
       FirebaseStorage.directories.profilePics,
-      `${currentUser?.id}/${activeInfoChild?.id}`,
+      `${currentUser?.key}/${activeInfoChild?.id}`,
       imgFiles[0],
       'profilePic'
     ).then(async (url) => {
@@ -130,6 +126,11 @@ export default function ChildInfo() {
             <p className="screen-title">Child Info </p>
             {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
           </div>
+          <p>
+            You can store and access all relevant information about your child, particularly essential details that you may need to retrieve at any
+            moment.
+          </p>
+          <Spacer height={10} />
 
           {!hasChildren && (
             <NoDataFallbackText
@@ -140,63 +141,50 @@ export default function ChildInfo() {
           )}
 
           {/* PROFILE PIC */}
-          <div id="children-container">
-            {activeInfoChild && activeInfoChild?.general && (
-              <>
-                {Manager.isValid(activeInfoChild?.general['profilePic']) && (
-                  <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
-                    <div className="after">
-                      <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
-                      <FaCameraRotate />
-                    </div>
+          <div id="image-and-actions-wrapper">
+            <div className="left">
+              {Manager.isValid(activeInfoChild?.general['profilePic']) && (
+                <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
+                  <div className="after">
+                    <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
+                    <FaCameraRotate />
                   </div>
-                )}
-                {!Manager.isValid(activeInfoChild?.general['profilePic']) && (
-                  <div className="profile-pic-container no-image">
-                    <div className="after">
-                      <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
-                      <BiImageAdd />
-                    </div>
+                </div>
+              )}
+              {!Manager.isValid(activeInfoChild?.general['profilePic'], true) && (
+                <div className="profile-pic-container no-image">
+                  <div className="after">
+                    <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
+                    <BiImageAdd />
                   </div>
-                )}
-              </>
-            )}
+                </div>
+              )}
+              <span className="child-name">{StringManager.getFirstNameOnly(activeInfoChild?.general?.name)}</span>
+            </div>
 
-            <span className="child-name">{StringManager.formatNameFirstNameOnly(activeInfoChild?.general?.name)}</span>
-          </div>
-          {/* BUTTONS */}
-          {Manager.isValid(currentUser?.children) && (
-            <div key={refreshKey}>
-              <Accordion expanded={showActions} id={'checkboxes'}>
-                <AccordionSummary onClick={() => setShowActions(!showActions)}>
-                  <p id={`actions-button`} className={`${showActions ? 'active' : ''}`}>
-                    Actions
-                    {showActions && <FaMinus />}
-                    {!showActions && <FaPlus />}
-                  </p>
-                </AccordionSummary>
-                <AccordionDetails>
+            <div className="right">
+              {/* BUTTONS */}
+              {Manager.isValid(currentUser?.children) && (
+                <div key={refreshKey}>
                   <div className="buttons">
                     <button
                       className="button default"
                       onClick={() => {
                         setShowInfoCard(true)
-                        setShowActions(false)
                       }}>
-                      Add Your Own Info <FaWandMagicSparkles />
+                      Add Your Own Info
                     </button>
                     {currentUser?.children?.length > 1 && (
                       <button
                         onClick={() => {
-                          setShowActions(false)
                           setShowSelectorCard(true)
                         }}
                         className="button default">
-                        View Another Child <BiFace className={'child-info'} />
+                        View Another Child
                       </button>
                     )}
                     <button className="default button" onClick={() => setShowNewChecklistCard(true)}>
-                      Create Transfer Checklist <MdChecklistRtl />
+                      Create Transfer Checklist
                     </button>
                     {Manager.isValid(activeInfoChild?.checklists) && (
                       <button
@@ -204,14 +192,15 @@ export default function ChildInfo() {
                         onClick={() => {
                           setShowChecklistsCard(true)
                         }}>
-                        View Transfer Checklists <MdChecklistRtl />
+                        View Transfer Checklists
                       </button>
                     )}
                   </div>
-                </AccordionDetails>
-              </Accordion>
+                </div>
+              )}
             </div>
-          )}
+          </div>
+
           {/* INFO */}
 
           <div id="child-info">

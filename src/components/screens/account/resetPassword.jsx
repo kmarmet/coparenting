@@ -1,25 +1,8 @@
+// Path: src\components\screens\account\resetPassword.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '../../../managers/manager'
 import ScreenNames from '../../../constants/screenNames'
-
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import validator from 'validator'
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
 import firebaseConfig from '../../../firebaseConfig'

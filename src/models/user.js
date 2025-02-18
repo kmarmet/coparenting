@@ -38,3 +38,5 @@ export default User = class User {
   }
 
 };
+
+//# sourceMappingURL=user.js.map

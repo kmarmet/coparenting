@@ -317,6 +317,10 @@
       @include fontType;
     }
 
+    table {
+      @include table;
+    }
+
     svg {
       font-size: 30px;
     }
@@ -522,7 +526,7 @@
       }
     }
 
-    #checkbox-wrapper {
+    .checkbox-wrapper {
       @include checkboxWrapper;
     }
 
@@ -929,10 +933,6 @@
         position: relative;
         top: 5px;
       }
-    }
-
-    #table {
-      @include table;
     }
 
     .rs-tag {

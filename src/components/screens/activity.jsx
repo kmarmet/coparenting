@@ -1,8 +1,9 @@
+// Path: src\components\screens\activity.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import { Fade } from 'react-awesome-reveal'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-import { FaCheck, FaChevronDown } from 'react-icons/fa6'
+import { FaCheck } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -20,33 +21,34 @@ import { PiSealWarningDuotone } from 'react-icons/pi'
 import StringManager from '../../managers/stringManager'
 import AppManager from '../../managers/appManager.coffee'
 import { FaPlus, FaMinus } from 'react-icons/fa6'
+import { IoMdCheckmarkCircleOutline } from 'react-icons/io'
 
 export default function Activity() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activityCount } = state
+  const { currentUser, theme, activityCount, authUser } = state
   const [activities, setActivities] = useState([])
   const [legendIsExpanded, setLegendIsExpanded] = useState(false)
   const getActivities = async () => {
-    const all = await DB.getTable(`${DB.tables.activities}/${currentUser.phone}`)
+    const all = await DB.getTable(`${DB.tables.activities}/${currentUser?.key}`)
     const toReturn = DatasetManager.sortDates(all)
     await AppManager.setAppBadge(activityCount)
     setState({ ...state, activityCount: toReturn.length })
     setActivities(toReturn)
   }
 
-  const clearAll = async () => await DB.deleteByPath(`${DB.tables.activities}/${currentUser.phone}`)
+  const clearAll = async () => await DB.deleteByPath(`${DB.tables.activities}/${currentUser?.key}`)
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.activities}/${currentUser.phone}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.activities}/${currentUser?.key}`), async () => {
       await getActivities().then((r) => r)
     })
   }
 
   const clearActivity = async (activity) => {
-    const key = await DB.getSnapshotKey(`${DB.tables.activities}/${currentUser?.phone}`, activity, 'id')
+    const key = await DB.getSnapshotKey(`${DB.tables.activities}/${currentUser?.key}`, activity, 'id')
     if (Manager.isValid(key)) {
-      await DB.deleteByPath(`${DB.tables.activities}/${currentUser?.phone}/${key}`)
+      await DB.deleteByPath(`${DB.tables.activities}/${currentUser?.key}/${key}`)
     }
   }
 
@@ -105,10 +107,10 @@ export default function Activity() {
         {activities.length === 0 && <NoDataFallbackText text={'No current activity'} />}
         <p className="screen-title">Activity Log</p>
         <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
-          <p className="intro-text mb-15">Stay informed in real-time with all updates and activity.</p>
-
+          <p className="intro-text mb-15">Stay updated with all developments and activities as they happen.</p>
+          #38E480
           {/* LEGENDS */}
-          {currentUser?.accountType === 'parent' &&
+          {currentUser?.accountType === 'parent' && (
             <div className="flex">
               <Accordion id={'legend'} expanded={legendIsExpanded}>
                 <AccordionSummary>
@@ -129,20 +131,18 @@ export default function Activity() {
                 </AccordionDetails>
               </Accordion>
             </div>
-          }
-
+          )}
           {/* CLEAR ALL BUTTON */}
           {activities.length > 0 && (
             <button className="clear-all button green center default" onClick={clearAll}>
               Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
             </button>
           )}
-
           {/* LOOP ACTIVITIES */}
           <div id="activity-cards">
             {Manager.isValid(activities) &&
               activities.map((activity, index) => {
-                const { text, title, dateCreated, creatorPhone, id } = activity
+                const { text, title, dateCreated } = activity
                 const categoryObject = getCategory(activity)
                 const { screen, category, className } = categoryObject
 
@@ -155,15 +155,13 @@ export default function Activity() {
                       <p className="text">{StringManager.uppercaseFirstLetterOfAllWords(text)}</p>
                       <p id="date">Received: {moment(dateCreated, DateFormats.fullDatetime).format(DateFormats.readableDatetime)}</p>
                     </div>
-                    <div id="svg-wrapper" onClick={() => clearActivity(activity)}>
-                      <FaCheck />
-                    </div>
+                    <IoMdCheckmarkCircleOutline className={'row-checkmark'} onClick={() => clearActivity(activity)} />
                   </div>
                 )
               })}
           </div>
-        </Fade >
-      </div >
+        </Fade>
+      </div>
       <NavBar navbarClass={'activity no-add-new-button'}></NavBar>
     </>
   )

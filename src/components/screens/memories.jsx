@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+// Path: src\components\screens\memories.jsx
+import React, { useContext, useEffect, useState } from 'react'
 import DB from '../../database/DB'
 import FirebaseStorage from '../../database/firebaseStorage'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
@@ -27,7 +28,6 @@ export default function Memories() {
   const [memories, setMemories] = useState([])
   const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
   const dbRef = ref(getDatabase())
-  const inputFile = useRef(null)
 
   const getSecuredMemories = async () => {
     let all = await SecurityManager.getMemories(currentUser)
@@ -73,7 +73,7 @@ export default function Memories() {
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
 
     // Current user is record owner
-    if (record.ownerPhone === currentUser?.key) {
+    if (record.ownerKey === currentUser?.key) {
       // Delete from Firebase Realtime DB
       await DB.deleteMemory(currentUser?.key, record).then(async () => {
         // Delete from Firebase Storage
@@ -114,7 +114,7 @@ export default function Memories() {
   }
 
   const onTableChange = async () => {
-    onValue(child(dbRef, `${DB.tables.memories}/${currentUser?.key}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.memories}/${currentUser?.key}`), async () => {
       await getSecuredMemories(currentUser)
     })
   }
@@ -126,7 +126,7 @@ export default function Memories() {
   return (
     <>
       {/* NEW MEMORY FORM */}
-      <NewMemoryForm hideCard={(e) => setShowNewMemoryCard(false)} showCard={showNewMemoryCard} />
+      <NewMemoryForm hideCard={() => setShowNewMemoryCard(false)} showCard={showNewMemoryCard} />
 
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
@@ -138,7 +138,7 @@ export default function Memories() {
             {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />}
           </div>
           <p id="happy-subtitle" className={`${theme} mb-10`}>
-            Upload photos of memories that are too good NOT to share <GoHeartFill className={'heart'} />
+            Share photos of unforgettable memories that deserve to be seen! <GoHeartFill className={'heart'} />
           </p>
 
           {/* GALLERY */}
@@ -163,6 +163,7 @@ export default function Memories() {
 
                       {/* IMAGE */}
                       <div id="memory-image-wrapper">
+                        {/* eslint-disable-next-line no-undef*/}
                         <img src={require('../../img/loading.gif')} className="loading-memory-gif" alt="" />
                         <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}>
                           {/* DELETE ICON */}

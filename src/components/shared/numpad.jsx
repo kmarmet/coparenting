@@ -1,3 +1,4 @@
+// Path: src\components\shared\numpad.jsx
 import React, { useContext } from 'react'
 import globalState from '../../context'
 import { IoCheckmark } from 'react-icons/io5'

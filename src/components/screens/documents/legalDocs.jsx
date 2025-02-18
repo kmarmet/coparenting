@@ -1,3 +1,4 @@
+// Path: src\components\screens\documents\legalDocs.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'

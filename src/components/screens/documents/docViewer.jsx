@@ -1,3 +1,4 @@
+// Path: src\components\screens\documents\docViewer.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import FirebaseStorage from '/src/database/firebaseStorage'
@@ -126,7 +127,7 @@ export default function DocViewer() {
   const formatImageDocument = async () => {
     try {
       const allDocs = await SecurityManager.getDocuments(currentUser)
-      let docOwner = await DB.find(DB.tables.users, ['phone', docToView?.ownerPhone], true)
+      let docOwner = await DB.find(DB.tables.users, ['phone', docToView?.ownerKey], true)
       const firebasePathId = docOwner.id
       const imageResult = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, firebasePathId, docToView.name)
       // Catch errors
@@ -433,7 +434,7 @@ export default function DocViewer() {
         AlertManager.confirmAlert('Would you like to use the selected text as a header?', 'Yes', true, async () => {
           const header = new DocumentHeader()
           header.headerText = formatHeaderText(text)
-          header.ownerPhone = currentUser.phone
+          header.ownerKey = currentUser.phone
           await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, header)
           await onLoad()
         })

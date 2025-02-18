@@ -1,7 +1,7 @@
+// Path: src\components\forms\newTransferRequest.jsx
 import React, { useContext, useState } from 'react'
 import globalState from '../../context'
 import Manager from '/src/managers/manager'
-import Autocomplete from 'react-google-autocomplete'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import TransferChangeRequest from '/src/models/transferChangeRequest.js'
 import moment from 'moment'
@@ -9,7 +9,6 @@ import DB from '/src/database/DB'
 import NotificationManager from '/src/managers/notificationManager.js'
 import DB_UserScoped from '/src/database/db_userScoped'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
-import { ImEye } from 'react-icons/im'
 import DateFormats from '/src/constants/dateFormats'
 import DateManager from '/src/managers/dateManager'
 import BottomCard from '../shared/bottomCard'
@@ -21,17 +20,15 @@ import ActivityCategory from '/src/models/activityCategory'
 import DomManager from '../../managers/domManager.coffee'
 import AddressInput from '../shared/addressInput'
 import Spacer from '../shared/spacer'
-import StringAsHtmlElement from '../shared/stringAsHtmlElement'
 
 export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, authUser } = state
   const [requestReason, setRequestReason] = useState('')
   const [shareWith, setShareWith] = useState([])
   const [requestTime, setRequestTime] = useState('')
   const [requestLocation, setRequestLocation] = useState('')
   const [requestDate, setRequestDate] = useState('')
-  const [directionsLink, setDirectionsLink] = useState('')
   const [requestRecipientPhone, setRequestRecipientPhone] = useState('')
   const [preferredLocation, setPreferredLocation] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
@@ -44,10 +41,9 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     setRequestTime('')
     setRequestLocation('')
     setRequestDate('')
-    setDirectionsLink('')
     setRequestRecipientPhone('')
     setPreferredLocation('')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({ ...state, currentUser: updatedCurrentUser })
   }
 
@@ -85,7 +81,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     const requestTimeIsValid = DateManager.dateIsValid(moment(requestTime, DateFormats.timeForDb).format(DateFormats.timeForDb))
     let newRequest = new TransferChangeRequest()
     newRequest.reason = requestReason
-    newRequest.ownerPhone = currentUser?.phone
+    newRequest.ownerKey = currentUser?.key
     newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
     newRequest.time = requestTimeIsValid ? requestTime : ''
     newRequest.location = requestLocation
@@ -98,18 +94,18 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
     if (preferredLocation.length > 0) {
       const coparent = currentUser?.coparents.filter((x) => x.phone === requestRecipientPhone)[0]
-      const key = await DB.getNestedSnapshotKey(`users/${currentUser?.phone}/coparents`, coparent, 'id')
-      await DB_UserScoped.updateUserRecord(currentUser?.phone, `coparents/${key}/preferredTransferLocation`, requestLocation)
+      const key = await DB.getNestedSnapshotKey(`users/${currentUser?.key}/coparents`, coparent, 'id')
+      await DB_UserScoped.updateUserRecord(currentUser?.key, `coparents/${key}/preferredTransferLocation`, requestLocation)
     }
 
     // // Add record
-    await DB.add(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, newRequest)
+    await DB.add(`${DB.tables.transferChangeRequests}/${currentUser.key}`, newRequest)
     AlertManager.successAlert('Transfer Change Request Sent')
 
     // Notify
     await NotificationManager.sendNotification(
       `Transfer Change Request`,
-      `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
+      `${StringManager.getFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
       requestRecipientPhone,
       currentUser,
       ActivityCategory.transferRequest
@@ -130,7 +126,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
         const phone = await DB_UserScoped.getUserFromName(e)
         setRequestRecipientPhone(phone)
       },
-      async (e) => {
+      async () => {
         setRequestRecipientPhone('')
       },
       false
@@ -140,10 +136,10 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const handlePreferredLocation = (e) => {
     Manager.handleCheckboxSelection(
       e,
-      (e) => {
+      () => {
         setPreferredLocation(requestLocation)
       },
-      (e) => {
+      () => {
         setPreferredLocation('')
       },
       false
@@ -217,7 +213,6 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
             <InputWrapper inputType={'location'} labelText={'New Location'}>
               <AddressInput
                 onSelection={(address) => {
-                  setDirectionsLink(`https://www.google.com/maps?daddr=7${encodeURIComponent(address)}`)
                   setRequestLocation(address)
                 }}
               />
@@ -226,7 +221,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
             <CheckboxGroup
               skipNameFormatting={true}
               containerClass={'mb-15'}
-              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+              dataKey={currentUser?.coparents?.map((x) => x?.key)}
               checkboxLabels={['Set as Preferred Transfer Location']}
               onCheck={handlePreferredLocation}
             />
@@ -238,7 +233,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
             <CheckboxGroup
               elClass="sending-to"
               parentLabel={'Who is the request being sent to?'}
-              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+              dataKey={currentUser?.coparents?.map((x) => x?.key)}
               checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
               onCheck={handleRequestRecipient}
               required={true}
@@ -250,7 +245,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
               onCheck={handleShareWithSelection}
               labelText={'Share with'}
               containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+              dataKey={currentUser?.coparents?.map((x) => x.key)}
               checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
             />
           </div>

@@ -1,3 +1,4 @@
+// Path: src\managers\visitationManager.js
 import moment from 'moment'
 import DateManager from './dateManager'
 import Manager from '../managers/manager'
@@ -236,7 +237,7 @@ const VisitationManager = {
   getSchedule: async (currentUser) => {
     return new Promise(async (resolve) => {
       await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`).then((events) => {
-        let scheduleEvents = events.filter((x) => x.fromVisitationSchedule === true && x.ownerPhone === currentUser.phone)
+        let scheduleEvents = events.filter((x) => x.fromVisitationSchedule === true && x.ownerKey === currentUser.phone)
         resolve(scheduleEvents)
       })
     })
@@ -323,7 +324,7 @@ const VisitationManager = {
     const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}`
     const allEvents = await DB.getTable(dbPath)
     for (let event of allEvents) {
-      if (event?.isHoliday && event?.ownerPhone === currentUser.phone) {
+      if (event?.isHoliday && event?.ownerKey === currentUser.phone) {
         await DB.delete(dbPath, event.id)
       }
     }

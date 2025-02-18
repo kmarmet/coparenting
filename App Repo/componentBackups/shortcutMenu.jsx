@@ -1,3 +1,4 @@
+// Path: App Repo\componentBackups\shortcutMenu.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import AppManager from 'managers/appManager'
 import globalState from 'context'

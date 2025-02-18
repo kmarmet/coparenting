@@ -8,12 +8,14 @@ import DateFormats from "../../constants/dateFormats";
 import moment from "moment";
 
 export default ChatThread = class ChatThread {
-  constructor(id = Manager.getUid(), members = [], creationTimestamp = moment().format(DateFormats.dateForDb), ownerPhone = '', isPausedFor = []) {
+  constructor(id = Manager.getUid(), members = [], creationTimestamp = moment().format(DateFormats.dateForDb), ownerKey = '', isPausedFor = []) {
     this.id = id;
     this.members = members;
     this.creationTimestamp = creationTimestamp;
-    this.ownerPhone = ownerPhone;
+    this.ownerKey = ownerKey;
     this.isPausedFor = isPausedFor;
   }
 
 };
+
+//# sourceMappingURL=chatThread.js.map

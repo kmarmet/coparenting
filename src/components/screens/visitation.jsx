@@ -1,6 +1,6 @@
+// Path: src\components\screens\visitation.jsx
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
-import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../context'
 import ScheduleTypes from '/src/constants/scheduleTypes'
 import DB from '/src/database/DB'
@@ -30,6 +30,7 @@ import EveryOtherWeekend from '/src/components/screens/visitation/everyOtherWeek
 import CustomWeekends from '/src/components/screens/visitation/customWeekends'
 import DateManager from '/src/managers/dateManager.js'
 import AddressInput from '../../components/shared/addressInput'
+
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
@@ -72,10 +73,10 @@ export default function Visitation() {
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
+      dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
-      dateObject.ownerPhone = currentUser?.phone
+      dateObject.ownerKey = currentUser?.phone
       dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
       dateObject.visitationSchedule = ScheduleTypes.everyWeekend
@@ -101,11 +102,11 @@ export default function Visitation() {
         console.log(holidayName)
         console.log(moment(holidayDateString).format('MM/DD'))
         // Required
-        dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Holiday Visitation`
+        dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Holiday Visitation`
         dateObject.startDate = moment(holidayDateString).format(DateFormats.dateForDb)
         dateObject.holidayName = holidayName
         // Not Required
-        dateObject.ownerPhone = currentUser?.phone
+        dateObject.ownerKey = currentUser?.phone
         dateObject.createdBy = currentUser?.name
         dateObject.fromVisitationSchedule = true
         dateObject.isHoliday = true
@@ -158,7 +159,7 @@ export default function Visitation() {
         setScheduleType(VisitationMapper.formattedScheduleTypes(e))
         setShowCustomWeekendsCard(showCustomWeekendsCard)
       },
-      (e) => {
+      () => {
         setScheduleType('')
         setShowCustomWeekendsCard(!showCustomWeekendsCard)
       }
@@ -170,7 +171,7 @@ export default function Visitation() {
     const userEvents = await SecurityManager.getCalendarEvents(currentUser)
     let userHolidays = []
     if (Manager.isValid(userEvents)) {
-      userHolidays = userEvents.filter((x) => x.ownerPhone === currentUser?.phone && x.fromVisitationSchedule === true && x.isHoliday === true)
+      userHolidays = userEvents.filter((x) => x.ownerKey === currentUser?.phone && x.fromVisitationSchedule === true && x.isHoliday === true)
     }
     return {
       holidays: _holidays.flat(),
@@ -178,7 +179,7 @@ export default function Visitation() {
     }
   }
 
-  const setDefaultHolidayCheckboxes = (allUserHolidayObjects) => {
+  const setDefaultHolidayCheckboxes = () => {
     const holidayCheckboxesWrapper = document.querySelector('.holiday-checkboxes-wrapper')
     if (Manager.isValid(holidayCheckboxesWrapper)) {
       const checkboxes = holidayCheckboxesWrapper.querySelectorAll('[data-date]')
@@ -357,22 +358,14 @@ export default function Visitation() {
               </div>
 
               {/* SHARE WITH */}
-              <ShareWithCheckboxes
-                required={false}
-                shareWith={currentUser?.coparents?.map((x) => x.phone)}
-                onCheck={handleShareWithSelection}
-                icon={<ImEye />}
-                labelText={'Share with'}
-                containerClass={'share-with-coparents'}
-                dataPhone={currentUser?.coparents?.map((x) => x.name)}
-              />
+              <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
 
               {/* LOCATION */}
               <InputWrapper wrapperClasses="mt-15 mb-15" inputType={'location'} labelText={'Preferred Transfer Location'}>
                 <AddressInput
                   efaultValue={currentUser?.defaultTransferLocation}
                   onSelection={(place) => {
-                    updateDefaultTransferLocation(place, `https://www.google.com/maps?daddr=7${encodeURIComponent(place)}`).then((r) =>
+                    updateDefaultTransferLocation(place, `https://www.google.com/maps?daddr=7${encodeURIComponent(place)}`).then(() =>
                       AlertManager.successAlert('Preferred Transfer Location Set')
                     )
                   }}
@@ -387,9 +380,7 @@ export default function Visitation() {
             elClass={'holiday-checkboxes-wrapper gap-10'}
             onCheck={handleHolidaySelection}
             skipNameFormatting={true}
-            defaultLabels={userHolidays}
-            checkboxLabels={holidaysFromApi.map((x) => x.name).sort()}
-            dataDate={dataDates}
+            checkboxArray={Manager.buildCheckboxGroup(currentUser, 'holidays', null, holidaysFromApi.map((x) => x.name).sort())}
           />
 
           {showUpdateHolidaysButton && (

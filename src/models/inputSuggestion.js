@@ -4,11 +4,13 @@ var InputSuggestion;
 import Manager from "../managers/manager";
 
 export default InputSuggestion = class InputSuggestion {
-  constructor(ownerPhone = '', formName = '', suggestion = '', id = Manager.getUid()) {
-    this.ownerPhone = ownerPhone;
+  constructor(ownerKey = '', formName = '', suggestion = '', id = Manager.getUid()) {
+    this.ownerKey = ownerKey;
     this.formName = formName;
     this.suggestion = suggestion;
     this.id = id;
   }
 
 };
+
+//# sourceMappingURL=inputSuggestion.js.map

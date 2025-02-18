@@ -24,6 +24,21 @@ CalendarMapper = {
       return ReminderTimes.timeOfEvent;
     }
   },
+  allReadableReminderTimes: function() {
+    var i, len, readableTimes, ref, time;
+    readableTimes = [];
+    ref = Object.keys(ReminderTimes);
+    for (i = 0, len = ref.length; i < len; i++) {
+      time = ref[i];
+      readableTimes.push(CalendarMapper.readableReminderBeforeTimeframes(time));
+    }
+    return readableTimes;
+  },
+  allUnformattedTimes: function() {
+    var all;
+    all = ["hour", "halfHour", "fiveMinutes", "timeOfEvent"];
+    return all;
+  },
   readableReminderBeforeTimeframes: function(timeframe) {
     if (Manager.contains(timeframe, 'hour', false)) {
       return '1 hour before';
@@ -33,20 +48,6 @@ CalendarMapper = {
     }
     if (Manager.contains(timeframe, 'fiveMinutes', false)) {
       return '5 minutes before';
-    }
-    if (Manager.contains(timeframe, 'timeOfEvent', false)) {
-      return 'At time of event';
-    }
-  },
-  unformattedToReadableTimeframe: function(timeframe) {
-    if (Manager.contains(timeframe, 'hour', false)) {
-      return '1 hour before';
-    }
-    if (Manager.contains(timeframe, 'fiveMinutes', false)) {
-      return '5 minutes before';
-    }
-    if (Manager.contains(timeframe, 'halfHour', false)) {
-      return '30 minutes before';
     }
     if (Manager.contains(timeframe, 'timeOfEvent', false)) {
       return 'At time of event';
@@ -69,20 +70,20 @@ CalendarMapper = {
     }
     return interval;
   },
-  repeatingEvents: function(repeatInterval, eventStartDate, repeatingEndDate) {
+  recurringEvents: function(recurringInterval, eventStartDate, recurringEndDate) {
     var datesToRepeat;
     datesToRepeat = null;
-    if (repeatInterval === 'daily') {
-      datesToRepeat = DateManager.getDailyDates(eventStartDate, repeatingEndDate);
+    if (recurringInterval === 'daily') {
+      datesToRepeat = DateManager.getDailyDates(eventStartDate, recurringEndDate);
     }
-    if (repeatInterval === 'weekly') {
-      datesToRepeat = DateManager.getWeeklyDates(eventStartDate, repeatingEndDate);
+    if (recurringInterval === 'weekly') {
+      datesToRepeat = DateManager.getWeeklyDates(eventStartDate, recurringEndDate);
     }
-    if (repeatInterval === 'biweekly') {
-      datesToRepeat = DateManager.getBiweeklyDates(eventStartDate, repeatingEndDate);
+    if (recurringInterval === 'biweekly') {
+      datesToRepeat = DateManager.getBiweeklyDates(eventStartDate, recurringEndDate);
     }
-    if (repeatInterval === 'monthly') {
-      datesToRepeat = DateManager.getMonthlyDates(eventStartDate, repeatingEndDate);
+    if (recurringInterval === 'monthly') {
+      datesToRepeat = DateManager.getMonthlyDates(eventStartDate, recurringEndDate);
     }
     return datesToRepeat;
   },
@@ -187,3 +188,5 @@ CalendarMapper = {
 };
 
 export default CalendarMapper;
+
+//# sourceMappingURL=calMapper.js.map

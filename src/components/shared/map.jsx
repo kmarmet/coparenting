@@ -1,3 +1,4 @@
+// Path: src\components\shared\map.jsx
 import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api'
 import { useState, useCallback, useMemo, useEffect, useContext } from 'react'
 import { setKey, fromAddress } from 'react-geocode'

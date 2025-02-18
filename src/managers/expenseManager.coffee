@@ -13,10 +13,10 @@ export default ExpenseManager = {
     try
       expenses = await SecurityManager.getExpenses(currentUser)
       expense = await DB.find(expenses, ["id", id], false)
-      ownerPhone = expense.ownerPhone
-      console.log("#{DB.tables.expenses}/#{ownerPhone}")
-      key = await DB.getSnapshotKey("#{DB.tables.expenses}/#{ownerPhone}", expense, "id")
-      update(ref(dbRef, "#{DB.tables.expenses}/#{ownerPhone}/#{key}"), updatedExpense)
+      ownerKey = expense.ownerKey
+      console.log("#{DB.tables.expenses}/#{ownerKey}")
+      key = await DB.getSnapshotKey("#{DB.tables.expenses}/#{ownerKey}", expense, "id")
+      update(ref(dbRef, "#{DB.tables.expenses}/#{ownerKey}/#{key}"), updatedExpense)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
@@ -28,11 +28,11 @@ export default ExpenseManager = {
       console.log(id)
       expenses = await SecurityManager.getExpenses(currentUser)
       expense = await DB.find(expenses, ["id", id], false)
-      ownerPhone = expense.ownerPhone
-      console.log(ownerPhone)
-      key = await DB.getSnapshotKey("#{DB.tables.expenses}/#{ownerPhone}", expense, "id")
+      ownerKey = expense.ownerKey
+      console.log(ownerKey)
+      key = await DB.getSnapshotKey("#{DB.tables.expenses}/#{ownerKey}", expense, "id")
       if key
-        update(ref(dbRef, "#{DB.tables.expenses}/#{ownerPhone}/#{key}"), updatedExpense)
+        update(ref(dbRef, "#{DB.tables.expenses}/#{ownerKey}/#{key}"), updatedExpense)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
   }

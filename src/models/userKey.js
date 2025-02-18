@@ -11,3 +11,5 @@ export default UserKey = class UserKey {
   }
 
 };
+
+//# sourceMappingURL=userKey.js.map

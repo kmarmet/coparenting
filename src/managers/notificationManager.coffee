@@ -2,9 +2,8 @@ import DB from '../../src/database/DB'
 import OneSignal from 'react-onesignal'
 import Manager from "./manager.js"
 import NotificationSubscriber from "../models/notificationSubscriber"
-import DB_UserScoped from "../database/db_userScoped"
-import ActivitySet from "../models/activity"
-
+import Activity from "../models/activity"
+import DB_UserScoped from "../database/db_userScoped.js"
 export default NotificationManager =
   currentUser: null
   lineBreak: '\r\n'
@@ -51,7 +50,6 @@ export default NotificationManager =
   # apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
   # appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
   init: (currentUser) ->
-    console.log(NotificationManager.appId)
     NotificationManager.currentUser = currentUser
     window.OneSignalDeferred = window.OneSignalDeferred or []
     OneSignalDeferred.push ->
@@ -63,9 +61,6 @@ export default NotificationManager =
   eventListener:  (event) ->
     userSubscribed = OneSignal.User.PushSubscription.optedIn
     subId =  event?.current?.id
-    console.log(OneSignal.User)
-    console.log(subId)
-    console.log(userSubscribed)
     if userSubscribed && subId
       newSubscriber = new NotificationSubscriber()
       setTimeout  ->
@@ -85,7 +80,7 @@ export default NotificationManager =
               deleteKey = await DB.getSnapshotKey("#{DB.tables.notificationSubscribers}", existingSubscriber, "id")
               await DB.deleteByPath("#{DB.tables.notificationSubscribers}/#{deleteKey}")
             await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
-          .catch (error) -> 
+          .catch (error) ->
             console.error error
       , 500
 
@@ -106,17 +101,22 @@ export default NotificationManager =
     userIdentity = ''
     fetch("https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity")
       .then (identity) ->
-        userIdentity =await identity.json()
+        userIdentity = await identity.json()
       .then (result) ->
       .catch (error) -> console.error error
     userIdentity
 
-  sendNotification: (title, message, recipientPhone, currentUser = null,  category = '') ->
+  sendNotification: (title, message, recipientKey, currentUser = null,  category = '') ->
     myHeaders = new Headers()
     myHeaders.append "Accept", "application/json"
     myHeaders.append "Content-Type", "application/json"
     myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
-    subIdRecord = await DB.find(DB.tables.notificationSubscribers, ["phone", recipientPhone], true)
+    subIdRecord = await DB.getTable("#{DB.tables.notificationSubscribers}/#{recipientKey}", true)
+
+#    If user is not subscribed, do not send notification
+    if !subIdRecord
+      return false
+
     subId = subIdRecord?.subscriptionId
 
     raw = JSON.stringify
@@ -129,32 +129,39 @@ export default NotificationManager =
       include_subscription_ids: [subId]
       app_id: NotificationManager.appId
 
-    requestOptions =
+    requestOptions = {
       method: "POST"
       headers: myHeaders
       body: raw
       redirect: "follow"
+    }
 
+    console.log(recipientKey)
     # Add activity to database
-    newActivity = new ActivitySet()
+    newActivity = new Activity()
     newActivity.id = Manager.getUid()
-    newActivity.recipientPhone = recipientPhone
-    newActivity.sharedByPhone = currentUser?.phone
+    newActivity.recipientKey = recipientKey
+    newActivity.ownerKey = currentUser?.key
     newActivity.sharedByName = currentUser?.name
     newActivity.title = title
     newActivity.text = message
     newActivity.category = category
 
-    DB.add "#{DB.tables.activities}/#{recipientPhone}", newActivity
+    await DB.add "#{DB.tables.activities}/#{recipientKey}", newActivity
 
     # Do not send notification in dev
-    if !window.location.href.includes("localhost")
+    if !window.location.href.includes("localhostsssss")
       fetch "https://api.onesignal.com/notifications", requestOptions
         .then (response) -> response.text()
         .then (result) ->
           console.log result
           console.log("Sent to #{subId}")
         .catch (error) -> console.error error
+
+  sendToShareWith: (shareWithKeys, currentUser, title, message, category = '') ->
+    if Manager.isValid(shareWithKeys)
+      for key in shareWithKeys
+        await NotificationManager.sendNotification(title, message, key, currentUser, category )
 
   enableNotifications: (subId) ->
     myHeaders = new Headers()
@@ -170,13 +177,13 @@ export default NotificationManager =
         "enabled": true,
         "notification_types": 1
       }
-    });
+    })
 
-
-    options =
+    options = {
       method: 'PATCH'
       headers: myHeaders
       body: raw
+    }
 
     fetch(url, options)
       .then (res) -> res.json()
@@ -197,20 +204,16 @@ export default NotificationManager =
         "enabled": false,
         "notification_types": -31
       }
-    });
+    })
 
-    options =
+    options = {
       method: 'PATCH'
       headers: myHeaders
       body: raw
+    }
+
 
     fetch(url, options)
       .then (res) -> res.json()
       .then (json) -> console.log json
       .catch (err) -> console.error err
-
-  sendToShareWith: (recipientPhones, currentUser, title, message, category = '') ->
-    if Manager.isValid(recipientPhones)
-      for phone in recipientPhones
-        coparent = await DB_UserScoped.getCoparentByPhone(phone, currentUser)
-        await NotificationManager.sendNotification(title, message, coparent?.phone, currentUser, category )

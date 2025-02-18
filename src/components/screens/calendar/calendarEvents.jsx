@@ -1,3 +1,4 @@
+// Path: src\components\screens\calendar\calendarEvents.jsx
 import moment from 'moment'
 import { useContext, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'

@@ -1,3 +1,4 @@
+// Path: src\components\shared\sideNavbar.jsx
 import React, { useContext } from 'react'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'

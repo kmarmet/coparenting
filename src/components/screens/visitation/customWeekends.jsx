@@ -1,3 +1,4 @@
+// Path: src\components\screens\visitation\customWeekends.jsx
 import BottomCard from '../../../components/shared/bottomCard'
 import globalState from '../../../context'
 import { useContext, useState } from 'react'
@@ -69,10 +70,10 @@ export default function CustomWeekends({ hide, showCard }) {
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${StringManager.formatNameFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
+      dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
-      dateObject.ownerPhone = currentUser?.phone
+      dateObject.ownerKey = currentUser?.phone
       dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
       dateObject.id = Manager.getUid()
@@ -127,7 +128,7 @@ export default function CustomWeekends({ hide, showCard }) {
         onCheck={handleShareWithSelection}
         labelText={'Share with'}
         containerClass={'share-with-coparents'}
-        dataPhone={currentUser?.coparents?.map((x) => x.name)}
+        dataKey={currentUser?.coparents?.map((x) => x.name)}
       />
     </BottomCard>
   )

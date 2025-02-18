@@ -1,3 +1,4 @@
+// Path: src\components\shared\inputWrapper.jsx
 import moment from 'moment'
 import React, { useContext, useEffect } from 'react'
 import { DebounceInput } from 'react-debounce-input'
@@ -89,10 +90,8 @@ function InputWrapper({
           placeholder={labelText}
           onChange={onChange}
           className={inputClasses}
-          cols="30"
           defaultValue={defaultValue}
           key={refreshKey}
-          rows="10"
           onBlur={(e) => {
             const input = e.target
             const labelWrapper = input.parentNode.querySelector('#label-wrapper')

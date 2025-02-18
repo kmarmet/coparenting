@@ -1,3 +1,4 @@
+// Path: src\components\screens\account\chatRecovery.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
@@ -46,7 +47,7 @@ function ChatRecovery() {
     setViewConvo(true)
 
     const newSuggestion = new InputSuggestion()
-    newSuggestion.ownerPhone = currentUser?.phone
+    newSuggestion.ownerKey = currentUser?.phone
     newSuggestion.formName = 'archived-chat'
     newSuggestion.suggestion = coparentPhone
     await DB.addSuggestion(newSuggestion)
@@ -179,7 +180,7 @@ function ChatRecovery() {
                       const matching = dbSuggestions.filter(
                         (x) =>
                           x.formName === 'archived-chat' &&
-                          x.ownerPhone === currentUser?.phone &&
+                          x.ownerKey === currentUser?.phone &&
                           Manager.contains(x.suggestion.toLowerCase(), inputValue)
                       )
                       setInputSuggestions(Manager.getUniqueArray(matching).flat())

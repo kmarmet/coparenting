@@ -1,3 +1,4 @@
+// Path: src\components\screens\childInfo\newChildForm.jsx
 import moment from 'moment'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import DB from '../../../database/DB'
@@ -9,23 +10,6 @@ import Child from '../../../models/child/child'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
 import DB_UserScoped from '../../../database/db_userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../../globalFunctions'
 import ModelNames from '../../../models/modelNames'
 import InputWrapper from '../../shared/inputWrapper'
 import BottomCard from '../../shared/bottomCard'
@@ -35,10 +19,13 @@ import UploadInputs from '../../shared/uploadInputs'
 import ImageManager from '../../../managers/imageManager'
 import FirebaseStorage from '../../../database/firebaseStorage'
 import Label from '../../shared/label'
-
+import Spacer from '../../shared/spacer'
+import DomManager from '../../../managers/domManager.js'
+import AddressInput from '/src/components/shared/addressInput.jsx'
+import StringManager from '../../../managers/stringManager.js'
 const NewChildForm = ({ hideCard, showCard }) => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, authUser, refreshKey } = state
 
   // State
   const [name, setName] = useState('')
@@ -47,7 +34,6 @@ const NewChildForm = ({ hideCard, showCard }) => {
   const [existingChildren, setExistingChildren] = useState([])
   const [gender, setGender] = useState('male')
   const [dateOfBirth, setDateOfBirth] = useState('')
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [profilePic, setProfilePic] = useState(null)
   const inputFile = useRef(null)
 
@@ -57,9 +43,8 @@ const NewChildForm = ({ hideCard, showCard }) => {
     setExistingChildren([])
     setGender('male')
     setDateOfBirth('')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({ ...state, currentUser: updatedCurrentUser })
-    setRefreshKey(Manager.getUid())
   }
 
   const submit = async () => {
@@ -67,11 +52,9 @@ const NewChildForm = ({ hideCard, showCard }) => {
       AlertManager.throwError('Please fill out required fields')
       return false
     } else {
-      const id = Manager.getUid()
       let _profilePic = profilePic
       const newChild = new Child()
       const general = new General()
-      newChild.id = id
       general.address = address
       general.phone = phoneNumber
       general.name = name
@@ -80,7 +63,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
       newChild.general = general
       newChild.general.profilePic = ''
 
-      AlertManager.successAlert(`${formatNameFirstNameOnly(name)} Added!`)
+      AlertManager.successAlert(`${StringManager.getFirstNameOnly(name)} Added!`)
 
       // Add profile pic
       if (Manager.isValid(_profilePic)) {
@@ -135,27 +118,32 @@ const NewChildForm = ({ hideCard, showCard }) => {
           {/* NAME */}
           <InputWrapper labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
           <InputWrapper labelText={'Phone Number'} required={false} onChange={(e) => setPhoneNumber(e.target.value)} />
-          <InputWrapper labelText={'Date of Birth'} required={true} inputType={'date'}>
-            <MobileDatePicker className="mt-0 w-100 event-from-date mui-input" onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
-          </InputWrapper>
+          {!DomManager.isMobile() && (
+            <InputWrapper labelText={'Date of Birth'} required={true} inputType={'date'}>
+              <MobileDatePicker className="mt-0 w-100 event-from-date mui-input" onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
+            </InputWrapper>
+          )}
+          {DomManager.isMobile() && (
+            <InputWrapper
+              useNativeDate={true}
+              labelText={'Date of Birth'}
+              required={true}
+              inputType={'date'}
+              onChange={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))}
+            />
+          )}
           <InputWrapper labelText={'Home Address'} required={true} inputType={'location'}>
-            <Autocomplete
-              apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-              options={{
-                types: ['geocode', 'establishment'],
-                componentRestrictions: { country: 'usa' },
-              }}
-              placeholder={'Home Address'}
-              onPlaceSelected={(place) => {
-                setAddress(place.formatted_address)
+            <AddressInput
+              onSelection={(place) => {
+                setAddress(place)
               }}
             />
           </InputWrapper>
 
           {/* GENDER */}
           <CheckboxGroup parentLabel={'Gender'} required={true} checkboxLabels={['Male', 'Female']} onCheck={handleGenderSelect} />
-
-          <Label text={'Image of Child'}></Label>
+          <Spacer />
+          <Label text={'Child Picture'}></Label>
 
           {/* UPLOAD BUTTON */}
           <UploadInputs

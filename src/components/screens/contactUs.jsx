@@ -1,28 +1,11 @@
+// Path: src\components\screens\contactUs.jsx
 import React, { useContext, useState } from 'react'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
-
 import BottomCard from '../shared/bottomCard'
 import EmailManager from '../../managers/emailManager'
-import {
-  contains,
-  formatFileName,
-  formatNameFirstNameOnly,
-  getFileExtension,
-  getFirstWord,
-  hasClass,
-  isAllUppercase,
-  removeFileExtension,
-  removeSpacesAndLowerCase,
-  spaceBetweenWords,
-  stringHasNumbers,
-  toCamelCase,
-  uniqueArray,
-  uppercaseFirstLetterOfAllWords,
-  wordCount,
-} from '../../globalFunctions'
 import { Fade } from 'react-awesome-reveal'
-
+import StringManager from '../../managers/stringManager'
 import { MdOutlineAppShortcut, MdOutlineEmail } from 'react-icons/md'
 import { VscFeedback } from 'react-icons/vsc'
 import NavBar from '../navBar'
@@ -184,7 +167,7 @@ export default function ContactUs() {
       {/* CONTACT US */}
       <div id="contact-us-container" className={`${theme} page-container form`}>
         <Fade direction={'up'} duration={1000} className={'contact-us-fade-wrapper'} triggerOnce={true} cascade={true}>
-          <p className="screen-title">Contact Us</p>
+          <p className="screen-title">Get in Touch</p>
           {/* SECTIONS */}
           <div className="sections">
             <p className="section" onClick={() => setShowFeatureRequestCard(true)}>

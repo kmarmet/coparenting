@@ -1,3 +1,4 @@
+// Path: src\components\screens\swapRequests.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context.js'
 import DB from '/src/database/DB'
@@ -6,7 +7,6 @@ import moment from 'moment'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import SwapDurations from '/src/constants/swapDurations.js'
 import NotificationManager from '/src/managers/notificationManager'
-import DB_UserScoped from '/src/database/db_userScoped'
 import SecurityManager from '/src/managers/securityManager'
 import NewSwapRequest from '../forms/newSwapRequest'
 import NavBar from '../navBar'
@@ -35,6 +35,7 @@ import { FaChildren } from 'react-icons/fa6'
 import { TbCalendarCheck } from 'react-icons/tb'
 import ViewSelector from '../shared/viewSelector'
 import StringAsHtmlElement from '../shared/stringAsHtmlElement'
+import DB_UserScoped from '../../database/db_userScoped.js'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -45,8 +46,7 @@ const Decisions = {
 export default function SwapRequests() {
   const { state, setState } = useContext(globalState)
   const [existingRequests, setExistingRequests] = useState([])
-  const { currentUser, theme } = state
-  const [rejectionReason, setRejectionReason] = useState('')
+  const { currentUser, theme, authUser } = state
   const [showCard, setShowCard] = useState(false)
   const [activeRequest, setActiveRequest] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
@@ -58,7 +58,6 @@ export default function SwapRequests() {
   const [startDate, setStartDate] = useState('')
   const [createdBy, setCreatedBy] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
-  const [status, setStatus] = useState('pending')
 
   const resetForm = async () => {
     Manager.resetForm('swap-request-wrapper')
@@ -66,7 +65,7 @@ export default function SwapRequests() {
     setSwapDuration('single')
     setIncludeChildren(false)
     setStartDate('')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
 
@@ -91,7 +90,6 @@ export default function SwapRequests() {
 
   const getSecuredRequests = async () => {
     let allRequests = await SecurityManager.getSwapRequests(currentUser)
-    console.log(allRequests)
     setExistingRequests(allRequests)
   }
 
@@ -101,47 +99,33 @@ export default function SwapRequests() {
     // Rejected
     if (decision === Decisions.rejected) {
       activeRequest.status = 'rejected'
-      await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerPhone}`, activeRequest, activeRequest.id)
+      await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerKey}`, activeRequest, activeRequest.id)
 
       const notifMessage = NotificationManager.templates.swapRequestRejection(activeRequest, recipientName)
-      NotificationManager.sendNotification(
-        'Swap Request Decision',
-        notifMessage,
-        activeRequest?.ownerPhone,
-        currentUser,
-        ActivityCategory.swapRequest
-      )
-      setStatus('rejected')
+      NotificationManager.sendNotification('Swap Request Decision', notifMessage, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
       setShowDetails(false)
     }
     // Approved
     if (decision === Decisions.approved) {
       const notifMessage = NotificationManager.templates.swapRequestApproval(activeRequest, recipientName)
       activeRequest.status = 'approved'
-      await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerPhone}`, activeRequest, activeRequest.id)
+      await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerKey}`, activeRequest, activeRequest.id)
 
-      NotificationManager.sendNotification(
-        'Swap Request Decision',
-        notifMessage,
-        activeRequest?.ownerPhone,
-        currentUser,
-        ActivityCategory.swapRequest
-      )
-      setStatus('approved')
+      NotificationManager.sendNotification('Swap Request Decision', notifMessage, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
       setShowDetails(false)
     }
   }
 
   const setCurrentRequest = async (request) => {
-    const coparent = await DB_UserScoped.getCoparentByPhone(request?.ownerPhone, currentUser)
-    setCreatedBy(StringManager.formatNameFirstNameOnly(coparent.name))
+    const coparent = await DB_UserScoped.getCoparentByKey(request?.ownerKey, currentUser)
+    setCreatedBy(StringManager.getFirstNameOnly(coparent.name))
     setShowDetails(true)
     setActiveRequest(request)
   }
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, DB.tables.swapRequests), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.swapRequests}/${currentUser?.key}`), async () => {
       await getSecuredRequests()
     })
   }
@@ -158,7 +142,6 @@ export default function SwapRequests() {
     setRequestChildren(activeRequest?.children)
     setSwapDuration(activeRequest?.duration)
     setStartDate(activeRequest?.startDate)
-    setStatus(activeRequest?.status)
   }
 
   const handleChildSelection = (e) => {
@@ -176,15 +159,16 @@ export default function SwapRequests() {
   }
 
   const deleteRequest = async (action = 'deleted') => {
+    console.log(action)
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
-        await DB.deleteById(`${DB.tables.swapRequests}/${currentUser.phone}`, activeRequest?.id)
+        await DB.deleteById(`${DB.tables.swapRequests}/${currentUser?.key}`, activeRequest?.id)
         AlertManager.successAlert(`Swap Request has been deleted`)
         setShowDetails(false)
       })
     } else {
-      if (activeRequest?.ownerPhone === currentUser?.phone) {
-        await DB.delete(`${DB.tables.swapRequests}/${currentUser.phone}`, activeRequest?.id)
+      if (activeRequest?.ownerKey === currentUser?.key) {
+        await DB.delete(`${DB.tables.swapRequests}/${currentUser?.key}`, activeRequest?.id)
         AlertManager.successAlert(`Swap Request has been deleted.`)
       }
       setShowDetails(false)
@@ -208,8 +192,8 @@ export default function SwapRequests() {
       {/* DETAILS CARD */}
       <BottomCard
         onDelete={deleteRequest}
-        hasDelete={activeRequest?.ownerPhone === currentUser?.phone && view === 'edit'}
-        hasSubmitButton={activeRequest?.ownerPhone !== currentUser?.phone}
+        hasDelete={activeRequest?.ownerKey === currentUser?.key && view === 'edit'}
+        hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
         submitText={'Approve'}
         submitIcon={<PiCheckBold />}
         title={'Request Details'}
@@ -244,7 +228,6 @@ export default function SwapRequests() {
               {/* CREATED BY */}
               <div className="flex">
                 <b>
-                  {' '}
                   <PiUserCircleDuotone />
                   Created by
                 </b>
@@ -293,21 +276,19 @@ export default function SwapRequests() {
               )}
 
               {/* SENT TO */}
-              <div className="flex">
-                {activeRequest?.ownerPhone === currentUser?.phone && (
+              {activeRequest?.ownerKey === currentUser?.phone && (
+                <div className="flex">
                   <>
                     <b>
                       <PiUserCircleDuotone />
                       Sent to
                     </b>
                     <span>
-                      {StringManager.formatNameFirstNameOnly(
-                        currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name
-                      )}
+                      {StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
                     </span>
                   </>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* CHILDREN */}
               {Manager.isValid(activeRequest?.children) && (
@@ -394,16 +375,16 @@ export default function SwapRequests() {
                 <button className="button default submit center mt-15 mb-10" data-request-id={activeRequest?.id} onClick={update}>
                   Update Request
                 </button>
-                {activeRequest?.ownerPhone !== currentUser?.phone && (
+                {activeRequest?.ownerKey !== currentUser?.key && (
                   <button
                     className="button default red center mt-5"
                     data-request-id={activeRequest?.id}
-                    onClick={async (e) => {
+                    onClick={async () => {
                       AlertManager.inputAlert(
                         'Rejection Reason',
                         'Please enter a rejection reason.',
-                        (e) => {
-                          setRejectionReason(e.value)
+                        () => {
+                          // setRejectionReason(e.value)
                           selectDecision(Decisions.rejected)
                         },
                         true,
@@ -428,7 +409,9 @@ export default function SwapRequests() {
             <p className="screen-title">Swap Requests </p>
             {!DomManager.isMobile() && <IoAdd id={'add-new-button'} className={'swap-requests'} onClick={() => setShowCard(true)} />}
           </div>
-          <p className="text-screen-intro">A request for your child(ren) to stay with you during your co-parent's scheduled visitation period.</p>
+          <p className="text-screen-intro">
+            A request for your child(ren) to remain with you during the designated visitation time of your co-parent.
+          </p>
 
           {/* LOOP REQUESTS */}
           <div id="swap-requests-container">

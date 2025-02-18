@@ -1,14 +1,15 @@
-import { useContext, useState } from 'react'
-import StringManager from '/src/managers/stringManager.coffee'
-import AlertManager from '/src/managers/alertManager.coffee'
-import Manager from '/src/managers/manager.js'
-import { HiMiniBellAlert, HiPause } from 'react-icons/hi2'
-import { PiChatCircleTextDuotone } from 'react-icons/pi'
-import ChatManager from '/src/managers/chatManager.js'
-import globalState from '/src/context.js'
-import DB_UserScoped from '/src/database/db_userScoped.js'
-import ScreenNames from '/src/constants/screenNames.coffee'
+// Path: src\components\screens\chats\chatRow.jsx
+import React, { useContext } from 'react'
 import { FaPlay } from 'react-icons/fa'
+import { HiPause } from 'react-icons/hi2'
+import { PiChatCircleTextDuotone } from 'react-icons/pi'
+import ScreenNames from '/src/constants/screenNames.coffee'
+import globalState from '/src/context.js'
+import DB_UserScoped from '../../../database/db_userScoped'
+import AlertManager from '/src/managers/alertManager.coffee'
+import ChatManager from '/src/managers/chatManager.js'
+import Manager from '/src/managers/manager.js'
+import StringManager from '/src/managers/stringManager.coffee'
 
 export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
   const { state, setState } = useContext(globalState)
@@ -16,7 +17,7 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
 
   const openChat = async (coparent) => {
     // Check if thread member (coparent) account exists in DB
-    let userCoparent = await DB_UserScoped.getCoparentByPhone(coparent?.phone, currentUser)
+    let userCoparent = await DB_UserScoped.getCoparentByKey(coparent?.key, currentUser)
     if (!Manager.isValid(userCoparent)) {
       AlertManager.oneButtonAlert(
         'Co-Parent Account not Found',
@@ -67,7 +68,7 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
             </div>
           )}
           <p data-coparent-phone={coparent?.phone} className="coparent-name">
-            {StringManager.formatNameFirstNameOnly(coparent?.name)}
+            {StringManager.getFirstNameOnly(coparent?.name)}
           </p>
           {/* PAUSE CHAT BUTTON */}
           {!chat?.isPausedFor?.includes(currentUser?.phone) && (
@@ -79,7 +80,7 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
                     'Once paused, the chat will still be available for your reference. However, you will not receive notifications for this specific chat until you unpause it. Are you sure?',
                     "I'm Sure",
                     true,
-                    async (e) => {
+                    async () => {
                       await pauseChat(coparent)
                     }
                   )

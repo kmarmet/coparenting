@@ -1,3 +1,4 @@
+// Path: src\components\forms\editCalEvent.jsx
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -103,8 +104,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   }
 
   const nonOwnerSubmit = async () => {
-    const dbRef = ref(getDatabase())
-
     // Fill/overwrite
     // Required
     const updatedEvent = { ...event }
@@ -152,7 +151,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         return false
       }
 
-      const cleanedObject = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
       const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
       // Update dates with multiple dates
@@ -381,9 +379,11 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
 
     if (Manager.isValid(event?.shareWith)) {
       let names = []
-      for (let userPhone of event?.shareWith) {
-        const coparent = await DB_UserScoped.getCoparentByPhone(userPhone, currentUser)
-        names.push(StringManager.formatNameFirstNameOnly(coparent?.name))
+      for (let key of event.shareWith) {
+        let user = await DB_UserScoped.getCoparentByKey(key, currentUser)
+        if (Manager.isValid(user)) {
+          names.push(StringManager.getFirstNameOnly(user.name))
+        }
       }
       setShareWithNames(names)
     }
@@ -473,6 +473,9 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   useEffect(() => {
     const pageContainer = document.querySelector('.edit-calendar-event')
     DomManager.showInputLabels(pageContainer)
+    setTimeout(() => {
+      // DomManager.setOnloadCheckboxes(event?.shareWith)
+    }, 500)
   }, [view])
 
   return (
@@ -498,6 +501,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       wrapperClass="edit-calendar-event">
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
         <ViewSelector
+          key={refreshKey}
           labels={['details', 'edit']}
           updateState={(labelText) => {
             setView(labelText)
@@ -573,7 +577,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                       <div id="reminder-times">
                         {Manager.isValid(event?.reminderTimes) &&
                           event?.reminderTimes.map((time, index) => {
-                            time = CalMapper.unformattedToReadableTimeframe(time)
+                            time = CalMapper.readableReminderBeforeTimeframes(time)
                             time = StringManager.uppercaseFirstLetterOfAllWords(time).replaceAll('Of', 'of')
                             return <span key={index}>{time}</span>
                           })}
@@ -599,12 +603,12 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
 
                   {/* WEBSITE */}
                   {Manager.isValid(event?.websiteUrl) && (
-                    <div className="flex" id="website">
+                    <div className="flex">
                       <b>
                         <PiGlobeDuotone />
                         Website
                       </b>
-                      <a className="" href={decodeURIComponent(event?.websiteUrl)} target="_blank">
+                      <a className="" href={decodeURIComponent(event?.websiteUrl)} target="_blank" rel="noreferrer">
                         {decodeURIComponent(event?.websiteUrl)}
                         <FaExternalLinkSquareAlt className={'external-icon'} />
                       </a>
@@ -615,7 +619,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                   {Manager.isValid(event?.phone) && (
                     <div className="flex">
                       <b>Phone</b>
-                      <a className="" href={`tel:${event?.phone}`} target="_blank">
+                      <a className="" href={`tel:${event?.phone}`} target="_blank" rel="noreferrer">
                         {StringManager.getReadablePhoneNumber(event?.phone)}
                       </a>
                     </div>
@@ -740,13 +744,12 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                       </InputWrapper>
                     </div>
                   )}
-                  <Spacer height={10} />
                   {/* Share with */}
                   {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
                     <ShareWithCheckboxes
                       required={false}
                       onCheck={handleShareWithSelection}
-                      defaultActiveShareWith={event?.shareWith}
+                      defaultKeys={event?.shareWith}
                       containerClass={`share-with-coparents`}
                     />
                   )}
@@ -778,22 +781,16 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                               }}
                               defaultChecked={Manager.isValid(event?.reminderTimes)}
                               className={'ml-auto reminder-toggle'}
-                              onChange={(e) => setShowReminders(!showReminders)}
+                              onChange={() => setShowReminders(!showReminders)}
                             />
                           </div>
                         </AccordionSummary>
                         <AccordionDetails>
                           <CheckboxGroup
+                            checkboxArray={Manager.buildCheckboxGroup(currentUser, 'reminder-times', event?.reminderTimes)}
                             elClass={`${theme} `}
                             containerClass={'reminder-times'}
-                            defaultLabels={event?.reminderTimes?.map((x) => CalendarMapper.readableReminderBeforeTimeframes(x))}
                             skipNameFormatting={true}
-                            dataPhone={
-                              currentUser?.accountType === 'parent'
-                                ? currentUser?.coparents?.map((x) => x.phone)
-                                : currentUser?.parents?.map((x) => x.phone)
-                            }
-                            checkboxLabels={['At time of event', '5 minutes before', '30 minutes before', '1 hour before']}
                             onCheck={handleReminderSelection}
                           />
                         </AccordionDetails>
@@ -827,16 +824,16 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                             }}
                             defaultChecked={Manager.isValid(event?.children)}
                             className={'ml-auto'}
-                            onChange={(e) => setIncludeChildren(!includeChildren)}
+                            onChange={() => setIncludeChildren(!includeChildren)}
                           />
                         </div>
                       </AccordionSummary>
                       <AccordionDetails>
                         <div id="include-children-checkbox-container">
                           <CheckboxGroup
-                            defaultLabels={event?.children}
+                            checkboxArray={Manager.buildCheckboxGroup(currentUser, 'children', event?.children)}
+                            elClass={`${theme} `}
                             containerClass={'include-children-checkbox-container'}
-                            checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
                             onCheck={handleChildSelection}
                           />
                         </div>

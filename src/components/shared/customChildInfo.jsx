@@ -1,3 +1,4 @@
+// Path: src\components\shared\customChildInfo.jsx
 import React, { useContext, useState } from 'react'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
@@ -15,7 +16,7 @@ import DateFormats from '../../constants/dateFormats'
 import StringManager from '../../managers/stringManager'
 import Spacer from './spacer'
 import ViewSelector from './viewSelector'
-
+import AddressInput from './addressInput'
 export default function CustomChildInfo({ hideCard, showCard, setActiveChild, activeChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, refreshKey } = state
@@ -30,6 +31,7 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       AlertManager.throwError('Please fill/select required fields')
       return false
     }
+    console.log(currentUser, activeChild, infoSection, StringManager.toCamelCase(title), value, shareWith)
     const updatedChild = await DB_UserScoped.addUserChildProp(
       currentUser,
       activeChild,
@@ -94,7 +96,7 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       showCard={showCard}>
       <div className="form">
         {/* INFO SECTIONS */}
-        <ViewSelector labels={['General', 'Medical', 'Schooling', 'Behavior']} updateState={(e) => setInfoSection(e)} />
+        <ViewSelector labels={['General', 'Medical', 'Schooling', 'Behavior']} updateState={(e) => setInfoSection(e.toLowerCase())} />
         <Spacer height={5} />
         <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with" required={false} />
         <Spacer height={10} />
@@ -133,14 +135,9 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
           <>
             <InputWrapper inputType={'input'} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
             <InputWrapper inputType={'location'} labelText={'Location'}>
-              <Autocomplete
-                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                options={{
-                  types: ['geocode', 'establishment'],
-                  componentRestrictions: { country: 'usa' },
-                }}
-                onPlaceSelected={async (place) => {
-                  setValue(place.formatted_address)
+              <AddressInput
+                onSelection={(place) => {
+                  setValue(place)
                 }}
               />
             </InputWrapper>

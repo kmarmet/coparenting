@@ -1,3 +1,4 @@
+// Path: src\components\screens\childInfo\behavior.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
@@ -21,28 +22,29 @@ export default function Behavior({ activeChild, setActiveChild }) {
   const [showInputs, setShowInputs] = useState(false)
 
   const deleteProp = async (prop) => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
+    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
 
     // Delete Shared
     const sharedProps = sharing?.map((x) => x?.prop)
     if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
       const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
-      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByPhone)
+      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await setSelectedChild()
     } else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'behavior', formatDbProp(prop))
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'behavior', StringManager.formatDbProp(prop))
       await setSelectedChild()
       setActiveChild(updatedChild)
     }
   }
-  const update = async (section, prop, value, isArray) => {
+
+  const update = async (prop, value) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'behavior', StringManager.formatDbProp(prop), value)
     setActiveChild(updatedChild)
     AlertManager.successAlert('Updated!')
   }
 
   const setSelectedChild = async () => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
+    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
     let sharedValues = []
     for (let obj of sharing) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
@@ -94,10 +96,10 @@ export default function Behavior({ activeChild, setActiveChild }) {
                       isDebounced={true}
                       inputType={'input'}
                       defaultValue={value}
-                      labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}
+                      labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
                       onChange={async (e) => {
                         const inputValue = e.target.value
-                        await update('behavior', infoLabel, `${inputValue}`)
+                        await update(infoLabel, `${inputValue}`)
                       }}
                     />
                     <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />

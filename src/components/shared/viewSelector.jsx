@@ -1,14 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react'
+// Path: src\components\shared\viewSelector.jsx
+import React, { useContext } from 'react'
 import globalState from '../../context'
 import DomManager from '/src/managers/domManager'
 import Spacer from './spacer'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 
-export default function ViewSelector({ labels, updateState, wrapperClasses, visibleLabels = [] }) {
+export default function ViewSelector({ labels, updateState, wrapperClasses }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+  const { theme, refreshKey } = state
 
   const toggleActive = (el) => {
     const views = document.querySelectorAll('.view')

@@ -1,3 +1,4 @@
+// Path: src\components\screens\documents\uploadDocuments.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager.js'
@@ -79,7 +80,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     // Check for existing document
     const securedDocuments = await SecurityManager.getDocuments(currentUser)
     const existingDocument = await DB.find(securedDocuments, null, false, (doc) => {
-      if (doc.name === docName && doc.ownerPhone === currentUser.phone) {
+      if (doc.name === docName && doc.ownerKey === currentUser.phone) {
         return true
       }
     })
@@ -125,7 +126,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     const fileUrl = await FirebaseStorage.getFileUrl(FirebaseStorage.directories.documents, currentUser?.id, docNameToUse)
     const newDocument = new Doc()
     newDocument.url = fileUrl
-    newDocument.ownerPhone = currentUser?.phone
+    newDocument.ownerKey = currentUser?.phone
     newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
     newDocument.type = docType
     newDocument.name = docNameToUse
@@ -138,7 +139,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
         shareWith,
         currentUser,
         `New Document`,
-        `${StringManager.formatNameFirstNameOnly(currentUser.name)} has uploaded a new document`,
+        `${StringManager.getFirstNameOnly(currentUser.name)} has uploaded a new document`,
         ActivityCategory.documents
       )
     }

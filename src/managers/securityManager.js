@@ -99,7 +99,7 @@ SecurityManager = {
   getSwapRequests: async function(currentUser) {
     var allRequests, i, len, request, returnRecords, sharedSwaps;
     returnRecords = [];
-    allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.swapRequests}/${currentUser.phone}`))).flat();
+    allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.swapRequests}/${currentUser != null ? currentUser.key : void 0}`))).flat();
     sharedSwaps = (await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests));
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
@@ -117,7 +117,7 @@ SecurityManager = {
   getTransferChangeRequests: async function(currentUser) {
     var allRequests, i, len, request, returnRecords, sharedTransfers;
     returnRecords = [];
-    allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.transferChangeRequests}/${currentUser.phone}`))).flat();
+    allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.transferChangeRequests}/${currentUser != null ? currentUser.key : void 0}`))).flat();
     sharedTransfers = (await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests));
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
@@ -135,7 +135,7 @@ SecurityManager = {
   getDocuments: async function(currentUser) {
     var allDocs, doc, i, len, returnRecords, sharedDocs;
     returnRecords = [];
-    allDocs = Manager.convertToArray((await DB.getTable(`${DB.tables.documents}/${currentUser.phone}`))).flat();
+    allDocs = Manager.convertToArray((await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`))).flat();
     sharedDocs = (await SecurityManager.getShareWithItems(currentUser, DB.tables.documents));
     if (Manager.isValid(allDocs)) {
       for (i = 0, len = allDocs.length; i < len; i++) {
@@ -168,23 +168,6 @@ SecurityManager = {
     }
     return returnRecords.flat();
   },
-  getArchivedChats: async function(currentUser) {
-    var allArchivedChats, chat, chatArray, i, j, len, len1, returnRecords;
-    returnRecords = [];
-    allArchivedChats = Manager.convertToArray((await DB.getTable(`${DB.tables.archivedChats}`))).flat();
-    if (Manager.isValid(allArchivedChats, true)) {
-      for (i = 0, len = allArchivedChats.length; i < len; i++) {
-        chatArray = allArchivedChats[i];
-        for (j = 0, len1 = chatArray.length; j < len1; j++) {
-          chat = chatArray[j];
-          if (chat.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
-            returnRecords.push(chat);
-          }
-        }
-      }
-    }
-    return returnRecords.flat();
-  },
   getInputSuggestions: async function(currentUser) {
     var i, len, returnRecords, suggestion, suggestions;
     returnRecords = [];
@@ -208,7 +191,7 @@ SecurityManager = {
       for (i = 0, len = chats.length; i < len; i++) {
         chat = chats[i];
         members = chat != null ? (ref = chat.members) != null ? ref.map(function(x) {
-          return x.phone;
+          return x.key;
         }) : void 0 : void 0;
         if (ref1 = currentUser != null ? currentUser.key : void 0, indexOf.call(members, ref1) >= 0) {
           securedChats.push(chat);
@@ -226,7 +209,7 @@ SecurityManager = {
       for (i = 0, len = allChatsFlattened.length; i < len; i++) {
         chat = allChatsFlattened[i];
         members = chat.members.map(function(x) {
-          return x.phone;
+          return x.key;
         });
         if (ref = currentUser != null ? currentUser.key : void 0, indexOf.call(members, ref) >= 0) {
           activeChats.push(chat);
@@ -238,3 +221,5 @@ SecurityManager = {
 };
 
 export default SecurityManager;
+
+//# sourceMappingURL=securityManager.js.map

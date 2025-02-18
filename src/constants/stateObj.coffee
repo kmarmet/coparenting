@@ -17,6 +17,7 @@ StateObj =
   modalIsOpen: false
   parentAccessGranted: false
   refreshKey: 0,
+  registrationUserName: ''
   selectedChild: null
   selectedNewEventDay: null
   showCenterNavbarButton: true
@@ -49,6 +50,7 @@ StateObj =
   setModalIsOpen: (bool) ->
   setParentAccessGranted: (bool) ->
   setRefreshKey: (num) ->
+  setRegistrationUserName: (name) ->
   setSelectedChild: (child) ->
   setSelectedNewEventDay: (day) ->
   setShowCenterNavbarButton: (bool) ->

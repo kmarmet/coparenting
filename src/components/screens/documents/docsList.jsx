@@ -1,4 +1,5 @@
-import { useContext, useEffect, useState } from 'react'
+// Path: src\components\screens\documents\docsList.jsx
+import React, { useContext, useEffect, useState } from 'react'
 import ScreenNames from '../../../constants/screenNames'
 import DB from '../../../database/DB'
 import Manager from '../../../managers/manager'
@@ -68,8 +69,8 @@ export default function DocsList() {
             {!DomManager.isMobile() && <GrDocumentUpload id={'add-new-button'} onClick={() => setShowCard(true)} />}
           </div>
           <p className="mb-10">
-            Upload documents, which are legal (separation agreement, custody agreement, .etc) or otherwise. These documents can be shared with a
-            co-parent if you choose to.
+            You may upload legal documents, such as a separation agreement or custody agreement, among others. If you wish, these documents can also
+            be shared with a co-parent.
           </p>
 
           {!Manager.isValid(selectedDoc) && (

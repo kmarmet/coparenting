@@ -2,11 +2,13 @@
 var ChatBookmark;
 
 ChatBookmark = class ChatBookmark {
-  constructor(ownerPhone = '', messageId = '') {
-    this.ownerPhone = ownerPhone;
+  constructor(ownerKey = '', messageId = '') {
+    this.ownerKey = ownerKey;
     this.messageId = messageId;
   }
 
 };
 
 export default ChatBookmark;
+
+//# sourceMappingURL=chatBookmark.js.map

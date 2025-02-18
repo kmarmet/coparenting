@@ -1,3 +1,4 @@
+// Path: App Repo\componentBackups\menu.jsx
 import React, { useContext, useEffect } from 'react'
 import globalState from '../context'
 import ScreenNames from 'constants/screenNames'

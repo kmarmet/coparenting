@@ -1,3 +1,4 @@
+// Path: src\components\screens\home.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import { Fade } from 'react-awesome-reveal'
@@ -79,7 +80,6 @@ export default function Home() {
 
     if (scrollDownButton) {
       scrollDownButton.addEventListener('click', () => {
-        const section = document.querySelector('[data-section="1"]')
         scrollWrapper.scrollBy({
           top: screen.height - 100,
           left: 0,
@@ -186,7 +186,7 @@ export default function Home() {
       <div id="below-fold-intro-text" className="section">
         <p>
           Our app provides a stress-free way to manage co-parenting by enhancing communication, scheduling, and decision-making, so&nbsp;
-          <b>you can focus on what matters most, your children's well-being</b>.
+          <b>you can focus on what matters most, your children&#39;s well-being</b>.
         </p>
       </div>
       {/* BELOW FOLD */}
@@ -222,8 +222,8 @@ export default function Home() {
                 Why <span>Choose</span> <span>Peace</span>ful Co-Parenting?
               </p>
               <p className="text subtitle">
-                Peaceful Co-Parenting has the same functionality and features as other apps, but our app has <b>UNIQUE FEATURES</b>. These unique
-                features are <u>NOT</u> available in other co-parenting applications.
+                Peaceful Co-Parenting offers the same functionalities and features as other applications, yet it stands out with its{' '}
+                <b>DISTINCTIVE FEATURES</b>. These exclusive features are UNAVAILABLE in any other co-parenting application.
               </p>
               <p id="unique-features-title">
                 <b>Features Exclusive to Peaceful Co-Parenting</b>
@@ -239,12 +239,12 @@ export default function Home() {
                 </p>
                 <MdOutlineStar className={'star'} />
                 <p className="feature-subtitle">
-                  All other co-parenting applications are installed via an app store. This means that they can typically only be installed on certain
-                  devices and on certain operating systems (Apple, Android, .etc).
+                  Unlike other co-parenting applications that require installation through an app store, which limits them to specific devices and
+                  operating systems (such as Apple and Android), Peaceful Co-Parenting offers a more flexible solution.
                 </p>
                 <p className="feature-subtitle">
-                  However, with Peaceful Co-Parenting <b>you can install our application on any device</b> (phone, tablet, computer, .etc) and any
-                  operating system (Android, Apple, .etc).
+                  You can install our application on <b>any device</b>—be it a phone, tablet, or computer—and it is compatible with all operating
+                  systems, including Android and Apple.
                 </p>
                 <div className="content">
                   <ul>
@@ -295,8 +295,8 @@ export default function Home() {
                 <p className="feature-title">One Subscription for ALL Features</p>
                 <MdOutlineStar className={'star'} />
                 <p className="feature-subtitle">
-                  Almost every co-parenting application have multiple tiers of pricing. You get very basic features for one price, and then they
-                  upsell (charge more) to access the more useful features. Not us!
+                  Many co-parenting apps offer various pricing tiers. You receive basic features at one price, but they often upsell for access to
+                  more valuable/useful features. That&#39;s not the case with us!
                 </p>
                 <div className="content">
                   <ul>
@@ -356,11 +356,11 @@ export default function Home() {
                 <p className="feature-title">Designed with You in Mind</p>
                 <MdOutlineStar className={'star'} />
                 <p className="feature-subtitle">
-                  Many applications, including other co-parenting applications, can be very difficult to use. Imagine that you need to create an
-                  expense to share with your co-parent but you can't find how/where to do that?
+                  Numerous applications can often be quite challenging to navigate. Picture this: you need to log an expense to share with your
+                  co-parent, but you're unable to locate the option to do so.
                 </p>
                 <p className="feature-subtitle">
-                  Our goal is <b>eliminate that frustration or wasted time</b> that gets in the way of what you want to do.
+                  We aim to <b>remove that frustration</b> and save you time, allowing you to focus on what truly matters.
                 </p>
                 <div className="content">
                   <ul>
@@ -405,8 +405,7 @@ export default function Home() {
                 <p className="feature-title">Everything in Realtime</p>
                 <MdOutlineStar className={'star'} />
                 <p className="feature-subtitle">
-                  Whether you are using the application or it is closed,{' '}
-                  <b>you will receive all updates, changes and notifications instantaneously.</b>
+                  You will receive all updates, changes, and notifications <b>instantly</b>, whether the application is open or closed.
                 </p>
                 <div className="content">
                   <ul>
@@ -439,8 +438,8 @@ export default function Home() {
                 <p className="feature-title">Multiple Co-Parent Support</p>
                 <MdOutlineStar className={'star'} />
                 <p className="feature-subtitle">
-                  We understand that you may have multiple co-parents from prior relationships or marriages. We have taken this into consideration and
-                  provide support for this dynamic.
+                  We recognize that you or your spouse might have several co-parents from previous relationships or marriages. We have acknowledged
+                  this situation and offer support tailored to this dynamic.
                 </p>
                 <div className="content">
                   <ul>
@@ -470,7 +469,7 @@ export default function Home() {
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'messaging'}>
                 <p className="feature-title">Messaging</p>
                 <MdOutlineStar className={'star'} />
-                <p className="feature-subtitle">All other applications include messaging, but not with these features.</p>
+                <p className="feature-subtitle">Other applications may include messaging, but not with these features.</p>
                 <div className="content">
                   <ul>
                     <li className="list-title">
@@ -516,12 +515,12 @@ export default function Home() {
                 <p className="feature-title">Support Team that Caters to You</p>
                 <MdOutlineStar className={'star'} />
                 <p className="feature-subtitle">
-                  Far too often when you reach out to a customer support team it can take days to get an answer, and then when you do get an answer it
-                  typically an answer that you can tell has been copied and pasted to many others in need of help.
+                  It&#39;s frustrating when you contact customer support and have to wait days for a response, only to receive a generic answer that
+                  feels like it was sent to countless others.
                 </p>
 
                 <p className="feature-subtitle">
-                  No longer! We put <b>YOU</b> first.
+                  We understand how important your time is, and that&#39;s why <b>we prioritize you!</b>
                 </p>
                 <div className="content">
                   <ul>
@@ -587,7 +586,7 @@ export default function Home() {
                           We promise to provide help that is 100% related to the concern/request you send us
                           <ul>
                             <li>No bots</li>
-                            <li>No 'canned' responses</li>
+                            <li>No &#39;canned&#39; responses</li>
                             <li>No vague responses that do not directly address your concern</li>
                           </ul>
                         </li>
@@ -680,8 +679,9 @@ export default function Home() {
                 <b>Supports both Light & Dark Modes: </b>
               </p>
               <span>
-                Whether you are visually impaired, or glare is a concern due to lighting - we got you covered! Our application supports Light and Dark
-                mode that can be toggled at the {DomManager.tapOrClick(true)} of a button.
+                We understand that visual impairments and glare from lighting can be challenging. That&#39;s why our application offers both Light and
+                Dark modes, easily switchable with just a {DomManager.tapOrClick()}. We&#39;re here to ensure your experience is comfortable and
+                accessible!
               </span>
             </div>
 

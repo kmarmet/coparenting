@@ -66,7 +66,7 @@ export default CalendarManager = {
     }
     // REPEATING
     if (arrayType === "recurring") {
-      datesToIterate = CalendarMapper.repeatingEvents(eventObject.repeatInterval, moment(startDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear), endDate);
+      datesToIterate = CalendarMapper.recurringEvents(eventObject.repeatInterval, moment(startDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear), endDate);
     }
     for (i = 0, len = datesToIterate.length; i < len; i++) {
       date = datesToIterate[i];
@@ -83,7 +83,7 @@ export default CalendarManager = {
       dateObject.directionsLink = Manager.getDirectionsLink(eventObject.location);
       dateObject.location = eventObject.location;
       dateObject.children = eventObject.children;
-      dateObject.ownerPhone = currentUser != null ? currentUser.phone : void 0;
+      dateObject.ownerKey = currentUser != null ? currentUser.phone : void 0;
       dateObject.createdBy = currentUser != null ? currentUser.name : void 0;
       dateObject.phone = eventObject.phone;
       dateObject.shareWith = DatasetManager.getUniqueArray(eventObject.shareWith, true);
@@ -247,3 +247,5 @@ export default CalendarManager = {
     return results;
   }
 };
+
+//# sourceMappingURL=calendarManager.js.map

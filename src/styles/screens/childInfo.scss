@@ -78,97 +78,6 @@
       }
     }
 
-    .profile-pic-container {
-      height: 130px;
-      width: 130px;
-      border-radius: 50%;
-      background-size: cover;
-      margin-bottom: 5px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      margin-top: 10px;
-      border: 0;
-      @include fadeEdges;
-      @include hover;
-
-      input {
-        opacity: 0;
-        display: block !important;
-      }
-
-      &.no-image {
-        .after {
-          background: $bestGreyForWhite;
-          backdrop-filter: unset;
-          width: 100%;
-          right: unset;
-          @include fadeEdges;
-
-          svg {
-            font-size: 40px;
-          }
-        }
-
-        p {
-          font-weight: 500;
-        }
-      }
-
-      p {
-        color: white;
-        font-size: 12px;
-        text-align: center;
-      }
-
-      input {
-        z-index: 100;
-        position: relative;
-      }
-
-      &.no-image {
-        .after {
-          height: 100%;
-        }
-      }
-
-      .after {
-        position: absolute;
-        right: -15px;
-        z-index: 1;
-        @include centerHoriz;
-        margin-left: auto;
-        padding: 0;
-        width: 35px;
-        height: 35px;
-        overflow: hidden;
-        background: $lightIconBgBlue;
-        border-radius: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 0;
-        bottom: -3px;
-        border: 1px solid white;
-
-        svg {
-          color: $mainBlue;
-          font-size: 18px;
-          margin: 0 auto;
-          display: block;
-          width: 100%;
-          opacity: 0.8;
-          position: absolute;
-          z-index: 10;
-        }
-
-        input {
-          font-size: 5px;
-          align-self: stretch;
-        }
-      }
-    }
-
     .sections {
       .section {
         @include lineItem;
@@ -195,7 +104,6 @@
           #checkbox-group {
             display: flex;
             flex-wrap: nowrap;
-            margin: 0;
             margin-left: 10px;
 
             .flex {
@@ -239,44 +147,139 @@
       }
     }
 
-    #children-container {
-      width: 100%;
-      background-color: transparent;
-      border-radius: 0;
-      border: 0;
-      justify-content: center;
-      flex-direction: column;
-      align-items: center;
+    #image-and-actions-wrapper {
+      background: $mainBlue;
       display: flex;
-      transition: all 0.3s ease-in-out;
-      margin-bottom: 15px;
+      overflow: hidden;
+      border-radius: $bigBorderRadius;
+      padding: 20px;
+      margin-bottom: 20px;
+      align-items: center;
+      position: relative;
 
-      &.active {
-        transition: all 0.3s ease-in-out;
-
-        span {
-          opacity: 1;
-        }
-
+      .left {
+        margin-right: 25px;
         .child-name {
-          font-weight: bold;
-          opacity: 1;
+          color: white;
+          font-weight: $fwMedium;
+          font-size: 20px;
+          text-align: center;
+          width: 100%;
+          display: block;
+          margin-top: 8px;
+        }
+        .profile-pic-container {
+          height: 100px;
+          width: 100px;
+          border-radius: 50%;
+          background-size: cover;
+          position: relative;
+          display: flex;
+          align-items: center;
+          @include hover;
+          border: 2px solid white;
+
+          input {
+            opacity: 0;
+            display: block !important;
+          }
+
+          &.no-image {
+            .after {
+              background: transparent;
+              width: 100%;
+              right: unset;
+              border: 0;
+              bottom: unset;
+              svg {
+                color: white;
+                font-size: 30px;
+              }
+            }
+
+            p {
+              font-weight: 500;
+            }
+          }
+
+          p {
+            color: white;
+            font-size: 12px;
+            text-align: center;
+          }
+
+          input {
+            z-index: 100;
+            position: relative;
+          }
+
+          &.no-image {
+            .after {
+              height: 100%;
+            }
+          }
+
+          .after {
+            position: absolute;
+            right: -15px;
+            z-index: 1;
+            @include centerHoriz;
+            margin-left: auto;
+            padding: 0;
+            width: 28px;
+            height: 28px;
+            overflow: hidden;
+            background: white;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0;
+            bottom: -3px;
+            border: 1px solid white;
+
+            svg {
+              color: $mainBlue;
+              font-size: 16px;
+              margin: 0 auto;
+              display: block;
+              width: 100%;
+              opacity: 1;
+              position: absolute;
+              z-index: 10;
+            }
+
+            input {
+              font-size: 5px;
+              align-self: stretch;
+            }
+          }
         }
       }
 
-      span {
-        color: white;
-        font-size: 85px;
-        opacity: 0.7;
-      }
+      .right {
+        width: 100%;
+        button {
+          &.button {
+            &.default {
+              font-size: 15px;
+              opacity: 0.9;
+              background: transparent;
+              text-align: center;
+              color: white;
+              margin: 0 auto 15px auto;
+              min-width: 0;
+              border: 0;
+              padding: 0 0 2px 0;
+              border-bottom: 1px solid white;
+              border-radius: 0;
 
-      .child-name {
-        font-size: 22px;
-        color: black;
-        border: 0;
-        opacity: 0.65;
-        font-optical-sizing: auto;
-        font-style: italic;
+              &:last-child {
+                margin-bottom: 0;
+              }
+            }
+          }
+        }
       }
     }
 
@@ -300,6 +303,7 @@
               position: relative;
               margin-left: 10px;
               bottom: 3px;
+              right: -5px;
             }
           }
         }
@@ -409,6 +413,7 @@
             font-size: 36px;
             margin-left: 0;
             margin-right: 10px;
+            width: 40px;
           }
 
           &.medical {

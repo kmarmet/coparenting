@@ -1,3 +1,4 @@
+// Path: src\components\screens\settings\settings.jsx
 import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import moment from 'moment'
@@ -16,7 +17,7 @@ import NotificationManager from '/src/managers/notificationManager.js'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, authUser } = state
   const [defaultReminderTimes, setDefaultReminderTimes] = useState([])
   const [morningSummaryTime, setMorningSummaryTime] = useState('')
   const [eveningSummaryTime, setEveningSummaryTime] = useState('')
@@ -40,12 +41,12 @@ export default function Settings() {
     AlertManager.successAlert('Calendar settings have been updated!')
   }
 
-  const toggleNotifications = async (e) => {
+  const toggleNotifications = async () => {
     setNotificationsToggled(!notificationsToggled)
     const subscriber = await DB.find(DB.tables.notificationSubscribers, ['phone', currentUser.phone], true)
-    const { oneSignalId, subscriptionId } = subscriber
+    const { subscriptionId } = subscriber
     await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({ ...state, currentUser: updatedCurrentUser })
 
     if (notificationsToggled === true) {
@@ -62,11 +63,9 @@ export default function Settings() {
           <p className="screen-title">Settings</p>
           {/* CALENDAR SETTINGS */}
           <Label text={'Calendar'} labelId="medium-title" isBold={true} />
-          <div className="calendar-settings mb-10 form">
-            <div className="section summary mb-10 gap-10">
-              <p className="pb-10">
-                The morning and evening summary hours are when you will receive the event summaries for the current day and next day.
-              </p>
+          <div className="calendar-settings form">
+            <div className="section summary gap-10">
+              <p className="pb-10">The summaries for the current and following day will be provided during the morning and evening summary hours.</p>
               {/* MORNING SUMMARY */}
               <InputWrapper labelText={'Morning Hour'} inputType={'date'}>
                 <MobileTimePicker className={`${theme} w-100`} views={['hours']} onAccept={(e) => setMorningSummaryTime(e)} />

@@ -1,20 +1,19 @@
+// Path: src\components\shared\shareWithCheckboxes.jsx
 import Manager from '../../managers/manager'
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import Label from './label'
 import DB from '../../database/DB'
-import { IoCloseOutline } from 'react-icons/io5'
 import StringManager from '../../managers/stringManager.coffee'
 import Checkbox from './checkbox.jsx'
 
 export default function ShareWithCheckboxes({
-  defaultActiveShareWith = [],
+  defaultKeys = [],
   onCheck,
   containerClass = '',
   checkboxGroupClass = '',
   required = true,
   labelText = '',
-  icon = '',
 }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
@@ -28,21 +27,24 @@ export default function ShareWithCheckboxes({
       people = [...people, [...currentUser.coparents]].filter((x) => x)
     }
 
+    // PARENTS
     if (Manager.isValid(currentUser?.parents)) {
       people = [...people, [...currentUser.parents]].filter((x) => x)
     }
+
     // CHILDREN
     if (Manager.isValid(currentUser?.childAccounts)) {
       let childrenAccounts = []
-      for (let child of currentUser?.childAccounts) {
+      for (let child of currentUser.childAccounts) {
         childrenAccounts.push(child)
       }
       people = [...people, [...childrenAccounts]].filter((x) => x)
     }
+
     let peopleWithAccounts = []
     if (Manager.isValid(people)) {
       for (let person of people.flat()) {
-        const account = await DB.find(DB.tables.users, ['phone', person?.phone], true)
+        const account = await DB.find(DB.tables.users, ['key', person?.key], true)
         if (account) {
           peopleWithAccounts.push(account)
         }
@@ -66,22 +68,16 @@ export default function ShareWithCheckboxes({
             {Manager.isValid(shareWith) &&
               shareWith?.map((user, index) => {
                 let name = user?.name
-                let phone = user.phone
-                if (!Manager.isValid(phone)) {
-                  phone = user?.general?.phone
-                }
-                if (!Manager.isValid(name)) {
-                  name = user?.general?.name
-                }
+                let key = user?.key
 
                 return (
                   <div
                     key={index}
                     id="share-with-checkbox-container"
-                    data-phone={phone ? phone : ''}
-                    className={`flex ${containerClass} ${defaultActiveShareWith.includes(phone) ? 'active' : ''}`}
+                    data-key={key ? key : ''}
+                    className={`flex ${containerClass} ${defaultKeys.includes(key) ? 'active' : ''}`}
                     onClick={onCheck}>
-                    <Checkbox text={StringManager.formatNameFirstNameOnly(name)} onClick={() => console.log('')} />
+                    <Checkbox defaultKeys={defaultKeys} dataKey={key} text={StringManager.getFirstNameOnly(name)} onClick={() => console.log(name)} />
                   </div>
                 )
               })}

@@ -1,3 +1,4 @@
+// Path: src\components\shared\modal.jsx
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import Manager from '../../managers/manager'

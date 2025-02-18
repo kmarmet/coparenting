@@ -1,51 +1,49 @@
-import React, { useContext, useEffect, useState } from 'react'
-import globalState from '/src/context.js'
-import DB from '/src/database/DB'
-import Manager from '/src/managers/manager'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
-import NotificationManager from '/src/managers/notificationManager'
-import MyConfetti from '/src/components/shared/myConfetti.js'
-import DateManager from '/src/managers/dateManager.js'
-import DateFormats from '/src/constants/dateFormats.js'
-import moment from 'moment'
-
-import { PiUserCircleDuotone } from 'react-icons/pi'
-import BottomCard from '../../shared/bottomCard.jsx'
-import { AiTwotoneTag } from 'react-icons/ai'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
-import { AiOutlineFileAdd } from 'react-icons/ai'
-import { FaChildren } from 'react-icons/fa6'
-import { TbCalendarCheck } from 'react-icons/tb'
-import { RxUpdate } from 'react-icons/rx'
-import SecurityManager from '/src/managers/securityManager'
-import { TbCalendarDollar } from 'react-icons/tb'
-import NewExpenseForm from '../../forms/newExpenseForm.jsx'
-import LightGallery from 'lightgallery/react'
-import MenuItem from '@mui/material/MenuItem'
-import { MobileDatePicker } from '@mui/x-date-pickers-pro'
-import { Fade } from 'react-awesome-reveal'
-import 'lightgallery/css/lightgallery.css'
-import NavBar from '../../navBar.jsx'
-import Label from '../../shared/label.jsx'
-import ExpenseCategories from '/src/constants/expenseCategories'
-import DatasetManager from '/src/managers/datasetManager'
-import AlertManager from '/src/managers/alertManager'
-import MenuItem from '@mui/material/MenuItem'
-import SelectDropdown from '../../shared/selectDropdown.jsx'
-import InputWrapper from '../../shared/inputWrapper.jsx'
-import DomManager from '/src/managers/domManager'
-import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
-import ActivityCategory from '/src/models/activityCategory'
-import ObjectManager from '/src/managers/objectManager'
-import ModelNames from '/src/models/modelNames'
-import StringManager from '/src/managers/stringManager'
-import ExpenseManager from '/src/managers/expenseManager.js'
-import PaymentOptions from './paymentOptions.jsx'
+// Path: src\components\screens\expenses\expenseTracker.jsx
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
+import MenuItem from '@mui/material/MenuItem'
+import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
+import 'lightgallery/css/lightgallery.css'
+import LightGallery from 'lightgallery/react'
+import moment from 'moment'
+import React, { useContext, useEffect, useState } from 'react'
+import { Fade } from 'react-awesome-reveal'
+import { AiOutlineFileAdd, AiTwotoneTag } from 'react-icons/ai'
+import { FaChildren, FaMinus, FaPlus } from 'react-icons/fa6'
 import { GiMoneyStack } from 'react-icons/gi'
+import { PiUserCircleDuotone } from 'react-icons/pi'
+import { RxUpdate } from 'react-icons/rx'
+import { TbCalendarCheck, TbCalendarDollar } from 'react-icons/tb'
+import NewExpenseForm from '../../forms/newExpenseForm.jsx'
+import NavBar from '../../navBar.jsx'
+import BottomCard from '../../shared/bottomCard.jsx'
+import InputWrapper from '../../shared/inputWrapper.jsx'
+import Label from '../../shared/label.jsx'
+import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
+import SelectDropdown from '../../shared/selectDropdown.jsx'
 import Spacer from '../../shared/spacer'
+import PaymentOptions from './paymentOptions.jsx'
+import MyConfetti from '/src/components/shared/myConfetti.js'
+import DateFormats from '/src/constants/dateFormats.js'
+import ExpenseCategories from '/src/constants/expenseCategories'
+import globalState from '/src/context.js'
+import DB from '../../../database/DB.js'
+import AlertManager from '/src/managers/alertManager'
+import DatasetManager from '/src/managers/datasetManager'
+import DateManager from '/src/managers/dateManager.js'
+import DomManager from '/src/managers/domManager'
+import ExpenseManager from '/src/managers/expenseManager.js'
+import Manager from '/src/managers/manager'
+import NotificationManager from '/src/managers/notificationManager'
+import ObjectManager from '/src/managers/objectManager'
+import SecurityManager from '/src/managers/securityManager'
+import StringManager from '/src/managers/stringManager'
+import ActivityCategory from '/src/models/activityCategory'
+import ModelNames from '/src/models/modelNames'
+import ViewSelector from '../../shared/viewSelector.jsx'
+
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
   recentlyAdded: 'Recently Added',
@@ -78,6 +76,7 @@ export default function ExpenseTracker() {
   const [categoriesAsArray, setCategoriesAsArray] = useState([])
   const [expenseDateType, setExpenseDateType] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
+
   const update = async () => {
     // Fill/overwrite
     let updatedExpense = { ...activeExpense }
@@ -97,7 +96,7 @@ export default function ExpenseTracker() {
       updatedExpense.dueDate = moment(dueDate).format(DateFormats.dateForDb)
     }
     const cleanedExpense = ObjectManager.cleanObject(updatedExpense, ModelNames.expense)
-    cleanedExpense.ownerPhone = activeExpense.ownerPhone
+    cleanedExpense.ownerKey = activeExpense.ownerKey
     await ExpenseManager.updateExpense(currentUser, cleanedExpense, cleanedExpense.id)
     await getSecuredExpenses()
     setActiveExpense(updatedExpense)
@@ -105,14 +104,14 @@ export default function ExpenseTracker() {
   }
 
   const togglePaidStatus = async () => {
-    const updatedStatus = (activeExpense.paidStatus = 'paid' ? 'unpaid' : 'paid')
+    const updatedStatus = activeExpense.paidStatus === 'paid' ? 'unpaid' : 'paid'
     setPaidStatus(updatedStatus)
     activeExpense.paidStatus = updatedStatus
     await ExpenseManager.updateExpense(currentUser, activeExpense, activeExpense.id).then(async () => {
       NotificationManager.sendNotification(
         `Expense Paid`,
         `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${activeExpense.name}`,
-        activeExpense?.ownerPhone,
+        activeExpense?.ownerKey,
         currentUser,
         activeExpense.category
       )
@@ -142,7 +141,7 @@ export default function ExpenseTracker() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
 
-    onValue(child(dbRef, DB.tables.expenses), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.expenses}/${currentUser?.key}`), async () => {
       await getSecuredExpenses()
     })
   }
@@ -209,7 +208,6 @@ export default function ExpenseTracker() {
 
   const handleCategorySelection = async (element) => {
     const allExpenses = await getSecuredExpenses()
-    const categoryPills = document.querySelectorAll('.category .pill')
     const category = element.target.textContent
     let expensesByCategory = allExpenses.filter((x) => x.category === category)
     if (element.target.classList.contains('active')) {
@@ -238,6 +236,10 @@ export default function ExpenseTracker() {
     setRecipientName(activeExpense?.recipientName)
   }
 
+  const deleteExpense = async () => {
+    await DB.deleteById(`${DB.tables.expenses}/${currentUser?.key}`, activeExpense?.id)
+  }
+
   useEffect(() => {
     if (activeExpense) {
       setDefaults()
@@ -255,7 +257,7 @@ export default function ExpenseTracker() {
   return (
     <>
       {/* NEW EXPENSE FORM */}
-      <NewExpenseForm showCard={showNewExpenseCard} hideCard={(e) => setShowNewExpenseCard(false)} />
+      <NewExpenseForm showCard={showNewExpenseCard} hideCard={() => setShowNewExpenseCard(false)} />
 
       {/* PAYMENT OPTIONS */}
       <PaymentOptions onClose={() => setShowPaymentOptionsCard(false)} showPaymentOptionsCard={showPaymentOptionsCard} />
@@ -272,16 +274,10 @@ export default function ExpenseTracker() {
           setActiveExpense(null)
           setShowDetails(false)
         }}
+        onDelete={deleteExpense}
         showCard={showDetails}>
         <div id="details" className={`content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
-          <div className="flex views-wrapper mb-15" id="views">
-            <p onClick={() => setView('details')} className={view === 'details' ? 'view active' : 'view'}>
-              Details
-            </p>
-            <p onClick={() => setView('edit')} className={view === 'edit' ? 'view active' : 'view'}>
-              Edit
-            </p>
-          </div>
+          <ViewSelector labels={['Details', 'Edit']} updateState={(e) => setView(e.toLowerCase())} />
 
           {/* DETAILS */}
           {view === 'details' && (
@@ -326,9 +322,7 @@ export default function ExpenseTracker() {
                   <PiUserCircleDuotone />
                   Sent to
                 </b>
-                <span>
-                  {StringManager.formatNameFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeExpense?.payer?.phone)[0]?.name)}
-                </span>
+                <span>{StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.key === activeExpense?.payer?.key)[0]?.name)}</span>
               </div>
 
               {/* PAY TO */}
@@ -337,7 +331,7 @@ export default function ExpenseTracker() {
                   <PiUserCircleDuotone />
                   Pay to
                 </b>
-                <span> {StringManager.formatNameFirstNameOnly(activeExpense?.recipientName)}</span>
+                <span> {StringManager.getFirstNameOnly(activeExpense?.recipientName)}</span>
               </div>
 
               {/* DUE DATE */}
@@ -487,10 +481,11 @@ export default function ExpenseTracker() {
             {!DomManager.isMobile() && <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />}
           </div>
           <p className={`${theme} text-screen-intro`}>
-            Add expenses to be paid by your co-parent. If a new expense is created for you to pay, you will have the opportunity to approve or reject
-            it.
+            Incorporate expenses that your co-parent is responsible for. Should a new expense arise that requires your payment, you will have the
+            option to either approve or decline it.
           </p>
-          <p className="payment-options-link mt-10" onClick={() => setShowPaymentOptionsCard(true)}>
+          <Spacer height={8} />
+          <p className="payment-options-link" onClick={() => setShowPaymentOptionsCard(true)}>
             Bill Payment & Money Transfer Options
           </p>
           <Spacer height={8} />
@@ -581,7 +576,7 @@ export default function ExpenseTracker() {
           {/* LOOP EXPENSES */}
           <div id="expenses-container">
             {Manager.isValid(expenses) &&
-              expenses.map((expense, index) => {
+              expenses.map((expense) => {
                 let dueDate = moment(expense?.dueDate).format(DateFormats.readableMonthAndDay) ?? ''
                 const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
                 let overdue = Manager.contains(readableDueDate, 'ago')

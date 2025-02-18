@@ -9,9 +9,9 @@ import Manager from "./manager.js";
 
 import NotificationSubscriber from "../models/notificationSubscriber";
 
-import DB_UserScoped from "../database/db_userScoped";
+import Activity from "../models/activity";
 
-import ActivitySet from "../models/activity";
+import DB_UserScoped from "../database/db_userScoped.js";
 
 export default NotificationManager = {
   currentUser: null,
@@ -55,7 +55,6 @@ export default NotificationManager = {
   // apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
   // appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
   init: function(currentUser) {
-    console.log(NotificationManager.appId);
     NotificationManager.currentUser = currentUser;
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     return OneSignalDeferred.push(function() {
@@ -70,9 +69,6 @@ export default NotificationManager = {
     var newSubscriber, ref, subId, userSubscribed;
     userSubscribed = OneSignal.User.PushSubscription.optedIn;
     subId = event != null ? (ref = event.current) != null ? ref.id : void 0 : void 0;
-    console.log(OneSignal.User);
-    console.log(subId);
-    console.log(userSubscribed);
     if (userSubscribed && subId) {
       newSubscriber = new NotificationSubscriber();
       return setTimeout(function() {
@@ -125,13 +121,16 @@ export default NotificationManager = {
     });
     return userIdentity;
   },
-  sendNotification: async function(title, message, recipientPhone, currentUser = null, category = '') {
+  sendNotification: async function(title, message, recipientKey, currentUser = null, category = '') {
     var myHeaders, newActivity, raw, requestOptions, subId, subIdRecord;
     myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
-    subIdRecord = (await DB.find(DB.tables.notificationSubscribers, ["phone", recipientPhone], true));
+    subIdRecord = (await DB.getTable(`${DB.tables.notificationSubscribers}/${recipientKey}`, true));
+    if (!subIdRecord) {
+      return false;
+    }
     subId = subIdRecord != null ? subIdRecord.subscriptionId : void 0;
     raw = JSON.stringify({
       contents: {
@@ -151,17 +150,18 @@ export default NotificationManager = {
       body: raw,
       redirect: "follow"
     };
+    console.log(recipientKey);
     // Add activity to database
-    newActivity = new ActivitySet();
+    newActivity = new Activity();
     newActivity.id = Manager.getUid();
-    newActivity.recipientPhone = recipientPhone;
-    newActivity.sharedByPhone = currentUser != null ? currentUser.phone : void 0;
+    newActivity.recipientKey = recipientKey;
+    newActivity.ownerKey = currentUser != null ? currentUser.key : void 0;
     newActivity.sharedByName = currentUser != null ? currentUser.name : void 0;
     newActivity.title = title;
     newActivity.text = message;
     newActivity.category = category;
-    DB.add(`${DB.tables.activities}/${recipientPhone}`, newActivity);
-    if (!window.location.href.includes("localhost")) {
+    await DB.add(`${DB.tables.activities}/${recipientKey}`, newActivity);
+    if (!window.location.href.includes("localhostsssss")) {
       return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
         return response.text();
       }).then(function(result) {
@@ -170,6 +170,17 @@ export default NotificationManager = {
       }).catch(function(error) {
         return console.error(error);
       });
+    }
+  },
+  sendToShareWith: async function(shareWithKeys, currentUser, title, message, category = '') {
+    var i, key, len, results;
+    if (Manager.isValid(shareWithKeys)) {
+      results = [];
+      for (i = 0, len = shareWithKeys.length; i < len; i++) {
+        key = shareWithKeys[i];
+        results.push((await NotificationManager.sendNotification(title, message, key, currentUser, category)));
+      }
+      return results;
     }
   },
   enableNotifications: function(subId) {
@@ -225,17 +236,7 @@ export default NotificationManager = {
     }).catch(function(err) {
       return console.error(err);
     });
-  },
-  sendToShareWith: async function(recipientPhones, currentUser, title, message, category = '') {
-    var coparent, i, len, phone, results;
-    if (Manager.isValid(recipientPhones)) {
-      results = [];
-      for (i = 0, len = recipientPhones.length; i < len; i++) {
-        phone = recipientPhones[i];
-        coparent = (await DB_UserScoped.getCoparentByPhone(phone, currentUser));
-        results.push((await NotificationManager.sendNotification(title, message, coparent != null ? coparent.phone : void 0, currentUser, category)));
-      }
-      return results;
-    }
   }
 };
+
+//# sourceMappingURL=notificationManager.js.map

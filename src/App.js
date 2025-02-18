@@ -1,3 +1,4 @@
+// Path: src\App.js
 import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import React, { useEffect, useState } from 'react'
@@ -56,6 +57,7 @@ import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
+import notificationSubscriber from './models/notificationSubscriber'
 
 export default function App() {
   // Initialize Firebase
@@ -138,21 +140,35 @@ export default function App() {
 
         // AppManager.deleteExpiredCalendarEvents(_currentUser).then((r) => r)
         // AppManager.deleteExpiredMemories(_currentUser).then((r) => r)
+
         const users = await DB.getTable(`${DB.tables.users}`)
         let activities = []
         let currentUserFromDb
+        let screenToNavigateTo = ScreenNames.calendar
         currentUserFromDb = users?.find((u) => u?.email === user?.email)
-        if (currentUserFromDb) {
-          NotificationManager.init(currentUserFromDb)
-          activities = await DB.getTable(`${DB.tables.activities}/${currentUserFromDb?.phone}`)
+
+        if (!currentUserFromDb) {
+          screenToNavigateTo = ScreenNames.home
         }
-        let userDetailsExist = Manager.isValid(currentUserFromDb) ? true : false
-        if (user.emailVerified) {
+
+        // User Exists
+        if (currentUserFromDb) {
+          // Check if child account and if parent access is granted
+          if (currentUserFromDb?.accountType === 'child') {
+            if (!Manager.isValid(currentUserFromDb?.parentAccessGranted) && currentUserFromDb?.parentAccessGranted === false) {
+              screenToNavigateTo = ScreenNames.requestParentAccess
+            }
+          }
+          NotificationManager.init(currentUserFromDb)
+          activities = await DB.getTable(`${DB.tables.activities}/${currentUserFromDb?.key}`)
+        }
+
+        if (user?.emailVerified) {
           setState({
             ...state,
             authUser: user,
             currentUser: currentUserFromDb,
-            currentScreen: userDetailsExist ? ScreenNames.calendar : ScreenNames.userDetails,
+            currentScreen: screenToNavigateTo,
             userIsLoggedIn: true,
             loadingText: '',
             isLoading: false,

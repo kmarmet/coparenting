@@ -1,3 +1,4 @@
+// Path: src\components\forms\newSwapRequest.jsx
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
@@ -10,7 +11,6 @@ import NotificationManager from '/src/managers/notificationManager'
 import BottomCard from '/src/components/shared/bottomCard'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import Toggle from 'react-toggle'
-import { ImEye } from 'react-icons/im'
 import ModelNames from '/src/models/modelNames'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
@@ -27,8 +27,7 @@ import DomManager from '../../managers/domManager'
 
 export default function NewSwapRequest({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow } = state
-  const [requestRange, setRequestRange] = useState([])
+  const { currentUser, theme, authUser, refreshKey } = state
   const [requestReason, setRequestReason] = useState('')
   const [requestChildren, setRequestChildren] = useState([])
   const [shareWith, setShareWith] = useState([])
@@ -39,12 +38,10 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [responseDueDate, setResponseDueDate] = useState('')
 
   const resetForm = async () => {
     Manager.resetForm('swap-request-wrapper')
-    setRequestRange([])
     setRequestReason('')
     setRequestChildren([])
     setShareWith([])
@@ -56,9 +53,8 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     setStartDate('')
     setEndDate('')
     hideCard()
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
-    setState({ ...state, currentUser: updatedCurrentUser })
-    setRefreshKey(Manager.getUid())
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
+    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
 
   const submit = async () => {
@@ -96,19 +92,19 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     newRequest.fromHour = requestFromHour
     newRequest.responseDueDate = responseDueDate
     newRequest.toHour = requestToHour
-    newRequest.ownerPhone = currentUser?.phone
+    newRequest.ownerKey = currentUser?.key
     newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
-    newRequest.recipientPhone = currentUser?.coparents?.filter((x) => Manager.contains(x?.name, recipientName))[0]?.phone || ''
+    newRequest.recipientPhone = currentUser?.coparents?.find((x) => x.name === recipientName)?.phone
 
     const cleanObject = ObjectManager.cleanObject(newRequest, ModelNames.swapRequest)
 
     // Send Notification
-    await DB.add(`${DB.tables.swapRequests}/${currentUser.phone}`, cleanObject).finally(() => {
+    await DB.add(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanObject).finally(() => {
       NotificationManager.sendToShareWith(
         shareWith,
         currentUser,
         'New Swap Request',
-        `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
+        `${StringManager.getFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
         ActivityCategory.swapRequest
       )
       setSwapDuration(SwapDurations.single)
@@ -122,10 +118,10 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     const selectedValue = e.getAttribute('data-label')
     Manager.handleCheckboxSelection(
       e,
-      (e) => {
+      () => {
         setRequestChildren([...requestChildren, selectedValue])
       },
-      (e) => {
+      () => {
         let filtered = requestChildren.filter((x) => x !== selectedValue)
         setRequestChildren(filtered)
       },
@@ -144,7 +140,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       (e) => {
         setRecipientName(e)
       },
-      (e) => {
+      () => {
         setRecipientName('')
       },
       false
@@ -314,7 +310,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
             <CheckboxGroup
               required={true}
               parentLabel={'Who are you sending the request to?'}
-              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+              dataKey={currentUser?.coparents?.map((x) => x.phone)}
               checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
               onCheck={handleRecipientSelection}
             />
@@ -328,7 +324,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
               onCheck={handleShareWithSelection}
               labelText={'Share with'}
               containerClass={'share-with-coparents'}
-              dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+              dataKey={currentUser?.coparents?.map((x) => x.phone)}
             />
             <Spacer height={10} />
 

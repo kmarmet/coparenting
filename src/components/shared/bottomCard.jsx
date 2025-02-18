@@ -1,10 +1,11 @@
+// Path: src\components\shared\bottomCard.jsx
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { CgClose } from 'react-icons/cg'
 import Manager from '/src/managers/manager.js'
-import DomManager from '../../managers/domManager'
-
+import DB_UserScoped from '../../database/db_userScoped'
+import StringManager from '../../managers/stringManager'
 export default function BottomCard({
   submitText,
   submitIcon,
@@ -23,7 +24,7 @@ export default function BottomCard({
   wrapperClass = '',
 }) {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, theme } = state
+  const { theme, authUser } = state
 
   const hideCard = () => {
     const pageOverlay = document.getElementById('page-overlay')
@@ -32,7 +33,10 @@ export default function BottomCard({
     const fadeInUp = 'animate__fadeInUp'
     if (bottomCard) {
       bottomCard.classList.add(fadeOutDown)
-      setState({ ...state, refreshKey: Manager.getUid(), menuIsOpen: false })
+
+      DB_UserScoped.getCurrentUser(authUser?.email).then((user) => {
+        setState({ ...state, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: user })
+      })
 
       setTimeout(() => {
         const labelWrappers = bottomCard.querySelectorAll('#label-wrapper')
@@ -47,11 +51,16 @@ export default function BottomCard({
   }
 
   useEffect(() => {
-    const pageContainer = document.querySelector('.page-container')
     const pageOverlay = document.getElementById('page-overlay')
     const body = document.body
     const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
     const checkboxContainer = document.getElementById('share-with-checkbox-container')
+    if (StringManager.wordCount(title) >= 4) {
+      const title = bottomCard.querySelector('#large-title')
+      if (title) {
+        title.classList.add('long-title')
+      }
+    }
     if (wrapperClass.length > 0) {
       const fadeInUp = 'animate__fadeInUp'
       const fadeOutDown = 'animate__fadeOutDown'

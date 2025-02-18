@@ -1,8 +1,10 @@
+// Path: src\components\forms\newExpenseForm.jsx
+import React, { useContext, useState } from 'react'
+
 import MenuItem from '@mui/material/MenuItem'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import globalState from '../../context'
-import React, { useContext, useRef, useState } from 'react'
 import { MdEventRepeat, MdOutlineFaceUnlock } from 'react-icons/md'
 import { PiMoneyWavyDuotone } from 'react-icons/pi'
 import Toggle from 'react-toggle'
@@ -11,17 +13,16 @@ import Numpad from '/src/components/shared/numpad'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import UploadInputs from '/src/components/shared/uploadInputs'
 import DateFormats from '/src/constants/dateFormats'
-import DatetimePickerViews from '/src/constants/datetimePickerViews'
 import ExpenseCategories from '/src/constants/expenseCategories.js'
-import DB from '/src/database/DB'
-import DB_UserScoped from '/src/database/db_userScoped'
+import DB from '../../database/DB'
+import DB_UserScoped from '../../database/db_userScoped'
 import FirebaseStorage from '/src/database/firebaseStorage'
 import AlertManager from '/src/managers/alertManager'
 import DateManager from '/src/managers/dateManager'
 import DomManager from '/src/managers/domManager.coffee'
 import ImageManager from '/src/managers/imageManager'
-import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
+import Manager from '../../managers/manager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager.coffee'
 import CalendarMapper from '/src/mappers/calMapper'
@@ -36,7 +37,7 @@ import DatasetManager from '../../managers/datasetManager.coffee'
 
 export default function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+  const { currentUser, theme, refreshKey, authUser } = state
   const [expenseName, setExpenseName] = useState('')
   const [expenseChildren, setExpenseChildren] = useState([])
   const [expenseDueDate, setExpenseDueDate] = useState('')
@@ -54,7 +55,6 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
   const [showNumpad, setShowNumpad] = useState(false)
   const [expenseAmount, setExpenseAmount] = useState('')
-  const imgRef = useRef()
 
   const resetForm = async () => {
     Manager.resetForm('expenses-wrapper')
@@ -75,7 +75,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     setRepeatingEndDate('')
     setShowNumpad(false)
     setExpenseAmount('')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
     hideCard()
   }
@@ -123,7 +123,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     newExpense.imageName = expenseImage.name ?? ''
     newExpense.payer = payer
     newExpense.repeatInterval = repeatInterval
-    newExpense.ownerPhone = currentUser?.phone
+    newExpense.ownerKey = currentUser?.key
     newExpense.shareWith = DatasetManager.getUniqueArray(shareWith, true)
     newExpense.isRepeating = isRepeating
 
@@ -134,7 +134,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     }
 
     // Get coparent name
-    newExpense.recipientName = StringManager.formatNameFirstNameOnly(currentUser?.name)
+    newExpense.recipientName = StringManager.getFirstNameOnly(currentUser?.name)
 
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
@@ -153,7 +153,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     const cleanObject = ObjectManager.cleanObject(newExpense, ModelNames.expense)
 
     // Add to DB
-    await DB.add(`${DB.tables.expenses}/${currentUser.phone}`, cleanObject).finally(async () => {
+    await DB.add(`${DB.tables.expenses}/${currentUser?.key}`, cleanObject).finally(async () => {
       // Add repeating expense to DB
       if (repeatInterval.length > 0 && repeatingEndDate.length > 0) {
         await addRepeatingExpensesToDb()
@@ -164,7 +164,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
         await NotificationManager.sendToShareWith(
           shareWith,
           currentUser,
-          `${StringManager.formatNameFirstNameOnly(currentUser?.name)} has created a new expense`,
+          `${StringManager.getFirstNameOnly(currentUser?.name)} has created a new expense`,
           `${expenseName} - $${expenseAmount}`,
           ActivityCategory.expenses
         )
@@ -178,7 +178,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
 
   const addRepeatingExpensesToDb = async () => {
     let expensesToPush = []
-    let datesToRepeat = CalendarMapper.repeatingEvents(repeatInterval, expenseDueDate, repeatingEndDate)
+    let datesToRepeat = CalendarMapper.recurringEvents(repeatInterval, expenseDueDate, repeatingEndDate)
 
     if (Manager.isValid(datesToRepeat)) {
       datesToRepeat.forEach((date) => {
@@ -188,14 +188,14 @@ export default function NewExpenseForm({ hideCard, showCard }) {
         newExpense.children = expenseChildren
         newExpense.amount = expenseAmount
         newExpense.imageName = ''
-        newExpense.phone = currentUser?.phone
+        newExpense.phone = currentUser?.key
         newExpense.dueDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
         newExpense.dateAdded = Manager.getCurrentDate()
         newExpense.notes = expenseNotes
         newExpense.paidStatus = 'unpaid'
         newExpense.createdBy = currentUser?.name
         newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
-        newExpense.recipientName = StringManager.formatNameFirstNameOnly(currentUser?.name)
+        newExpense.recipientName = StringManager.getFirstNameOnly(currentUser?.name)
         newExpense.repeating = true
         expensesToPush.push(newExpense)
       })
@@ -204,17 +204,19 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   }
 
   const handleChildSelection = (e) => {
-    const checkbox = e.currentTarget
-    const selectedValue = checkbox.getAttribute('data-label')
-    if (checkbox.classList.contains('active')) {
-      checkbox.classList.remove('active')
-      if (expenseChildren.length > 0) {
-        setExpenseChildren(expenseChildren.filter((x) => x !== selectedValue))
-      }
-    } else {
-      checkbox.classList.add('active')
-      setExpenseChildren([...expenseChildren, selectedValue])
-    }
+    const checkboxContainer = e.closest('#checkbox-wrapper')
+    const childName = checkboxContainer.getAttribute('data-label')
+    Manager.handleCheckboxSelection(
+      e,
+      async () => {
+        console.log(checkboxContainer)
+        setExpenseChildren([...expenseChildren, childName])
+      },
+      async () => {
+        setExpenseChildren(expenseChildren.filter((x) => x !== childName))
+      },
+      false
+    )
   }
 
   const handleShareWithSelection = async (e) => {
@@ -226,16 +228,16 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     const checkboxContainer = e.closest('#checkbox-wrapper')
     Manager.handleCheckboxSelection(
       e,
-      async (e) => {
-        const coparentPhone = checkboxContainer.getAttribute('data-phone')
-        const coparent = currentUser?.coparents?.filter((x) => x.phone === coparentPhone)[0]
+      async () => {
+        const coparentKey = checkboxContainer.getAttribute('data-key')
+        const coparent = currentUser?.coparents?.filter((x) => x.key === coparentKey)[0]
         const coparentName = coparent.name
         setPayer({
-          phone: coparentPhone,
+          key: coparentKey,
           name: coparentName,
         })
       },
-      async (e) => {
+      async () => {
         setPayer({
           phone: '',
           name: '',
@@ -243,7 +245,6 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       },
       false
     )
-    // setChildren(childrenArr)
   }
 
   const handleRepeatingSelection = async (e) => {
@@ -298,7 +299,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     const number = parseInt(e.target.textContent.replace('$', ''))
     const currentNumber = parseInt(expenseAmount || 0)
     const total = number + currentNumber
-    setExpenseAmount((amount) => total.toString())
+    setExpenseAmount(() => total.toString())
     numberButton.classList.add('pressed', 'animate', 'active')
     setTimeout(() => {
       numberButton.classList.remove('pressed')
@@ -439,7 +440,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           <CheckboxGroup
             required={true}
             parentLabel={'Who will be paying the expense?'}
-            dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+            dataKey={currentUser?.coparents?.map((x) => x.key)}
             checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
             onCheck={handlePayerSelection}
           />
@@ -448,11 +449,11 @@ export default function NewExpenseForm({ hideCard, showCard }) {
 
           {/* SHARE WITH */}
           <ShareWithCheckboxes
-            shareWith={currentUser?.coparents?.map((x) => x.phone)}
+            shareWith={currentUser?.coparents?.map((x) => x.key)}
             onCheck={handleShareWithSelection}
             labelText={'Share with'}
             containerClass={'share-with-coparents'}
-            dataPhone={currentUser?.coparents?.map((x) => x.phone)}
+            dataKey={currentUser?.coparents?.map((x) => x.key)}
             checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
           />
 
@@ -469,7 +470,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
                     unchecked: null,
                   }}
                   className={'ml-auto reminder-toggle'}
-                  onChange={(e) => setIncludeChildren(!includeChildren)}
+                  onChange={() => setIncludeChildren(!includeChildren)}
                 />
               </div>
               {includeChildren && (

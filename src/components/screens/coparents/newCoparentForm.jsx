@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
+// Path: src\components\screens\coparents\newCoparentForm.jsx
+import React, { useContext, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../../context'
 import Coparent from '/src/models/coparent'
@@ -11,14 +12,14 @@ import InputWrapper from '/src/components/shared/inputWrapper'
 import BottomCard from '/src/components/shared/bottomCard'
 import AlertManager from '/src/managers/alertManager'
 import LogManager from '/src/managers/logManager'
-import DB_UserScoped from '/src/database/db_userScoped'
+import DB_UserScoped from '../../../database/db_userScoped'
 import validator from 'validator'
 import StringManager from '../../../managers/stringManager'
 import Spacer from '../../shared/spacer'
 
 const NewCoparentForm = ({ showCard, hideCard }) => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, authUser } = state
 
   // State
   const [name, setName] = useState('')
@@ -35,7 +36,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
     setParentType('')
     setRefreshKey(Manager.getUid())
     hideCard()
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(currentUser.phone)
+    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({ ...state, currentUser: updatedCurrentUser })
   }
 
@@ -48,8 +49,15 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
     if (!invalidInputs) {
       AlertManager.throwError('All fields are required')
     } else {
+      const coparent = await DB_UserScoped.getCoparentByPhone(phoneNumber, currentUser)
+      let key = Manager.getUid()
+
+      if (coparent) {
+        key = coparent.key
+      }
       const newCoparent = new Coparent()
       newCoparent.id = Manager.getUid()
+      newCoparent.key = key
       newCoparent.address = address
       newCoparent.phone = StringManager.formatPhone(phoneNumber)
       newCoparent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
@@ -62,7 +70,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       } catch (error) {
         LogManager.log(error.message, LogManager.logTypes.error)
       }
-      AlertManager.successAlert(`${StringManager.formatNameFirstNameOnly(name)} Added!`)
+      AlertManager.successAlert(`${StringManager.getFirstNameOnly(name)} Added!`)
       await resetForm()
     }
   }
@@ -73,7 +81,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       (e) => {
         setParentType(e)
       },
-      (e) => {
+      () => {
         setParentType('')
       }
     )

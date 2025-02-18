@@ -55,3 +55,5 @@ ScreenNames = {
 };
 
 export default ScreenNames;
+
+//# sourceMappingURL=screenNames.js.map

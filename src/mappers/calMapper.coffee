@@ -14,6 +14,16 @@ CalendarMapper =
     if Manager.contains(timeframe,'event')
       return ReminderTimes.timeOfEvent
 
+  allReadableReminderTimes: () ->
+    readableTimes = []
+    for time in Object.keys(ReminderTimes)
+      readableTimes.push(CalendarMapper.readableReminderBeforeTimeframes(time))
+    return readableTimes
+
+  allUnformattedTimes: () ->
+    all = ["hour", "halfHour", "fiveMinutes", "timeOfEvent"]
+    return all
+
   readableReminderBeforeTimeframes: (timeframe) ->
     if Manager.contains(timeframe,'hour', false)
       return  '1 hour before'
@@ -21,16 +31,6 @@ CalendarMapper =
       return  '30 minutes before'
     if Manager.contains(timeframe,'fiveMinutes', false)
       return  '5 minutes before'
-    if Manager.contains(timeframe,'timeOfEvent', false)
-      return  'At time of event'
-
-  unformattedToReadableTimeframe: (timeframe) ->
-    if Manager.contains(timeframe,'hour', false)
-      return '1 hour before'
-    if Manager.contains(timeframe,'fiveMinutes', false)
-      return  '5 minutes before'
-    if Manager.contains(timeframe,'halfHour', false)
-      return  '30 minutes before'
     if Manager.contains(timeframe,'timeOfEvent', false)
       return  'At time of event'
 
@@ -47,16 +47,16 @@ CalendarMapper =
 
     return interval
 
-  repeatingEvents: (repeatInterval, eventStartDate, repeatingEndDate) ->
+  recurringEvents: (recurringInterval, eventStartDate, recurringEndDate) ->
     datesToRepeat = null
-    if repeatInterval is 'daily'
-      datesToRepeat = DateManager.getDailyDates(eventStartDate, repeatingEndDate)
-    if repeatInterval is 'weekly'
-      datesToRepeat = DateManager.getWeeklyDates(eventStartDate, repeatingEndDate)
-    if repeatInterval is 'biweekly'
-      datesToRepeat = DateManager.getBiweeklyDates(eventStartDate, repeatingEndDate)
-    if repeatInterval is 'monthly'
-      datesToRepeat = DateManager.getMonthlyDates(eventStartDate, repeatingEndDate)
+    if recurringInterval is 'daily'
+      datesToRepeat = DateManager.getDailyDates(eventStartDate, recurringEndDate)
+    if recurringInterval is 'weekly'
+      datesToRepeat = DateManager.getWeeklyDates(eventStartDate, recurringEndDate)
+    if recurringInterval is 'biweekly'
+      datesToRepeat = DateManager.getBiweeklyDates(eventStartDate, recurringEndDate)
+    if recurringInterval is 'monthly'
+      datesToRepeat = DateManager.getMonthlyDates(eventStartDate, recurringEndDate)
     return datesToRepeat
 
   holidayNameToDate: (name) ->

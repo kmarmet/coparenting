@@ -1,3 +1,4 @@
+// Path: src\components\childrenInput.jsx
 import React, { useContext, useState } from 'react'
 import globalState from '../context'
 import Manager from '../managers/manager'

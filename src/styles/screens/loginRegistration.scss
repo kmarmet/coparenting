@@ -1,40 +1,7 @@
+// Path: src\styles\screens\loginRegistration.scss
 @import '../mixins';
 
 #external-overrides {
-  #app-container {
-    #input-wrapper {
-      input {
-        display: block;
-        width: 100%;
-        outline: 0;
-        font-weight: 400;
-        transition: all 0.2s ease-in-out;
-        border: 1px solid $iconGrey;
-        border-radius: $borderRadius;
-        height: 100%;
-        max-height: unset;
-        position: absolute;
-        top: 0;
-        caret-color: $mainBlue;
-        padding: 0 8px;
-
-        &:focus {
-          border-radius: $borderRadius;
-          border: 1px solid $mainBlue;
-        }
-
-        &.password,
-        &.email {
-          border-radius: $borderRadius;
-          padding: 8px 10px;
-        }
-      }
-
-      &.password {
-        margin-bottom: 25px;
-      }
-    }
-  }
   // REGISTRATION
   #registration-container {
     position: relative;
@@ -68,9 +35,9 @@
       border-radius: 0;
       position: fixed;
       bottom: 0;
-      padding: 8px;
+      padding: 15px;
       min-height: 0;
-      color: $lightDarkGrey;
+      color: $linkColor;
       background-color: white;
       width: 100%;
       margin: 0;
@@ -175,8 +142,7 @@
         margin-bottom: 100px;
       }
 
-      ul {
-        margin-bottom: 10px;
+      .password-validation {
         display: block;
 
         li {

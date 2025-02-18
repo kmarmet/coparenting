@@ -22,7 +22,7 @@ SecurityManager =
     currentUser = users.find (x) -> x.email == currentUser?.email
     returnRecords = []
     allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
-    sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents);
+    sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
     if Manager.isValid(allEvents)
       for event in allEvents
         if DateManager.isValidDate(event.startDate)
@@ -37,7 +37,7 @@ SecurityManager =
   getUserVisitationHolidays: (currentUser) ->
     returnRecords = []
     allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
-    sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents);
+    sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
     if Manager.isValid(allEvents)
       for event in allEvents
         if DateManager.isValidDate(event.startDate)
@@ -52,7 +52,7 @@ SecurityManager =
   getExpenses: (currentUser) ->
     returnRecords = []
     allExpenses = Manager.convertToArray(await DB.getTable("#{DB.tables.expenses}/#{currentUser?.key}")).flat()
-    sharedExpenses = await SecurityManager.getShareWithItems(currentUser, DB.tables.expenses);
+    sharedExpenses = await SecurityManager.getShareWithItems(currentUser, DB.tables.expenses)
 
     if Manager.isValid(allExpenses)
       for expense in allExpenses
@@ -64,8 +64,8 @@ SecurityManager =
 
   getSwapRequests: (currentUser) ->
     returnRecords = []
-    allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.swapRequests}/#{currentUser.phone}")).flat()
-    sharedSwaps = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+    allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.swapRequests}/#{currentUser?.key}")).flat()
+    sharedSwaps = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests)
 
     if Manager.isValid(allRequests)
       for request in allRequests
@@ -78,8 +78,8 @@ SecurityManager =
 
   getTransferChangeRequests: (currentUser) ->
     returnRecords = []
-    allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.transferChangeRequests}/#{currentUser.phone}")).flat()
-    sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+    allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.transferChangeRequests}/#{currentUser?.key}")).flat()
+    sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests)
 
     if Manager.isValid(allRequests)
       for request in allRequests
@@ -92,8 +92,8 @@ SecurityManager =
 
   getDocuments: (currentUser) ->
     returnRecords = []
-    allDocs = Manager.convertToArray(await DB.getTable("#{DB.tables.documents}/#{currentUser.phone}")).flat()
-    sharedDocs = await SecurityManager.getShareWithItems(currentUser, DB.tables.documents);
+    allDocs = Manager.convertToArray(await DB.getTable("#{DB.tables.documents}/#{currentUser?.key}")).flat()
+    sharedDocs = await SecurityManager.getShareWithItems(currentUser, DB.tables.documents)
 
     if Manager.isValid(allDocs)
       for doc in allDocs
@@ -107,7 +107,7 @@ SecurityManager =
   getMemories: (currentUser) ->
     returnRecords = []
     allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}/#{currentUser?.key}")).flat()
-    sharedMemories = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests);
+    sharedMemories = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests)
 
     if Manager.isValid(allMemories)
       for memory in allMemories
@@ -116,16 +116,6 @@ SecurityManager =
     if Manager.isValid(sharedMemories)
       returnRecords = [sharedMemories..., returnRecords...]
 
-    return returnRecords.flat()
-
-  getArchivedChats: (currentUser) ->
-    returnRecords = []
-    allArchivedChats = Manager.convertToArray(await DB.getTable("#{DB.tables.archivedChats}")).flat()
-    if Manager.isValid(allArchivedChats,true)
-      for chatArray in allArchivedChats
-        for chat in chatArray
-          if (chat.ownerKey == currentUser?.key)
-            returnRecords.push(chat)
     return returnRecords.flat()
 
   getInputSuggestions: (currentUser) ->
@@ -143,7 +133,7 @@ SecurityManager =
     # User does not have a chat with root access by phone
     if Manager.isValid(chats)
       for chat in chats
-        members = chat?.members?.map (x) -> x.phone
+        members = chat?.members?.map (x) -> x.key
         if currentUser?.key in members
           securedChats.push(chat)
     return securedChats.flat()
@@ -154,7 +144,7 @@ SecurityManager =
     allChatsFlattened = allChats.flat()
     if Manager.isValid(allChatsFlattened)
       for chat in allChatsFlattened
-        members = chat.members.map (x) -> x.phone
+        members = chat.members.map (x) -> x.key
         if currentUser?.key in members
           activeChats.push chat
     return activeChats

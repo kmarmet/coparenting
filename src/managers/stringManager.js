@@ -13,7 +13,7 @@ StringManager = {
     }
     return formattedPhone;
   },
-  formatNameFirstNameOnly: function(name) {
+  getFirstNameOnly: function(name) {
     var returnString;
     if (!name) {
       return name;
@@ -52,7 +52,8 @@ StringManager = {
     return input.replace(/\.[^\/.]+$/, '');
   },
   wordCount: function(input) {
-    return input.trim().split(/\s+/).length;
+    var ref, ref1;
+    return input != null ? (ref = input.trim()) != null ? (ref1 = ref.split(/\s+/)) != null ? ref1.length : void 0 : void 0 : void 0;
   },
   stringHasNumbers: function(input) {
     return /\d/.test(input);
@@ -119,3 +120,5 @@ StringManager = {
 };
 
 export default StringManager;
+
+//# sourceMappingURL=stringManager.js.map

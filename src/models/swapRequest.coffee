@@ -9,10 +9,10 @@ export default class SwapRequest
     @shareWith = []
     @endDate = ''
     @dateAdded = moment().format(DateFormats.dateForDb)
-    @recipientPhone = ''
+    @recipientKey = ''
     @reason = ''
     @duration = ''
-    @ownerPhone = ''
+    @ownerKey = ''
     @children = ''
     @fromHour = ''
     @toHour = ''

@@ -22,7 +22,7 @@ export default class CalendarEvent
     @directionsLink = ''
     @endTime = ''
     @fromVisitationSchedule = false
-    @repeatInterval = ''
+    @recurringInterval = ''
     @sentReminders = []
     @visitationPeriodEndDate = ''
     @visibleToAll = false

@@ -1,3 +1,4 @@
+// Path: src\styles\screens\chat.scss
 @import '../mixins';
 
 #external-overrides {
@@ -285,7 +286,7 @@
   }
 }
 
-#message-thread-container {
+#chat-wrapper {
   display: flex;
   flex-direction: column;
   width: 100vw;
@@ -307,15 +308,12 @@
 
   .top-buttons {
     justify-content: flex-end;
-    top: 0;
     z-index: 999;
     border-bottom: 1px solid $lightBorder;
     width: 100vw;
-    padding: $statusBarHeight 15px 10px 10px;
+    padding: 10px;
     backdrop-filter: blur(50px);
     background: none;
-    height: 100px;
-    position: absolute;
 
     #user-info {
       justify-content: center;
@@ -383,11 +381,8 @@
     overflow: auto;
     background-color: white;
     overflow-x: hidden;
-    padding: 120px 15px 0 15px;
-    height: 100%;
+    padding: 15px;
     max-height: calc(100vh - 106px);
-    bottom: 0;
-
     @media screen and (min-width: 800px) {
       min-width: 10%;
       width: 28vw;
@@ -576,10 +571,8 @@
 
   .form {
     width: 100%;
-    padding: 15px;
+    padding: 15px 15px 30px 15px;
     z-index: 9999;
-    position: absolute;
-    bottom: 0;
     background: white;
 
     #send-button {

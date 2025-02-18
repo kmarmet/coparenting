@@ -20,6 +20,7 @@ StateObj = {
   modalIsOpen: false,
   parentAccessGranted: false,
   refreshKey: 0,
+  registrationUserName: '',
   selectedChild: null,
   selectedNewEventDay: null,
   showCenterNavbarButton: true,
@@ -52,6 +53,7 @@ StateObj = {
   setModalIsOpen: function(bool) {},
   setParentAccessGranted: function(bool) {},
   setRefreshKey: function(num) {},
+  setRegistrationUserName: function(name) {},
   setSelectedChild: function(child) {},
   setSelectedNewEventDay: function(day) {},
   setShowCenterNavbarButton: function(bool) {},
@@ -68,3 +70,5 @@ StateObj = {
 };
 
 export default StateObj;
+
+//# sourceMappingURL=stateObj.js.map

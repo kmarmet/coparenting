@@ -1,9 +1,9 @@
+// Path: src\components\screens\chats\chats.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import Manager from '/src/managers/manager'
 import globalState from '../../../context.js'
-import DB_UserScoped from '/src/database/db_userScoped'
+import DB_UserScoped from '../../../database/db_userScoped.js'
 import { BiMessageRoundedAdd } from 'react-icons/bi'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
 import { Fade } from 'react-awesome-reveal'
 import BottomCard from '../../shared/bottomCard'
 import SecurityManager from '/src/managers/securityManager'
@@ -14,27 +14,28 @@ import DomManager from '/src/managers/domManager'
 import ScreenNames from '/src/constants/screenNames'
 import StringManager from '/src/managers/stringManager.coffee'
 import ChatRow from './chatRow.jsx'
-import DB from '/src/database/DB.js'
 import { TbMessageCirclePlus } from 'react-icons/tb'
+import Spacer from '../../shared/spacer'
+
 const Chats = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
-  const [showNewThreadForm, setShowNewThreadForm] = useState(false)
+  const { currentUser, theme, authUser } = state
   const [chats, setChats] = useState([])
-  const [selectedCoparent, setSelectedCoparent] = useState(null)
-  const [activeChatPhones, setActiveChatPhones] = useState([])
+  const [activeChatKeys, setActiveChatKeys] = useState([])
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
 
   const openMessageThread = async (coparent) => {
     // Check if thread member (coparent) account exists in DB
-    let userCoparent = await DB_UserScoped.getCoparentByPhone(coparent?.phone, currentUser)
+    console.log('before')
+    let userCoparent = await DB_UserScoped.getCoparentByKey(coparent?.key, currentUser)
+    console.log(userCoparent, coparent)
     if (!Manager.isValid(userCoparent)) {
       AlertManager.oneButtonAlert(
         'Co-Parent Account not Found',
         'This co-parent may have closed their account, however, you can still view the messages',
         null,
         () => {
-          setState({ ...state, currentScreen: ScreenNames.chat, messageRecipient: coparent })
+          setState({ ...state, currentScreen: ScreenNames.chats, messageRecipient: coparent })
         }
       )
     } else {
@@ -46,29 +47,19 @@ const Chats = () => {
   const getSecuredChats = async () => {
     let securedChats = await SecurityManager.getChats(currentUser)
     const members = securedChats.map((x) => x.members).flat()
-    const activeChats = members.filter((x) => x.phone && x.phone !== currentUser.phone)
-    const activeChatPhones = activeChats.map((x) => x.phone)
+    const activeChats = members.filter((x) => x?.key && x?.key !== currentUser?.key)
+    const activeChatKeys = activeChats.map((x) => x?.key)
     setChats(securedChats)
-    setActiveChatPhones(activeChatPhones)
-  }
-
-  const onTableChange = async () => {
-    const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.chats}/${currentUser.phone}`), async (snapshot) => {
-      await getSecuredChats()
-    })
+    setActiveChatKeys(activeChatKeys)
   }
 
   useEffect(() => {
-    if (currentUser?.accountType === 'parent') {
-      onTableChange().then((r) => r)
-    }
-  }, [selectedCoparent])
+    getSecuredChats()
+  }, [])
 
   return (
     <>
       {/* NEW THREAD FORM */}
-
       <BottomCard
         hasSubmitButton={false}
         className="new-conversation"
@@ -82,7 +73,7 @@ const Chats = () => {
           currentUser?.coparents?.map((coparent, index) => {
             return (
               <div key={index}>
-                {!activeChatPhones.includes(coparent?.phone) && (
+                {!activeChatKeys.includes(coparent?.phone) && (
                   <div id="users-wrapper">
                     <div className="user-wrapper">
                       <TbMessageCirclePlus />
@@ -91,7 +82,7 @@ const Chats = () => {
                         onClick={() => {
                           openMessageThread(coparent).then((r) => r)
                         }}>
-                        {StringManager.formatNameFirstNameOnly(coparent?.name)}
+                        {StringManager.getFirstNameOnly(coparent?.name)}
                       </p>
                     </div>
                   </div>
@@ -106,19 +97,19 @@ const Chats = () => {
           currentUser?.parents?.map((parent, index) => {
             return (
               <div key={index} className="flex" id="users-wrapper">
-                {!activeChatPhones.includes(parent?.phone) && (
+                {!activeChatKeys.includes(parent?.key) && (
                   <div className="user-wrapper">
                     <BiMessageRoundedAdd />
                     <p
                       className="coparent-name new-thread-coparent-name"
                       onClick={() => {
-                        openMessageThread(parent?.phone).then((r) => r)
+                        openMessageThread(parent?.key).then((r) => r)
                       }}>
                       {parent?.name}
                     </p>
                   </div>
                 )}
-                {activeChatPhones.includes(parent?.phone) && <p>All available co-parents already have an open conversation with you. </p>}
+                {activeChatKeys.includes(parent?.key) && <p>All available co-parents already have an open conversation with you. </p>}
               </div>
             )
           })}
@@ -127,19 +118,23 @@ const Chats = () => {
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
         {/*<VideoCall />*/}
-        {!showNewThreadForm && chats.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
+        {chats.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
         <Fade direction={'up'} duration={1000} triggerOnce={true} className={'chats-fade-wrapper'}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Chats</p>
             {!DomManager.isMobile() && <TbMessageCirclePlus id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
           </div>
+          <p>
+            Your space to peacefully chat with your co-parent and pass along any important info they need to know, or to seek clarification on
+            information that is unfamiliar to you.
+          </p>
+          <Spacer height={5} />
 
           {/* CHAT ROWS */}
-          {!showNewThreadForm &&
-            chats.length > 0 &&
+          {chats.length > 0 &&
             chats.map((chat, index) => {
-              const coparent = chat?.members?.filter((x) => x.phone !== currentUser?.phone)[0]
-              return <ChatRow coparent={coparent} chat={chat} index={index} />
+              const coparent = chat?.members?.filter((x) => x.key !== currentUser?.key)[0]
+              return <ChatRow key={index} coparent={coparent} chat={chat} index={index} />
             })}
         </Fade>
       </div>

@@ -1,3 +1,4 @@
+// Path: src\components\screens\coparents\coparents.jsx
 import { getDatabase, onValue, ref } from 'firebase/database'
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
@@ -77,7 +78,7 @@ export default function Coparents() {
     if (currentUser) {
       const dbRef = getDatabase()
       const userRef = ref(dbRef, `${DB.tables.users}/${currentUser?.key}/coparents`)
-      onValue(userRef, async (snapshot) => {
+      onValue(userRef, async () => {
         await getCoparents()
       })
     }
@@ -86,13 +87,6 @@ export default function Coparents() {
   useEffect(() => {
     onTableChange().then((r) => r)
   }, [])
-
-  const updateSelectedCoparent = async (coparent) => {
-    const { phone } = coparent
-    const updatedCoparent = await DB.find(`${DB.tables.users}/${currentUser.key}/coparents`, ['phone', phone], true)
-    setSelectedCoparentDataArray(Object.entries(coparent))
-    setSelectedCoparentRaw(coparent)
-  }
 
   return (
     <>
@@ -110,6 +104,7 @@ export default function Coparents() {
             <p className="screen-title">Co-Parents </p>
             {!DomManager.isMobile() && <BsPersonAdd id={'add-new-button'} onClick={() => setShowNewCoparentFormCard(true)} />}
           </div>
+          <p>Maintain accessible records of important information regarding your co-parent.</p>
           {/* COPARENT ICONS CONTAINER */}
           <div id="coparent-container">
             {selectedCoparentDataArray &&
@@ -128,7 +123,7 @@ export default function Coparents() {
                     data-name={coparent.name}
                     key={index}>
                     <PiUserCircleDuotone />
-                    <span className="coparent-name">{StringManager.formatNameFirstNameOnly(coparent.name)}</span>
+                    <span className="coparent-name">{StringManager.getFirstNameOnly(coparent.name)}</span>
                     <span className="coparent-type">{coparent.parentType}</span>
                   </div>
                 )
@@ -148,6 +143,7 @@ export default function Coparents() {
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
                   infoLabel = StringManager.formatTitleWords(infoLabel)
                   const value = propArray[1]
+                  const inputsToSkip = ['address', 'key']
                   return (
                     <div key={index}>
                       {infoLabel !== 'Id' && (
@@ -165,17 +161,19 @@ export default function Coparents() {
                             )}
 
                             {/* TEXT INPUT */}
-                            {!Manager.contains(infoLabel.toLowerCase(), 'address') && (
-                              <InputWrapper
-                                defaultValue={value}
-                                onChange={async (e) => {
-                                  const inputValue = e.target.value
-                                  await update(infoLabel, `${inputValue}`)
-                                }}
-                                inputType={'input'}
-                                labelText={StringManager.addSpaceBetweenWords(infoLabel)}></InputWrapper>
+                            {!inputsToSkip.includes(infoLabel.toLowerCase()) && (
+                              <>
+                                <InputWrapper
+                                  defaultValue={value}
+                                  onChange={async (e) => {
+                                    const inputValue = e.target.value
+                                    await update(infoLabel, `${inputValue}`)
+                                  }}
+                                  inputType={'input'}
+                                  labelText={StringManager.addSpaceBetweenWords(infoLabel)}></InputWrapper>
+                                <IoMdRemoveCircle className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
+                              </>
                             )}
-                            <IoMdRemoveCircle className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
                           </div>
                         </div>
                       )}
@@ -195,7 +193,7 @@ export default function Coparents() {
                   </button>
                   <button
                     className="button   default red center"
-                    onClick={(e) => {
+                    onClick={() => {
                       AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
                         await deleteCoparent()
                         AlertManager.successAlert('Co-Parent Removed')

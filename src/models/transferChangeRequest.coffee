@@ -6,12 +6,12 @@ export default class TransferChangeRequest
     @startDate = ''
     @endDate = ''
     @time = ''
-    @ownerPhone = ''
+    @ownerKey = ''
     @location = ''
     @directionsLink = ''
     @shareWith = []
     @reason = ''
-    @recipientPhone = ''
+    @recipientKey = ''
     @responseDueDate = ''
     @preferredTransferLocation = ''
   ) ->

@@ -1,8 +1,9 @@
+// Path: src\components\screens\calendar\calendar.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import AlertManager from '/src/managers/alertManager'
 import AppManager from '/src/managers/appManager'
 import BottomCard from '/src/components/shared/bottomCard'
-import DB from '/src/database/DB'
+import DB from '../../../database/DB.js'
 import DatasetManager from '/src/managers/datasetManager'
 import DateFormats from '/src/constants/dateFormats'
 import DateManager from '/src/managers/dateManager'
@@ -27,11 +28,11 @@ import DesktopLegend from './desktopLegend.jsx'
 import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import { initializeApp } from 'firebase/app'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import DB_UserScoped from '../../../database/db_userScoped.js'
+import { getAuth } from 'firebase/auth'
+
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser, isLoading, authUser } = state
+  const { theme, currentUser, authUser } = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
   const [searchResults, setSearchResults] = useState([])
@@ -190,12 +191,12 @@ export default function EventCalendar() {
     let userVisitationHolidays = []
     if (currentUser.accountType === 'parent') {
       userVisitationHolidays = allEvents.filter(
-        (x) => x.isHoliday === true && x.ownerPhone === currentUser?.key && Manager.contains(x.title.toLowerCase(), 'holiday')
+        (x) => x.isHoliday === true && x.ownerKey === currentUser?.key && Manager.contains(x.title.toLowerCase(), 'holiday')
       )
     }
     if (currentUser.accountType === 'child') {
       // const parentNumbers = (currentUser?.parents?.userVisitationHolidays = allEvents.filter(
-      //   (x) => x.isHoliday === true && x.ownerPhone === currentUser?.key && contains(x.title.toLowerCase(), 'holiday')
+      //   (x) => x.isHoliday === true && x.ownerKey === currentUser?.key && contains(x.title.toLowerCase(), 'holiday')
       // ))
     }
     userVisitationHolidays.forEach((holiday) => {
@@ -263,7 +264,7 @@ export default function EventCalendar() {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     await setHolidaysState()
-    onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser?.key}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser?.key}`), async () => {
       const selectedCalendarElement = document.querySelector('.MuiButtonBase-root.MuiPickersDay-root.Mui-selected')
       if (selectedCalendarElement) {
         const timestampMs = selectedCalendarElement.dataset.timestamp
@@ -276,7 +277,7 @@ export default function EventCalendar() {
   // Check if parent access is granted -> if not, show request parent access screen
   const redirectChildIfNecessary = async () => {
     const users = await DB.getTable(`${DB.tables.users}`)
-    const user = users.find((x) => x.email === auth.currentUser.email)
+    const user = users.find((x) => x.email === authUser.email)
     if (user && user.accountType === 'child' && !user.parentAccessGranted) {
       setState({ ...state, currentScreen: ScreenNames.requestParentAccess, currentUser: user })
     }
@@ -284,6 +285,7 @@ export default function EventCalendar() {
 
   useEffect(() => {
     redirectChildIfNecessary().then((r) => r)
+    // eslint-disable-next-line no-prototype-builtins
     if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
       setLoadingDisabled(true)
       const appContentWithSidebar = document.getElementById('app-content-with-sidebar')
@@ -431,9 +433,7 @@ export default function EventCalendar() {
             views={['month', 'day']}
             minDate={moment(`${moment().year()}-01-01`)}
             maxDate={moment(`${moment().year()}-12-31`)}
-            onMonthChange={async (month) => {
-              await getSecuredEvents()
-            }}
+            onMonthChange={async () => await getSecuredEvents()}
             onChange={async (day) => {
               setSelectedDate(day)
               await getSecuredEvents(day).then((r) => r)
@@ -453,7 +453,7 @@ export default function EventCalendar() {
         {!showHolidays && !showSearchCard && (
           <div id="below-calendar" className={`${theme} mt-10 flex`}>
             {/* LEGEND BUTTON */}
-            <div className="flex" id="legend-wrapper" onClick={() => setShowLegend(true)}>
+            <div className="flex" id="legend-wrapper">
               <span className="dot currentUser"></span>
               <span className="dot coparent"></span>
               <span className="dot standard"></span>

@@ -1,3 +1,4 @@
+// Path: src\components\screens\coparents\customCoparentInfo.jsx
 import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '../../../managers/manager'

@@ -1,6 +1,7 @@
 import Manager from "./manager"
 
 DomManager = {
+
   toggleActive: (element) ->
     if element.classList.contains("active")
       element.classList.remove("active")

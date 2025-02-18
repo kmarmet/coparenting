@@ -1,7 +1,7 @@
 
 class ChatBookmark
   constructor: (
-    @ownerPhone = ''
+    @ownerKey = ''
     @messageId = ''
   ) ->
 

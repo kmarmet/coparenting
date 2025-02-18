@@ -1,3 +1,4 @@
+// Path: src\components\screens\installApp.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import Manager from '../../managers/manager'

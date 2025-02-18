@@ -2,12 +2,15 @@
 var NotificationSubscribers;
 
 export default NotificationSubscribers = class NotificationSubscribers {
-  constructor(id = '', phone = '', email = '', subscriptionId = '', oneSignalId = '') {
+  constructor(id = '', phone = '', key = '', email = '', subscriptionId = '', oneSignalId = '') {
     this.id = id;
     this.phone = phone;
+    this.key = key;
     this.email = email;
     this.subscriptionId = subscriptionId;
     this.oneSignalId = oneSignalId;
   }
 
 };
+
+//# sourceMappingURL=notificationSubscriber.js.map

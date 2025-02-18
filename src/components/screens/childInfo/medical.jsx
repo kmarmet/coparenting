@@ -1,3 +1,4 @@
+// Path: src\components\screens\childInfo\medical.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
@@ -21,13 +22,13 @@ export default function Medical({ activeChild, setActiveChild }) {
   const [showInputs, setShowInputs] = useState(false)
 
   const deleteProp = async (prop) => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
+    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
 
     // Delete Shared
     const sharedProps = sharing?.map((x) => x?.prop)
     if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
       const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
-      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByPhone)
+      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await setSelectedChild()
     }
 
@@ -39,21 +40,21 @@ export default function Medical({ activeChild, setActiveChild }) {
     }
   }
 
-  const update = async (section, prop, value) => {
+  const update = async (prop, value) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'medical', StringManager.formatDbProp(prop), value)
     setActiveChild(updatedChild)
     AlertManager.successAlert('Updated!')
   }
 
   const setSelectedChild = async () => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser.phone}`)
+    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
     let sharedValues = []
     for (let obj of sharing) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
     }
-    if (Manager.isValid(activeChild.medical)) {
+    if (Manager.isValid(activeChild?.medical)) {
       // Set info
-      let values = Object.entries(activeChild.medical)
+      let values = Object.entries(activeChild?.medical)
 
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
@@ -78,10 +79,10 @@ export default function Medical({ activeChild, setActiveChild }) {
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
           className={!Manager.isValid(medicalValues) ? 'disabled header medical' : 'header medical'}>
-          <FaBriefcaseMedical className={'svg medical'} /> {!Manager.isValid(activeChild.medical) ? '- No Info' : ''}
+          <FaBriefcaseMedical className={'svg medical'} /> {!Manager.isValid(activeChild?.medical) ? '- No Info' : ''}
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Medical
-            {!Manager.isValid(activeChild.medical) ? '- No Info' : ''}
+            {!Manager.isValid(activeChild?.medical) ? '- No Info' : ''}
             {Manager.isValid(activeChild?.medical) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
           </p>
         </AccordionSummary>
@@ -96,13 +97,15 @@ export default function Medical({ activeChild, setActiveChild }) {
                   <div className="flex input">
                     <InputWrapper
                       inputType={'input'}
-                      labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${Manager.isValid(prop[2]) ? `(shared by ${formatNameFirstNameOnly(prop[2])})` : ''}`}
+                      labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
+                        Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
+                      }`}
                       defaultValue={value}
                       value={value}
                       debounceTimeout={1000}
                       onChange={(e) => {
                         const inputValue = e.target.value
-                        update('medical', infoLabel, `${inputValue}`).then((r) => r)
+                        update(infoLabel, `${inputValue}`).then((r) => r)
                       }}
                     />
                     <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />

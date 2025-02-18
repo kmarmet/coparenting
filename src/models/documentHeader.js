@@ -4,10 +4,12 @@ var DocumentHeader;
 import Manager from "../managers/manager";
 
 export default DocumentHeader = class DocumentHeader {
-  constructor(id = Manager.getUid(), headerText = '', ownerPhone = '') {
+  constructor(id = Manager.getUid(), headerText = '', ownerKey = '') {
     this.id = id;
     this.headerText = headerText;
-    this.ownerPhone = ownerPhone;
+    this.ownerKey = ownerKey;
   }
 
 };
+
+//# sourceMappingURL=documentHeader.js.map

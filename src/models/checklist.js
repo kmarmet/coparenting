@@ -4,11 +4,13 @@ var Checklist;
 import Manager from "/src/managers/manager";
 
 export default Checklist = class Checklist {
-  constructor(id = Manager.getUid(), checklistItems = [], ownerPhone = '', fromOrTo = "from") {
+  constructor(id = Manager.getUid(), checklistItems = [], ownerKey = '', fromOrTo = "from") {
     this.id = id;
     this.checklistItems = checklistItems;
-    this.ownerPhone = ownerPhone;
+    this.ownerKey = ownerKey;
     this.fromOrTo = fromOrTo;
   }
 
 };
+
+//# sourceMappingURL=checklist.js.map

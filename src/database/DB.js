@@ -1,3 +1,4 @@
+// Path: src\database\DB.js
 import Manager from '../managers/manager'
 import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
 import _ from 'lodash'
@@ -137,9 +138,7 @@ const DB = {
     if (!Array.isArray(currentSuggestions)) {
       currentSuggestions = []
     }
-    const existingSuggestion = currentSuggestions.filter(
-      (x) => x.ownerPhone === newSuggestion.ownerPhone && x.suggestion === newSuggestion.suggestion
-    )[0]
+    const existingSuggestion = currentSuggestions.filter((x) => x.ownerKey === newSuggestion.ownerKey && x.suggestion === newSuggestion.suggestion)[0]
     if (!existingSuggestion) {
       currentSuggestions = currentSuggestions.filter((n) => n)
       set(child(dbRef, `${DB.tables.suggestions}`), [...currentSuggestions, newSuggestion])

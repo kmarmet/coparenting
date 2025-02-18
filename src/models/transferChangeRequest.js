@@ -4,19 +4,21 @@ var TransferChangeRequest;
 import Manager from "../managers/manager";
 
 export default TransferChangeRequest = class TransferChangeRequest {
-  constructor(id = Manager.getUid(), startDate = '', endDate = '', time = '', ownerPhone = '', location = '', directionsLink = '', shareWith = [], reason = '', recipientPhone = '', responseDueDate = '', preferredTransferLocation = '') {
+  constructor(id = Manager.getUid(), startDate = '', endDate = '', time = '', ownerKey = '', location = '', directionsLink = '', shareWith = [], reason = '', recipientKey = '', responseDueDate = '', preferredTransferLocation = '') {
     this.id = id;
     this.startDate = startDate;
     this.endDate = endDate;
     this.time = time;
-    this.ownerPhone = ownerPhone;
+    this.ownerKey = ownerKey;
     this.location = location;
     this.directionsLink = directionsLink;
     this.shareWith = shareWith;
     this.reason = reason;
-    this.recipientPhone = recipientPhone;
+    this.recipientKey = recipientKey;
     this.responseDueDate = responseDueDate;
     this.preferredTransferLocation = preferredTransferLocation;
   }
 
 };
+
+//# sourceMappingURL=transferChangeRequest.js.map

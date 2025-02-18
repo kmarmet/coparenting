@@ -1,3 +1,4 @@
+// Path: src\components\screens\account\account.jsx
 import React, { useContext, useState } from 'react'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
@@ -234,7 +235,7 @@ export default function Account() {
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <p className="screen-title">Account</p>
           <p id="user-name">
-            Hey {StringManager.formatNameFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
+            Hey {StringManager.getFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
           </p>
           <div className="sections">
             <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>

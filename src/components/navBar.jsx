@@ -1,3 +1,4 @@
+// Path: src\components\navBar.jsx
 import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
@@ -6,7 +7,6 @@ import { TbGridDots } from 'react-icons/tb'
 import { BiFace } from 'react-icons/bi'
 import DomManager from '../managers/domManager'
 import { RxActivityLog } from 'react-icons/rx'
-
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
   const { currentScreen, currentUser, menuIsOpen, theme, activityCount } = state

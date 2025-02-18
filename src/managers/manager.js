@@ -1,7 +1,9 @@
+// Path: src\managers\manager.js
 import DB from '../database/DB'
 import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
 import StringManager from './stringManager'
+import DomManager from './domManager'
 
 const Manager = {
   invalidInputs: (requiredInputs) => {
@@ -245,85 +247,81 @@ const Manager = {
   },
   handleCheckboxSelection: (element, onCheck, onCheckRemoval, canSelectAll = false) => {
     const clickedEl = element
-    const labels = document.querySelectorAll(`[data-label]`)
-    // UNCHECK
-    if (clickedEl.classList.contains('active')) {
-      clickedEl.classList.remove('active')
-      const label = clickedEl.dataset['label']
-      if (onCheckRemoval) onCheckRemoval(label)
-    }
+    const checkboxes = clickedEl.parentNode
+    const checkboxWrappers = checkboxes.querySelectorAll(`.checkbox-wrapper`)
+    const label = clickedEl.dataset['label']
+
     // CHECK
-    else {
+    if (clickedEl.classList.contains('active')) {
       const label = clickedEl.dataset['label']
       if (canSelectAll === false) {
-        labels.forEach((labelEl) => {
-          const thisLabel = labelEl.dataset.label
+        checkboxWrappers.forEach((wrapper) => {
+          const thisLabel = wrapper.dataset.label
           if (thisLabel !== label) {
-            labelEl.querySelector('#checkbox').classList.remove('active')
+            wrapper.classList.remove('active')
           }
-          labelEl.querySelector('#label-wrapper').classList.remove('active')
-          labelEl.classList.remove('active')
         })
       }
       if (onCheck) onCheck(label)
-
-      clickedEl.classList.add('active')
     }
+    // UNCHECK
+    else {
+      if (onCheckRemoval) onCheckRemoval(label)
+    }
+  },
+  buildCheckboxGroup: (currentUser, labelType, defaultLabels, holidays = []) => {
+    let checkboxLabels = []
+    if (labelType === 'reminder-times') {
+      checkboxLabels = CalMapper.allUnformattedTimes()
+    }
+    if (labelType === 'children') {
+      checkboxLabels = currentUser?.children?.map((x) => x?.general?.name)
+    }
+    if (labelType === 'recurring-intervals') {
+      checkboxLabels = ['Daily', 'Weekly', 'Biweekly', 'Monthly']
+    }
+    if (labelType === 'holidays') {
+      checkboxLabels = holidays
+    }
+    if (labelType === 'record-types') {
+      checkboxLabels = ['Expenses', 'Chats']
+    }
+    if (labelType === 'remember-me') {
+      checkboxLabels = ['Remember Me']
+    }
+    if (labelType === 'expense-payers' && Manager.isValid(currentUser.coparents)) {
+      checkboxLabels = [...currentUser.coparents.map((x) => x.name), 'Me']
+    }
+    let checkboxGroup = []
+    for (let label of checkboxLabels) {
+      let isActive = false
+      if (Manager.isValid(defaultLabels) && defaultLabels.includes(label)) {
+        isActive = true
+      }
+      if (labelType === 'reminder-times') {
+        label = CalMapper.readableReminderBeforeTimeframes(label)
+      }
+      checkboxGroup.push({
+        label: label,
+        key: label.replaceAll(' ', ''),
+        isActive,
+      })
+    }
+
+    return checkboxGroup
   },
   handleShareWithSelection: (e, currentUser, shareWith) => {
     const clickedEl = e.currentTarget
-    const checkbox = clickedEl.querySelector('#checkbox')
-    const selectedValue = clickedEl.getAttribute('data-phone')
+    const key = clickedEl.getAttribute('data-key')
 
-    // UNCHECK
-    if (!checkbox.classList.contains('active')) {
-      if (Manager.isValid(shareWith)) {
-        shareWith = shareWith.filter((x) => x !== selectedValue)
-      }
+    DomManager.toggleActive(clickedEl)
+
+    if (shareWith.includes(key)) {
+      shareWith = shareWith.filter((x) => x !== key)
+    } else {
+      shareWith = [...shareWith, key]
     }
 
-    // CHECK
-    else {
-      // PARENTS
-      if (currentUser?.accountType === 'parent') {
-        currentUser?.coparents?.forEach((coparent) => {
-          if (coparent?.phone === selectedValue) {
-            if (shareWith?.length === 0) {
-              shareWith = [coparent?.phone]
-            } else {
-              if (shareWith?.length > 0) {
-                shareWith = [...shareWith, coparent?.phone]
-              }
-            }
-          }
-        })
-
-        // CHILDREN
-        currentUser?.children?.forEach((child) => {
-          if (child?.general?.phone === selectedValue) {
-            if (shareWith?.length === 0) {
-              shareWith = [child?.general?.phone]
-            } else {
-              if (shareWith?.length > 0) {
-                shareWith = [...shareWith, child?.general?.phone]
-              }
-            }
-          }
-        })
-      } else {
-        if (currentUser.accountType === 'child') {
-          currentUser?.parents?.forEach((parent) => {
-            if (parent?.phone === selectedValue) {
-              if (shareWith.length === 0) {
-                shareWith = [parent?.phone]
-              } else {
-                shareWith = [...shareWith, parent?.phone]
-              }
-            }
-          })
-        }
-      }
-    }
     return shareWith
   },
   setDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) => {

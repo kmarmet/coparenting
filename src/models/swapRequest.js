@@ -8,16 +8,16 @@ import DateFormats from "../constants/dateFormats";
 import moment from "moment";
 
 export default SwapRequest = class SwapRequest {
-  constructor(id = Manager.getUid(), startDate = '', shareWith = [], endDate = '', dateAdded = moment().format(DateFormats.dateForDb), recipientPhone = '', reason = '', duration = '', ownerPhone = '', children = '', fromHour = '', toHour = '', status = 'pending', range = [], responseDueDate = '') {
+  constructor(id = Manager.getUid(), startDate = '', shareWith = [], endDate = '', dateAdded = moment().format(DateFormats.dateForDb), recipientKey = '', reason = '', duration = '', ownerKey = '', children = '', fromHour = '', toHour = '', status = 'pending', range = [], responseDueDate = '') {
     this.id = id;
     this.startDate = startDate;
     this.shareWith = shareWith;
     this.endDate = endDate;
     this.dateAdded = dateAdded;
-    this.recipientPhone = recipientPhone;
+    this.recipientKey = recipientKey;
     this.reason = reason;
     this.duration = duration;
-    this.ownerPhone = ownerPhone;
+    this.ownerKey = ownerKey;
     this.children = children;
     this.fromHour = fromHour;
     this.toHour = toHour;
@@ -27,3 +27,5 @@ export default SwapRequest = class SwapRequest {
   }
 
 };
+
+//# sourceMappingURL=swapRequest.js.map

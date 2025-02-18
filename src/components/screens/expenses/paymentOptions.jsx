@@ -1,3 +1,4 @@
+// Path: src\components\screens\expenses\paymentOptions.jsx
 import BottomCard from '../../shared/bottomCard.jsx'
 import { RxOpenInNewWindow } from 'react-icons/rx'
 import { ImAppleinc } from 'react-icons/im'

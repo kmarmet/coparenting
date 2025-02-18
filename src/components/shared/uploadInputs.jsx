@@ -1,3 +1,4 @@
+// Path: src\components\shared\uploadInputs.jsx
 import React, { useContext } from 'react'
 import globalState from '../../context'
 

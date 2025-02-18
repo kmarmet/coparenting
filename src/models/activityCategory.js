@@ -19,3 +19,5 @@ ActivityCategory = {
 };
 
 export default ActivityCategory;
+
+//# sourceMappingURL=activityCategory.js.map

@@ -1,22 +1,23 @@
+// Path: src\components\screens\auth\login.jsx
+import { initializeApp } from 'firebase/app'
+import { browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
 import React, { useContext, useState } from 'react'
+import { Fade } from 'react-awesome-reveal'
+import { GrInstallOption } from 'react-icons/gr'
+import { MdOutlinePassword } from 'react-icons/md'
+import { PiEyeClosedDuotone, PiEyeDuotone } from 'react-icons/pi'
+import { SlLogin } from 'react-icons/sl'
+import validator from 'validator'
+import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
+import InputWrapper from '/src/components/shared/inputWrapper'
 import ScreenNames from '/src/constants/screenNames'
 import globalState from '/src/context.js'
-import Manager from '/src/managers/manager'
-import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
-import InstallApp from '/src/components/screens/installApp.jsx'
-import { browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
 import firebaseConfig from '/src/firebaseConfig'
-import { initializeApp } from 'firebase/app'
-import { PiEyeClosedDuotone, PiEyeDuotone } from 'react-icons/pi'
-import validator from 'validator'
-import { MdOutlinePassword } from 'react-icons/md'
-import { Fade } from 'react-awesome-reveal'
 import AlertManager from '/src/managers/alertManager'
-import InputWrapper from '/src/components/shared/inputWrapper'
-import { SlLogin } from 'react-icons/sl'
 import DomManager from '/src/managers/domManager'
-import { GrInstallOption } from 'react-icons/gr'
-import { useEffect } from 'react'
+import Manager from '/src/managers/manager'
+import DB from '../../../database/DB'
+import Spacer from '../../shared/spacer'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
@@ -49,6 +50,14 @@ export default function Login() {
         return signInWithEmailAndPassword(auth, email, password)
           .then(async (userCredential) => {
             const user = userCredential.user
+            const users = await DB.getTable(DB.tables.users)
+            const dbUser = users?.find((u) => u?.email === user?.email)
+            let nextScreen = dbUser ? ScreenNames.calendar : ScreenNames.userDetails
+            if (dbUser?.accountType === 'child') {
+              if (dbUser?.parentAccessGranted === false) {
+                nextScreen = ScreenNames.requestParentAccess
+              }
+            }
             // USER NEEDS TO VERIFY EMAIL
             if (!user.emailVerified) {
               AlertManager.oneButtonAlert(
@@ -63,12 +72,11 @@ export default function Login() {
 
             // Persistent AND Email is Verified
             else {
-              const userFromStorage = JSON.parse(localStorage.getItem('currentUser'))
               setState({
                 ...state,
                 userIsLoggedIn: true,
                 isLoading: false,
-                currentScreen: Manager.isValid(userFromStorage) ? ScreenNames.calendar : ScreenNames.userDetails,
+                currentScreen: nextScreen,
               })
             }
           })
@@ -94,6 +102,15 @@ export default function Login() {
     signInWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const user = userCredential.user
+        const users = await DB.getTable(DB.tables.users)
+        const dbUser = users?.find((u) => u?.email === user?.email)
+        let nextScreen = dbUser ? ScreenNames.calendar : ScreenNames.userDetails
+        if (dbUser?.accountType === 'child') {
+          if (dbUser?.parentAccessGranted === false) {
+            nextScreen = ScreenNames.requestParentAccess
+          }
+        }
+        console.log(nextScreen)
         // USER NEEDS TO VERIFY EMAIL
         if (!user.emailVerified) {
           AlertManager.oneButtonAlert(
@@ -108,13 +125,11 @@ export default function Login() {
 
         // EMAIL IS VERIFIED
         else {
-          const userFromStorage = JSON.parse(localStorage.getItem('currentUser'))
-          console.log(userFromStorage, 'userFromStorage')
           setState({
             ...state,
             userIsLoggedIn: true,
             isLoading: false,
-            currentScreen: Manager.isValid(userFromStorage) ? ScreenNames.calendar : ScreenNames.userDetails,
+            currentScreen: nextScreen,
           })
         }
       })
@@ -153,9 +168,6 @@ export default function Login() {
 
   return (
     <>
-      {/* INSTALL APP MODAL */}
-      {/* <InstallApp /> */}
-
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`page-container form login`}>
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
@@ -168,7 +180,7 @@ export default function Login() {
           {/* QUOTE CONTAINER */}
           <div id="quote-container">
             <p id="quote">
-              Co-parenting. It's not a competition between two homes. It's <b>a collaboration of parents doing what is best for the kids.</b>
+              Co-parenting. It&#39;s not a competition between two homes. It&#39;s <b>a collaboration of parents doing what is best for the kids.</b>
             </p>
             <p id="author">~ Heather Hetchler</p>
           </div>
@@ -188,7 +200,7 @@ export default function Login() {
             <div className="form w-80">
               {/* EMAIL */}
               <InputWrapper
-                inputClasses="email"
+                inputClasses="email login-input"
                 inputValueType="email"
                 required={true}
                 labelText={'Email Address'}
@@ -201,7 +213,7 @@ export default function Login() {
                   required={true}
                   wrapperClasses="password"
                   labelText={'Password'}
-                  inputClasses="password"
+                  inputClasses="password login-input"
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue eye-icon ml-10'} />}
@@ -210,12 +222,13 @@ export default function Login() {
 
               {/* REMEMBER ME */}
               <CheckboxGroup
-                elClass={'light mb-15'}
-                boxWidth={50}
+                elClass={'light'}
                 onCheck={togglePersistence}
-                checkboxLabels={['Remember Me']}
+                checkboxArray={Manager.buildCheckboxGroup(null, 'remember-me', ['Remember Me'])}
                 skipNameFormatting={true}
               />
+
+              <Spacer height={10} />
               <div className="flex w-100 mb-15 gap buttons">
                 <button className="button default green" onClick={signIn}>
                   Login <SlLogin />
