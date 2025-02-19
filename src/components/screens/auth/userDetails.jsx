@@ -38,9 +38,9 @@ export default function UserDetails() {
     }
     const userObject = {
       phone: userPhone,
-      email: authUser.email,
+      email: authUser?.email,
       accountType,
-      key: authUser.uid,
+      key: authUser?.uid,
     }
     const newUser = await DB_UserScoped.createAndInsertUser(userObject)
     AlertManager.successAlert('Success!')
@@ -72,7 +72,9 @@ export default function UserDetails() {
         onCheck={handleAccountType}
         parentLabel="Account Type (cannot be changed later)"
         labelText="Account Type"
-        checkboxLabels={['Parent', 'Child']}
+        checkboxArray={Manager.buildCheckboxGroup({
+          customLabelArray: ['Parent', 'Child'],
+        })}
         required={true}
         textOnly={true}
         dataKey={['Parent', 'Child']}

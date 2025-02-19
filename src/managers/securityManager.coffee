@@ -6,10 +6,22 @@ import DB_UserScoped from "../database/DB_UserScoped"
 SecurityManager =
   getShareWithItems: (currentUser, table) ->
     coparentAndChildEvents  = []
+
+#   PARENT ACCOUNTS
     if Manager.isValid(currentUser) && Manager.isValid(currentUser?.coparents)
       for coparent in currentUser?.coparents
         coparentItems = await DB.getTable("#{table}/#{coparent?.key}")
         for item in coparentItems
+          if Manager.isValid(item?.shareWith)
+            if item?.shareWith?.includes currentUser?.key
+              coparentAndChildEvents.push(item)
+
+#   CHILD ACCOUNTS
+    console.log(currentUser.parents)
+    if Manager.isValid(currentUser) && Manager.isValid(currentUser?.parents)
+      for parent in currentUser?.parents
+        parentItems = await DB.getTable("#{table}/#{parent?.key}")
+        for item in parentItems
           if Manager.isValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
               coparentAndChildEvents.push(item)

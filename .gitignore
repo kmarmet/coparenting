@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 
+*.env
+
 *.map
 
 .parcel-cache/data.mdb

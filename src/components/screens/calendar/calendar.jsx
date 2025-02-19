@@ -388,7 +388,7 @@ export default function EventCalendar() {
           }}>
           <div className={'mb-5 flex form search-card'} id="search-container">
             <InputWrapper
-              placeholder="Enter event name..."
+              labelText="Enter event name..."
               refreshKey={refreshKey}
               inputValue={searchQuery}
               onChange={async (e) => {

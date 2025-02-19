@@ -29,20 +29,12 @@ export default function Account() {
   const [showUpdateCard, setShowUpdateCard] = useState(false)
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
-  const [resetKey, setResetKey] = useState(Manager.getUid())
   const [showLoginForm, setShowLoginForm] = useState(false)
-  const [reauthPassword, setReauthPassword] = useState('')
 
   // Init Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
   const firebaseUser = auth.currentUser
-
-  const resetForm = async () => {
-    setResetKey(Manager.getUid())
-    setEmail('')
-    setPhone('')
-  }
 
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
@@ -54,17 +46,23 @@ export default function Account() {
   const logout = () => {
     signOut(auth)
       .then(() => {
+        const pageOverlay = document.getElementById('page-overlay')
+        if (pageOverlay) {
+          pageOverlay.classList.remove('active')
+        }
         setState({
           ...state,
           currentScreen: ScreenNames.login,
           currentUser: null,
           userIsLoggedIn: false,
+          isLoading: false,
         })
         // Sign-out successful.
         console.log('User signed out')
       })
       .catch((error) => {
         // An error happened.
+        console.log(error)
       })
   }
 
@@ -80,7 +78,7 @@ export default function Account() {
       AlertManager.throwError('Email is not valid')
       return false
     }
-    AlertManager.inputAlert('Enter Your Password', 'To update your email, we need to re-authenticate your account for security purpose', (e) => {
+    AlertManager.inputAlert('Enter Your Password', 'To update your email, we need to re-authenticate your account for security purposes', (e) => {
       const user = auth.currentUser
       const credential = EmailAuthProvider.credential(user.email, e.value)
       reauthenticateWithCredential(auth.currentUser, credential)
@@ -95,6 +93,12 @@ export default function Account() {
         })
         .catch((error) => {
           // An error ocurred
+          if (Manager.contains(error.message, 'auth/wrong-password')) {
+            AlertManager.throwError('Password is incorrect')
+          }
+          if (Manager.contains(error.message, 'email-already-in-use')) {
+            AlertManager.throwError('Account already exists with this email')
+          }
           console.log(error.message)
           // ...
         })
@@ -184,10 +188,8 @@ export default function Account() {
             await updateUserEmail()
           }
         }}
-        refreshKey={resetKey}
         submitText={`Update`}
         onClose={() => {
-          setResetKey(Manager.getUid())
           setShowUpdateCard(false)
         }}
         wrapperClass="update-card"
@@ -196,11 +198,11 @@ export default function Account() {
         <div {...handlers} id="update-contact-info-container" className={`${theme}  form`}>
           <div className="form">
             {updateType === 'email' && (
-              <InputWrapper onChange={(e) => setEmail(e.currentTarget.value)} labelText={'New Email Address'} required={true}></InputWrapper>
+              <InputWrapper onChange={(e) => setEmail(e.target.value)} labelText={'New Email Address'} required={true}></InputWrapper>
             )}
-            {updateType === 'phone' && (
-              <InputWrapper onChange={(e) => setPhone(e.currentTarget.value)} labelText={'New Phone Number'} required={true}></InputWrapper>
-            )}
+            {/*{updateType === 'phone' && (*/}
+            {/*  <InputWrapper onChange={(e) => setPhone(e.currentTarget.value)} labelText={'New Phone Number'} required={true}></InputWrapper>*/}
+            {/*)}*/}
           </div>
         </div>
       </BottomCard>
@@ -210,9 +212,7 @@ export default function Account() {
         onSubmit={async () => {
           console.log('here')
         }}
-        refreshKey={resetKey}
         onClose={() => {
-          setResetKey(Manager.getUid())
           setShowLoginForm(false)
         }}
         wrapperClass="re-auth-card"
@@ -242,15 +242,15 @@ export default function Account() {
               <MdOutlinePassword className={'mr-10'} />
               Reset Password
             </p>
-            <p
-              onClick={() => {
-                setUpdateType('phone')
-                setShowUpdateCard(true)
-              }}
-              className="section">
-              <MdOutlineContactPhone className={'mr-10'} />
-              Update Phone Number
-            </p>
+            {/*<p*/}
+            {/*  onClick={() => {*/}
+            {/*    setUpdateType('phone')*/}
+            {/*    setShowUpdateCard(true)*/}
+            {/*  }}*/}
+            {/*  className="section">*/}
+            {/*  <MdOutlineContactPhone className={'mr-10'} />*/}
+            {/*  Update Phone Number*/}
+            {/*</p>*/}
             <p
               className="section"
               onClick={() => {

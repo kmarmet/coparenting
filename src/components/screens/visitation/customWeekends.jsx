@@ -1,7 +1,7 @@
 // Path: src\components\screens\visitation\customWeekends.jsx
 import BottomCard from '../../../components/shared/bottomCard'
 import globalState from '../../../context'
-import { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Manager from '../../../managers/manager'
 import DateFormats from '../../../constants/dateFormats'
 import AlertManager from '../../../managers/alertManager'
@@ -114,22 +114,21 @@ export default function CustomWeekends({ hide, showCard }) {
         <CheckboxGroup
           parentLabel={'Weekend YOU will have the child(ren)'}
           onCheck={handleSpecificWeekendSelection}
-          checkboxLabels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend']}
+          checkboxArray={Manager.buildCheckboxGroup({
+            currentUser,
+            customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend'],
+          })}
         />
         <CheckboxGroup
           parentLabel={'Month with 5 weekends - extra weekend'}
           onCheck={handleFifthWeekendSelection}
-          checkboxLabels={['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend']}
+          checkboxArray={Manager.buildCheckboxGroup({
+            currentUser,
+            customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend'],
+          })}
         />
       </>
-      <ShareWithCheckboxes
-        required={false}
-        shareWith={currentUser?.coparents?.map((x) => x.phone)}
-        onCheck={handleShareWithSelection}
-        labelText={'Share with'}
-        containerClass={'share-with-coparents'}
-        dataKey={currentUser?.coparents?.map((x) => x.name)}
-      />
+      <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
     </BottomCard>
   )
 }

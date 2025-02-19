@@ -361,8 +361,10 @@ export default function SwapRequests() {
                 </div>
                 {(activeRequest?.children?.length > 0 || includeChildren) && (
                   <CheckboxGroup
-                    defaultLabels={activeRequest?.children?.map((x) => x['general']?.name)}
-                    checkboxLabels={currentUser?.children?.map((x) => x['general']?.name)}
+                    checkboxArray={Manager.buildCheckboxGroup({
+                      currentUser,
+                      labelType: 'children',
+                    })}
                     onCheck={handleChildSelection}
                   />
                 )}

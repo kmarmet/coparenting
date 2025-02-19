@@ -131,7 +131,10 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
               parentLabel={'Parent Type'}
               className="coparent-type"
               skipNameFormatting={true}
-              checkboxLabels={['Step-Parent', 'Biological Parent', "Spouse's Co-Parent"]}
+              checkboxArray={Manager.buildCheckboxGroup({
+                currentUser,
+                customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Other'],
+              })}
               onCheck={handleCoparentType}
             />
 
@@ -141,7 +144,10 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
               parentLabel={'Relationship to Me'}
               className="relationship-to-me mt-15"
               skipNameFormatting={true}
-              checkboxLabels={['Spouse', 'Former Spouse', "Spouse's Former Spouse"]}
+              checkboxArray={Manager.buildCheckboxGroup({
+                currentUser,
+                customLabelArray: ['Spouse', 'Former Spouse', 'Former Partner of Spouse'],
+              })}
               onCheck={handleRelationshipType}
             />
           </div>

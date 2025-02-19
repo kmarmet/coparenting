@@ -1,15 +1,14 @@
 // Path: src\components\screens\calendar\calendarEvents.jsx
 import moment from 'moment'
-import { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
 import globalState from '../../../context.js'
 import DatasetManager from '../../../managers/datasetManager.coffee'
 import DateFormats from '/src/constants/dateFormats'
 import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
-import DB_UserScoped from '../../../database/db_userScoped.js'
-import { auth } from 'firebaseui'
-export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = function (event) {} }) {
+
+export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (event) => {} }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser, authUser } = state
   const [holidays, setHolidays] = useState([])
@@ -47,6 +46,7 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = fun
     dotObjects = DatasetManager.getUniqueArray(dotObjects, true)
     return dotObjects
   }
+
   const handleEventRowClick = async (clickedEvent) => {
     if (clickedEvent.isHoliday) {
       return false

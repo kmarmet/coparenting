@@ -1470,9 +1470,9 @@
     }
 
     label {
-      color: $lightDarkGrey;
+      color: black;
       font-weight: $fwRegular;
-      opacity: 1;
+      opacity: 0.75;
       text-transform: uppercase;
       font-size: 12px;
 
@@ -2821,7 +2821,7 @@
               position: relative;
               //              top: -10px;
               //              width: 90% !important;
-              s input {
+              input {
                 border-radius: $borderRadius !important;
                 margin-top: 12px !important;
               }

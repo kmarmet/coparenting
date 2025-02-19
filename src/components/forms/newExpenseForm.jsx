@@ -434,28 +434,23 @@ export default function NewExpenseForm({ hideCard, showCard }) {
 
           {/* NOTES */}
           <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'} />
-          <Spacer height={45} />
+          <Spacer height={5} />
 
           {/* PAYER */}
           <CheckboxGroup
             required={true}
             parentLabel={'Who will be paying the expense?'}
-            dataKey={currentUser?.coparents?.map((x) => x.key)}
-            checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
+            checkboxArray={Manager.buildCheckboxGroup({
+              currentUser,
+              predefinedType: 'coparents',
+            })}
             onCheck={handlePayerSelection}
           />
 
           <Spacer height={10} />
 
           {/* SHARE WITH */}
-          <ShareWithCheckboxes
-            shareWith={currentUser?.coparents?.map((x) => x.key)}
-            onCheck={handleShareWithSelection}
-            labelText={'Share with'}
-            containerClass={'share-with-coparents'}
-            dataKey={currentUser?.coparents?.map((x) => x.key)}
-            checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
-          />
+          <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
 
           <Spacer height={10} />
 
@@ -474,7 +469,13 @@ export default function NewExpenseForm({ hideCard, showCard }) {
                 />
               </div>
               {includeChildren && (
-                <CheckboxGroup checkboxLabels={currentUser?.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+                <CheckboxGroup
+                  checkboxArray={Manager.buildCheckboxGroup({
+                    currentUser,
+                    labelType: 'children',
+                  })}
+                  onCheck={handleChildSelection}
+                />
               )}
             </div>
           )}
@@ -498,7 +499,13 @@ export default function NewExpenseForm({ hideCard, showCard }) {
               )}
               {isRepeating && (
                 <>
-                  <CheckboxGroup onCheck={handleRepeatingSelection} checkboxLabels={['Daily', 'Weekly', 'Biweekly', 'Monthly']} />
+                  <CheckboxGroup
+                    onCheck={handleRepeatingSelection}
+                    checkboxArray={Manager.buildCheckboxGroup({
+                      currentUser,
+                      labelType: 'recurring-interval',
+                    })}
+                  />
                   <Spacer height={5} />
                 </>
               )}

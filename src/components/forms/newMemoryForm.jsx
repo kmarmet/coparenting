@@ -163,14 +163,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
 
           <div className="form">
             {/* SHARE WITH */}
-            {currentUser && (
-              <ShareWithCheckboxes
-                onCheck={handleShareWithSelection}
-                containerClass={'share-with-coparents'}
-                dataKey={currentUser?.coparents?.map((x) => x.phone)}
-                checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
-              />
-            )}
+            {currentUser && <ShareWithCheckboxes onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />}
 
             <Spacer height={10} />
 

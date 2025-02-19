@@ -31,7 +31,6 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   const [requestReason, setRequestReason] = useState('')
   const [requestChildren, setRequestChildren] = useState([])
   const [shareWith, setShareWith] = useState([])
-  const [recipientName, setRecipientName] = useState('')
   const [requestFromHour, setRequestFromHour] = useState('')
   const [requestToHour, setRequestToHour] = useState('')
   const [swapDuration, setSwapDuration] = useState('single')
@@ -39,13 +38,13 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
+  const [recipientKey, setRecipientKey] = useState('')
 
   const resetForm = async () => {
     Manager.resetForm('swap-request-wrapper')
     setRequestReason('')
     setRequestChildren([])
     setShareWith([])
-    setRecipientName('')
     setRequestFromHour('')
     setRequestToHour('')
     setSwapDuration('single')
@@ -58,8 +57,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   }
 
   const submit = async () => {
-    console.log(startDate, recipientName)
-    const invalidInputs = Manager.invalidInputs([startDate, recipientName])
+    const invalidInputs = Manager.invalidInputs([startDate, recipientKey])
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
     //#region VALIDATION
@@ -94,7 +92,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     newRequest.toHour = requestToHour
     newRequest.ownerKey = currentUser?.key
     newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
-    newRequest.recipientPhone = currentUser?.coparents?.find((x) => x.name === recipientName)?.phone
+    newRequest.recipientKey = recipientKey
 
     const cleanObject = ObjectManager.cleanObject(newRequest, ModelNames.swapRequest)
 
@@ -135,16 +133,13 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   }
 
   const handleRecipientSelection = (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      (e) => {
-        setRecipientName(e)
-      },
-      () => {
-        setRecipientName('')
-      },
-      false
-    )
+    const coparentKey = e.getAttribute('data-key')
+    if (e.classList.contains('active')) {
+      setRecipientKey(coparentKey)
+    } else {
+      setRecipientKey('')
+      console.log('here')
+    }
   }
 
   const changeSwapDuration = (duration) => setSwapDuration(duration)
@@ -159,7 +154,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   return (
     <div className="swap-request-wrapper">
       <BottomCard
-        submitText={'Add Request'}
+        submitText={'Send Request'}
         refreshKey={refreshKey}
         onSubmit={submit}
         wrapperClass="new-swap-request"
@@ -209,7 +204,6 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                     }}
                   />
                 )}
-                <Spacer height={10} />
               </>
             )}
 
@@ -237,7 +231,6 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                     required={true}
                   />
                 )}
-                <Spacer height={10} />
 
                 {/* TIMES */}
                 <div className="flex gap ">
@@ -280,8 +273,6 @@ export default function NewSwapRequest({ showCard, hideCard }) {
               </InputWrapper>
             )}
 
-            <Spacer height={5} />
-
             {/* RESPONSE DUE DATE */}
             {!DomManager.isMobile() && (
               <InputWrapper inputType={'date'} labelText={'Respond by'}>
@@ -304,29 +295,31 @@ export default function NewSwapRequest({ showCard, hideCard }) {
               />
             )}
 
-            <Spacer height={15} />
+            <Spacer height={5} />
 
             {/* SEND REQUEST TO */}
             <CheckboxGroup
               required={true}
               parentLabel={'Who are you sending the request to?'}
-              dataKey={currentUser?.coparents?.map((x) => x.phone)}
-              checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
-              onCheck={handleRecipientSelection}
+              checkboxArray={Manager.buildCheckboxGroup({
+                currentUser,
+                predefinedType: 'coparents',
+              })}
+              onCheck={(e) => {
+                handleRecipientSelection(e)
+              }}
             />
 
-            <Spacer height={10} />
+            <Spacer height={5} />
 
             {/* WHO SHOULD SEE IT? */}
             <ShareWithCheckboxes
               required={true}
-              shareWith={currentUser?.coparents?.map((x) => x.phone)}
               onCheck={handleShareWithSelection}
               labelText={'Share with'}
               containerClass={'share-with-coparents'}
-              dataKey={currentUser?.coparents?.map((x) => x.phone)}
             />
-            <Spacer height={10} />
+            <Spacer height={5} />
 
             {/* INCLUDE CHILDREN */}
             {Manager.isValid(currentUser?.children) && (
@@ -339,16 +332,22 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                       unchecked: null,
                     }}
                     className={'ml-auto reminder-toggle'}
-                    onChange={(e) => setIncludeChildren(!includeChildren)}
+                    onChange={() => setIncludeChildren(!includeChildren)}
                   />
                 </div>
                 {includeChildren && (
-                  <CheckboxGroup checkboxLabels={currentUser?.children.map((x) => x['general'].name)} onCheck={handleChildSelection} />
+                  <CheckboxGroup
+                    checkboxArray={Manager.buildCheckboxGroup({
+                      currentUser,
+                      labelType: 'children',
+                    })}
+                    onCheck={handleChildSelection}
+                  />
                 )}
               </div>
             )}
 
-            <Spacer height={5} />
+            <Spacer height={10} />
 
             {/* NOTES */}
             <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />

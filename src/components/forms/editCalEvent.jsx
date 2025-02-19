@@ -499,13 +499,16 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       className="edit-calendar-event"
       wrapperClass="edit-calendar-event">
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
-        <ViewSelector
-          key={refreshKey}
-          labels={['details', 'edit']}
-          updateState={(labelText) => {
-            setView(labelText)
-          }}
-        />
+        {/* READONLY IF CHILD ACCOUNT */}
+        {currentUser?.accountType !== 'child' && (
+          <ViewSelector
+            key={refreshKey}
+            labels={['details', 'edit']}
+            updateState={(labelText) => {
+              setView(labelText)
+            }}
+          />
+        )}
 
         {!dataIsLoading && (
           <>

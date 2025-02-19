@@ -14,8 +14,9 @@ import DB_UserScoped from "../database/DB_UserScoped";
 
 SecurityManager = {
   getShareWithItems: async function(currentUser, table) {
-    var coparent, coparentAndChildEvents, coparentItems, i, item, j, len, len1, ref, ref1;
+    var coparent, coparentAndChildEvents, coparentItems, i, item, j, k, l, len, len1, len2, len3, parent, parentItems, ref, ref1, ref2, ref3;
     coparentAndChildEvents = [];
+    //   PARENT ACCOUNTS
     if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.coparents : void 0)) {
       ref = currentUser != null ? currentUser.coparents : void 0;
       for (i = 0, len = ref.length; i < len; i++) {
@@ -25,6 +26,23 @@ SecurityManager = {
           item = coparentItems[j];
           if (Manager.isValid(item != null ? item.shareWith : void 0)) {
             if (item != null ? (ref1 = item.shareWith) != null ? ref1.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
+              coparentAndChildEvents.push(item);
+            }
+          }
+        }
+      }
+    }
+    //   CHILD ACCOUNTS
+    console.log(currentUser.parents);
+    if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.parents : void 0)) {
+      ref2 = currentUser != null ? currentUser.parents : void 0;
+      for (k = 0, len2 = ref2.length; k < len2; k++) {
+        parent = ref2[k];
+        parentItems = (await DB.getTable(`${table}/${parent != null ? parent.key : void 0}`));
+        for (l = 0, len3 = parentItems.length; l < len3; l++) {
+          item = parentItems[l];
+          if (Manager.isValid(item != null ? item.shareWith : void 0)) {
+            if (item != null ? (ref3 = item.shareWith) != null ? ref3.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
               coparentAndChildEvents.push(item);
             }
           }
