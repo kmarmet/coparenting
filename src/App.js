@@ -228,7 +228,7 @@ export default function App() {
             {/* DOCUMENTS */}
             {currentScreen === ScreenNames.docsList && <DocsList />}
             {currentScreen === ScreenNames.docViewer && <DocViewer />}
-            {currentScreen === ScreenNames.records && <Archives />}
+            {currentScreen === ScreenNames.archives && <Archives />}
 
             {/* UPLOAD */}
             {currentScreen === ScreenNames.uploadDocuments && <UploadDocuments />}

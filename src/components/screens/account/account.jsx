@@ -89,7 +89,7 @@ export default function Account() {
           await updateEmail(auth.currentUser, email, {
             email: email,
           })
-          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.phone}/email`, email)
+          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/email`, email)
           setState({ ...state, isLoading: false })
           logout()
         })
@@ -120,7 +120,7 @@ export default function Account() {
   }
 
   const closeAccount = async () => {
-    AlertManager.inputAlert('Enter Your Password', 'Your password is required to confirm account deletion', (e) => {
+    AlertManager.inputAlert('Enter Your Password', 'To proceed with the account deletion, you must provide your password for verification', (e) => {
       const user = auth.currentUser
       const credential = EmailAuthProvider.credential(user.email, e.value)
       if (!Manager.isValid(e.value, true)) {
@@ -136,7 +136,7 @@ export default function Account() {
           }
 
           // Delete from OneSignal
-          const subscriber = await DB.find(DB.tables.notificationSubscribers, ['phone', currentUser.phone], true)
+          const subscriber = await DB.find(DB.tables.notificationSubscribers, ['key', currentUser.key], true)
 
           if (subscriber) {
             await NotificationManager.deleteUser(subscriber?.oneSignalId, subscriber?.subscriptionId)
@@ -260,12 +260,6 @@ export default function Account() {
               <MdOutlineContactMail className={'mr-10'} />
               Update Email Address
             </p>
-            {/*{currentUser && currentUser?.accountType === 'parent' && (*/}
-            {/*  <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.chatRecovery })}>*/}
-            {/*    <PiChatsCircleDuotone className={'mr-10'} />*/}
-            {/*    Chats Recovery*/}
-            {/*  </p>*/}
-            {/*)}*/}
             <p className="section close-account" onClick={closeAccount}>
               <PiUserCircleMinusDuotone className={'mr-10'} />
               Close Account

@@ -78,33 +78,33 @@ const ChatManager = {
     return await DB.getTable(`${DB.tables.chatMessages}/${chatId}`)
   },
   pauseChat: async (currentUser, coparent) => {
-    const securedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
+    const securedChat = await ChatManager.getScopedChat(currentUser, coparent?.key)
     try {
       let isPausedFor = securedChat.isPausedFor
 
       if (!Manager.isValid(isPausedFor)) {
-        isPausedFor = [currentUser.phone]
+        isPausedFor = [currentUser?.key]
       } else {
-        isPausedFor = [...isPausedFor, currentUser.phone]
+        isPausedFor = [...isPausedFor, currentUser?.key]
       }
       isPausedFor = DatasetManager.getUniqueArray(isPausedFor, true)
       securedChat.isPausedFor = isPausedFor
       // Set chat inactive
-      await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser.phone}`, securedChat, securedChat.id)
-      await DB.updateEntireRecord(`${DB.tables.chats}/${coparent.phone}`, securedChat, securedChat.id)
+      await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser?.key}`, securedChat, securedChat.id)
+      await DB.updateEntireRecord(`${DB.tables.chats}/${coparent?.key}`, securedChat, securedChat.id)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }
   },
   unpauseChat: async (currentUser, coparent) => {
-    const securedChat = await ChatManager.getScopedChat(currentUser, coparent.phone)
+    const securedChat = await ChatManager.getScopedChat(currentUser, coparent?.key)
     try {
-      let isPausedFor = securedChat?.isPausedFor?.filter((x) => x !== currentUser.phone)
+      let isPausedFor = securedChat?.isPausedFor?.filter((x) => x !== currentUser?.key)
       isPausedFor = DatasetManager.getUniqueArray(isPausedFor, true)
       securedChat.isPausedFor = isPausedFor
       // Set chat inactive
-      await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser.phone}`, securedChat, securedChat.id)
-      await DB.updateEntireRecord(`${DB.tables.chats}/${coparent.phone}`, securedChat, securedChat.id)
+      await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser?.key}`, securedChat, securedChat.id)
+      await DB.updateEntireRecord(`${DB.tables.chats}/${coparent?.key}`, securedChat, securedChat.id)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }
@@ -120,7 +120,7 @@ const ChatManager = {
     let toAdd = []
 
     const newBookmark = new ChatBookmark()
-    newBookmark.ownerKey = currentUser.phone
+    newBookmark.ownerKey = currentUser?.key
     newBookmark.messageId = messageId
 
     // Bookmarks exist already
@@ -136,7 +136,9 @@ const ChatManager = {
     }
 
     try {
-      await set(child(dbRef, `${DB.tables.chatBookmarks}/${chatId}`), toAdd).catch((error) => {})
+      await set(child(dbRef, `${DB.tables.chatBookmarks}/${chatId}`), toAdd).catch((error) => {
+        console.log(error)
+      })
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }
@@ -151,7 +153,9 @@ const ChatManager = {
       toAdd = [chat]
     }
     try {
-      set(child(dbRef, path), toAdd).catch((error) => {})
+      set(child(dbRef, path), toAdd).catch((error) => {
+        console.log(error)
+      })
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }
@@ -166,7 +170,9 @@ const ChatManager = {
       toAdd = [message]
     }
     try {
-      set(child(dbRef, path), toAdd).catch((error) => {})
+      set(child(dbRef, path), toAdd).catch((error) => {
+        console.log(error)
+      })
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }

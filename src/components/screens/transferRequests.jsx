@@ -85,7 +85,7 @@ export default function TransferRequests() {
       updatedRequest.responseDueDate = moment(responseDueDate).format(DateFormats.dateForDb)
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.transferChangeRequest)
-    await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser.phone}`, cleanedRequest, activeRequest.id)
+    await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, cleanedRequest, activeRequest.id)
     await getSecuredRequests()
     setActiveRequest(updatedRequest)
     setShowDetails(false)
@@ -165,7 +165,7 @@ export default function TransferRequests() {
     if (!sendWithAddress) {
       notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} has Arrived`
     }
-    const notifPhone = activeRequest?.ownerKey === currentUser.phone ? activeRequest.recipientPhone : currentUser.phone
+    const notifPhone = activeRequest?.ownerKey === currentUser.key ? activeRequest.recipientPhone : currentUser.key
     await NotificationManager.sendNotification(
       'Transfer Destination Arrival',
       notificationMessage,
@@ -311,7 +311,7 @@ export default function TransferRequests() {
               <InputWrapper inputType={'date'} labelText={'Date'}>
                 <MobileDatePicker
                   onOpen={addThemeToDatePickers}
-                  className={`${theme}  mt-0 w-100`}
+                  className={`${theme}  w-100`}
                   defaultValue={moment(activeRequest?.date)}
                   onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
                 />
@@ -322,7 +322,7 @@ export default function TransferRequests() {
                 <MobileTimePicker
                   onOpen={addThemeToDatePickers}
                   defaultValue={moment(activeRequest?.time, DateFormats.timeForDb)}
-                  className={`${theme}  mt-0 w-100`}
+                  className={`${theme}  w-100`}
                   onChange={(e) => setRequestTime(moment(e).format(DateFormats.timeForDb))}
                 />
               </InputWrapper>
@@ -410,13 +410,11 @@ export default function TransferRequests() {
                             {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
                           </span>
                         </p>
-                        {request?.recipientPhone === currentUser.phone && (
-                          <p id="subtitle">From {StringManager.getFirstNameOnly(request?.createdBy)}</p>
-                        )}
-                        {request?.recipientPhone !== currentUser.phone && (
+                        {request?.recipientKey === currentUser.key && <p id="subtitle">From {StringManager.getFirstNameOnly(request?.createdBy)}</p>}
+                        {request?.recipientKey !== currentUser.key && (
                           <p id="subtitle">
                             Request Sent to&nbsp;
-                            {StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === request?.recipientPhone)[0]?.name)}
+                            {StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.key === request?.recipientKey)[0]?.name)}
                           </p>
                         )}
                       </div>

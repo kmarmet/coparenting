@@ -73,7 +73,7 @@ export default function CustomWeekends({ hide, showCard }) {
       dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
-      dateObject.ownerKey = currentUser?.phone
+      dateObject.ownerKey = currentUser?.key
       dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
       dateObject.id = Manager.getUid()

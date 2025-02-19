@@ -621,6 +621,7 @@
       text-align: center;
       position: relative;
       border-radius: 0 !important;
+      font-weight: $fwRegular !important;
 
       //      &:before {
       //        content: '' !important;
@@ -673,9 +674,9 @@
     position: relative;
     top: -25px;
     .MuiInputBase-input {
-      width: calc(100% - 20px) !important;
+      //      width: calc(100% - 20px) !important;
       //      max-width: calc(100% - 20px) !important;
-      height: 40px !important;
+      //      height: 40px !important;
     }
     &.MuiFormControl-fullWidth {
       border: 0;
@@ -1077,6 +1078,12 @@
       position: absolute !important;
       top: 0 !important;
       caret-color: $mainBlue !important;
+
+      // new {
+      height: auto !important;
+      //      border: 2px solid red !important;
+      top: 38px !important;
+      width: 100% !important;
     }
   }
 

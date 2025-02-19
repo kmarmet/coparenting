@@ -58,7 +58,7 @@ export default AppManager = {
   },
   deleteExpiredCalendarEvents: async function(currentUser) {
     var daysPassed, event, events, i, len, results;
-    events = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`));
+    events = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.key : void 0}`));
     if (Manager.isValid(events)) {
       events = events.filter(function(x) {
         return x != null;
@@ -118,9 +118,9 @@ export default AppManager = {
         memory = memories[i];
         daysPassed = moment().diff(event.creationDate, 'days');
         if (daysPassed >= 30) {
-          await DB.delete(`${DB.tables.memories}/${currentUser.phone}`, memory.id);
+          await DB.delete(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`, memory.id);
           if (Manager.isValid(memory != null ? memory.memoryName : void 0)) {
-            results.push((await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser.phone, memory != null ? memory.memoryName : void 0)));
+            results.push((await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser != null ? currentUser.key : void 0, memory != null ? memory.memoryName : void 0)));
           } else {
             results.push(void 0);
           }
@@ -132,3 +132,5 @@ export default AppManager = {
     }
   }
 };
+
+//# sourceMappingURL=appManager.js.map

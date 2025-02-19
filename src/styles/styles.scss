@@ -568,6 +568,10 @@
         overflow: auto;
       }
 
+      &.disable-scroll {
+        overflow: hidden;
+      }
+
       &.home {
         //        overflow-y: auto;
         //        overflow-x: auto;

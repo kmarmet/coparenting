@@ -83,7 +83,7 @@ export default CalendarManager = {
       dateObject.directionsLink = Manager.getDirectionsLink(eventObject.location);
       dateObject.location = eventObject.location;
       dateObject.children = eventObject.children;
-      dateObject.ownerKey = currentUser != null ? currentUser.phone : void 0;
+      dateObject.ownerKey = currentUser != null ? currentUser.key : void 0;
       dateObject.createdBy = currentUser != null ? currentUser.name : void 0;
       dateObject.phone = eventObject.phone;
       dateObject.shareWith = DatasetManager.getUniqueArray(eventObject.shareWith, true);

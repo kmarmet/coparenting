@@ -81,7 +81,7 @@ export default function SwapRequests() {
       updatedRequest.responseDueDate = moment(responseDueDate).format(DateFormats.dateForDb)
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.swapRequest)
-    await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser.phone}`, cleanedRequest, cleanedRequest.id)
+    await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanedRequest, cleanedRequest.id)
     await getSecuredRequests()
     setActiveRequest(updatedRequest)
     setShowDetails(false)
@@ -94,7 +94,7 @@ export default function SwapRequests() {
   }
 
   const selectDecision = async (decision) => {
-    const recipient = await DB_UserScoped.getCoparentByPhone(activeRequest.recipientPhone, currentUser)
+    const recipient = await DB_UserScoped.getCoparentByKey(activeRequest.recipientKey, currentUser)
     const recipientName = recipient.name
     // Rejected
     if (decision === Decisions.rejected) {
@@ -276,7 +276,7 @@ export default function SwapRequests() {
               )}
 
               {/* SENT TO */}
-              {activeRequest?.ownerKey === currentUser?.phone && (
+              {activeRequest?.ownerKey === currentUser?.key && (
                 <div className="flex">
                   <>
                     <b>
@@ -284,7 +284,7 @@ export default function SwapRequests() {
                       Sent to
                     </b>
                     <span>
-                      {StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.phone === activeRequest?.recipientPhone)[0]?.name)}
+                      {StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.key === activeRequest?.recipientKey)[0]?.name)}
                     </span>
                   </>
                 </div>

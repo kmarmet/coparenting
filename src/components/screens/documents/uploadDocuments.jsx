@@ -1,5 +1,5 @@
 // Path: src\components\screens\documents\uploadDocuments.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager.js'
 import FirebaseStorage from '/src/database/firebaseStorage'
@@ -24,12 +24,11 @@ import DB from '/src/database/DB'
 import StringManager from '/src/managers/stringManager'
 import DocumentConversionManager from '/src/managers/documentConversionManager.js'
 import { ref, uploadString, getStorage } from 'firebase/storage'
-import documentConversionManager from '/src/managers/documentConversionManager.js'
 import Spacer from '../../shared/spacer'
 
 export default function UploadDocuments({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, formToShow } = state
+  const { currentUser, theme } = state
   const [shareWith, setShareWith] = useState([])
   const [docType, setDocType] = useState(null)
   const [docName, setDocName] = useState('')
@@ -80,7 +79,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     // Check for existing document
     const securedDocuments = await SecurityManager.getDocuments(currentUser)
     const existingDocument = await DB.find(securedDocuments, null, false, (doc) => {
-      if (doc.name === docName && doc.ownerKey === currentUser.phone) {
+      if (doc.name === docName && doc.ownerKey === currentUser.key) {
         return true
       }
     })
@@ -97,9 +96,9 @@ export default function UploadDocuments({ hideCard, showCard }) {
     //#region IMAGE CONVERSION
     if (docType === 'image') {
       file = await ImageManager.compressImage(file)
-      const url = await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser?.id}/${docNameToUse}`, file)
+      const url = await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser?.key}/${docNameToUse}`, file)
       let firebaseStorageFileName = docNameToUse.replaceAll(' ', '')
-      let text = await DocumentConversionManager.imageToHtml(firebaseStorageFileName, currentUser?.id)
+      let text = await DocumentConversionManager.imageToHtml(firebaseStorageFileName, currentUser?.key)
       await storeTextInFirebase(text, docNameToUse.replaceAll(' ', ''))
     }
     //#endregion IMAGE CONVERSION
@@ -107,14 +106,14 @@ export default function UploadDocuments({ hideCard, showCard }) {
     //#region DOCUMENT CONVERSION
     if (docType === 'document') {
       if (fileExtension === 'pdf') {
-        await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.id}/${docNameToUse}`, file)
-        const docHtml = await DocumentConversionManager.pdfToHtml(docNameToUse, currentUser?.id)
+        await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.key}/${docNameToUse}`, file)
+        const docHtml = await DocumentConversionManager.pdfToHtml(docNameToUse, currentUser?.key)
         let firebaseStorageFileName = docNameToUse.replaceAll(' ', '')
         await storeTextInFirebase(docHtml, firebaseStorageFileName)
       } else {
         // Image
-        await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.id}/${docNameToUse}`, file)
-        const docHtml = await DocumentConversionManager.docToHtml(docNameToUse, currentUser?.id)
+        await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.key}/${docNameToUse}`, file)
+        const docHtml = await DocumentConversionManager.docToHtml(docNameToUse, currentUser?.key)
         let firebaseStorageFileName = docNameToUse.replaceAll(' ', '')
         await storeTextInFirebase(docHtml, firebaseStorageFileName)
       }
@@ -123,10 +122,10 @@ export default function UploadDocuments({ hideCard, showCard }) {
 
     //#region ADD TO DB / SEND NOTIFICATION
     // Add to user documents object
-    const fileUrl = await FirebaseStorage.getFileUrl(FirebaseStorage.directories.documents, currentUser?.id, docNameToUse)
+    const fileUrl = await FirebaseStorage.getFileUrl(FirebaseStorage.directories.documents, currentUser?.key, docNameToUse)
     const newDocument = new Doc()
     newDocument.url = fileUrl
-    newDocument.ownerKey = currentUser?.phone
+    newDocument.ownerKey = currentUser?.key
     newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
     newDocument.type = docType
     newDocument.name = docNameToUse
@@ -153,7 +152,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
 
   const storeTextInFirebase = async (txt, fileName) => {
     const storage = getStorage()
-    const storageRef = ref(storage, `${FirebaseStorage.directories.documents}/${currentUser.id}/${fileName}`)
+    const storageRef = ref(storage, `${FirebaseStorage.directories.documents}/${currentUser.key}/${fileName}`)
 
     // Upload the string
     uploadString(storageRef, txt, 'raw')

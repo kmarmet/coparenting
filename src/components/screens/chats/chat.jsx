@@ -212,6 +212,7 @@ const Chats = () => {
     setToneObject(toneAndSentiment)
   }
 
+  // ON PAGE LOAD
   useEffect(() => {
     const messageInput = document.querySelector('.message-input')
 
@@ -221,12 +222,17 @@ const Chats = () => {
     onTableChange().then((r) => r)
 
     const appContainer = document.querySelector('.App')
+    const appContent = document.getElementById('app-content-with-sidebar')
+    const chatWrapper = document.getElementById('chat-wrapper')
 
-    if (appContainer) {
+    if (appContent && chatWrapper && appContainer) {
+      appContent.classList.add('disable-scroll')
+      chatWrapper.classList.add('disable-scroll')
       appContainer.classList.add('disable-scroll')
     }
   }, [])
 
+  // ON SEARCH RESULTS CHANGE
   useEffect(() => {
     const searchResultsContainer = document.querySelector('.search-results')
     if (Manager.isValid(searchResultsContainer)) {

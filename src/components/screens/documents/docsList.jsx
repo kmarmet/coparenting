@@ -41,14 +41,14 @@ export default function DocsList() {
   }
 
   const deleteDocs = async () => {
-    DocumentsManager.deleteDocsWithIds(toDelete, currentUser, (docId) => {
+    DocumentsManager.deleteDocsWithIds(toDelete, currentUser, () => {
       setToDelete([])
     })
   }
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.documents}/${currentUser?.phone}`), async (snapshot) => {
+    onValue(child(dbRef, `${DB.tables.documents}/${currentUser?.key}`), async () => {
       await getSecuredDocs()
     })
   }

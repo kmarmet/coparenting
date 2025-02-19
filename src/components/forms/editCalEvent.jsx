@@ -3,7 +3,6 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
-import { getDatabase, ref } from 'firebase/database'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
@@ -746,12 +745,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                   )}
                   {/* Share with */}
                   {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
-                    <ShareWithCheckboxes
-                      required={false}
-                      onCheck={handleShareWithSelection}
-                      defaultKeys={event?.shareWith}
-                      containerClass={`share-with-coparents`}
-                    />
+                    <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with-coparents`} />
                   )}
                   <Spacer height={5} />
                   {/* ALL DAY / HAS END DATE */}
@@ -787,7 +781,10 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                         </AccordionSummary>
                         <AccordionDetails>
                           <CheckboxGroup
-                            checkboxArray={Manager.buildCheckboxGroup(currentUser, 'reminder-times', event?.reminderTimes)}
+                            checkboxArray={Manager.buildCheckboxGroup({
+                              currentUser,
+                              labelType: 'reminder-times',
+                            })}
                             elClass={`${theme} `}
                             containerClass={'reminder-times'}
                             skipNameFormatting={true}
@@ -831,7 +828,10 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                       <AccordionDetails>
                         <div id="include-children-checkbox-container">
                           <CheckboxGroup
-                            checkboxArray={Manager.buildCheckboxGroup(currentUser, 'children', event?.children)}
+                            checkboxArray={Manager.buildCheckboxGroup({
+                              currentUser,
+                              labelType: 'children',
+                            })}
                             elClass={`${theme} `}
                             containerClass={'include-children-checkbox-container'}
                             onCheck={handleChildSelection}

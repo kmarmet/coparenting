@@ -71,7 +71,7 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
             {StringManager.getFirstNameOnly(coparent?.name)}
           </p>
           {/* PAUSE CHAT BUTTON */}
-          {!chat?.isPausedFor?.includes(currentUser?.phone) && (
+          {!chat?.isPausedFor?.includes(currentUser?.key) && (
             <div id="pause-wrapper">
               <HiPause
                 onClick={(e) => {
@@ -89,7 +89,7 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
               />
             </div>
           )}
-          {chat?.isPausedFor?.includes(currentUser?.phone) && (
+          {chat?.isPausedFor?.includes(currentUser?.key) && (
             <div id="play-wrapper">
               <FaPlay className={'play-icon'} onClick={() => unpauseChat(coparent)} />
             </div>

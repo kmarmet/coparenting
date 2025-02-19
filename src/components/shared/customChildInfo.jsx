@@ -6,7 +6,6 @@ import DB_UserScoped from '../../database/db_userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import CheckboxGroup from './checkboxGroup'
-import Autocomplete from 'react-google-autocomplete'
 import InputWrapper from './inputWrapper'
 import BottomCard from './bottomCard'
 import AlertManager from '../../managers/alertManager'
@@ -104,8 +103,11 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
         <CheckboxGroup
           parentLabel="Type"
           required={true}
-          defaultLabels={'Text'}
-          checkboxLabels={['Text', 'Location', 'Date']}
+          checkboxArray={Manager.buildCheckboxGroup({
+            currentUser,
+            defaultLabels: ['Text'],
+            customLabelArray: ['Text', 'Location', 'Date'],
+          })}
           onCheck={handleInfoTypeSelection}
         />
 

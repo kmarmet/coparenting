@@ -18,7 +18,6 @@ import NotificationManager from '/src/managers/notificationManager.js'
 export default function Settings() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, authUser } = state
-  const [defaultReminderTimes, setDefaultReminderTimes] = useState([])
   const [morningSummaryTime, setMorningSummaryTime] = useState('')
   const [eveningSummaryTime, setEveningSummaryTime] = useState('')
   const [notificationsToggled, setNotificationsToggled] = useState(0)
@@ -26,14 +25,14 @@ export default function Settings() {
   const submitCalendarSettings = async () => {
     if (DateManager.dateIsValid(morningSummaryTime)) {
       await DB_UserScoped.updateUserRecord(
-        currentUser?.phone,
+        currentUser?.key,
         'dailySummaries/morningReminderSummaryHour',
         moment(morningSummaryTime).format(DateFormats.summaryHour)
       )
     }
     if (DateManager.dateIsValid(eveningSummaryTime)) {
       await DB_UserScoped.updateUserRecord(
-        currentUser?.phone,
+        currentUser?.key,
         'dailySummaries/eveningReminderSummaryHour',
         moment(eveningSummaryTime).format(DateFormats.summaryHour)
       )
@@ -43,9 +42,9 @@ export default function Settings() {
 
   const toggleNotifications = async () => {
     setNotificationsToggled(!notificationsToggled)
-    const subscriber = await DB.find(DB.tables.notificationSubscribers, ['phone', currentUser.phone], true)
+    const subscriber = await DB.find(DB.tables.notificationSubscribers, ['key', currentUser.key], true)
     const { subscriptionId } = subscriber
-    await DB_UserScoped.updateUserRecord(currentUser.phone, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
+    await DB_UserScoped.updateUserRecord(currentUser?.key, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({ ...state, currentUser: updatedCurrentUser })
 

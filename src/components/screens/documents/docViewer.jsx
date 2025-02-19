@@ -72,7 +72,7 @@ export default function DocViewer() {
   }
 
   const setTableOfContentsHeaders = async () => {
-    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
     userHeaders = userHeaders.map((x) => x.headerText)
     const domHeaders = document.querySelectorAll('.header')
     let headersInDocument = []
@@ -151,7 +151,7 @@ export default function DocViewer() {
       if (imageResult?.status === 'success') {
         setImgUrl(imageResult?.imageUrl)
         // Get all headers
-        let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+        let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
         userHeaders = userHeaders.map((x) => x.headerText)
 
         let allHeaders = []
@@ -284,7 +284,7 @@ export default function DocViewer() {
 
         for (let textElement of textWrappers) {
           const spans = textElement.querySelectorAll('span')
-          let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+          let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
 
           for (let span of spans) {
             for (let userHeader of userHeaders) {
@@ -318,7 +318,7 @@ export default function DocViewer() {
             const links = par.querySelectorAll('a')
 
             // Get all headers
-            let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+            let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
             userHeaders = userHeaders.map((x) => x.headerText)
 
             // Remove unnecessary pars
@@ -415,9 +415,9 @@ export default function DocViewer() {
     const headerTarget = headerElement?.target
     if (headerTarget) {
       const headerText = formatHeaderText(headerTarget?.parentNode?.textContent)
-      const header = await DB.find(`${DB.tables.documentHeaders}/${currentUser.phone}`, ['headerText', headerText], true)
+      const header = await DB.find(`${DB.tables.documentHeaders}/${currentUser?.key}`, ['headerText', headerText], true)
       if (header) {
-        await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser.phone}`, header.id)
+        await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser?.key}`, header.id)
         setTocHeaders([])
         await onLoad()
       }
@@ -427,15 +427,15 @@ export default function DocViewer() {
   const addUserHeaderToDatabase = async () => {
     // setState({ ...state, isLoading: true })
     const text = DomManager.getSelectionText()
-    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser.phone}`)
+    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
     const alreadyExists = userHeaders.filter((x) => x.headerText.trim().includes(text.trim())).length > 0
     if (!alreadyExists) {
       if (text.length > 0 && currentScreen === ScreenNames.docViewer) {
         AlertManager.confirmAlert('Would you like to use the selected text as a header?', 'Yes', true, async () => {
           const header = new DocumentHeader()
           header.headerText = formatHeaderText(text)
-          header.ownerKey = currentUser.phone
-          await DB.add(`${DB.tables.documentHeaders}/${currentUser.phone}`, header)
+          header.ownerKey = currentUser.key
+          await DB.add(`${DB.tables.documentHeaders}/${currentUser?.key}`, header)
           await onLoad()
         })
       }

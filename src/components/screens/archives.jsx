@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useState } from 'react'
 // Path: src\components\screens\archives.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
 import Label from '/src/components/shared/label.jsx'
@@ -10,7 +11,6 @@ import SecurityManager from '/src/managers/securityManager.coffee'
 import StringManager from '/src/managers/stringManager.coffee'
 import MenuItem from '@mui/material/MenuItem'
 import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
 import { RiFileExcel2Fill } from 'react-icons/ri'
 import globalState from '../../context'
@@ -90,10 +90,10 @@ export default function Archives() {
         let allExpenses = await SecurityManager.getExpenses(currentUser)
         let filteredExpenses = []
         if (e === 'Me') {
-          filteredExpenses = allExpenses.filter((x) => x.payer.phone === currentUser.phone)
+          filteredExpenses = allExpenses.filter((x) => x.payer?.key === currentUser?.key)
         } else {
           const coparent = currentUser?.coparents?.filter((x) => x.name.includes(e))[0]
-          filteredExpenses = allExpenses.filter((x) => x.payer.phone === coparent.phone)
+          filteredExpenses = allExpenses.filter((x) => x.payer?.key === coparent?.key)
         }
 
         if (Manager.isValid(filteredExpenses)) {
@@ -182,7 +182,11 @@ export default function Archives() {
             elClass={`${theme}`}
             parentLabel="Record Type"
             skipNameFormatting={true}
-            checkboxArray={Manager.buildCheckboxGroup(currentUser, 'record-types', ['Expenses'])}
+            checkboxArray={Manager.buildCheckboxGroup({
+              currentUser,
+              labelType: 'record-types',
+              defaultLabels: ['Expenses'],
+            })}
             onCheck={handleRecordTypeSelection}
           />
 
@@ -194,7 +198,10 @@ export default function Archives() {
                 elClass={'payers'}
                 skipNameFormatting={true}
                 parentLabel="Payer"
-                checkboxArray={Manager.buildCheckboxGroup(currentUser, 'expense-payers', [], expensePayers)}
+                checkboxArray={Manager.buildCheckboxGroup({
+                  currentUser,
+                  customLabelArray: expensePayers,
+                })}
                 onCheck={handlePayerSelection}
               />
             </>
@@ -268,7 +275,12 @@ export default function Archives() {
                 getAndSetMessages(chatKey).then((r) => r)
               }}
               parentLabel="Select which chat you would like to export"
-              checkboxArray={Manager.buildCheckboxGroup(currentUser, null, [], activeChats, 'name', 'id')}
+              checkboxArray={Manager.buildCheckboxGroup({
+                currentUser,
+                customLabelArray: activeChats,
+                labelProp: 'name',
+                uidProp: 'id',
+              })}
             />
           )}
         </Fade>

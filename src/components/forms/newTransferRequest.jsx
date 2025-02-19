@@ -123,6 +123,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     Manager.handleCheckboxSelection(
       e,
       async (e) => {
+        console.log(e)
         const phone = await DB_UserScoped.getUserFromName(e)
         setRequestRecipientPhone(phone)
       },
@@ -220,33 +221,43 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
             <CheckboxGroup
               skipNameFormatting={true}
-              containerClass={'mb-15'}
-              dataKey={currentUser?.coparents?.map((x) => x?.key)}
-              checkboxLabels={['Set as Preferred Transfer Location']}
+              checkboxArray={Manager.buildCheckboxGroup({
+                currentUser,
+                manualLabelArray: ['Set as Preferred Transfer Location'],
+              })}
               onCheck={handlePreferredLocation}
             />
+
             <Spacer height={5} />
+
             {/* REASON */}
             <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
+
+            <Spacer height={5} />
 
             {/* SEND REQUEST TO */}
             <CheckboxGroup
               elClass="sending-to"
               parentLabel={'Who is the request being sent to?'}
-              dataKey={currentUser?.coparents?.map((x) => x?.key)}
-              checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
+              checkboxArray={Manager.buildCheckboxGroup({
+                currentUser,
+                predefinedType: 'coparents',
+              })}
               onCheck={handleRequestRecipient}
               required={true}
             />
 
             <Spacer height={5} />
+
             <ShareWithCheckboxes
               shareWith={currentUser?.coparents?.map((x) => x.phone)}
               onCheck={handleShareWithSelection}
               labelText={'Share with'}
               containerClass={'share-with-coparents'}
-              dataKey={currentUser?.coparents?.map((x) => x.key)}
-              checkboxLabels={currentUser?.coparents?.map((x) => x.name)}
+              checkboxArray={Manager.buildCheckboxGroup({
+                currentUser,
+                predefinedType: 'share-with',
+              })}
             />
           </div>
         </div>

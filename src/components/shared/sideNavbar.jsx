@@ -40,7 +40,7 @@ export default function SideNavbar() {
   }
 
   const changeTheme = async (theme) => {
-    await DB_UserScoped.updateUserRecord(currentUser?.phone, `settings/theme`, theme)
+    await DB_UserScoped.updateUserRecord(currentUser?.key, `settings/theme`, theme)
     window.location.reload()
   }
 
@@ -57,6 +57,7 @@ export default function SideNavbar() {
       })
       .catch((error) => {
         // An error happened.
+        console.log(error)
       })
   }
 

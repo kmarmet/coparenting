@@ -18,6 +18,7 @@ import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
 import DB from '../../../database/DB'
 import Spacer from '../../shared/spacer'
+import ReCAPTCHA from 'react-google-recaptcha'
 
 export default function Login() {
   const { state, setState } = useContext(globalState)
@@ -26,6 +27,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [viewPassword, setViewPassword] = useState(false)
   const [isPersistent, setIsPersistent] = useState(false)
+  const recaptchaRef = React.createRef()
 
   // Init Firebase
   const app = initializeApp(firebaseConfig)
@@ -168,6 +170,19 @@ export default function Login() {
 
   return (
     <>
+      <form
+        onSubmit={() => {
+          recaptchaRef.current.execute()
+        }}>
+        <ReCAPTCHA
+          ref={recaptchaRef}
+          size="invisible"
+          sitekey="6Leip9sqAAAAAD8rj96Clcbty9kD6MzPS_IzkUG-"
+          onChange={(e) => {
+            console.log(e)
+          }}
+        />
+      </form>
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`page-container form login`}>
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
@@ -224,7 +239,9 @@ export default function Login() {
               <CheckboxGroup
                 elClass={'light'}
                 onCheck={togglePersistence}
-                checkboxArray={Manager.buildCheckboxGroup(null, null, null, ['Remember Me'])}
+                checkboxArray={Manager.buildCheckboxGroup({
+                  customLabelArray: ['Remember Me'],
+                })}
                 skipNameFormatting={true}
               />
 

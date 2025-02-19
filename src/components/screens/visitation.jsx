@@ -76,7 +76,7 @@ export default function Visitation() {
       dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
-      dateObject.ownerKey = currentUser?.phone
+      dateObject.ownerKey = currentUser?.key
       dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
       dateObject.visitationSchedule = ScheduleTypes.everyWeekend
@@ -106,7 +106,7 @@ export default function Visitation() {
         dateObject.startDate = moment(holidayDateString).format(DateFormats.dateForDb)
         dateObject.holidayName = holidayName
         // Not Required
-        dateObject.ownerKey = currentUser?.phone
+        dateObject.ownerKey = currentUser?.key
         dateObject.createdBy = currentUser?.name
         dateObject.fromVisitationSchedule = true
         dateObject.isHoliday = true
@@ -171,7 +171,7 @@ export default function Visitation() {
     const userEvents = await SecurityManager.getCalendarEvents(currentUser)
     let userHolidays = []
     if (Manager.isValid(userEvents)) {
-      userHolidays = userEvents.filter((x) => x.ownerKey === currentUser?.phone && x.fromVisitationSchedule === true && x.isHoliday === true)
+      userHolidays = userEvents.filter((x) => x.ownerKey === currentUser?.key && x.fromVisitationSchedule === true && x.isHoliday === true)
     }
     return {
       holidays: _holidays.flat(),

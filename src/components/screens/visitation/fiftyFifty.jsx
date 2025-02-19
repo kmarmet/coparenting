@@ -58,13 +58,13 @@ export default function FiftyFifty({ hide, showCard }) {
     }
 
     const scheduleDates = VisitationManager.getFiftyFifty(dates)
-    scheduleDates.forEach((date, index) => {
+    scheduleDates.forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
       dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
-      dateObject.ownerKey = currentUser?.phone
+      dateObject.ownerKey = currentUser?.key
       dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
       dateObject.id = Manager.getUid()

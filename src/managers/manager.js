@@ -4,6 +4,7 @@ import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
 import StringManager from './stringManager'
 import DomManager from './domManager'
+import DB_UserScoped from '../database/db_userScoped'
 
 const Manager = {
   invalidInputs: (requiredInputs) => {
@@ -269,10 +270,26 @@ const Manager = {
       if (onCheckRemoval) onCheckRemoval(label)
     }
   },
-  buildCheckboxGroup: (currentUser, labelType, defaultLabels, manualLabelArray, labelProp, uidProp) => {
+  buildCheckboxGroup: ({ currentUser, labelType, defaultLabels, customLabelArray, labelProp, uidProp, predefinedType }) => {
     let checkboxLabels = []
-    if (Manager.isValid(labelProp) && Manager.isValid(uidProp)) {
-    } else {
+    let checkboxGroup = []
+    // Predefined Types
+    if (Manager.isValid(predefinedType)) {
+      if (predefinedType === 'coparents') {
+        checkboxLabels = DB_UserScoped.getCoparentObjArray(currentUser)
+      }
+
+      for (const label of checkboxLabels) {
+        checkboxGroup.push({
+          label: label['name'],
+          key: label['key'],
+        })
+      }
+
+      return checkboxGroup
+    }
+
+    if (!Manager.isValid(labelProp) && !Manager.isValid(uidProp)) {
       if (labelType && labelType === 'reminder-times') {
         checkboxLabels = CalMapper.allUnformattedTimes()
       }
@@ -291,11 +308,10 @@ const Manager = {
       if (labelType && labelType === 'expense-payers' && Manager.isValid(currentUser.coparents)) {
         checkboxLabels = [...currentUser.coparents.map((x) => x.name), 'Me']
       }
-      if (!labelType && Manager.isValid(manualLabelArray)) {
-        checkboxLabels = manualLabelArray
+      if (!labelType && Manager.isValid(customLabelArray)) {
+        checkboxLabels = customLabelArray
       }
     }
-    let checkboxGroup = []
 
     // ITERATE THROUGH LABELS
     if (!Manager.isValid(labelProp) && !Manager.isValid(uidProp)) {
@@ -314,9 +330,10 @@ const Manager = {
         })
       }
     }
+
     // From Object
     else {
-      for (const chat of Array.from(manualLabelArray)) {
+      for (const chat of Array.from(customLabelArray)) {
         checkboxGroup.push({
           label: chat[labelProp],
           key: chat[uidProp],

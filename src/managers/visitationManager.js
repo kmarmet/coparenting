@@ -235,9 +235,9 @@ const VisitationManager = {
     }
   },
   getSchedule: async (currentUser) => {
-    return new Promise(async (resolve) => {
-      await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.phone}`).then((events) => {
-        let scheduleEvents = events.filter((x) => x.fromVisitationSchedule === true && x.ownerKey === currentUser.phone)
+    return new Promise((resolve) => {
+      DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`).then((events) => {
+        let scheduleEvents = events.filter((x) => x.fromVisitationSchedule === true && x.ownerKey === currentUser?.key)
         resolve(scheduleEvents)
       })
     })
@@ -321,10 +321,10 @@ const VisitationManager = {
     await CalendarManager.deleteMultipleEvents(scheduleEvents, currentUser)
   },
   deleteAllHolidaysForUser: async (currentUser) => {
-    const dbPath = `${DB.tables.calendarEvents}/${currentUser.phone}`
+    const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
     const allEvents = await DB.getTable(dbPath)
     for (let event of allEvents) {
-      if (event?.isHoliday && event?.ownerKey === currentUser.phone) {
+      if (event?.isHoliday && event?.ownerKey === currentUser?.key) {
         await DB.delete(dbPath, event.id)
       }
     }

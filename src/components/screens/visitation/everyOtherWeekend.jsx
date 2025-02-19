@@ -43,7 +43,7 @@ export default function EveryOtherWeekend({ hide, showCard }) {
       dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       // Not Required
-      dateObject.ownerKey = currentUser?.phone
+      dateObject.ownerKey = currentUser?.key
       dateObject.fromVisitationSchedule = true
       dateObject.visitationSchedule = ScheduleTypes.everyOtherWeekend
       dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()

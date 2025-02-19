@@ -13,6 +13,44 @@ import StringManager from '/src/managers/stringManager.coffee'
 
 const DB_UserScoped = {
   // GET
+  getCoparentObjArray: (currentUser) => {
+    let objArray = []
+    if (Manager.isValid(currentUser?.coparents)) {
+      for (let coparent of currentUser.coparents) {
+        if (coparent?.key) {
+          objArray.push({
+            key: coparent.key,
+            name: coparent.name,
+          })
+        }
+      }
+    }
+    return objArray
+  },
+  getCoparentOrChildObjArray: (currentUser) => {
+    let objArray = []
+    if (Manager.isValid(currentUser?.coparents)) {
+      for (let coparent of currentUser.coparents) {
+        if (coparent?.key) {
+          objArray.push({
+            key: coparent.key,
+            name: coparent.name,
+          })
+        }
+      }
+    }
+    if (Manager.isValid(currentUser?.children)) {
+      for (let child of currentUser.children) {
+        if (child?.key) {
+          objArray.push({
+            key: child.key,
+            name: child.name,
+          })
+        }
+      }
+    }
+    return objArray
+  },
   getChildAccounts: async (currentUser) => {
     let childrenAccounts = []
     if (Manager.isValid(currentUser?.children, true)) {
@@ -68,9 +106,9 @@ const DB_UserScoped = {
     })
   },
   getPropFromUserRecord: (tableName, currentUser, propPath) =>
-    new Promise(async (resolve) => {
+    new Promise((resolve) => {
       const dbRef = ref(getDatabase())
-      await get(child(dbRef, `${tableName}/${currentUser?.key}/${propPath}`)).then((snapshot) => {
+      get(child(dbRef, `${tableName}/${currentUser?.key}/${propPath}`)).then((snapshot) => {
         let propValue = snapshot.val()
         resolve(propValue || [])
       })
@@ -95,9 +133,9 @@ const DB_UserScoped = {
     return tableData
   },
   getRecordsByUser: async (tableName, currentUser, objectName) => {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const dbRef = ref(getDatabase())
-      await get(child(dbRef, `${tableName}/${currentUser?.key}/${objectName}`))
+      get(child(dbRef, `${tableName}/${currentUser?.key}/${objectName}`))
         .then((snapshot) => {
           if (snapshot.exists()) {
             // console.log("if");
@@ -283,9 +321,9 @@ const DB_UserScoped = {
     let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/coparents`, coparent, 'phone')
     await set(child(dbRef, `users/${currentUser?.key}/coparents/${key}/${StringManager.formatDbProp(prop)}`), value)
   },
-  updateUserRecord: async (phoneUid, propPath, value) => {
+  updateUserRecord: async (keyOrUid, propPath, value) => {
     const dbRef = ref(getDatabase())
-    await set(child(dbRef, `${DB.tables.users}/${phoneUid}/${propPath}`), value)
+    await set(child(dbRef, `${DB.tables.users}/${keyOrUid}/${propPath}`), value)
   },
   updateByPath: (path, newValue) => {
     const dbRef = ref(getDatabase())

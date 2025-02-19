@@ -449,7 +449,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   <AccordionDetails>
                     <CheckboxGroup
                       elClass={`${theme} reminder-times`}
-                      checkboxArray={Manager.buildCheckboxGroup(currentUser, 'reminder-times', null)}
+                      checkboxArray={Manager.buildCheckboxGroup({
+                        currentUser,
+                        labelType: 'reminder-times',
+                      })}
                       containerClass={'reminder-times'}
                       skipNameFormatting={true}
                       onCheck={handleReminderSelection}
@@ -495,7 +498,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   <CheckboxGroup
                     elClass={`${theme} children`}
                     skipNameFormatting={true}
-                    checkboxArray={Manager.buildCheckboxGroup(currentUser, 'children')}
+                    checkboxArray={Manager.buildCheckboxGroup({
+                      currentUser,
+                      labelType: 'children',
+                    })}
                     onCheck={handleChildSelection}
                   />
                 </AccordionDetails>
@@ -518,7 +524,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                           unchecked: null,
                         }}
                         className={'ml-auto reminder-toggle'}
-                        onChange={(e) => setEventIsRepeating(!eventIsRepeating)}
+                        onChange={() => setEventIsRepeating(!eventIsRepeating)}
                       />
                     </div>
                   </AccordionSummary>
@@ -526,7 +532,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     <CheckboxGroup
                       elClass={`${theme}`}
                       onCheck={handleRepeatingSelection}
-                      checkboxArray={Manager.buildCheckboxGroup(currentUser, 'recurring-intervals')}
+                      checkboxArray={Manager.buildCheckboxGroup({
+                        currentUser,
+                        labelType: 'recurring-intervals',
+                      })}
                     />
                     <Spacer height={5} />
                     {Manager.isValid(repeatInterval) && (

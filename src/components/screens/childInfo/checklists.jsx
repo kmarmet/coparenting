@@ -1,9 +1,9 @@
+import React, { useContext, useEffect, useState } from 'react'
 // Path: src\components\screens\childInfo\checklists.jsx
 import BottomCard from '../../shared/bottomCard'
 import globalState from '../../../context'
 import Spacer from '/src/components/shared/spacer'
 import ViewSelector from '/src/components/shared/viewSelector'
-import { useContext, useEffect, useState } from 'react'
 import Manager from '/src/managers/manager'
 import { MdOutlineChecklist } from 'react-icons/md'
 import DB from '/src/database/DB'
@@ -15,19 +15,19 @@ import { PiTrashSimpleDuotone } from 'react-icons/pi'
 
 export default function Checklists({ showCard, hideCard, activeChild }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+  const { currentUser, theme } = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
   const [view, setView] = useState('from')
   const [checklist, setChecklist] = useState(null)
   const [activeItems, setActiveItems] = useState([])
 
   const addToDb = async () => {
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
     const newChecklist = new Checklist()
     newChecklist.checklistItems = checkboxTextList
-    newChecklist.ownerKey = currentUser.phone
+    newChecklist.ownerKey = currentUser?.key
     newChecklist.fromOrTo = view
-    await DB.add(`${DB.tables.users}/${currentUser.phone}/children/${childKey}/checklists`, newChecklist)
+    await DB.add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
   }
 
   const toggleActive = (el) => {
@@ -43,8 +43,8 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
   const deleteItem = async (el) => {
     const element = el.currentTarget
     const checklistItem = element.previousElementSibling
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
-    const path = `${DB.tables.users}/${currentUser.phone}/children/${childKey}/checklists`
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
+    const path = `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`
     const childChecklists = await DB.getTable(path)
     const activeChecklist = childChecklists.filter((x) => x.fromOrTo === view)[0]
     if (activeChecklist) {
@@ -68,8 +68,8 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
 
   const getActiveChildChecklists = async () => {
     if (activeChild) {
-      const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
-      const path = `${DB.tables.users}/${currentUser.phone}/children/${childKey}/checklists`
+      const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
+      const path = `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`
       return await DB.getTable(path)
     } else {
       return {}
@@ -107,7 +107,7 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
       showCard={showCard}
       hasSubmitButton={false}
       title={'Checklists'}
-      subtitle={`View transfer checklists to ensure nothing is left behind when transferring to or from a co-parent's home.  ${DomManager.tapOrClick(
+      subtitle={`Review transfer checklists to guarantee that all items are accounted for during transitions to or from a co-parent's home.  ${DomManager.tapOrClick(
         true
       )} each item to mark completed. ${DomManager.tapOrClick(true)} delete icon to remove the item from the checklist permanently.`}
       onClose={hideCard}>

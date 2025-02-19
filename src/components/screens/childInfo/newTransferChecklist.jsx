@@ -1,9 +1,9 @@
 // Path: src\components\screens\childInfo\newTransferChecklist.jsx
+import React, { useContext, useEffect, useState } from 'react'
 import BottomCard from '../../shared/bottomCard'
 import globalState from '../../../context'
 import Spacer from '/src/components/shared/spacer'
 import ViewSelector from '/src/components/shared/viewSelector'
-import { useContext, useEffect, useState } from 'react'
 import Manager from '/src/managers/manager'
 import { MdOutlineChecklist } from 'react-icons/md'
 import DB from '/src/database/DB'
@@ -11,7 +11,7 @@ import Checklist from '/src/models/checklist.js'
 import DatasetManager from '../../../managers/datasetManager'
 import MyConfetti from '../../shared/myConfetti'
 import AlertManager from '../../../managers/alertManager'
-export default function NewTransferChecklist({ showCard, hideCard, activeChild, visibleDestinations }) {
+export default function NewTransferChecklist({ showCard, hideCard, activeChild }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, refreshKey } = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
@@ -33,12 +33,12 @@ export default function NewTransferChecklist({ showCard, hideCard, activeChild, 
   }
 
   const addToDb = async () => {
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser.phone}/children`, activeChild, 'id')
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
     const newChecklist = new Checklist()
     newChecklist.checklistItems = DatasetManager.getUniqueArray(checkboxTextList, true)
-    newChecklist.ownerKey = currentUser.phone
+    newChecklist.ownerKey = currentUser?.key
     newChecklist.fromOrTo = view
-    await DB.add(`${DB.tables.users}/${currentUser.phone}/children/${childKey}/checklists`, newChecklist)
+    await DB.add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
     hideCard()
     MyConfetti.fire()
     AlertManager.successAlert('Checklist Created!')

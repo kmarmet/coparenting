@@ -308,12 +308,6 @@
 /*#region  FORM*/
 @mixin form {
   &.transfer-change {
-    #checkbox-group {
-      &.sending-to {
-        margin-top: 85px;
-      }
-    }
-
     input {
       &:first-child {
         margin-bottom: 0;
@@ -1445,6 +1439,7 @@
   border: 1px solid $iconGrey;
   border-radius: $borderRadius;
   transition: all 0.3s ease-in-out;
+  overflow: hidden;
 
   &.textarea {
     min-height: 120px;
@@ -1514,6 +1509,13 @@
       width: 100%;
       display: block;
     }
+  }
+
+  textarea {
+    max-height: unset;
+    display: flex;
+    overflow: auto;
+    min-height: 90px;
   }
 }
 
@@ -2817,10 +2819,9 @@
 
             .MuiFormControl-root {
               position: relative;
-              top: -10px;
-              width: 90% !important;
-
-              input {
+              //              top: -10px;
+              //              width: 90% !important;
+              s input {
                 border-radius: $borderRadius !important;
                 margin-top: 12px !important;
               }
@@ -2834,7 +2835,6 @@
   // EDIT CALENDAR EVENT
   &.edit-calendar-event {
     width: 100%;
-    min-height: 70vh;
 
     #large-title {
       &.long-title {
@@ -2854,20 +2854,6 @@
 
       img {
         width: 100% !important;
-      }
-    }
-
-    #relative-wrapper {
-      min-height: 70vh;
-
-      #content {
-        padding-bottom: 300px;
-        min-height: 70vh;
-      }
-
-      textarea {
-        height: 150px;
-        max-height: 150px;
       }
     }
   }
@@ -3339,8 +3325,7 @@
   /*#endregion  CARDS BY CLASS*/
   #relative-wrapper {
     position: relative;
-    padding: 0 15px 100px 15px;
-    overflow: hidden;
+    padding: 0 15px 200px 15px;
     height: 100%;
     min-height: 70vh;
 
@@ -3354,13 +3339,10 @@
       overflow: auto;
       overflow-x: hidden;
       position: absolute;
-      top: 65px;
+      top: 60px;
       bottom: 0;
       width: calc(100% - 30px);
-      height: 100vh;
-      padding-bottom: 300px;
-      max-height: 70vh;
-
+      max-height: calc(100% - 140px);
       #details {
         .flex {
           margin-bottom: 0;

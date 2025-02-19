@@ -7,17 +7,17 @@ import DatasetManager from "./datasetManager"
 export default DocumentsManager =
   deleteDocsWithIds: (idsToDelete, currentUser, callback = () => {}) ->
     for docId in idsToDelete
-      docs = DatasetManager.getValidArray(await DB.getTable("#{DB.tables.documents}/#{currentUser?.phone}"))
+      docs = DatasetManager.getValidArray(await DB.getTable("#{DB.tables.documents}/#{currentUser?.key}"))
       if Manager.isValid(docs)
         for thisDoc in docs
           if thisDoc.id == docId
-            await DB.deleteById("#{DB.tables.documents}/#{currentUser?.phone}", docId)
+            await DB.deleteById("#{DB.tables.documents}/#{currentUser?.key}", docId)
             await FirebaseStorage.deleteFile("#{FirebaseStorage.directories.documents}/#{currentUser.id}/#{thisDoc.name}")
             if callback then callback(docId)
 
   addToDocumentsTable: (currentUser, data) ->
     dbRef = ref getDatabase()
-    tableData = await DB.getTable ("#{DB.tables.documents}/#{currentUser?.phone}")
+    tableData = await DB.getTable ("#{DB.tables.documents}/#{currentUser?.key}")
 
     if Manager.isValid (tableData)
       if tableData.length > 0
@@ -27,7 +27,7 @@ export default DocumentsManager =
     else
       tableData = [data]
 
-    await set child(dbRef, "#{DB.tables.documents}/#{currentUser.phone}"), tableData
+    await set child(dbRef, "#{DB.tables.documents}/#{currentUser?.key}"), tableData
 
   fixTypos: (jackedUpText) ->
     jackedUpText

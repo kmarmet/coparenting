@@ -148,19 +148,16 @@
     }
 
     #image-and-actions-wrapper {
-      background: $mainBlue;
       display: flex;
       overflow: hidden;
-      border-radius: $bigBorderRadius;
-      padding: 20px;
       margin-bottom: 20px;
-      align-items: center;
       position: relative;
+      align-items: flex-start;
 
       .left {
         margin-right: 25px;
         .child-name {
-          color: white;
+          color: black;
           font-weight: $fwMedium;
           font-size: 20px;
           text-align: center;
@@ -259,19 +256,21 @@
 
       .right {
         width: 100%;
+        margin-top: 10px;
         button {
           &.button {
             &.default {
-              font-size: 15px;
+              font-size: 14px;
               opacity: 0.9;
               background: transparent;
-              text-align: center;
-              color: white;
-              margin: 0 auto 15px auto;
+              text-align: right;
+              margin-left: auto;
+              color: black;
               min-width: 0;
+              margin-bottom: 20px;
               border: 0;
               padding: 0 0 2px 0;
-              border-bottom: 1px solid white;
+              border-bottom: 1px solid $lightDarkGrey;
               border-radius: 0;
 
               &:last-child {

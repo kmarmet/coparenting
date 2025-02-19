@@ -38,7 +38,7 @@ export default AppManager =
       'parent'
 
   deleteExpiredCalendarEvents: (currentUser) ->
-    events = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.phone}")
+    events = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
     if Manager.isValid(events)
       events = events.filter (x) -> x?
       events = events.flat()
@@ -78,6 +78,6 @@ export default AppManager =
       for memory in memories
         daysPassed = moment().diff(event.creationDate, 'days')
         if daysPassed >= 30
-          await DB.delete( "#{DB.tables.memories}/#{currentUser.phone}", memory.id)
+          await DB.delete( "#{DB.tables.memories}/#{currentUser?.key}", memory.id)
           if Manager.isValid(memory?.memoryName)
-            await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser.phone, memory?.memoryName)
+            await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.key, memory?.memoryName)

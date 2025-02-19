@@ -1,5 +1,5 @@
 // Path: src\components\fullMenu.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
 import Manager from '../managers/manager'
@@ -8,7 +8,6 @@ import { getAuth, signOut } from 'firebase/auth'
 import { VscSettings } from 'react-icons/vsc'
 import { RxActivityLog } from 'react-icons/rx'
 import {
-  PiArchiveDuotone,
   PiCalendarDotsDuotone,
   PiCarProfileDuotone,
   PiChatsCircleDuotone,
@@ -22,13 +21,12 @@ import {
 } from 'react-icons/pi'
 import { GrInstallOption } from 'react-icons/gr'
 import DB_UserScoped from '../database/db_userScoped'
-import { RiMailSendLine } from 'react-icons/ri'
+import { RiArchive2Fill, RiMailSendLine } from 'react-icons/ri'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
 import { BsPeople } from 'react-icons/bs'
 import { MdOutlineManageAccounts } from 'react-icons/md'
 import { BiFace } from 'react-icons/bi'
 import BottomCard from './shared/bottomCard'
-import { RiArchive2Fill } from 'react-icons/ri'
 
 export default function FullMenu() {
   const { state, setState } = useContext(globalState)
@@ -42,7 +40,7 @@ export default function FullMenu() {
   }
 
   const changeTheme = async (theme) => {
-    await DB_UserScoped.updateUserRecord(currentUser?.phone, `settings/theme`, theme)
+    await DB_UserScoped.updateUserRecord(currentUser?.key, `settings/theme`, theme)
     window.location.reload()
   }
 
@@ -179,10 +177,10 @@ export default function FullMenu() {
               <p>Co-Parents</p>
             </div>
 
-            {/* RECORDS */}
+            {/* ARCHIVES */}
             <div
-              className={`menu-item records ${currentScreen === ScreenNames.records ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.records)}>
+              className={`menu-item records ${currentScreen === ScreenNames.archives ? 'active' : ''}`}
+              onClick={() => changeCurrentScreen(ScreenNames.archives)}>
               <RiArchive2Fill />
               <p>Archives</p>
             </div>

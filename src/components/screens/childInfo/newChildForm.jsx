@@ -4,7 +4,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import DB from '../../../database/DB'
 import globalState from '../../../context'
 import Manager from '../../../managers/manager'
-import Autocomplete from 'react-google-autocomplete'
 import General from '../../../models/child/general'
 import Child from '../../../models/child/child'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
@@ -31,16 +30,13 @@ const NewChildForm = ({ hideCard, showCard }) => {
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
-  const [existingChildren, setExistingChildren] = useState([])
   const [gender, setGender] = useState('male')
   const [dateOfBirth, setDateOfBirth] = useState('')
   const [profilePic, setProfilePic] = useState(null)
-  const inputFile = useRef(null)
 
   const resetForm = async () => {
     Manager.resetForm('new-child-wrapper')
     hideCard()
-    setExistingChildren([])
     setGender('male')
     setDateOfBirth('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
@@ -68,11 +64,14 @@ const NewChildForm = ({ hideCard, showCard }) => {
       // Add profile pic
       if (Manager.isValid(_profilePic)) {
         _profilePic = await ImageManager.compressImage(profilePic)
-        await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, `${currentUser?.id}/${id}`, _profilePic, 'profilePic').then(
-          async (url) => {
-            newChild.general.profilePic = url
-          }
-        )
+        await FirebaseStorage.upload(
+          FirebaseStorage.directories.profilePics,
+          `${currentUser?.key}/${StringManager.getFirstNameOnly(name)}`,
+          _profilePic,
+          'profilePic'
+        ).then(async (url) => {
+          newChild.general.profilePic = url
+        })
       }
       const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.child)
 
@@ -85,7 +84,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
 
   const getExistingChildren = async () => {
     await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'children').then((children) => {
-      setExistingChildren(children)
+      // setExistingChildren(children)
     })
   }
 
@@ -141,8 +140,16 @@ const NewChildForm = ({ hideCard, showCard }) => {
           </InputWrapper>
 
           {/* GENDER */}
-          <CheckboxGroup parentLabel={'Gender'} required={true} checkboxLabels={['Male', 'Female']} onCheck={handleGenderSelect} />
-          <Spacer />
+          <CheckboxGroup
+            parentLabel={'Gender'}
+            required={true}
+            checkboxArray={Manager.buildCheckboxGroup({
+              currentUser,
+              customLabelArray: ['Male', 'Female'],
+            })}
+            onCheck={handleGenderSelect}
+          />
+          <Spacer height={5} />
           <Label text={'Child Picture'}></Label>
 
           {/* UPLOAD BUTTON */}
