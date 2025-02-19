@@ -189,7 +189,7 @@ export default function TransferRequests() {
   useEffect(() => {
     onTableChange().then((r) => r)
     getCurrentUserAddress().then((r) => r)
-    setKey(process.env.REACT_GOOGLE_MAPS_API_KEY)
+    setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
   }, [])
 
   return (

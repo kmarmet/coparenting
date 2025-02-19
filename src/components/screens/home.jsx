@@ -26,7 +26,6 @@ import { TbArrowBadgeRight } from 'react-icons/tb'
 export default function Home() {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser } = state
-  const [loadedImages, setLoadedImages] = useState([])
   const bind = useLongPress((element) => {
     setState({ ...state, currentScreen: ScreenNames.login })
   })
@@ -151,30 +150,9 @@ export default function Home() {
           </div>
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.image'}>
             <div className="flex" id="images">
-              <LazyLoadImage
-                data-src={'/src/img/homepage/memories.png'}
-                className={'image'}
-                delay={1000}
-                src={require('/src/img/homepage/memories.png')}
-                alt="Menu"
-                effect="blur"
-              />
-              <LazyLoadImage
-                data-src={'/src/img/homepage/calendar.png'}
-                className={'image'}
-                delay={1000}
-                src={require('/src/img/homepage/calendar.png')}
-                alt="Menu"
-                effect="blur"
-              />
-              <LazyLoadImage
-                data-src={'/src/img/homepage/childInfo.png'}
-                className={'image'}
-                delay={1000}
-                src={require('/src/img/homepage/childInfo.png')}
-                alt="Menu"
-                effect="blur"
-              />
+              <img className={'image'} src={require('/src/img/homepage/memories.png')} alt="Menu" />
+              <img className={'image'} src={require('/src/img/homepage/calendar.png')} alt="Calendar" />
+              <img className={'image'} src={require('/src/img/homepage/childInfo.png')} alt="Child Info" />
             </div>
           </LightGallery>
         </Fade>
@@ -193,7 +171,7 @@ export default function Home() {
           <div className="flex boxes section" data-section={1}>
             <div className="text-box">
               <PiCalendarDotsDuotone />
-              <p className="text-box-title"> Streamline your Parenting Schedule </p>
+              <p className="text-box-title">Streamline your Parenting Schedule </p>
               <p className="text-box-subtitle">Shared Calendars, Real-Time Updates, and Reminders</p>
               <p className="text-box-main-text">
                 Easily coordinate visitation, school events, and extracurricular activities with our intuitive scheduling tool. Ensuring both parents

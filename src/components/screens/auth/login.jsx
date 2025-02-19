@@ -1,7 +1,7 @@
 // Path: src\components\screens\auth\login.jsx
 import { initializeApp } from 'firebase/app'
 import { browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
 import { GrInstallOption } from 'react-icons/gr'
 import { MdOutlinePassword } from 'react-icons/md'
@@ -27,8 +27,9 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [viewPassword, setViewPassword] = useState(false)
   const [isPersistent, setIsPersistent] = useState(false)
+  const [recaptchaVerified, setRecaptchaVerified] = useState(false)
+  const [recaptchaSitekey, setRecaptchaSitekey] = useState(process.env.REACT_APP_RECAPTCHA_SITE_KEY)
   const recaptchaRef = React.createRef()
-
   // Init Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
@@ -112,7 +113,6 @@ export default function Login() {
             nextScreen = ScreenNames.requestParentAccess
           }
         }
-        console.log(nextScreen)
         // USER NEEDS TO VERIFY EMAIL
         if (!user.emailVerified) {
           AlertManager.oneButtonAlert(
@@ -170,19 +170,6 @@ export default function Login() {
 
   return (
     <>
-      <form
-        onSubmit={() => {
-          recaptchaRef.current.execute()
-        }}>
-        <ReCAPTCHA
-          ref={recaptchaRef}
-          size="invisible"
-          sitekey="6Leip9sqAAAAAD8rj96Clcbty9kD6MzPS_IzkUG-"
-          onChange={(e) => {
-            console.log(e)
-          }}
-        />
-      </form>
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`page-container form login`}>
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
@@ -247,9 +234,11 @@ export default function Login() {
 
               <Spacer height={10} />
               <div className="flex w-100 mb-15 gap buttons">
-                <button className="button default green" onClick={signIn}>
-                  Login <SlLogin />
-                </button>
+                {recaptchaVerified && (
+                  <button className="button default green" onClick={signIn}>
+                    Login <SlLogin />
+                  </button>
+                )}
                 <button className="button default light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
                   {/*Sign Up <IoPersonAddOutline />*/}
                   Sign Up
@@ -257,15 +246,19 @@ export default function Login() {
               </div>
             </div>
 
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={recaptchaSitekey}
+              onChange={(e) => {
+                if (Manager.isValid(e, true)) {
+                  setRecaptchaVerified(true)
+                }
+              }}
+            />
+
             {/* FORGOT PASSWORD BUTTON */}
             <p id="forgot-password-link" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
               Reset Password <MdOutlinePassword />
-            </p>
-
-            <p id="contact-support-text">
-              If you need to reset your email address, please contact us at
-              <br />
-              <a href="mailto:support@peaceful-coparenting.app">support@peaceful-coparenting.app</a>
             </p>
           </div>
         </Fade>

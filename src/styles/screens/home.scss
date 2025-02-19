@@ -89,7 +89,7 @@
       justify-content: center;
       overflow: hidden;
 
-      .lazy-load-image-loaded {
+      img {
         max-width: 300px;
         height: auto;
 
@@ -301,58 +301,6 @@
       // ABOVE FOLD
       &.above-fold {
         @media screen and (max-width: 600px) {
-          #images {
-            position: relative;
-            display: block;
-            width: 100vw;
-            height: 40vh;
-            overflow: hidden;
-            .lazy-load-image-loaded {
-              max-width: unset;
-              &:nth-child(1) {
-                position: absolute;
-                left: 0;
-                z-index: 99;
-              }
-              &:nth-child(2) {
-                left: 50%;
-                z-index: 999;
-                transform: translateX(-50%);
-                position: absolute;
-                img {
-                  width: 50vh;
-                }
-              }
-              &:nth-child(3) {
-                right: 0;
-                z-index: 99;
-                position: absolute;
-              }
-
-              img {
-              }
-            }
-            #single-image {
-              width: 100%;
-              position: relative;
-              bottom: 50px;
-
-              img {
-                width: 80%;
-                margin: 0 auto;
-              }
-            }
-
-            #double-images {
-              width: 100%;
-              gap: 10px;
-              justify-content: center;
-
-              img {
-                width: 50%;
-              }
-            }
-          }
           #subtitle {
             line-height: 1.4;
           }

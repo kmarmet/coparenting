@@ -23,7 +23,7 @@ export default function Map({ locationString }) {
   // GoogleMaps loading instructions
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.REACT_GOOGLE_MAPS_API_KEY,
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     version: 'weekly',
   })
 
@@ -76,7 +76,7 @@ export default function Map({ locationString }) {
   }
 
   useEffect(() => {
-    setKey(process.env.REACT_GOOGLE_MAPS_API_KEY)
+    setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
   }, [])
 
   return isLoaded ? (
