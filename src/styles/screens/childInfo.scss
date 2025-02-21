@@ -182,6 +182,7 @@
           }
 
           &.no-image {
+            border: 1px solid $lightDarkGrey;
             .after {
               background: transparent;
               width: 100%;
@@ -189,7 +190,7 @@
               border: 0;
               bottom: unset;
               svg {
-                color: white;
+                color: $lightDarkGrey;
                 font-size: 30px;
               }
             }

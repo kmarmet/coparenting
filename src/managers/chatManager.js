@@ -11,15 +11,23 @@ const ChatManager = {
   getToneAndSentiment: async (message) => {
     let tone = await ChatManager.getTone(message)
     let sentiment = await ChatManager.getSentiment(message)
+    let warningSentiments = ['sad']
 
     const returnTone = tone.overall[0][1]
     const returnSentiment = sentiment.overall[0][1]
     let icon = tone.overall[0][2]
+    let color = returnSentiment === 'NEGATIVE' ? 'red' : 'green'
+
+    console.log(returnSentiment, returnTone)
+
+    if (warningSentiments.includes(returnTone)) {
+      color = 'yellow'
+    }
 
     return {
       tone: returnTone,
       sentiment: returnSentiment,
-      color: returnSentiment === 'NEGATIVE' ? 'red' : 'green',
+      color: color,
       icon,
     }
   },
@@ -57,7 +65,10 @@ const ChatManager = {
         .then((result) => {
           resolve(result.json())
         })
-        .catch((error) => reject(error))
+        .catch((error) => {
+          console.log(error)
+          reject(error)
+        })
     }),
   getScopedChat: async (currentUser, messageToUserKey) => {
     try {

@@ -22,13 +22,15 @@ export default function Medical({ activeChild, setActiveChild }) {
   const [showInputs, setShowInputs] = useState(false)
 
   const deleteProp = async (prop) => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
+    const sharedInfoRecords = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
 
     // Delete Shared
-    const sharedProps = sharing?.map((x) => x?.prop)
-    if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
-      const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
-      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
+    const sharedProps = sharedInfoRecords?.map((x) => x?.prop)
+    let formattedProp = StringManager.toCamelCase(prop.toLowerCase())
+
+    if (Manager.isValid(sharedProps) && sharedProps.includes(formattedProp)) {
+      const scopedSharingObject = await DB.find(sharedInfoRecords, ['prop', formattedProp], false)
+      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, scopedSharingObject, formattedProp, scopedSharingObject?.sharedByOwnerKey)
       await setSelectedChild()
     }
 

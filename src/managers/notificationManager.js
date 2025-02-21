@@ -52,8 +52,8 @@ export default NotificationManager = {
   apiKey: 'os_v2_app_wjb2emrqojh2re4vwfdvavgfgfpm3s3xxaduhlnuiah2weksujvxpesz4fnbclq7b2dch2k3ixixovlaroxcredbec4ghwac4qpcjbi',
   appId: 'b243a232-3072-4fa8-9395-b1475054c531',
   // LOCALHOST
-  // apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
-  // appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
+  //  apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
+  //  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
   init: function(currentUser) {
     NotificationManager.currentUser = currentUser;
     window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -69,20 +69,22 @@ export default NotificationManager = {
     var newSubscriber, ref, subId, userSubscribed;
     userSubscribed = OneSignal.User.PushSubscription.optedIn;
     subId = event != null ? (ref = event.current) != null ? ref.id : void 0 : void 0;
+    console.log(subId);
     if (userSubscribed && subId) {
       newSubscriber = new NotificationSubscriber();
       return setTimeout(function() {
-        var ref1, ref2;
+        var ref1, ref2, ref3;
         console.log(NotificationManager != null ? NotificationManager.currentUser : void 0);
         newSubscriber.email = NotificationManager != null ? (ref1 = NotificationManager.currentUser) != null ? ref1.email : void 0 : void 0;
         newSubscriber.phone = NotificationManager != null ? (ref2 = NotificationManager.currentUser) != null ? ref2.phone : void 0 : void 0;
+        newSubscriber.key = NotificationManager != null ? (ref3 = NotificationManager.currentUser) != null ? ref3.key : void 0 : void 0;
         newSubscriber.id = Manager.getUid();
         newSubscriber.subscriptionId = subId;
         return fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}/user/identity`).then(async function(identity) {
-          var deleteKey, existingSubscriber, ref3, ref4, userIdentity;
+          var deleteKey, existingSubscriber, ref4, ref5, userIdentity;
           userIdentity = (await identity.json());
-          newSubscriber.oneSignalId = userIdentity != null ? (ref3 = userIdentity.identity) != null ? ref3.onesignal_id : void 0 : void 0;
-          existingSubscriber = (await DB.find(DB.tables.notificationSubscribers, ["phone", NotificationManager != null ? (ref4 = NotificationManager.currentUser) != null ? ref4.phone : void 0 : void 0], true));
+          newSubscriber.oneSignalId = userIdentity != null ? (ref4 = userIdentity.identity) != null ? ref4.onesignal_id : void 0 : void 0;
+          existingSubscriber = (await DB.find(DB.tables.notificationSubscribers, ["phone", NotificationManager != null ? (ref5 = NotificationManager.currentUser) != null ? ref5.phone : void 0 : void 0], true));
           // If user already exists -> replace record
           if (Manager.isValid(existingSubscriber)) {
             deleteKey = (await DB.getSnapshotKey(`${DB.tables.notificationSubscribers}`, existingSubscriber, "id"));
@@ -122,12 +124,15 @@ export default NotificationManager = {
     return userIdentity;
   },
   sendNotification: async function(title, message, recipientKey, currentUser = null, category = '') {
-    var myHeaders, newActivity, raw, requestOptions, subId, subIdRecord;
+    var allSubs, myHeaders, newActivity, raw, requestOptions, subId, subIdRecord;
     myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Basic ${NotificationManager.apiKey}`);
-    subIdRecord = (await DB.getTable(`${DB.tables.notificationSubscribers}/${recipientKey}`, true));
+    allSubs = (await DB.getTable(`${DB.tables.notificationSubscribers}`));
+    subIdRecord = allSubs.find(function(sub) {
+      return sub.key === recipientKey;
+    });
     if (!subIdRecord) {
       return false;
     }

@@ -20,7 +20,7 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
     const dayEvents = arr.filter((x) => x.startDate === dayDate)
     let dotObjects = []
     for (let event of dayEvents) {
-      const isCurrentUserDot = event?.ownerKey === authUser?.uid
+      const isCurrentUserDot = event?.ownerKey === currentUser?.key
       if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.isValid(event.ownerKey)) {
         dotObjects.push({
           className: 'holiday-event-dot',
@@ -122,7 +122,7 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
                         {/* TIMES */}
                         {!Manager.contains(event?.startTime, 'Invalid') && event?.startTime?.length > 0 && (
                           <span id="subtitle" className="from-time">
-                            <span className="at-symbol">&nbsp;@</span> {event?.startTime}
+                            <span>&nbsp;-</span> {event?.startTime}
                           </span>
                         )}
                         {!Manager.contains(event?.endTime, 'Invalid') && event?.endTime?.length > 0 && event?.endTime !== event?.startTime && (

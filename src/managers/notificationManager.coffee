@@ -47,8 +47,8 @@ export default NotificationManager =
   appId: 'b243a232-3072-4fa8-9395-b1475054c531'
 
 # LOCALHOST
-  # apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
-  # appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
+#  apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
+#  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
   init: (currentUser) ->
     NotificationManager.currentUser = currentUser
     window.OneSignalDeferred = window.OneSignalDeferred or []
@@ -61,12 +61,14 @@ export default NotificationManager =
   eventListener:  (event) ->
     userSubscribed = OneSignal.User.PushSubscription.optedIn
     subId =  event?.current?.id
+    console.log(subId)
     if userSubscribed && subId
       newSubscriber = new NotificationSubscriber()
       setTimeout  ->
         console.log(NotificationManager?.currentUser)
         newSubscriber.email = NotificationManager?.currentUser?.email
         newSubscriber.phone = NotificationManager?.currentUser?.phone
+        newSubscriber.key = NotificationManager?.currentUser?.key
         newSubscriber.id = Manager.getUid()
         newSubscriber.subscriptionId = subId
         fetch("https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity")
@@ -111,7 +113,8 @@ export default NotificationManager =
     myHeaders.append "Accept", "application/json"
     myHeaders.append "Content-Type", "application/json"
     myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
-    subIdRecord = await DB.getTable("#{DB.tables.notificationSubscribers}/#{recipientKey}", true)
+    allSubs = await DB.getTable("#{DB.tables.notificationSubscribers}")
+    subIdRecord = allSubs.find (sub) -> sub.key == recipientKey
 
 #    If user is not subscribed, do not send notification
     if !subIdRecord

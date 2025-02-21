@@ -130,7 +130,7 @@ const Chats = () => {
     }, 300)
   }
 
-  const viewBookmarks = (e) => {
+  const viewBookmarks = () => {
     if (bookmarks.length > 0) {
       setShowBookmarks(!showBookmarks)
       scrollToLatestMessage()
@@ -193,7 +193,7 @@ const Chats = () => {
 
   const handleMessageTyping = () => {
     const messageInput = document.querySelector('.message-input')
-    const valueLength = messageInput.value?.length
+    const valueLength = messageInput.value?.trim().length
     const text = messageInput.value
     if (messageInput && messageInput.value.trim().length > 1) {
       messageInput.classList.add('has-value')
@@ -217,17 +217,15 @@ const Chats = () => {
     const messageInput = document.querySelector('.message-input')
 
     if (messageInput) {
-      messageInput.focus()
+      // messageInput.focus()
     }
     onTableChange().then((r) => r)
 
     const appContainer = document.querySelector('.App')
     const appContent = document.getElementById('app-content-with-sidebar')
-    const chatWrapper = document.getElementById('chat-wrapper')
 
-    if (appContent && chatWrapper && appContainer) {
+    if (appContent && appContainer) {
       appContent.classList.add('disable-scroll')
-      chatWrapper.classList.add('disable-scroll')
       appContainer.classList.add('disable-scroll')
     }
   }, [])
@@ -266,7 +264,6 @@ const Chats = () => {
           setSearchInputQuery('')
           setState({ ...state, showOverlay: false })
         }}
-        refreshKey={refreshKey}
         onClose={() => {
           setShowSearchInput(false)
           setShowSearchCard(false)
@@ -275,7 +272,7 @@ const Chats = () => {
           setRefreshKey(Manager.getUid())
         }}>
         <InputWrapper
-          placeholder="Find a message..."
+          labelText="Find a message..."
           inputType={'input'}
           onChange={(e) => {
             if (e.target.value.length > 2) {
@@ -285,6 +282,8 @@ const Chats = () => {
           inputClasses="search-input"
         />
       </BottomCard>
+
+      {/* PAGE CONTAINER */}
       <div key={refreshKey} id="chat-wrapper" className={`${theme} conversation`}>
         {/* TOP BAR */}
         {!showSearchInput && DomManager.isMobile() && (
@@ -324,10 +323,10 @@ const Chats = () => {
                   sender = StringManager.getFirstNameOnly(messageObj.sender)
                 }
                 return (
-                  <div className="message-wrapper search" key={index}>
+                  <div className="message-fade-wrapper search" key={index}>
                     <p className={messageObj.sender === currentUser?.name ? 'message from' : 'to message'}>{messageObj.message}</p>
                     <span className={messageObj.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
-                      From {sender} on&nbsp;{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
+                      From {sender} on&nbsp;{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD (hh:mma)')}
                     </span>
                   </div>
                 )
@@ -346,13 +345,13 @@ const Chats = () => {
                 sender = StringManager.getFirstNameOnly(bookmark.sender)
               }
               return (
-                <div key={index} className={'message-div-wrapper'}>
+                <div key={index} className={'message-fade-wrapper'}>
                   <div className="flex">
                     <p className={bookmark.sender === currentUser?.name ? 'message from' : 'to message'}>{bookmark.message}</p>
-                    <PiBookmarkSimpleDuotone className={'active'} onClick={(e) => toggleMessageBookmark(bookmark)} />
+                    <PiBookmarkSimpleDuotone className={'active'} onClick={() => toggleMessageBookmark(bookmark)} />
                   </div>
                   <span className={bookmark.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
-                    From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD @ hh:mma')}
+                    From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD (hh:mma)')}
                   </span>
                 </div>
               )
@@ -360,9 +359,9 @@ const Chats = () => {
           </div>
         )}
 
-        {/* LOOP MESSAGES */}
         {!showBookmarks && searchResults.length === 0 && (
           <>
+            {/* ITERATE DEFAULT MESSAGES */}
             <div id="default-messages">
               {Manager.isValid(messagesToLoop) &&
                 messagesToLoop.map((message, index) => {
@@ -371,7 +370,7 @@ const Chats = () => {
                   if (bookmarks?.filter((x) => x.id === message.id).length > 0) {
                     isBookmarked = true
                   }
-                  let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do @ h:mma')
+                  let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do (h:mma)')
                   // Message Sent Today
                   if (moment(message.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
                     timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
@@ -382,24 +381,27 @@ const Chats = () => {
                         <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
                           {message.message}
                         </p>
-                        <PiBookmarkSimpleDuotone className={isBookmarked ? 'active' : ''} onClick={(e) => toggleMessageBookmark(message, false)} />
+                        <PiBookmarkSimpleDuotone className={isBookmarked ? 'active' : ''} onClick={() => toggleMessageBookmark(message, false)} />
                       </div>
                       <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
                     </div>
                   )
                 })}
-              <div id="last-message-anchor"></div>
             </div>
 
             {/* MESSAGE INPUT */}
             <div className="form message-input-form">
-              {/* MESSAGE INPUT CONTAINER */}
               <div className={messageText.length > 1 ? 'flex has-value' : 'flex'} id="message-input-container">
-                <div id="tone-wrapper" className={`${toneObject?.color} ${Manager.isValid(toneObject) ? 'active' : ''}`}>
+                {/* EMOTION METER */}
+                <div
+                  id="tone-wrapper"
+                  className={`${toneObject?.color} ${Manager.isValid(toneObject) && Manager.isValid(messageText, true) ? 'active' : ''}`}>
                   <span className="emotion-text">EMOTION</span>
                   <span className="tone">{StringManager.uppercaseFirstLetterOfAllWords(toneObject?.tone)}</span>
                   <span className="icon">{toneObject?.icon}</span>
                 </div>
+
+                {/* INPUT / SEND BUTTON */}
                 <div id="input-and-send-button" className="flex">
                   <DebounceInput
                     element={'textarea'}
@@ -412,7 +414,7 @@ const Chats = () => {
                     rows={'1'}
                   />
                   <button className={toneObject?.color} onClick={sendMessage} id="send-button">
-                    Send <IoSend />
+                    <IoSend />
                   </button>
                 </div>
               </div>
@@ -420,6 +422,7 @@ const Chats = () => {
           </>
         )}
       </div>
+
       {/* DESKTOP SIDEBAR */}
       {!DomManager.isMobile() && (
         <Fade direction={'up'} duration={1000} className={'conversation-sidebar-fade-wrapper chats-desktop-sidebar'} triggerOnce={true}>

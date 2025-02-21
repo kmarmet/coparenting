@@ -565,9 +565,35 @@
       width: 60vw;
       margin: 0 auto;
       overflow: hidden;
+
       @media (min-width: 768px), (max-width: 1024px) {
         width: calc(100vw - 30px);
         max-width: calc(100vw - 30px);
+      }
+
+      #emotion-meter-wrapper {
+        p {
+          font-weight: $fwMedium;
+          margin: 15px auto 0 auto;
+          display: block;
+          width: 100%;
+          text-align: center;
+          font-size: 18px;
+
+          &.description {
+            margin-top: 0;
+            font-size: 15px;
+            font-weight: $fwLight;
+            text-align: left;
+            margin-bottom: 15px;
+          }
+        }
+        #emotion-meter-gif {
+          border-radius: $borderRadius;
+          width: 100%;
+          margin: 0 auto 30px auto;
+          border: 1px solid $mainBlue;
+        }
       }
 
       .full-width-box {

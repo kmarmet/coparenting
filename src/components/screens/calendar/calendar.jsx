@@ -47,7 +47,6 @@ export default function EventCalendar() {
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [showHolidays, setShowHolidays] = useState(false)
   const [loadingDisabled, setLoadingDisabled] = useState(false)
-  const [showLegend, setShowLegend] = useState(false)
   const [eventsSetOnPageLoad, setEventsSetOnPageLoad] = useState(false)
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
@@ -81,7 +80,6 @@ export default function EventCalendar() {
   }
 
   const addDayIndicators = async (events) => {
-    const payString = 'payday,paycheck,pay,salary,paid,payment'
     const emojiHolidays = await DB.getTable(DB.tables.holidayEvents)
     // Remove existing icons/dots before adding them again
     document.querySelectorAll('.dot-wrapper').forEach((wrapper) => wrapper.remove())
@@ -221,13 +219,13 @@ export default function EventCalendar() {
 
   const getEventsFromDate = (dayDate, events) => {
     const arr = [...events, ...holidays]
-    const dayEvent = arr.filter((x) => x.startDate === dayDate)[0]
+    const dayEvent = arr.find((x) => x.startDate === dayDate)
     const dayEvents = arr.filter((x) => x.startDate === dayDate)
     let payEvents = []
     let dotClasses = []
     for (let event of dayEvents) {
       if (Manager.isValid(event)) {
-        const isCurrentUserDot = event?.ownerKey === authUser?.uid
+        const isCurrentUserDot = event?.ownerKey === currentUser?.key
         if (
           event?.title.toLowerCase().includes('pay') ||
           event?.title.toLowerCase().includes('paid') ||

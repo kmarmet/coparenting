@@ -19,24 +19,15 @@
 /* width */
 ::-webkit-scrollbar {
   display: none !important;
-  width: 6px;
-  border-radius: 50px;
-  height: 30px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
   display: none !important;
-  background: $mainBlue;
-  border-radius: 10px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  margin: 50px 0;
-  border-radius: 50px;
-  background: $darkPurple;
-  height: 30px;
   display: none !important;
 }
 
@@ -62,20 +53,10 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow: hidden !important;
   background-color: white !important;
-  height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
-  min-height: calc(100% + env(safe-area-inset-top));
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-
-  &.light {
-    .rc-tooltip {
-      .rc-tooltip-inner {
-        background-color: $lightBlueDark !important;
-        opacity: 1 !important;
-      }
-    }
-  }
-
-  // height: 100vh;
+  //  height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
+  //  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  //  min-height: calc(100% + env(safe-area-inset-top));
+  max-height: 100vh;
 
   /* width */
   &::-webkit-scrollbar {
@@ -117,19 +98,6 @@ button,
 textarea,
 select {
   font: inherit;
-}
-
-/*
-    7. Avoid text overflows
-  */
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  // overflow-wrap: break-word;
 }
 
 /*

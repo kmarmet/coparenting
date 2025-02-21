@@ -431,10 +431,13 @@ const DB_UserScoped = {
   },
   deleteSharedChildInfoProp: async (currentUser, sharedRecordProp, prop, sharedByOwnerKey) => {
     const dbRef = ref(getDatabase())
-    const found = await DB.find(sharedRecordProp, ['prop', prop.toLowerCase()], false)
-
-    if (Manager.isValid(found) && Object.prototype.hasOwnProperty.call(found, 'sharedByOwnerKey') && found.sharedByOwnerKey === sharedByOwnerKey) {
-      const deleteKey = await DB.getSnapshotKey(`${DB.tables.sharedChildInfo}/${currentUser.key}`, found)
+    console.log(sharedRecordProp)
+    if (
+      Manager.isValid(sharedRecordProp) &&
+      sharedRecordProp.hasOwnProperty('sharedByOwnerKey') &&
+      sharedRecordProp.sharedByOwnerKey === sharedByOwnerKey
+    ) {
+      const deleteKey = await DB.getSnapshotKey(`${DB.tables.sharedChildInfo}/${currentUser.key}`, sharedRecordProp, 'id')
 
       if (Manager.isValid(deleteKey)) {
         await remove(child(dbRef, `${DB.tables.sharedChildInfo}/${currentUser.key}/${deleteKey}`))

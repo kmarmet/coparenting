@@ -1,5 +1,7 @@
 import Manager from '../managers/manager'
+import { createWorker } from 'tesseract.js'
 import FirebaseStorage from '../database/firebaseStorage'
+import reactStringReplace from 'react-string-replace'
 const DocumentConversionManager = {
   tocHeaders: [
     'income tax exemptions',
@@ -147,6 +149,39 @@ const DocumentConversionManager = {
         .catch((error) => console.error(error))
     }
     return returnHtml
+  },
+  wrapTextInHeader: (text) => {
+    const asArray = text.split(' ')
+    let result = reactStringReplace(text, 'Thanksgiving', (match, i) => (
+      <span className="header" key={match + i}>
+        {match}
+      </span>
+    ))
+
+    for (let _string of asArray) {
+      if (DocumentConversionManager.tocHeaders.includes(_string.toLowerCase())) {
+        result = reactStringReplace(result, _string.toLocaleLowerCase(), (match, i) => (
+          <span className="header" key={match + i}>
+            {match}
+          </span>
+        ))
+      }
+    }
+
+    return result
+  },
+  getImageText: async (imgUrl) => {
+    const worker = await createWorker()
+    // Set the whitelist to only recognize digits and letters
+    // await worker.setParameters({
+    //   preserve_interword_spaces: '0',
+    //   tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+    // })
+    const result = await worker.recognize(imgUrl)
+    const { data } = result
+    const { text } = data
+    await worker.terminate()
+    return text
   },
   imageToText: async (imageUrl) => {
     const myHeaders = new Headers()

@@ -182,10 +182,15 @@ export default function Home() {
               <AiTwotoneMessage />
               <p className="text-box-title"> Effective Communication without Conflict </p>
               <p className="text-box-subtitle">Clear Messaging for Healthier Conversations</p>
-              <p className="text-box-main-text">
-                Facilitate positive communication with in-app messaging designed to reduce misunderstandings. All interactions are organized and
-                documented to maintain clarity and peace of mind.
-              </p>
+              <p className="text-box-main-text">Facilitate positive communication with in-app messaging designed to reduce misunderstandings.</p>
+              <div id="emotion-meter-wrapper">
+                <p>Emotion Meter 😃</p>
+                <p className="description">
+                  Effective communication with a foundation of respect is crucial for successful co-parenting. The Emotion Meter plays a vital role in
+                  facilitating this essential aspect.
+                </p>
+                <LazyLoadImage id="emotion-meter-gif" src={require('../../img/homepage/emotion-meter.gif')} alt="Menu" effect="blur" delay={1000} />
+              </div>
             </div>
           </div>
         </Fade>

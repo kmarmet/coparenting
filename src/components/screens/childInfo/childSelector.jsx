@@ -29,7 +29,7 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
       showCard={showCard}
       wrapperClass="child-selector-card"
       className={`child-selector`}>
-      <div className="flex mt-15" id="child-selector">
+      <div className=" mt-15" id="child-selector">
         {Manager.isValid(children) &&
           children.map((child, index) => {
             return (

@@ -291,19 +291,11 @@
   flex-direction: column;
   width: 100vw;
   overflow: hidden;
-  max-height: 100vh;
-  height: 100vh;
-  position: relative;
-  top: 0;
   background: white;
-  bottom: 0;
-
-  &.disable-scroll {
-    overflow: hidden;
-  }
+  height: 100vh;
+  justify-content: space-between;
 
   .search-results {
-    height: 100vh;
     display: none;
 
     &.active {
@@ -316,9 +308,11 @@
     z-index: 999;
     border-bottom: 1px solid $lightBorder;
     width: 100vw;
-    padding: 10px;
+    padding: 60px 10px 10px 10px;
     backdrop-filter: blur(50px);
     background: none;
+    position: absolute;
+    top: 0;
 
     #user-info {
       justify-content: center;
@@ -327,12 +321,13 @@
         color: $mainBlue;
         font-size: 25px;
       }
+
       #user-name {
         color: $mainBlue;
         font-weight: 600;
         font-size: 20px;
         justify-self: center;
-        margin: 0 auto;
+        margin: 0 auto 0 5px;
       }
     }
 
@@ -340,7 +335,7 @@
       gap: 15px;
 
       svg {
-        font-size: 26px;
+        font-size: 28px;
         color: $lightDarkGrey;
       }
 
@@ -386,8 +381,9 @@
     overflow: auto;
     background-color: white;
     overflow-x: hidden;
-    padding: 15px;
-    max-height: calc(100vh - 106px);
+    padding: 15px 15px 125px 15px;
+    position: relative;
+    top: 90px;
     @media screen and (min-width: 800px) {
       min-width: 10%;
       width: 28vw;
@@ -418,11 +414,6 @@
       }
     }
 
-    #last-message-anchor {
-      clear: both;
-      margin-bottom: 130px;
-    }
-
     // MESSAGE WRAPPER
     .message-fade-wrapper {
       width: 100%;
@@ -444,7 +435,7 @@
         opacity: 0.5;
         transition: all 0.3s ease-in-out;
         position: relative;
-        right: -10px;
+        right: -5px;
 
         &.active {
           transition: all 0.3s ease-in-out;
@@ -576,9 +567,10 @@
 
   .form {
     width: 100%;
-    padding: 15px 15px 60px 15px;
+    padding: 15px 15px 35px 15px;
     z-index: 9999;
-    background: white;
+    backdrop-filter: blur(50px);
+    justify-self: flex-end;
 
     #send-button {
       border-radius: 8px;
@@ -589,16 +581,14 @@
       opacity: 1;
       padding: 10px 15px;
       color: white;
-      width: 100px;
+      width: 55px;
       right: 0;
       display: flex;
       align-items: center;
+      justify-content: center;
       border: 0;
       svg {
         font-size: 18px;
-        margin-left: 8px;
-        position: relative;
-        bottom: 2px;
       }
 
       &.red {
@@ -611,10 +601,10 @@
       margin-right: auto;
       #tone-wrapper {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         width: 100vw;
         justify-content: center;
-        background: white;
+        background: transparent;
         text-align: center;
         z-index: -1;
         opacity: 0;
@@ -624,22 +614,6 @@
         background: $bestGreyForWhite;
         position: relative;
 
-        p,
-        b,
-        span {
-          font-size: 14px;
-        }
-
-        .emotion-text {
-          font-style: italic;
-          font-size: 10px;
-          position: absolute;
-          left: 5px;
-          color: black;
-          opacity: 0.5;
-          top: 8px;
-        }
-
         &.active {
           border-radius: $borderRadius;
           margin-bottom: 10px;
@@ -648,6 +622,55 @@
           z-index: 999999;
           opacity: 1;
           max-height: unset;
+        }
+
+        &.red {
+          background: $bootstrapBgRed;
+          border: 1px solid $bootstrapRedBorder;
+          .tone,
+          .emotion-text {
+            color: $bootstrapRedColor;
+          }
+        }
+        &.green {
+          background: $bootstrapBgGreen;
+          border: 1px solid $bootstrapGreenBorder;
+          .tone,
+          .emotion-text {
+            color: $bootstrapGreenColor;
+          }
+        }
+        &.yellow {
+          background: $bootstrapBgYellow;
+          border: 1px solid $bootstrapYellowBorder;
+          .tone,
+          .emotion-text {
+            color: $bootstrapYellowColor;
+          }
+        }
+
+        p,
+        b,
+        span {
+          font-size: 14px;
+        }
+
+        .tone {
+          color: white;
+          font-size: 16px;
+        }
+
+        .icon {
+          font-size: 20px;
+        }
+
+        .emotion-text {
+          font-style: italic;
+          font-size: 10px;
+          position: absolute;
+          left: 5px;
+          color: white;
+          top: 8px;
         }
 
         * {
@@ -672,23 +695,29 @@
         width: 100vw;
         gap: 15px;
         .message-input {
-          background-color: $bestGreyForWhite;
           color: black;
           outline: none;
           min-height: 45px;
           line-height: 1.5;
           vertical-align: middle;
-          border: 1px solid $darkGrey;
+          border: 0;
+          border-bottom: 1px solid #cacaca;
+          border-radius: 0;
           width: 100%;
           overflow: auto;
           padding: 10px;
           transition: all 0.3s ease-in-out;
-          border-radius: $borderRadius;
           display: flex;
           align-items: center;
+          background: transparent;
+
+          &:focus {
+            border-bottom: 1px solid $mainBlue;
+          }
 
           &::placeholder {
             color: $darkGrey;
+            font-size: 14px;
           }
         }
       }

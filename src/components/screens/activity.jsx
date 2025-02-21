@@ -28,9 +28,10 @@ export default function Activity() {
   const { currentUser, theme, activityCount, authUser } = state
   const [activities, setActivities] = useState([])
   const [legendIsExpanded, setLegendIsExpanded] = useState(false)
+
   const getActivities = async () => {
     const all = await DB.getTable(`${DB.tables.activities}/${currentUser?.key}`)
-    const toReturn = DatasetManager.sortDates(all)
+    const toReturn = DatasetManager.sortDates(all).reverse()
     await AppManager.setAppBadge(activityCount)
     setState({ ...state, activityCount: toReturn.length })
     setActivities(toReturn)
