@@ -541,12 +541,11 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     {Manager.isValid(repeatInterval) && (
                       <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
                         {!DomManager.isMobile() && (
-                          <DatetimePicker
-                            format={DateFormats.readableMonth}
-                            views={DatetimePickerViews.monthAndYear}
-                            hasAmPm={false}
-                            onAccept={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))}
-                          />
+                            <MobileDatePicker
+                              onOpen={addThemeToDatePickers}
+                              className={`${theme}  w-100`}
+                              onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))}
+                            />
                         )}
                         {DomManager.isMobile() && (
                           <input

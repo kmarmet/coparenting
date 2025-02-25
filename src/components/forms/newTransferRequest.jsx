@@ -223,7 +223,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
               skipNameFormatting={true}
               checkboxArray={Manager.buildCheckboxGroup({
                 currentUser,
-                manualLabelArray: ['Set as Preferred Transfer Location'],
+                customLabelArray: ['Set as Preferred Transfer Location'],
               })}
               onCheck={handlePreferredLocation}
             />

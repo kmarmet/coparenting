@@ -1004,13 +1004,14 @@
   top: 10px;
   right: 10px;
   z-index: 999999;
-  
+
   &.active {
     .children {
       right: 0;
       transform: scaleY(1);
       transition: all 0.5s ease-in-out;
       opacity: 1;
+      z-index: 999999;
       @include bestShadow;
     }
   }
@@ -1033,6 +1034,7 @@
 
   .children {
     border-radius: $bigBorderRadius;
+    z-index: -1;
     display: flex;
     justify-content: center;
     align-items: center;

@@ -16,6 +16,8 @@
 
 .parcel-cache/data.mdb
 
+App Repo/
+Business/
 build/
 dist/
 .parcel-cache/

@@ -508,7 +508,7 @@ export default function EventCalendar() {
           <InputWrapper
             labelText="Find events..."
             refreshKey={refreshKey}
-            inputType={'input'}
+            placeholder={''}
             inputValue={searchQuery}
             onChange={async (e) => {
               const inputValue = e.target.value

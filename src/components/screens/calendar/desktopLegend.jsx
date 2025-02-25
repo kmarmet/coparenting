@@ -1,5 +1,5 @@
+import React, { useState } from 'react'
 import Label from '../../shared/label.jsx'
-import { useState } from 'react'
 import { HiOutlineColorSwatch } from 'react-icons/hi'
 
 export default function DesktopLegend() {

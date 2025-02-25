@@ -935,6 +935,11 @@
       display: unset;
       padding: 10px;
       max-width: 365px !important;
+      
+      @media screen and (min-width: 800px) {
+        display: flex;
+        margin: 0 auto !important;
+      }
     }
 
     // Date/time container (including buttons and clock)
@@ -947,6 +952,11 @@
         width: 100% !important;
         max-width: 365px !important;
         margin: 0;
+        
+        @media screen and (min-width: 800px) {
+          display: flex;
+          margin: 0 auto !important;
+        }
       }
     }
 

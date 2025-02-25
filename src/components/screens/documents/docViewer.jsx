@@ -473,7 +473,17 @@ export default function DocViewer() {
     }
 
     // Listen for selection change
+    if (currentScreen === ScreenNames.docViewer) {
+
     document.addEventListener('selectionchange', debounce(addUserHeaderToDatabase, 1000))
+    }
+
+    return () => {
+      document.removeEventListener('selectionchange', addUserHeaderToDatabase)
+      if (appContentWithSidebar) {
+        appContentWithSidebar.classList.remove('doc-viewer')
+      }
+    }
   }, [])
 
   return (
