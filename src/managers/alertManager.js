@@ -3,6 +3,8 @@ var AlertManager;
 
 import Swal from "sweetalert2";
 
+import DomManager from "./domManager";
+
 AlertManager = {
   throwError: function(title, text) {
     Swal.fire({
@@ -20,6 +22,7 @@ animate__fadeOutDown
 animate__faster`
       }
     });
+    DomManager.setErrorAlertRed();
     return false;
   },
   successAlert: function(message, allowOutsideClick = true) {
@@ -131,3 +134,5 @@ animate__faster`
 };
 
 export default AlertManager;
+
+//# sourceMappingURL=alertManager.js.map

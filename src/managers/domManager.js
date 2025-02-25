@@ -28,6 +28,13 @@ DomManager = {
       return false;
     }
   },
+  setErrorAlertRed: function() {
+    var text;
+    text = document.getElementById('swal2-html-container');
+    if (text) {
+      return text.style.color = 'white';
+    }
+  },
   isMobile: function() {
     return window.screen.width < 801;
   },

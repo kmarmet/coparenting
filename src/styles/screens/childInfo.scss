@@ -148,136 +148,108 @@
     }
 
     #image-and-actions-wrapper {
-      display: flex;
       overflow: hidden;
       margin-bottom: 20px;
       position: relative;
-      align-items: flex-start;
+      margin-right: 25px;
+      display: flex;
+      flex-direction:   column;
+      align-items: center;
+      
+      .child-name {
+        color: black;
+        font-weight: $fwMedium;
+        font-size: 20px;
+        text-align: center;
+        width: 100%;
+        display: block;
+        margin-top: 8px;
+      }
+      .profile-pic-container {
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+        background-size: cover;
+        position: relative;
+        display: flex;
+        align-items: center;
+        @include hover;
+        border: 2px solid white;
 
-      .left {
-        margin-right: 25px;
-        .child-name {
-          color: black;
-          font-weight: $fwMedium;
-          font-size: 20px;
-          text-align: center;
-          width: 100%;
-          display: block;
-          margin-top: 8px;
+        input {
+          opacity: 0;
+          display: block !important;
         }
-        .profile-pic-container {
-          height: 100px;
-          width: 100px;
-          border-radius: 50%;
-          background-size: cover;
-          position: relative;
-          display: flex;
-          align-items: center;
-          @include hover;
-          border: 2px solid white;
 
-          input {
-            opacity: 0;
-            display: block !important;
-          }
-
-          &.no-image {
-            border: 1px solid $lightDarkGrey;
-            .after {
-              background: transparent;
-              width: 100%;
-              right: unset;
-              border: 0;
-              bottom: unset;
-              svg {
-                color: $lightDarkGrey;
-                font-size: 30px;
-              }
-            }
-
-            p {
-              font-weight: 500;
+        &.no-image {
+          border: 1px solid $lightDarkGrey;
+          .after {
+            background: transparent;
+            width: 100%;
+            right: unset;
+            border: 0;
+            bottom: unset;
+            svg {
+              color: $lightDarkGrey;
+              font-size: 30px;
             }
           }
 
           p {
-            color: white;
-            font-size: 12px;
-            text-align: center;
+            font-weight: 500;
+          }
+        }
+
+        p {
+          color: white;
+          font-size: 12px;
+          text-align: center;
+        }
+
+        input {
+          z-index: 100;
+          position: relative;
+        }
+
+        &.no-image {
+          .after {
+            height: 100%;
+          }
+        }
+
+        .after {
+          position: absolute;
+          right: -15px;
+          z-index: 1;
+          @include centerHoriz;
+          margin-left: auto;
+          padding: 0;
+          width: 28px;
+          height: 28px;
+          overflow: hidden;
+          background: white;
+          border-radius: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 0;
+          bottom: -3px;
+          border: 1px solid white;
+
+          svg {
+            color: $mainBlue;
+            font-size: 16px;
+            margin: 0 auto;
+            display: block;
+            width: 100%;
+            opacity: 1;
+            position: absolute;
+            z-index: 10;
           }
 
           input {
-            z-index: 100;
-            position: relative;
-          }
-
-          &.no-image {
-            .after {
-              height: 100%;
-            }
-          }
-
-          .after {
-            position: absolute;
-            right: -15px;
-            z-index: 1;
-            @include centerHoriz;
-            margin-left: auto;
-            padding: 0;
-            width: 28px;
-            height: 28px;
-            overflow: hidden;
-            background: white;
-            border-radius: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 0;
-            bottom: -3px;
-            border: 1px solid white;
-
-            svg {
-              color: $mainBlue;
-              font-size: 16px;
-              margin: 0 auto;
-              display: block;
-              width: 100%;
-              opacity: 1;
-              position: absolute;
-              z-index: 10;
-            }
-
-            input {
-              font-size: 5px;
-              align-self: stretch;
-            }
-          }
-        }
-      }
-
-      .right {
-        width: 100%;
-        margin-top: 10px;
-        button {
-          &.button {
-            &.default {
-              font-size: 14px;
-              opacity: 0.9;
-              background: transparent;
-              text-align: right;
-              margin-left: auto;
-              color: black;
-              min-width: 0;
-              margin-bottom: 20px;
-              border: 0;
-              padding: 0 0 2px 0;
-              border-bottom: 1px solid $lightDarkGrey;
-              border-radius: 0;
-
-              &:last-child {
-                margin-bottom: 0;
-              }
-            }
+            font-size: 5px;
+            align-self: stretch;
           }
         }
       }
@@ -335,7 +307,6 @@
         .info-section {
           transition: max-height 0.3s ease-in-out;
           max-width: calc(100vw - 30px);
-          margin-bottom: 10px;
           overflow: hidden;
 
           &:first-child {

@@ -15,7 +15,6 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import VisitationMapper from '/src/mappers/visitationMapper'
 import DateFormats from '/src/constants/dateFormats'
 import CalendarMapper from '/src/mappers/calMapper'
-import { ImEye } from 'react-icons/im'
 import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../navBar'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
@@ -30,6 +29,7 @@ import EveryOtherWeekend from '/src/components/screens/visitation/everyOtherWeek
 import CustomWeekends from '/src/components/screens/visitation/customWeekends'
 import DateManager from '/src/managers/dateManager.js'
 import AddressInput from '../../components/shared/addressInput'
+import Spacer from '../shared/spacer'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -353,17 +353,21 @@ export default function Visitation() {
                   parentLabel={'Choose Visitation Schedule'}
                   onCheck={handleScheduleTypeSelection}
                   skipNameFormatting={true}
-                  checkboxArray={Manager.buildCheckboxGroup(currentUser, 'visitation', [])}
+                  checkboxArray={Manager.buildCheckboxGroup({
+                    currentUser,
+                    labelType: 'visitation',
+                  })}
                 />
               </div>
 
               {/* SHARE WITH */}
               <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
 
+              <Spacer height={10} />
               {/* LOCATION */}
-              <InputWrapper wrapperClasses="mt-15 mb-15" inputType={'location'} labelText={'Preferred Transfer Location'}>
+              <InputWrapper inputType="location" childrenOnly={true} labelText={'Preferred Transfer Location'}>
                 <AddressInput
-                  efaultValue={currentUser?.defaultTransferLocation}
+                  defaultValue={currentUser?.defaultTransferLocation}
                   onSelection={(place) => {
                     updateDefaultTransferLocation(place, `https://www.google.com/maps?daddr=7${encodeURIComponent(place)}`).then(() =>
                       AlertManager.successAlert('Preferred Transfer Location Set')
@@ -380,7 +384,10 @@ export default function Visitation() {
             elClass={'holiday-checkboxes-wrapper gap-10'}
             onCheck={handleHolidaySelection}
             skipNameFormatting={true}
-            checkboxArray={Manager.buildCheckboxGroup(currentUser, null, null, holidaysFromApi.map((x) => x.name).sort())}
+            checkboxArray={Manager.buildCheckboxGroup({
+              currentUser,
+              customLabelArray: holidaysFromApi.map((x) => x.name),
+            })}
           />
 
           {showUpdateHolidaysButton && (

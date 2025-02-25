@@ -1,7 +1,9 @@
 import Swal from "sweetalert2"
+import DomManager from "./domManager"
 
 AlertManager = {
   throwError: (title ,text) ->
+
     Swal.fire
       title: title
       text: text
@@ -18,6 +20,7 @@ AlertManager = {
             animate__fadeOutDown
             animate__faster
           """
+    DomManager.setErrorAlertRed()
     return false
   successAlert : (message, allowOutsideClick = true) ->
     Swal.fire

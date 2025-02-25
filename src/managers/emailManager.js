@@ -11,7 +11,8 @@ EmailManager = {
     featureRequest: 'featureRequest',
     appFeedback: 'appFeedback',
     customerSupport: 'customerSupport',
-    emailVerification: 'emailVerification'
+    emailVerification: 'emailVerification',
+    coparentInvitation: 'coparent-invitation'
   },
   GetConfig: function(message, templateName, fromName) {
     var config;
@@ -30,16 +31,21 @@ EmailManager = {
     config = EmailManager.GetConfig();
     config.template_id = templateName;
     config.message = message;
-    config.from_name = fromName;
+    config.from_name = "kmarmet1@gmail.com";
     return emailjs.send(config.service_id, config.template_id, config);
   },
-  SendEmailToUser: function(templateName, message, userEmail) {
+  SendEmailToUser: function(templateName, message, userEmail, fromName) {
     var config;
     config = EmailManager.GetConfig();
-    config.template_id = templateName;
+    config.template_id = "coparent-invitation";
     config.message = message;
-    config.reply_to = userEmail;
-    return emailjs.send(config.service_id, config.template_id, config);
+    config.from_name = fromName;
+    return emailjs.send('default_service', templateName, {
+      to_email: userEmail,
+      from_name: fromName
+    }).then(function(response) {
+      return console.log('SUCCESS!', response.status, response.text);
+    });
   },
   SendFeatureRequest: function(userEmail, message) {
     return EmailManager.SendEmail(EmailManager.Templates.featureRequest, message, userEmail);
@@ -56,3 +62,5 @@ EmailManager = {
 };
 
 export default EmailManager;
+
+//# sourceMappingURL=emailManager.js.map

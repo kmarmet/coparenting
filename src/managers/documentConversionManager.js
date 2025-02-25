@@ -129,10 +129,11 @@ const DocumentConversionManager = {
     myHeaders.append('Access-Control-Allow-Origin', '*')
     let apiAddress = 'https://localhost:5000'
     // let apiAddress = 'https://peaceful-coparenting.app:5000'
+    const corsOrNoCors = window.location.href.includes('localhost') ? 'no-cors' : 'cors'
     const requestOptions = {
       method: 'GET',
       headers: myHeaders,
-      mode: 'cors',
+      mode: corsOrNoCors,
       crossOrigin: true,
       redirect: 'follow',
     }
@@ -140,12 +141,14 @@ const DocumentConversionManager = {
     let returnHtml = ''
     const all = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, currentUserId, fileName)
     const { status, imageUrl } = all
+    console.log(imageUrl)
     if (status === 'success') {
       await fetch(`${apiAddress}/document/GetTextFromImage?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
         .then((response) => response.text())
-        .then((result) => (returnHtml = result))
+        .then((result) => console.log(result))
         .catch((error) => console.error(error))
     }
+    console.log(returnHtml)
     return returnHtml
   },
   imageToText: async (imageUrl) => {
@@ -168,6 +171,7 @@ const DocumentConversionManager = {
       let returnResult = ''
       const response = await fetch('https://www.imagetotext.info/api/imageToText', requestOptions).catch((error) => {
         returnResult = null
+        console.log(error)
       })
       if (response) {
         let result = await response.text()

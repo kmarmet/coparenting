@@ -22,6 +22,11 @@ DomManager = {
     else
       false
 
+  setErrorAlertRed: () ->
+    text = document.getElementById('swal2-html-container')
+    if text
+      text.style.color = 'white'
+
   isMobile: () -> window.screen.width < 801
 
   tapOrClick: (isUppercase = false) ->

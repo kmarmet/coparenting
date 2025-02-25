@@ -62,14 +62,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
       setState({ ...state, isLoading: false })
       return false
     }
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
-    if (validAccounts > 0 && currentUser?.coparents?.length > 0) {
-      if (shareWith.length === 0) {
-        AlertManager.throwError('Please choose who you would like to share this document with')
-        return false
-      }
-    }
     // if (docType === 'document' && Object.entries(files).map((x) => !Manager.contains(x[1].name, '.docx'))[0]) {
     //   AlertManager.throwError('Uploaded file MUST be of type .docx')
     //   setState({ ...state, isLoading: false })
@@ -96,8 +89,8 @@ export default function UploadDocuments({ hideCard, showCard }) {
     //#region IMAGE CONVERSION
     if (docType === 'image') {
       file = await ImageManager.compressImage(file)
-      const url = await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser?.key}/${docNameToUse}`, file)
-      let firebaseStorageFileName = docNameToUse.replaceAll(' ', '')
+      let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
+      await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`, file)
       let text = await DocumentConversionManager.imageToHtml(firebaseStorageFileName, currentUser?.key)
       await storeTextInFirebase(text, docNameToUse.replaceAll(' ', ''))
     }
@@ -108,13 +101,13 @@ export default function UploadDocuments({ hideCard, showCard }) {
       if (fileExtension === 'pdf') {
         await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.key}/${docNameToUse}`, file)
         const docHtml = await DocumentConversionManager.pdfToHtml(docNameToUse, currentUser?.key)
-        let firebaseStorageFileName = docNameToUse.replaceAll(' ', '')
+        let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
         await storeTextInFirebase(docHtml, firebaseStorageFileName)
       } else {
         // Image
         await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.key}/${docNameToUse}`, file)
         const docHtml = await DocumentConversionManager.docToHtml(docNameToUse, currentUser?.key)
-        let firebaseStorageFileName = docNameToUse.replaceAll(' ', '')
+        let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
         await storeTextInFirebase(docHtml, firebaseStorageFileName)
       }
     }
@@ -128,7 +121,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     newDocument.ownerKey = currentUser?.key
     newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
     newDocument.type = docType
-    newDocument.name = docNameToUse
+    newDocument.name = StringManager.formatFileName(docNameToUse)
     const cleanedDoc = ObjectManager.cleanObject(newDocument, ModelNames.doc)
     await DocumentsManager.addToDocumentsTable(currentUser, cleanedDoc)
 
@@ -152,11 +145,11 @@ export default function UploadDocuments({ hideCard, showCard }) {
 
   const storeTextInFirebase = async (txt, fileName) => {
     const storage = getStorage()
-    const storageRef = ref(storage, `${FirebaseStorage.directories.documents}/${currentUser.key}/${fileName}`)
+    const storageRef = ref(storage, `${FirebaseStorage.directories.documents}/${currentUser?.key}/${fileName}`)
 
     // Upload the string
     uploadString(storageRef, txt, 'raw')
-      .then((snapshot) => {
+      .then(() => {
         console.log('Uploaded a raw string!')
       })
       .catch((error) => {
@@ -175,7 +168,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
       (e) => {
         setDocType(e.toLowerCase())
       },
-      (e) => {},
+      () => {},
       false
     )
   }
@@ -198,9 +191,14 @@ export default function UploadDocuments({ hideCard, showCard }) {
             <>
               <InputWrapper labelText={'Document Name'} onChange={(e) => setDocName(e.target.value)} />
               <Spacer height={5} />
-              <CheckboxGroup parentLabel={'Document Type'} required={true} checkboxLabels={['Document', 'Image']} onCheck={handleCheckboxSelection} />
+              <CheckboxGroup
+                parentLabel={'Document Type'}
+                required={true}
+                checkboxArray={Manager.buildCheckboxGroup({ currentUser, customLabelArray: ['Document', 'Image'] })}
+                onCheck={handleCheckboxSelection}
+              />
               <Spacer height={5} />
-              <ShareWithCheckboxes onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
+              <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
             </>
           </div>
           {/* UPLOAD BUTTONS */}

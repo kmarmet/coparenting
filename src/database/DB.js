@@ -23,7 +23,6 @@ const DB = {
     chatMessages: 'chatMessages',
     holidayEvents: 'holidayEvents',
     documentHeaders: 'documentHeaders',
-    userKeys: 'userKeys',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
     if (filterFunction) {

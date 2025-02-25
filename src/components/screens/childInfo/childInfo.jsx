@@ -25,6 +25,7 @@ import StringManager from '/src/managers/stringManager'
 import NewTransferChecklist from './newTransferChecklist'
 import Checklists from './checklists'
 import Spacer from '../../shared/spacer'
+import Actions from '../../shared/actions'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
@@ -95,6 +96,41 @@ export default function ChildInfo() {
 
   return (
     <>
+      <Actions hide={showNewChildForm || showSelectorCard || showInfoCard || showNewChecklistCard || showChecklistsCard}>
+        {/* BUTTONS */}
+        {Manager.isValid(currentUser?.children) && (
+              <>
+                <button
+                  className="button default"
+                  onClick={() => {
+                    setShowInfoCard(true)
+                  }}>
+                  Add Your Own Info
+                </button>
+                {currentUser?.children?.length > 1 && (
+                  <button
+                    onClick={() => {
+                      setShowSelectorCard(true)
+                    }}
+                    className="button default">
+                    View Another Child
+                  </button>
+                )}
+                <button className="default button" onClick={() => setShowNewChecklistCard(true)}>
+                  Create Transfer Checklist
+                </button>
+                {Manager.isValid(activeInfoChild?.checklists) && (
+                  <button
+                    className="default button"
+                    onClick={() => {
+                      setShowChecklistsCard(true)
+                    }}>
+                    View Transfer Checklists
+                  </button>
+                )}
+              </>
+        )}
+      </Actions>
       {/* CHILD SELECTOR */}
       <ChildSelector
         activeInfoChild={activeInfoChild}
@@ -142,7 +178,6 @@ export default function ChildInfo() {
 
           {/* PROFILE PIC */}
           <div id="image-and-actions-wrapper">
-            <div className="left">
               {Manager.isValid(activeInfoChild?.general['profilePic']) && (
                 <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
                   <div className="after">
@@ -160,45 +195,6 @@ export default function ChildInfo() {
                 </div>
               )}
               <span className="child-name">{StringManager.getFirstNameOnly(activeInfoChild?.general?.name)}</span>
-            </div>
-
-            <div className="right">
-              {/* BUTTONS */}
-              {Manager.isValid(currentUser?.children) && (
-                <div key={refreshKey}>
-                  <div className="buttons">
-                    <button
-                      className="button default"
-                      onClick={() => {
-                        setShowInfoCard(true)
-                      }}>
-                      Add Your Own Info
-                    </button>
-                    {currentUser?.children?.length > 1 && (
-                      <button
-                        onClick={() => {
-                          setShowSelectorCard(true)
-                        }}
-                        className="button default">
-                        View Another Child
-                      </button>
-                    )}
-                    <button className="default button" onClick={() => setShowNewChecklistCard(true)}>
-                      Create Transfer Checklist
-                    </button>
-                    {Manager.isValid(activeInfoChild?.checklists) && (
-                      <button
-                        className="default button"
-                        onClick={() => {
-                          setShowChecklistsCard(true)
-                        }}>
-                        View Transfer Checklists
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
 
           {/* INFO */}

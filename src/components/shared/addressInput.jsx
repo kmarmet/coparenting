@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Manager from '../../managers/manager'
 import Autocomplete from 'react-google-autocomplete'
 
 export default function AddressInput({ onSelection, defaultValue }) {

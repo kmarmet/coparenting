@@ -2,18 +2,9 @@
 import React, { useContext } from 'react'
 import globalState from '../../context'
 
-function UploadInputs({
-  upload,
-  uploadButtonText = 'Choose File',
-  chooseImageClass = '',
-  containerClass = '',
-  getImages = () => {},
-  actualUploadButtonText = 'Upload',
-  uploadType = 'document',
-  onClose,
-}) {
+function UploadInputs({ upload, containerClass = '', getImages = () => {}, uploadType = 'document' }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, currentScreen } = state
+  const { currentUser } = state
 
   const getUploadType = () => {
     if (uploadType === 'document') {

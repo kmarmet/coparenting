@@ -21,11 +21,15 @@ import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager.coffee'
 import { PiUserCircleDuotone } from 'react-icons/pi'
 import AddressInput from '../../shared/addressInput'
+import BottomCard from '../../shared/bottomCard'
+import EmailManager from '../../../managers/emailManager'
+import { BsFillSendFill } from 'react-icons/bs'
+import Spacer from '../../shared/spacer'
+import Actions from '../../shared/actions'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
-
   // State
   const [userCoparents, setUserCoparents] = useState([])
   const [selectedCoparentDataArray, setSelectedCoparentDataArray] = useState(null)
@@ -33,6 +37,10 @@ export default function Coparents() {
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
   const [selectedCoparentRaw, setSelectedCoparentRaw] = useState()
   const [currentCoparentAddress, setCurrentCoparentAddress] = useState('')
+  const [showInvitationForm, setShowInvitationForm] = useState(false)
+  const [invitedCoparentName, setInvitedCoparentName] = useState('')
+  const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
+  const [hideActions, setHideActions] = useState(true)
 
   const deleteProp = async (prop) => {
     const coparent = await getCoparent()
@@ -42,8 +50,9 @@ export default function Coparents() {
 
   const getCoparent = async () => {
     let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.key}/coparents`)
-    const coparentPhone = selectedCoparentDataArray.filter((x) => Manager.contains(x, 'phone'))[0][1]
-    return coparents.filter((x) => x.key === coparentPhone)[0]
+    const keyArray = selectedCoparentDataArray.find((x) => x[0] === 'key')
+    const key = keyArray[1]
+    return coparents.filter((x) => x.key === key)[0]
   }
 
   const update = async (prop, value) => {
@@ -51,6 +60,7 @@ export default function Coparents() {
     const coparent = await getCoparent()
     await DB_UserScoped.updateCoparent(currentUser, coparent, StringManager.formatDbProp(prop), value)
     const updatedCoparent = await getCoparent()
+    console.log(updatedCoparent)
     setSelectedCoparentDataArray(Object.entries(updatedCoparent))
   }
 
@@ -86,13 +96,66 @@ export default function Coparents() {
     onTableChange().then((r) => r)
   }, [])
 
+  useEffect(() => {
+    if (showCustomInfoCard || showInvitationForm || showNewCoparentFormCard) {
+      setHideActions(true)
+    }
+    else {
+      setHideActions(false)
+    }
+  }, [showCustomInfoCard, showInvitationForm, showNewCoparentFormCard])
+
   return (
     <>
+      <Actions hide={hideActions}>
+        <button
+          className="button default center green"
+          onClick={() => {
+            setShowCustomInfoCard(true)
+          }}>
+          Add Your Own Info <FaWandMagicSparkles />
+        </button>
+        <button
+          className="button default center red"
+          onClick={() => {
+            AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
+              await deleteCoparent()
+              AlertManager.successAlert('Co-Parent Removed')
+              setSelectedCoparentDataArray(null)
+            })
+          }}>
+          Remove Co-Parent <IoPersonRemove />
+        </button>
+        <button className="default button center" onClick={() => setShowInvitationForm(true)}>
+          Invite Co-Parent <BsFillSendFill />
+        </button>
+      </Actions>
+
       {/* CUSTOM INFO FORM */}
       <CustomCoparentInfo hideCard={() => setShowCustomInfoCard(false)} activeCoparent={selectedCoparentRaw} showCard={showCustomInfoCard} />
 
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
+
+      <BottomCard
+        submitText={'Send Invitation'}
+        wrapperClass="invite-coparent-card"
+        title={'Invite Co-Parent'}
+        onClose={() => setShowInvitationForm(false)}
+        showCard={showInvitationForm}
+        onSubmit={() => {
+          if (!Manager.isValid(invitedCoparentEmail) || !Manager.isValid(invitedCoparentName)) {
+            AlertManager.throwError('Please field out all fields')
+            return false
+          }
+          EmailManager.SendEmailToUser(EmailManager.Templates.coparentInvitation, '', invitedCoparentEmail, invitedCoparentName)
+          AlertManager.successAlert('Invitation Sent!')
+          setShowInvitationForm(false)
+        }}
+        hideCard={() => setShowInvitationForm(false)}>
+        <InputWrapper labelText={'Co-Parent Name'} required={true} onChange={(e) => setInvitedCoparentName(e.target.value)} />
+        <InputWrapper labelText={'Co-Parent Email Address'} required={true} onChange={(e) => setInvitedCoparentEmail(e.target.value)} />
+      </BottomCard>
 
       {/*{!selectedCoparentDataArray && <NoDataFallbackText text={'No Co-Parents Added'} />}*/}
       {/* COPARENTS CONTAINER */}
@@ -151,6 +214,7 @@ export default function Coparents() {
                             {infoLabel.toLowerCase().includes('address') && (
                               <InputWrapper inputType={'date'} labelText={infoLabel}>
                                 <AddressInput
+                                  defaultValue={value}
                                   onSelection={async (place) => {
                                     await update('address', place)
                                   }}
@@ -179,29 +243,6 @@ export default function Coparents() {
                   )
                 })}
 
-              {/* BUTTONS */}
-              {currentUser?.coparents?.length > 0 && (
-                <>
-                  <button
-                    className="button  default center white-text mb-10 mt-20 green"
-                    onClick={() => {
-                      setShowCustomInfoCard(true)
-                    }}>
-                    Add Your Own Info <FaWandMagicSparkles />
-                  </button>
-                  <button
-                    className="button   default red center"
-                    onClick={() => {
-                      AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
-                        await deleteCoparent()
-                        AlertManager.successAlert('Co-Parent Removed')
-                        setSelectedCoparentDataArray(null)
-                      })
-                    }}>
-                    Remove Co-Parent <IoPersonRemove />
-                  </button>
-                </>
-              )}
             </div>
           </div>
         </Fade>

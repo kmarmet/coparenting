@@ -1,3 +1,4 @@
+import React, { useContext, useState } from 'react'
 // Path: src\components\screens\visitation\fiftyFifty.jsx
 import Label from '../../../components/shared/label'
 import BottomCard from '../../../components/shared/bottomCard'
@@ -5,8 +6,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import globalState from '../../../context'
-import { useContext, useState } from 'react'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa6'
+import { FaPlus, FaMinus } from 'react-icons/fa6'
 import Manager from '../../../managers/manager'
 import InputWrapper from '../../../components/shared/inputWrapper'
 import DateFormats from '../../../constants/dateFormats'
@@ -19,6 +19,7 @@ import ScheduleTypes from '../../../constants/scheduleTypes'
 import MyConfetti from '../../../components/shared/myConfetti'
 import moment from 'moment'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
+import Spacer from '../../shared/spacer'
 
 export default function FiftyFifty({ hide, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -77,9 +78,9 @@ export default function FiftyFifty({ hide, showCard }) {
       }
     })
     MyConfetti.fire()
-    resetForm()
     // Upload to DB
     await VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
+    resetForm()
   }
 
   const addThemeToDatePickers = () => {
@@ -104,13 +105,13 @@ export default function FiftyFifty({ hide, showCard }) {
       showCard={showCard}
       refreshKey={refreshKey}
       onClose={resetForm}>
-      <div className="text mt-15 mb-15">
+      <div className="text">
         <Accordion id={'checkboxes'} expanded={expandFiftyFiftyInfoText}>
           <AccordionSummary>
             <div className="flex w-100 space-between" onClick={() => setExpandFiftyFiftyInfoText(!expandFiftyFiftyInfoText)}>
               <Label text={`What is a 50/50 Visitation Schedule`} />
-              {!expandFiftyFiftyInfoText && <FaChevronDown className={'visitation-card'} />}
-              {expandFiftyFiftyInfoText && <FaChevronUp className={'visitation-card'} />}
+              {!expandFiftyFiftyInfoText && <FaPlus className={'visitation-card'} />}
+              {expandFiftyFiftyInfoText && <FaMinus className={'visitation-card'} />}
             </div>
           </AccordionSummary>
           <AccordionDetails>
@@ -119,11 +120,13 @@ export default function FiftyFifty({ hide, showCard }) {
               For the start of the next visitation period (and next period ONLY) you have your children, enter the date ranges for both the first half
               of the 50/50 and the second half of the 50/50.
             </p>
+            <Spacer height={5} />
             <p>
               <i>
                 Use the <u>third period</u> date selector if it is necessary for your schedule.
               </i>
             </p>
+            <Spacer height={5} />
             <p>
               <b>Example</b> <br /> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:
               <br />

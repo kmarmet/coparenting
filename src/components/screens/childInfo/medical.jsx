@@ -81,9 +81,11 @@ export default function Medical({ activeChild, setActiveChild }) {
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
           className={!Manager.isValid(medicalValues) ? 'disabled header medical' : 'header medical'}>
-          <FaBriefcaseMedical className={'svg medical'} /> {!Manager.isValid(activeChild?.medical) ? '- No Info' : ''}
+          <FaBriefcaseMedical className={'svg medical'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Medical
+
+
             {!Manager.isValid(activeChild?.medical) ? '- No Info' : ''}
             {Manager.isValid(activeChild?.medical) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
           </p>

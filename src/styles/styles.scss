@@ -474,6 +474,10 @@
     .green {
       color: $green;
     }
+    
+    .actions {
+      @include actions;
+    }
 
     #install-app-wrapper {
       @include installApp;

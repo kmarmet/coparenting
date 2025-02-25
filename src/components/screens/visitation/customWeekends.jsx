@@ -13,6 +13,8 @@ import MyConfetti from '../../../components/shared/myConfetti'
 import moment from 'moment'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
+import DomManager from '../../../managers/domManager'
+import Spacer from '../../shared/spacer'
 
 export default function CustomWeekends({ hide, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -103,7 +105,7 @@ export default function CustomWeekends({ hide, showCard }) {
   return (
     <BottomCard
       submitText={'Add Schedule'}
-      className="form"
+      className={'long-title form'}
       onSubmit={addSpecificWeekendsToCalendar}
       hasSubmitButton={Manager.isValid(defaultSelectedWeekends)}
       wrapperClass="custom-weekends-schedule"
@@ -119,6 +121,7 @@ export default function CustomWeekends({ hide, showCard }) {
             customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend'],
           })}
         />
+        <Spacer height={5} />
         <CheckboxGroup
           parentLabel={'Month with 5 weekends - extra weekend'}
           onCheck={handleFifthWeekendSelection}
@@ -127,6 +130,7 @@ export default function CustomWeekends({ hide, showCard }) {
             customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend'],
           })}
         />
+        <Spacer height={5} />
       </>
       <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
     </BottomCard>

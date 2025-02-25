@@ -14,14 +14,13 @@ import NavBar from '../../navBar'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
-import { FaCheck } from 'react-icons/fa6'
+import { FaTrashCan } from 'react-icons/fa6'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [docs, setDocs] = useState([])
   const [selectedDoc, setSelectedDoc] = useState(null)
-  const [toDelete, setToDelete] = useState([])
   const [showCard, setShowCard] = useState(false)
 
   const getSecuredDocs = async () => {
@@ -29,21 +28,9 @@ export default function DocsList() {
     setDocs(allDocs)
   }
 
-  const handleDeleteCheckbox = (checkbox) => {
-    const id = checkbox?.previousSibling?.getAttribute('data-id')
-    if (checkbox.classList.contains('active')) {
-      checkbox.classList.remove('active')
-      setToDelete(toDelete.filter((x) => x !== id))
-    } else {
-      checkbox.classList.add('active')
-      setToDelete([...toDelete, id])
-    }
-  }
-
-  const deleteDocs = async () => {
-    DocumentsManager.deleteDocsWithIds(toDelete, currentUser, () => {
-      setToDelete([])
-    })
+  const deleteDoc = async (checkbox) => {
+    const id = checkbox.currentTarget?.previousSibling?.getAttribute('data-id')
+    DocumentsManager.deleteDocsWithIds([id], currentUser)
   }
 
   const onTableChange = async () => {
@@ -92,20 +79,14 @@ export default function DocsList() {
                           {fileType === 'Document' ? <GrDocumentText className={'file-type'} /> : <GrDocumentImage className={'file-type'} />}
                           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
                         </p>
-                        <div className={`checkbox delete`} onClick={(e) => handleDeleteCheckbox(e.currentTarget)}>
-                          <FaCheck className={'checkmark-icon'} />
+                        <div className={`checkbox delete`} onClick={deleteDoc}>
+                          <FaTrashCan className={'delete-icon'} />
                         </div>
                       </div>
                     </div>
                   )
                 })}
             </div>
-          )}
-
-          {toDelete.length > 0 && (
-            <button onClick={deleteDocs} className="mt-20 button default red center">
-              Delete {toDelete.length} Documents
-            </button>
           )}
         </Fade>
       </div>

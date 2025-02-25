@@ -999,6 +999,68 @@
 
 /*#endregion  POSITIONING*/
 /*#region  COMPONENTS*/
+@mixin actions {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 999999;
+  
+  &.active {
+    .children {
+      right: 0;
+      transform: scaleY(1);
+      transition: all 0.5s ease-in-out;
+      opacity: 1;
+      @include bestShadow;
+    }
+  }
+
+  .actions-button-wrapper {
+    background: $bestGreyForWhite;
+    color: $lightDarkGrey;
+    border-radius: 50%;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+
+    svg {
+      font-size: 22px;
+    }
+  }
+
+  .children {
+    border-radius: $bigBorderRadius;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    position: relative;
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+    top: 15px;
+    transform: scaleY(0);
+    width: 70vw;
+    padding: 15px;
+    background: $bestGreyForWhite;
+    right: -100vw;
+
+    button {
+      &.default {
+        font-size: 14px;
+        width: 100%;
+
+        svg {
+          opacity: 0.8;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
 @mixin accordion {
   .MuiCollapse-root {
     border-radius: 0 0 $borderRadius $borderRadius;
@@ -2820,7 +2882,7 @@
               //              width: 90% !important;
               input {
                 border-radius: $borderRadius !important;
-                margin-top: 12px !important;
+                //                margin-top: 12px !important;
               }
             }
           }

@@ -9,6 +9,7 @@ EmailManager =
     appFeedback: 'appFeedback'
     customerSupport: 'customerSupport'
     emailVerification: 'emailVerification'
+    coparentInvitation: 'coparent-invitation'
   GetConfig: (message, templateName, fromName) ->
     config =
       service_id: 'service_ml9j8d3'
@@ -22,14 +23,15 @@ EmailManager =
     config = EmailManager.GetConfig()
     config.template_id = templateName
     config.message = message
-    config.from_name = fromName
+    config.from_name = "kmarmet1@gmail.com"
     emailjs.send(config.service_id, config.template_id, config)
-  SendEmailToUser: ( templateName, message, userEmail) ->
+  SendEmailToUser: ( templateName, message, userEmail, fromName) ->
     config = EmailManager.GetConfig()
-    config.template_id = templateName
+    config.template_id = "coparent-invitation"
     config.message = message
-    config.reply_to = userEmail
-    emailjs.send(config.service_id, config.template_id, config)
+    config.from_name = fromName
+    emailjs.send('default_service', templateName,  {to_email: userEmail, from_name: fromName}).then (response) ->
+      console.log('SUCCESS!', response.status, response.text)
   SendFeatureRequest: (userEmail, message) ->
     EmailManager.SendEmail(EmailManager.Templates.featureRequest, message, userEmail)
   SendAppFeedback: (userEmail,message) ->

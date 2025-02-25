@@ -364,14 +364,20 @@
             font-size: 22px;
             margin-right: 10px;
             color: $mainBlue;
+          }
 
-            &.checkmark-icon {
-              color: white;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              font-size: 16px;
-              margin: 0;
+          .checkbox {
+            &.delete {
+              .delete-icon {
+                color: $red;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 16px;
+                margin: 0;
+                position: relative;
+                top: 2px;
+              }
             }
           }
 

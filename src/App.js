@@ -57,6 +57,7 @@ import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
+import EmailManager from './managers/emailManager'
 
 export default function App() {
   // Initialize Firebase

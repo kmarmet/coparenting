@@ -25,8 +25,6 @@ import { IoIosArrowUp } from 'react-icons/io'
 import _ from 'lodash'
 import Label from '../../shared/label.jsx'
 import DatasetManager from '../../../managers/datasetManager.coffee'
-import reactStringReplace from 'react-string-replace'
-import Spacer from '../../shared/spacer'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
@@ -62,8 +60,9 @@ export default function DocViewer() {
     if (currentUser && nonImageFileTypes.includes(fileType)) {
       setDocType('document')
       const url = docToView.url
+      console.log(url)
       const fileName = FirebaseStorage.getImageNameFromUrl(url)
-      const firebaseText = await FirebaseStorage.getSingleFile(FirebaseStorage.directories.documents, currentUser.id, fileName)
+      const firebaseText = await FirebaseStorage.getSingleFile(FirebaseStorage.directories.documents, currentUser.key, fileName)
       await formatDocument(firebaseText)
     } else {
       setDocType('image')
@@ -395,8 +394,10 @@ export default function DocViewer() {
           element?.value?.length === 0 ||
           element?.textContent === '\n\n'
         ) {
-          element.style.display = 'none'
-          console.log(element)
+          if (!element.classList.contains('delete-header-button')) {
+            element.style.display = 'none'
+          }
+          // console.log(element)
           element.remove()
         }
       }
@@ -487,7 +488,7 @@ export default function DocViewer() {
         showOverlay={false}
         onClose={closeSearch}>
         <div className="flex">
-          <InputWrapper placeholder="Enter text to find..." onChange={(e) => search(e.target.value)} inputValueType="text" />
+          <InputWrapper labelText="Enter text to find..." onChange={(e) => search(e.target.value)} inputValueType="text" />
         </div>
       </BottomCard>
 
@@ -543,7 +544,7 @@ export default function DocViewer() {
               {tocHeaders.length > 0 &&
                 tocHeaders.sort().map((header, index) => {
                   return (
-                    <div className="flex" id="toc-header-wrapper">
+                    <div key={index} className="flex" id="toc-header-wrapper">
                       <span>•</span>
                       <p
                         onClick={() => {

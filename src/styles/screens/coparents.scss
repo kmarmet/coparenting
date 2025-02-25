@@ -73,6 +73,18 @@
   #coparent-info {
     margin-top: 20px;
 
+    .form {
+      button {
+        width: 60%;
+
+        &.default {
+          svg {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+
     .row {
       overflow: hidden;
       transition: max-height 0.3s ease-in-out;

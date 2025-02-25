@@ -8,7 +8,6 @@ const FirebaseStorage = {
     memories: 'memories',
     documents: 'documents',
     profilePics: 'profilePics',
-    chatRecoveryRequests: 'chatRecoveryRequests',
   },
   base64ToImage: (dataUrl, imageName) => {
     var arr = dataUrl.split(','),
@@ -60,18 +59,21 @@ const FirebaseStorage = {
           //
         })
     }),
+
   getImageAndUrl: async (imageDir, id, imageName) => {
     const storage = getStorage()
     let imgLoadStatus = 'success'
     let imageUrl = ''
+    console.log(`${imageDir}/${id}/${imageName}`)
     await getDownloadURL(ref(storage, `${imageDir}/${id}/${imageName}`))
       .then((url) => {
-        var image = new Image()
+        let image = new Image()
         image.src = url
         imageUrl = url
         image.onerror = function () {
           imgLoadStatus = 'error'
         }
+        console.log(image)
       })
       .catch((error) => {
         if (error.toString().includes('storage/object-not-found')) {

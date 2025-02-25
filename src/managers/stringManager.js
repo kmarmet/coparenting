@@ -32,6 +32,9 @@ StringManager = {
     input = input.toString().replace(/-/g, '').replace(/\s+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\+/g, '').replace(/\+1/g, '');
     return input;
   },
+  formatFileName: function(fileName) {
+    return fileName.replaceAll(' ', '-').replaceAll('(', '').replaceAll(')', '');
+  },
   spaceBetweenWords: function(input) {
     return input.toString().replace(/([a-z])([A-Z])/g, '$1 $2');
   },

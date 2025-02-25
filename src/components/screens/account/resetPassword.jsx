@@ -9,6 +9,7 @@ import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
+import DomManager from '../../../managers/domManager'
 
 export default function ResetPassword() {
   const { state, setState } = useContext(globalState)
@@ -23,7 +24,7 @@ export default function ResetPassword() {
       return false
     }
     await sendPasswordResetEmail(auth, email)
-      .then(async (link) => {
+      .then(async () => {
         AlertManager.successAlert('A reset link has been sent to your email')
         setState({
           ...state,
@@ -32,15 +33,11 @@ export default function ResetPassword() {
         })
       })
       .catch((error) => {
-        AlertManager.throwError('error', 'We could not find an account with the email provided')
+        AlertManager.throwError('Account not Found', 'We could not find an account with the email provided')
         console.log(error)
         // Some error occurred.
       })
   }
-
-  useEffect(() => {
-    Manager.showPageContainer()
-  }, [])
 
   return (
     <>

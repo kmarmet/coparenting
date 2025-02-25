@@ -292,7 +292,6 @@ const DB_UserScoped = {
     await set(child(dbRef, `${DB.tables.users}/${key}`), cleanUser).catch((error) => {
       console.log(error)
     })
-    await DB.addSingleRecord(`${DB.tables.userKeys}/${key}`, userKey)
 
     return newUser
   },

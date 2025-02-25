@@ -710,7 +710,7 @@
   // Primary calendar picker container
   .MuiPaper-root {
     background-color: $lightBg;
-    border-radius: $bigBorderRadius;
+    border-radius: $bigBorderRadius !important;
     width: 95vw !important;
     @include bestShadow;
 
@@ -915,13 +915,39 @@
     .css-12vly6n-MuiDateTimePickerToolbar-timeContainer {
       flex-wrap: wrap;
     }
+    
+    .MuiPickersToolbarText-root  {
+      &.Mui-selected {
+        font-weight: $fwBold ;
+      }
+    }
+    
+    .MuiPickersToolbar-content {
+      display: flex;
+      align-items: center;
+      .MuiTimePickerToolbar-ampmSelection {
+        margin: 0;
+      }
+    }
+
+    .MuiPickersToolbar-root {
+      margin: 0 !important;
+      display: unset;
+      padding: 10px;
+      max-width: 365px !important;
+    }
 
     // Date/time container (including buttons and clock)
     .css-16b5y55-MuiPickersLayout-contentWrapper,
     .MuiPickersLayout-contentWrapper {
-      grid-column: 3;
-      max-width: 365px;
-      overflow: hidden;
+      grid-column: 2;
+      overflow: hidden !important;
+      .MuiTimeClock-root {
+        padding-left: 10px;
+        width: 100% !important;
+        max-width: 365px !important;
+        margin: 0;
+      }
     }
 
     .MuiTimeClock-arrowSwitcher {

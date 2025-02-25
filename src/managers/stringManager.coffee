@@ -31,6 +31,9 @@ StringManager = {
       .replace(/\+1/g, '')
     input
 
+  formatFileName: (fileName) ->
+    fileName.replaceAll(' ', '-').replaceAll('(', '').replaceAll(')', '')
+
   spaceBetweenWords: (input) ->
     input.toString().replace(/([a-z])([A-Z])/g, '$1 $2')
 
