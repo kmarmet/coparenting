@@ -12,6 +12,7 @@ import Medical from '/src/components/screens/childInfo/medical'
 import Schooling from '/src/components/screens/childInfo/schooling'
 import { FaCameraRotate } from 'react-icons/fa6'
 import { BiImageAdd } from 'react-icons/bi'
+import { TbChecklist } from 'react-icons/tb'
 import { Fade } from 'react-awesome-reveal'
 import NewChildForm from '/src/components/screens/childInfo/newChildForm'
 import ChildSelector from '/src/components/screens/childInfo/childSelector'
@@ -26,6 +27,10 @@ import NewTransferChecklist from './newTransferChecklist'
 import Checklists from './checklists'
 import Spacer from '../../shared/spacer'
 import Actions from '../../shared/actions'
+import { HiOutlineDotsVertical } from 'react-icons/hi'
+import { IoClose } from 'react-icons/io5'
+import { FaWandMagicSparkles } from 'react-icons/fa6'
+import { BiFace } from 'react-icons/bi'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
@@ -38,6 +43,7 @@ export default function ChildInfo() {
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [hasChildren, setHasChildren] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
+  const [showActions, setShowActions] = useState(false)
   const uploadProfilePic = async () => {
     // setState({ ...state, isLoading: true })
     const imgFiles = document.getElementById('upload-image-input').files
@@ -96,41 +102,6 @@ export default function ChildInfo() {
 
   return (
     <>
-      <Actions hide={showNewChildForm || showSelectorCard || showInfoCard || showNewChecklistCard || showChecklistsCard}>
-        {/* BUTTONS */}
-        {Manager.isValid(currentUser?.children) && (
-              <>
-                <button
-                  className="button default"
-                  onClick={() => {
-                    setShowInfoCard(true)
-                  }}>
-                  Add Your Own Info
-                </button>
-                {currentUser?.children?.length > 1 && (
-                  <button
-                    onClick={() => {
-                      setShowSelectorCard(true)
-                    }}
-                    className="button default">
-                    View Another Child
-                  </button>
-                )}
-                <button className="default button" onClick={() => setShowNewChecklistCard(true)}>
-                  Create Transfer Checklist
-                </button>
-                {Manager.isValid(activeInfoChild?.checklists) && (
-                  <button
-                    className="default button"
-                    onClick={() => {
-                      setShowChecklistsCard(true)
-                    }}>
-                    View Transfer Checklists
-                  </button>
-                )}
-              </>
-        )}
-      </Actions>
       {/* CHILD SELECTOR */}
       <ChildSelector
         activeInfoChild={activeInfoChild}
@@ -159,13 +130,79 @@ export default function ChildInfo() {
       <div id="child-info-container" className={`${theme} page-container form`}>
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title">Child Info </p>
+            <p className="screen-title beside-action-button">Child Info </p>
+
+            {/* ADD NEW BUTTON - DESKTOP */}
             {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
+            {/* ACTIONS BUTTON */}
+            {showActions ? (
+              <IoClose id={'actions-button'} onClick={() => setShowActions(false)} />
+            ) : (
+              <HiOutlineDotsVertical id={'actions-button'} onClick={() => setShowActions(true)} />
+            )}
           </div>
+
           <p>
             You can store and access all relevant information about your child, particularly essential details that you may need to retrieve at any
             moment.
           </p>
+
+          {/* ACTIONS */}
+          {Manager.isValid(currentUser?.children) && (
+            <Actions show={showActions}>
+              <div className="action-items">
+                <div
+                  className="action-item"
+                  onClick={() => {
+                    setShowInfoCard(true)
+                    setShowActions(false)
+                  }}>
+                  <div className="svg-wrapper">
+                    <FaWandMagicSparkles />
+                  </div>
+                  <span>Add Your Own Info</span>
+                </div>
+                {currentUser?.children?.length > 1 && (
+                  <div
+                    onClick={() => {
+                      setShowSelectorCard(true)
+                      setShowActions(false)
+                    }}
+                    className="action-item">
+                    <div className="svg-wrapper">
+                      <BiFace className={'child'} />
+                    </div>
+                    <span>View Another Child</span>
+                  </div>
+                )}
+                <div
+                  className=" action-item"
+                  onClick={() => {
+                    setShowActions(false)
+
+                    setShowNewChecklistCard(true)
+                  }}>
+                  <div className="svg-wrapper">
+                    <TbChecklist className={'checklist'} />
+                  </div>
+                  <span> Create Transfer Checklist</span>
+                </div>
+                {Manager.isValid(activeInfoChild?.checklists) && (
+                  <button
+                    className="action-item"
+                    onClick={() => {
+                      setShowChecklistsCard(true)
+                      setShowActions(false)
+                    }}>
+                    <div className="svg-wrapper">
+                      <TbChecklist className={'checklist'} />
+                    </div>
+                    <span>View Transfer Checklists</span>
+                  </button>
+                )}
+              </div>
+            </Actions>
+          )}
           <Spacer height={10} />
 
           {!hasChildren && (
@@ -178,23 +215,23 @@ export default function ChildInfo() {
 
           {/* PROFILE PIC */}
           <div id="image-and-actions-wrapper">
-              {Manager.isValid(activeInfoChild?.general['profilePic']) && (
-                <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
-                  <div className="after">
-                    <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
-                    <FaCameraRotate />
-                  </div>
+            {Manager.isValid(activeInfoChild?.general['profilePic']) && (
+              <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
+                <div className="after">
+                  <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
+                  <FaCameraRotate />
                 </div>
-              )}
-              {!Manager.isValid(activeInfoChild?.general['profilePic'], true) && (
-                <div className="profile-pic-container no-image">
-                  <div className="after">
-                    <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
-                    <BiImageAdd />
-                  </div>
+              </div>
+            )}
+            {!Manager.isValid(activeInfoChild?.general['profilePic'], true) && (
+              <div className="profile-pic-container no-image">
+                <div className="after">
+                  <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
+                  <BiImageAdd />
                 </div>
-              )}
-              <span className="child-name">{StringManager.getFirstNameOnly(activeInfoChild?.general?.name)}</span>
+              </div>
+            )}
+            <span className="child-name">{StringManager.getFirstNameOnly(activeInfoChild?.general?.name)}</span>
           </div>
 
           {/* INFO */}

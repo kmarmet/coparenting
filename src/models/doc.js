@@ -4,13 +4,14 @@ var Doc;
 import Manager from "../managers/manager";
 
 export default Doc = class Doc {
-  constructor(name = '', type = '', shareWith = [], url = '', id = Manager.getUid(), ownerKey) {
+  constructor(name = '', type = '', shareWith = [], url = '', id = Manager.getUid(), ownerKey = '', compressedHtml = '') {
     this.name = name;
     this.type = type;
     this.shareWith = shareWith;
     this.url = url;
     this.id = id;
     this.ownerKey = ownerKey;
+    this.compressedHtml = compressedHtml;
   }
 
 };

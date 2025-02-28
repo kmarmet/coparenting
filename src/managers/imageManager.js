@@ -17,13 +17,47 @@ import FirebaseStorage from '../database/firebaseStorage';
 
 import domtoimage from 'dom-to-image';
 
+import shortenurl from "shorten-url";
+
+import AlertManager from "./alertManager";
+
 ImageManager = {
-  getStatusCode: function(url) {
-    return fetch(url).then(function(response) {
-      var statusCode;
-      statusCode = response.status;
-      return statusCode;
+  shortenUrl: async function(url) {
+    var error, myHeaders, raw, requestOptions, response, result, shortenedUrlObject;
+    shortenedUrlObject = '';
+    myHeaders = new Headers();
+    myHeaders.append("content-type", "application/json");
+    myHeaders.append("x-api-key", "sk_575d8944c4434a94a25350a97217367f");
+    raw = JSON.stringify({
+      expiry: "5m",
+      url: url
     });
+    requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow"
+    };
+    try {
+      response = (await fetch("https://api.manyapis.com/v1-create-short-url", requestOptions));
+      result = (await response.json());
+      shortenedUrlObject = result;
+      console.log(result);
+    } catch (error1) {
+      error = error1;
+      console.error(error);
+      AlertManager.throwError('Unable to parse image. Please try again after a few minutes.');
+      return false;
+    }
+    return shortenedUrlObject.shortUrl;
+  },
+  getStatusCode: function(url) {
+    var statusCode;
+    statusCode = 0;
+    fetch(url).then(function(response) {
+      return statusCode = response.status;
+    });
+    return statusCode;
   },
   compressImage: async function(imgFile) {
     var compressedFile, error, options;
@@ -44,7 +78,7 @@ ImageManager = {
   expandImage: function(img, modal) {
     var imageModal, src;
     if (modal == null) {
-      modal = document.querySelector('.image-modal');
+      modal = document.querySelector('.image - modal');
     }
     src = img.getAttribute('src');
     imageModal = modal;
@@ -52,7 +86,7 @@ ImageManager = {
     return imageModal.classList.add('active');
   },
   formatImageName: function(imageName) {
-    return imageName.replace(/\.[^\/.]+$/, '').replaceAll('-', ' ').replaceAll('_', ' ').uppercaseFirstLetterOfAllWords();
+    return imageName.replace(/\.[^\/.]+$/, '').replaceAll(' - ', ' ').replaceAll('_', ' ').uppercaseFirstLetterOfAllWords();
   },
   blobToImage: function(blob) {
     return new Promise(function(resolve) {
@@ -69,7 +103,7 @@ ImageManager = {
   },
   navigateToImage: function(direction, imgPaths) {
     var img, imgIndex, src;
-    img = document.querySelector('#modal-img');
+    img = document.querySelector(' #modal-img');
     src = img.getAttribute('src');
     imgIndex = imgPaths.indexOf(src);
     if (imgIndex > -1 && imgIndex + 1 < imgPaths.length) {
@@ -152,3 +186,5 @@ ImageManager = {
 };
 
 export default ImageManager;
+
+//# sourceMappingURL=imageManager.js.map

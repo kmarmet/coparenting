@@ -8,24 +8,24 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import CustomCoparentInfo from './customCoparentInfo'
 import NewCoparentForm from './newCoparentForm'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
-import { IoPersonRemove } from 'react-icons/io5'
+import { IoClose, IoPersonRemove } from 'react-icons/io5'
 import { Fade } from 'react-awesome-reveal'
 import { IoMdRemoveCircle } from 'react-icons/io'
 import NavBar from '/src/components/navBar.jsx'
-import { BsPersonAdd } from 'react-icons/bs'
+import { BsFillSendFill, BsPersonAdd } from 'react-icons/bs'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
 import DatasetManager from '/src/managers/datasetManager'
 import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager.coffee'
-import { PiUserCircleDuotone } from 'react-icons/pi'
+import { PiUserCircle } from 'react-icons/pi'
 import AddressInput from '../../shared/addressInput'
 import BottomCard from '../../shared/bottomCard'
 import EmailManager from '../../../managers/emailManager'
-import { BsFillSendFill } from 'react-icons/bs'
-import Spacer from '../../shared/spacer'
 import Actions from '../../shared/actions'
+import { HiOutlineDotsVertical } from 'react-icons/hi'
+import { PiUserCircleDuotone } from 'react-icons/pi'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -41,7 +41,7 @@ export default function Coparents() {
   const [invitedCoparentName, setInvitedCoparentName] = useState('')
   const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
   const [hideActions, setHideActions] = useState(true)
-
+  const [showActions, setShowActions] = useState(false)
   const deleteProp = async (prop) => {
     const coparent = await getCoparent()
     await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), coparent)
@@ -99,38 +99,13 @@ export default function Coparents() {
   useEffect(() => {
     if (showCustomInfoCard || showInvitationForm || showNewCoparentFormCard) {
       setHideActions(true)
-    }
-    else {
+    } else {
       setHideActions(false)
     }
   }, [showCustomInfoCard, showInvitationForm, showNewCoparentFormCard])
 
   return (
     <>
-      <Actions hide={hideActions}>
-        <button
-          className="button default center green"
-          onClick={() => {
-            setShowCustomInfoCard(true)
-          }}>
-          Add Your Own Info <FaWandMagicSparkles />
-        </button>
-        <button
-          className="button default center red"
-          onClick={() => {
-            AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
-              await deleteCoparent()
-              AlertManager.successAlert('Co-Parent Removed')
-              setSelectedCoparentDataArray(null)
-            })
-          }}>
-          Remove Co-Parent <IoPersonRemove />
-        </button>
-        <button className="default button center" onClick={() => setShowInvitationForm(true)}>
-          Invite Co-Parent <BsFillSendFill />
-        </button>
-      </Actions>
-
       {/* CUSTOM INFO FORM */}
       <CustomCoparentInfo hideCard={() => setShowCustomInfoCard(false)} activeCoparent={selectedCoparentRaw} showCard={showCustomInfoCard} />
 
@@ -162,28 +137,83 @@ export default function Coparents() {
       <div id="coparents-container" className={`${theme} page-container coparents-wrapper form`}>
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title">Co-Parents </p>
+            <p className="screen-title beside-action-button">Co-Parents </p>
             {!DomManager.isMobile() && <BsPersonAdd id={'add-new-button'} onClick={() => setShowNewCoparentFormCard(true)} />}
+            {/* ACTIONS BUTTON */}
+            {showActions ? (
+              <IoClose id={'actions-button'} onClick={() => setShowActions(false)} />
+            ) : (
+              <HiOutlineDotsVertical id={'actions-button'} onClick={() => setShowActions(true)} />
+            )}
           </div>
           <p>Maintain accessible records of important information regarding your co-parent.</p>
+          <Actions show={showActions}>
+            <div className="action-items">
+              <div
+                className="action-item"
+                onClick={() => {
+                  setShowActions(false)
+                  setShowCustomInfoCard(true)
+                }}>
+                <div className="svg-wrapper">
+                  <FaWandMagicSparkles />
+                </div>
+                <span>
+                  Add Your <br /> Own Info
+                </span>
+              </div>
+              <div
+                className="action-item"
+                onClick={() => {
+                  setShowActions(false)
+                  AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
+                    await deleteCoparent()
+                    AlertManager.successAlert('Co-Parent Removed')
+                    setSelectedCoparentDataArray(null)
+                  })
+                }}>
+                <div className="svg-wrapper remove-user">
+                  <IoPersonRemove className={'remove-user'} />
+                </div>
+                <span>
+                  Remove <br /> Co-Parent
+                </span>
+              </div>
+
+              <div
+                className="action-item"
+                onClick={() => {
+                  setShowInvitationForm(true)
+                  setShowActions(false)
+                }}>
+                <div className="svg-wrapper airplane">
+                  <BsFillSendFill className={'airplane'} />
+                </div>
+                <span>
+                  Invite <br /> Co-Parent
+                </span>
+              </div>
+            </div>
+          </Actions>
           {/* COPARENT ICONS CONTAINER */}
           <div id="coparent-container">
             {selectedCoparentDataArray &&
               Manager.isValid(userCoparents) &&
               userCoparents.map((coparent, index) => {
-                const coparentPhone = selectedCoparentDataArray.filter((x) => Manager.contains(x, 'phone'))[0][1]
+                const coparentKeyArray = selectedCoparentDataArray.find((x) => x[0] === 'key')
+                const coparentKey = coparentKeyArray[1]
                 return (
                   <div
                     onClick={() => {
-                      setCurrentCoparentAddress(coparent.address)
+                      setCurrentCoparentAddress(coparent?.address)
                       setSelectedCoparentDataArray(Object.entries(coparent))
                       setSelectedCoparentRaw(coparent)
                     }}
-                    className={coparentPhone && coparentPhone === coparent.key ? 'active coparent' : 'coparent'}
+                    className={coparentKey && coparentKey === coparent.key ? 'active coparent' : 'coparent'}
                     data-phone={coparent.key}
                     data-name={coparent.name}
                     key={index}>
-                    <PiUserCircleDuotone />
+                    {coparentKey === coparent.key ? <PiUserCircleDuotone /> : <PiUserCircle />}
                     <span className="coparent-name">{StringManager.getFirstNameOnly(coparent.name)}</span>
                     <span className="coparent-type">{coparent.parentType}</span>
                   </div>
@@ -212,9 +242,8 @@ export default function Coparents() {
                           <div className="flex input">
                             {/* LOCATION */}
                             {infoLabel.toLowerCase().includes('address') && (
-                              <InputWrapper inputType={'date'} labelText={infoLabel}>
+                              <InputWrapper inputType={'date'} labelText={value}>
                                 <AddressInput
-                                  defaultValue={value}
                                   onSelection={async (place) => {
                                     await update('address', place)
                                   }}
@@ -242,7 +271,6 @@ export default function Coparents() {
                     </div>
                   )
                 })}
-
             </div>
           </div>
         </Fade>

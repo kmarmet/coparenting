@@ -1,5 +1,9 @@
 import Manager from '../managers/manager'
 import FirebaseStorage from '../database/firebaseStorage'
+import ImageManager from './imageManager'
+import StringManager from './stringManager'
+import AlertManager from './alertManager'
+
 const DocumentConversionManager = {
   tocHeaders: [
     'income tax exemptions',
@@ -124,31 +128,36 @@ const DocumentConversionManager = {
     }
     return returnHtml
   },
-  imageToHtml: async (fileName, currentUserId) => {
+  imageToHtml: async (url, fileName) => {
+    let returnHtml = ''
+    const extension = StringManager.getFileExtension(fileName)
     const myHeaders = new Headers()
-    myHeaders.append('Access-Control-Allow-Origin', '*')
-    let apiAddress = 'https://localhost:5000'
-    // let apiAddress = 'https://peaceful-coparenting.app:5000'
-    const corsOrNoCors = window.location.href.includes('localhost') ? 'no-cors' : 'cors'
+    myHeaders.append('Content-Type', 'image/*')
+    let shortenedUrl = await ImageManager.shortenUrl(url)
+
     const requestOptions = {
       method: 'GET',
       headers: myHeaders,
-      mode: corsOrNoCors,
-      crossOrigin: true,
       redirect: 'follow',
     }
 
-    let returnHtml = ''
-    const all = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, currentUserId, fileName)
-    const { status, imageUrl } = all
-    console.log(imageUrl)
-    if (status === 'success') {
-      await fetch(`${apiAddress}/document/GetTextFromImage?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.error(error))
+    try {
+      const response = await fetch(
+        `https://api.ocr.space/parse/imageurl?apikey=K88878363888957&url=${shortenedUrl}&OCREngine=2&filetype=${extension}`,
+        requestOptions
+      ).catch((error) => {
+        AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')
+        console.log(error)
+        return false
+      })
+      const result = await response.json()
+      returnHtml = result
+      console.log(result)
+    } catch (error) {
+      AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')
+      console.error(error)
     }
-    console.log(returnHtml)
+
     return returnHtml
   },
   imageToText: async (imageUrl) => {

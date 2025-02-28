@@ -76,23 +76,24 @@ export default function UploadDocuments({ hideCard, showCard }) {
         return true
       }
     })
-
+    let html = ''
+    let imageUrl = ''
     if (existingDocument) {
       // error
       AlertManager.throwError('Document has already been uploaded')
       setState({ ...state, isLoading: false })
       return false
     }
-
     //#endregion VALIDATION
 
     //#region IMAGE CONVERSION
     if (docType === 'image') {
       file = await ImageManager.compressImage(file)
       let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
-      await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`, file)
-      let text = await DocumentConversionManager.imageToHtml(firebaseStorageFileName, currentUser?.key)
-      await storeTextInFirebase(text, docNameToUse.replaceAll(' ', ''))
+      imageUrl = await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`, file)
+      const imageName = FirebaseStorage.getImageNameFromUrl(imageUrl)
+      const ocrObject = await DocumentConversionManager.imageToHtml(imageUrl, imageName)
+      html = ocrObject?.ParsedResults[0]?.ParsedText
     }
     //#endregion IMAGE CONVERSION
 
@@ -115,9 +116,13 @@ export default function UploadDocuments({ hideCard, showCard }) {
 
     //#region ADD TO DB / SEND NOTIFICATION
     // Add to user documents object
-    const fileUrl = await FirebaseStorage.getFileUrl(FirebaseStorage.directories.documents, currentUser?.key, docNameToUse)
+    let fileUrl = imageUrl
+    if (!Manager.isValid(fileUrl, true)) {
+      fileUrl = await FirebaseStorage.getFileUrl(FirebaseStorage.directories.documents, currentUser?.key, docNameToUse)
+    }
     const newDocument = new Doc()
     newDocument.url = fileUrl
+    newDocument.compressedHtml = html
     newDocument.ownerKey = currentUser?.key
     newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
     newDocument.type = docType

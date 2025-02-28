@@ -132,6 +132,20 @@ DomManager = {
       text = document.selection.createRange().text;
     }
     return text;
+  },
+  clearTextSelection: function() {
+    if (window.getSelection) {
+      // Chrome
+      if (window.getSelection().empty) {
+        return window.getSelection().empty();
+      } else if (window.getSelection().removeAllRanges) {
+        // Firefox
+        return window.getSelection().removeAllRanges();
+      }
+    } else if (document.selection) {
+      // IE?
+      return document.selection.empty();
+    }
   }
 };
 

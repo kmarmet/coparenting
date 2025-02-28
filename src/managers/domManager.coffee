@@ -90,6 +90,19 @@ DomManager = {
     else if document.selection? and document.selection.type != "Control"
       text = document.selection.createRange().text
     return text
+
+  clearTextSelection: ->
+    if window.getSelection
+    # Chrome
+        if window.getSelection().empty
+          window.getSelection().empty()
+        else if window.getSelection().removeAllRanges
+    # Firefox
+          window.getSelection().removeAllRanges()
+    else if document.selection
+    # IE?
+      document.selection.empty()
+
 }
 
 export default DomManager

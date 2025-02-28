@@ -131,7 +131,7 @@ export default function Memories() {
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
         {/* NO DATA FALLBACK TEXT */}
-        {memories && memories.length === 0 && <NoDataFallbackText text={'There are currently no memories'} />}
+        {memories && memories.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories available'} />}
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Memories</p>

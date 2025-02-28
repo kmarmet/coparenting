@@ -5,13 +5,44 @@ import DB from "../database/DB"
 import { saveAs } from 'file-saver'
 import FirebaseStorage from '../database/firebaseStorage'
 import domtoimage from 'dom-to-image';
+import shortenurl from "shorten-url"
+import AlertManager from "./alertManager"
 
 ImageManager =
+  shortenUrl: (url) ->
+    shortenedUrlObject = ''
+    myHeaders = new Headers()
+    myHeaders.append "content-type", "application/json"
+    myHeaders.append "x-api-key", "sk_575d8944c4434a94a25350a97217367f"
+
+    raw = JSON.stringify
+      expiry: "5m"
+      url: url
+
+    requestOptions =
+      method: "POST"
+      headers: myHeaders
+      body: raw
+      redirect: "follow"
+
+    try
+      response = await fetch("https://api.manyapis.com/v1-create-short-url", requestOptions)
+
+      result = await response.json()
+      shortenedUrlObject = result;
+      console.log result
+    catch error
+      console.error error
+      AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')
+      return false;
+
+    return shortenedUrlObject.shortUrl
+
   getStatusCode: (url) ->
+    statusCode = 0
     fetch  url
-      .then (response) ->
-        statusCode = response.status
-        return statusCode
+      .then (response) -> statusCode = response.status
+    return statusCode
 
   compressImage: (imgFile) ->
     try
@@ -26,9 +57,8 @@ ImageManager =
     catch error
       console.log(error)
 
-
   expandImage: (img, modal) ->
-    modal ?= document.querySelector('.image-modal')
+    modal ?= document.querySelector('.image - modal')
     src = img.getAttribute('src')
     imageModal = modal
     imageModal.querySelector('img').setAttribute('src', src)
@@ -37,7 +67,7 @@ ImageManager =
   formatImageName: (imageName) ->
     imageName
       .replace(/\.[^/.]+$/, '')
-      .replaceAll('-', ' ')
+      .replaceAll(' - ', ' ')
       .replaceAll('_', ' ')
       .uppercaseFirstLetterOfAllWords()
 
@@ -52,7 +82,7 @@ ImageManager =
       console.log(img)
 
   navigateToImage: (direction, imgPaths) ->
-    img = document.querySelector('#modal-img')
+    img = document.querySelector(' #modal-img')
     src = img.getAttribute('src')
     imgIndex = imgPaths.indexOf(src)
     if imgIndex > -1 and imgIndex + 1 < imgPaths.length
@@ -67,7 +97,7 @@ ImageManager =
       img.src = imgPaths[0]
 
   getImages: (currentUser) ->
-    allMemories  = []
+    allMemories = []
     memories = await SecurityManager.getMemories(currentUser)
     allMemories = memories
     await FirebaseStorage.getImages(FirebaseStorage.directories.memories, currentUser.id).then (imgPromises) ->
@@ -75,7 +105,7 @@ ImageManager =
         if images.length > 0
           allMemories.push(images)
 
-    returnMemories =  allMemories
+    returnMemories = allMemories
     returnMemories
 
   deleteImage: (currentUser, imgPaths, directory, path) ->
@@ -94,10 +124,10 @@ ImageManager =
     FirebaseStorage.delete(directory, currentUser.id, imageName)
 
   createImage: (url) ->
-      image = new Image()
-      image.setAttribute('crossOrigin', 'anonymous')
-      image.src = url
-      image
+    image = new Image()
+    image.setAttribute('crossOrigin', 'anonymous')
+    image.src = url
+    image
 
   getRadianAngle: (degreeValue) ->
     (degreeValue * Math.PI) / 180

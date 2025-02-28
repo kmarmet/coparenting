@@ -38,8 +38,9 @@ export default function DocViewer() {
   const [docType, setDocType] = useState('document')
   const [showTips, setShowTips] = useState(false)
   const [isFormatting, setIsFormatting] = useState(false)
-  const scrollToHeader = (headerText) => {
-    const domHeader = document.querySelector(`#doc-text [data-header='${headerText}']`)
+
+  const scrollToHeader = (hashedHeader) => {
+    const domHeader = document.querySelector(`#doc-text [data-hashed-header="${hashedHeader}"]`)
     if (domHeader) {
       setTimeout(() => {
         if (domHeader) {
@@ -51,16 +52,15 @@ export default function DocViewer() {
       }, 300)
     }
   }
+
   const onLoad = async () => {
-    // setState({ ...state, isLoading: false })
-    const fileType = `.${StringManager.getFileExtension(docToView.name)}`
+    const fileType = `.${StringManager.getFileExtension(docToView.name)}`.toLowerCase()
     setTextWithHeaders('')
     setIsFormatting(true)
     const nonImageFileTypes = ['.docx', '.doc', '.pdf', '.odt', '.txt']
     if (currentUser && nonImageFileTypes.includes(fileType)) {
       setDocType('document')
       const url = docToView.url
-      console.log(url)
       const fileName = FirebaseStorage.getImageNameFromUrl(url)
       const firebaseText = await FirebaseStorage.getSingleFile(FirebaseStorage.directories.documents, currentUser.key, fileName)
       await formatDocument(firebaseText)
@@ -76,10 +76,10 @@ export default function DocViewer() {
     const domHeaders = document.querySelectorAll('.header')
     let headersInDocument = []
     for (let header of domHeaders) {
-      const headerText = header.textContent.trim()
+      const headerText = header.querySelector('.header-text').textContent.trim()
       if (!_.isEmpty(headerText) && StringManager.wordCount(headerText) <= 10) {
         if (!headersInDocument.includes(headerText)) {
-          headersInDocument.push(headerText)
+          headersInDocument.push(Manager.generateHash(headerText))
         }
       }
     }
@@ -125,32 +125,13 @@ export default function DocViewer() {
 
   const formatImageDocument = async () => {
     try {
-      const allDocs = await SecurityManager.getDocuments(currentUser)
-      let docOwner = await DB.find(DB.tables.users, ['phone', docToView?.ownerKey], true)
-      const firebasePathId = docOwner.id
-      const imageResult = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, firebasePathId, docToView.name)
-      // Catch errors
-      if (!Manager.isValid(allDocs)) {
-        setState({ ...state, isLoading: false, loadingText: '' })
-        return false
-      }
-
-      if (!Manager.isValid(docOwner)) {
-        setState({ ...state, isLoading: false, loadingText: '' })
-        return false
-      }
-
-      if (!Manager.isValid(docToView)) {
-        setState({ ...state, isLoading: false, loadingText: '' })
-        AlertManager.throwError('No Document Found')
-        return false
-      }
-
       // Insert text
-      if (imageResult?.status === 'success') {
-        setImgUrl(imageResult?.imageUrl)
+      if (docToView) {
+        setImgUrl(docToView.url)
+
         // Get all headers
         let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
+        let dbUserHeaders = userHeaders
         userHeaders = userHeaders.map((x) => x.headerText)
 
         let allHeaders = []
@@ -159,9 +140,8 @@ export default function DocViewer() {
         } else {
           allHeaders = predefinedHeaders
         }
-        let text = await DocumentConversionManager.imageToText(imageResult?.imageUrl)
+        let text = docToView.compressedHtml
 
-        // Image to text server probably down -> 404
         if (!text) {
           AlertManager.throwError(
             'Unable to find or convert document, please try again after awhile. In the meantime, you can view the document image while this is being resolved.'
@@ -171,7 +151,7 @@ export default function DocViewer() {
           return false
         }
         // HTML symbol -> regular
-        text = text.replaceAll('&#039;', "'")
+        // text = text.replaceAll('&#039;', "'")
 
         // Remove line breaks after header
         const lineBreaks = document.querySelectorAll('br')
@@ -181,20 +161,31 @@ export default function DocViewer() {
             lineBreak.remove()
           }
         }
+
         // Format headers
         for (let header of allHeaders) {
-          const dataHeader = header.replaceAll(' ', '').replaceAll("'", '').replace('"', '')
           if (userHeaders.includes(header)) {
             text = text.replaceAll(
               header,
-              `<span data-header=${dataHeader} class="header">${header}<TiDelete className="delete-header-button"/></span>`
+              `<div data-hashed-header=${Manager.generateHash(header)} class="header">
+                                <span class="header-text">${header}</span>
+                              </div>`
             )
           } else {
-            text = text.replaceAll(header, `<span data-header=${dataHeader} class="header">${header}</span>`)
+            text = text.replaceAll(header, `<span data-hashed-header=${Manager.generateHash(header)} class="header">${header}</span>`)
           }
         }
         setTextWithHeaders(text)
         setState({ ...state, isLoading: false, loadingText: '' })
+
+        // Add header event listeners
+        setTimeout(() => {
+          const _allHeaders = document.querySelectorAll('.header')
+          for (let _header of _allHeaders) {
+            _header.addEventListener('click', deleteHeader)
+          }
+          setTableOfContentsHeaders()
+        }, 500)
       } else {
         AlertManager.throwError('No Document Found')
         setState({ ...state, isLoading: false, loadingText: '' })
@@ -204,15 +195,6 @@ export default function DocViewer() {
       AlertManager.throwError('Unable to find or load document')
       setState({ ...state, isLoading: false, loadingText: '' })
     }
-  }
-
-  const formatHeaderText = (headerText) => {
-    return headerText
-      .trim()
-      .replaceAll('&nbsp;', '')
-      .replace(/[^a-zA-Z0-9 ]/g, '')
-      .replaceAll('  ', ' ')
-      .replaceAll('   ', ' ')
   }
 
   const formatDocument = async (firebaseText) => {
@@ -287,14 +269,12 @@ export default function DocViewer() {
 
           for (let span of spans) {
             for (let userHeader of userHeaders) {
-              const userHeaderText = formatHeaderText(userHeader.headerText)
-              let text = formatHeaderText(span.textContent)
-              if (text.includes(userHeaderText)) {
+              if (span.textContent.includes(userHeader.headerText)) {
                 const newHeader = document.createElement('span')
                 newHeader.classList.add('header')
-                newHeader.setAttribute('data-header', userHeaderText)
+                newHeader.setAttribute('data-header', userHeader.headerText)
                 span.replaceWith(newHeader)
-                newHeader.textContent = userHeaderText
+                newHeader.textContent = userHeader.headerText
                 const deleteIcon = document.createElement('p')
                 deleteIcon.classList.add('delete-header-button')
                 deleteIcon.onclick = async (e) => {
@@ -413,9 +393,9 @@ export default function DocViewer() {
   }
 
   const deleteHeader = async (headerElement) => {
-    const headerTarget = headerElement?.target
+    const headerTarget = headerElement?.currentTarget
     if (headerTarget) {
-      const headerText = formatHeaderText(headerTarget?.parentNode?.textContent)
+      const headerText = headerTarget.querySelector('.header-text')?.textContent
       const header = await DB.find(`${DB.tables.documentHeaders}/${currentUser?.key}`, ['headerText', headerText], true)
       if (header) {
         await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser?.key}`, header.id)
@@ -426,22 +406,30 @@ export default function DocViewer() {
   }
 
   const addUserHeaderToDatabase = async () => {
-    // setState({ ...state, isLoading: true })
     const text = DomManager.getSelectionText()
     let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-    const alreadyExists = userHeaders.filter((x) => x.headerText.trim().includes(text.trim())).length > 0
+    const alreadyExists = Manager.isValid(userHeaders.find((x) => x.headerText.includes(text)))
     if (!alreadyExists) {
       if (text.length > 0 && currentScreen === ScreenNames.docViewer) {
-        AlertManager.confirmAlert('Would you like to use the selected text as a header?', 'Yes', true, async () => {
-          const header = new DocumentHeader()
-          header.headerText = formatHeaderText(text)
-          header.ownerKey = currentUser.key
-          await DB.add(`${DB.tables.documentHeaders}/${currentUser?.key}`, header)
-          await onLoad()
-        })
+        AlertManager.confirmAlert(
+          'Would you like to use the selected text as a header?',
+          'Yes',
+          true,
+          async () => {
+            const header = new DocumentHeader()
+            header.headerText = text
+            header.ownerKey = currentUser.key
+            await DB.add(`${DB.tables.documentHeaders}/${currentUser?.key}`, header)
+            await onLoad()
+          },
+          () => {
+            DomManager.clearTextSelection()
+          }
+        )
       }
     }
   }
+
   const closeSearch = async () => {
     setShowSearch(false)
     setState({ ...state, refreshKey: Manager.getUid() })
@@ -474,8 +462,7 @@ export default function DocViewer() {
 
     // Listen for selection change
     if (currentScreen === ScreenNames.docViewer) {
-
-    document.addEventListener('selectionchange', debounce(addUserHeaderToDatabase, 1000))
+      document.addEventListener('selectionchange', debounce(addUserHeaderToDatabase, 1000))
     }
 
     return () => {
@@ -513,29 +500,27 @@ export default function DocViewer() {
         <>
           <Label text={'Searching'} isBold={true} />
           <p className="tip-text">
-            {DomManager.tapOrClick(true)} the search button and start typing the word/words you would like to find. Found results will be&nbsp;
-            <span className="text-highlight">highlighted</span>&nbsp;.
+            To begin your search, {DomManager.tapOrClick()} the search button and enter the word or words you want to look for. The results you find
+            will be <span className="text-highlight">highlighted</span> for easy viewing.
           </p>
           <Label text={'Table of Contents'} isBold={true} />
           <p className="tip-text">
             {DomManager.tapOrClick(true)} the <IoListOutline id="toc-button-inline" className={`${theme}`} /> icon to view the Table of Contents.
           </p>
-          <p className="tip-text">When you click on an item you will be taken directly to that header in the document.</p>
-          <p>If the document has a lot of text, it may take a few moments for the table of contents button to appear.</p>
+          <p className="tip-text">
+            When you {DomManager.tapOrClick()} an item, you&#39;ll be directed straight to the corresponding header in the document.
+          </p>
           <Label text={'Create Your Own Headers'} isBold={true} />
           <p className="tip-text">
-            There are headers (dark blue text with a light blue background) that are predefined that you may see. But you will likely want to define
-            your own custom headers so that certain texts stands out to you.
+            You might notice some predefined headers, which are dark blue text on a light blue background. However, it&#39;s a good idea to create
+            your own custom headers to make specific texts stand out to you.
           </p>
           <p className="tip-text">
-            Simply select the text you would like to create a new header for and when you see the confirmation button, {DomManager.tapOrClick()}{' '}
-            <b>Yes</b>.
+            To create a new header, just highlight the text you want to use, and then click the confirmation button when it appears.
           </p>
           <p className="tip-text">
-            The page will reload and you will now see the new header you have created! You will see the same header every time you view the document.
-          </p>
-          <p className="tip-text">
-            You can delete it at any time by {DomManager.tapOrClick()}ing the red <span className="red">X</span> icon to the right of the header.
+            The page will refresh, and you&#39;ll be able to see the new header you&#39;ve just created! Your custom headers will appear each time you
+            open the document.
           </p>
         </>
       </BottomCard>
@@ -562,8 +547,8 @@ export default function DocViewer() {
                           scrollToHeader(header)
                         }}
                         className={`toc-header`}
-                        data-header={header}
-                        dangerouslySetInnerHTML={{ __html: header }}></p>
+                        data-hashed-header={header}
+                        dangerouslySetInnerHTML={{ __html: Manager.decodeHash(header) }}></p>
                     </div>
                   )
                 })}

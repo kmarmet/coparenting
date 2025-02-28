@@ -2,7 +2,7 @@
 
 #coparents-container {
   #coparent-container {
-    display: flex;
+    display: grid;
     width: 100%;
     overflow: auto;
     background-color: transparent;
@@ -10,7 +10,7 @@
     border: 0;
     padding: 10px;
     margin: 0;
-    gap: 15px;
+    grid-template-columns: auto auto auto auto;
 
     .coparent {
       display: flex;
@@ -22,15 +22,16 @@
 
       svg {
         font-size: 45px;
+        opacity: 0.4;
       }
 
       &.active {
-        margin-top: -10px;
         transition: all 0.3s ease-in-out;
 
         svg {
           color: $mainBlue;
           opacity: 1;
+          transition: all 0.3s ease-in-out;
         }
 
         .coparent-name {

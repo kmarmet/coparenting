@@ -67,7 +67,7 @@
   align-items: center;
   position: relative;
   font-weight: $fwRegular;
-  padding-bottom: 10px;
+  margin-bottom: 5px;
   text-align: center;
   opacity: 1;
 
@@ -105,6 +105,23 @@
   @media screen and (min-width: 768px) {
     text-align: center;
     justify-content: center;
+  }
+}
+@mixin actionsButton {
+  color: $lightDarkGrey;
+  position: relative;
+  z-index: 99;
+}
+// SCREEN TITLE WRAPPER
+@mixin screenTitleWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  p {
+    &.screen-title {
+      padding: 0;
+    }
   }
 }
 
@@ -999,70 +1016,7 @@
 
 /*#endregion  POSITIONING*/
 /*#region  COMPONENTS*/
-@mixin actions {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 999999;
 
-  &.active {
-    .children {
-      right: 0;
-      transform: scaleY(1);
-      transition: all 0.5s ease-in-out;
-      opacity: 1;
-      z-index: 999999;
-      @include bestShadow;
-    }
-  }
-
-  .actions-button-wrapper {
-    background: $bestGreyForWhite;
-    color: $lightDarkGrey;
-    border-radius: 50%;
-    height: 32px;
-    width: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: auto;
-
-    svg {
-      font-size: 22px;
-    }
-  }
-
-  .children {
-    border-radius: $bigBorderRadius;
-    z-index: -1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 5px;
-    position: relative;
-    opacity: 0;
-    transition: all 0.5s ease-in-out;
-    top: 15px;
-    transform: scaleY(0);
-    width: 70vw;
-    padding: 15px;
-    background: $bestGreyForWhite;
-    right: -100vw;
-
-    button {
-      &.default {
-        font-size: 14px;
-        width: 100%;
-
-        svg {
-          opacity: 0.8;
-          font-size: 14px;
-        }
-      }
-    }
-  }
-}
 @mixin accordion {
   .MuiCollapse-root {
     border-radius: 0 0 $borderRadius $borderRadius;
@@ -1080,14 +1034,13 @@
       button {
         &.button {
           &.default {
-            font-size: 14px;
+            font-size: 12px;
             padding: 8px 15px;
             min-width: 0;
             width: unset;
             background: white;
             color: $lightDarkGrey;
             border: 0;
-            margin-bottom: 8px;
             opacity: 1;
             font-weight: $fwMediumBold;
 
@@ -1121,6 +1074,8 @@
           line-height: 1;
           font-size: 14px;
           padding: 8px 15px;
+          opacity: 1;
+          font-weight: $fwBold;
 
           &.expenses {
             margin-left: 0;

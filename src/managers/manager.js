@@ -103,6 +103,12 @@ const Manager = {
   contains: (variable, stringToCheckFor) => {
     return _.includes(variable, stringToCheckFor)
   },
+  generateHash: (str) => {
+    return btoa(str)
+  },
+  decodeHash: (str) => {
+    return atob(str)
+  },
   showPageContainer: () => {
     const interval = setInterval(() => {
       const pageContainer = document.querySelector('.page-container')

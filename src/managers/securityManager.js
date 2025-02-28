@@ -33,7 +33,6 @@ SecurityManager = {
       }
     }
     //   CHILD ACCOUNTS
-    console.log(currentUser.parents);
     if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.parents : void 0)) {
       ref2 = currentUser != null ? currentUser.parents : void 0;
       for (k = 0, len2 = ref2.length; k < len2; k++) {

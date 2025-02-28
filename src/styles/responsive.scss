@@ -128,7 +128,7 @@
           .children {
             width: 300px;
             position: relative;
-            float:right;
+            float: right;
             right: 0;
             top: 40px;
             z-index: $maxZIndex;
@@ -176,8 +176,8 @@
         justify-self: flex-start;
         .header {
           min-width: 300px;
-          width: 400px;
-          margin: 20px auto;
+          width: 100%;
+          margin: 20px auto 5px auto;
 
           .header {
             margin: 0;

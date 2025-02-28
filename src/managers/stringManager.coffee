@@ -1,3 +1,5 @@
+import lzstring from "lz-string"
+
 StringManager = {
   getReadablePhoneNumber: (phoneNumber) ->
     formattedPhone = phoneNumber;
@@ -31,7 +33,23 @@ StringManager = {
       .replace(/\+1/g, '')
     input
 
-  formatFileName: (fileName) ->
+  compressString: (string) ->
+    # Import the lz-string library dependency
+    compressed = lzstring.compress(string)
+
+    console.log 'Original:', string.length, 'bytes'
+    console.log 'Compressed:', compressed.length, 'bytes'
+    return compressed
+
+  deCompressString: (string) ->
+# Import the lz-string library dependency
+    console.log(string)
+    decompressed = lzstring.decompress(string)
+    console.log(decompressed)
+    return decompressed
+
+
+ formatFileName: (fileName) ->
     fileName.replaceAll(' ', '-').replaceAll('(', '').replaceAll(')', '')
 
   spaceBetweenWords: (input) ->

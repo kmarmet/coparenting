@@ -73,7 +73,7 @@ const Chats = () => {
           currentUser?.coparents?.map((coparent, index) => {
             return (
               <div key={index}>
-                {!activeChatKeys.includes(coparent?.phone) && (
+                {!activeChatKeys.includes(coparent?.key) && (
                   <div id="users-wrapper">
                     <div className="user-wrapper">
                       <TbMessageCirclePlus />

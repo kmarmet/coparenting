@@ -25,6 +25,7 @@ import ActivityCategory from '/src/models/activityCategory'
 import StringManager from '/src/managers/stringManager'
 import DB_UserScoped from '../../database/db_userScoped'
 import DomManager from '../../managers/domManager'
+import DocumentConversionManager from '../../managers/documentConversionManager'
 
 export default function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)

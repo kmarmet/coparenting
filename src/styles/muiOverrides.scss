@@ -1,6 +1,138 @@
 @import './palette';
 @import './variables';
+@import './mixins';
+
 #external-overrides {
+  /*#region  ACTIONS*/
+  #app-container {
+    p {
+      &.screen-title {
+        &.beside-action-button {
+          margin-right: -20px;
+          z-index: 9;
+          position: relative;
+          //          width: auto;
+        }
+      }
+    }
+    .actions {
+      transition: all 0.3s ease-in-out !important;
+      width: 100%;
+
+      .action-items {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        justify-content: center;
+        grid-gap: 10px;
+
+        .action-item {
+          height: 98px;
+          width: 115px;
+          border-radius: $bigBorderRadius;
+          padding: 8px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          margin-top: 0;
+          transition: all 0.6s ease-in-out;
+          opacity: 1;
+          border: 1px solid $purple;
+          position: relative;
+
+          span {
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.2;
+            padding-top: 5px;
+            color: #9d69ff;
+            font-weight: $fwRegular;
+          }
+
+          .svg-wrapper {
+            position: absolute;
+            line-height: 1;
+            width: 100%;
+            z-index: 9;
+            top: -10px;
+            display: flex;
+            justify-content: center;
+
+            &.remove-user {
+              svg {
+                font-size: 21px;
+              }
+            }
+
+            &.airplane {
+              top: -8px;
+            }
+
+            svg {
+              width: 30px;
+              font-size: 18px;
+              color: #9d69ff;
+              background: white;
+
+              &.checklist {
+                transform: scale(1.3);
+              }
+
+              &.child {
+                transform: scale(1.3);
+              }
+            }
+          }
+        }
+      }
+
+      &.Mui-expanded {
+        height: auto !important;
+        margin-top: 25px !important;
+        transition: all 0.3s ease-in-out !important;
+      }
+
+      .MuiAccordionSummary-root {
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 0 !important;
+      }
+
+      .MuiCollapse-root {
+        position: unset !important;
+        background: transparent !important;
+      }
+
+      .MuiAccordionDetails-root {
+        padding: 0 !important;
+      }
+
+      .MuiAccordion-root {
+        display: none !important;
+      }
+      button {
+        margin-bottom: 8px;
+
+        &.default {
+          background: white !important;
+          color: $mainBlue !important;
+          font-size: 14px !important;
+          padding: 10px 0 !important;
+
+          &:last-child {
+            margin-bottom: 0 !important;
+          }
+        }
+      }
+      .MuiButtonBase-root {
+        height: 0 !important;
+        min-height: 0 !important;
+        transition: all 0.3s ease-in-out !important;
+      }
+    }
+  }
+  /*#endregion  ACTIONS*/
+
   .Mui-expanded {
     margin: 0 !important;
   }
@@ -915,13 +1047,13 @@
     .css-12vly6n-MuiDateTimePickerToolbar-timeContainer {
       flex-wrap: wrap;
     }
-    
-    .MuiPickersToolbarText-root  {
+
+    .MuiPickersToolbarText-root {
       &.Mui-selected {
-        font-weight: $fwBold ;
+        font-weight: $fwBold;
       }
     }
-    
+
     .MuiPickersToolbar-content {
       display: flex;
       align-items: center;
@@ -935,7 +1067,7 @@
       display: unset;
       padding: 10px;
       max-width: 365px !important;
-      
+
       @media screen and (min-width: 800px) {
         display: flex;
         margin: 0 auto !important;
@@ -952,7 +1084,7 @@
         width: 100% !important;
         max-width: 365px !important;
         margin: 0;
-        
+
         @media screen and (min-width: 800px) {
           display: flex;
           margin: 0 auto !important;

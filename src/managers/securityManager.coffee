@@ -17,7 +17,6 @@ SecurityManager =
               coparentAndChildEvents.push(item)
 
 #   CHILD ACCOUNTS
-    console.log(currentUser.parents)
     if Manager.isValid(currentUser) && Manager.isValid(currentUser?.parents)
       for parent in currentUser?.parents
         parentItems = await DB.getTable("#{table}/#{parent?.key}")

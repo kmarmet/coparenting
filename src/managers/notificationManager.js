@@ -89,10 +89,8 @@ export default NotificationManager = {
           if (Manager.isValid(existingSubscriber)) {
             deleteKey = (await DB.getSnapshotKey(`${DB.tables.notificationSubscribers}`, existingSubscriber, "id"));
             await DB.deleteByPath(`${DB.tables.notificationSubscribers}/${deleteKey}`);
+            return (await DB.add(`/${DB.tables.notificationSubscribers}`, newSubscriber));
           }
-          return (await DB.add(`/${DB.tables.notificationSubscribers}`, newSubscriber));
-        }).catch(function(error) {
-          return console.error(error);
         });
       }, 500);
     }
@@ -112,16 +110,6 @@ export default NotificationManager = {
     return fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/users/by/onesignal_id/${oneSignalId}`, {
       method: 'DELETE'
     });
-  },
-  viewUser: function(subId) {
-    var userIdentity;
-    userIdentity = '';
-    fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}/user/identity`).then(async function(identity) {
-      return userIdentity = (await identity.json());
-    }).then(function(result) {}).catch(function(error) {
-      return console.error(error);
-    });
-    return userIdentity;
   },
   sendNotification: async function(title, message, recipientKey, currentUser = null, category = '') {
     var allSubs, myHeaders, newActivity, raw, requestOptions, subId, subIdRecord;
@@ -155,7 +143,6 @@ export default NotificationManager = {
       body: raw,
       redirect: "follow"
     };
-    console.log(recipientKey);
     // Add activity to database
     newActivity = new Activity();
     newActivity.id = Manager.getUid();
@@ -170,7 +157,7 @@ export default NotificationManager = {
       return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
         return response.text();
       }).then(function(result) {
-        console.log(result);
+        //          console.log result
         return console.log(`Sent to ${subId}`);
       }).catch(function(error) {
         return console.error(error);
