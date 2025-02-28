@@ -50,6 +50,14 @@
   display: flex !important;
   flex-wrap: wrap;
 
+  &.no-wrap {
+    flex-wrap: nowrap;
+
+    @media screen and (max-width: 800px) {
+      display: block !important;
+    }
+  }
+
   #below-image {
     width: 100%;
     justify-content: space-between;

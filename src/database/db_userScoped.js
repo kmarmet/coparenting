@@ -159,7 +159,7 @@ const DB_UserScoped = {
   getCoparentByKey: async (coparentKey, currentUser) => {
     let coparent
     if (Manager.isValid(currentUser)) {
-      console.log('Coparent Key: ', coparentKey)
+      // console.log('Coparent Key: ', coparentKey)
       coparent = await DB.find(DB.tables.users, ['key', coparentKey], true)
     }
     return coparent

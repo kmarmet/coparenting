@@ -3,6 +3,8 @@ var StringManager;
 
 import lzstring from "lz-string";
 
+import Manager from "./manager";
+
 StringManager = {
   getReadablePhoneNumber: function(phoneNumber) {
     var cleaned, formattedPhone, match;
@@ -49,6 +51,36 @@ StringManager = {
     decompressed = lzstring.decompress(string);
     console.log(decompressed);
     return decompressed;
+  },
+  typoCorrection: async function(text) {
+    var error, fixedText, myHeaders, raw, requestOptions, response, result;
+    fixedText = '';
+    myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    raw = JSON.stringify({
+      key: process.env.REACT_APP_SAPLER_TONE_API_KEY,
+      text: text,
+      session_id: Manager.getUid(),
+      auto_apply: true,
+      lang: 'en',
+      variety: 'us-variety'
+    });
+    requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow"
+    };
+    try {
+      response = (await fetch("https://api.sapling.ai/api/v1/spellcheck", requestOptions));
+      result = (await response.json());
+      fixedText = result.applied_text;
+      console.log(result);
+    } catch (error1) {
+      error = error1;
+      console.error(error);
+    }
+    return fixedText;
   },
   formatFileName: function(fileName) {
     return fileName.replaceAll(' ', '-').replaceAll('(', '').replaceAll(')', '');

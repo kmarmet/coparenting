@@ -177,12 +177,10 @@ const Chats = () => {
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     const userChats = await DB.getTable(`${DB.tables.chats}/${currentUser?.key}`)
-    console.log(userChats)
     const thisChat = userChats.filter(
       (x) => x.members.map((x) => x?.key).includes(currentUser.key) && x.members.map((x) => x?.key).includes(messageRecipient.key)
     )[0]
 
-    console.log(thisChat)
     if (thisChat) {
       const chatId = thisChat.id
       onValue(child(dbRef, `${DB.tables.chatMessages}/${chatId}`), async () => {

@@ -9,6 +9,64 @@ import FirebaseStorage from "../database/firebaseStorage"
 
 
 export default AppManager =
+  getIPAddress: () ->
+    ipAddress = ''
+    myHeaders = new Headers()
+
+    requestOptions =
+      method: "GET"
+      headers: myHeaders
+      redirect: "follow"
+
+    try
+      response = await fetch "https://api.ipify.org", requestOptions
+      result = await response.text()
+      ipAddress = result
+      console.log result
+    catch error
+      console.error error
+    return ipAddress
+
+  getTimezone: (ipAddress) ->
+    timezone = ''
+    myHeaders = new Headers()
+    myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY
+
+    requestOptions =
+      method: "GET"
+      headers: myHeaders
+      redirect: "follow"
+
+    try
+      response = await fetch "https://api.manyapis.com/v1-get-ip-detail?ip=#{ipAddress}", requestOptions
+      result = await response.json()
+      timezone = result?.city?.timezone
+      console.log result?.city?.timezone
+    catch error
+      console.error error
+
+    return timezone
+
+  getLocationDetails: (ipAddress) ->
+    location = ''
+    myHeaders = new Headers()
+    myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY
+
+    requestOptions =
+      method: "GET"
+      headers: myHeaders
+      redirect: "follow"
+
+    try
+      response = await fetch "https://api.manyapis.com/v1-get-ip-detail?ip=#{ipAddress}", requestOptions
+      result = await response.json()
+      location = result
+      console.log result
+    catch error
+      console.error error
+
+    return location
+
   getQueryStringParams: (queryStringName) ->
     searchParams = new URLSearchParams(window.location.search);
 

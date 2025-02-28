@@ -67,15 +67,17 @@ export default function DocsList() {
                   const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
                   const fileType = documentExts.includes(StringManager.getFileExtension(doc.name).toString()) ? 'Document' : 'Image'
                   return (
-                    <div className="row" key={index}>
+                    <div
+                      className="row"
+                      key={index}
+                      onClick={(e) => {
+                        if (!Manager.contains(e.target.classList, 'delete')) {
+                          setSelectedDoc(doc)
+                          setState({ ...state, docToView: doc, currentScreen: ScreenNames.docViewer })
+                        }
+                      }}>
                       <div className="flex section">
-                        <p
-                          data-id={doc.id}
-                          onClick={() => {
-                            setSelectedDoc(doc)
-
-                            setState({ ...state, docToView: doc, currentScreen: ScreenNames.docViewer })
-                          }}>
+                        <p data-id={doc.id}>
                           {fileType === 'Document' ? <GrDocumentText className={'file-type'} /> : <GrDocumentImage className={'file-type'} />}
                           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
                         </p>

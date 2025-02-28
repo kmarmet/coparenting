@@ -48,6 +48,8 @@
         opacity: 1;
         bottom: unset;
         right: unset;
+
+        @include hover;
       }
     }
   }
@@ -243,6 +245,95 @@
           p {
             text-align: center;
             width: 100%;
+          }
+        }
+      }
+
+      // DOCUMENTS
+      &.documents {
+        width: 100%;
+        background-image: linear-gradient(
+          0deg,
+          hsl(240deg 96% 68%) 0%,
+          hsl(236deg 95% 66%) 26%,
+          hsl(233deg 94% 63%) 39%,
+          hsl(229deg 93% 61%) 49%,
+          hsl(225deg 92% 58%) 64%,
+          hsl(221deg 92% 53%) 100%
+        );
+
+        * {
+          color: white;
+        }
+        &.text-box {
+          @media screen and (max-width: 800px) {
+            margin: 0;
+          }
+        }
+        .light-gallery-instructions {
+          text-align: center;
+          margin: 15px auto;
+          font-style: italic;
+          font-size: 12px;
+        }
+
+        .text-columns {
+          gap: 20px;
+          justify-content: space-between;
+          align-items: flex-start;
+
+          .left {
+            width: 50%;
+          }
+          .right {
+            background: white;
+            padding: 10px;
+            width: 50%;
+            border-radius: $borderRadius;
+
+            h2 {
+              color: $mainBlue;
+            }
+            li {
+              color: black;
+            }
+            h2 {
+              font-size: 20px;
+              text-align: center;
+              font-weight: $fwRegular;
+            }
+            li {
+              margin-bottom: 10px;
+              font-size: 15px;
+            }
+          }
+
+          @media screen and (max-width: 800px) {
+            display: block;
+            width: 100%;
+
+            .left,
+            .right {
+              width: 100%;
+            }
+          }
+        }
+
+        .images {
+          gap: 15px;
+          align-items: center;
+          display: grid !important;
+          grid-template-columns: auto auto;
+          @include hover;
+          .image {
+            border-radius: $borderRadius;
+          }
+          @media screen and (max-width: 800px) {
+            display: block !important;
+            width: 100%;
+            .image {
+              margin-bottom: 20px;
+            }
           }
         }
       }

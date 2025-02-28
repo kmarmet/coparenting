@@ -5,7 +5,6 @@ import DB from "../database/DB"
 import { saveAs } from 'file-saver'
 import FirebaseStorage from '../database/firebaseStorage'
 import domtoimage from 'dom-to-image';
-import shortenurl from "shorten-url"
 import AlertManager from "./alertManager"
 
 ImageManager =
@@ -13,7 +12,7 @@ ImageManager =
     shortenedUrlObject = ''
     myHeaders = new Headers()
     myHeaders.append "content-type", "application/json"
-    myHeaders.append "x-api-key", "sk_575d8944c4434a94a25350a97217367f"
+    myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY
 
     raw = JSON.stringify
       expiry: "5m"
@@ -30,7 +29,6 @@ ImageManager =
 
       result = await response.json()
       shortenedUrlObject = result;
-      console.log result
     catch error
       console.error error
       AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')
@@ -47,7 +45,7 @@ ImageManager =
   compressImage: (imgFile) ->
     try
       options = {
-        maxSizeMB: 3,
+        maxSizeMB: 1,
         useWebWorker: true,
       }
       compressedFile = await imageCompression(imgFile, options);

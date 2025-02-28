@@ -18,8 +18,6 @@ const ChatManager = {
     let icon = tone.overall[0][2]
     let color = returnSentiment === 'NEGATIVE' ? 'red' : 'green'
 
-    console.log(returnSentiment, returnTone)
-
     if (warningSentiments.includes(returnTone)) {
       color = 'yellow'
     }

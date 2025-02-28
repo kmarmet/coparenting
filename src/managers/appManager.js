@@ -23,6 +23,68 @@ import CalendarManager from "./calendarManager";
 import FirebaseStorage from "../database/firebaseStorage";
 
 export default AppManager = {
+  getIPAddress: async function() {
+    var error, ipAddress, myHeaders, requestOptions, response, result;
+    ipAddress = '';
+    myHeaders = new Headers();
+    requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow"
+    };
+    try {
+      response = (await fetch("https://api.ipify.org", requestOptions));
+      result = (await response.text());
+      ipAddress = result;
+      console.log(result);
+    } catch (error1) {
+      error = error1;
+      console.error(error);
+    }
+    return ipAddress;
+  },
+  getTimezone: async function(ipAddress) {
+    var error, myHeaders, ref1, ref2, requestOptions, response, result, timezone;
+    timezone = '';
+    myHeaders = new Headers();
+    myHeaders.append("x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY);
+    requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow"
+    };
+    try {
+      response = (await fetch(`https://api.manyapis.com/v1-get-ip-detail?ip=${ipAddress}`, requestOptions));
+      result = (await response.json());
+      timezone = result != null ? (ref1 = result.city) != null ? ref1.timezone : void 0 : void 0;
+      console.log(result != null ? (ref2 = result.city) != null ? ref2.timezone : void 0 : void 0);
+    } catch (error1) {
+      error = error1;
+      console.error(error);
+    }
+    return timezone;
+  },
+  getLocationDetails: async function(ipAddress) {
+    var error, location, myHeaders, requestOptions, response, result;
+    location = '';
+    myHeaders = new Headers();
+    myHeaders.append("x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY);
+    requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow"
+    };
+    try {
+      response = (await fetch(`https://api.manyapis.com/v1-get-ip-detail?ip=${ipAddress}`, requestOptions));
+      result = (await response.json());
+      location = result;
+      console.log(result);
+    } catch (error1) {
+      error = error1;
+      console.error(error);
+    }
+    return location;
+  },
   getQueryStringParams: function(queryStringName) {
     var searchParams;
     searchParams = new URLSearchParams(window.location.search);

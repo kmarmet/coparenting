@@ -1,4 +1,5 @@
 import lzstring from "lz-string"
+import Manager from "./manager"
 
 StringManager = {
   getReadablePhoneNumber: (phoneNumber) ->
@@ -48,8 +49,36 @@ StringManager = {
     console.log(decompressed)
     return decompressed
 
+  typoCorrection: (text) ->
+    fixedText = ''
+    myHeaders = new Headers()
+    myHeaders.append "Content-Type", "application/json"
 
- formatFileName: (fileName) ->
+    raw = JSON.stringify
+      key: process.env.REACT_APP_SAPLER_TONE_API_KEY
+      text: text
+      session_id: Manager.getUid()
+      auto_apply: true
+      lang: 'en'
+      variety: 'us-variety'
+
+    requestOptions =
+      method: "POST"
+      headers: myHeaders
+      body: raw
+      redirect: "follow"
+
+    try
+      response = await fetch "https://api.sapling.ai/api/v1/spellcheck", requestOptions
+      result = await response.json()
+      fixedText = result.applied_text
+      console.log result
+    catch error
+      console.error error
+
+    return fixedText
+
+  formatFileName: (fileName) ->
     fileName.replaceAll(' ', '-').replaceAll('(', '').replaceAll(')', '')
 
   spaceBetweenWords: (input) ->

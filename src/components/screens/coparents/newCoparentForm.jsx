@@ -16,6 +16,7 @@ import DB_UserScoped from '../../../database/db_userScoped'
 import validator from 'validator'
 import StringManager from '../../../managers/stringManager'
 import Spacer from '../../shared/spacer'
+import AddressInput from '../../shared/addressInput'
 
 const NewCoparentForm = ({ showCard, hideCard }) => {
   const { state, setState } = useContext(globalState)
@@ -115,14 +116,10 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
             <InputWrapper inputType={'input'} required={true} labelText={'Name'} onChange={(e) => setName(e.target.value)} />
             <InputWrapper inputType={'input'} required={true} labelText={'Phone Number'} onChange={(e) => setPhoneNumber(e.target.value)} />
             <InputWrapper inputType={'location'} required={true} labelText={'Home Address'}>
-              <Autocomplete
-                placeholder="Home Address"
-                apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-                options={{
-                  types: ['geocode', 'establishment'],
-                  componentRestrictions: { country: 'usa' },
+              <AddressInput
+                onSelection={(place) => {
+                  setAddress(place)
                 }}
-                onPlaceSelected={(place) => setAddress(place.formatted_address)}
               />
             </InputWrapper>
             <Spacer height={10} />

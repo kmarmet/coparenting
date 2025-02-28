@@ -17,8 +17,6 @@ import FirebaseStorage from '../database/firebaseStorage';
 
 import domtoimage from 'dom-to-image';
 
-import shortenurl from "shorten-url";
-
 import AlertManager from "./alertManager";
 
 ImageManager = {
@@ -27,7 +25,7 @@ ImageManager = {
     shortenedUrlObject = '';
     myHeaders = new Headers();
     myHeaders.append("content-type", "application/json");
-    myHeaders.append("x-api-key", "sk_575d8944c4434a94a25350a97217367f");
+    myHeaders.append("x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY);
     raw = JSON.stringify({
       expiry: "5m",
       url: url
@@ -42,7 +40,6 @@ ImageManager = {
       response = (await fetch("https://api.manyapis.com/v1-create-short-url", requestOptions));
       result = (await response.json());
       shortenedUrlObject = result;
-      console.log(result);
     } catch (error1) {
       error = error1;
       console.error(error);
@@ -63,7 +60,7 @@ ImageManager = {
     var compressedFile, error, options;
     try {
       options = {
-        maxSizeMB: 3,
+        maxSizeMB: 1,
         useWebWorker: true
       };
       compressedFile = (await imageCompression(imgFile, options));

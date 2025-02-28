@@ -58,6 +58,7 @@ import Manager from '/src/managers/manager'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
 import EmailManager from './managers/emailManager'
+import appManager from './managers/appManager'
 
 export default function App() {
   // Initialize Firebase
@@ -73,7 +74,7 @@ export default function App() {
   const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
 
   emailjs.init({
-    publicKey: 'khikD1NoIHmBPlckL',
+    publicKey: process.env.REACT_EMAILJS_API_KEY,
     // Do not allow headless browsers
     blockHeadless: true,
     blockList: {

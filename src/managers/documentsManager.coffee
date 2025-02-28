@@ -14,7 +14,7 @@ export default DocumentsManager =
           if thisDoc.id == docId
             await DB.deleteById("#{DB.tables.documents}/#{currentUser?.key}", docId)
             thisDoc.name = StringManager.formatFileName(thisDoc.name)
-            await FirebaseStorage.deleteFile("#{FirebaseStorage.directories.documents}/#{currentUser.id}/#{thisDoc.name}")
+            await FirebaseStorage.deleteFile("#{FirebaseStorage.directories.documents}/#{currentUser.key}/#{thisDoc.name}")
             if callback then callback(docId)
 
   addToDocumentsTable: (currentUser, data) ->

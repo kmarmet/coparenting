@@ -15,17 +15,18 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import DomManager from '/src/managers/domManager'
 import debounce from 'debounce'
-import { IoListOutline } from 'react-icons/io5'
+import { IoListOutline, IoMenuOutline } from 'react-icons/io5'
 import DocumentHeader from '/src/models/documentHeader'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import { TbFileSearch } from 'react-icons/tb'
-import { MdSearchOff, MdTipsAndUpdates } from 'react-icons/md'
+import { MdDriveFileRenameOutline, MdSearchOff } from 'react-icons/md'
 import ScreenNames from '/src/constants/screenNames'
 import { IoIosArrowUp } from 'react-icons/io'
 import _ from 'lodash'
 import Label from '../../shared/label.jsx'
 import DatasetManager from '../../../managers/datasetManager.coffee'
-
+import { FaFileImage, FaLightbulb } from 'react-icons/fa6'
+import { IoClose } from 'react-icons/io5'
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
   const { state, setState } = useContext(globalState)
@@ -38,7 +39,9 @@ export default function DocViewer() {
   const [docType, setDocType] = useState('document')
   const [showTips, setShowTips] = useState(false)
   const [isFormatting, setIsFormatting] = useState(false)
-
+  const [showRenameFile, setShowRenameFile] = useState(false)
+  const [newFileName, setNewFileName] = useState('')
+  const [sideMenuIsOpen, setSideMenuIsOpen] = useState(false)
   const scrollToHeader = (hashedHeader) => {
     const domHeader = document.querySelector(`#doc-text [data-hashed-header="${hashedHeader}"]`)
     if (domHeader) {
@@ -131,7 +134,6 @@ export default function DocViewer() {
 
         // Get all headers
         let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-        let dbUserHeaders = userHeaders
         userHeaders = userHeaders.map((x) => x.headerText)
 
         let allHeaders = []
@@ -140,8 +142,7 @@ export default function DocViewer() {
         } else {
           allHeaders = predefinedHeaders
         }
-        let text = docToView.compressedHtml
-
+        let text = docToView.docText
         if (!text) {
           AlertManager.throwError(
             'Unable to find or convert document, please try again after awhile. In the meantime, you can view the document image while this is being resolved.'
@@ -150,8 +151,6 @@ export default function DocViewer() {
           setState({ ...state, isLoading: false, loadingText: '' })
           return false
         }
-        // HTML symbol -> regular
-        // text = text.replaceAll('&#039;', "'")
 
         // Remove line breaks after header
         const lineBreaks = document.querySelectorAll('br')
@@ -167,15 +166,21 @@ export default function DocViewer() {
           if (userHeaders.includes(header)) {
             text = text.replaceAll(
               header,
-              `<div data-hashed-header=${Manager.generateHash(header)} class="header">
+              `<div data-hashed-header=${Manager.generateHash(header).replaceAll(' ', '')} class="header">
                                 <span class="header-text">${header}</span>
                               </div>`
             )
           } else {
-            text = text.replaceAll(header, `<span data-hashed-header=${Manager.generateHash(header)} class="header">${header}</span>`)
+            text = text.replaceAll(
+              header,
+              `<span data-hashed-header=${Manager.generateHash(header).replaceAll(' ', '')} class="header">${header}</span>`
+            )
           }
         }
-        setTextWithHeaders(text)
+
+        const docText = document.getElementById('doc-text')
+        docText.innerHTML = text
+        // docText.innerHTML = docText.innerHTML.replaceAll(/([a-z])([A-Z])/g, '$1 $2')
         setState({ ...state, isLoading: false, loadingText: '' })
 
         // Add header event listeners
@@ -206,7 +211,7 @@ export default function DocViewer() {
     const textContainer = document.getElementById('doc-text')
     const allDocuments = await SecurityManager.getDocuments(currentUser)
     const coparents = allDocuments.map((x) => x.coparent)
-    const relevantDoc = allDocuments.filter((x) => x?.name === docToView?.name)[0]
+    const relevantDoc = allDocuments.find((x) => x?.name === docToView?.name)
     const fileExtension = StringManager.getFileExtension(docToView?.name).toString()
 
     if (!Manager.isValid(relevantDoc)) {
@@ -392,6 +397,14 @@ export default function DocViewer() {
     }
   }
 
+  const addMenuItemAnimation = () => {
+    document.querySelectorAll('#floating-buttons .svg-wrapper').forEach((menuItem, i) => {
+      setTimeout(() => {
+        menuItem.classList.add('visible')
+      }, 55 * i)
+    })
+  }
+
   const deleteHeader = async (headerElement) => {
     const headerTarget = headerElement?.currentTarget
     if (headerTarget) {
@@ -445,6 +458,37 @@ export default function DocViewer() {
     const header = document.querySelector('.screen-title')
     header.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }
+
+  const renameFile = async () => {
+    if (newFileName.length > 0) {
+      const newName = `${newFileName}.${StringManager.getFileExtension(docToView.name).toLowerCase()}`
+      const childKey = await DB.getSnapshotKey(`${DB.tables.documents}/${currentUser?.key}`, docToView, 'id')
+
+      if (Manager.isValid(childKey)) {
+        await DB.updateByPath(`${DB.tables.documents}/${currentUser?.key}/${childKey}/name`, newName)
+        setState({ ...state, refreshKey: Manager.getUid(), docToView: { ...docToView, name: newName } })
+      }
+      setShowRenameFile(false)
+      setNewFileName('')
+    }
+  }
+
+  useEffect(() => {
+    if (sideMenuIsOpen) {
+      addMenuItemAnimation()
+    } else {
+      const allMenuItems = document.querySelectorAll('#floating-buttons .svg-wrapper')
+      allMenuItems.forEach((menuItem) => {
+        menuItem.classList.remove('visible')
+      })
+    }
+  }, [sideMenuIsOpen])
+
+  useEffect(() => {
+    if (showToc || showSearch || showTips || showRenameFile) {
+      setSideMenuIsOpen(false)
+    }
+  }, [showToc, showSearch, showTips])
 
   useEffect(() => {
     if (isFormatting === false) {
@@ -557,35 +601,74 @@ export default function DocViewer() {
         </BottomCard>
       )}
 
+      {/* RENAME FILE */}
+      <BottomCard
+        showCard={showRenameFile}
+        submitText={'Rename'}
+        wrapperClass="rename-file-card"
+        onClose={() => setShowRenameFile(false)}
+        onSubmit={renameFile}
+        className="rename-file"
+        title={'Rename Document'}>
+        <InputWrapper labelText={'Enter new file name...'} onChange={(e) => setNewFileName(e.target.value)} />
+      </BottomCard>
+
       {/* FLOATING BUTTONS */}
-      <div id="floating-buttons" className={` ${showToc || showSearch || showTips ? 'hide' : ''}`}>
-        {/* SCROLL TO TOP BUTTON */}
-        <div id="scroll-to-top-icon-wrapper" onClick={scrollToTop}>
-          <IoIosArrowUp id={'scroll-to-top-button'} />
+      <div id="floating-buttons" className={` ${showToc || showSearch || showTips ? 'hide' : ''} ${sideMenuIsOpen ? 'open' : ''}`}>
+        <div id="menu-items">
+          {/* SCROLL TO TOP BUTTON */}
+          <div className="svg-wrapper">
+            <IoIosArrowUp id={'scroll-to-top-icon'} onClick={scrollToTop} />
+          </div>
+          {/* TOC BUTTON */}
+          {tocHeaders.length > 0 && (
+            <div className="svg-wrapper">
+              <IoListOutline
+                onClick={async () => {
+                  await setTableOfContentsHeaders()
+                  setShowToc(true)
+                }}
+                id="toc-icon"
+                className={`${theme}`}
+              />
+            </div>
+          )}
+
+          {/* SEARCH ICON FOR 800PX > */}
+          {!DomManager.isMobile() && (
+            <div className="svg-wrapper">
+              <TbFileSearch id={'desktop-search-icon'} onClick={() => setShowSearch(true)} />
+            </div>
+          )}
+
+          {/* RENAME ICON */}
+          <div className="svg-wrapper">
+            <MdDriveFileRenameOutline onClick={() => setShowRenameFile(true)} />
+          </div>
+
+          {/* DOCUMENT IMAGE */}
+          {docType === 'image' && (
+            <div className="svg-wrapper">
+              <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
+                <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
+                <FaFileImage className={'file-image'} />
+              </LightGallery>
+            </div>
+          )}
+
+          {/* TIPS ICON */}
+          <div className="svg-wrapper">
+            <FaLightbulb id={'tips-icon'} onClick={() => setShowTips(true)} />
+          </div>
         </div>
 
-        {/* TOC BUTTON */}
-        {tocHeaders.length > 0 && (
-          <div
-            id="toc-button-wrapper"
-            onClick={async () => {
-              await setTableOfContentsHeaders()
-              setShowToc(true)
-            }}>
-            <IoListOutline id="toc-button" className={`${theme}`} />
-          </div>
-        )}
-
-        {/* SEARCH ICON FOR 800PX > */}
-        {!DomManager.isMobile() && (
-          <div id="desktop-search-button-wrapper">
-            <TbFileSearch id={'desktop-search-button'} onClick={() => setShowSearch(true)} />
-          </div>
-        )}
-
-        {/* TIPS ICON */}
-        <div id="tips-icon-wrapper" onClick={() => setShowTips(true)}>
-          <MdTipsAndUpdates id={'tips-icon'} />
+        {/* MENU ICON */}
+        <div className={`${sideMenuIsOpen ? 'close' : ''} svg-wrapper menu-icon`}>
+          {sideMenuIsOpen ? (
+            <IoClose className={'menu-icon close'} onClick={() => setSideMenuIsOpen(false)} />
+          ) : (
+            <IoMenuOutline className={'menu-icon'} onClick={() => setSideMenuIsOpen(true)} />
+          )}
         </div>
       </div>
 
@@ -594,14 +677,7 @@ export default function DocViewer() {
         <p className="screen-title">
           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')}
         </p>
-        <>
-          {docType === 'image' && (
-            <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
-              <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
-            </LightGallery>
-          )}
-          <div id="doc-text" dangerouslySetInnerHTML={{ __html: textWithHeaders }} />
-        </>
+        <div id="doc-text"></div>
       </div>
 
       {/* NAVBARS */}

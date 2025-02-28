@@ -1,14 +1,15 @@
 // Path: src\components\screens\home.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import { Fade } from 'react-awesome-reveal'
 import { PiCalendarDotsDuotone, PiMoneyWavyDuotone } from 'react-icons/pi'
 import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool } from 'react-icons/ai'
 import DomManager from '/src/managers/domManager'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { IoDocumentText } from 'react-icons/io5'
 import firebaseConfig from '/src/firebaseConfig'
 import { initializeApp } from 'firebase/app'
-import { TbSunMoon } from 'react-icons/tb'
+import { TbArrowBadgeRight, TbSunMoon } from 'react-icons/tb'
 import Logo from '../../img/logo.png'
 import { MdOutlineStar } from 'react-icons/md'
 import { FaRegHandshake } from 'react-icons/fa'
@@ -19,9 +20,9 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import AppManager from '/src/managers/appManager.js'
 import HomescreenSections from '/src/models/homescreenSections.js'
-import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io'
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
-import { TbArrowBadgeRight } from 'react-icons/tb'
+import Spacer from '../shared/spacer'
 
 export default function Home() {
   const { state, setState } = useContext(globalState)
@@ -150,7 +151,7 @@ export default function Home() {
           </div>
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.image'}>
             <div className="flex" id="images">
-              <img className={'image'} src={require('/src/img/homepage/memories.png')} alt="Menu" />
+              <img className={'image'} src={require('/src/img/homepage/memories.png')} alt="Memories" />
               <img className={'image'} src={require('/src/img/homepage/calendar.png')} alt="Calendar" />
               <img className={'image'} src={require('/src/img/homepage/childInfo.png')} alt="Child Info" />
             </div>
@@ -189,7 +190,13 @@ export default function Home() {
                   Effective communication with a foundation of respect is crucial for successful co-parenting. The Emotion Meter plays a vital role in
                   facilitating this essential aspect.
                 </p>
-                <LazyLoadImage id="emotion-meter-gif" src={require('../../img/homepage/emotion-meter.gif')} alt="Menu" effect="blur" delay={1000} />
+                <LazyLoadImage
+                  id="emotion-meter-gif"
+                  src={require('../../img/homepage/emotion-meter.gif')}
+                  alt="Emotion Meter"
+                  effect="blur"
+                  delay={1000}
+                />
               </div>
             </div>
           </div>
@@ -339,7 +346,7 @@ export default function Home() {
                 <MdOutlineStar className={'star'} />
                 <p className="feature-subtitle">
                   Numerous applications can often be quite challenging to navigate. Picture this: you need to log an expense to share with your
-                  co-parent, but you're unable to locate the option to do so.
+                  co-parent, but you&#39;re unable to locate the option to do so.
                 </p>
                 <p className="feature-subtitle">
                   We aim to <b>remove that frustration</b> and save you time, allowing you to focus on what truly matters.
@@ -576,6 +583,52 @@ export default function Home() {
           </div>
         </Fade>
 
+        {/* DOCUMENTS */}
+        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+          <div id="documents" className="section text-box documents">
+            <IoDocumentText />
+            <div className="flex text-columns">
+              <div className="text-wrapper left">
+                <p className="title">Effortlessly View your Documents</p>
+                <p className="text">
+                  Co-parents often need to refer back to their separation agreements or other important documents to clarify specific details, such as
+                  holiday visitation arrangements or obligations.
+                </p>
+                <p className="text">
+                  Finding the document is just the first step; after that, you need to sift through it to locate the specific information you need.
+                  This can often be a lengthy and exasperating task.
+                </p>
+                <p className="text">We have eliminated that process and the frustration that comes with it.</p>
+              </div>
+              <div className="right">
+                <h2>How we Simplify this Task</h2>
+                <ul>
+                  <li>
+                    Easily upload your documents
+                    <ul>
+                      <li>Text will be extracted from image documents</li>
+                    </ul>
+                  </li>
+                  <li>Set your own headers by simply selecting text you would like to stand out</li>
+                  <li>
+                    A table of contents is generated for you, allowing quick navigation to any section, utilizing both predefined headers and your own
+                    custom headers
+                  </li>
+                  <li>Use the search feature to quickly find a word or words you are looking for</li>
+                </ul>
+              </div>
+            </div>
+            <p className="light-gallery-instructions">{DomManager.tapOrClick()} an image to enlarge</p>
+            <Fade direction={'up'} duration={1000} triggerOnce={true}>
+              <LightGallery elementClassNames={`images no-wrap ${theme}`} speed={500} selector={'.image'}>
+                <img className={'image'} src={require('/src/img/homepage/tableOfContents.png')} alt="Table of Contents" />
+                <img className={'image'} src={require('/src/img/homepage/customDocHeaders.gif')} alt="Custom Headers" />
+              </LightGallery>
+            </Fade>
+          </div>
+        </Fade>
+        <Spacer height={20} />
+
         {/* EXPENSES */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div id="expenses-wrapper" className="section expenses">
@@ -588,9 +641,11 @@ export default function Home() {
                 costs and avoid conflicts over money.
               </p>
             </div>
-            <LazyLoadImage src={require('/src/img/homepage/expense-tracker.png')} alt="Menu" effect="blur" delay={1000} />
+            <LazyLoadImage src={require('/src/img/homepage/expense-tracker.png')} alt="Expenses" effect="blur" delay={1000} />
           </div>
         </Fade>
+
+        <Spacer height={20} />
 
         {/* COLLABORATION */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
@@ -623,8 +678,8 @@ export default function Home() {
               <p className="title">Security & Privacy</p>
               <p className="text subtitle center">Transparency in Shared Financial Responsibilities</p>
               <p className="text">
-                <b>Custom Sharing: </b> Keep control over what co-parents see by selecting the "share with" checkbox for events, expenses , and
-                important information.
+                <b>Custom Sharing: </b> Keep control over what co-parents see by selecting the &#34;share with&#34; checkbox for events, expenses ,
+                and important information.
               </p>
               <p className="text">
                 <b>Enhanced Protection: </b> Enjoy peace of mind with SMS code verification for password recovery, and secure registration for both
@@ -663,11 +718,11 @@ export default function Home() {
             </div>
 
             <div className="flex images mt-15">
-              <LazyLoadImage src={require('/src/img/homepage/devices/phone.png')} alt="Menu" effect="blur" delay={1000} />
+              <LazyLoadImage src={require('/src/img/homepage/devices/phone.png')} alt="Phone" effect="blur" delay={1000} />
 
-              <LazyLoadImage src={require('/src/img/homepage/devices/laptop.png')} alt="Menu" effect="blur" delay={1000} />
+              <LazyLoadImage src={require('/src/img/homepage/devices/laptop.png')} alt="Computer" effect="blur" delay={1000} />
 
-              <LazyLoadImage src={require('/src/img/homepage/devices/tablet.png')} alt="Menu" effect="blur" delay={1000} />
+              <LazyLoadImage src={require('/src/img/homepage/devices/tablet.png')} alt="Tablet" effect="blur" delay={1000} />
             </div>
 
             <p className="subtitle mt-25 mb-0" id="multiple-device-usage">
@@ -702,7 +757,7 @@ export default function Home() {
               </p>
               <p className="text">
                 <b>Multimedia Sharing</b> Share memories in real-time by uploading photos and milestones with your co-parent, helping you both stay
-                connected with your child's journey.
+                connected with your child&#39;s journey.
               </p>
             </div>
           </div>

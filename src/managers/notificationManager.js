@@ -49,10 +49,10 @@ export default NotificationManager = {
     }
   },
   //  PRODUCTION
-  apiKey: 'os_v2_app_wjb2emrqojh2re4vwfdvavgfgfpm3s3xxaduhlnuiah2weksujvxpesz4fnbclq7b2dch2k3ixixovlaroxcredbec4ghwac4qpcjbi',
+  apiKey: process.env.REACT_APP_ONE_SIGNAL_API_KEY_DEV,
   appId: 'b243a232-3072-4fa8-9395-b1475054c531',
   // LOCALHOST
-  //  apiKey: 'os_v2_app_j6desntrnffrplh255adzo5p5dy5bymf5qrexxmauni7ady7m6v5kxspx55zktplqa6un2jfyc6az5yvhaxfkgbtpfjf3siqd2th3ty'
+  //  apiKey: process.env.REACT_APP_ONE_SIGNAL_API_KEY_PROD
   //  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
   init: function(currentUser) {
     NotificationManager.currentUser = currentUser;

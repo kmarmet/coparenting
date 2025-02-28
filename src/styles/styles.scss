@@ -431,7 +431,7 @@
     .screen-title {
       @include screenTitle;
     }
-    
+
     #screen-title-wrapper {
       @include screenTitleWrapper;
     }
@@ -478,7 +478,7 @@
     .green {
       color: $green;
     }
-    
+
     #actions-button {
       @include actionsButton;
     }
@@ -541,7 +541,6 @@
     .views-wrapper {
       @include viewsWrapper;
     }
-
 
     #app-content-with-sidebar {
       margin: 0 15px;
@@ -818,7 +817,7 @@
         @include deadCenter;
         width: 120px;
         height: 120px;
-        top: 52%;
+        top: 55%;
       }
     }
 

@@ -36,7 +36,7 @@ export default DocumentsManager = {
             if (thisDoc.id === docId) {
               await DB.deleteById(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`, docId);
               thisDoc.name = StringManager.formatFileName(thisDoc.name);
-              await FirebaseStorage.deleteFile(`${FirebaseStorage.directories.documents}/${currentUser.id}/${thisDoc.name}`);
+              await FirebaseStorage.deleteFile(`${FirebaseStorage.directories.documents}/${currentUser.key}/${thisDoc.name}`);
               if (callback) {
                 results1.push(callback(docId));
               } else {

@@ -142,8 +142,10 @@ const DocumentConversionManager = {
     }
 
     try {
+      // REACT_APP_OCR_API_KEY
       const response = await fetch(
-        `https://api.ocr.space/parse/imageurl?apikey=K88878363888957&url=${shortenedUrl}&OCREngine=2&filetype=${extension}`,
+        // eslint-disable-next-line no-undef
+        `https://api.ocr.space/parse/imageurl?apikey=${process.env.REACT_APP_OCR_API_KEY}&url=${shortenedUrl}&OCREngine=2&filetype=${extension}`,
         requestOptions
       ).catch((error) => {
         AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')
@@ -152,49 +154,12 @@ const DocumentConversionManager = {
       })
       const result = await response.json()
       returnHtml = result
-      console.log(result)
     } catch (error) {
       AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')
       console.error(error)
     }
 
     return returnHtml
-  },
-  imageToText: async (imageUrl) => {
-    const myHeaders = new Headers()
-    myHeaders.append('Content-Type', 'application/json')
-    myHeaders.append('Authorization', `Bearer 4a44586a48f7fdaa4fae19b700019017273112de`)
-
-    const raw = JSON.stringify({
-      image_url: imageUrl,
-    })
-
-    const requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow',
-    }
-
-    try {
-      let returnResult = ''
-      const response = await fetch('https://www.imagetotext.info/api/imageToText', requestOptions).catch((error) => {
-        returnResult = null
-        console.log(error)
-      })
-      if (response) {
-        let result = await response.text()
-        returnResult = JSON.parse(result).result
-      }
-      // console.log(JSON.parse(result).result)
-      if (Manager.isValid(returnResult, true)) {
-        return returnResult
-      } else {
-        return null
-      }
-    } catch (error) {
-      return error
-    }
   },
 }
 

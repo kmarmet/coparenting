@@ -42,7 +42,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
   }
 
   const upload = async () => {
-    setState({ ...state, isLoading: true })
+    setState({ ...state, isLoading: true, loadingText: 'Making the magic happen! Your patience is appreciated!' })
     let files = document.querySelector('#upload-input').files
     let file = files[0]
     if (files.length === 0 || !file) {
@@ -58,7 +58,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
 
     //#region VALIDATION
     if (!Manager.isValid(docType)) {
-      AlertManager.throwError('Please choose a Document Type')
+      AlertManager.throwError('Please choose a document type')
       setState({ ...state, isLoading: false })
       return false
     }
@@ -90,10 +90,26 @@ export default function UploadDocuments({ hideCard, showCard }) {
     if (docType === 'image') {
       file = await ImageManager.compressImage(file)
       let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
+      // Upload to Firebase Storage
       imageUrl = await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`, file)
       const imageName = FirebaseStorage.getImageNameFromUrl(imageUrl)
       const ocrObject = await DocumentConversionManager.imageToHtml(imageUrl, imageName)
       html = ocrObject?.ParsedResults[0]?.ParsedText
+      html = html
+        .replaceAll(/([a-z])([A-Z])/g, '$1 $2')
+        .replaceAll('\n', '')
+        .replaceAll('\r', '')
+        .replaceAll(' p.x.', 'pm ')
+        .replaceAll(' p..', 'pm ')
+        .replaceAll(' p.wn', 'pm ')
+        .replaceAll(' p.m.', 'pm ')
+        .replaceAll(' a.x.', 'am ')
+        .replaceAll(' a..', 'am ')
+        .replaceAll(' a.wn', 'am ')
+        .replaceAll(' a.m.', 'am ')
+        .replaceAll(' .', '. ')
+        .replaceAll('Triday', 'Friday')
+      html = await StringManager.typoCorrection(html)
     }
     //#endregion IMAGE CONVERSION
 
@@ -122,7 +138,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     }
     const newDocument = new Doc()
     newDocument.url = fileUrl
-    newDocument.compressedHtml = html
+    newDocument.docText = html
     newDocument.ownerKey = currentUser?.key
     newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
     newDocument.type = docType
