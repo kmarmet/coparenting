@@ -1,5 +1,5 @@
 // Path: src\components\shared\viewSelector.jsx
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import DomManager from '/src/managers/domManager'
 import Spacer from './spacer'
@@ -18,6 +18,10 @@ export default function ViewSelector({ labels, updateState, wrapperClasses }) {
     })
     DomManager.toggleActive(el)
   }
+
+  useEffect(() => {
+    updateState('details')
+  }, [])
 
   return (
     <>

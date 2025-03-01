@@ -36,12 +36,14 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
     if (Manager.isValid(coparent)) {
       await ChatManager.pauseChat(currentUser, coparent)
       AlertManager.successAlert('Chats Paused')
+      setState({ ...state, currentScreen: ScreenNames.chats })
     }
   }
 
   const unpauseChat = async (coparent) => {
     if (Manager.isValid(coparent)) {
       await ChatManager.unpauseChat(currentUser, coparent)
+      setState({ ...state, currentScreen: ScreenNames.chats })
     }
   }
 

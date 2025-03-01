@@ -58,6 +58,10 @@ body {
   //  min-height: calc(100% + env(safe-area-inset-top));
   max-height: 100vh;
 
+  &.dark {
+    background-color: $darkBg !important;
+  }
+
   /* width */
   &::-webkit-scrollbar {
     display: none !important;

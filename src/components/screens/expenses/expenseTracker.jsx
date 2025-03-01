@@ -110,7 +110,7 @@ export default function ExpenseTracker() {
     await ExpenseManager.updateExpense(currentUser, activeExpense, activeExpense.id).then(async () => {
       NotificationManager.sendNotification(
         `Expense Paid`,
-        `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${activeExpense.name}`,
+        `An expense has been marked ${updatedStatus.toUpperCase()} by ${currentUser?.name} \nExpense Name: ${activeExpense?.name}`,
         payer?.key,
         currentUser,
         activeExpense.category

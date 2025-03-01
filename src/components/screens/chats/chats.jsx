@@ -16,6 +16,9 @@ import StringManager from '/src/managers/stringManager.coffee'
 import ChatRow from './chatRow.jsx'
 import { TbMessageCirclePlus } from 'react-icons/tb'
 import Spacer from '../../shared/spacer'
+import DB from '../../../database/DB'
+import DateManager from '../../../managers/dateManager'
+import { child, getDatabase, onValue, ref } from 'firebase/database'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -53,8 +56,16 @@ const Chats = () => {
     setActiveChatKeys(activeChatKeys)
   }
 
+  const onTableChange = async () => {
+    const dbRef = ref(getDatabase())
+
+    onValue(child(dbRef, `${DB.tables.chats}/${currentUser?.key}`), async () => {
+      getSecuredChats().then((r) => r)
+    })
+  }
+
   useEffect(() => {
-    getSecuredChats()
+    onTableChange().then((r) => r)
   }, [])
 
   return (

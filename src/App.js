@@ -151,6 +151,8 @@ export default function App() {
 
         // User Exists
         if (currentUserFromDb) {
+          const body = document.getElementById('external-overrides')
+          body.classList.add(currentUserFromDb?.settings?.theme)
           // Check if child account and if parent access is granted
           if (currentUserFromDb?.accountType === 'child') {
             if (!Manager.isValid(currentUserFromDb?.parentAccessGranted) && currentUserFromDb?.parentAccessGranted === false) {

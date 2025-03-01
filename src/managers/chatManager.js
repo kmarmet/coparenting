@@ -13,9 +13,9 @@ const ChatManager = {
     let sentiment = await ChatManager.getSentiment(message)
     let warningSentiments = ['sad']
 
-    const returnTone = tone.overall[0][1]
-    const returnSentiment = sentiment.overall[0][1]
-    let icon = tone.overall[0][2]
+    const returnTone = tone?.overall[0][1]
+    const returnSentiment = sentiment?.overall[0][1]
+    let icon = tone?.overall[0][2]
     let color = returnSentiment === 'NEGATIVE' ? 'red' : 'green'
 
     if (warningSentiments.includes(returnTone)) {

@@ -4,8 +4,23 @@
 
 #external-overrides {
   // MUI OVERRIDES
+  .MuiInputBase-root {
+    svg {
+      color: $darkText !important;
+    }
+    .MuiOutlinedInput-input {
+      background: $darkGrey !important;
+      color: $darkText !important;
+      border-radius: 0 !important;
+      padding: 3px 8px !important;
+    }
+  }
+
   #static-calendar {
     &.dark {
+      .MuiPickersMonth-monthButton {
+        color: $darkText;
+      }
       .MuiDialogActions-root {
         p,
         button {
@@ -17,20 +32,18 @@
       .MuiPickersLayout-root {
         background: $darkBg !important;
         .MuiPickersCalendarHeader-label {
-          color: white !important;
-          opacity: 0.85 !important;
+          color: $darkText !important;
         }
         svg {
-          color: white !important;
+          color: $darkText !important;
         }
 
         .MuiDateCalendar-root {
           .MuiDayCalendar-weekDayLabel {
-            color: white !important;
-            opacity: 0.85;
+            color: $darkText !important;
           }
           .MuiPickersDay-root {
-            color: white !important;
+            color: $darkText !important;
 
             &:hover {
               background: $darkBorderColor !important;
@@ -50,18 +63,18 @@
     &.dark {
       .MuiDateCalendar-root {
         .MuiDayCalendar-weekDayLabel {
-          color: white !important;
+          color: $darkText !important;
         }
       }
       .MuiPickersLayout-root,
       .MuiButtonBase-root {
-        color: white;
+        color: $darkText;
       }
       .MuiPaper-root {
         background: $darkBg;
 
         .MuiClockNumber-root {
-          color: white !important;
+          color: $darkText !important;
         }
 
         .MuiTimePickerToolbar-ampmSelection {
@@ -79,7 +92,7 @@
             border: 1px solid $darkBorderColor !important;
           }
           span {
-            color: white !important;
+            color: $darkText !important;
           }
         }
 
@@ -90,12 +103,73 @@
     }
   }
 
+  #legend-wrapper {
+    &#legend-wrapper {
+      border-bottom: 1px solid $darkMainBlue;
+    }
+  }
+
+  #records-wrapper {
+    #record-row {
+      table {
+        thead {
+          background: transparent;
+          th {
+            background: transparent;
+            color: $darkText;
+            line-height: 1.2;
+          }
+        }
+        td {
+          color: $darkGreyText;
+        }
+      }
+      .title {
+        font-weight: $fwRegular;
+        background: $darkGreyLight;
+        border: 0;
+      }
+      &.expenses {
+        background: $darkGrey;
+        border: 0;
+      }
+    }
+  }
+
+  #calendar-legend {
+    &#calendar-legend {
+      &.open {
+        background: $darkGrey !important;
+        border: 0 !important;
+
+        .MuiButtonBase-root {
+          svg {
+            color: $red !important;
+            opacity: 1 !important;
+          }
+        }
+
+        p {
+          &.currentUser {
+            color: #2ecc71;
+          }
+          &.coparent {
+            color: #8f7afa;
+          }
+          &.standard {
+            color: #f88379;
+          }
+        }
+      }
+    }
+  }
+
   #activity-wrapper {
     #activity-cards {
       #row-wrapper {
         .activity-row {
           #date {
-            color: white;
+            color: $darkText;
           }
         }
       }
@@ -107,11 +181,46 @@
     &.dark {
       #full-menu {
         .menu-item {
-          background: $darkBorderColor;
+          background: $darkGrey;
+          border: 0;
 
-          &.active {
-            p {
+          &.visitation,
+          &.chats,
+          &.calendar,
+          &.admin,
+          &.activity,
+          &.expenses,
+          &.swap-request,
+          &.transfer-change,
+          &.documents,
+          &.memories,
+          &.child-info,
+          &.records,
+          &.coparents,
+          &.account,
+          &.settings,
+          &.contact-us,
+          &.theme,
+          &.logout,
+          &.install-app {
+            * {
+              color: $darkGreyText;
+            }
+
+            &.active {
+              background: $darkMainBlue;
+              p {
+                color: white !important;
+              }
+              * {
+                color: white;
+              }
+            }
+          }
+          &.visible {
+            svg {
               opacity: 1;
+              color: $darkText;
             }
           }
         }
@@ -128,12 +237,31 @@
       }
 
       b,
-      span {
-        color: white;
+      span,
+      p {
+        color: $darkText;
       }
 
       #medium-title {
-        color: white;
+        color: $darkText;
+      }
+
+      #install-app-wrapper {
+        .os-container {
+          .emphasize {
+            background: $darkMainBlue;
+            color: white;
+
+            &.more-padding {
+              background: $darkGrey;
+            }
+          }
+        }
+        .accordion-header {
+          &.desktop {
+            background: $darkGrey;
+          }
+        }
       }
 
       .chats-desktop-sidebar {
@@ -155,12 +283,34 @@
         background: $darkBg;
         border: 1px solid $darkBorderColor;
 
+        #user-info {
+          svg {
+            color: $darkMainBlue;
+          }
+          #user-name {
+            color: $darkMainBlue;
+          }
+        }
+        .top-buttons {
+          border: 0;
+          svg {
+            color: $darkMainBlue;
+          }
+        }
+
         .form {
+          #send-button {
+            background: $darkGreen;
+          }
           #message-input-container {
             #input-and-send-button {
               .message-input {
                 border-bottom: 1px solid $darkBorderColor;
-                color: white;
+                color: $darkText;
+
+                &::placeholder {
+                  color: $darkGreyText;
+                }
               }
             }
           }
@@ -170,10 +320,30 @@
         #bookmark-messages {
           background: $darkBg;
 
+          .timestamp {
+            opacity: 1;
+            color: $darkGreyText;
+          }
+
+          .message {
+            &.from {
+              &.from {
+                background: $darkMainBlue;
+                &:after {
+                  background: radial-gradient(30px at 0 0, #0000 99%, $darkMainBlue 102%);
+                }
+              }
+            }
+          }
+
           .message-fade-wrapper {
             svg {
               opacity: 1;
-              color: $darkMainBlue;
+              color: $darkIconGrey;
+
+              &.active {
+                color: $darkGreen;
+              }
             }
           }
         }
@@ -191,9 +361,15 @@
       .actions {
         .action-items {
           .action-item {
+            background: $darkGrey;
+            border: 0;
+            span {
+              color: $darkText;
+            }
             .svg-wrapper {
               svg {
-                background: $darkBg;
+                background: transparent;
+                color: $darkGreen;
               }
             }
           }
@@ -216,7 +392,7 @@
       #upload-inputs {
         #upload-input {
           background: transparent;
-          color: white;
+          color: $darkText;
           opacity: 0.9;
         }
       }
@@ -227,27 +403,27 @@
         }
 
         .row-title {
-          color: white;
+          color: $darkText;
         }
 
         #subtitle {
-          color: white;
+          color: $darkText;
         }
 
         .status {
           font-weight: $fwRegular;
           &.pending {
             background: $yellow;
-            color: #8f5621;
-            border: 1px solid #8f5621;
+            color: black;
+            border: 1px solid black;
           }
           &.unpaid {
             background: $red;
-            color: white;
+            color: black;
           }
           &.paid {
-            background: $green;
-            color: white;
+            background: $darkGreen;
+            color: black;
           }
         }
       }
@@ -292,11 +468,12 @@
       .screen-title {
         color: $darkMainBlue;
         opacity: 1;
+        font-weight: $fwMediumBold;
       }
 
       #screen-title-wrapper {
         svg {
-          color: $green;
+          color: $darkGreen;
 
           @include hover;
         }
@@ -314,7 +491,7 @@
           #legend-row {
             * {
               opacity: 0.9;
-              color: white;
+              color: $darkText;
             }
             svg {
               color: #fff;
@@ -332,15 +509,10 @@
         .MuiAccordion-heading {
           .MuiButtonBase-root {
             .MuiAccordionSummary-content {
-              color: white;
+              color: $darkText;
             }
           }
         }
-      }
-
-      p {
-        color: white;
-        opacity: 0.9;
       }
 
       hr {
@@ -349,12 +521,12 @@
 
       #disclaimer {
         p {
-          color: white;
+          color: $darkText;
         }
       }
 
       #large-title {
-        color: white;
+        color: $darkText;
       }
 
       #share-with-checkbox-group {
@@ -389,10 +561,10 @@
             &.MuiAccordionSummary-root {
               #actions-button {
                 background: $darkBorderColor;
-                color: white;
+                color: $darkText;
 
                 svg {
-                  color: white;
+                  color: $darkText;
                 }
               }
             }
@@ -404,7 +576,7 @@
         .expense {
           #name-wrapper {
             .name {
-              color: white;
+              color: $darkText;
             }
           }
         }
@@ -431,7 +603,7 @@
             }
 
             span {
-              color: white;
+              color: $darkText;
               padding-top: 5px;
               opacity: 0.7;
             }
@@ -439,32 +611,31 @@
         }
         .thread-item {
           border-bottom: 1px solid $translucentLightest;
-          padding-bottom: 10px;
 
           #close-thread-actions-icon {
-            color: white;
+            color: $darkText;
             opacity: 0.7;
             @include transformHover;
           }
 
           #user-initial-wrapper {
             svg {
-              color: $darkMainBlue;
+              color: $darkIconGrey;
             }
           }
 
           #edit-icon {
-            color: white;
+            color: $darkText;
             opacity: 0.85;
             @include hover;
           }
 
           .coparent-name {
-            color: white;
+            color: $darkText;
             opacity: 0.9;
 
             .last-message {
-              color: white;
+              color: $darkText;
             }
           }
         }
@@ -478,7 +649,7 @@
 
         #right-side {
           svg {
-            color: white;
+            color: $darkText;
             opacity: 0.85;
           }
         }
@@ -489,14 +660,14 @@
           .message-input {
             background: transparent;
             border-bottom: 1px solid $darkMainBlue;
-            color: white;
+            color: $darkText;
 
             &:focus {
               background: $darkBg;
             }
 
             &:after {
-              color: white;
+              color: $darkText;
             }
           }
 
@@ -520,7 +691,7 @@
               &:after {
                 display: none;
               }
-              color: white;
+              color: $darkText;
             }
 
             &.to {
@@ -528,7 +699,7 @@
               &:after {
                 display: none;
               }
-              color: white;
+              color: $darkText;
             }
           }
         }
@@ -568,7 +739,7 @@
           border: 1px solid $darkBorderColor;
           svg {
             opacity: 0.7;
-            color: white;
+            color: $darkText;
           }
 
           .menu-item {
@@ -594,7 +765,7 @@
 
         #menu-items {
           .menu-item {
-            color: $borderColor;
+            color: $darkIconGrey;
             &.active:not(#add-new-button) {
               color: $darkMainBlue;
             }
@@ -608,7 +779,7 @@
           &#checkboxes {
             #label-wrapper {
               label {
-                color: white;
+                color: $darkText;
               }
             }
           }
@@ -616,7 +787,7 @@
         #checkbox-container {
           &.flex {
             span {
-              color: white;
+              color: $darkText;
               opacity: 0.9;
             }
 
@@ -643,7 +814,7 @@
           &#checkboxes {
             #label-wrapper {
               label {
-                color: white;
+                color: $darkText;
               }
             }
           }
@@ -651,7 +822,7 @@
         #share-with-checkbox-container {
           &.flex {
             span {
-              color: white;
+              color: $darkText;
               opacity: 0.9;
             }
 
@@ -679,21 +850,21 @@
         // LABEL WRAPPER
         #label-wrapper {
           label {
-            color: white;
+            color: $darkText;
           }
         }
         input,
         textarea {
           background: transparent;
           border: 0;
-          color: white;
+          color: $darkText;
           opacity: 0.9;
           border-bottom: 1px solid $darkBorderColor;
 
           &.rs-date-range-input {
             background: transparent !important;
             border: 0 !important;
-            color: white !important;
+            color: $darkText !important;
             opacity: 0.9 !important;
             border-bottom: 1px solid $darkBorderColor !important;
           }
@@ -701,16 +872,24 @@
           &:focus {
             outline: none;
             border: unset;
-            background: $darkBorderColor;
-            border-radius: 4px;
-            padding: 10px;
+            background: $darkGrey;
+            border-radius: 0;
+            padding: 3px 8px;
+            //            padding: 10px;
           }
         }
 
         &.active {
+          textarea {
+            top: 28px;
+          }
           input,
           textarea {
             width: 100%;
+
+            &:focus {
+              //              padding: 8px;
+            }
             &::placeholder {
               opacity: 0;
             }
@@ -748,7 +927,7 @@
         }
         .MuiAccordionSummary-root {
           #toggle-button {
-            color: white;
+            color: $darkText;
           }
         }
         .child-name {
@@ -773,10 +952,10 @@
           background: $translucentLightest;
         }
         label {
-          color: white;
+          color: $darkText;
 
           span {
-            color: white;
+            color: $darkText;
             opacity: 0.9;
           }
         }
@@ -816,7 +995,7 @@
         .coparent {
           .coparent-name,
           .coparent-type {
-            color: white;
+            color: $darkText;
           }
         }
       }
@@ -825,6 +1004,11 @@
       #bottom-card {
         background: $darkBg;
 
+        #large-title {
+          color: $darkMainBlue;
+          font-weight: $fwMediumBold;
+        }
+
         #details {
           .flex {
             border-bottom: 1px solid $darkBorderColor;
@@ -832,8 +1016,15 @@
         }
 
         p {
-          color: white;
-          opacity: 0.7;
+          color: $darkText;
+
+          &.view {
+            color: $darkGreyText;
+
+            &.active {
+              color: $darkText;
+            }
+          }
         }
 
         hr {
@@ -845,7 +1036,7 @@
             background: $darkBorderColor;
 
             .item {
-              color: white;
+              color: $darkText;
               opacity: 0.65;
 
               &.active {
@@ -869,7 +1060,7 @@
               .card-button {
                 &.submit {
                   svg {
-                    color: white;
+                    color: $darkText;
                   }
                 }
               }
@@ -886,7 +1077,7 @@
             #default-expense-amounts {
               button {
                 background: $darkBorderColor;
-                color: white;
+                color: $darkText;
               }
             }
           }
@@ -897,7 +1088,7 @@
           .duration-option {
             p,
             svg {
-              color: white;
+              color: $darkText;
             }
             &.active {
               p,
@@ -922,7 +1113,7 @@
             background: $darkBg;
             .close-icon {
               background: $darkBorderColor;
-              color: white;
+              color: $darkText;
             }
           }
         }
@@ -977,13 +1168,17 @@
       #row {
         border-bottom: 1px solid $darkBorderColor;
         #subtitle {
-          color: white;
+          color: $darkText;
         }
       }
 
       // CALENDAR
       #calendar-container {
         border: 1px solid $darkBorderColor;
+
+        @media screen and (max-width: 800px) {
+          border: 0;
+        }
         .events {
           background: $darkBg;
           .event-row {
@@ -991,16 +1186,17 @@
             .text {
               #title-wrapper {
                 .title {
-                  color: white;
+                  color: $darkText;
+                  font-weight: $fwLight;
                 }
                 .reminders {
                   svg {
                     opacity: 0.7;
-                    color: white;
+                    color: $darkText;
                   }
                   .reminder-times {
                     span {
-                      color: white;
+                      color: $darkText;
                     }
                   }
                 }
@@ -1009,19 +1205,20 @@
             p,
             b,
             span:not(.event-type-dot) {
-              color: white;
-              opacity: 0.9;
+              color: $darkGreyText;
+              //              opacity: 0.6;
 
               &.start-date,
               &#times,
               &.reminder-times {
-                opacity: 0.6;
+                //                opacity: 0.6;
+                color: $darkGreyText;
               }
             }
 
             #children {
               p {
-                opacity: 0.5;
+                //                opacity: 0.5;
               }
             }
           }
