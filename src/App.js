@@ -92,7 +92,7 @@ export default function App() {
   })
 
   // State to include in App.js
-  const { isLoading, currentScreen, menuIsOpen, currentUser, loadingText } = state
+  const { isLoading, currentScreen, menuIsOpen, currentUser, loadingText, theme } = state
 
   const deleteMenuAnimation = () => {
     document.querySelectorAll('#full-menu .menu-item').forEach((menuItem, i) => {
@@ -172,6 +172,7 @@ export default function App() {
             currentScreen: screenToNavigateTo,
             userIsLoggedIn: true,
             loadingText: '',
+            theme: currentUserFromDb?.settings?.theme,
             isLoading: false,
             activityCount: activities.length ?? 0,
           })
@@ -197,7 +198,7 @@ export default function App() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
-      <div className={`App`} id="app-container">
+      <div className={`App ${theme}`} id="app-container">
         {/* LOADING */}
         {isLoading && <Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />}
 

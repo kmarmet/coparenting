@@ -36,7 +36,8 @@ export default function Memories() {
       let validImages = []
       for (const memory of all) {
         if (Manager.isValid(memory.url)) {
-          const imageStatusCode = await ImageManager.getStatusCode(memory.url)
+          const imageStatusCode = await ImageManager.getStatusCode(memory?.url)
+          console.log(imageStatusCode)
           if (imageStatusCode === 404) {
             // Delete memory if no longer in Firebase Storage
             await DB.deleteMemory(currentUser?.key, memory)
@@ -47,8 +48,10 @@ export default function Memories() {
         }
       }
       validImages = validImages.filter((x) => x)
+      console.log(validImages)
       if (currentUser) {
         if (Manager.isValid(validImages)) {
+          console.log(validImages)
           setMemories(validImages)
           setTimeout(() => {
             setState({ ...state, isLoading: false })

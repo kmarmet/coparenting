@@ -10,8 +10,8 @@
         p,
         button {
           background: transparent !important;
-          color: $darkBlue !important;
-          border-color: $darkBlue !important;
+          color: $darkMainBlue !important;
+          border-color: $darkMainBlue !important;
         }
       }
       .MuiPickersLayout-root {
@@ -32,6 +32,10 @@
           .MuiPickersDay-root {
             color: white !important;
 
+            &:hover {
+              background: $darkBorderColor !important;
+            }
+
             &.Mui-selected {
               background: $darkBorderColor !important;
               border: unset;
@@ -41,16 +45,12 @@
       }
     }
   }
+
   .MuiDialog-root {
     &.dark {
       .MuiDateCalendar-root {
         .MuiDayCalendar-weekDayLabel {
           color: white !important;
-        }
-        .MuiPickersDay-root {
-          &.Mui-selected {
-            color: white !important;
-          }
         }
       }
       .MuiPickersLayout-root,
@@ -69,7 +69,7 @@
             color: $darkBorderColor !important;
 
             &.Mui-selected {
-              color: $darkBlue !important;
+              color: $darkMainBlue !important;
             }
           }
         }
@@ -85,6 +85,18 @@
 
         .MuiPickersLayout-root {
           background: $darkBg !important;
+        }
+      }
+    }
+  }
+
+  #activity-wrapper {
+    #activity-cards {
+      #row-wrapper {
+        .activity-row {
+          #date {
+            color: white;
+          }
         }
       }
     }
@@ -111,28 +123,205 @@
     &.dark {
       background: $darkBg;
 
+      * {
+        user-select: none;
+      }
+
+      b,
+      span {
+        color: white;
+      }
+
+      #medium-title {
+        color: white;
+      }
+
+      .chats-desktop-sidebar {
+        &.chats-desktop-sidebar {
+          background: $darkBg;
+          border: 1px solid $darkBorderColor;
+        }
+      }
+
+      #navbar {
+        box-shadow: none;
+
+        #menu-items {
+          box-shadow: none;
+        }
+      }
+
+      #chat-wrapper {
+        background: $darkBg;
+        border: 1px solid $darkBorderColor;
+
+        .form {
+          #message-input-container {
+            #input-and-send-button {
+              .message-input {
+                border-bottom: 1px solid $darkBorderColor;
+                color: white;
+              }
+            }
+          }
+        }
+
+        #default-messages,
+        #bookmark-messages {
+          background: $darkBg;
+
+          .message-fade-wrapper {
+            svg {
+              opacity: 1;
+              color: $darkMainBlue;
+            }
+          }
+        }
+      }
+
+      #account-container {
+        .sections {
+          .section {
+            border-bottom: 1px solid $darkBorderColor;
+            border-top: 0;
+          }
+        }
+      }
+
+      .actions {
+        .action-items {
+          .action-item {
+            .svg-wrapper {
+              svg {
+                background: $darkBg;
+              }
+            }
+          }
+        }
+      }
+
+      #memories-container {
+        #below-image {
+          p {
+            color: $darkMainBlue;
+          }
+        }
+        .light-gallery {
+          .memory-image {
+            border: 0;
+          }
+        }
+      }
+
+      #upload-inputs {
+        #upload-input {
+          background: transparent;
+          color: white;
+          opacity: 0.9;
+        }
+      }
+
+      .row {
+        &.chats {
+          border: 0;
+        }
+
+        .row-title {
+          color: white;
+        }
+
+        #subtitle {
+          color: white;
+        }
+
+        .status {
+          font-weight: $fwRegular;
+          &.pending {
+            background: $yellow;
+            color: #8f5621;
+            border: 1px solid #8f5621;
+          }
+          &.unpaid {
+            background: $red;
+            color: white;
+          }
+          &.paid {
+            background: $green;
+            color: white;
+          }
+        }
+      }
+
+      #navbar {
+        @media screen and (min-width: 800px) {
+          display: none;
+        }
+      }
+
+      .views-wrapper {
+        border-bottom: 1px solid $darkBorderColor;
+      }
+
+      .checkbox-wrapper {
+        @include hover;
+        .checkbox-dot {
+          border: 1px solid $darkBorderColor;
+          opacity: 1;
+        }
+
+        label {
+          @include hover;
+        }
+      }
+
       // PAGE CONTAINER
       .page-container {
         background: $darkBg;
         border: unset;
-        @include shadow;
+      }
+
+      .page-container:not(.home):not(.login) {
+        border: 1px solid $darkBorderColor;
+
+        @media screen and (max-width: 800px) {
+          border: 0;
+        }
       }
 
       // SCREEN TITLE
       .screen-title {
-        color: $darkBlue;
+        color: $darkMainBlue;
+        opacity: 1;
+      }
+
+      #screen-title-wrapper {
+        svg {
+          color: $green;
+
+          @include hover;
+        }
       }
 
       #app-content-wrapper {
-        background: $darkestBg;
+        background: $darkBg;
       }
 
       #calendar-sidebar {
         background: $darkBg;
-      }
+        border: 1px solid $darkBorderColor;
 
-      .section {
-        border-bottom: 1px solid $darkBorderColor;
+        #desktop-legend-wrapper {
+          #legend-row {
+            * {
+              opacity: 0.9;
+              color: white;
+            }
+            svg {
+              color: #fff;
+              opacity: 0.7;
+            }
+          }
+        }
       }
 
       // MUI OVERRIDES
@@ -190,18 +379,28 @@
         }
       }
 
-      // MEMORIES
-      #memories-container {
-        #title-and-date,
-        #below-image {
-          p {
-            color: white;
-          }
-        }
-      }
-
       // EXPENSE WRAPPER
       #expense-tracker {
+        .MuiCollapse-root {
+          background: $darkBorderColor;
+        }
+        .MuiPaper-elevation {
+          .MuiAccordionSummary-gutters {
+            &.MuiAccordionSummary-root {
+              #actions-button {
+                background: $darkBorderColor;
+                color: white;
+
+                svg {
+                  color: white;
+                }
+              }
+            }
+          }
+        }
+        .payment-options-link {
+          color: $darkMainBlue;
+        }
         .expense {
           #name-wrapper {
             .name {
@@ -250,7 +449,7 @@
 
           #user-initial-wrapper {
             svg {
-              color: $darkBlue;
+              color: $darkMainBlue;
             }
           }
 
@@ -289,7 +488,7 @@
 
           .message-input {
             background: transparent;
-            border-bottom: 1px solid $darkBlue;
+            border-bottom: 1px solid $darkMainBlue;
             color: white;
 
             &:focus {
@@ -302,7 +501,7 @@
           }
 
           #send-button {
-            background: $darkBlue;
+            background: $darkMainBlue;
           }
         }
 
@@ -325,7 +524,7 @@
             }
 
             &.to {
-              background: $darkBlue;
+              background: $darkMainBlue;
               &:after {
                 display: none;
               }
@@ -337,20 +536,48 @@
 
       // BRAND BAR
       #brand-bar {
-        background: $darkBg;
         border: unset;
+        background: $darkBg;
+        #content {
+          #right {
+            background: $darkBorderColor;
+
+            p {
+              line-height: 1;
+            }
+          }
+        }
       }
 
       // SIDEBAR
       #side-navbar {
+        .menu-item {
+          opacity: 1;
+
+          &:hover {
+            p {
+              font-weight: $fwRegular;
+              opacity: 1;
+            }
+          }
+        }
         #top,
         #bottom {
           background: $darkBg;
           border: unset;
-          @include shadow;
+          border: 1px solid $darkBorderColor;
           svg {
             opacity: 0.7;
             color: white;
+          }
+
+          .menu-item {
+            &.active {
+              svg {
+                opacity: 1;
+                color: $darkMainBlue;
+              }
+            }
           }
         }
       }
@@ -369,7 +596,7 @@
           .menu-item {
             color: $borderColor;
             &.active:not(#add-new-button) {
-              color: $darkBlue;
+              color: $darkMainBlue;
             }
           }
         }
@@ -377,6 +604,15 @@
 
       // STANDARD CHECKBOXES
       #checkbox-group {
+        #checkboxes {
+          &#checkboxes {
+            #label-wrapper {
+              label {
+                color: white;
+              }
+            }
+          }
+        }
         #checkbox-container {
           &.flex {
             span {
@@ -392,7 +628,7 @@
               &.active {
                 border: unset;
                 #inner-circle {
-                  background: $darkBlue;
+                  background: $darkMainBlue;
                   border: unset;
                 }
               }
@@ -403,6 +639,15 @@
 
       // SHARE WITH CHECKBOXES [
       #share-with-checkbox-group {
+        #checkboxes {
+          &#checkboxes {
+            #label-wrapper {
+              label {
+                color: white;
+              }
+            }
+          }
+        }
         #share-with-checkbox-container {
           &.flex {
             span {
@@ -418,7 +663,7 @@
               &.active {
                 border: unset;
                 #inner-circle {
-                  background: $darkBlue;
+                  background: $darkMainBlue;
                   border: unset;
                 }
               }
@@ -427,19 +672,16 @@
         }
       }
 
-      // LABEL WRAPPER
-      #label-wrapper {
-        label {
-          color: white;
-
-          &#medium-title {
-            color: $gold;
-          }
-        }
-      }
-
       // INPUT WRAPPER
       #input-wrapper {
+        border: 1px solid $darkBorderColor;
+
+        // LABEL WRAPPER
+        #label-wrapper {
+          label {
+            color: white;
+          }
+        }
         input,
         textarea {
           background: transparent;
@@ -463,11 +705,6 @@
             border-radius: 4px;
             padding: 10px;
           }
-
-          &::placeholder {
-            color: white;
-            opacity: 0.6;
-          }
         }
 
         &.active {
@@ -477,14 +714,6 @@
             &::placeholder {
               opacity: 0;
             }
-          }
-        }
-
-        .floating-label {
-          background: transparent;
-
-          span {
-            opacity: 1;
           }
         }
 
@@ -501,8 +730,29 @@
 
       // CHILD INFO
       #child-info-container {
+        #child-info {
+          .form {
+            .flex {
+              &.input {
+                .delete-icon {
+                  color: $red;
+                }
+              }
+            }
+          }
+        }
+        #image-and-actions-wrapper {
+          .profile-pic-container {
+            border: 0;
+          }
+        }
+        .MuiAccordionSummary-root {
+          #toggle-button {
+            color: white;
+          }
+        }
         .child-name {
-          color: $darkBlue;
+          color: $darkMainBlue;
         }
         .profile-pic-container {
           &.no-image {
@@ -535,15 +785,24 @@
       // REACT TOGGLE
 
       .react-toggle {
+        overflow: hidden;
         * {
-          user-select: none;
+          user-select: none !important;
           outline: 0 !important;
         }
         &.react-toggle--checked {
           background: $darkBg !important;
+          user-select: none;
           .react-toggle-track-check,
           .react-toggle-track {
-            background: $darkBlue !important;
+            overflow: hidden;
+            background: $darkMainBlue !important;
+
+            .react-toggle-track-check {
+              height: 10px;
+              transform: scale(0.9);
+              top: -2px;
+            }
           }
         }
         .react-toggle-track {
@@ -566,6 +825,12 @@
       #bottom-card {
         background: $darkBg;
 
+        #details {
+          .flex {
+            border-bottom: 1px solid $darkBorderColor;
+          }
+        }
+
         p {
           color: white;
           opacity: 0.7;
@@ -586,6 +851,14 @@
               &.active {
                 opacity: 1;
               }
+            }
+          }
+        }
+
+        &.payment-options-card {
+          #relative-wrapper {
+            a {
+              color: $darkMainBlue;
             }
           }
         }
@@ -629,7 +902,7 @@
             &.active {
               p,
               svg {
-                color: $darkBlue;
+                color: $darkMainBlue;
                 opacity: 1;
               }
             }
@@ -642,20 +915,6 @@
               &#view-visitation-holidays-item,
               &#view-all-holidays-item {
                 background: $darkBg;
-              }
-            }
-          }
-          .buttons {
-            background-color: transparent;
-
-            .card-button {
-              &.submit {
-                background-color: $darkBlue;
-                color: white;
-
-                svg {
-                  color: white;
-                }
               }
             }
           }
@@ -690,32 +949,26 @@
         }
 
         .buttons {
-          background: $darkLightBg;
+          background: $darkBg;
           #blur {
             filter: blur(5px);
-            background: $darkLightBg;
+            background: $darkBg;
             width: 100vw;
             padding-top: 15px;
             bottom: 10px;
           }
-          .card-button {
-            &.cancel {
-              border: 1px solid white;
+
+          .delete-icon {
+            opacity: 1;
+          }
+          button {
+            &.card-button {
+              background: $darkMainBlue;
               color: white;
-              opacity: 0.6;
-            }
-            &.delete {
-              border: 1px solid $red;
-              color: $red;
-            }
-            &.submit {
               svg {
                 color: white;
               }
             }
-            background-color: transparent;
-            color: $green;
-            border: 1px solid $green;
           }
         }
       }
@@ -730,9 +983,11 @@
 
       // CALENDAR
       #calendar-container {
+        border: 1px solid $darkBorderColor;
         .events {
           background: $darkBg;
           .event-row {
+            border-bottom: 1px solid $darkBorderColor;
             .text {
               #title-wrapper {
                 .title {

@@ -118,6 +118,10 @@
   align-items: center;
   justify-content: center;
 
+  svg {
+    margin-left: 10px;
+  }
+
   p {
     &.screen-title {
       padding: 0;
@@ -1231,7 +1235,7 @@
       }
 
       svg {
-        font-size: 30px;
+        transform: scale(0.8);
         color: $mainBlue;
         margin-right: 5px;
       }
@@ -1844,7 +1848,7 @@
       top: 50%;
     }
 
-    @include sparkleButton;
+    //    @include sparkleButton;
   }
 }
 
@@ -2059,7 +2063,7 @@
     }
 
     &.desktop {
-      background: $darkestBg;
+      background: $darkBg;
       padding: 11px;
     }
 

@@ -37,10 +37,13 @@ ImageManager =
     return shortenedUrlObject.shortUrl
 
   getStatusCode: (url) ->
-    statusCode = 0
-    fetch  url
-      .then (response) -> statusCode = response.status
-    return statusCode
+    new Promise((resolve, reject) ->
+      fetch  url
+        .then (response) ->
+          resolve(response.status)
+        .catch (error) ->
+          reject(error)
+    )
 
   compressImage: (imgFile) ->
     try

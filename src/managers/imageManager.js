@@ -49,12 +49,13 @@ ImageManager = {
     return shortenedUrlObject.shortUrl;
   },
   getStatusCode: function(url) {
-    var statusCode;
-    statusCode = 0;
-    fetch(url).then(function(response) {
-      return statusCode = response.status;
+    return new Promise(function(resolve, reject) {
+      return fetch(url).then(function(response) {
+        return resolve(response.status);
+      }).catch(function(error) {
+        return reject(error);
+      });
     });
-    return statusCode;
   },
   compressImage: async function(imgFile) {
     var compressedFile, error, options;

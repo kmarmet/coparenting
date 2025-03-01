@@ -111,7 +111,7 @@ export default function ExpenseTracker() {
       NotificationManager.sendNotification(
         `Expense Paid`,
         `An expense has been PAID by ${currentUser?.name} \nExpense Name: ${activeExpense.name}`,
-        activeExpense?.ownerKey,
+        payer?.key,
         currentUser,
         activeExpense.category
       )

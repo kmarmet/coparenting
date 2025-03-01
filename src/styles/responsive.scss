@@ -109,12 +109,6 @@
   #app-container {
     @media screen and (min-width: 800px) {
       .actions {
-        width: 32px;
-        max-height: 0;
-        position: absolute;
-        margin-left: 15px;
-        top: 0;
-        right: 0;
         .actions-button-wrapper {
           position: relative;
           top: -5px;
