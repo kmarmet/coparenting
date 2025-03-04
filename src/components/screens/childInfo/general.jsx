@@ -11,12 +11,13 @@ import AlertManager from '/src/managers/alertManager'
 import { MdContactEmergency } from 'react-icons/md'
 import DB from '/src/database/DB'
 import StringManager from '/src/managers/stringManager.coffee'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
+import { FaMinus, FaPlus } from 'react-icons/fa6'
 import DB_UserScoped from '../../../database/db_userScoped'
 import AddressInput from '/src/components/shared/addressInput'
-function General({ activeChild, setActiveChild }) {
+
+function General() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, activeInfoChild } = state
   const [generalValues, setGeneralValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
@@ -30,8 +31,8 @@ function General({ activeChild, setActiveChild }) {
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await setSelectedChild()
     } else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', StringManager.formatDbProp(prop))
-      setActiveChild(updatedChild)
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'general', StringManager.formatDbProp(prop))
+      setState({ ...state, activeInfoChild: updatedChild })
       await setSelectedChild()
     }
   }
@@ -42,9 +43,9 @@ function General({ activeChild, setActiveChild }) {
     for (let obj of sharing) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
     }
-    if (Manager.isValid(activeChild?.general)) {
+    if (Manager.isValid(activeInfoChild?.general)) {
       // Set info
-      let values = Object.entries(activeChild?.general)
+      let values = Object.entries(activeInfoChild?.general)
 
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
@@ -61,25 +62,25 @@ function General({ activeChild, setActiveChild }) {
 
   const update = async (prop, value) => {
     AlertManager.successAlert('Updated!')
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', StringManager.formatDbProp(prop), value)
-    setActiveChild(updatedChild)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', StringManager.formatDbProp(prop), value)
+    setState({ ...state, activeInfoChild: updatedChild })
   }
 
   useEffect(() => {
     setSelectedChild().then((r) => r)
-  }, [activeChild])
+  }, [activeInfoChild])
 
   return (
     <div className="info-section section general form">
       <Accordion className={`${theme} child-info`} expanded={showInputs}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
-          className={!Manager.isValid(activeChild?.general) ? 'disabled header general' : 'header general'}>
+          className={!Manager.isValid(activeInfoChild?.general) ? 'disabled header general' : 'header general'}>
           <MdContactEmergency className={'svg'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             General
-            {!Manager.isValid(activeChild?.general) ? '- No Info' : ''}
-            {Manager.isValid(activeChild?.general) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
+            {!Manager.isValid(activeInfoChild?.general) ? '- no info' : ''}
+            {Manager.isValid(activeInfoChild?.general) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
@@ -97,6 +98,7 @@ function General({ activeChild, setActiveChild }) {
                           defaultValue={value}
                           labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}>
                           <AddressInput
+                            defaultValue={value}
                             onSelection={async (place) => {
                               await update('address', place)
                             }}
@@ -104,15 +106,24 @@ function General({ activeChild, setActiveChild }) {
                         </InputWrapper>
                       )}
                       {!Manager.contains(infoLabel.toLowerCase(), 'address') && (
-                        <InputWrapper
-                          inputType={'input'}
-                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
-                          defaultValue={value}
-                          onChange={async (e) => {
-                            const inputValue = e.target.value
-                            await update('general', infoLabel, inputValue)
-                          }}
-                        />
+                        <>
+                          {infoLabel.toLowerCase().includes('phone') && (
+                            <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
+                              {infoLabel}: {value}
+                            </a>
+                          )}
+                          {!infoLabel.toLowerCase().includes('phone') && (
+                            <InputWrapper
+                              inputType={'input'}
+                              labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                              defaultValue={value}
+                              onChange={async (e) => {
+                                const inputValue = e.target.value
+                                await update(infoLabel, inputValue)
+                              }}
+                            />
+                          )}
+                        </>
                       )}
                       {infoLabel.toLowerCase() !== 'name' && <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />}
                     </div>

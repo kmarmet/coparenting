@@ -13,21 +13,24 @@ import StringManager from '../../../managers/stringManager'
 import DomManager from '../../../managers/domManager'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
 
-export default function Checklists({ showCard, hideCard, activeChild }) {
+export default function Checklists({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, activeInfoChild } = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
   const [view, setView] = useState('from')
   const [checklist, setChecklist] = useState(null)
   const [activeItems, setActiveItems] = useState([])
+  const [destinationLabels, setDestinationLabels] = useState(['From Co-Parent', 'To Co-Parent'])
 
   const addToDb = async () => {
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
     const newChecklist = new Checklist()
     newChecklist.checklistItems = checkboxTextList
     newChecklist.ownerKey = currentUser?.key
     newChecklist.fromOrTo = view
     await DB.add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
+    const updatedChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`)
+    setState({ ...state, activeInfoChild: updatedChild })
   }
 
   const toggleActive = (el) => {
@@ -43,10 +46,11 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
   const deleteItem = async (el) => {
     const element = el.currentTarget
     const checklistItem = element.previousElementSibling
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
     const path = `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`
     const childChecklists = await DB.getTable(path)
     const activeChecklist = childChecklists.filter((x) => x.fromOrTo === view)[0]
+
     if (activeChecklist) {
       const items = activeChecklist.checklistItems
       const text = checklistItem.textContent.toLowerCase()
@@ -63,23 +67,39 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
       }
       checklistItem.remove()
       element.remove()
-    }
-  }
-
-  const getActiveChildChecklists = async () => {
-    if (activeChild) {
-      const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
-      const path = `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`
-      return await DB.getTable(path)
-    } else {
-      return {}
+      const updatedChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`)
+      setState({ ...state, activeInfoChild: updatedChild })
     }
   }
 
   const setActiveChildChecklist = async () => {
-    const checklists = await getActiveChildChecklists()
-    if (Manager.isValid(checklists)) {
-      const checklist = checklists?.filter((x) => x.fromOrTo === view)[0]
+    const checklists = activeInfoChild?.checklists.map((x) => x)
+    const fromDest = checklists?.find((x) => x?.fromOrTo === 'from')
+    const toDest = checklists?.find((x) => x?.fromOrTo === 'to')
+
+    // Set destination labels based on which checklists are present
+    if (Manager.isValid(fromDest)) {
+      setDestinationLabels(['To Co-Parent'])
+    }
+    if (Manager.isValid(toDest)) {
+      setDestinationLabels(['From Co-Parent'])
+    }
+
+    if (Manager.isValid(fromDest) && Manager.isValid(toDest)) {
+      setDestinationLabels(['From Co-Parent', 'To Co-Parent'])
+    }
+
+    // Set view based on which checklist is present
+    if (Manager.isValid(toDest) && !Manager.isValid(fromDest)) {
+      setView('to')
+    }
+    if (Manager.isValid(fromDest) && !Manager.isValid(toDest)) {
+      setView('from')
+    }
+
+    // Set checklist based on view
+    if (Manager.isValid(activeInfoChild?.checklists)) {
+      const checklist = checklists.find((x) => x?.fromOrTo === view)
       if (checklist) {
         setCheckboxTextList(checklist.checklistItems)
         setChecklist(checklist)
@@ -89,15 +109,15 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
       }
     }
   }
+  useEffect(() => {
+    if (showCard) {
+      setActiveChildChecklist().then((r) => r)
+    }
+  }, [showCard])
 
-  // Change list depending on view
   useEffect(() => {
     setActiveChildChecklist().then((r) => r)
   }, [view])
-
-  useEffect(() => {
-    setActiveChildChecklist().then((r) => r)
-  }, [activeChild])
 
   return (
     <BottomCard
@@ -113,6 +133,7 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
       onClose={hideCard}>
       <Spacer height={5} />
       <ViewSelector
+        shouldUpdateStateOnLoad={false}
         updateState={(text) => {
           const _view = text.toLowerCase()
           if (Manager.contains(_view, 'to')) {
@@ -122,7 +143,7 @@ export default function Checklists({ showCard, hideCard, activeChild }) {
           }
         }}
         wrapperClasses={'child-info'}
-        labels={['From Co-Parent', 'To Co-Parent']}
+        labels={destinationLabels}
       />
 
       {Manager.isValid(checklist) &&

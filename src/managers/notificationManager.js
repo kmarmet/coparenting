@@ -9,9 +9,7 @@ import Manager from "./manager.js";
 
 import NotificationSubscriber from "../models/notificationSubscriber";
 
-import Activity from "../models/activity";
-
-import DB_UserScoped from "../database/db_userScoped.js";
+import Notification from "../models/notification";
 
 export default NotificationManager = {
   currentUser: null,
@@ -112,7 +110,7 @@ export default NotificationManager = {
     });
   },
   sendNotification: async function(title, message, recipientKey, currentUser = null, category = '') {
-    var allSubs, myHeaders, newActivity, raw, requestOptions, subId, subIdRecord;
+    var allSubs, myHeaders, newNotification, raw, requestOptions, subId, subIdRecord;
     myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Content-Type", "application/json");
@@ -143,17 +141,17 @@ export default NotificationManager = {
       body: raw,
       redirect: "follow"
     };
-    // Add activity to database
-    newActivity = new Activity();
-    newActivity.id = Manager.getUid();
-    newActivity.recipientKey = recipientKey;
-    newActivity.ownerKey = currentUser != null ? currentUser.key : void 0;
-    newActivity.sharedByName = currentUser != null ? currentUser.name : void 0;
-    newActivity.title = title;
-    newActivity.text = message;
-    newActivity.category = category;
-    await DB.add(`${DB.tables.activities}/${recipientKey}`, newActivity);
-    if (!window.location.href.includes("localhostsssss")) {
+    // Add notification to database
+    newNotification = new Notification();
+    newNotification.id = Manager.getUid();
+    newNotification.recipientKey = recipientKey;
+    newNotification.ownerKey = currentUser != null ? currentUser.key : void 0;
+    newNotification.sharedByName = currentUser != null ? currentUser.name : void 0;
+    newNotification.title = title;
+    newNotification.text = message;
+    newNotification.category = category;
+    await DB.add(`${DB.tables.notifications}/${recipientKey}`, newNotification);
+    if (!window.location.href.includes("localhost")) {
       return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
         return response.text();
       }).then(function(result) {

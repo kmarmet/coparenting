@@ -64,7 +64,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign requests to',
-        'You have not added any co-parents. Or, it is also possible they have closed their account.'
+        'It appears that you have not created any co-parents, or it is possible that they may have deactivated their account.'
       )
       return false
     }

@@ -268,6 +268,8 @@
       .form {
         .flex {
           align-items: center;
+          width: 100%;
+          justify-content: space-between;
           &.input {
             .delete-icon {
               color: $lightDarkGrey;

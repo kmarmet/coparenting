@@ -34,16 +34,16 @@ import { BiFace } from 'react-icons/bi'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+  const { currentUser, theme, activeInfoChild } = state
   const imgRef = useRef()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showSelectorCard, setShowSelectorCard] = useState(false)
-  const [activeInfoChild, setActiveInfoChild] = useState(null)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [hasChildren, setHasChildren] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
   const [showActions, setShowActions] = useState(false)
+  const [activeChildChecklists, setActiveChildChecklists] = useState(false)
   const uploadProfilePic = async () => {
     // setState({ ...state, isLoading: true })
     const imgFiles = document.getElementById('upload-image-input').files
@@ -62,7 +62,7 @@ export default function ChildInfo() {
     ).then(async (url) => {
       const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilePic', url)
       setState({ ...state, isLoading: false })
-      setActiveInfoChild(updatedChild)
+      setState({ ...state, activeInfoChild: updatedChild })
     })
   }
 
@@ -76,25 +76,32 @@ export default function ChildInfo() {
       } else {
         setHasChildren(false)
       }
-      const checklistBottomCard = document.querySelector('.child-info-checklists')
-      if (checklistBottomCard && !checklistBottomCard.classList.contains('animate__fadeInUp')) {
-        if (Manager.isValid(kiddos)) {
-          if (!activeInfoChild) {
-            setActiveInfoChild(kiddos[0])
-          } else {
-            const newActiveChild = kiddos.filter((x) => x.id === activeInfoChild.id)[0]
-            setActiveInfoChild(newActiveChild)
-          }
-        }
-      }
     })
   }
 
-  const updateActiveChild = async (child) => {
-    const children = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children`)
-    const thisChild = children.filter((x) => x.id === child.id)[0]
-    setActiveInfoChild(thisChild)
+  const checkForChecklists = async () => {
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
+    if (childKey) {
+      const checklists = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`)
+      setActiveChildChecklists(checklists)
+    }
   }
+
+  const setDefaultActiveInfoChild = async () => {
+    const children = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children`)
+    if (children) {
+      setState({ ...state, activeInfoChild: children[0] })
+    }
+  }
+
+  useEffect(() => {
+    if (Manager.isValid(activeInfoChild)) {
+      console.log(activeInfoChild)
+      checkForChecklists().then((r) => r)
+    } else {
+      setDefaultActiveInfoChild().then((r) => r)
+    }
+  }, [activeInfoChild])
 
   useEffect(() => {
     onTableChange().then((r) => r)
@@ -103,34 +110,34 @@ export default function ChildInfo() {
   return (
     <>
       {/* CHILD SELECTOR */}
-      <ChildSelector
-        activeInfoChild={activeInfoChild}
-        showCard={showSelectorCard}
-        hideCard={() => setShowSelectorCard(false)}
-        setActiveChild={async (child) => {
-          await updateActiveChild(child)
-          setShowSelectorCard(false)
-        }}
-      />
-      {/* CUSTOM INFO FORM */}
-      <CustomChildInfo
-        showCard={showInfoCard}
-        setActiveChild={(child) => setActiveInfoChild(child)}
-        activeChild={activeInfoChild}
-        hideCard={() => setShowInfoCard(false)}
-      />
-      {/* NEW CHILD + */}
+      {Manager.isValid(activeInfoChild) && (
+        <ChildSelector
+          showCard={showSelectorCard}
+          hideCard={() => setShowSelectorCard(false)}
+          setActiveChild={() => {
+            setShowSelectorCard(false)
+          }}
+        />
+      )}
+      {Manager.isValid(activeInfoChild) && (
+        <>
+          {/* CUSTOM INFO FORM */}
+          <CustomChildInfo showCard={showInfoCard} activeChild={activeInfoChild} hideCard={() => setShowInfoCard(false)} />
+          {/* NEW CHECKLIST */}
+          <NewTransferChecklist activeChild={activeInfoChild} showCard={showNewChecklistCard} hideCard={() => setShowNewChecklistCard(false)} />
+          {/* VIEW CHECKLISTS */}
+          <Checklists showCard={showChecklistsCard} hideCard={() => setShowChecklistsCard(false)} activeChild={activeInfoChild} />
+        </>
+      )}
+
+      {/* NEW CHILD  */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
-
-      <NewTransferChecklist activeChild={activeInfoChild} showCard={showNewChecklistCard} hideCard={() => setShowNewChecklistCard(false)} />
-
-      <Checklists showCard={showChecklistsCard} hideCard={() => setShowChecklistsCard(false)} activeChild={activeInfoChild} />
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container form`}>
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title beside-action-button">Child Info </p>
+            <p className="screen-title beside-action-button">Child Info</p>
 
             {/* ADD NEW BUTTON - DESKTOP */}
             {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
@@ -148,7 +155,7 @@ export default function ChildInfo() {
           </p>
 
           {/* ACTIONS */}
-          {Manager.isValid(currentUser?.children) && (
+          {hasChildren && (
             <Actions show={showActions}>
               <div className="action-items">
                 <div
@@ -175,19 +182,20 @@ export default function ChildInfo() {
                     <span>View Another Child</span>
                   </div>
                 )}
-                <div
-                  className=" action-item"
-                  onClick={() => {
-                    setShowActions(false)
-
-                    setShowNewChecklistCard(true)
-                  }}>
-                  <div className="svg-wrapper">
-                    <TbChecklist className={'checklist'} />
+                {activeChildChecklists.length < 2 && (
+                  <div
+                    className="action-item"
+                    onClick={() => {
+                      setShowActions(false)
+                      setShowNewChecklistCard(true)
+                    }}>
+                    <div className="svg-wrapper">
+                      <TbChecklist className={'checklist'} />
+                    </div>
+                    <span>Create Transfer Checklist</span>
                   </div>
-                  <span> Create Transfer Checklist</span>
-                </div>
-                {Manager.isValid(activeInfoChild?.checklists) && (
+                )}
+                {Manager.isValid(activeChildChecklists) && (
                   <button
                     className="action-item"
                     onClick={() => {
@@ -215,15 +223,15 @@ export default function ChildInfo() {
 
           {/* PROFILE PIC */}
           <div id="image-and-actions-wrapper">
-            {Manager.isValid(activeInfoChild?.general['profilePic']) && (
-              <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general['profilePic']})` }}>
+            {Manager.isValid(activeInfoChild?.general?.profilePic) && (
+              <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general?.profilePic})` }}>
                 <div className="after">
                   <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
                   <FaCameraRotate />
                 </div>
               </div>
             )}
-            {!Manager.isValid(activeInfoChild?.general['profilePic'], true) && (
+            {!Manager.isValid(activeInfoChild?.general?.profilePic, true) && (
               <div className="profile-pic-container no-image">
                 <div className="after">
                   <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
@@ -239,10 +247,10 @@ export default function ChildInfo() {
           <div id="child-info">
             {activeInfoChild && (
               <div className="form">
-                <General activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-                <Medical activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-                <Schooling activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
-                <Behavior activeChild={activeInfoChild} setActiveChild={(child) => setActiveInfoChild(child)} />
+                <General activeChild={activeInfoChild} />
+                <Medical activeChild={activeInfoChild} />
+                <Schooling activeChild={activeInfoChild} />
+                <Behavior activeChild={activeInfoChild} />
               </div>
             )}
           </div>

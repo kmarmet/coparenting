@@ -1,4 +1,4 @@
-// Path: src\components\screens\activity.jsx
+// Path: src\components\screens\notifications.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import { Fade } from 'react-awesome-reveal'
@@ -23,33 +23,34 @@ import AppManager from '../../managers/appManager.coffee'
 import { FaPlus, FaMinus } from 'react-icons/fa6'
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io'
 
-export default function Activity() {
+export default function Notifications() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activityCount, authUser } = state
-  const [activities, setActivities] = useState([])
+
+  const { currentUser, theme, notificationCount, authUser } = state
+  const [notifications, setActivities] = useState([])
   const [legendIsExpanded, setLegendIsExpanded] = useState(false)
 
   const getActivities = async () => {
-    const all = await DB.getTable(`${DB.tables.activities}/${currentUser?.key}`)
+    const all = await DB.getTable(`${DB.tables.notifications}/${currentUser?.key}`)
     const toReturn = DatasetManager.sortDates(all).reverse()
-    await AppManager.setAppBadge(activityCount)
-    setState({ ...state, activityCount: toReturn.length })
+    await AppManager.setAppBadge(notificationCount)
+    setState({ ...state, notificationCount: toReturn.length })
     setActivities(toReturn)
   }
 
-  const clearAll = async () => await DB.deleteByPath(`${DB.tables.activities}/${currentUser?.key}`)
+  const clearAll = async () => await DB.deleteByPath(`${DB.tables.notifications}/${currentUser?.key}`)
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.activities}/${currentUser?.key}`), async () => {
+    onValue(child(dbRef, `${DB.tables.notifications}/${currentUser?.key}`), async () => {
       await getActivities().then((r) => r)
     })
   }
 
   const clearActivity = async (activity) => {
-    const key = await DB.getSnapshotKey(`${DB.tables.activities}/${currentUser?.key}`, activity, 'id')
+    const key = await DB.getSnapshotKey(`${DB.tables.notifications}/${currentUser?.key}`, activity, 'id')
     if (Manager.isValid(key)) {
-      await DB.deleteByPath(`${DB.tables.activities}/${currentUser?.key}/${key}`)
+      await DB.deleteByPath(`${DB.tables.notifications}/${currentUser?.key}/${key}`)
     }
   }
 
@@ -87,7 +88,7 @@ export default function Activity() {
 
       default:
         return {
-          screen: ScreenNames.activity,
+          screen: ScreenNames.notifications,
           className: 'normal',
           category: 'normal',
         }
@@ -105,10 +106,10 @@ export default function Activity() {
   return (
     <>
       <div id="activity-wrapper" className={`${theme} form page-container`}>
-        {activities.length === 0 && <NoDataFallbackText text={'No current activity'} />}
-        <p className="screen-title">Activity Log</p>
+        {notifications.length === 0 && <NoDataFallbackText text={'No current activity'} />}
+        <p className="screen-title">Notifications</p>
         <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
-          <p className="intro-text mb-15">Stay updated with all developments and activities as they happen.</p>
+          <p className="intro-text mb-15">Stay updated with all developments and notifications as they happen.</p>
           #38E480
           {/* LEGENDS */}
           {currentUser?.accountType === 'parent' && (
@@ -134,15 +135,15 @@ export default function Activity() {
             </div>
           )}
           {/* CLEAR ALL BUTTON */}
-          {activities.length > 0 && (
+          {notifications.length > 0 && (
             <button className="clear-all button green center default" onClick={clearAll}>
               Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
             </button>
           )}
           {/* LOOP ACTIVITIES */}
           <div id="activity-cards">
-            {Manager.isValid(activities) &&
-              activities.map((activity, index) => {
+            {Manager.isValid(notifications) &&
+              notifications.map((activity, index) => {
                 const { text, title, dateCreated } = activity
                 const categoryObject = getCategory(activity)
                 const { screen, category, className } = categoryObject

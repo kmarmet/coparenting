@@ -8,6 +8,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
 import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
 import Toggle from 'react-toggle'
+import { Fade } from 'react-awesome-reveal'
+
 import validator from 'validator'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager.coffee'
@@ -16,12 +18,10 @@ import Spacer from '../shared/spacer.jsx'
 import ViewSelector from '../shared/viewSelector'
 import BottomCard from '/src/components/shared/bottomCard'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
-import DatetimePicker from '/src/components/shared/datetimePicker.jsx'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import MyConfetti from '/src/components/shared/myConfetti.js'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import DateFormats from '/src/constants/dateFormats'
-import DatetimePickerViews from '/src/constants/datetimePickerViews'
 import EventLengths from '/src/constants/eventLengths'
 import AlertManager from '/src/managers/alertManager'
 import DatasetManager from '/src/managers/datasetManager'
@@ -102,7 +102,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     const newEvent = new CalendarEvent()
 
     // Required
-    newEvent.title = eventTitle
+    newEvent.title = eventTitle.trim()
     if (Manager.contains(eventTitle, 'birthday')) {
       newEvent.title += ' 🎂'
     }
@@ -123,6 +123,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     newEvent.createdBy = currentUser?.name
     newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
     newEvent.notes = eventNotes
+    newEvent.phone = eventPhone
     newEvent.websiteUrl = eventWebsite
     newEvent.reminderTimes = eventReminderTimes
     newEvent.repeatInterval = repeatInterval
@@ -334,288 +335,291 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         wrapperClass="new-calendar-event"
         title={'Add New Event'}>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
-          {/* Event Length */}
-          <Spacer height={5} />
-          <ViewSelector
-            labels={['Single Day', 'Multiple Days']}
-            updateState={(labelText) => {
-              if (Manager.contains(labelText, 'Single')) {
-                setEventLength(EventLengths.single)
-              } else {
-                setEventLength(EventLengths.multiple)
-              }
-            }}
-          />
+          <Fade direction={'up'} duration={600} delay={200} triggerOnce={true}>
+            {/* Event Length */}
+            <Spacer height={5} />
+            <ViewSelector
+              defaultView={'Single Day'}
+              labels={['Single Day', 'Multiple Days']}
+              updateState={(labelText) => {
+                if (Manager.contains(labelText, 'Single')) {
+                  setEventLength(EventLengths.single)
+                } else {
+                  setEventLength(EventLengths.multiple)
+                }
+              }}
+            />
 
-          {/* EVENT NAME */}
-          <InputWrapper
-            inputClasses="event-title-input"
-            inputType={'input'}
-            labelText={'Event Name'}
-            defaultValue={eventTitle}
-            placeholder="Event Name"
-            required={true}
-            isDebounced={false}
-            inputValue={eventTitle}
-            onChange={async (e) => {
-              const inputValue = e.target.value
-              setEventTitle(inputValue)
-            }}
-          />
+            {/* EVENT NAME */}
+            <InputWrapper
+              inputClasses="event-title-input"
+              inputType={'input'}
+              labelText={'Event Name'}
+              defaultValue={eventTitle}
+              placeholder="Event Name"
+              required={true}
+              isDebounced={false}
+              inputValue={eventTitle}
+              onChange={async (e) => {
+                const inputValue = e.target.value
+                setEventTitle(inputValue)
+              }}
+            />
 
-          {/* FROM DATE */}
-          <div className="flex gap">
-            {eventLength === EventLengths.single && !DomManager.isMobile() && (
-              <InputWrapper labelText={'Date'} inputType={'date'} required={true}>
-                <MobileDatePicker
-                  onOpen={addThemeToDatePickers}
-                  value={moment(selectedNewEventDay)}
-                  className={`${theme} m-0  event-from-date mui-input`}
-                  onAccept={(e) => {
-                    setEventStartDate(e)
+            {/* FROM DATE */}
+            <div className="flex gap">
+              {eventLength === EventLengths.single && !DomManager.isMobile() && (
+                <InputWrapper labelText={'Date'} inputType={'date'} required={true}>
+                  <MobileDatePicker
+                    onOpen={addThemeToDatePickers}
+                    value={moment(selectedNewEventDay)}
+                    className={`${theme} m-0  event-from-date mui-input`}
+                    onAccept={(e) => {
+                      setEventStartDate(e)
+                    }}
+                  />
+                </InputWrapper>
+              )}
+              {eventLength === EventLengths.single && DomManager.isMobile() && (
+                <InputWrapper
+                  defaultValue={moment(selectedNewEventDay)}
+                  onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
+                  useNativeDate={true}
+                  labelText={'Date'}
+                  inputType={'date'}
+                  required={true}
+                />
+              )}
+            </div>
+
+            {/* DATE RANGE */}
+            {eventLength === EventLengths.multiple && (
+              <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
+                <MobileDateRangePicker
+                  className={''}
+                  onOpen={() => {
+                    Manager.hideKeyboard('date-range-input')
+                    addThemeToDatePickers()
                   }}
+                  onAccept={(dateArray) => {
+                    if (Manager.isValid(dateArray)) {
+                      setEventStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
+                      setEventEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
+                      setEventIsDateRange(true)
+                    }
+                  }}
+                  slots={{ field: SingleInputDateRangeField }}
+                  name="allowedRange"
                 />
               </InputWrapper>
             )}
-            {eventLength === EventLengths.single && DomManager.isMobile() && (
-              <InputWrapper
-                defaultValue={moment(selectedNewEventDay)}
-                onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
-                useNativeDate={true}
-                labelText={'Date'}
-                inputType={'date'}
-                required={true}
-              />
+
+            {/* EVENT WITH TIME */}
+            {!isAllDay && (
+              <div className={'flex event-times-wrapper'}>
+                <InputWrapper labelText={'Start Time'} wrapperClasses="start-time" inputType="date">
+                  <MobileTimePicker onOpen={addThemeToDatePickers} minutesStep={5} key={refreshKey} onAccept={(e) => setEventStartTime(e)} />
+                </InputWrapper>
+                <InputWrapper labelText={'End Time'} wrapperClasses="end-time" inputType="date">
+                  <MobileTimePicker key={refreshKey} onOpen={addThemeToDatePickers} minutesStep={5} onAccept={(e) => setEventEndTime(e)} />
+                </InputWrapper>
+              </div>
             )}
-          </div>
 
-          {/* DATE RANGE */}
-          {eventLength === EventLengths.multiple && (
-            <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
-              <MobileDateRangePicker
-                className={''}
-                onOpen={() => {
-                  Manager.hideKeyboard('date-range-input')
-                  addThemeToDatePickers()
-                }}
-                onAccept={(dateArray) => {
-                  if (Manager.isValid(dateArray)) {
-                    setEventStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
-                    setEventEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
-                    setEventIsDateRange(true)
-                  }
-                }}
-                slots={{ field: SingleInputDateRangeField }}
-                name="allowedRange"
-              />
-            </InputWrapper>
-          )}
+            {/* Share with */}
+            <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
 
-          {/* EVENT WITH TIME */}
-          {!isAllDay && (
-            <div className={'flex event-times-wrapper'}>
-              <InputWrapper labelText={'Start Time'} wrapperClasses="start-time" inputType="date">
-                <MobileTimePicker onOpen={addThemeToDatePickers} minutesStep={5} key={refreshKey} onAccept={(e) => setEventStartTime(e)} />
-              </InputWrapper>
-              <InputWrapper labelText={'End Time'} wrapperClasses="end-time" inputType="date">
-                <MobileTimePicker key={refreshKey} onOpen={addThemeToDatePickers} minutesStep={5} onAccept={(e) => setEventEndTime(e)} />
-              </InputWrapper>
+            <Spacer height={5} />
+
+            {/* REMINDER */}
+            {!isAllDay && (
+              <>
+                <div>
+                  <Accordion id={'checkboxes'} expanded={showReminders}>
+                    <AccordionSummary>
+                      <div className="flex">
+                        <p>Remind Me</p>
+                        <Toggle
+                          icons={{
+                            checked: <MdNotificationsActive />,
+                            unchecked: null,
+                          }}
+                          className={'ml-auto reminder-toggle'}
+                          onChange={() => setShowReminders(!showReminders)}
+                        />
+                      </div>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <CheckboxGroup
+                        elClass={`${theme} reminder-times`}
+                        checkboxArray={Manager.buildCheckboxGroup({
+                          currentUser,
+                          labelType: 'reminder-times',
+                        })}
+                        containerClass={'reminder-times'}
+                        skipNameFormatting={true}
+                        onCheck={handleReminderSelection}
+                      />
+                    </AccordionDetails>
+                  </Accordion>
+                </div>
+              </>
+            )}
+
+            {/* IS VISITATION? */}
+            <div>
+              <div className="flex">
+                <p>Visitation Event</p>
+                <Toggle
+                  icons={{
+                    unchecked: null,
+                  }}
+                  className={'ml-auto visitation-toggle'}
+                  onChange={() => setIsVisitation(!isVisitation)}
+                />
+              </div>
             </div>
-          )}
 
-          {/* Share with */}
-          <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
-
-          <Spacer height={5} />
-
-          {/* REMINDER */}
-          {!isAllDay && (
-            <>
+            {/* INCLUDING WHICH CHILDREN */}
+            {Manager.isValid(currentUser?.children) && (
               <div>
-                <Accordion id={'checkboxes'} expanded={showReminders}>
+                <Accordion id={'checkboxes'} expanded={includeChildren}>
                   <AccordionSummary>
                     <div className="flex">
-                      <p>Remind Me</p>
+                      <p>Include Children</p>
                       <Toggle
                         icons={{
-                          checked: <MdNotificationsActive />,
+                          checked: <MdOutlineFaceUnlock />,
                           unchecked: null,
                         }}
                         className={'ml-auto reminder-toggle'}
-                        onChange={() => setShowReminders(!showReminders)}
+                        onChange={() => setIncludeChildren(!includeChildren)}
                       />
                     </div>
                   </AccordionSummary>
                   <AccordionDetails>
                     <CheckboxGroup
-                      elClass={`${theme} reminder-times`}
+                      elClass={`${theme} children`}
+                      skipNameFormatting={true}
                       checkboxArray={Manager.buildCheckboxGroup({
                         currentUser,
-                        labelType: 'reminder-times',
+                        labelType: 'children',
                       })}
-                      containerClass={'reminder-times'}
-                      skipNameFormatting={true}
-                      onCheck={handleReminderSelection}
+                      onCheck={handleChildSelection}
                     />
                   </AccordionDetails>
                 </Accordion>
               </div>
-            </>
-          )}
+            )}
 
-          {/* IS VISITATION? */}
-          <div>
-            <div className="flex">
-              <p>Visitation Event</p>
-              <Toggle
-                icons={{
-                  unchecked: null,
-                }}
-                className={'ml-auto visitation-toggle'}
-                onChange={() => setIsVisitation(!isVisitation)}
-              />
-            </div>
-          </div>
-
-          {/* INCLUDING WHICH CHILDREN */}
-          {Manager.isValid(currentUser?.children) && (
-            <div>
-              <Accordion id={'checkboxes'} expanded={includeChildren}>
-                <AccordionSummary>
-                  <div className="flex">
-                    <p>Include Children</p>
-                    <Toggle
-                      icons={{
-                        checked: <MdOutlineFaceUnlock />,
-                        unchecked: null,
-                      }}
-                      className={'ml-auto reminder-toggle'}
-                      onChange={() => setIncludeChildren(!includeChildren)}
-                    />
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <CheckboxGroup
-                    elClass={`${theme} children`}
-                    skipNameFormatting={true}
-                    checkboxArray={Manager.buildCheckboxGroup({
-                      currentUser,
-                      labelType: 'children',
-                    })}
-                    onCheck={handleChildSelection}
-                  />
-                </AccordionDetails>
-              </Accordion>
-            </div>
-          )}
-
-          {/* RECURRING/CLONED */}
-          {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
-            <>
-              {/* RECURRING */}
-              <div id="repeating-container">
-                <Accordion id={'checkboxes'} expanded={eventIsRepeating}>
-                  <AccordionSummary>
-                    <div className="flex">
-                      <p>Recurring</p>
-                      <Toggle
-                        icons={{
-                          checked: <MdEventRepeat />,
-                          unchecked: null,
-                        }}
-                        className={'ml-auto reminder-toggle'}
-                        onChange={() => setEventIsRepeating(!eventIsRepeating)}
+            {/* RECURRING/CLONED */}
+            {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
+              <>
+                {/* RECURRING */}
+                <div id="repeating-container">
+                  <Accordion id={'checkboxes'} expanded={eventIsRepeating}>
+                    <AccordionSummary>
+                      <div className="flex">
+                        <p>Recurring</p>
+                        <Toggle
+                          icons={{
+                            checked: <MdEventRepeat />,
+                            unchecked: null,
+                          }}
+                          className={'ml-auto reminder-toggle'}
+                          onChange={() => setEventIsRepeating(!eventIsRepeating)}
+                        />
+                      </div>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <CheckboxGroup
+                        elClass={`${theme}`}
+                        onCheck={handleRepeatingSelection}
+                        checkboxArray={Manager.buildCheckboxGroup({
+                          currentUser,
+                          labelType: 'recurring-intervals',
+                        })}
                       />
-                    </div>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <CheckboxGroup
-                      elClass={`${theme}`}
-                      onCheck={handleRepeatingSelection}
-                      checkboxArray={Manager.buildCheckboxGroup({
-                        currentUser,
-                        labelType: 'recurring-intervals',
-                      })}
-                    />
-                    <Spacer height={5} />
-                    {Manager.isValid(repeatInterval) && (
-                      <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
-                        {!DomManager.isMobile() && (
+                      <Spacer height={5} />
+                      {Manager.isValid(repeatInterval) && (
+                        <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
+                          {!DomManager.isMobile() && (
                             <MobileDatePicker
                               onOpen={addThemeToDatePickers}
                               className={`${theme}  w-100`}
                               onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))}
                             />
-                        )}
-                        {DomManager.isMobile() && (
-                          <input
-                            type="date"
-                            onChange={(e) => {
-                              setEventEndDate(moment(e.target.value).format('MM-DD-yyyy'))
-                            }}
-                          />
-                        )}
-                      </InputWrapper>
-                    )}
-                  </AccordionDetails>
-                </Accordion>
-              </div>
-
-              {/* CLONE */}
-              <div>
-                <div className="flex">
-                  <p>Copy Event to other Dates</p>
-                  <Toggle
-                    icons={{
-                      checked: <FaClone />,
-                      unchecked: null,
-                    }}
-                    className={'ml-auto clone-toggle clone'}
-                    onChange={(e) => {
-                      setShowCloneInput(e.target.checked)
-                      const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
-                      if (e.target.checked && dateWrapperElements.length === 0) {
-                        addDateInput()
-                      }
-                    }}
-                  />
+                          )}
+                          {DomManager.isMobile() && (
+                            <input
+                              type="date"
+                              onChange={(e) => {
+                                setEventEndDate(moment(e.target.value).format('MM-DD-yyyy'))
+                              }}
+                            />
+                          )}
+                        </InputWrapper>
+                      )}
+                    </AccordionDetails>
+                  </Accordion>
                 </div>
-              </div>
 
-              {/* CLONED */}
-              <div className={`cloned-date-wrapper form ${showCloneInput ? 'active' : ''}`}></div>
-              {Manager.isValid(clonedDates) && (
-                <button className="default button" onClick={addDateInput}>
-                  Add Another Date
-                </button>
-              )}
-            </>
-          )}
-          <Spacer height={8} />
+                {/* CLONE */}
+                <div>
+                  <div className="flex">
+                    <p>Copy Event to other Dates</p>
+                    <Toggle
+                      icons={{
+                        checked: <FaClone />,
+                        unchecked: null,
+                      }}
+                      className={'ml-auto clone-toggle clone'}
+                      onChange={(e) => {
+                        setShowCloneInput(e.target.checked)
+                        const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
+                        if (e.target.checked && dateWrapperElements.length === 0) {
+                          addDateInput()
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
 
-          {/* URL/WEBSITE */}
-          <InputWrapper
-            labelText={'Website'}
-            required={false}
-            inputType={'input'}
-            inputValueType="url"
-            onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
+                {/* CLONED */}
+                <div className={`cloned-date-wrapper form ${showCloneInput ? 'active' : ''}`}></div>
+                {Manager.isValid(clonedDates) && (
+                  <button className="default button" onClick={addDateInput}>
+                    Add Another Date
+                  </button>
+                )}
+              </>
+            )}
+            <Spacer height={8} />
 
-          {/* ADDRESS */}
-          <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
-            <AddressInput onSelection={(address) => setEventLocation(address)} />
-          </InputWrapper>
+            {/* URL/WEBSITE */}
+            <InputWrapper
+              labelText={'Website'}
+              required={false}
+              inputType={'input'}
+              inputValueType="url"
+              onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
 
-          {/* PHONE */}
-          <InputWrapper inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
+            {/* ADDRESS */}
+            <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
+              <AddressInput onSelection={(address) => setEventLocation(address)} />
+            </InputWrapper>
 
-          {/* NOTES */}
-          <InputWrapper
-            wrapperClasses="textarea"
-            labelText={'Notes'}
-            required={false}
-            inputType={'textarea'}
-            onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
+            {/* PHONE */}
+            <InputWrapper inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
+
+            {/* NOTES */}
+            <InputWrapper
+              wrapperClasses="textarea"
+              labelText={'Notes'}
+              required={false}
+              inputType={'textarea'}
+              onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
+          </Fade>
         </div>
       </BottomCard>
     </>

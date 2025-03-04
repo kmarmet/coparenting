@@ -10,6 +10,7 @@ import FirebaseStorage from './firebaseStorage'
 import DatasetManager from '/src/managers/datasetManager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager.coffee'
+import AppManager from '../managers/appManager'
 
 const DB_UserScoped = {
   // GET
@@ -55,8 +56,8 @@ const DB_UserScoped = {
     let childrenAccounts = []
     if (Manager.isValid(currentUser?.children, true)) {
       for (let child of currentUser.children) {
-        if (child?.phone) {
-          const childAccount = await DB.find(DB.tables.users, ['phone', child?.phone], true)
+        if (child?.key) {
+          const childAccount = await DB.find(DB.tables.users, ['key', child?.key], true)
           if (Manager.isValid(childAccount)) {
             childrenAccounts.push(child)
           }
@@ -234,12 +235,11 @@ const DB_UserScoped = {
   },
   addUserChildProp: async (currentUser, activeChild, infoSection, prop, value, shareWith) => {
     const dbRef = ref(getDatabase())
-    console.log(`users/${currentUser?.key}/children/`, activeChild, 'id')
     let key = await DB.getSnapshotKey(`users/${currentUser?.key}/children/`, activeChild, 'id')
     if (key !== null) {
       if (Manager.isValid(shareWith, true)) {
-        for (let userNumber of shareWith) {
-          const shareWithSet = await DB.getTable(`${DB.tables.sharedChildInfo}/${userNumber}`)
+        for (let userKey of shareWith) {
+          const shareWithSet = await DB.getTable(`${DB.tables.sharedChildInfo}/${userKey}`)
           let sharedObject
           sharedObject = {
             prop: prop,
@@ -250,7 +250,7 @@ const DB_UserScoped = {
             id: Manager.getUid(),
             value: value,
           }
-          await set(child(dbRef, `${DB.tables.sharedChildInfo}/${userNumber}`), [...shareWithSet, sharedObject])
+          await set(child(dbRef, `${DB.tables.sharedChildInfo}/${userKey}`), [...shareWithSet, sharedObject])
         }
       }
       await set(child(dbRef, `users/${currentUser?.key}/children/${key}/${infoSection}/${StringManager.formatDbProp(prop)}`), `${value}`)
@@ -271,22 +271,17 @@ const DB_UserScoped = {
     const dbRef = ref(getDatabase())
     const { email, key, accountType, phone } = userObject
 
-    console.log(userObject)
+    const locationDetails = await AppManager.getLocationDetails()
 
     // User Record
     let newUser = new User()
     newUser.email = email
     newUser.key = key
+    newUser.location = locationDetails
     newUser.name = StringManager.uppercaseFirstLetterOfAllWords(name).trim()
     newUser.accountType = accountType.toLowerCase()
     newUser.phone = StringManager.formatPhone(phone)
     const cleanUser = ObjectManager.cleanObject(newUser, ModelNames.user)
-
-    // User Key Record
-    const userKey = new UserKey()
-    userKey.email = email
-    userKey.phone = phone
-    userKey.key = key
 
     // Insert
     await set(child(dbRef, `${DB.tables.users}/${key}`), cleanUser).catch((error) => {

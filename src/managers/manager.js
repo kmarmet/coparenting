@@ -211,6 +211,9 @@ const Manager = {
         }
       }
     }
+    if (typeof variable === 'string' && variable.indexOf('Invalid') > -1) {
+      return false
+    }
     return !(typeof variable === 'string' && variable.indexOf('Invalid') > -1)
   },
   isIos: () => {

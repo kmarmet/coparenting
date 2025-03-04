@@ -14,6 +14,14 @@ export default class User
     @coparents = []
     @parentType = ''
     @accountType = ''
+    @location = {
+      country: ''
+      city: ''
+      state: ''
+      latitude: ''
+      location: ''
+      timezone: ''
+    }
     @settings = {
       theme: 'light'
       notificationsEnabled: true

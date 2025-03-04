@@ -1,7 +1,7 @@
 import DateFormats from "../constants/dateFormats"
 import moment from "moment"
 
-export default class Activity
+export default class Notification
   constructor: (
     @id = ''
     @dateCreated = moment().format(DateFormats.fullDatetime)
@@ -10,7 +10,6 @@ export default class Activity
     @ownerKey = ''
     @title = ''
     @text = ''
-  
+
 
   ) ->
-  

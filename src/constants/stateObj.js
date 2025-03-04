@@ -6,7 +6,7 @@ import ScreenNames from "./screenNames";
 StateObj = {
   activeInfoChild: null,
   activeInfoCoparent: [],
-  activityCount: 0,
+  notificationCount: 0,
   authUser: null,
   childAccessGranted: false,
   currentScreen: ScreenNames.home,
@@ -36,7 +36,7 @@ StateObj = {
   viewTransferRequestForm: false,
   setActiveInfoChild: function(child) {},
   setActiveInfoCoparent: function(coparent) {},
-  setActivityCount: function(count) {},
+  setNotificationCount: function(count) {},
   setAuthUser: function(user) {},
   setChildAccessGranted: function(bool) {},
   setContactInfoToUpdateType: function() {},

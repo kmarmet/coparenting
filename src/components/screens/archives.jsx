@@ -16,7 +16,6 @@ import { RiFileExcel2Fill } from 'react-icons/ri'
 import globalState from '../../context'
 import NavBar from '../navBar'
 import Spacer from '../shared/spacer'
-import DB_UserScoped from '../../database/db_userScoped'
 import DB from '../../database/DB'
 
 const SortByTypes = {
@@ -220,6 +219,8 @@ export default function Archives() {
               </SelectDropdown>
             </div>
           )}
+
+          <Spacer height={5} />
 
           {/* EXPORT BUTTON */}
           {recordType === RecordTypes.Expenses && Manager.isValid(expenses) && (

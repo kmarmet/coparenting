@@ -4,11 +4,11 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
+import { MdLocalPhone } from 'react-icons/md'
 import React, { useContext, useEffect, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
 import { BiSolidNavigation } from 'react-icons/bi'
 import { CgDetailsMore } from 'react-icons/cg'
-import { FaExternalLinkSquareAlt } from 'react-icons/fa'
 import { FaChildren } from 'react-icons/fa6'
 import { IoTimeOutline } from 'react-icons/io5'
 import { LiaMapMarkedAltSolid } from 'react-icons/lia'
@@ -72,7 +72,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
-  const [view, setView] = useState('details')
+  const [view, setView] = useState('Details')
   const [shareWithNames, setShareWithNames] = useState([])
   const [dataIsLoading, setDataIsLoading] = useState(true)
 
@@ -99,14 +99,17 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     setEventIsRepeating(false)
     setEventIsCloned(false)
     hideCard()
-    await afterUpdateCallback()
+
+    if (Manager.isValid(eventShareWith)) {
+      NotificationManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventName} has been updated`, ActivityCategory.calendar)
+    }
   }
 
   const nonOwnerSubmit = async () => {
     // Fill/overwrite
     // Required
     const updatedEvent = { ...event }
-    updatedEvent.title = eventName
+    updatedEvent.title = eventName.trim()
     updatedEvent.reminderTimes = eventReminderTimes
     updatedEvent.shareWith = eventShareWith
     updatedEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
@@ -196,7 +199,15 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         // If event is shared with you AND you are not the owner of the event
         const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
         await editNonOwnerEvent(dbPath, cleanedEvent)
-        await afterUpdateCallback()
+        if (Manager.isValid(eventShareWith)) {
+          NotificationManager.sendToShareWith(
+            eventShareWith,
+            currentUser,
+            'Event Updated',
+            `${eventName} has been updated`,
+            ActivityCategory.calendar
+          )
+        }
       }
     }
 
@@ -310,11 +321,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     await resetForm()
   }
 
-  const afterUpdateCallback = async () => {
-    // Share with Notifications
-    NotificationManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventName} has been updated`, ActivityCategory.calendar)
-  }
-
   // CHECKBOX HANDLERS
   const handleChildSelection = (e) => {
     let childrenArr = []
@@ -370,7 +376,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     setEventNotes(event?.notes)
     setEventShareWith(event?.shareWith ?? [])
     setEventIsRepeating(event?.isRepeating)
-    setView('details')
+    setView('Details')
     setRecurInterval(event?.repeatInterval)
     setEventIsDateRange(event?.isDateRange)
     setIncludeChildren(Manager.isValid(event?.children))
@@ -485,13 +491,13 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
           AlertManager.successAlert('Event Deleted')
         })
       }}
-      hasDelete={view === 'edit' && currentUser?.key === event?.ownerKey}
+      hasDelete={view === 'Edit' && currentUser?.key === event?.ownerKey}
       onSubmit={currentUser?.key === event?.ownerKey ? submit : nonOwnerSubmit}
       submitText={'Update'}
       submitIcon={<LuCalendarCheck />}
-      hasSubmitButton={view === 'edit'}
+      hasSubmitButton={view === 'Edit'}
       onClose={async () => {
-        // await resetForm()
+        await resetForm()
         hideCard()
       }}
       title={StringManager.uppercaseFirstLetterOfAllWords(event?.title)}
@@ -503,7 +509,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         {currentUser?.accountType !== 'child' && (
           <ViewSelector
             key={refreshKey}
-            labels={['details', 'edit']}
+            labels={['Details', 'Edit']}
             updateState={(labelText) => {
               setView(labelText)
             }}
@@ -513,8 +519,8 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         {!dataIsLoading && (
           <>
             {/* DETAILS */}
-            {view === 'details' && (
-              <Fade direction={'up'} duration={600} triggerOnce={true}>
+            {view === 'Details' && (
+              <Fade direction={'up'} duration={900} triggerOnce={true}>
                 <div id="details">
                   {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
                     <div className="flex">
@@ -612,7 +618,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                       </b>
                       <a className="" href={decodeURIComponent(event?.websiteUrl)} target="_blank" rel="noreferrer">
                         {decodeURIComponent(event?.websiteUrl)}
-                        <FaExternalLinkSquareAlt className={'external-icon'} />
                       </a>
                     </div>
                   )}
@@ -620,7 +625,10 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                   {/* PHONE */}
                   {Manager.isValid(event?.phone) && (
                     <div className="flex">
-                      <b>Phone</b>
+                      <b>
+                        <MdLocalPhone />
+                        Phone
+                      </b>
                       <a className="" href={`tel:${event?.phone}`} target="_blank" rel="noreferrer">
                         {StringManager.getReadablePhoneNumber(event?.phone)}
                       </a>
@@ -650,6 +658,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                         </b>
                         <span>{event?.location}</span>
                       </div>
+
                       <a className=" nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
                         <BiSolidNavigation /> Navigation
                       </a>
@@ -671,8 +680,8 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
               </Fade>
             )}
 
-            {view === 'edit' && (
-              <Fade direction={'up'} duration={600} triggerOnce={true}>
+            {view === 'Edit' && (
+              <Fade direction={'up'} duration={900} triggerOnce={true}>
                 <div className="content">
                   {/* EVENT NAME */}
                   <InputWrapper
@@ -875,7 +884,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
             )}
           </>
         )}
-        {dataIsLoading && <img id="bottom-card-loading-gif" src={require('../../img/loading.gif')} />}
+        {dataIsLoading && <img id="bottom-card-loading-gif" src={require('../../img/loading.gif')} alt="Loading" />}
       </div>
     </BottomCard>
   )

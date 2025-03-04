@@ -47,8 +47,15 @@ export default AppManager =
 
     return timezone
 
-  getLocationDetails: (ipAddress) ->
-    location = ''
+  getLocationDetails: () ->
+    ipAddress = await AppManager.getIPAddress()
+    location = {
+      city: '',
+      timezone: '',
+      country: '',
+      latitude: '',
+      longitude: ''
+    }
     myHeaders = new Headers()
     myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY
 
@@ -60,8 +67,14 @@ export default AppManager =
     try
       response = await fetch "https://api.manyapis.com/v1-get-ip-detail?ip=#{ipAddress}", requestOptions
       result = await response.json()
-      location = result
-      console.log result
+      location.ipAddress = ipAddress
+      location.city = result?.city?.name
+      location.country = result?.country?.name
+      location.latitude = result?.city?.latitude
+      location.longitude = result?.city?.longitude
+      location.timezone = result?.city?.timezone
+#      console.log(location)
+#      console.log result
     catch error
       console.error error
 

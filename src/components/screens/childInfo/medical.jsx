@@ -6,7 +6,6 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
-import { FaChevronDown } from 'react-icons/fa6'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
 import { IoCloseOutline } from 'react-icons/io5'
@@ -15,9 +14,9 @@ import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
 import { FaPlus, FaMinus } from 'react-icons/fa6'
 
-export default function Medical({ activeChild, setActiveChild }) {
+export default function Medical() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, activeInfoChild } = state
   const [medicalValues, setMedicalValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
@@ -36,15 +35,15 @@ export default function Medical({ activeChild, setActiveChild }) {
 
     // Delete NOT shared
     else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', StringManager.formatDbProp(prop))
-      setActiveChild(updatedChild)
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'medical', StringManager.formatDbProp(prop))
+      setState({ ...state, activeInfoChild: updatedChild })
       await setSelectedChild()
     }
   }
 
   const update = async (prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'medical', StringManager.formatDbProp(prop), value)
-    setActiveChild(updatedChild)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'medical', StringManager.formatDbProp(prop), value)
+    setState({ ...state, activeInfoChild: updatedChild })
     AlertManager.successAlert('Updated!')
   }
 
@@ -54,9 +53,9 @@ export default function Medical({ activeChild, setActiveChild }) {
     for (let obj of sharing) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
     }
-    if (Manager.isValid(activeChild?.medical)) {
+    if (Manager.isValid(activeInfoChild?.medical)) {
       // Set info
-      let values = Object.entries(activeChild?.medical)
+      let values = Object.entries(activeInfoChild?.medical)
 
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
@@ -73,7 +72,7 @@ export default function Medical({ activeChild, setActiveChild }) {
 
   useEffect(() => {
     setSelectedChild().then((r) => r)
-  }, [activeChild])
+  }, [activeInfoChild])
 
   return (
     <div className="info-section section medical form">
@@ -84,10 +83,8 @@ export default function Medical({ activeChild, setActiveChild }) {
           <FaBriefcaseMedical className={'svg medical'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Medical
-
-
-            {!Manager.isValid(activeChild?.medical) ? '- No Info' : ''}
-            {Manager.isValid(activeChild?.medical) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
+            {!Manager.isValid(activeInfoChild?.medical) ? '- no info' : ''}
+            {Manager.isValid(activeInfoChild?.medical) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
@@ -99,19 +96,26 @@ export default function Medical({ activeChild, setActiveChild }) {
               return (
                 <div key={index}>
                   <div className="flex input">
-                    <InputWrapper
-                      inputType={'input'}
-                      labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
-                        Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
-                      }`}
-                      defaultValue={value}
-                      value={value}
-                      debounceTimeout={1000}
-                      onChange={(e) => {
-                        const inputValue = e.target.value
-                        update(infoLabel, `${inputValue}`).then((r) => r)
-                      }}
-                    />
+                    {infoLabel.toLowerCase().includes('phone') && (
+                      <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
+                        {infoLabel}: {value}
+                      </a>
+                    )}
+                    {!infoLabel.toLowerCase().includes('phone') && (
+                      <InputWrapper
+                        inputType={'input'}
+                        labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
+                          Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
+                        }`}
+                        defaultValue={value}
+                        value={value}
+                        debounceTimeout={1000}
+                        onChange={(e) => {
+                          const inputValue = e.target.value
+                          update(infoLabel, `${inputValue}`).then((r) => r)
+                        }}
+                      />
+                    )}
                     <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                   </div>
                 </div>

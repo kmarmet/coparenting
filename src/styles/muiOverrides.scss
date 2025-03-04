@@ -11,7 +11,6 @@
           margin-right: -20px;
           z-index: 9;
           position: relative;
-          //          width: auto;
         }
       }
     }
@@ -23,12 +22,13 @@
         display: grid;
         grid-template-columns: auto auto auto;
         justify-content: center;
-        grid-gap: 10px;
+        grid-gap: 20px 10px;
 
         .action-item {
           height: 98px;
           width: 115px;
           border-radius: $bigBorderRadius;
+          background: transparent;
           padding: 8px;
           display: flex;
           flex-direction: column;
@@ -37,7 +37,7 @@
           margin-top: 0;
           transition: all 0.6s ease-in-out;
           opacity: 1;
-          border: 1px solid $purple;
+          border: 1px solid $accentBlue;
           position: relative;
 
           span {
@@ -45,7 +45,7 @@
             font-size: 15px;
             line-height: 1.2;
             padding-top: 5px;
-            color: #9d69ff;
+            color: $accentBlue;
             font-weight: $fwRegular;
           }
 
@@ -71,7 +71,7 @@
             svg {
               width: 30px;
               font-size: 18px;
-              color: #9d69ff;
+              color: $accentBlue;
               background: white;
 
               &.checklist {
@@ -583,7 +583,7 @@
       }
       &.Mui-selected {
         transition: all 0.2s ease-in-out !important;
-        background: $lightIconBgBlue;
+        background: rgba(70, 144, 255, 0.19);
         width: 51px !important;
         height: 43px !important;
         margin-left: 5px;
@@ -591,14 +591,14 @@
         border-radius: 100% !important;
         position: relative;
         top: 2px;
-        border: 1px solid $mainBlue;
+        border: 1px solid $accentBlue;
         opacity: 1 !important;
-        color: $mainBlue !important;
+        color: $accentBlue !important;
         font-weight: $fwBold !important;
 
         .dot-wrapper {
           position: relative;
-          top: -5px;
+          top: -2px;
         }
       }
     }
@@ -743,11 +743,11 @@
     button,
     p {
       opacity: 1 !important;
-      color: $mainBlue !important;
+      color: $accentBlue !important;
       text-transform: uppercase;
       margin: 0;
       font-size: 12px !important;
-      border-bottom: 1px solid $mainBlue !important;
+      border-bottom: 1px solid $accentBlue !important;
       padding: 3px 8px !important;
       line-height: 1 !important;
       text-align: center;
@@ -803,8 +803,6 @@
   .MuiFormControl-root {
     //    border-bottom: 1px solid #e3e8ee;
     width: 100%;
-    position: relative;
-    top: -25px;
     .MuiInputBase-input {
       //      width: calc(100% - 20px) !important;
       //      max-width: calc(100% - 20px) !important;
@@ -830,7 +828,7 @@
     &.css-1b5lkxe-MuiFormControl-root {
       .MuiOutlinedInput-root {
         [role='combobox'] {
-          padding: 5px 5px 5px 10px;
+          padding: 10px;
           background: $bestGreyForWhite;
           border-radius: $borderRadius;
           font-size: 14px !important;

@@ -311,7 +311,7 @@ export default function ExpenseTracker() {
                   <b>
                     <AiTwotoneTag />
                     Category
-                  </b>{' '}
+                  </b>
                   <span>{activeExpense?.category}</span>
                 </div>
               )}
@@ -383,7 +383,7 @@ export default function ExpenseTracker() {
               {/* EXPENSE IMAGE */}
               {Manager.isValid(activeExpense?.imageUrl) && (
                 <>
-                  <Label text={'Expense Images'} classes="mb-5" />
+                  <Label text={'Expense Images'} />
                   <div id="expense-image">
                     <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
                       <div
@@ -427,12 +427,7 @@ export default function ExpenseTracker() {
               </InputWrapper>
 
               {/* CATEGORY */}
-              <SelectDropdown
-                labelClasses={'mb-5'}
-                wrapperClasses={'mb-15'}
-                selectValue={category}
-                onChange={(e) => setCategory(e.target.value)}
-                labelText={'Category'}>
+              <SelectDropdown labelClasses={'mb-5'} selectValue={category} onChange={(e) => setCategory(e.target.value)} labelText={'Category'}>
                 {categoriesAsArray.map((cat, index) => {
                   return (
                     <MenuItem key={index} value={cat}>
@@ -441,6 +436,8 @@ export default function ExpenseTracker() {
                   )
                 })}
               </SelectDropdown>
+
+              <Spacer height={5} />
 
               <InputWrapper
                 defaultValue={activeExpense?.notes}

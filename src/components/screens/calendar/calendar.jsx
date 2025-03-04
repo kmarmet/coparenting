@@ -29,6 +29,7 @@ import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
+import { Fade } from 'react-awesome-reveal'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -254,9 +255,9 @@ export default function EventCalendar() {
   }
 
   const setInitialActivities = async () => {
-    const activities = await DB.getTable(`${DB.tables.activities}/${currentUser?.key}`)
-    await AppManager.setAppBadge(activities.length)
-    setState({ ...state, activityCount: activities.length, isLoading: false })
+    const notifications = await DB.getTable(`${DB.tables.notifications}/${currentUser?.key}`)
+    await AppManager.setAppBadge(notifications.length)
+    setState({ ...state, notificationCount: notifications.length, isLoading: false })
   }
 
   const onTableChange = async () => {
@@ -330,6 +331,13 @@ export default function EventCalendar() {
     }
 
     onTableChange().then((r) => r)
+
+    const legendButton = document.getElementById('legend-button')
+    if (legendButton) {
+      legendButton.addEventListener('click', () => {
+        legendButton.classList.toggle('active')
+      })
+    }
   }, [])
 
   return (
@@ -422,7 +430,9 @@ export default function EventCalendar() {
 
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme} `}>
-        <p className="screen-title">Calendar</p>
+        <Fade direction={'up'} delay={0} duration={800} className={'calendar-events-fade-wrapper'} cascade={false} triggerOnce={true}>
+          <p className="screen-title">Calendar</p>
+        </Fade>
         {/* STATIC CALENDAR */}
         <div id="static-calendar" className={theme}>
           <StaticDatePicker
@@ -455,7 +465,9 @@ export default function EventCalendar() {
               <span className="dot currentUser"></span>
               <span className="dot coparent"></span>
               <span className="dot standard"></span>
-              <p id="legend-button">Legend</p>
+              <p id="legend-button" className="animated-button">
+                Legend
+              </p>
             </div>
 
             {/* SEARCH BUTTON */}

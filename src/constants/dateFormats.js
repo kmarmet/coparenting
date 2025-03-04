@@ -3,7 +3,7 @@ var DateFormats;
 
 DateFormats = {
   withReadbleDay: 'dddd, MMMM DD, YYYY',
-  readableDatetime: 'ddd, MMM DD @ hh:mma',
+  readableDatetime: 'ddd, MMM DD (hh:mma)',
   fullDatetime: 'MM/DD/YYYY h:mma',
   readableMonthAndDay: 'dddd, MMMM DD',
   monthAndDay: 'MM/DD',
@@ -18,3 +18,5 @@ DateFormats = {
 };
 
 export default DateFormats;
+
+//# sourceMappingURL=dateFormats.js.map

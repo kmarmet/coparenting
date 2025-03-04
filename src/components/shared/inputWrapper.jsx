@@ -60,18 +60,16 @@ function InputWrapper({
             placeholder={labelText}
             className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
             onChange={onChange}
-            onBlur={(e) => {
-              const input = e.target
-              const labelWrapper = input.parentNode.querySelector('#label-wrapper')
-              if (input.value.length === 0) {
-                labelWrapper.classList.remove('active')
-                input.placeholder = labelText
-              }
-            }}
-            debounceTimeout={isDebounced ? (customDebounceDelay ? customDebounceDelay : 800) : 0}
+            debounceTimeout={isDebounced ? (customDebounceDelay ? customDebounceDelay : 1000) : 0}
             key={refreshKey}
             type={inputValueType}
-            pattern={inputValueType && inputValueType === 'tel' ? '[0-9]{3} [0-9]{3} [0-9]{4}' : ''}
+            pattern={
+              inputValueType && inputValueType === 'tel' ? (
+                <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required />
+              ) : (
+                ''
+              )
+            }
             maxLength={inputValueType && inputValueType === 'tel' ? 12 : 100}
           />
         </>
@@ -86,21 +84,7 @@ function InputWrapper({
 
       {/* TEXTAREA */}
       {inputType === 'textarea' && (
-        <textarea
-          placeholder={labelText}
-          onChange={onChange}
-          className={inputClasses}
-          defaultValue={defaultValue}
-          key={refreshKey}
-          onBlur={(e) => {
-            const input = e.target
-            const labelWrapper = input.parentNode.querySelector('#label-wrapper')
-            if (input.value.length === 0) {
-              labelWrapper.classList.remove('active')
-              input.placeholder = labelText
-            }
-          }}
-        />
+        <textarea placeholder={labelText} onChange={onChange} className={inputClasses} defaultValue={defaultValue} key={refreshKey} />
       )}
     </div>
   )

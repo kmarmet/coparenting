@@ -29,7 +29,7 @@ export default class CalendarEvent
     @holidayName = ''
     @visitationSchedule = ''
     @isHoliday = false,
-    @isRepeating = false
+    @isRecurring = false
     @isCloned = false
     @isDateRange = false
   ) ->

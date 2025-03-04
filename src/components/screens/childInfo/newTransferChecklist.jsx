@@ -11,12 +11,12 @@ import Checklist from '/src/models/checklist.js'
 import DatasetManager from '../../../managers/datasetManager'
 import MyConfetti from '../../shared/myConfetti'
 import AlertManager from '../../../managers/alertManager'
-export default function NewTransferChecklist({ showCard, hideCard, activeChild }) {
+export default function NewTransferChecklist({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+  const { currentUser, activeInfoChild, refreshKey } = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
   const [view, setView] = useState('from')
-  const [existingChecklists, setExistingChecklists] = useState([])
+  const [destinationLabels, setDestinationLabels] = useState(['From Co-Parent', 'To Co-Parent'])
 
   const addInput = () => {
     const inputs = document.getElementById('inputs')
@@ -33,50 +33,39 @@ export default function NewTransferChecklist({ showCard, hideCard, activeChild }
   }
 
   const addToDb = async () => {
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
     const newChecklist = new Checklist()
     newChecklist.checklistItems = DatasetManager.getUniqueArray(checkboxTextList, true)
     newChecklist.ownerKey = currentUser?.key
     newChecklist.fromOrTo = view
-    await DB.add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
-    hideCard()
-    MyConfetti.fire()
-    AlertManager.successAlert('Checklist Created!')
+    if (childKey) {
+      await DB.add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
+      const updatedChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`)
+      setState({ ...state, activeInfoChild: updatedChild })
+      hideCard()
+      MyConfetti.fire()
+      AlertManager.successAlert('Checklist Created!')
+    }
   }
 
-  // On View Change
+  const checkForExisting = () => {
+    const fromDest = activeInfoChild?.checklists?.find((x) => x?.fromOrTo === 'from')
+    const toDest = activeInfoChild?.checklists?.find((x) => x?.fromOrTo === 'to')
+
+    if (Manager.isValid(fromDest)) {
+      setDestinationLabels(['To Co-Parent'])
+    }
+    if (Manager.isValid(toDest)) {
+      setDestinationLabels(['From Co-Parent'])
+    }
+    if (!Manager.isValid(fromDest) && !Manager.isValid(toDest)) {
+      setDestinationLabels(['From Co-Parent', 'To Co-Parent'])
+    }
+  }
+
   useEffect(() => {
-    const inputs = document.getElementById('inputs')
-    inputs.innerHTML = ''
-    setCheckboxTextList([])
-    const fromDest = activeChild?.checklists?.filter((x) => x.fromOrTo === 'from')[0]
-    const toDest = activeChild?.checklists?.filter((x) => x.fromOrTo === 'to')[0]
-    let existingChecklistsArr = []
-    if (fromDest) {
-      existingChecklistsArr.push('from')
-    }
-    if (toDest) {
-      existingChecklistsArr.push('to')
-    }
-    setExistingChecklists(existingChecklistsArr)
-  }, [view])
-
-  const checkForExisting = (_view) => {
-    const fromDest = activeChild?.checklists?.filter((x) => x.fromOrTo === 'from')[0]
-    const toDest = activeChild?.checklists?.filter((x) => x.fromOrTo === 'to')[0]
-    if (_view.includes('from')) {
-      if (fromDest) {
-        AlertManager.throwError("Transfer Checklist when transferring from co-parent's home already exists")
-        return false
-      }
-    }
-    if (_view.includes('to')) {
-      if (toDest) {
-        AlertManager.throwError("Transfer Checklist when transferring to co-parent's home already exists")
-        return false
-      }
-    }
-  }
+    checkForExisting()
+  }, [activeInfoChild])
 
   return (
     <BottomCard
@@ -90,26 +79,25 @@ export default function NewTransferChecklist({ showCard, hideCard, activeChild }
       onClose={hideCard}>
       <Spacer height={5} />
       <ViewSelector
+        shouldUpdateStateOnLoad={false}
         updateState={(text) => {
           const _view = text.toLowerCase()
+
           if (Manager.contains(_view, 'to')) {
-            checkForExisting(_view)
+            console.log('to')
             setView('to')
           } else {
-            checkForExisting(_view)
             setView('from')
           }
         }}
         wrapperClasses={'child-info'}
-        labels={['From Co-Parent', 'To-Coparent']}
+        labels={destinationLabels}
       />
 
       <div id="inputs" key={refreshKey}></div>
-      {!existingChecklists.includes(view) && (
-        <button className="button default center" onClick={addInput}>
-          Add Item
-        </button>
-      )}
+      <button className="button default center" onClick={addInput}>
+        Add Item
+      </button>
     </BottomCard>
   )
 }

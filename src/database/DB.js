@@ -15,7 +15,7 @@ const DB = {
     suggestions: 'suggestions',
     memories: 'memories',
     notificationSubscribers: 'notificationSubscribers',
-    activities: 'activities',
+    notifications: 'notifications',
     sharedChildInfo: 'sharedChildInfo',
     chatBookmarks: 'chatBookmarks',
     chats: 'chats',
@@ -49,10 +49,10 @@ const DB = {
     }
   },
   getSnapshotKey: async (path, objectToCheck, propertyToCompare = 'id') =>
-    await new Promise(async (resolve) => {
+    await new Promise((resolve) => {
       try {
         const dbRef = ref(getDatabase())
-        await get(child(dbRef, path)).then((snapshot) => {
+        get(child(dbRef, path)).then((snapshot) => {
           if (snapshot.exists()) {
             let row = _.findKey(snapshot.val(), [propertyToCompare, objectToCheck[propertyToCompare]])
             // console.log(row)
@@ -67,6 +67,7 @@ const DB = {
           }
         })
       } catch (error) {
+        console.log(error.message)
         LogManager.log(error.message, LogManager.logTypes.error, error.stack)
       }
     }),

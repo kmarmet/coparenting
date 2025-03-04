@@ -20,7 +20,7 @@ import NewTransferChangeRequest from '/src/components/forms/newTransferRequest.j
 import FullMenu from '/src/components/fullMenu'
 import Account from '/src/components/screens/account/account.jsx'
 import ResetPassword from '/src/components/screens/account/resetPassword.jsx'
-import Activity from '/src/components/screens/activity'
+import Notifications from '/src/components/screens/notifications'
 import AdminDashboard from '/src/components/screens/admin/adminDashboard'
 import Login from '/src/components/screens/auth/login.jsx'
 import Registration from '/src/components/screens/auth/registration.jsx'
@@ -140,7 +140,7 @@ export default function App() {
         await AppManager.clearAppBadge()
 
         const users = await DB.getTable(`${DB.tables.users}`)
-        let activities = []
+        let notifications = []
         let currentUserFromDb
         let screenToNavigateTo = ScreenNames.calendar
         currentUserFromDb = users?.find((u) => u?.email === user?.email)
@@ -159,11 +159,17 @@ export default function App() {
               screenToNavigateTo = ScreenNames.requestParentAccess
             }
           } else {
+            // Add location details to use record if they do not exist
+            if (!Manager.isValid(currentUserFromDb?.location)) {
+              AppManager.getLocationDetails().then((r) => {
+                DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r).then((r) => r)
+              })
+            }
             AppManager.deleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
             AppManager.deleteExpiredMemories(currentUserFromDb).then((r) => r)
           }
           NotificationManager.init(currentUserFromDb)
-          activities = await DB.getTable(`${DB.tables.activities}/${currentUserFromDb?.key}`)
+          notifications = await DB.getTable(`${DB.tables.notifications}/${currentUserFromDb?.key}`)
         }
 
         if (user?.emailVerified) {
@@ -176,7 +182,7 @@ export default function App() {
             loadingText: '',
             theme: currentUserFromDb?.settings?.theme,
             isLoading: false,
-            activityCount: activities.length ?? 0,
+            notificationCount: notifications.length ?? 0,
           })
         } else {
           setState({ ...state, isLoading: false, authUser: user, currentScreen: ScreenNames.login })
@@ -204,7 +210,7 @@ export default function App() {
         {/* LOADING */}
         {isLoading && <Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />}
 
-        <div id="page-overlay"></div>
+        <div className={theme} id="page-overlay"></div>
 
         <globalState.Provider value={stateToUpdate}>
           {/* FULL MENU */}
@@ -250,7 +256,7 @@ export default function App() {
             {/* STANDARD */}
             {currentScreen === ScreenNames.installApp && <InstallApp />}
             {currentScreen === ScreenNames.home && !isLoading && <Home />}
-            {currentScreen === ScreenNames.activity && <Activity />}
+            {currentScreen === ScreenNames.notifications && <Notifications />}
             {currentScreen === ScreenNames.calendar && <EventCalendar />}
             {currentScreen === ScreenNames.settings && <Settings />}
             {currentScreen === ScreenNames.account && <Account />}

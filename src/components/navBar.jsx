@@ -2,14 +2,15 @@
 import React, { useContext } from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
-import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone } from 'react-icons/pi'
+import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone, PiBellDuotone } from 'react-icons/pi'
 import { TbGridDots } from 'react-icons/tb'
 import { BiFace } from 'react-icons/bi'
 import DomManager from '../managers/domManager'
 import { RxActivityLog } from 'react-icons/rx'
+
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, currentUser, menuIsOpen, theme, activityCount } = state
+  const { currentScreen, currentUser, menuIsOpen, theme, notificationCount } = state
 
   const changeCurrentScreen = async (screen) => {
     setState({
@@ -68,12 +69,12 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               <PiImagesSquareDuotone />
             </div>
 
-            {/* ACTIVITY */}
+            {/* NOTIFICATIONS */}
             <div
-              onClick={() => changeCurrentScreen(ScreenNames.activity)}
-              className={`${currentScreen === ScreenNames.activity ? 'active menu-item activity' : 'menu-item activity'}`}>
-              <RxActivityLog />
-              {activityCount > 0 && <span className="count">{activityCount}</span>}
+              onClick={() => changeCurrentScreen(ScreenNames.notifications)}
+              className={`${currentScreen === ScreenNames.notifications ? 'active menu-item notifications' : 'menu-item notifications'}`}>
+              <PiBellDuotone />
+              {notificationCount > 0 && <span className="badge"></span>}
             </div>
           </div>
         </div>

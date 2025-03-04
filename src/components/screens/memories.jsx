@@ -20,7 +20,7 @@ import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
-import { GoHeartFill } from 'react-icons/go'
+import { IoHeart } from 'react-icons/io5'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -133,17 +133,16 @@ export default function Memories() {
 
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
-        {/* NO DATA FALLBACK TEXT */}
-        {memories && memories.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories available'} />}
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Memories</p>
             {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />}
           </div>
           <p id="happy-subtitle" className={`${theme} mb-10`}>
-            Share photos of unforgettable memories that deserve to be seen! <GoHeartFill className={'heart'} />
+            Share photos of unforgettable memories that deserve to be seen! <IoHeart className={'heart'} />
           </p>
-
+          {/* NO DATA FALLBACK TEXT */}
+          {memories && memories.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories available'} />}
           {/* GALLERY */}
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
             <>

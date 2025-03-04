@@ -1,8 +1,10 @@
 /*#region  BASE COLORS */
 $green: #2ecc71;
 $red: #d57179;
+$accentBlue: #4690ff;
+$accentBlueBg: rgba(70, 144, 255, 0.15);
 // BOOTSTRAP RED
-$bootstrapBgRed: #f8d7da;
+$bootstrapBgRed: #ffeff3;
 $bootstrapRedBorder: #f5c2c7;
 $bootstrapRedColor: #842029;
 $bootstrapBgGreen: #d1e7dd;
@@ -52,33 +54,31 @@ $mediumGrey: #b6b6b6;
 
 /*#region  VISITATION COLORS*/
 $coparentPurple: #8f7afa;
-$accentBlue: #99b2ff;
 $lightGreen: rgba(46, 204, 113, 0.65);
 $currentUserGreen: $green;
-//#F88379
+$holidayOrange: #f88379;
 /*#endregion  VISITATION COLORS*/
 
 /*#region  Dark Theme*/
 $darkBlueDarkest: #121735;
-$darkBg: #101012;
-$darkGreyText: #7f7d85;
+$darkBg: black;
+$darkGreyText: #89868f;
 $darkIconGrey: #4e4d57;
 $darkGreyLight: #1f1f23;
-//$darkBg: #0f121e;
 $darkPurple: #808cf8;
 $darkGrey: #1a191c;
-$darkText: #cdccd1;
+$darkText: #c2c1c6;
 $darkLightPurple: #aaa8cc;
 $darkLightBg: #13112f;
 $darkGreen: #00c899;
 $darkBlue: #5c8df7;
-$darkMainBlue: #146dff;
-$darkBlueMedium: #567fff;
+$darkBlueMedium: #4c6fff;
+$darkMainBlue: $darkBlueMedium;
 $darkBlueLight: cornflowerblue;
 $darkSmallShadow:
   0 3px 6px rgba(0, 0, 0, 0.16),
   0 3px 6px rgba(0, 0, 0, 0.23);
-$darkBorderColor: #1b1a1d;
+$darkBorderColor: #252327;
 /*#endregion  Dark Theme*/
 
 /*#region  LIGHT THEME*/
@@ -92,7 +92,6 @@ $lightMenuBg: white;
 $lightBorder: #e7e9ee;
 $lightBg: white;
 $lightDesktopBg: #f3f7fa;
-//$lightBg: #f4f8ff;
 $lightBlackLight: #1c1c1c;
 $lightBlue: #edf2fd;
 $lightDarkGrey: rgba(0, 0, 0, 0.44);

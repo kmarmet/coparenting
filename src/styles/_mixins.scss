@@ -56,7 +56,7 @@
 
 // SCREEN TITLE
 @mixin screenTitle {
-  font-size: 24px;
+  font-size: 26px;
   width: 100vw;
   max-width: 100%;
   word-break: break-word;
@@ -66,10 +66,13 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  font-weight: $fwRegular;
   margin-bottom: 5px;
   text-align: center;
   opacity: 1;
+  color: $mainBlue;
+  font-family: 'DM Serif Text', serif;
+  font-weight: 500;
+  font-style: normal;
 
   &.active {
     transform: scale(1);
@@ -410,14 +413,15 @@
 }
 
 @mixin defaultButton() {
-  border-radius: 50px;
-  padding: 8px 20px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: $fwRegular;
   color: white;
   line-height: 1;
+  padding: 12px 15px;
+  border: 0;
   @include buttonPress;
 
   * {
@@ -429,20 +433,10 @@
     margin-left: 5px;
   }
 
-  &.green {
-    background-color: $green;
-    color: white;
-  }
-
-  &.white {
-    background-color: white;
-    color: black;
-  }
-
   &.default {
-    color: $mainBlue;
-    border: 1px solid $mainBlue;
-    background: transparent;
+    color: white;
+    border: 0;
+    background: $accentBlue;
 
     @media screen and (min-width: 800px) {
       &:hover {
@@ -452,21 +446,13 @@
     }
 
     &.green {
-      background: transparent;
-      border: 1px solid $green;
-      color: $green;
-
-      &.has-bg {
-        background-color: $green;
-        color: white;
-        border: 0;
-      }
+      background: $darkGreen;
+      color: white;
     }
 
     &.red {
-      color: $red;
-      border: 1px solid $red;
-      background-color: transparent;
+      background: $red;
+      color: white;
     }
 
     &#upload-button {
@@ -1023,8 +1009,8 @@
 
 @mixin accordion {
   .MuiCollapse-root {
-    border-radius: 0 0 $borderRadius $borderRadius;
-    background: $lightIconBgBlue;
+    border-radius: $borderRadius;
+    background: $bestGreyForWhite;
     transition: all 0.3s ease-in-out;
 
     .buttons {
@@ -1044,7 +1030,6 @@
             width: unset;
             background: white;
             color: $lightDarkGrey;
-            border: 0;
             opacity: 1;
             font-weight: $fwMediumBold;
 
@@ -1164,9 +1149,14 @@
     color: #787878;
     padding-bottom: 6px;
 
+    &:after {
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+    }
+
     &.active {
       font-size: 16px;
-      color: #5b5b5b;
+      color: $accentBlue;
       font-weight: $fwMedium;
       opacity: 1;
 
@@ -1175,8 +1165,10 @@
         position: relative;
         top: 7px;
         display: block;
-        border-bottom: 1px solid $darkGrey;
-        background: $darkGrey;
+        border-bottom: 1px solid $mainBlue;
+        background: $mainBlue;
+        opacity: 1;
+        transition: all 0.3s ease-in-out;
       }
     }
 
@@ -1260,7 +1252,7 @@
 @mixin row {
   margin-bottom: 10px;
   border-bottom: 1px solid rgba(214, 219, 222, 0.45);
-  padding-bottom: 10px;
+  padding-bottom: 5px;
   width: 100%;
   align-items: center;
   justify-content: space-between;
@@ -1775,13 +1767,13 @@
     #label-wrapper {
       label {
         transition: all 0.3s ease-in-out;
-        color: $mainBlue;
+        color: $accentBlue;
         opacity: 1;
       }
     }
     .checkbox-dot {
       background-color: $lightIconBgBlue;
-      border: 1px solid $mainBlue;
+      border: 1px solid $accentBlue;
       opacity: 1;
 
       &:after {
@@ -1791,10 +1783,10 @@
         height: 7px;
         width: 7px;
         border-radius: 50%;
-        color: $mainBlue;
+        color: $accentBlue;
         top: 50%;
         left: 50%;
-        background-color: $mainBlue;
+        background-color: $accentBlue;
         bottom: 50%;
         transition: all 0.1s ease-in-out;
         right: 50%;
@@ -2466,25 +2458,21 @@
   background-color: white;
   position: fixed;
   border-radius: 30px 30px 0 0;
-  overflow: auto;
   height: auto;
   left: 0;
   width: 100vw;
-  max-height: 0;
-  min-height: 0;
   bottom: -100vh;
   z-index: -1;
   box-shadow: rgba(0, 0, 0, 0.56) 0 2px 30px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
+  top: 150px;
+  overflow: hidden;
   // ANIMATION
   &.animate__fadeInUp {
     @include zIndex(9999999);
     bottom: 0;
-    max-height: 70vh;
-    min-height: 50vh;
   }
 
   // ACTIVE
@@ -2495,9 +2483,166 @@
     }
   }
 
-  .flex {
-    .MuiFormControl-root {
-      .MuiInputBase-input {
+  #relative-wrapper {
+    position: relative;
+    padding: 0 15px;
+    height: 100%;
+    overflow: hidden;
+
+    #share-with-checkbox-group {
+      .flex {
+        margin-bottom: 0;
+      }
+    }
+
+    #content {
+      overflow: auto;
+      overflow-x: hidden;
+      padding-bottom: 100px;
+
+      max-height: 100%;
+      #details {
+        .flex {
+          margin-bottom: 0;
+          align-items: center;
+
+          &.children,
+          &.reminders {
+            #children,
+            #reminder-times {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              flex-wrap: wrap;
+
+              span {
+                padding-bottom: 3px;
+              }
+            }
+          }
+
+          svg {
+            font-size: 22px;
+            margin: 0 5px 0 0;
+            color: $mainBlue;
+
+            &.external-icon {
+              font-size: 16px;
+              position: relative;
+              top: 3px;
+              margin-left: 5px;
+            }
+          }
+
+          b {
+            min-width: 150px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+          }
+
+          span {
+            text-align: right;
+            font-size: 15px;
+
+            &.notes {
+              text-align: left;
+              line-height: 1.6;
+              max-width: 50%;
+              white-space: pre-wrap;
+            }
+          }
+        }
+      }
+    }
+
+    #title-wrapper {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 10000000;
+      right: 0;
+      left: 0;
+      margin: 0;
+      padding: 15px 10px;
+
+      #large-title {
+        justify-content: center;
+      }
+
+      .close-icon {
+        font-size: 30px;
+        z-index: 1000;
+        position: relative;
+        font-weight: bold;
+        padding: 3px 5px;
+        background: $bestGreyForWhite;
+        border-radius: 100%;
+      }
+    }
+
+    .MuiPaper-root {
+      border-radius: 0;
+      //      margin-bottom: 5px !important;
+
+      .flex {
+        margin: 0;
+      }
+    }
+
+    .flex {
+      &.gap {
+        margin-bottom: 0;
+      }
+
+      &.title-suggestion-dropdown {
+        margin: 0;
+      }
+
+      p {
+        padding-left: 0;
+
+        &.pill {
+          padding-left: 15px;
+        }
+      }
+    }
+
+    hr {
+      border-color: $lightBorder;
+    }
+
+    #holiday-card-buttons {
+      display: flex;
+      gap: 10px;
+
+      button {
+        border-radius: 10px;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        left: inherit;
+        right: inherit;
+        bottom: 0;
+        border: 1px solid $green;
+        font-weight: $fwRegular;
+        background-color: white;
+        justify-self: flex-start;
+        margin-right: auto;
+        line-height: 1;
+        color: $green;
+        width: 50%;
+        @include buttonPress;
+
+        &#view-visitation-holidays-item {
+          color: $mainBlue;
+          border: 1px solid $mainBlue;
+        }
+
+        svg {
+          color: $green;
+        }
       }
     }
   }
@@ -2559,7 +2704,7 @@
         display: flex;
         font-size: 14px;
         align-items: center;
-        margin: 25px 0;
+        margin: 15px 0;
         text-align: right;
         width: 100%;
         justify-content: flex-end;
@@ -2587,6 +2732,7 @@
   #large-title {
     color: $mainBlue;
     padding-top: 5px;
+    font-weight: $fwMedium;
   }
 
   .divider {
@@ -2596,7 +2742,7 @@
 
   // BUTTONS
   .buttons {
-    position: fixed;
+    position: sticky;
     display: flex;
     justify-content: center;
     border: 0;
@@ -2625,7 +2771,7 @@
     }
 
     .card-button {
-      border-radius: 50px;
+      border-radius: 8px;
       padding: 12px 0;
       display: flex;
       align-items: center;
@@ -2640,7 +2786,6 @@
       left: inherit;
       right: inherit;
       bottom: 0;
-      border: 1px solid $green;
       justify-self: flex-start;
       margin: 0 auto;
       line-height: 1;
@@ -2658,16 +2803,16 @@
       }
 
       &.submit {
-        background-color: #edf2fd;
+        background-color: $green;
         margin-right: auto;
         border: 0;
         left: 0;
-        color: $mainBlue;
+        color: white;
         font-weight: $fwMedium;
         font-size: 17px;
 
         svg {
-          color: $mainBlue;
+          color: white;
         }
       }
 
@@ -2919,33 +3064,16 @@
       }
     }
 
-    &.expense-tracker {
-      min-height: 70vh;
-
-      .action-buttons {
-        button {
-          width: calc(100% / 3);
-          justify-content: center;
-          font-size: 14px;
-          padding: 8px 0;
-          margin: 0;
-        }
-      }
-    }
-
     .action-buttons {
-      display: flex;
-      gap: 10px;
+      display: grid;
+      width: 100%;
+      grid-template-columns: calc(50% - 10px) calc(50% - 10px);
       margin-top: 15px;
       justify-content: center;
+      grid-gap: 10px;
 
       button {
-        display: flex;
-        align-items: center;
-        padding: 5px 10px;
-        background-color: transparent;
-        min-width: 30%;
-        justify-content: center;
+        width: 100%;
 
         svg {
           margin-left: 5px;
@@ -2961,19 +3089,6 @@
               color: white;
             }
           }
-        }
-
-        &.green {
-          border: 1px solid $green;
-        }
-
-        &.red {
-          border: 1px solid $red;
-          color: $red;
-        }
-
-        &.blue {
-          border: 1px solid $mainBlue;
         }
       }
     }
@@ -2992,10 +3107,9 @@
 
   // VIEW HOLIDAYS
   &.view-holidays {
-    min-height: 250px;
-    max-height: 250px;
-    padding-bottom: 150px;
-
+    min-height: 20vh;
+    max-height: 20vh;
+    top: unset;
     #content {
       position: relative;
       top: 5px;
@@ -3126,6 +3240,7 @@
   &.search-card {
     max-height: 25vh;
     min-height: 25vh;
+    top: unset;
 
     #input-and-nav {
       .flex {
@@ -3352,172 +3467,6 @@
   }
 
   /*#endregion  CARDS BY CLASS*/
-  #relative-wrapper {
-    position: relative;
-    padding: 0 15px 200px 15px;
-    height: 100%;
-    min-height: 70vh;
-
-    #share-with-checkbox-group {
-      .flex {
-        margin-bottom: 0;
-      }
-    }
-
-    #content {
-      overflow: auto;
-      overflow-x: hidden;
-      position: absolute;
-      top: 60px;
-      bottom: 0;
-      width: calc(100% - 30px);
-      max-height: calc(100% - 140px);
-      #details {
-        .flex {
-          margin-bottom: 0;
-          align-items: center;
-
-          &.children,
-          &.reminders {
-            #children,
-            #reminder-times {
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              flex-wrap: wrap;
-
-              span {
-                padding-bottom: 3px;
-              }
-            }
-          }
-
-          svg {
-            font-size: 24px;
-            margin: 0 5px 0 0;
-            color: $mainBlue;
-
-            &.external-icon {
-              font-size: 16px;
-              position: relative;
-              top: 3px;
-              margin-left: 5px;
-            }
-          }
-
-          b {
-            min-width: 150px;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-          }
-
-          span {
-            text-align: right;
-            font-size: 15px;
-
-            &.notes {
-              text-align: left;
-              line-height: 1.6;
-              max-width: 50%;
-              white-space: pre-wrap;
-            }
-          }
-        }
-      }
-    }
-
-    #title-wrapper {
-      position: sticky;
-      top: 0;
-      background-color: white;
-      z-index: 10000000;
-      right: 0;
-      left: 0;
-      margin: 0;
-      padding: 15px 0 10px 0;
-
-      #large-title {
-        justify-content: center;
-      }
-
-      .close-icon {
-        font-size: 30px;
-        z-index: 1000;
-        position: relative;
-        font-weight: bold;
-        padding: 3px 5px;
-        right: 5px;
-        background: $bestGreyForWhite;
-        border-radius: 100%;
-      }
-    }
-
-    .MuiPaper-root {
-      border-radius: 0;
-      //      margin-bottom: 5px !important;
-
-      .flex {
-        margin: 0;
-      }
-    }
-
-    .flex {
-      &.gap {
-        margin-bottom: 0;
-      }
-
-      &.title-suggestion-dropdown {
-        margin: 0;
-      }
-
-      p {
-        padding-left: 0;
-
-        &.pill {
-          padding-left: 15px;
-        }
-      }
-    }
-
-    hr {
-      border-color: $lightBorder;
-    }
-
-    #holiday-card-buttons {
-      display: flex;
-      gap: 10px;
-
-      button {
-        border-radius: 10px;
-        padding: 12px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        left: inherit;
-        right: inherit;
-        bottom: 0;
-        border: 1px solid $green;
-        font-weight: $fwRegular;
-        background-color: white;
-        justify-self: flex-start;
-        margin-right: auto;
-        line-height: 1;
-        color: $green;
-        width: 50%;
-        @include buttonPress;
-
-        &#view-visitation-holidays-item {
-          color: $mainBlue;
-          border: 1px solid $mainBlue;
-        }
-
-        svg {
-          color: $green;
-        }
-      }
-    }
-  }
 }
 
 /*#endregion  COMPONENTS*/
@@ -3574,7 +3523,7 @@
       margin-bottom: 0;
     }
 
-    &.activity {
+    &.notifications {
       opacity: 1;
 
       p {
@@ -3648,7 +3597,7 @@
 
 @mixin fullMenu {
   #full-menu {
-    display: grid;
+    display: flex;
     grid-template-columns: auto auto auto;
     flex-wrap: wrap;
     position: relative;
@@ -3664,7 +3613,6 @@
       opacity: 0;
       transform: scale(0);
       transition: all 0.6s ease-in-out;
-      width: 100%;
       background-color: transparent;
       height: 100px;
       border-radius: $bigBorderRadius;
@@ -3673,13 +3621,36 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      width: calc((100% / 3) - 12px);
+      position: relative;
+
+      &.activity {
+        .badge {
+          height: 12px;
+          width: 12px;
+          border-radius: 50%;
+          background: $red;
+          position: absolute;
+          top: 21px;
+          right: 47px;
+          z-index: 9;
+        }
+        p {
+          display: block;
+          margin: 0 auto;
+          position: relative;
+          right: 5px;
+          width: 100%;
+          text-align: center;
+        }
+      }
 
       /*#region  ROWS*/
       &.visitation,
       &.chats,
       &.calendar,
       &.admin,
-      &.activity,
+      &.notifications,
       &.expenses,
       &.swap-request {
         border: 1px solid #557fff;
@@ -3690,12 +3661,7 @@
 
         &.active {
           background: rgba(85, 127, 255, 0.11);
-        }
-
-        &.activity {
-          svg {
-            transform: scale(0.8);
-          }
+          box-shadow: 0 0 12px 0 #557fff;
         }
       }
 
@@ -3705,14 +3671,15 @@
       &.child-info,
       &.records,
       &.coparents {
-        border: 1px solid #931414;
+        border: 1px solid #f88379;
 
         * {
-          color: #931414;
+          color: #f88379;
         }
 
         &.active {
-          background: rgba(147, 20, 20, 0.11);
+          background: rgba(255, 234, 234, 0.87);
+          box-shadow: 0 0 12px 0 #f88379;
         }
       }
 
@@ -3722,14 +3689,23 @@
       &.theme,
       &.logout,
       &.install-app {
-        border: 1px solid #5a4eff;
+        border: 1px solid $coparentPurple;
 
         * {
-          color: #5a4eff;
+          color: $coparentPurple;
         }
 
         &.active {
           background: $lightPurple;
+          box-shadow: 0 0 12px 0 $coparentPurple;
+        }
+
+        &.contact-us {
+          &.visible {
+            svg {
+              font-size: 20px;
+            }
+          }
         }
       }
 
@@ -3738,7 +3714,6 @@
         color: white;
         width: 35px;
         display: block;
-        height: 35px;
         margin: 0 auto 5px auto;
       }
 
@@ -3754,14 +3729,21 @@
         margin-top: 0;
         transition: all 0.6s ease-in-out;
         transform: scale(1);
-        opacity: 0.65;
-
+        opacity: 1;
         p {
-          font-weight: $fwLight;
+          font-weight: $fwRegular;
         }
 
         svg {
-          opacity: 0.75;
+          opacity: 1;
+          height: 32px;
+        }
+
+        &.contact-us,
+        &.install-app {
+          svg {
+            transform: scale(0.9);
+          }
         }
       }
 
@@ -3771,7 +3753,7 @@
 
         p,
         svg {
-          font-weight: $fwMedium;
+          font-weight: $fwMediumBold;
           opacity: 1;
         }
       }
@@ -3879,6 +3861,7 @@
       justify-content: center;
       display: flex;
       color: $lightDarkGrey;
+      position: relative;
 
       &#chat-menu-item {
         position: relative;
@@ -3906,19 +3889,19 @@
           font-size: 26px;
         }
 
-        .count {
+        .badge {
           background: $red;
           color: white;
           display: flex;
           justify-content: center;
           align-items: center;
           border-radius: 100%;
-          height: 22px;
-          width: 22px;
+          height: 9px;
+          width: 9px;
           font-size: 0.7em;
-          position: relative;
-          bottom: 10px;
-          right: 5px;
+          position: absolute;
+          top: 0;
+          right: 2px;
         }
       }
 
@@ -3937,6 +3920,7 @@
 
       svg {
         font-size: 32px;
+        @include buttonPress;
 
         &.child-info {
           font-size: 34px;

@@ -26,7 +26,7 @@ const Chats = () => {
   const [chats, setChats] = useState([])
   const [activeChatKeys, setActiveChatKeys] = useState([])
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
-
+  const [showNewChatButton, setShowNewChatButton] = useState(true)
   const openMessageThread = async (coparent) => {
     // Check if thread member (coparent) account exists in DB
     console.log('before')
@@ -52,6 +52,10 @@ const Chats = () => {
     const members = securedChats.map((x) => x.members).flat()
     const activeChats = members.filter((x) => x?.key && x?.key !== currentUser?.key)
     const activeChatKeys = activeChats.map((x) => x?.key)
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+    if (activeChatKeys.length === validAccounts) {
+      setShowNewChatButton(false)
+    }
     setChats(securedChats)
     setActiveChatKeys(activeChatKeys)
   }
@@ -150,7 +154,7 @@ const Chats = () => {
         </Fade>
       </div>
       {!showNewConvoCard && (
-        <NavBar navbarClass={'calendar'}>
+        <NavBar navbarClass={`chats ${!showNewChatButton ? 'no-add-new-button' : ''}`}>
           {DomManager.isMobile() && <TbMessageCirclePlus id={'add-new-button'} onClick={() => setShowNewConvoCard(true)} />}
         </NavBar>
       )}

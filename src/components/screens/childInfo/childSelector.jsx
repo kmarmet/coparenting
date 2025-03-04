@@ -6,9 +6,9 @@ import DB from '/src/database/DB'
 import BottomCard from '/src/components/shared/bottomCard'
 import StringManager from '../../../managers/stringManager'
 
-function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) {
+function ChildSelector({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const { currentUser, activeInfoChild } = state
   const [children, setChildren] = useState(currentUser?.children)
 
   const setUserChildren = async () => {
@@ -33,7 +33,13 @@ function ChildSelector({ setActiveChild, hideCard, showCard, activeInfoChild }) 
         {Manager.isValid(children) &&
           children.map((child, index) => {
             return (
-              <div key={index} id="children-container" onClick={() => setActiveChild(child)}>
+              <div
+                key={index}
+                id="children-container"
+                onClick={() => {
+                  hideCard()
+                  setState({ ...state, activeInfoChild: child })
+                }}>
                 {Manager.isValid(child?.general['profilePic']) && (
                   <div id="profile-pic-wrapper" style={{ backgroundImage: `url(${child?.general['profilePic']})` }}></div>
                 )}

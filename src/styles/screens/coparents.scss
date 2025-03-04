@@ -29,7 +29,7 @@
         transition: all 0.3s ease-in-out;
 
         svg {
-          color: $mainBlue;
+          color: $accentBlue;
           opacity: 1;
           transition: all 0.3s ease-in-out;
         }
@@ -37,7 +37,7 @@
         .coparent-name {
           opacity: 1;
           font-weight: $fwMedium;
-          color: $mainBlue;
+          color: $accentBlue;
         }
 
         .child-name {

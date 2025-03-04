@@ -6,7 +6,7 @@ import Spacer from './spacer'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 
-export default function ViewSelector({ labels, updateState, wrapperClasses }) {
+export default function ViewSelector({ labels, updateState, wrapperClasses, defaultView, shouldUpdateStateOnLoad = true }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
   const { theme, refreshKey } = state
@@ -20,7 +20,13 @@ export default function ViewSelector({ labels, updateState, wrapperClasses }) {
   }
 
   useEffect(() => {
-    updateState('details')
+    if (shouldUpdateStateOnLoad) {
+      if (defaultView) {
+        updateState(defaultView)
+      } else {
+        updateState('Details')
+      }
+    }
   }, [])
 
   return (
@@ -38,7 +44,7 @@ export default function ViewSelector({ labels, updateState, wrapperClasses }) {
                   updateState(label)
                   toggleActive(el.target)
                 }}>
-                {StringManager.uppercaseFirstLetterOfAllWords(label)}
+                {label}
               </p>
             )
           })}

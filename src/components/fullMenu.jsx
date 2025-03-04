@@ -6,8 +6,9 @@ import Manager from '../managers/manager'
 import AppManager from '../managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
 import { VscSettings } from 'react-icons/vsc'
-import { RxActivityLog } from 'react-icons/rx'
+
 import {
+  PiBellDuotone,
   PiCalendarDotsDuotone,
   PiCarProfileDuotone,
   PiChatsCircleDuotone,
@@ -30,7 +31,7 @@ import BottomCard from './shared/bottomCard'
 
 export default function FullMenu() {
   const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, theme, currentUser, authUser } = state
+  const { currentScreen, menuIsOpen, theme, currentUser, authUser, notificationCount } = state
 
   const auth = getAuth()
 
@@ -91,12 +92,13 @@ export default function FullMenu() {
           <p>Calendar</p>
         </div>
 
-        {/* ACTIVITY */}
+        {/* NOTIFICATIONS */}
         <div
-          className={`menu-item activity ${currentScreen === ScreenNames.activity ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.activity)}>
-          <RxActivityLog />
-          <p>Activity</p>
+          className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}
+          onClick={() => changeCurrentScreen(ScreenNames.notifications)}>
+          <PiBellDuotone />
+          {notificationCount > 0 && <div className="badge"></div>}
+          <p>Notifications</p>
         </div>
 
         {/* PARENTS ONLY */}
@@ -218,9 +220,9 @@ export default function FullMenu() {
           </div>
         )}
         {currentUser?.settings?.theme === 'light' && (
-          <div className="menu-item theme">
+          <div onClick={() => changeTheme('dark')} className="menu-item theme">
             <PiMoonStarsDuotone />
-            <p onClick={() => changeTheme('dark')}> Dark Mode</p>
+            <p>Dark Mode</p>
           </div>
         )}
         {/* INSTALL APP BUTTON */}

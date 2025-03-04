@@ -16,9 +16,11 @@ import StringManager from '../../managers/stringManager'
 import Spacer from './spacer'
 import ViewSelector from './viewSelector'
 import AddressInput from './addressInput'
-export default function CustomChildInfo({ hideCard, showCard, setActiveChild, activeChild }) {
+import validator from 'validator'
+
+export default function CustomChildInfo({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+  const { currentUser, theme, activeInfoChild } = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
   const [infoSection, setInfoSection] = useState('general')
@@ -30,10 +32,13 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       AlertManager.throwError('Please fill/select required fields')
       return false
     }
-    console.log(currentUser, activeChild, infoSection, StringManager.toCamelCase(title), value, shareWith)
+    if (infoType === 'phone' && !validator.isMobilePhone(value)) {
+      AlertManager.throwError('Please enter a valid phone number')
+      return false
+    }
     const updatedChild = await DB_UserScoped.addUserChildProp(
       currentUser,
-      activeChild,
+      activeInfoChild,
       infoSection,
       StringManager.toCamelCase(title),
       value,
@@ -44,7 +49,7 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       await NotificationManager.sendToShareWith(
         shareWith,
         currentUser,
-        `${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,
+        `${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeInfoChild?.general?.name}`,
         `${title} - ${value}`,
         infoSection
       )
@@ -52,7 +57,7 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
 
     AlertManager.successAlert(`${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`)
     resetForm()
-    setActiveChild(updatedChild)
+    setState({ ...state, activeInfoChild: updatedChild })
   }
 
   const handleInfoTypeSelection = (e) => {
@@ -81,11 +86,11 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
     setValue('')
     setInfoSection('')
     hideCard()
+    setState({ ...state, refreshKey: Manager.getUid() })
   }
 
   return (
     <BottomCard
-      refreshKey={refreshKey}
       onSubmit={add}
       submitText={'Add'}
       className="custom-child-info-wrapper"
@@ -95,7 +100,11 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
       showCard={showCard}>
       <div className="form">
         {/* INFO SECTIONS */}
-        <ViewSelector labels={['General', 'Medical', 'Schooling', 'Behavior']} updateState={(e) => setInfoSection(e.toLowerCase())} />
+        <ViewSelector
+          defaultView={'General'}
+          labels={['General', 'Medical', 'Schooling', 'Behavior']}
+          updateState={(e) => setInfoSection(e.toLowerCase())}
+        />
         <Spacer height={5} />
         <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with" required={false} />
         <Spacer height={10} />
@@ -106,7 +115,7 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
           checkboxArray={Manager.buildCheckboxGroup({
             currentUser,
             defaultLabels: ['Text'],
-            customLabelArray: ['Text', 'Location', 'Date'],
+            customLabelArray: ['Text', 'Location', 'Date', 'Phone'],
           })}
           onCheck={handleInfoTypeSelection}
         />
@@ -116,6 +125,18 @@ export default function CustomChildInfo({ hideCard, showCard, setActiveChild, ac
           <>
             <InputWrapper inputType={'input'} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
             <InputWrapper inputType={'input'} labelText={'Value'} required={true} onChange={(e) => setValue(e.target.value)} />
+          </>
+        )}
+
+        {infoType === 'phone' && (
+          <>
+            <InputWrapper inputType={'input'} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
+            <InputWrapper
+              inputValueType="tel"
+              labelText={'Phone Number'}
+              required={true}
+              onChange={(e) => setValue(StringManager.formatPhone(e.target.value))}
+            />
           </>
         )}
 

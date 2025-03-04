@@ -1,6 +1,6 @@
 ScreenNames =
   account: 'account'
-  activity: 'activity'
+  notifications: 'notifications'
   adminDashboard: 'adminDashboard'
   calendar: 'calendar'
   chat: 'chat'

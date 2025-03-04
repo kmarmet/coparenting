@@ -4,15 +4,22 @@
 
 #external-overrides {
   // MUI OVERRIDES
-  .MuiInputBase-root {
-    svg {
-      color: $darkText !important;
-    }
-    .MuiOutlinedInput-input {
-      background: $darkGrey !important;
-      color: $darkText !important;
-      border-radius: 0 !important;
-      padding: 3px 8px !important;
+  .MuiFormControl-root {
+    &.dark {
+      .MuiInputBase-root {
+        svg {
+          color: $darkText !important;
+        }
+        .MuiOutlinedInput-input {
+          color: $darkText !important;
+          border-radius: 0 !important;
+          padding: 3px 8px !important;
+
+          &:focus {
+            background: $darkGrey !important;
+          }
+        }
+      }
     }
   }
 
@@ -50,8 +57,8 @@
             }
 
             &.Mui-selected {
-              background: $darkBorderColor !important;
-              border: unset;
+              background: unset !important;
+              border: 1px solid $darkBlueMedium;
             }
           }
         }
@@ -110,66 +117,42 @@
   }
 
   #records-wrapper {
-    #record-row {
-      table {
-        thead {
-          background: transparent;
-          th {
+    &.dark {
+      #record-row {
+        table {
+          thead {
             background: transparent;
-            color: $darkText;
-            line-height: 1.2;
+            th {
+              background: transparent;
+              color: $darkText;
+              line-height: 1.2;
+            }
+          }
+          td {
+            color: $darkGreyText;
           }
         }
-        td {
-          color: $darkGreyText;
+        .title {
+          font-weight: $fwRegular;
+          background: $darkGreyLight;
+          border: 0;
         }
-      }
-      .title {
-        font-weight: $fwRegular;
-        background: $darkGreyLight;
-        border: 0;
-      }
-      &.expenses {
-        background: $darkGrey;
-        border: 0;
-      }
-    }
-  }
-
-  #calendar-legend {
-    &#calendar-legend {
-      &.open {
-        background: $darkGrey !important;
-        border: 0 !important;
-
-        .MuiButtonBase-root {
-          svg {
-            color: $red !important;
-            opacity: 1 !important;
-          }
-        }
-
-        p {
-          &.currentUser {
-            color: #2ecc71;
-          }
-          &.coparent {
-            color: #8f7afa;
-          }
-          &.standard {
-            color: #f88379;
-          }
+        &.expenses {
+          background: $darkGrey;
+          border: 0;
         }
       }
     }
   }
 
   #activity-wrapper {
-    #activity-cards {
-      #row-wrapper {
-        .activity-row {
-          #date {
-            color: $darkText;
+    &.dark {
+      #activity-cards {
+        #row-wrapper {
+          .activity-row {
+            #date {
+              color: $darkText;
+            }
           }
         }
       }
@@ -236,14 +219,40 @@
         user-select: none;
       }
 
+      #page-overlay {
+        background-color: unset;
+      }
+
       b,
       span,
       p {
         color: $darkText;
       }
 
+      a {
+        color: $darkMainBlue;
+      }
+
+      #instructions-wrapper {
+        .instructions {
+          color: $darkGreyText;
+        }
+      }
+
       #medium-title {
         color: $darkText;
+      }
+
+      #doc-text {
+        color: $darkText;
+
+        .header {
+          background: $darkGreyLight;
+          &::after {
+            color: $red;
+            background: transparent;
+          }
+        }
       }
 
       #install-app-wrapper {
@@ -282,6 +291,10 @@
       #chat-wrapper {
         background: $darkBg;
         border: 1px solid $darkBorderColor;
+
+        @media screen and (max-width: 800px) {
+          border: 0;
+        }
 
         #user-info {
           svg {
@@ -436,6 +449,14 @@
 
       .views-wrapper {
         border-bottom: 1px solid $darkBorderColor;
+
+        .view {
+          &.active {
+            &:after {
+              border-bottom: 1px solid $darkIconGrey;
+            }
+          }
+        }
       }
 
       .checkbox-wrapper {
@@ -979,7 +1000,7 @@
 
             .react-toggle-track-check {
               height: 10px;
-              transform: scale(0.9);
+              transform: scale(0.7);
               top: -2px;
             }
           }
@@ -1003,15 +1024,33 @@
       // BOTTOM CARD
       #bottom-card {
         background: $darkBg;
+        border-top: 1px solid $darkBorderColor;
 
         #large-title {
           color: $darkMainBlue;
-          font-weight: $fwMediumBold;
+          font-weight: $fwMedium;
         }
 
         #details {
+          a {
+            &.nav-detail {
+              color: $darkMainBlue;
+              opacity: 1;
+              svg {
+                color: $darkMainBlue;
+              }
+
+              &:visited {
+                color: $darkMainBlue;
+              }
+            }
+          }
           .flex {
             border-bottom: 1px solid $darkBorderColor;
+            a {
+              color: $darkMainBlue;
+              opacity: 1;
+            }
           }
         }
 
@@ -1176,6 +1215,34 @@
       #calendar-container {
         border: 1px solid $darkBorderColor;
 
+        #calendar-legend {
+          &#calendar-legend {
+            &.open {
+              background: $darkGrey !important;
+              border: 0 !important;
+
+              .MuiButtonBase-root {
+                svg {
+                  color: $red !important;
+                  opacity: 1 !important;
+                }
+              }
+
+              p {
+                &.currentUser {
+                  color: #2ecc71;
+                }
+                &.coparent {
+                  color: #8f7afa;
+                }
+                &.standard {
+                  color: #f88379;
+                }
+              }
+            }
+          }
+        }
+
         @media screen and (max-width: 800px) {
           border: 0;
         }
@@ -1184,6 +1251,15 @@
           .event-row {
             border-bottom: 1px solid $darkBorderColor;
             .text {
+              * {
+                font-weight: $fwRegular;
+              }
+              #icon-row {
+                svg {
+                  color: $darkIconGrey;
+                  opacity: 1;
+                }
+              }
               #title-wrapper {
                 .title {
                   color: $darkText;
@@ -1206,19 +1282,11 @@
             b,
             span:not(.event-type-dot) {
               color: $darkGreyText;
-              //              opacity: 0.6;
 
               &.start-date,
               &#times,
               &.reminder-times {
-                //                opacity: 0.6;
                 color: $darkGreyText;
-              }
-            }
-
-            #children {
-              p {
-                //                opacity: 0.5;
               }
             }
           }

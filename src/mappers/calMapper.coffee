@@ -21,7 +21,7 @@ CalendarMapper =
     return readableTimes
 
   allUnformattedTimes: () ->
-    all = ["hour", "halfHour", "fiveMinutes", "timeOfEvent"]
+    all = ["timeOfEvent","fiveMinutes","halfHour","hour"]
     return all
 
   readableReminderBeforeTimeframes: (timeframe) ->
@@ -32,7 +32,7 @@ CalendarMapper =
     if Manager.contains(timeframe,'fiveMinutes', false)
       return  '5 minutes before'
     if Manager.contains(timeframe,'timeOfEvent', false)
-      return  'At time of event'
+      return  'At Event Time'
 
   readableRepeatIntervals: (selectedInterval) ->
     interval = null

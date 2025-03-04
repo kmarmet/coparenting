@@ -3,7 +3,7 @@ import ScreenNames from "./screenNames"
 StateObj =
   activeInfoChild: null
   activeInfoCoparent: [],
-  activityCount: 0,
+  notificationCount: 0,
   authUser: null
   childAccessGranted: false,
   currentScreen: ScreenNames.home
@@ -33,7 +33,7 @@ StateObj =
   viewTransferRequestForm: false
   setActiveInfoChild: (child) ->
   setActiveInfoCoparent: (coparent) ->
-  setActivityCount: (count) ->
+  setNotificationCount: (count) ->
   setAuthUser: (user) ->
   setChildAccessGranted: (bool) ->
   setContactInfoToUpdateType: ->

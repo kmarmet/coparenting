@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
 import DB_UserScoped from '/src/database/db_userScoped'
-import { FaChevronDown } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
@@ -13,9 +12,9 @@ import { IoCloseOutline, IoSchool } from 'react-icons/io5'
 import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
 import { FaPlus, FaMinus } from 'react-icons/fa6'
-export default function Schooling({ activeChild, setActiveChild }) {
+export default function Schooling() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, activeInfoChild } = state
   const [schoolingValues, setSchoolingValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
@@ -29,17 +28,17 @@ export default function Schooling({ activeChild, setActiveChild }) {
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await setSelectedChild()
     } else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'schooling', formatDbProp(prop))
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'schooling', StringManager.formatDbProp(prop))
       await setSelectedChild()
-      setActiveChild(updatedChild)
+      setState({ ...state, activeInfoChild: updatedChild })
     }
   }
 
   const update = async (prop, value) => {
     console.log(prop, value)
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', StringManager.formatDbProp(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'schooling', StringManager.formatDbProp(prop), value)
     AlertManager.successAlert('Updated!')
-    setActiveChild(updatedChild)
+    setState({ ...state, activeInfoChild: updatedChild })
   }
 
   const setSelectedChild = async () => {
@@ -48,9 +47,9 @@ export default function Schooling({ activeChild, setActiveChild }) {
     for (let obj of sharing) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
     }
-    if (Manager.isValid(activeChild?.schooling)) {
+    if (Manager.isValid(activeInfoChild?.schooling)) {
       // Set info
-      let values = Object.entries(activeChild?.schooling)
+      let values = Object.entries(activeInfoChild?.schooling)
 
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
@@ -67,21 +66,21 @@ export default function Schooling({ activeChild, setActiveChild }) {
 
   useEffect(() => {
     setSelectedChild()
-  }, [activeChild])
+  }, [activeInfoChild])
 
   return (
     <div className="info-section section schooling">
-      <Accordion className={theme} disabled={!Manager.isValid(activeChild?.schooling)}>
+      <Accordion className={theme} disabled={!Manager.isValid(activeInfoChild?.schooling)}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
-          className={!Manager.isValid(activeChild?.schooling) ? 'disabled header schooling' : 'header schooling'}>
+          className={!Manager.isValid(activeInfoChild?.schooling) ? 'disabled header schooling' : 'header schooling'}>
           <IoSchool className={'svg'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Schooling
-            {!Manager.isValid(activeChild?.schooling) ? '- No Info' : ''}
-            {Manager.isValid(activeChild?.schooling) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
+            {!Manager.isValid(activeInfoChild?.schooling) ? '- no info' : ''}
+            {Manager.isValid(activeInfoChild?.schooling) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
           </p>{' '}
-          {!Manager.isValid(activeChild?.schooling) ? '- No Info' : ''}
+          {!Manager.isValid(activeInfoChild?.schooling) ? '- no info' : ''}
         </AccordionSummary>
         <AccordionDetails>
           {Manager.isValid(schoolingValues) &&
@@ -91,12 +90,19 @@ export default function Schooling({ activeChild, setActiveChild }) {
               return (
                 <div key={index}>
                   <div className="flex input">
-                    <InputWrapper
-                      inputType={'input'}
-                      labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
-                      defaultValue={value}
-                      onChange={(e) => update(infoLabel, e.target.value)}
-                    />
+                    {infoLabel.toLowerCase().includes('phone') && (
+                      <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
+                        {infoLabel}: {value}
+                      </a>
+                    )}
+                    {!infoLabel.toLowerCase().includes('phone') && (
+                      <InputWrapper
+                        inputType={'input'}
+                        labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                        defaultValue={value}
+                        onChange={(e) => update(infoLabel, e.target.value)}
+                      />
+                    )}
                     <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                   </div>
                 </div>

@@ -36,7 +36,7 @@ CalendarMapper = {
   },
   allUnformattedTimes: function() {
     var all;
-    all = ["hour", "halfHour", "fiveMinutes", "timeOfEvent"];
+    all = ["timeOfEvent", "fiveMinutes", "halfHour", "hour"];
     return all;
   },
   readableReminderBeforeTimeframes: function(timeframe) {
@@ -50,7 +50,7 @@ CalendarMapper = {
       return '5 minutes before';
     }
     if (Manager.contains(timeframe, 'timeOfEvent', false)) {
-      return 'At time of event';
+      return 'At Event Time';
     }
   },
   readableRepeatIntervals: function(selectedInterval) {

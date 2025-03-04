@@ -64,9 +64,16 @@ export default AppManager = {
     }
     return timezone;
   },
-  getLocationDetails: async function(ipAddress) {
-    var error, location, myHeaders, requestOptions, response, result;
-    location = '';
+  getLocationDetails: async function() {
+    var error, ipAddress, location, myHeaders, ref1, ref2, ref3, ref4, ref5, requestOptions, response, result;
+    ipAddress = (await AppManager.getIPAddress());
+    location = {
+      city: '',
+      timezone: '',
+      country: '',
+      latitude: '',
+      longitude: ''
+    };
     myHeaders = new Headers();
     myHeaders.append("x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY);
     requestOptions = {
@@ -77,9 +84,15 @@ export default AppManager = {
     try {
       response = (await fetch(`https://api.manyapis.com/v1-get-ip-detail?ip=${ipAddress}`, requestOptions));
       result = (await response.json());
-      location = result;
-      console.log(result);
+      location.ipAddress = ipAddress;
+      location.city = result != null ? (ref1 = result.city) != null ? ref1.name : void 0 : void 0;
+      location.country = result != null ? (ref2 = result.country) != null ? ref2.name : void 0 : void 0;
+      location.latitude = result != null ? (ref3 = result.city) != null ? ref3.latitude : void 0 : void 0;
+      location.longitude = result != null ? (ref4 = result.city) != null ? ref4.longitude : void 0 : void 0;
+      location.timezone = result != null ? (ref5 = result.city) != null ? ref5.timezone : void 0 : void 0;
     } catch (error1) {
+      //      console.log(location)
+      //      console.log result
       error = error1;
       console.error(error);
     }

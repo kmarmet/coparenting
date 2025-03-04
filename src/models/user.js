@@ -8,7 +8,14 @@ import moment from 'moment';
 import DateFormats from '../constants/dateFormats';
 
 export default User = class User {
-  constructor(id = Manager.getUid(), key = '', name = '', email = '', phone = '', children = [], childAccounts = [], coparents = [], parentType = '', accountType = '', settings = {
+  constructor(id = Manager.getUid(), key = '', name = '', email = '', phone = '', children = [], childAccounts = [], coparents = [], parentType = '', accountType = '', location = {
+      country: '',
+      city: '',
+      state: '',
+      latitude: '',
+      location: '',
+      timezone: ''
+    }, settings = {
       theme: 'light',
       notificationsEnabled: true
     }, dailySummaries = {
@@ -32,6 +39,7 @@ export default User = class User {
     this.coparents = coparents;
     this.parentType = parentType;
     this.accountType = accountType;
+    this.location = location;
     this.settings = settings;
     this.dailySummaries = dailySummaries;
     this.visitation = visitation;

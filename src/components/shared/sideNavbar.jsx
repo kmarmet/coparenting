@@ -30,7 +30,7 @@ import { Fade } from 'react-awesome-reveal'
 
 export default function SideNavbar() {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser, currentScreen, activityCount } = state
+  const { theme, currentUser, currentScreen, notificationCount } = state
 
   const auth = getAuth()
 
@@ -164,13 +164,13 @@ export default function SideNavbar() {
                 <p>Coparents</p>
               </div>
 
-              {/* ACTIVITY */}
+              {/* NOTIFICATIONS */}
               <div
-                className={`menu-item activity ${currentScreen === ScreenNames.activity ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.activity)}>
+                className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}
+                onClick={() => changeCurrentScreen(ScreenNames.notifications)}>
                 <RxActivityLog />
-                <p className="flex">Activity</p>
-                {activityCount > 0 && <span>{activityCount}</span>}
+                <p className="flex">Notifications</p>
+                {notificationCount > 0 && <span>{notificationCount}</span>}
               </div>
             </>
           )}

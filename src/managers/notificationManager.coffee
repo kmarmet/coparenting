@@ -2,8 +2,7 @@ import DB from '../../src/database/DB'
 import OneSignal from 'react-onesignal'
 import Manager from "./manager.js"
 import NotificationSubscriber from "../models/notificationSubscriber"
-import Activity from "../models/activity"
-import DB_UserScoped from "../database/db_userScoped.js"
+import Notification from "../models/notification"
 
 export default NotificationManager =
   currentUser: null
@@ -130,20 +129,20 @@ export default NotificationManager =
       redirect: "follow"
     }
 
-    # Add activity to database
-    newActivity = new Activity()
-    newActivity.id = Manager.getUid()
-    newActivity.recipientKey = recipientKey
-    newActivity.ownerKey = currentUser?.key
-    newActivity.sharedByName = currentUser?.name
-    newActivity.title = title
-    newActivity.text = message
-    newActivity.category = category
+    # Add notification to database
+    newNotification = new Notification()
+    newNotification.id = Manager.getUid()
+    newNotification.recipientKey = recipientKey
+    newNotification.ownerKey = currentUser?.key
+    newNotification.sharedByName = currentUser?.name
+    newNotification.title = title
+    newNotification.text = message
+    newNotification.category = category
 
-    await DB.add "#{DB.tables.activities}/#{recipientKey}", newActivity
+    await DB.add "#{DB.tables.notifications}/#{recipientKey}", newNotification
 
     # Do not send notification in dev
-    if !window.location.href.includes("localhostsssss")
+    if !window.location.href.includes("localhost")
       fetch "https://api.onesignal.com/notifications", requestOptions
         .then (response) -> response.text()
         .then (result) ->
