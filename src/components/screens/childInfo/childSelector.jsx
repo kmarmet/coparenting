@@ -29,7 +29,7 @@ function ChildSelector({ hideCard, showCard }) {
       showCard={showCard}
       wrapperClass="child-selector-card"
       className={`child-selector`}>
-      <div className=" mt-15" id="child-selector">
+      <div className="mt-15" id="child-selector">
         {Manager.isValid(children) &&
           children.map((child, index) => {
             return (
@@ -38,6 +38,7 @@ function ChildSelector({ hideCard, showCard }) {
                 id="children-container"
                 onClick={() => {
                   hideCard()
+                  console.log(child.general.name)
                   setState({ ...state, activeInfoChild: child })
                 }}>
                 {Manager.isValid(child?.general['profilePic']) && (
@@ -45,7 +46,7 @@ function ChildSelector({ hideCard, showCard }) {
                 )}
                 {!Manager.isValid(child?.general['profilePic']) && (
                   <div className="profile-pic-container no-image">
-                    <p>{child?.general?.name[0]}</p>
+                    <p>{StringManager.uppercaseFirstLetterOfAllWords(child?.general?.name[0])}</p>
                   </div>
                 )}
                 <p className={`child-name ${child?.general?.name === child?.general?.name ? 'active' : ''}`}>

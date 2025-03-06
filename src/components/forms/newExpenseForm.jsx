@@ -145,7 +145,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
 
     // IMAGE UPLOAD
     if (Manager.isValid(expenseImage?.name)) {
-      await FirebaseStorage.upload(FirebaseStorage.directories.expenseImages, currentUser?.id, expenseImage, expenseImage.name).then((url) => {
+      await FirebaseStorage.upload(FirebaseStorage.directories.expenseImages, currentUser?.key, expenseImage, expenseImage.name).then((url) => {
         newExpense.imageUrl = url
       })
     }

@@ -147,7 +147,6 @@ export default function SideNavbar() {
                 <PiImagesSquareDuotone />
                 <p>Memories</p>
               </div>
-
               {/* CHILD INFO */}
               <div
                 className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
@@ -155,7 +154,6 @@ export default function SideNavbar() {
                 <BiFace />
                 <p>Child Info</p>
               </div>
-
               {/* COPARENTS */}
               <div
                 className={`menu-item coparents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
@@ -163,7 +161,7 @@ export default function SideNavbar() {
                 <BsPeople />
                 <p>Coparents</p>
               </div>
-
+              $accentBlue
               {/* NOTIFICATIONS */}
               <div
                 className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}

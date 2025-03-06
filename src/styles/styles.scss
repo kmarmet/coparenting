@@ -229,6 +229,11 @@
     }
   }
 
+  &.memories-fade-wrapper {
+    &:has(> #instructions-wrapper) {
+    }
+  }
+
   &.side-navbar-fade-wrapper {
     align-self: stretch;
   }
@@ -321,6 +326,13 @@
       @include table;
     }
 
+    a {
+      color: $mainBlue;
+      text-decoration: none;
+      border-bottom: 1px solid $mainBlue;
+      line-height: 1;
+    }
+
     svg {
       font-size: 30px;
     }
@@ -331,7 +343,6 @@
       width: 100%;
       margin: 20px auto;
 
-      //      background-image: -webkit-gradient( linear, left bottom, right bottom, color-stop(0.04, #f4f8fb), color-stop(0.5, #9b9b9b), color-stop(0.98, white) );
       &.event-hr {
         margin: 10px auto;
         width: 70%;
@@ -369,6 +380,24 @@
     .mui-input {
       &::placeholder {
         font-size: 12px !important;
+      }
+    }
+
+    .label {
+      color: #000;
+      opacity: 0.75;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.3s ease-in-out;
+
+      &.child-info {
+        color: $linkColor;
+        text-decoration: none;
+        border: 0;
+        opacity: 1;
+        font-size: 14px;
+        margin-left: 10px;
       }
     }
 
@@ -485,10 +514,6 @@
 
     #install-app-wrapper {
       @include installApp;
-    }
-
-    .time-inputs-wrapper {
-      margin-top: 10px;
     }
 
     .string-as-html {

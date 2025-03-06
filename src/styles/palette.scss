@@ -1,10 +1,10 @@
 /*#region  BASE COLORS */
-$green: #2ecc71;
-$red: #d57179;
-$accentBlue: #4690ff;
+$green: #64ce76;
+$red: #d92f54;
+$accentBlue: #3b4dff;
+$lightAccentBlue: rgba(208, 215, 248, 0.32);
 $accentBlueBg: rgba(70, 144, 255, 0.15);
-// BOOTSTRAP RED
-$bootstrapBgRed: #ffeff3;
+$bootstrapBgRed: rgba(255, 231, 235, 0.65);
 $bootstrapRedBorder: #f5c2c7;
 $bootstrapRedColor: #842029;
 $bootstrapBgGreen: #d1e7dd;
@@ -29,27 +29,28 @@ $lightBlue: #e2ecff;
 $lightestGreen: rgba(173, 245, 203, 0.65);
 /*#endregion  BASE COLORS */
 
-/*#region  BLACKS (NOT NEGROES)*/
+/*#region  BLACKS (NOT NEGROS)*/
 $black: #232323;
 $lightBlack: #1c1c1c;
 $translucent: rgba(255, 255, 255, 0.02);
 $translucentLighter: rgba(255, 255, 255, 0.05);
 $translucentLightest: rgba(255, 255, 255, 0.09);
 $anotherBlack: #12130f;
-/*#endregion  BLACKS (NOT NEGROES)*/
+/*#endregion  BLACKS (NOT NEGROS)*/
 
 /*#region  GREYS*/
-$borderColor: rgba(232, 235, 236, 0.47);
+$borderColor: rgba(232, 235, 236, 0.17);
+$mediumGrey: #e0e0e0;
 $borderColorDark: #c0c2c4;
-$lightestGrey: #f3f7fa;
-$lightGrey: #e4e4e4;
+$lightestGrey: #fafafa;
+$lightGrey: #f1f1f1;
 $offWhite: #e6e6e6;
 $buttonGrey: #efefef;
+$darkGrey: #757575;
 $iconGrey: #e3e8ee;
 $bestGreyForWhite: #f2f4f5;
 $bestGreyForWhite2: #eeeeec;
 $desktopBorderColor: #e0e0e0;
-$mediumGrey: #b6b6b6;
 /*#endregion  GREYS*/
 
 /*#region  VISITATION COLORS*/
@@ -66,11 +67,10 @@ $darkGreyText: #89868f;
 $darkIconGrey: #4e4d57;
 $darkGreyLight: #1f1f23;
 $darkPurple: #808cf8;
-$darkGrey: #1a191c;
 $darkText: #c2c1c6;
 $darkLightPurple: #aaa8cc;
 $darkLightBg: #13112f;
-$darkGreen: #00c899;
+$darkGreen: $green;
 $darkBlue: #5c8df7;
 $darkBlueMedium: #4c6fff;
 $darkMainBlue: $darkBlueMedium;
@@ -82,6 +82,7 @@ $darkBorderColor: #252327;
 /*#endregion  Dark Theme*/
 
 /*#region  LIGHT THEME*/
+$lightBg: white;
 $lightBlueDark: #00319f;
 $lightBlueLightDark: #0049be;
 $lightBlueMedium: #4c6fff;
@@ -90,7 +91,6 @@ $lightIconBgBlue: #dde5ff;
 $lightestBlue: #d3eafd;
 $lightMenuBg: white;
 $lightBorder: #e7e9ee;
-$lightBg: white;
 $lightDesktopBg: #f3f7fa;
 $lightBlackLight: #1c1c1c;
 $lightBlue: #edf2fd;

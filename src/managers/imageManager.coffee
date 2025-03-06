@@ -101,7 +101,7 @@ ImageManager =
     allMemories = []
     memories = await SecurityManager.getMemories(currentUser)
     allMemories = memories
-    await FirebaseStorage.getImages(FirebaseStorage.directories.memories, currentUser.id).then (imgPromises) ->
+    await FirebaseStorage.getImages(FirebaseStorage.directories.memories, currentUser.key).then (imgPromises) ->
       await Promise.all(imgPromises).then (images) ->
         if images.length > 0
           allMemories.push(images)
@@ -122,7 +122,7 @@ ImageManager =
       images: newArray
 
     DB.updateRecord(DB.tables.users, currentUser, 'memories', newMemoryObj)
-    FirebaseStorage.delete(directory, currentUser.id, imageName)
+    FirebaseStorage.delete(directory, currentUser.key, imageName)
 
   createImage: (url) ->
     image = new Image()

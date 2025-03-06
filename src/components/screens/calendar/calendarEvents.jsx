@@ -9,7 +9,6 @@ import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
 import { CgDetailsMore } from 'react-icons/cg'
 import { FaChildren } from 'react-icons/fa6'
-import { LiaMapMarkedAltSolid } from 'react-icons/lia'
 import { MdLocalPhone } from 'react-icons/md'
 import { PiBellSimpleRingingDuotone, PiGlobeDuotone } from 'react-icons/pi'
 import { useSwipeable } from 'react-swipeable'
@@ -18,14 +17,11 @@ import AlertManager from '../../../managers/alertManager'
 import DB from '../../../database/DB'
 import SecurityManager from '../../../managers/securityManager'
 import CalendarManager from '../../../managers/calendarManager'
+import { TbLocationFilled } from 'react-icons/tb'
 
 export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (event) => {} }) {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser, authUser } = state
-  // const [holidays, setHolidays] = useState([])
-  // const [showHolidays, setShowHolidays] = useState(false)
-  //
-  // const [searchResults, setSearchResults] = useState([])
+  const { theme, currentUser, refreshKey } = state
 
   const handlers = useSwipeable({
     onSwipedLeft: async (eventData) => {
@@ -131,20 +127,26 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
 
   return (
     <>
-      <div className="events">
-        <Fade direction={'up'} delay={0} duration={800} className={'calendar-events-fade-wrapper'} triggerOnce={true}>
-          {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">No events on this day</p>}
-          {Manager.isValid(eventsOfActiveDay) &&
-            eventsOfActiveDay.map((event, index) => {
-              let startDate = event?.startDate
-              if (event?.isDateRange) {
-                startDate = event?.staticStartDate
-              }
-              let dotObjects = getRowDotColor(event.startDate)
-              const dotObject = dotObjects?.filter((x) => x.id === event.id)[0]
-              return (
+      <div className="events" key={refreshKey}>
+        {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">No events on this day</p>}
+        {Manager.isValid(eventsOfActiveDay) &&
+          eventsOfActiveDay.map((event, index) => {
+            let startDate = event?.startDate
+            if (event?.isDateRange) {
+              startDate = event?.staticStartDate
+            }
+            let dotObjects = getRowDotColor(event.startDate)
+            const dotObject = dotObjects?.filter((x) => x.id === event.id)[0]
+            return (
+              <Fade
+                key={index}
+                direction={'up'}
+                delay={0}
+                duration={800}
+                cascade={true}
+                className={'calendar-events-fade-wrapper'}
+                triggerOnce={true}>
                 <div
-                  key={index}
                   onClick={(e) => {
                     if (!e.target.classList.contains('delete-event-button')) {
                       handleEventRowClick(event).then((r) => r)
@@ -207,16 +209,16 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
                         {Manager.isValid(event?.notes) && <CgDetailsMore />}
                         {Manager.isValid(event?.websiteUrl) && <PiGlobeDuotone />}
                         {Manager.isValid(event?.phone) && <MdLocalPhone />}
-                        {Manager.isValid(event?.location) && <LiaMapMarkedAltSolid />}
+                        {Manager.isValid(event?.location) && <TbLocationFilled />}
                         {Manager.isValid(event?.children) && <FaChildren />}
                       </div>
                     )}
                   </div>
                   <div className="delete-event-button">DELETE</div>
                 </div>
-              )
-            })}
-        </Fade>
+              </Fade>
+            )
+          })}
       </div>
     </>
   )

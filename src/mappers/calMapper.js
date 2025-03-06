@@ -50,7 +50,7 @@ CalendarMapper = {
       return '5 minutes before';
     }
     if (Manager.contains(timeframe, 'timeOfEvent', false)) {
-      return 'At Event Time';
+      return 'At event time';
     }
   },
   readableRepeatIntervals: function(selectedInterval) {

@@ -25,6 +25,11 @@
 
   #static-calendar {
     &.dark {
+      #legend-wrapper {
+        &#legend-wrapper {
+          border-bottom: 1px solid $darkMainBlue;
+        }
+      }
       .MuiPickersMonth-monthButton {
         color: $darkText;
       }
@@ -107,12 +112,6 @@
           background: $darkBg !important;
         }
       }
-    }
-  }
-
-  #legend-wrapper {
-    &#legend-wrapper {
-      border-bottom: 1px solid $darkMainBlue;
     }
   }
 

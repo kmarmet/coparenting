@@ -6,6 +6,8 @@ import { CgClose } from 'react-icons/cg'
 import Manager from '/src/managers/manager.js'
 import DB_UserScoped from '../../database/db_userScoped'
 import StringManager from '../../managers/stringManager'
+import { FaMinus } from 'react-icons/fa'
+
 export default function BottomCard({
   submitText,
   submitIcon,
@@ -108,7 +110,7 @@ export default function BottomCard({
       <div id="relative-wrapper">
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
-          <CgClose
+          <FaMinus
             className="close-icon"
             onClick={() => {
               const pageOverlay = document.getElementById('page-overlay')

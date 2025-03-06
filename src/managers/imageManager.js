@@ -123,7 +123,7 @@ ImageManager = {
     allMemories = [];
     memories = (await SecurityManager.getMemories(currentUser));
     allMemories = memories;
-    await FirebaseStorage.getImages(FirebaseStorage.directories.memories, currentUser.id).then(async function(imgPromises) {
+    await FirebaseStorage.getImages(FirebaseStorage.directories.memories, currentUser.key).then(async function(imgPromises) {
       return (await Promise.all(imgPromises).then(function(images) {
         if (images.length > 0) {
           return allMemories.push(images);
@@ -147,7 +147,7 @@ ImageManager = {
       images: newArray
     };
     DB.updateRecord(DB.tables.users, currentUser, 'memories', newMemoryObj);
-    return FirebaseStorage.delete(directory, currentUser.id, imageName);
+    return FirebaseStorage.delete(directory, currentUser.key, imageName);
   },
   createImage: function(url) {
     var image;

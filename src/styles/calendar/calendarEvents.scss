@@ -35,13 +35,6 @@
           opacity: 1;
         }
 
-        svg {
-          font-size: 20px;
-          margin-right: 8px;
-          color: black;
-          opacity: 0.5;
-        }
-
         #children {
           margin-bottom: 5px;
           margin-left: auto;
@@ -82,7 +75,6 @@
             max-width: 300px;
             opacity: 1;
             transition: all 0.5s ease-in-out;
-            //            @include shadow;
             border-radius: 6px;
           }
         }
@@ -95,10 +87,12 @@
 
           #icon-row {
             padding: 8px 0 5px 20px;
+            gap: 5px;
+            align-items: center;
 
             svg {
-              font-size: 18px;
-              opacity: 0.45;
+              font-size: 17px;
+              color: #b0b0b0;
             }
           }
 

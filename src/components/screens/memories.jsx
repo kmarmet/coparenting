@@ -13,7 +13,6 @@ import moment from 'moment'
 import { Fade } from 'react-awesome-reveal'
 import { LuImagePlus } from 'react-icons/lu'
 import ImageManager from '../../managers/imageManager'
-import { IoIosCloseCircle } from 'react-icons/io'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
 import DateFormats from '../../constants/dateFormats'
@@ -32,12 +31,10 @@ export default function Memories() {
   const getSecuredMemories = async () => {
     let all = await SecurityManager.getMemories(currentUser)
     if (Manager.isValid(all)) {
-      // setState({ ...state, isLoading: true })
       let validImages = []
       for (const memory of all) {
         if (Manager.isValid(memory.url)) {
           const imageStatusCode = await ImageManager.getStatusCode(memory?.url)
-          console.log(imageStatusCode)
           if (imageStatusCode === 404) {
             // Delete memory if no longer in Firebase Storage
             await DB.deleteMemory(currentUser?.key, memory)
@@ -48,17 +45,9 @@ export default function Memories() {
         }
       }
       validImages = validImages.filter((x) => x)
-      console.log(validImages)
       if (currentUser) {
         if (Manager.isValid(validImages)) {
-          console.log(validImages)
           setMemories(validImages)
-          setTimeout(() => {
-            setState({ ...state, isLoading: false })
-          }, 600)
-          setTimeout(() => {
-            addImageAnimation()
-          }, 200)
         } else {
           setState({ ...state, isLoading: false })
           setMemories([])
@@ -70,17 +59,23 @@ export default function Memories() {
     }
   }
 
-  const deleteMemory = async (path, record) => {
+  const deleteMemory = async (path, record, deleteButton) => {
     document.querySelectorAll('.memory-image').forEach((memoryImage) => memoryImage.classList.remove('active'))
-    setState({ ...state, isLoading: true })
     const imageName = FirebaseStorage.getImageNameFromUrl(path)
+    const imageToRemove = deleteButton.closest('.memory').querySelector('#memory-image-wrapper')
+    const deleteButtonParent = deleteButton.parentNode
+
+    if (Manager.isValid(imageToRemove) && Manager.isValid(deleteButtonParent)) {
+      deleteButtonParent.remove()
+      imageToRemove.remove()
+    }
 
     // Current user is record owner
     if (record.ownerKey === currentUser?.key) {
       // Delete from Firebase Realtime DB
       await DB.deleteMemory(currentUser?.key, record).then(async () => {
         // Delete from Firebase Storage
-        await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.id, imageName)
+        await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.key, imageName)
       })
     }
     // Memory was shared with current user -> hide it
@@ -89,21 +84,6 @@ export default function Memories() {
       const updatedShareWith = record.shareWith.filter((x) => x !== currentUser?.key)
       await DB.updateByPath(`${DB.tables.memories}/${memoryKey}/shareWith`, updatedShareWith)
     }
-  }
-
-  const addImageAnimation = async () => {
-    document.querySelectorAll('.memory-image').forEach((memoryImage, i) => {
-      setTimeout(() => {
-        setTimeout(() => {
-          const parent = memoryImage.parentNode
-          const loadingGif = parent.querySelector('.loading-memory-gif')
-          if (loadingGif) {
-            loadingGif.remove()
-          }
-          memoryImage.classList.add('active')
-        }, 200 * i)
-      }, 500)
-    })
   }
 
   const saveMemoryImage = (e) => {
@@ -123,6 +103,12 @@ export default function Memories() {
   }
 
   useEffect(() => {
+    setTimeout(() => {
+      const skeleton = document.getElementById('skeleton')
+      if (Manager.isValid(skeleton)) {
+        skeleton.style.display = 'none'
+      }
+    }, 1500)
     onTableChange().then((r) => r)
   }, [])
 
@@ -133,7 +119,7 @@ export default function Memories() {
 
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
-        <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
+        <Fade direction={'up'} duration={1000} className={'memories-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Memories</p>
             {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />}
@@ -145,52 +131,53 @@ export default function Memories() {
           {memories && memories.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories available'} />}
           {/* GALLERY */}
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
-            <>
-              {Manager.isValid(memories) &&
-                memories.map((imgObj, index) => {
-                  return (
-                    <div key={index} className="memory">
-                      {/* TITLE AND DATE */}
-                      {imgObj?.title.length > 0 && (
-                        <div id="title-and-date">
-                          {/* TITLE */}
-                          <p className="title">{StringManager.uppercaseFirstLetterOfAllWords(imgObj.title)}</p>
+            <Fade direction={'up'} duration={1000} className={'memories-fade-wrapper'} triggerOnce={true}>
+              <>
+                {Manager.isValid(memories) &&
+                  memories.map((imgObj, index) => {
+                    return (
+                      <div key={index} className="memory">
+                        {/* TITLE AND DATE */}
+                        {imgObj?.title.length > 0 && (
+                          <div id="title-and-date">
+                            {/* TITLE */}
+                            <p className="title">{StringManager.formatTitleWords(StringManager.uppercaseFirstLetterOfAllWords(imgObj.title))}</p>
 
-                          {/* DATE */}
-                          {DateManager.dateIsValid(imgObj.memoryCaptureDate) && (
-                            <p id="date">{moment(imgObj.memoryCaptureDate).format(DateFormats.readableMonthAndDay)}</p>
-                          )}
+                            {/* DATE */}
+                            {DateManager.dateIsValid(imgObj.memoryCaptureDate) && (
+                              <p id="date">{moment(imgObj.memoryCaptureDate).format(DateFormats.readableMonthAndDay)}</p>
+                            )}
+                          </div>
+                        )}
+                        {Manager.isValid(imgObj?.notes) && <p className="notes">{imgObj?.notes}</p>}
+
+                        {/* IMAGE */}
+                        <div id="memory-image-wrapper">
+                          <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}></div>
                         </div>
-                      )}
 
-                      {/* IMAGE */}
-                      <div id="memory-image-wrapper">
-                        {/* eslint-disable-next-line no-undef*/}
-                        <img src={require('../../img/loading.gif')} className="loading-memory-gif" alt="" />
-                        <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}>
-                          {/* DELETE ICON */}
-                          <IoIosCloseCircle className={'delete-icon'} onClick={() => deleteMemory(imgObj.url, imgObj)} />
+                        {/* NOTES */}
+                        <div id="below-image">
+                          {/* SAVE ICON */}
+                          <p onClick={(e) => deleteMemory(imgObj.url, imgObj, e.currentTarget)} id="delete-button">
+                            DELETE
+                          </p>
+                          {/* SAVE ICON */}
+                          <p onClick={(e) => saveMemoryImage(e)} id="download-text">
+                            DOWNLOAD
+                          </p>
                         </div>
                       </div>
-
-                      {/* NOTES */}
-                      <div id="below-image" className="flex">
-                        <p className="text">{StringManager.capitalizeFirstWord(imgObj?.notes)}</p>
-
-                        {/* SAVE ICON */}
-                        <p onClick={(e) => saveMemoryImage(e)} id="download-text">
-                          DOWNLOAD
-                        </p>
-                      </div>
-                    </div>
-                  )
-                })}
-            </>
+                    )
+                  })}
+              </>
+            </Fade>
           </LightGallery>
+
           {memories.length > 0 && (
             <div id="disclaimer">
               <p className="blue">
-                All images will be automatically (and permanently) deleted after 30 days from their creation date. Feel free to download them at any
+                All images will be automatically and permanently removed 30 days after their creation date. You are welcome to download them at any
                 time.
               </p>
             </div>

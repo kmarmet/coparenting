@@ -25,7 +25,7 @@ import ActivityCategory from '/src/models/activityCategory'
 import StringManager from '/src/managers/stringManager'
 import DB_UserScoped from '../../database/db_userScoped'
 import DomManager from '../../managers/domManager'
-import DocumentConversionManager from '../../managers/documentConversionManager'
+import { LuImagePlus } from 'react-icons/lu'
 
 export default function NewMemoryForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -57,6 +57,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
 
     if (validAccounts > 0) {
       if (newMemory.shareWith.length === 0) {
+        setState({ ...state, showAlert: true })
         AlertManager.throwError('Please choose who you would like to share this memory with')
         return false
       }
@@ -101,7 +102,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
     hideCard()
 
     // Upload Image
-    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.id, localImages)
+    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.key, localImages)
       .then(() => {
         const checkedCheckbox = document.querySelector('.share-with-container .box.active')
         if (checkedCheckbox) {
@@ -110,7 +111,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
       })
       .finally(async () => {
         // Add memories to 'memories' property for currentUser
-        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.memories, currentUser?.id, localImages).then(async (urls) => {
+        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.memories, currentUser?.key, localImages).then(async (urls) => {
           // Add to user memories object
           for (const url of urls) {
             const imageName = FirebaseStorage.getImageNameFromUrl(url)
@@ -155,6 +156,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
       wrapperClass="new-memory"
       refreshKey={refreshKey}
       submitText={'Add Memory'}
+      submitIcon={<LuImagePlus />}
       title={'New Memory'}
       onClose={resetForm}
       showCard={showCard}>

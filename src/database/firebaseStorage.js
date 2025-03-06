@@ -255,10 +255,10 @@ const FirebaseStorage = {
         // Uh-oh, an error occurred!
       })
   },
-  deleteDirectory: async (directoryName, currentUserId) => {
+  deleteDirectory: async (directoryName, currentUserKey) => {
     const storage = getStorage()
     // Create a reference to the folder you want to delete
-    const folderRef = ref(storage, `${directoryName}/${currentUserId}`)
+    const folderRef = ref(storage, `${directoryName}/${currentUserKey}`)
 
     // List all the files in the folder
     listAll(folderRef)

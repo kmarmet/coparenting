@@ -27,6 +27,7 @@ import Label from '../../shared/label.jsx'
 import DatasetManager from '../../../managers/datasetManager.coffee'
 import { FaFileImage, FaLightbulb } from 'react-icons/fa6'
 import { IoClose } from 'react-icons/io5'
+
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
   const { state, setState } = useContext(globalState)
@@ -34,7 +35,6 @@ export default function DocViewer() {
   const [tocHeaders, setTocHeaders] = useState([])
   const [showToc, setShowToc] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
-  const [textWithHeaders, setTextWithHeaders] = useState('')
   const [imgUrl, setImgUrl] = useState('')
   const [docType, setDocType] = useState('document')
   const [showTips, setShowTips] = useState(false)
@@ -58,7 +58,6 @@ export default function DocViewer() {
 
   const onLoad = async () => {
     const fileType = `.${StringManager.getFileExtension(docToView.name)}`.toLowerCase()
-    setTextWithHeaders('')
     setIsFormatting(true)
     const nonImageFileTypes = ['.docx', '.doc', '.pdf', '.odt', '.txt']
     if (currentUser && nonImageFileTypes.includes(fileType)) {
@@ -102,10 +101,8 @@ export default function DocViewer() {
     if (Manager.isValid(searchValue, true)) {
       const docText = document.getElementById('doc-text')
       let textAsHtml = docText.innerHTML
-      setTextWithHeaders('')
       textAsHtml = searchTextHL.highlight(textAsHtml, searchValue)
       textAsHtml = textAsHtml.replaceAll('<span class=" text-highlight"="', '')
-      setTextWithHeaders(textAsHtml)
       setTimeout(() => {
         let headers = docText.querySelectorAll('.header')
         for (let header of headers) {
@@ -147,7 +144,6 @@ export default function DocViewer() {
           AlertManager.throwError(
             'Unable to find or convert document, please try again after awhile. In the meantime, you can view the document image while this is being resolved.'
           )
-          setTextWithHeaders('')
           setState({ ...state, isLoading: false, loadingText: '' })
           return false
         }
@@ -244,7 +240,6 @@ export default function DocViewer() {
     //#endregion VALIDATION
 
     // APPEND HTML
-    setTextWithHeaders(docHtml)
 
     //#region STYLING/FORMATTING
     setTimeout(async () => {
@@ -522,8 +517,8 @@ export default function DocViewer() {
       {/* SEARCH CARD */}
       <BottomCard
         wrapperClass="doc-search-card"
-        hasSubmitButton={false}
         className="form search-card"
+        submitText={'Find Text'}
         showCard={showSearch}
         title={'Search'}
         showOverlay={false}

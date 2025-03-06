@@ -18,7 +18,7 @@ export default function CheckboxGroup({ onCheck, elClass = '', skipNameFormattin
             <Label text={parentLabel} required={required} />
           </div>
         )}
-        <div id="checkboxes">
+        <div id="checkboxes" className={checkboxArray.length > 2 ? 'more-than-two-checkboxes' : 'two-checkboxes'}>
           {Manager.isValid(checkboxArray) &&
             checkboxArray.map((obj, index) => {
               let label = obj.label

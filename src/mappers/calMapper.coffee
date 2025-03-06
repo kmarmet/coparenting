@@ -32,7 +32,7 @@ CalendarMapper =
     if Manager.contains(timeframe,'fiveMinutes', false)
       return  '5 minutes before'
     if Manager.contains(timeframe,'timeOfEvent', false)
-      return  'At Event Time'
+      return  'At event time'
 
   readableRepeatIntervals: (selectedInterval) ->
     interval = null

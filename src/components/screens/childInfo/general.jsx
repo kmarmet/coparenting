@@ -40,8 +40,10 @@ function General() {
   const setSelectedChild = async () => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
     let sharedValues = []
-    for (let obj of sharing) {
-      sharedValues.push([obj.prop, obj.value, obj.sharedByName])
+    if (Manager.isValid(sharing)) {
+      for (let obj of sharing) {
+        sharedValues.push([obj.prop, obj.value, obj.sharedByName])
+      }
     }
     if (Manager.isValid(activeInfoChild?.general)) {
       // Set info
@@ -62,8 +64,8 @@ function General() {
 
   const update = async (prop, value) => {
     AlertManager.successAlert('Updated!')
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', StringManager.formatDbProp(prop), value)
-    setState({ ...state, activeInfoChild: updatedChild })
+    console.log(StringManager.formatDbProp(prop))
+    await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', StringManager.formatDbProp(prop), value)
   }
 
   useEffect(() => {
@@ -71,7 +73,7 @@ function General() {
   }, [activeInfoChild])
 
   return (
-    <div className="info-section section general form">
+    <div key={activeInfoChild?.id} className="info-section section general form">
       <Accordion className={`${theme} child-info`} expanded={showInputs}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
@@ -86,19 +88,15 @@ function General() {
         <AccordionDetails>
           {Manager.isValid(generalValues) &&
             generalValues.map((prop, index) => {
-              let infoLabel = StringManager.uppercaseFirstLetterOfAllWords(StringManager.spaceBetweenWords(prop[0]).replaceAll('OF', ' of '))
+              let infoLabel = StringManager.spaceBetweenWords(prop[0])
               const value = prop[1]
               return (
                 <div key={index}>
                   {prop[0] !== 'profilePic' && (
                     <div className="flex input">
                       {Manager.contains(infoLabel.toLowerCase(), 'address') && (
-                        <InputWrapper
-                          inputType={'location'}
-                          defaultValue={value}
-                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}>
+                        <InputWrapper inputType={'location'} labelText={`ADDRESS: ${value.replace(/\d{5}/, '').replaceAll(', USA', '')}`}>
                           <AddressInput
-                            defaultValue={value}
                             onSelection={async (place) => {
                               await update('address', place)
                             }}
@@ -108,7 +106,7 @@ function General() {
                       {!Manager.contains(infoLabel.toLowerCase(), 'address') && (
                         <>
                           {infoLabel.toLowerCase().includes('phone') && (
-                            <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
+                            <a className="label child-info" href={`tel:${StringManager.formatPhone(value).toString()}`}>
                               {infoLabel}: {value}
                             </a>
                           )}

@@ -22,6 +22,9 @@ import Spacer from '../../shared/spacer'
 import DomManager from '../../../managers/domManager.js'
 import AddressInput from '/src/components/shared/addressInput.jsx'
 import StringManager from '../../../managers/stringManager.js'
+import CalendarManager from '../../../managers/calendarManager'
+import CalendarEvent from '../../../models/calendarEvent'
+
 const NewChildForm = ({ hideCard, showCard }) => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, authUser, refreshKey } = state
@@ -40,7 +43,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
     setGender('male')
     setDateOfBirth('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser })
+    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
 
   const submit = async () => {
@@ -75,6 +78,13 @@ const NewChildForm = ({ hideCard, showCard }) => {
       }
       const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.child)
 
+      const childBirthdayEvent = new CalendarEvent()
+      childBirthdayEvent.title = `${cleanChild.general.name}'s Birthday 🎂`
+      childBirthdayEvent.startDate = cleanChild.general.dateOfBirth
+      childBirthdayEvent.ownerKey = currentUser.key
+      console.log(childBirthdayEvent)
+      await CalendarManager.addCalendarEvent(currentUser, childBirthdayEvent)
+
       // Add child to DB
       await DB_UserScoped.addUserChild(currentUser, cleanChild)
 
@@ -83,9 +93,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
   }
 
   const getExistingChildren = async () => {
-    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'children').then((children) => {
-      // setExistingChildren(children)
-    })
+    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'children')
   }
 
   const handleGenderSelect = (e) => {
@@ -104,12 +112,11 @@ const NewChildForm = ({ hideCard, showCard }) => {
 
   return (
     <BottomCard
-      refreshKey={refreshKey}
       submitText={`Add ${name.length > 0 ? name : 'Child'}`}
       onSubmit={submit}
       className="new-child-wrapper"
       wrapperClass="new-child-card"
-      title={'Add Child'}
+      title={`Add ${name.length > 0 ? name : 'Child'}`}
       showCard={showCard}
       onClose={resetForm}>
       <div id="new-child-container" className={`${theme}  form`}>

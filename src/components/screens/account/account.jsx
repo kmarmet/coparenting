@@ -136,7 +136,7 @@ export default function Account() {
           // // Delete from Firebase Storage
           const allStorageDirectories = Object.keys(FirebaseStorage.directories)
           for (let dir of allStorageDirectories) {
-            await FirebaseStorage.deleteDirectory(dir, currentUser.id)
+            await FirebaseStorage.deleteDirectory(dir, currentUser.key)
           }
 
           // Delete from OneSignal

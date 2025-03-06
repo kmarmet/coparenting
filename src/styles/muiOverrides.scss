@@ -20,16 +20,16 @@
 
       .action-items {
         display: grid;
-        grid-template-columns: auto auto auto;
+        grid-template-columns: repeat(2, 1fr);
         justify-content: center;
-        grid-gap: 20px 10px;
+        grid-gap: 10px;
+        width: 65vw;
+        margin: 0 auto;
 
         .action-item {
-          height: 98px;
-          width: 115px;
+          height: 112px;
           border-radius: $bigBorderRadius;
-          background: transparent;
-          padding: 8px;
+          background: $lightAccentBlue;
           display: flex;
           flex-direction: column;
           justify-content: center;
@@ -39,6 +39,7 @@
           opacity: 1;
           border: 1px solid $accentBlue;
           position: relative;
+          padding: 0 10px;
 
           span {
             text-align: center;
@@ -50,11 +51,9 @@
           }
 
           .svg-wrapper {
-            position: absolute;
             line-height: 1;
             width: 100%;
             z-index: 9;
-            top: -10px;
             display: flex;
             justify-content: center;
 
@@ -69,11 +68,9 @@
             }
 
             svg {
-              width: 30px;
-              font-size: 18px;
+              font-size: 22px;
               color: $accentBlue;
-              background: white;
-
+              //              background: white;
               &.checklist {
                 transform: scale(1.3);
               }
@@ -144,7 +141,6 @@
 
   .MuiCollapse-entered {
     display: flex !important;
-    margin-bottom: 15px;
     align-items: center !important;
   }
   // EVENT ROW
@@ -583,7 +579,8 @@
       }
       &.Mui-selected {
         transition: all 0.2s ease-in-out !important;
-        background: rgba(70, 144, 255, 0.19);
+        background: $bestGreyForWhite;
+        background: $lightAccentBlue;
         width: 51px !important;
         height: 43px !important;
         margin-left: 5px;
@@ -609,8 +606,10 @@
     gap: 3px;
     margin-left: 0;
     &#legend-wrapper {
-      border-bottom: 1px solid $mainBlue;
+      background: $bestGreyForWhite !important;
       order: -1;
+      padding: 0 8px 0 12px !important;
+      border-radius: $bigBorderRadius;
 
       #legend-button {
         border: 0 !important;
@@ -624,19 +623,17 @@
       position: relative;
 
       &.MuiPaper-root {
-        display: none;
-      }
+        margin: 15px auto 0 !important;
 
-      &.open {
-        border-radius: $borderRadius !important;
-        margin: 0 auto !important;
-        background: #fcfcfc !important;
-        width: calc(100vw - 30px) !important;
-        border: 1px solid $lightBorder !important;
-        padding: 10px 0 40px 10px !important;
-
-        &.MuiPaper-root {
-          display: block;
+        &:before {
+          display: none;
+        }
+        &.Mui-expanded {
+          width: 200px !important;
+          padding: 10px 0 30px 10px !important;
+          background: #fcfcfc !important;
+          border-radius: $bigBorderRadius !important;
+          border: 1px solid $lightBorder !important;
         }
       }
 
@@ -651,23 +648,16 @@
         min-height: unset !important;
         opacity: 0.75;
         position: absolute;
-        bottom: 10px;
+        bottom: 4px;
         z-index: 1000;
-        @include centerHoriz;
+        right: 4px;
 
         svg {
-          font-size: 15px !important;
-          color: black !important;
+          font-size: 22px !important;
+          color: $red !important;
           margin: 0 !important;
         }
       }
-    }
-
-    .closed {
-      display: none !important;
-    }
-    .open {
-      display: block !important;
     }
 
     p {
@@ -730,7 +720,7 @@
     width: 100vw;
     display: flex;
     align-items: center;
-    gap: 15px !important;
+    gap: 10px !important;
     position: relative;
     z-index: 100000;
     padding: 0 0 10px 0;
@@ -743,26 +733,17 @@
     button,
     p {
       opacity: 1 !important;
-      color: $accentBlue !important;
+      color: $black !important;
       text-transform: uppercase;
       margin: 0;
       font-size: 12px !important;
-      border-bottom: 1px solid $accentBlue !important;
-      padding: 3px 8px !important;
+      padding: 8px !important;
       line-height: 1 !important;
       text-align: center;
       position: relative;
-      border-radius: 0 !important;
-      font-weight: $fwRegular !important;
-
-      //      &:before {
-      //        content: '' !important;
-      //        left: -20px !important;
-      //        right: -20px !important;
-      //        bottom: -20px !important;
-      //        top: -20px !important;
-      //        position: absolute !important;
-      //      }
+      border-radius: $bigBorderRadius;
+      font-weight: $fwMediumBold !important;
+      background: $bestGreyForWhite !important;
     }
 
     .divider {
@@ -850,6 +831,34 @@
       }
     }
 
+    .MuiDialogActions-spacing {
+      display: grid;
+      grid-template-columns: auto auto !important;
+      width: 100%;
+      justify-content: center;
+      padding-bottom: 20px !important;
+      max-width: 365px !important;
+      margin-left: 21px;
+      padding-top: 10px;
+
+      .MuiButton-root {
+        &.MuiButton-text {
+          color: white;
+          font-weight: bold;
+          border-radius: $borderRadius;
+          font-size: 14px !important;
+          display: flex;
+          align-items: center;
+          line-height: 1;
+          padding: 10px 15px !important;
+          margin-top: 10px;
+          height: unset;
+          width: 100px;
+          border: 0 !important;
+        }
+      }
+    }
+
     &.MuiPaper-elevation:not(.MuiPopover-paper) {
       border-radius: 0;
     }
@@ -896,11 +905,12 @@
 
     .MuiDialogActions-root {
       button {
-        color: $mainBlue !important;
-        background-color: transparent;
+        color: white !important;
+        background-color: $accentBlue !important;
+
         &:nth-child(2) {
-          border-bottom: 1px solid $green !important;
-          color: $green !important;
+          background: $green !important;
+          color: white !important;
         }
       }
     }
@@ -1061,10 +1071,40 @@
     }
 
     .MuiPickersToolbar-root {
-      margin: 0 !important;
       display: unset;
-      padding: 10px;
+      margin-left: 21px !important;
+      padding: 20px 10px;
       max-width: 365px !important;
+
+      .MuiTimePickerToolbar-ampmSelection {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 0;
+        * {
+          line-height: 1;
+        }
+      }
+
+      .MuiTimePickerToolbar-hourMinuteLabel {
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 5px;
+
+        .MuiTimePickerToolbar-separator {
+          margin: 0 !important;
+        }
+      }
+
+      .MuiButtonBase-root {
+        border-top: 0 !important;
+        border-left: 0 !important;
+        border-right: 0 !important;
+        border-radius: 0 !important;
+        height: unset !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
 
       @media screen and (min-width: 800px) {
         display: flex;
@@ -1078,6 +1118,7 @@
       grid-column: 2;
       overflow: hidden !important;
       .MuiTimeClock-root {
+        overflow: auto !important;
         padding-left: 10px;
         width: 100% !important;
         max-width: 365px !important;
@@ -1132,23 +1173,6 @@
           display: none !important;
         }
       }
-
-      &.MuiButton-root {
-        color: white;
-        font-weight: bold;
-        border-radius: $borderRadius;
-        font-size: 14px !important;
-        display: flex;
-        align-items: center;
-        line-height: 1;
-        min-width: 100px;
-        height: 20px;
-        padding: 15px 0;
-        margin-top: 10px;
-        &:nth-child(3) {
-          margin-right: 8px;
-        }
-      }
     }
 
     // DATE RANGE
@@ -1201,8 +1225,14 @@
 
   // TIME CLOCK WHEEL
   .MuiTimeClock-root {
+    padding: 0 !important;
+    display: flex;
+    margin-left: 22px !important;
+    justify-content: center;
     .MuiClock-root {
       transform: scale(1.1);
+      margin: 15px auto;
+      width: 100%;
       .MuiClockPointer-root {
         background-color: $mainBlue;
 
@@ -1216,9 +1246,32 @@
   .MuiPickersLayout-contentWrapper,
   .MuiPickersLayout-actionBar {
     max-width: 365px;
-    &.MuiPickersLayout-actionBar {
-      //      margin-top: 10px;
-      gap: 10px;
+  }
+
+  #static-calendar {
+    .MuiPickersLayout-actionBar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      justify-content: center;
+      margin: 0;
+      padding: 0 15px;
+    }
+  }
+
+  #input-wrapper {
+    * {
+      line-height: 1 !important;
+    }
+    &.date {
+      #label-wrapper {
+        top: 3px !important;
+      }
+    }
+    .MuiFormControl-root {
+      input {
+        top: 12px !important;
+        border-radius: 0 !important;
+      }
     }
   }
 
@@ -1231,23 +1284,15 @@
     }
 
     input {
-      outline: none;
       display: block !important;
       outline: 0 !important;
       font-weight: 400 !important;
       transition: all 0.2s ease-in-out !important;
-      border: 1px solid $iconGrey !important;
-      border-radius: $borderRadius !important;
-      height: 38px !important;
       padding: 0 8px !important;
       max-height: unset !important;
       position: absolute !important;
-      top: 0 !important;
       caret-color: $mainBlue !important;
-
-      // new {
       height: auto !important;
-      //      border: 2px solid red !important;
       top: 38px !important;
       width: 100% !important;
     }

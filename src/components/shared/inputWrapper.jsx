@@ -7,6 +7,12 @@ import Manager from '../../managers/manager'
 import Label from './label'
 import DomManager from '../../managers/domManager'
 
+const DebounceLengths = {
+  short: 500,
+  medium: 1000,
+  long: 2000,
+}
+
 function InputWrapper({
   wrapperClasses = '',
   children,
@@ -20,24 +26,11 @@ function InputWrapper({
   childrenOnly = false,
   isDebounced = true,
   useNativeDate = false,
-  customDebounceDelay = 800,
+  customDebounceDelay = DebounceLengths.medium,
 }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, refreshKey } = state
   const noInputTypes = ['location', 'textarea', 'date']
-
-  useEffect(() => {
-    const inputWrapper = document.getElementById('input-wrapper')
-
-    if (inputWrapper) {
-      inputWrapper.addEventListener('blur', (el) => {
-        el.classList.remove('active')
-      })
-      inputWrapper.addEventListener('focus', (el) => {
-        el.classList.add('active')
-      })
-    }
-  }, [])
 
   return (
     <div
@@ -45,12 +38,11 @@ function InputWrapper({
         const wrapper = e.currentTarget
         if (wrapper) {
           wrapper.classList.add('active')
-          wrapper.querySelector('#label-wrapper')?.classList?.add('active')
         }
       }}
       id="input-wrapper"
       className={`${wrapperClasses} ${inputType} input-container form`}>
-      {Manager.isValid(labelText) && <Label classes={`${inputType === 'date' ? 'active' : ''}`} text={`${labelText}`} required={required} />}
+      {Manager.isValid(labelText) && <Label text={`${labelText}`} required={required} />}
       {!noInputTypes.includes(inputType) && (
         <>
           <DebounceInput
@@ -60,8 +52,14 @@ function InputWrapper({
             placeholder={labelText}
             className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
             onChange={onChange}
-            debounceTimeout={isDebounced ? (customDebounceDelay ? customDebounceDelay : 1000) : 0}
+            debounceTimeout={isDebounced ? (customDebounceDelay ? customDebounceDelay : DebounceLengths.long) : 0}
             key={refreshKey}
+            onBlur={(e) => {
+              const wrapper = e.currentTarget.parentElement
+              if (wrapper) {
+                wrapper.classList.remove('active')
+              }
+            }}
             type={inputValueType}
             pattern={
               inputValueType && inputValueType === 'tel' ? (
@@ -77,14 +75,37 @@ function InputWrapper({
 
       {/* DATE/LOCATION */}
       {noInputTypes.includes(inputType) && useNativeDate && (
-        <input className="date-input" defaultValue={moment(defaultValue).format('yyyy-MM-DD')} type="date" onChange={onChange} />
+        <input
+          onBlur={(e) => {
+            const wrapper = e.currentTarget.parentElement
+            if (wrapper) {
+              wrapper.classList.remove('active')
+            }
+          }}
+          className="date-input"
+          defaultValue={moment(defaultValue).format('yyyy-MM-DD')}
+          type="date"
+          onChange={onChange}
+        />
       )}
       {noInputTypes.includes(inputType) && !useNativeDate && <> {children}</>}
       {childrenOnly && <>{children}</>}
 
       {/* TEXTAREA */}
       {inputType === 'textarea' && (
-        <textarea placeholder={labelText} onChange={onChange} className={inputClasses} defaultValue={defaultValue} key={refreshKey} />
+        <textarea
+          onBlur={(e) => {
+            const wrapper = e.currentTarget.parentElement
+            if (wrapper) {
+              wrapper.classList.remove('active')
+            }
+          }}
+          placeholder={labelText}
+          onChange={onChange}
+          className={inputClasses}
+          defaultValue={defaultValue}
+          key={refreshKey}
+        />
       )}
     </div>
   )

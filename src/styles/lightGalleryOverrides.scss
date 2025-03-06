@@ -13,13 +13,11 @@
       position: relative;
       .delete-icon {
         position: absolute;
-        top: -10px;
+        top: 0;
         z-index: 1000;
-        right: -10px;
+        right: 0;
         color: $red;
-        background-color: white;
         font-size: 30px;
-        border-radius: 100%;
       }
     }
   }
@@ -28,7 +26,6 @@
     display: flex;
     align-items: center;
     width: 100%;
-    margin-bottom: 5px;
     justify-content: space-between;
 
     * {
@@ -60,18 +57,29 @@
 
   #below-image {
     width: 100%;
-    justify-content: space-between;
-    align-items: flex-start;
+    display: grid;
+    align-items: center;
+    grid-template-columns: auto auto;
+    justify-content: flex-end;
+    gap: 5px;
 
-    #download-text {
-      color: $mainBlue;
+    #download-text,
+    #delete-button {
+      color: white;
       font-size: 12px;
       font-weight: $fwMedium;
-      border-bottom: 1px solid $mainBlue;
       line-height: 1;
       margin: 0;
-      padding: 0;
+      padding: 8px 15px;
+      background: $accentBlue;
+      border-radius: 6px;
+      text-align: center;
       @include transformHover;
+
+      &#delete-button {
+        background: #d64f5b;
+        color: white;
+      }
     }
   }
 

@@ -35,7 +35,6 @@ export default function Schooling() {
   }
 
   const update = async (prop, value) => {
-    console.log(prop, value)
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'schooling', StringManager.formatDbProp(prop), value)
     AlertManager.successAlert('Updated!')
     setState({ ...state, activeInfoChild: updatedChild })
@@ -65,7 +64,7 @@ export default function Schooling() {
   }
 
   useEffect(() => {
-    setSelectedChild()
+    setSelectedChild().then((x) => x)
   }, [activeInfoChild])
 
   return (
@@ -79,8 +78,7 @@ export default function Schooling() {
             Schooling
             {!Manager.isValid(activeInfoChild?.schooling) ? '- no info' : ''}
             {Manager.isValid(activeInfoChild?.schooling) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
-          </p>{' '}
-          {!Manager.isValid(activeInfoChild?.schooling) ? '- no info' : ''}
+          </p>
         </AccordionSummary>
         <AccordionDetails>
           {Manager.isValid(schoolingValues) &&

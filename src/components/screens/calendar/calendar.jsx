@@ -29,7 +29,7 @@ import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { Fade } from 'react-awesome-reveal'
+import { Zoom } from 'react-awesome-reveal'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -429,10 +429,8 @@ export default function EventCalendar() {
       </>
 
       {/* PAGE CONTAINER */}
-      <div id="calendar-container" className={`page-container calendar ${theme} `}>
-        <Fade direction={'up'} delay={0} duration={800} className={'calendar-events-fade-wrapper'} cascade={false} triggerOnce={true}>
-          <p className="screen-title">Calendar</p>
-        </Fade>
+      <div id="calendar-container" className={`page-container calendar ${theme}`}>
+        <p className="screen-title">Calendar</p>
         {/* STATIC CALENDAR */}
         <div id="static-calendar" className={theme}>
           <StaticDatePicker
@@ -444,6 +442,7 @@ export default function EventCalendar() {
             onMonthChange={async () => await getSecuredEvents()}
             onChange={async (day) => {
               setSelectedDate(day)
+              setState({ ...state, refreshKey: Manager.getUid() })
               await getSecuredEvents(day).then((r) => r)
             }}
             slotProps={{

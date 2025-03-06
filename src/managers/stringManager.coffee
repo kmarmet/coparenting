@@ -146,7 +146,26 @@ StringManager = {
       return title
 
   formatTitleWords: (title) ->
-    title = title.replaceAll("To", "to").replaceAll("Vs", "vs").replaceAll("With", "with").replaceAll("At", "at").replaceAll("From", "from").replaceAll("The", "the").replaceAll("And", "and").replaceAll("Is", "is").replaceAll("Not", "not")
+    title = title.replaceAll(" To ", "to")
+      .replaceAll(" A ", " a ")
+      .replaceAll(" An ", " an ")
+      .replaceAll(" Or ", " or ")
+      .replaceAll(" Vs ", "vs")
+      .replaceAll(" With ", "with")
+      .replaceAll(" At", "at")
+      .replaceAll(" From ", "from")
+      .replaceAll(" The ", "the")
+      .replaceAll(" For ", " for ")
+      .replaceAll(" Thru ", " thru ")
+      .replaceAll(" And ", "and")
+      .replaceAll(" Is ", "is")
+      .replaceAll(" Not ", "not")
+      .replaceAll(" Off ", "off")
+      .replaceAll(" But ", "but")
+      .replaceAll(" On ", "on")
+      .replaceAll(" Per ", "per")
+      .replaceAll(" Up ", "up")
+      .replaceAll(" Via ", "via")
 
 }
 

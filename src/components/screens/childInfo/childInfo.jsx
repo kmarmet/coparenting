@@ -40,12 +40,11 @@ export default function ChildInfo() {
   const [showSelectorCard, setShowSelectorCard] = useState(false)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
-  const [hasChildren, setHasChildren] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
   const [showActions, setShowActions] = useState(false)
   const [activeChildChecklists, setActiveChildChecklists] = useState(false)
+
   const uploadProfilePic = async () => {
-    // setState({ ...state, isLoading: true })
     const imgFiles = document.getElementById('upload-image-input').files
 
     if (imgFiles.length === 0) {
@@ -66,59 +65,30 @@ export default function ChildInfo() {
     })
   }
 
-  const onTableChange = async () => {
-    const dbRef = ref(getDatabase())
-
-    onValue(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children`), async (snapshot) => {
-      const kiddos = Manager.convertToArray(snapshot.val())
-      if (Manager.isValid(kiddos)) {
-        setHasChildren(true)
-      } else {
-        setHasChildren(false)
-      }
-    })
-  }
-
   const checkForChecklists = async () => {
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
-    if (childKey) {
-      const checklists = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`)
-      setActiveChildChecklists(checklists)
-    }
-  }
-
-  const setDefaultActiveInfoChild = async () => {
     const children = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children`)
     if (children) {
-      setState({ ...state, activeInfoChild: children[0] })
+      setTimeout(() => {
+        setState({ ...state, activeInfoChild: children[0] })
+      }, 300)
+      if (children[0]) {
+        const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, children[0], 'id')
+        if (childKey) {
+          const checklists = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`)
+          setActiveChildChecklists(checklists)
+        }
+      }
     }
   }
 
   useEffect(() => {
-    if (Manager.isValid(activeInfoChild)) {
-      console.log(activeInfoChild)
-      checkForChecklists().then((r) => r)
-    } else {
-      setDefaultActiveInfoChild().then((r) => r)
-    }
-  }, [activeInfoChild])
-
-  useEffect(() => {
-    onTableChange().then((r) => r)
+    checkForChecklists().then((r) => r)
   }, [])
 
   return (
     <>
       {/* CHILD SELECTOR */}
-      {Manager.isValid(activeInfoChild) && (
-        <ChildSelector
-          showCard={showSelectorCard}
-          hideCard={() => setShowSelectorCard(false)}
-          setActiveChild={() => {
-            setShowSelectorCard(false)
-          }}
-        />
-      )}
+      {Manager.isValid(activeInfoChild) && <ChildSelector showCard={showSelectorCard} hideCard={() => setShowSelectorCard(false)} />}
       {Manager.isValid(activeInfoChild) && (
         <>
           {/* CUSTOM INFO FORM */}
@@ -155,7 +125,7 @@ export default function ChildInfo() {
           </p>
 
           {/* ACTIONS */}
-          {hasChildren && (
+          {Manager.isValid(currentUser?.children) && (
             <Actions show={showActions}>
               <div className="action-items">
                 <div
@@ -213,11 +183,9 @@ export default function ChildInfo() {
           )}
           <Spacer height={10} />
 
-          {!hasChildren && (
+          {!Manager.isValid(currentUser?.children) && (
             <NoDataFallbackText
-              text={
-                'No children have been added yet. In order to share events with your children, or store information about them - you will need to add them here.'
-              }
+              text={'Currently, no children have been added. To share events with your children or to store their information, please add them here.'}
             />
           )}
 
@@ -247,10 +215,10 @@ export default function ChildInfo() {
           <div id="child-info">
             {activeInfoChild && (
               <div className="form">
-                <General activeChild={activeInfoChild} />
-                <Medical activeChild={activeInfoChild} />
-                <Schooling activeChild={activeInfoChild} />
-                <Behavior activeChild={activeInfoChild} />
+                <General />
+                <Medical />
+                <Schooling />
+                <Behavior />
               </div>
             )}
           </div>

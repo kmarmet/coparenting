@@ -73,39 +73,41 @@ export default function Checklists({ showCard, hideCard }) {
   }
 
   const setActiveChildChecklist = async () => {
-    const checklists = activeInfoChild?.checklists.map((x) => x)
-    const fromDest = checklists?.find((x) => x?.fromOrTo === 'from')
-    const toDest = checklists?.find((x) => x?.fromOrTo === 'to')
-
-    // Set destination labels based on which checklists are present
-    if (Manager.isValid(fromDest)) {
-      setDestinationLabels(['To Co-Parent'])
-    }
-    if (Manager.isValid(toDest)) {
-      setDestinationLabels(['From Co-Parent'])
-    }
-
-    if (Manager.isValid(fromDest) && Manager.isValid(toDest)) {
-      setDestinationLabels(['From Co-Parent', 'To Co-Parent'])
-    }
-
-    // Set view based on which checklist is present
-    if (Manager.isValid(toDest) && !Manager.isValid(fromDest)) {
-      setView('to')
-    }
-    if (Manager.isValid(fromDest) && !Manager.isValid(toDest)) {
-      setView('from')
-    }
-
-    // Set checklist based on view
     if (Manager.isValid(activeInfoChild?.checklists)) {
-      const checklist = checklists.find((x) => x?.fromOrTo === view)
-      if (checklist) {
-        setCheckboxTextList(checklist.checklistItems)
-        setChecklist(checklist)
-      } else {
-        setCheckboxTextList([])
-        setChecklist(null)
+      const checklists = activeInfoChild?.checklists.map((x) => x)
+      const fromDest = checklists?.find((x) => x?.fromOrTo === 'from')
+      const toDest = checklists?.find((x) => x?.fromOrTo === 'to')
+
+      // Set destination labels based on which checklists are present
+      if (Manager.isValid(fromDest)) {
+        setDestinationLabels(['To Co-Parent'])
+      }
+      if (Manager.isValid(toDest)) {
+        setDestinationLabels(['From Co-Parent'])
+      }
+
+      if (Manager.isValid(fromDest) && Manager.isValid(toDest)) {
+        setDestinationLabels(['From Co-Parent', 'To Co-Parent'])
+      }
+
+      // Set view based on which checklist is present
+      if (Manager.isValid(toDest) && !Manager.isValid(fromDest)) {
+        setView('to')
+      }
+      if (Manager.isValid(fromDest) && !Manager.isValid(toDest)) {
+        setView('from')
+      }
+
+      // Set checklist based on view
+      if (Manager.isValid(activeInfoChild?.checklists)) {
+        const checklist = checklists.find((x) => x?.fromOrTo === view)
+        if (checklist) {
+          setCheckboxTextList(checklist.checklistItems)
+          setChecklist(checklist)
+        } else {
+          setCheckboxTextList([])
+          setChecklist(null)
+        }
       }
     }
   }

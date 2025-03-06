@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { TfiClose } from 'react-icons/tfi'
 import { Fade } from 'react-awesome-reveal'
-
+import { RiCloseCircleFill } from 'react-icons/ri'
 export default function Legend() {
   const [showLegend, setShowLegend] = useState(false)
 
@@ -23,12 +23,12 @@ export default function Legend() {
   }, [])
 
   return (
-    <Accordion expanded={showLegend} id={'calendar-legend'} className={showLegend ? 'open' : 'closed'}>
+    <Accordion expanded={showLegend} id={'calendar-legend'}>
       <AccordionSummary className={showLegend ? 'open' : 'closed'}>
-        {showLegend && <TfiClose onClick={() => setShowLegend(false)} />}
+        {showLegend && <RiCloseCircleFill onClick={() => setShowLegend(false)} />}
       </AccordionSummary>
       <AccordionDetails>
-        <Fade direction={'up'} triggerOnce={true}>
+        <Fade direction={'down'} triggerOnce={true} cascade={true} damping={0.2}>
           <p className="flex currentUser">Your Event</p>
           <p className="flex coparent">Shared Event</p>
           <p className="flex standard">Holiday</p>

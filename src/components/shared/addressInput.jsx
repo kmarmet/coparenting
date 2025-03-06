@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Autocomplete from 'react-google-autocomplete'
+import Manager from '../../managers/manager'
 
 export default function AddressInput({ onSelection, defaultValue }) {
   return (
@@ -8,6 +9,11 @@ export default function AddressInput({ onSelection, defaultValue }) {
       onBlur={(e) => {
         const el = e.target
         const parent = el.parentNode
+        const inputWrapper = el.closest('#input-wrapper')
+        if (inputWrapper) {
+          inputWrapper.classList.remove('active')
+        }
+
         if (el.value.length === 0) {
           parent.querySelector('#label-wrapper').classList.remove('active')
           parent.classList.remove('active')

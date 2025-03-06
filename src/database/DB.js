@@ -203,11 +203,11 @@ const DB = {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }
   },
-  deleteMemory: async (phoneUid, memory) => {
+  deleteMemory: async (userKey, memory) => {
     const dbRef = ref(getDatabase())
-    const key = await DB.getSnapshotKey(`${DB.tables.memories}/${phoneUid}`, memory, 'id')
+    const key = await DB.getSnapshotKey(`${DB.tables.memories}/${userKey}`, memory, 'id')
     try {
-      remove(child(dbRef, `${DB.tables.memories}/${phoneUid}/${key}`))
+      remove(child(dbRef, `${DB.tables.memories}/${userKey}/${key}`))
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
     }
