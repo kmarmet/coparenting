@@ -2,11 +2,11 @@
 var Medical;
 
 export default Medical = class Medical {
-  constructor(doctorName = '', doctorPhone = '', allergy = [], shareWith = []) {
+  constructor(doctorName = '', shareWith = []) {
     this.doctorName = doctorName;
-    this.doctorPhone = doctorPhone;
-    this.allergy = allergy;
     this.shareWith = shareWith;
   }
 
 };
+
+//# sourceMappingURL=medical.js.map

@@ -2,7 +2,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
-import { IoCloseOutline } from 'react-icons/io5'
 import DB_UserScoped from '/src/database/db_userScoped'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -13,6 +12,7 @@ import { GiBrain } from 'react-icons/gi'
 import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
 import { FaPlus, FaMinus } from 'react-icons/fa6'
+import { PiTrashSimpleDuotone } from 'react-icons/pi'
 
 export default function Behavior() {
   const { state, setState } = useContext(globalState)
@@ -78,7 +78,7 @@ export default function Behavior() {
           <GiBrain className={'svg'} />{' '}
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Behavior {!Manager.isValid(activeInfoChild.behavior) ? '- no info' : ''}
-            {Manager.isValid(activeInfoChild?.behavior) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
+            {Manager.isValid(activeInfoChild?.behavior) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
@@ -108,7 +108,7 @@ export default function Behavior() {
                         }}
                       />
                     )}
-                    <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                   </div>
                 </div>
               )

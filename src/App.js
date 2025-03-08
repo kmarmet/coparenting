@@ -180,7 +180,7 @@ export default function App() {
             loadingText: '',
             theme: currentUserFromDb?.settings?.theme,
             isLoading: false,
-            notificationCount: notifications.length ?? 0,
+            notificationCount: notifications?.length,
           })
         } else {
           setState({ ...state, isLoading: false, authUser: user, currentScreen: ScreenNames.login })

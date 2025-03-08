@@ -11,11 +11,12 @@ import { Fade } from 'react-awesome-reveal'
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
   const { currentScreen, currentUser, menuIsOpen, theme, notificationCount } = state
-  const [showHeightSpacer, setShowHeightSpacer] = useState(false)
+
   const changeCurrentScreen = async (screen) => {
     setState({
       ...state,
       currentScreen: screen,
+      activeInfoChild: null,
     })
   }
 

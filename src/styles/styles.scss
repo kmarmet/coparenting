@@ -457,6 +457,10 @@
       font-weight: 600;
     }
 
+    #floating-actions {
+      @include floatingActions;
+    }
+
     .screen-title {
       @include screenTitle;
     }
@@ -506,10 +510,6 @@
     /*#region  CLASS/ID DEFAULTS*/
     .green {
       color: $green;
-    }
-
-    #actions-button {
-      @include actionsButton;
     }
 
     #install-app-wrapper {

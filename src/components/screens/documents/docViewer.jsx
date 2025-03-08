@@ -20,13 +20,13 @@ import DocumentHeader from '/src/models/documentHeader'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import { TbFileSearch } from 'react-icons/tb'
 import { MdDriveFileRenameOutline, MdSearchOff } from 'react-icons/md'
+import { FaFileImage, FaLightbulb } from 'react-icons/fa6'
 import ScreenNames from '/src/constants/screenNames'
 import { IoIosArrowUp } from 'react-icons/io'
+import { IoClose } from 'react-icons/io5'
 import _ from 'lodash'
 import Label from '../../shared/label.jsx'
 import DatasetManager from '../../../managers/datasetManager.coffee'
-import { FaFileImage, FaLightbulb } from 'react-icons/fa6'
-import { IoClose } from 'react-icons/io5'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders

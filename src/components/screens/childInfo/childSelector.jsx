@@ -35,7 +35,7 @@ function ChildSelector({ hideCard, showCard }) {
             return (
               <div
                 key={index}
-                id="children-container"
+                id="child-wrapper"
                 onClick={() => {
                   hideCard()
                   console.log(child.general.name)

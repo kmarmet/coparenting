@@ -1,3 +1,3 @@
 
 export default class Medical
-  constructor: (@doctorName = '', @doctorPhone = '', @allergy = [], @shareWith = []) ->
+  constructor: (@doctorName = '', @shareWith = []) ->

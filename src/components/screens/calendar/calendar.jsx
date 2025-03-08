@@ -29,7 +29,6 @@ import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { Zoom } from 'react-awesome-reveal'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)

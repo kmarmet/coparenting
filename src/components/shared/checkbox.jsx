@@ -4,6 +4,8 @@ import globalState from '../../context.js'
 import DomManager from '../../managers/domManager.coffee'
 import Label from './label.jsx'
 import { GrCheckmark } from 'react-icons/gr'
+import { ImCheckmark } from 'react-icons/im'
+
 export default function Checkbox({ isActive, text, onCheck, wrapperClass = '', dataKey, dataDate, dataLabel }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser, refreshKey } = state
@@ -26,7 +28,7 @@ export default function Checkbox({ isActive, text, onCheck, wrapperClass = '', d
       className={`checkbox-wrapper ${wrapperClass} ${isActive ? 'active' : ''}`}
       onClick={toggleActive}>
       <div className="checkbox">
-        <GrCheckmark />
+        <ImCheckmark />
       </div>
       <Label classes={``} text={text} isBold={true} />
     </div>

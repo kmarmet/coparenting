@@ -1,23 +1,6 @@
 @import '../mixins';
 
 #external-overrides {
-  .info-section {
-    .MuiAccordion-root {
-      .MuiAccordion-heading {
-        .MuiButtonBase-root {
-          .svg {
-            font-size: 28px !important;
-
-            &.medical {
-              font-size: 26px !important;
-              position: relative;
-              bottom: 2px;
-            }
-          }
-        }
-      }
-    }
-  }
   #child-info-container {
     @include accordion;
 
@@ -26,10 +9,18 @@
         width: 100%;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         margin: 0 !important;
         font-size: 20px !important;
         color: $lightBlackLight;
+        svg {
+          margin-left: auto;
+        }
+
+        .smaller-text {
+          padding-left: 5px;
+          margin-right: auto;
+        }
       }
     }
 
@@ -80,7 +71,6 @@
 
     .sections {
       .section {
-        @include lineItem;
         justify-content: flex-start;
 
         &.notifications {
@@ -166,15 +156,14 @@
         margin-top: 8px;
       }
       .profile-pic-container {
-        height: 100px;
-        width: 100px;
+        height: 125px;
+        width: 125px;
         border-radius: 50%;
         background-size: cover;
         position: relative;
         display: flex;
         align-items: center;
         @include hover;
-        border: 2px solid white;
 
         input {
           opacity: 0;
@@ -219,25 +208,25 @@
 
         .after {
           position: absolute;
-          right: -15px;
           z-index: 1;
           @include centerHoriz;
           margin-left: auto;
           padding: 0;
-          width: 28px;
-          height: 28px;
+          width: 32px;
+          height: 32px;
           overflow: hidden;
-          background: white;
+          background: $bestGreyForWhite;
           border-radius: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
           margin-right: 0;
-          bottom: -3px;
-          border: 1px solid white;
+          bottom: -5px;
+          right: -15px;
+          border: 2px solid white;
 
           svg {
-            color: $mainBlue;
+            color: $darkGrey;
             font-size: 16px;
             margin: 0 auto;
             display: block;
@@ -272,12 +261,12 @@
           justify-content: space-between;
           &.input {
             .delete-icon {
-              color: $lightDarkGrey;
-              transform: scale(1.4);
+              color: $red;
               position: relative;
+              font-size: 26px;
               margin-left: 10px;
-              bottom: 3px;
-              right: -5px;
+              bottom: 5px;
+              right: -8px;
             }
           }
         }
@@ -325,6 +314,50 @@
             }
           }
 
+          &.checklist {
+            .checklist-wrapper {
+              padding-left: 4px;
+            }
+            .checklist-item-wrapper {
+              border-bottom: 0;
+              justify-content: space-between;
+              margin-bottom: 5px;
+
+              svg {
+                margin-right: 5px;
+                &.checklist-delete-icon {
+                  color: $red;
+                  font-size: 26px;
+                  padding: 0;
+                  position: relative;
+                  right: -8px;
+                  margin: 0;
+                }
+              }
+
+              .checklist-item {
+                width: 100%;
+                background: $bestGreyForWhite;
+                padding: 8px 10px;
+                border-radius: $borderRadius;
+                display: flex;
+                align-items: center;
+                transition: all 0.3s ease-in-out;
+
+                &.active {
+                  background: $green;
+                  transition: all 0.3s ease-in-out;
+                  color: white;
+
+                  svg {
+                    color: white;
+                    font-size: 22px;
+                  }
+                }
+              }
+            }
+          }
+
           &.active {
             .header {
               border-bottom: 0;
@@ -345,7 +378,6 @@
 
         .header {
           display: flex;
-          @include lineItem;
           justify-content: flex-start;
           border: 0;
           padding: 10px;
@@ -358,41 +390,27 @@
             opacity: 0.5;
           }
 
-          &.behavior {
-            span {
-              color: #dc7633;
-            }
-          }
-
-          &.medical {
-            span {
-              color: #e74c3c;
-            }
-          }
-
-          &.general {
-            span {
-              color: #f4d03f;
-            }
-          }
-
-          &.schooling {
-            span {
-              color: #2ecc71;
-            }
+          .plus-minus {
+            font-size: 22px;
           }
 
           .svg {
-            font-size: 36px;
+            font-size: 30px;
             margin-left: 0;
             margin-right: 10px;
             width: 40px;
-          }
 
-          &.medical {
-            span {
-              position: relative;
-              top: -3px;
+            &.from,
+            &.to {
+              font-size: 30px;
+            }
+
+            &.medical {
+              font-size: 26px;
+            }
+
+            &.general {
+              font-size: 28px;
             }
           }
         }

@@ -8,10 +8,12 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
-import { IoCloseOutline, IoSchool } from 'react-icons/io5'
+import { IoSchool } from 'react-icons/io5'
 import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
 import { FaPlus, FaMinus } from 'react-icons/fa6'
+import { PiTrashSimpleDuotone } from 'react-icons/pi'
+
 export default function Schooling() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, activeInfoChild } = state
@@ -77,7 +79,9 @@ export default function Schooling() {
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Schooling
             {!Manager.isValid(activeInfoChild?.schooling) ? '- no info' : ''}
-            {Manager.isValid(activeInfoChild?.schooling) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
+            {Manager.isValid(activeInfoChild?.schooling) && (
+              <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>
+            )}
           </p>
         </AccordionSummary>
         <AccordionDetails>
@@ -101,7 +105,7 @@ export default function Schooling() {
                         onChange={(e) => update(infoLabel, e.target.value)}
                       />
                     )}
-                    <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                   </div>
                 </div>
               )

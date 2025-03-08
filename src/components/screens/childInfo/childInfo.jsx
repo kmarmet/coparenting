@@ -1,5 +1,4 @@
 // Path: src\components\screens\childInfo\childInfo.jsx
-import { child, getDatabase, onValue, ref } from 'firebase/database'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import globalState from '../../../context'
 import DB from '/src/database/DB'
@@ -23,14 +22,13 @@ import AlertManager from '/src/managers/alertManager'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager'
-import NewTransferChecklist from './newTransferChecklist'
+import AddOrUpdateTransferChecklists from './addOrUpdateTransferChecklists'
 import Checklists from './checklists'
 import Spacer from '../../shared/spacer'
 import Actions from '../../shared/actions'
-import { HiOutlineDotsVertical } from 'react-icons/hi'
-import { IoClose } from 'react-icons/io5'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import { BiFace } from 'react-icons/bi'
+import Checklist from './checklist'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
@@ -41,7 +39,6 @@ export default function ChildInfo() {
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
-  const [showActions, setShowActions] = useState(false)
   const [activeChildChecklists, setActiveChildChecklists] = useState(false)
 
   const uploadProfilePic = async () => {
@@ -60,19 +57,20 @@ export default function ChildInfo() {
       'profilePic'
     ).then(async (url) => {
       const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilePic', url)
-      setState({ ...state, isLoading: false })
-      setState({ ...state, activeInfoChild: updatedChild })
+      setState({ ...state, activeInfoChild: updatedChild, isLoading: false })
     })
   }
 
   const checkForChecklists = async () => {
     const children = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children`)
-    if (children) {
-      setTimeout(() => {
-        setState({ ...state, activeInfoChild: children[0] })
-      }, 300)
-      if (children[0]) {
-        const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, children[0], 'id')
+    if (Manager.isValid(children)) {
+      if (!Manager.isValid(activeInfoChild)) {
+        setTimeout(() => {
+          setState({ ...state, activeInfoChild: children[0] })
+        }, 300)
+        setActiveChildChecklists([])
+      } else {
+        const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
         if (childKey) {
           const checklists = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`)
           setActiveChildChecklists(checklists)
@@ -94,7 +92,11 @@ export default function ChildInfo() {
           {/* CUSTOM INFO FORM */}
           <CustomChildInfo showCard={showInfoCard} activeChild={activeInfoChild} hideCard={() => setShowInfoCard(false)} />
           {/* NEW CHECKLIST */}
-          <NewTransferChecklist activeChild={activeInfoChild} showCard={showNewChecklistCard} hideCard={() => setShowNewChecklistCard(false)} />
+          <AddOrUpdateTransferChecklists
+            activeChild={activeInfoChild}
+            showCard={showNewChecklistCard}
+            hideCard={() => setShowNewChecklistCard(false)}
+          />
           {/* VIEW CHECKLISTS */}
           <Checklists showCard={showChecklistsCard} hideCard={() => setShowChecklistsCard(false)} activeChild={activeInfoChild} />
         </>
@@ -103,20 +105,50 @@ export default function ChildInfo() {
       {/* NEW CHILD  */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
+      {/* ACTIONS */}
+      {Manager.isValid(currentUser?.children) && (
+        <Actions shouldHide={showInfoCard || showSelectorCard || showNewChecklistCard} onOpen={checkForChecklists}>
+          <div className="action-items">
+            {/* CUSTOM INFO */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowInfoCard(true)
+              }}>
+              <FaWandMagicSparkles className={'magic'} />
+            </div>
+
+            {/* VIEW ANOTHER CHILD */}
+            {currentUser?.children?.length > 1 && (
+              <div
+                onClick={() => {
+                  setShowSelectorCard(true)
+                }}
+                className="action-item">
+                <BiFace className={'child'} />
+              </div>
+            )}
+
+            {/* EDIT/ADD CHECKLIST */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowNewChecklistCard(true)
+              }}>
+              <TbChecklist className={'checklist'} />
+            </div>
+          </div>
+        </Actions>
+      )}
+
       {/* PAGE CONTAINER */}
-      <div id="child-info-container" className={`${theme} page-container form`}>
+      <div id="child-info-container" className={`${theme} page-container child-info form`}>
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title beside-action-button">Child Info</p>
 
             {/* ADD NEW BUTTON - DESKTOP */}
             {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
-            {/* ACTIONS BUTTON */}
-            {showActions ? (
-              <IoClose id={'actions-button'} onClick={() => setShowActions(false)} />
-            ) : (
-              <HiOutlineDotsVertical id={'actions-button'} onClick={() => setShowActions(true)} />
-            )}
           </div>
 
           <p>
@@ -124,63 +156,6 @@ export default function ChildInfo() {
             moment.
           </p>
 
-          {/* ACTIONS */}
-          {Manager.isValid(currentUser?.children) && (
-            <Actions show={showActions}>
-              <div className="action-items">
-                <div
-                  className="action-item"
-                  onClick={() => {
-                    setShowInfoCard(true)
-                    setShowActions(false)
-                  }}>
-                  <div className="svg-wrapper">
-                    <FaWandMagicSparkles />
-                  </div>
-                  <span>Add Your Own Info</span>
-                </div>
-                {currentUser?.children?.length > 1 && (
-                  <div
-                    onClick={() => {
-                      setShowSelectorCard(true)
-                      setShowActions(false)
-                    }}
-                    className="action-item">
-                    <div className="svg-wrapper">
-                      <BiFace className={'child'} />
-                    </div>
-                    <span>View Another Child</span>
-                  </div>
-                )}
-                {activeChildChecklists.length < 2 && (
-                  <div
-                    className="action-item"
-                    onClick={() => {
-                      setShowActions(false)
-                      setShowNewChecklistCard(true)
-                    }}>
-                    <div className="svg-wrapper">
-                      <TbChecklist className={'checklist'} />
-                    </div>
-                    <span>Create Transfer Checklist</span>
-                  </div>
-                )}
-                {Manager.isValid(activeChildChecklists) && (
-                  <button
-                    className="action-item"
-                    onClick={() => {
-                      setShowChecklistsCard(true)
-                      setShowActions(false)
-                    }}>
-                    <div className="svg-wrapper">
-                      <TbChecklist className={'checklist'} />
-                    </div>
-                    <span>View Transfer Checklists</span>
-                  </button>
-                )}
-              </div>
-            </Actions>
-          )}
           <Spacer height={10} />
 
           {!Manager.isValid(currentUser?.children) && (
@@ -219,6 +194,8 @@ export default function ChildInfo() {
                 <Medical />
                 <Schooling />
                 <Behavior />
+                {activeInfoChild?.checklists?.find((x) => x?.fromOrTo === 'from') && <Checklist fromOrTo={'from'} />}
+                {activeInfoChild?.checklists?.find((x) => x?.fromOrTo === 'to') && <Checklist fromOrTo={'to'} />}
               </div>
             )}
           </div>

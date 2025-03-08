@@ -4,7 +4,6 @@ import globalState from '../../../context'
 import Manager from '/src/managers/manager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
-import { IoCloseOutline } from 'react-icons/io5'
 import Accordion from '@mui/material/Accordion'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
@@ -14,6 +13,7 @@ import StringManager from '/src/managers/stringManager.coffee'
 import { FaMinus, FaPlus } from 'react-icons/fa6'
 import DB_UserScoped from '../../../database/db_userScoped'
 import AddressInput from '/src/components/shared/addressInput'
+import { PiTrashSimpleDuotone } from 'react-icons/pi'
 
 function General() {
   const { state, setState } = useContext(globalState)
@@ -64,7 +64,6 @@ function General() {
 
   const update = async (prop, value) => {
     AlertManager.successAlert('Updated!')
-    console.log(StringManager.formatDbProp(prop))
     await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', StringManager.formatDbProp(prop), value)
   }
 
@@ -78,11 +77,11 @@ function General() {
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
           className={!Manager.isValid(activeInfoChild?.general) ? 'disabled header general' : 'header general'}>
-          <MdContactEmergency className={'svg'} />
+          <MdContactEmergency className={'svg general'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             General
             {!Manager.isValid(activeInfoChild?.general) ? '- no info' : ''}
-            {Manager.isValid(activeInfoChild?.general) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
+            {Manager.isValid(activeInfoChild?.general) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
@@ -123,7 +122,7 @@ function General() {
                           )}
                         </>
                       )}
-                      {infoLabel.toLowerCase() !== 'name' && <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />}
+                      {infoLabel.toLowerCase() !== 'name' && <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />}
                     </div>
                   )}
                 </div>

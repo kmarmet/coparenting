@@ -99,10 +99,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     setEventIsRepeating(false)
     setEventIsCloned(false)
     hideCard()
-
-    if (Manager.isValid(eventShareWith)) {
-      NotificationManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventName} has been updated`, ActivityCategory.calendar)
-    }
   }
 
   const nonOwnerSubmit = async () => {
@@ -208,6 +204,9 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
             ActivityCategory.calendar
           )
         }
+      }
+      if (Manager.isValid(eventShareWith)) {
+        NotificationManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventName} has been updated`, ActivityCategory.calendar)
       }
     }
 
@@ -498,7 +497,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       hasSubmitButton={view === 'Edit'}
       onClose={async () => {
         await resetForm()
-        hideCard()
       }}
       title={StringManager.uppercaseFirstLetterOfAllWords(event?.title)}
       showCard={showCard}

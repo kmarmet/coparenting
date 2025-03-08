@@ -84,7 +84,7 @@ export default function Medical() {
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Medical
             {!Manager.isValid(activeInfoChild?.medical) ? '- no info' : ''}
-            {Manager.isValid(activeInfoChild?.medical) && <>{showInputs ? <FaMinus /> : <FaPlus />}</>}
+            {Manager.isValid(activeInfoChild?.medical) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>

@@ -117,7 +117,7 @@ export default function Notifications() {
               <Accordion id={'legend'} expanded={legendIsExpanded}>
                 <AccordionSummary>
                   <p id="legend-title" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
-                    Legend {legendIsExpanded ? <FaMinus /> : <FaPlus />}
+                    Legend {legendIsExpanded ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}
                   </p>
                 </AccordionSummary>
                 <AccordionDetails>

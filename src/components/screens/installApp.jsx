@@ -35,7 +35,8 @@ export default function InstallApp() {
           <Accordion id={'ios'}>
             <AccordionSummary>
               <p className="accordion-header apple" onClick={(e) => setExpandAppleAccordion(!expandAppleAccordion)}>
-                iOS <FaApple className={'apple-logo'} /> {expandAppleAccordion ? <FaMinus /> : <FaPlus />}
+                iOS <FaApple className={'apple-logo'} />{' '}
+                {expandAppleAccordion ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}
               </p>
             </AccordionSummary>
 
@@ -77,7 +78,7 @@ export default function InstallApp() {
             <AccordionSummary>
               <p className="accordion-header android" onClick={(e) => setExpandAndroidAccordion(!expandAndroidAccordion)}>
                 Android <BsAndroid2 />
-                {expandAndroidAccordion ? <FaMinus /> : <FaPlus />}
+                {expandAndroidAccordion ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}
               </p>
             </AccordionSummary>
             <AccordionDetails expanded={expandAndroidAccordion.toString()}>
@@ -114,7 +115,8 @@ export default function InstallApp() {
           <Accordion id={'pc'}>
             <AccordionSummary>
               <p className="accordion-header desktop" onClick={(e) => setExpandDesktopAccordion(!expandDesktopAccordion)}>
-                Desktop/Laptop <TbDeviceDesktopDown /> {expandDesktopAccordion ? <FaMinus /> : <FaPlus />}
+                Desktop/Laptop <TbDeviceDesktopDown />{' '}
+                {expandDesktopAccordion ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}
               </p>
             </AccordionSummary>
             <AccordionDetails expanded={expandDesktopAccordion.toString()}>
