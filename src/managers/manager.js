@@ -279,10 +279,11 @@ const Manager = {
       if (onCheckRemoval) onCheckRemoval(label)
     }
   },
-  buildCheckboxGroup: ({ currentUser, labelType, defaultLabels, customLabelArray, labelProp, uidProp, predefinedType }) => {
+  buildCheckboxGroup: ({ currentUser, labelType, defaultLabels = [], customLabelArray = [], labelProp, uidProp, predefinedType }) => {
     let checkboxLabels = []
     let checkboxGroup = []
-    // Predefined Types
+
+    // PREDEFINED TYPES
     if (Manager.isValid(predefinedType)) {
       if (predefinedType === 'coparents') {
         checkboxLabels = DB_UserScoped.getCoparentObjArray(currentUser)
@@ -342,10 +343,10 @@ const Manager = {
 
     // From Object
     else {
-      for (const chat of Array.from(customLabelArray)) {
+      for (const obj of Array.from(customLabelArray)) {
         checkboxGroup.push({
-          label: chat[labelProp],
-          key: chat[uidProp],
+          label: obj[labelProp],
+          key: obj[uidProp],
         })
       }
     }

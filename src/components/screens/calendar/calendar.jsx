@@ -29,6 +29,8 @@ import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
+import { RiMoneyDollarCircleFill } from 'react-icons/ri'
+import reactStringReplace from 'react-string-replace'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -81,6 +83,7 @@ export default function EventCalendar() {
 
   const addDayIndicators = async (events) => {
     const emojiHolidays = await DB.getTable(DB.tables.holidayEvents)
+
     // Remove existing icons/dots before adding them again
     document.querySelectorAll('.dot-wrapper').forEach((wrapper) => wrapper.remove())
     document.querySelectorAll('.payday-emoji').forEach((emoji) => emoji.remove())
@@ -89,6 +92,7 @@ export default function EventCalendar() {
     // Iterate static calendar day elements
     const dayElements = document.querySelectorAll('.MuiPickersDay-root')
 
+    // Iterate day elements
     for (const dayElement of dayElements) {
       const dayAsMs = dayElement.dataset.timestamp
       let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DateFormats.dateForDb)
@@ -101,6 +105,8 @@ export default function EventCalendar() {
       if (!dayEvent && !holiday) {
         const invisibleDots = document.createElement('span')
         invisibleDots.classList.add('invisible-dots')
+
+        // ADD INVISIBLE DOTS
         if (dayElement.innerHTML.indexOf('invisible') === -1) {
           dayElement.append(invisibleDots)
         }
@@ -111,18 +117,9 @@ export default function EventCalendar() {
       const dotWrapper = document.createElement('span')
       dotWrapper.classList.add('dot-wrapper')
 
-      // PAYDAY ICON
-      let isPayday = payEvents.includes(dayEvent.startDate)
-
-      if (isPayday) {
-        const payDayIcon = document.createElement('sup')
-        payDayIcon.classList.add('payday-emoji')
-        payDayIcon.innerText = '$'
-        dayElement.append(payDayIcon)
-      }
-
       // HOLIDAYS
       for (let holiday of emojiHolidays) {
+        // Add holiday emoji
         if (Manager.isValid(holiday) && holiday?.startDate === dayEvent?.startDate) {
           const holidayEmoji = document.createElement('span')
           holidayEmoji.classList.add('holiday-emoji')
@@ -173,6 +170,17 @@ export default function EventCalendar() {
         dotToAppend.classList.add(dotClass, 'dot')
         dotWrapper.append(dotToAppend)
       }
+
+      // PAYDAY ICON
+      let isPayday = payEvents.includes(dayEvent.startDate)
+
+      if (isPayday) {
+        const dotToAppend = document.createElement('span')
+        dotToAppend.classList.add('payday-dot', 'dot')
+        dotWrapper.append(dotToAppend)
+      }
+
+      // APPEND DOT WRAPPER
       dayElement.append(dotWrapper)
     }
   }
@@ -229,7 +237,8 @@ export default function EventCalendar() {
         if (
           event?.title.toLowerCase().includes('pay') ||
           event?.title.toLowerCase().includes('paid') ||
-          event?.title.toLowerCase().includes('salary')
+          event?.title.toLowerCase().includes('salary') ||
+          event?.title.toLowerCase().includes('expense')
         ) {
           payEvents.push(event.startDate)
         }
@@ -462,7 +471,8 @@ export default function EventCalendar() {
             <div className="flex" id="legend-wrapper">
               <span className="dot currentUser"></span>
               <span className="dot coparent"></span>
-              <span className="dot standard"></span>
+              <span className="dot holiday"></span>
+              <span className="dot payday"></span>
               <p id="legend-button" className="animated-button">
                 Legend
               </p>

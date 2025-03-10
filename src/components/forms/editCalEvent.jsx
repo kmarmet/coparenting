@@ -753,10 +753,17 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                       </InputWrapper>
                     </div>
                   )}
+
                   {/* Share with */}
                   {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
-                    <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with-coparents`} />
+                    <ShareWithCheckboxes
+                      defaultKeys={event?.shareWith}
+                      required={false}
+                      onCheck={handleShareWithSelection}
+                      containerClass={`share-with-coparents`}
+                    />
                   )}
+
                   <Spacer height={5} />
                   {/* ALL DAY / HAS END DATE */}
                   <div className={!DateManager.isValidDate(event?.startTime) ? 'flex all-day-toggle default-checked' : 'flex all-day-toggle'}>
@@ -794,8 +801,9 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                             checkboxArray={Manager.buildCheckboxGroup({
                               currentUser,
                               labelType: 'reminder-times',
+                              defaultLabels: event?.reminderTimes,
                             })}
-                            elClass={`${theme} `}
+                            elClass={`${theme}`}
                             containerClass={'reminder-times'}
                             skipNameFormatting={true}
                             onCheck={handleReminderSelection}

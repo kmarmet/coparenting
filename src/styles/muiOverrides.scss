@@ -207,7 +207,7 @@
     height: 400px;
     max-height: unset !important;
     width: 98vw;
-    max-width: 365px;
+    max-width: 380px;
   }
 
   // AM/PM SELECTION
@@ -448,9 +448,12 @@
       border-radius: 100%;
     }
 
+    .payday-dot {
+      background: $green;
+    }
     .current-user-visitation-dot,
     .current-user-event-dot {
-      background-color: $currentUserGreen;
+      background-color: $mainBlue;
     }
 
     .coparent-visitation-dot,
@@ -459,7 +462,7 @@
     }
 
     .holiday-event-dot {
-      background-color: #f88379;
+      background-color: $holidayOrange;
     }
   }
   .invisible-dots {
@@ -480,11 +483,6 @@
     justify-content: center;
     border-radius: 50%;
     align-items: center;
-    &.payday-emoji {
-      color: $green !important;
-      font-size: 14px;
-      vertical-align: super !important;
-    }
   }
 
   // Padding for top row (for emoji)
@@ -494,11 +492,9 @@
 
   // Static Calendar
   .MuiDateCalendar-root {
-    width: calc(100vw - 2px) !important;
+    width: calc(100vw) !important;
     margin: 0 !important;
     height: 100% !important;
-    //    max-height: 425px !important;
-    padding: 0 5px;
 
     @media screen and (min-width: 1000px) {
       margin: 0 auto !important;
@@ -511,8 +507,9 @@
 
     .MuiPickersDay-today:not(.Mui-selected) {
       border: 0 !important;
-      color: $mainBlue;
-      font-weight: $fwRegular !important;
+      color: $accentBlue;
+      opacity: 1 !important;
+      font-weight: $fwMediumBold !important;
     }
 
     // WEEKDAY LABEL (S M W)
@@ -570,12 +567,12 @@
       &.weekend-day,
       &.MuiPickersDay-dayOutsideMonth,
       &[aria-colindex='7'],
-      ,
       &[aria-colindex='1'] {
         opacity: 0.5 !important;
 
-        &.Mui-selected {
-          opacity: 1;
+        &.Mui-selected,
+        &.MuiPickersDay-today {
+          opacity: 1 !important;
         }
       }
       &.Mui-selected {
@@ -666,17 +663,21 @@
       &.coparent {
         color: $coparentPurple;
       }
-      &.standard {
-        color: #f88379;
+
+      &.financial {
+        color: $green;
+      }
+
+      &.holiday {
+        color: $holidayOrange;
       }
 
       &.currentUser {
-        color: $currentUserGreen;
+        color: $mainBlue;
       }
     }
 
     .dot {
-      background: red;
       height: 5px;
       width: 5px;
       border-radius: 100%;
@@ -690,12 +691,16 @@
         background: $coparentPurple;
       }
 
-      &.standard {
-        background: #f88379;
+      &.holiday {
+        background: $holidayOrange;
+      }
+
+      &.payday {
+        background: $green;
       }
 
       &.currentUser {
-        background: $currentUserGreen;
+        background: $mainBlue;
       }
     }
   }
@@ -758,8 +763,7 @@
   }
 
   .MuiPickersLayout-contentWrapper {
-    width: 100vw !important;
-    max-width: 100vw !important;
+    width: 380px;
     margin: 0 auto !important;
 
     @media screen and (min-width: 1000px) {
@@ -783,12 +787,8 @@
     }
   }
   .MuiFormControl-root {
-    //    border-bottom: 1px solid #e3e8ee;
     width: 100%;
     .MuiInputBase-input {
-      //      width: calc(100% - 20px) !important;
-      //      max-width: calc(100% - 20px) !important;
-      //      height: 40px !important;
     }
     &.MuiFormControl-fullWidth {
       border: 0;
@@ -823,7 +823,7 @@
   .MuiPaper-root {
     background-color: $lightBg;
     border-radius: $bigBorderRadius !important;
-    width: 95vw !important;
+    width: 380px !important;
     @include bestShadow;
 
     .MuiCollapse-vertical {
@@ -838,8 +838,7 @@
       width: 100%;
       justify-content: center;
       padding-bottom: 20px !important;
-      max-width: 365px !important;
-      margin-left: 21px;
+      max-width: 380px !important;
       padding-top: 10px;
 
       .MuiButton-root {
@@ -867,7 +866,7 @@
     &[role='dialog'] {
       .MuiPickersLayout-root {
         background-color: white !important;
-        width: 100vw !important;
+        width: 380px !important;
         max-width: 100% !important;
 
         @media screen and (min-width: 1000px) {
@@ -951,7 +950,7 @@
       height: 400px;
       max-height: unset !important;
       width: 98vw;
-      max-width: 365px;
+      max-width: 380px;
 
       .MuiIconButton-root {
         font-size: 45px;
@@ -1073,9 +1072,9 @@
 
     .MuiPickersToolbar-root {
       display: unset;
-      margin-left: 21px !important;
-      padding: 20px 10px;
-      max-width: 365px !important;
+      max-width: 380px !important;
+      padding: 15px;
+      margin: 0 !important;
 
       .MuiTimePickerToolbar-ampmSelection {
         display: grid;
@@ -1122,8 +1121,8 @@
         overflow: auto !important;
         padding-left: 10px;
         width: 100% !important;
-        max-width: 365px !important;
-        margin: 0;
+        max-width: 380px !important;
+        margin: 0 !important;
 
         @media screen and (min-width: 800px) {
           display: flex;
@@ -1246,7 +1245,7 @@
 
   .MuiPickersLayout-contentWrapper,
   .MuiPickersLayout-actionBar {
-    max-width: 365px;
+    max-width: 380px;
   }
 
   #static-calendar {
@@ -1280,6 +1279,7 @@
     border: 0;
     border-radius: 0;
     padding-right: 0;
+
     * {
       user-select: none;
     }
@@ -1293,9 +1293,10 @@
       max-height: unset !important;
       position: absolute !important;
       caret-color: $mainBlue !important;
-      height: auto !important;
+      height: 22px !important;
       top: 38px !important;
       width: 100% !important;
+      border-radius: 0 !important;
     }
   }
 
@@ -1366,7 +1367,7 @@
 
   .css-jaa451 {
     .MuiPickersLayout-toolbar {
-      max-width: 365px;
+      max-width: 380px;
     }
   }
 
@@ -1383,11 +1384,11 @@
     }
   }
   .MuiPickersFadeTransitionGroup-root {
-    max-width: 365px;
+    max-width: 380px;
     .MuiDateCalendar-viewTransitionContainer {
-      max-width: 365px;
+      max-width: 380px;
       .css-1h73gvd {
-        max-width: 365px;
+        max-width: 380px;
       }
     }
   }
@@ -1403,9 +1404,9 @@
 
   .MuiPickersLayout-root {
     margin: 0 auto;
-    max-width: 365px;
+    max-width: 380px;
     .css-1st8yxe-MuiPickersLayout-root {
-      max-width: 365px;
+      max-width: 380px;
     }
   }
 
@@ -1426,7 +1427,7 @@
 
   .css-1nf2ro8,
   .MuiDialog-paper {
-    width: 365px;
+    width: 380px;
   }
 
   .css-18w7by0 {
@@ -1439,7 +1440,6 @@
 
   // Top date container
   .css-x79lsh {
-    max-width: 365px;
+    max-width: 380px;
   }
-  //@include testBorders;
 }

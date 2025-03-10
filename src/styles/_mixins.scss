@@ -1025,11 +1025,18 @@
     backdrop-filter: blur(20px);
     background: transparent;
     right: 10px;
+    #action-items {
+      transition: all 0.3s ease-in-out;
+      right: 0;
+    }
   }
 
   #action-items {
-    right: 0;
     opacity: 1;
+    position: relative;
+    z-index: -1;
+    right: -100px;
+    transition: all 0.3s ease-in-out;
 
     .action-item {
       position: relative;
@@ -1049,7 +1056,7 @@
     top: unset;
     opacity: 1;
     transform: scale(1);
-    background: $lightIconBgBlue;
+    background: $lightAccentBlue;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1058,15 +1065,15 @@
     position: relative;
     transition: all 0.4s ease-in-out;
     padding: 10px 0;
-    border-radius: $borderRadius 0 0 $borderRadius;
+    border-radius: 5px 0 0 5px;
     width: 30px;
 
     svg {
-      font-size: 30px;
+      font-size: 28px;
       padding: 0;
       margin: 0;
       width: 20px;
-      color: $mainBlue;
+      color: $accentBlue;
     }
 
     &.close {
@@ -1084,7 +1091,7 @@
   }
 
   .action-item {
-    background: #e0e0e0;
+    background: $lightAccentBlue;
     height: 44px;
     width: 44px;
     border-radius: 50%;
@@ -1100,11 +1107,11 @@
   }
 
   svg {
-    color: #14c220;
     font-size: 30px;
     line-height: 1;
     padding: 0;
     overflow: hidden;
+    color: $accentBlue;
 
     &.magic {
       transform: scale(0.8);
@@ -1115,6 +1122,14 @@
       position: relative;
       bottom: 0;
     }
+  }
+  #document-image {
+    background-size: cover;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    z-index: 9999;
+    opacity: 0;
   }
 }
 
@@ -1242,11 +1257,8 @@
   align-items: center;
   gap: 15px;
   margin-bottom: 15px;
-  padding-top: 5px;
-  //  width: 100%;
   width: auto;
   border-radius: 50px;
-  margin-top: 5px;
 
   * {
     line-height: 1;
@@ -1266,14 +1278,13 @@
     @include hover;
 
     &.active {
-      padding: 5px 12px;
-      font-size: 14px;
-      border: 1px solid $accentBlue;
-      background: white;
+      padding: 7px 12px;
+      font-size: 12px;
+      border: 1px solid #525252;
       font-weight: $fwMediumBold;
-      color: $accentBlue;
       line-height: 1;
       display: flex;
+      color: #525252;
       justify-content: center;
       align-items: center;
       border-radius: 50px;
@@ -1556,7 +1567,7 @@
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   height: 45px;
   padding-top: 10px;
   border: 1px solid #e0e0e0;
@@ -2032,6 +2043,7 @@
       grid-template-columns: repeat(2, 1fr);
       align-items: center;
       padding-bottom: 5px;
+      padding-top: 5px;
 
       &.more-than-two-checkboxes {
         grid-template-columns: repeat(2, 1fr);
@@ -2561,8 +2573,8 @@
 }
 
 @mixin bottomCard {
-  background-color: $lightestGrey;
   position: fixed;
+  background: white;
   border-radius: 30px 30px 0 0;
   height: auto;
   left: 0;
@@ -2575,6 +2587,7 @@
   justify-content: space-between;
   top: 150px;
   overflow: hidden;
+
   // ANIMATION
   &.animate__fadeInUp {
     @include zIndex(9999999);
@@ -2586,6 +2599,38 @@
     &.view-holidays {
       max-height: 25vh;
       min-height: 0;
+    }
+  }
+
+  #title-wrapper {
+    position: sticky;
+    top: 0;
+    background-color: rgba(171, 194, 255, 0.27);
+    z-index: 10000000;
+    right: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px 10px 10px 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 30px 30px 0 0;
+
+    #large-title {
+      justify-content: center;
+      color: #3969ff;
+      font-size: 22px;
+      max-width: 87%;
+      line-height: 1.3;
+    }
+
+    .close-icon {
+      font-size: 26px;
+      z-index: 1000;
+      position: relative;
+      font-weight: bold;
+      margin-right: 5px;
+      color: #52525b;
     }
   }
 
@@ -2659,31 +2704,6 @@
             }
           }
         }
-      }
-    }
-
-    #title-wrapper {
-      position: sticky;
-      top: 0;
-      background-color: $lightestGrey;
-      z-index: 10000000;
-      right: 0;
-      left: 0;
-      margin: 0;
-      padding: 20px 0 0 0;
-
-      #large-title {
-        justify-content: center;
-      }
-
-      .close-icon {
-        font-size: 20px;
-        z-index: 1000;
-        position: relative;
-        font-weight: bold;
-        margin-right: 5px;
-        color: $darkIconGrey;
-        opacity: 0.6;
       }
     }
 
@@ -2860,7 +2880,6 @@
     padding: 8px 0 20px 0;
     height: 80px;
     z-index: 999;
-    background: $lightestGrey;
 
     * {
       line-height: 1;
@@ -2960,16 +2979,9 @@
 
   /*#region  CARDS BY CLASS*/
 
-  // LONG TITLE
-  &.long-title {
-    #large-title {
-      font-size: 16px;
-    }
-  }
-
   // CHILD INFO CHECKLISTS
   &.child-info-checklists {
-    #checklist-item-wrapper {
+    #checklist-item-row {
       align-items: center;
 
       .delete-icon {
@@ -3093,13 +3105,6 @@
             #label-wrapper {
               margin: 0;
               top: 0;
-            }
-
-            .MuiFormControl-root {
-              position: relative;
-              input {
-                border-radius: $borderRadius !important;
-              }
             }
           }
         }
@@ -3287,9 +3292,8 @@
 
   // FULL MENU
   &.full-menu {
-    background: $lightBg;
     &.animate__fadeInUp {
-      min-height: 90vh;
+      top: 80px;
     }
 
     #relative-wrapper {
@@ -3302,12 +3306,7 @@
       }
     }
 
-    #title-wrapper {
-      background-color: $lightBg !important;
-    }
-
     .buttons {
-      background: $lightBg !important;
       border: 0 !important;
       display: none !important;
     }
@@ -3753,7 +3752,6 @@
           display: block;
           margin: 0 auto;
           position: relative;
-          right: 5px;
           width: 100%;
           text-align: center;
         }

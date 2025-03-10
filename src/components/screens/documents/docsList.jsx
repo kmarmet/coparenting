@@ -14,7 +14,7 @@ import NavBar from '../../navBar'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
-import { FaTrashCan } from 'react-icons/fa6'
+import { PiTrashSimpleDuotone } from 'react-icons/pi'
 
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
@@ -82,7 +82,7 @@ export default function DocsList() {
                           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
                         </p>
                         <div className={`checkbox delete`} onClick={deleteDoc}>
-                          <FaTrashCan className={'delete-icon'} />
+                          <PiTrashSimpleDuotone className={'delete-icon'} />
                         </div>
                       </div>
                     </div>

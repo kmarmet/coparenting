@@ -2,11 +2,10 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
-import { CgClose } from 'react-icons/cg'
 import Manager from '/src/managers/manager.js'
 import DB_UserScoped from '../../database/db_userScoped'
 import StringManager from '../../managers/stringManager'
-import { FaMinus } from 'react-icons/fa'
+import { FiMinus } from 'react-icons/fi'
 
 export default function BottomCard({
   submitText,
@@ -107,21 +106,21 @@ export default function BottomCard({
 
   return (
     <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
+      <div className="flex" id="title-wrapper">
+        <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
+        <FiMinus
+          className="close-icon"
+          onClick={() => {
+            const pageOverlay = document.getElementById('page-overlay')
+            if (pageOverlay) {
+              pageOverlay.classList.remove('active')
+            }
+            onClose()
+            hideCard()
+          }}
+        />
+      </div>
       <div id="relative-wrapper">
-        <div className="flex" id="title-wrapper">
-          <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
-          <FaMinus
-            className="close-icon"
-            onClick={() => {
-              const pageOverlay = document.getElementById('page-overlay')
-              if (pageOverlay) {
-                pageOverlay.classList.remove('active')
-              }
-              onClose()
-              hideCard()
-            }}
-          />
-        </div>
         <div id="content">
           {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
           {children}

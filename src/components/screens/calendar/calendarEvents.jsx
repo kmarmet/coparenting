@@ -85,6 +85,18 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
           date: event.startDate,
         })
       }
+      if (
+        event?.title.toLowerCase().includes('pay') ||
+        event?.title.toLowerCase().includes('paid') ||
+        event?.title.toLowerCase().includes('salary') ||
+        event?.title.toLowerCase().includes('expense')
+      ) {
+        dotObjects.push({
+          className: 'financial-dot',
+          id: event.id,
+          date: event.startDate,
+        })
+      }
       if (isCurrentUserDot) {
         dotObjects.push({
           className: 'current-user-event-dot',

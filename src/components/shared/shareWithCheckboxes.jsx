@@ -77,7 +77,12 @@ export default function ShareWithCheckboxes({
                     data-key={key ? key : ''}
                     className={`flex ${containerClass} ${defaultKeys.includes(key) ? 'active' : ''}`}
                     onClick={onCheck}>
-                    <Checkbox defaultKeys={defaultKeys} dataKey={key} text={StringManager.getFirstNameOnly(name)} onClick={() => console.log(name)} />
+                    <Checkbox
+                      isActive={defaultKeys.includes(key)}
+                      dataKey={key}
+                      text={StringManager.getFirstNameOnly(name)}
+                      onClick={() => console.log(name)}
+                    />
                   </div>
                 )
               })}

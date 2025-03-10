@@ -95,11 +95,6 @@ export default function AddOrUpdateTransferChecklists({ showCard, hideCard }) {
     }
   }
 
-  // SET EXISTING ITEMS BASED ON VIEW
-  useEffect(() => {
-    setChecklists().then((r) => r)
-  }, [view])
-
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
     const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
@@ -115,6 +110,12 @@ export default function AddOrUpdateTransferChecklists({ showCard, hideCard }) {
     }
   }
 
+  // SET EXISTING ITEMS BASED ON VIEW
+  useEffect(() => {
+    setChecklists().then((r) => r)
+  }, [view])
+
+  // ON SHOW CARD
   useEffect(() => {
     onTableChange().then((r) => r)
     const inputs = document.getElementById('inputs')
@@ -124,6 +125,7 @@ export default function AddOrUpdateTransferChecklists({ showCard, hideCard }) {
         input.remove()
       })
     }
+    setCheckboxTextList([])
     setChecklists().then((r) => r)
   }, [showCard])
 

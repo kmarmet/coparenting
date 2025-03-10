@@ -175,6 +175,10 @@
                 position: relative;
                 top: 3px;
 
+                &.financial-dot {
+                  background-color: $green;
+                }
+
                 &.holiday-event-dot {
                   background: $holidayOrange;
                 }
@@ -184,11 +188,11 @@
                 }
 
                 &.current-user-event-dot {
-                  background: $currentUserGreen;
+                  background: $mainBlue;
                 }
 
                 &.current-user-visitation {
-                  background: $accentBlue;
+                  background: $mainBlue;
                 }
               }
             }

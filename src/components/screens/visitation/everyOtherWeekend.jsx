@@ -1,7 +1,7 @@
 // Path: src\components\screens\visitation\everyOtherWeekend.jsx
 import BottomCard from '../../../components/shared/bottomCard'
 import globalState from '../../../context'
-import { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Manager from '../../../managers/manager'
 import InputWrapper from '../../../components/shared/inputWrapper'
 import DateFormats from '../../../constants/dateFormats'
@@ -14,6 +14,7 @@ import MyConfetti from '../../../components/shared/myConfetti'
 import moment from 'moment'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import Label from '../../shared/label'
 
 export default function EveryOtherWeekend({ hide, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -77,7 +78,8 @@ export default function EveryOtherWeekend({ hide, showCard }) {
       title={'Every other Weekend Visitation Schedule'}
       showCard={showCard}
       onClose={resetForm}>
-      <InputWrapper wrapperClasses="mt-15" labelText={'Friday of the next weekend you have your child(ren)'} required={true} inputType={'date'}>
+      <Label classes="mt-15" text={'Friday of the next weekend you have your child(ren)'} />
+      <InputWrapper labelText={''} required={true} inputType={'date'}>
         <MobileDatePicker onOpen={addThemeToDatePickers} onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100`} />
       </InputWrapper>
       {/* SHARE WITH */}

@@ -5,7 +5,6 @@ import Manager from '../../managers/manager'
 import BottomCard from '../shared/bottomCard'
 import EmailManager from '../../managers/emailManager'
 import { Fade } from 'react-awesome-reveal'
-import StringManager from '../../managers/stringManager'
 import { MdOutlineAppShortcut, MdOutlineEmail } from 'react-icons/md'
 import { VscFeedback } from 'react-icons/vsc'
 import NavBar from '../navBar'
@@ -153,14 +152,6 @@ export default function ContactUs() {
               />
             </div>
           </div>
-        </div>
-        <div className="buttons">
-          <button className="card-button" onClick={submitSupportRequest}>
-            Get Support
-          </button>
-          <button className="card-button cancel" onClick={() => setShowSupportCard(false)}>
-            Cancel
-          </button>
         </div>
       </BottomCard>
 

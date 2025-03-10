@@ -27,6 +27,7 @@ import { IoClose } from 'react-icons/io5'
 import _ from 'lodash'
 import Label from '../../shared/label.jsx'
 import DatasetManager from '../../../managers/datasetManager.coffee'
+import Actions from '../../shared/actions'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
@@ -42,6 +43,8 @@ export default function DocViewer() {
   const [showRenameFile, setShowRenameFile] = useState(false)
   const [newFileName, setNewFileName] = useState('')
   const [sideMenuIsOpen, setSideMenuIsOpen] = useState(false)
+  const [searchValue, setSearchValue] = useState('')
+
   const scrollToHeader = (hashedHeader) => {
     const domHeader = document.querySelector(`#doc-text [data-hashed-header="${hashedHeader}"]`)
     if (domHeader) {
@@ -96,13 +99,13 @@ export default function DocViewer() {
     setTocHeaders(DatasetManager.getUniqueArray(allHeaders, true))
   }
 
-  const search = async (searchValue) => {
-    // setState({ ...state, isLoading: true })
+  const search = async () => {
     if (Manager.isValid(searchValue, true)) {
       const docText = document.getElementById('doc-text')
       let textAsHtml = docText.innerHTML
       textAsHtml = searchTextHL.highlight(textAsHtml, searchValue)
       textAsHtml = textAsHtml.replaceAll('<span class=" text-highlight"="', '')
+      docText.innerHTML = textAsHtml
       setTimeout(() => {
         let headers = docText.querySelectorAll('.header')
         for (let header of headers) {
@@ -119,7 +122,9 @@ export default function DocViewer() {
           }
         }
       }, 500)
-      setState({ ...state, isLoading: false })
+    } else {
+      AlertManager.throwError('Please enter a search value')
+      return false
     }
   }
 
@@ -522,10 +527,14 @@ export default function DocViewer() {
         showCard={showSearch}
         title={'Search'}
         showOverlay={false}
+        onSubmit={search}
         onClose={closeSearch}>
-        <div className="flex">
-          <InputWrapper labelText="Enter text to find..." onChange={(e) => search(e.target.value)} inputValueType="text" />
-        </div>
+        <InputWrapper
+          wrapperClasses="mt-5"
+          labelText="Enter word(s) to find..."
+          onChange={(e) => setSearchValue(e.target.value)}
+          inputValueType="text"
+        />
       </BottomCard>
 
       {/* TIPS CARD */}
@@ -605,66 +614,64 @@ export default function DocViewer() {
         onSubmit={renameFile}
         className="rename-file"
         title={'Rename Document'}>
-        <InputWrapper labelText={'Enter new file name...'} onChange={(e) => setNewFileName(e.target.value)} />
+        <InputWrapper labelText={'Enter new document name...'} onChange={(e) => setNewFileName(e.target.value)} />
       </BottomCard>
 
       {/* FLOATING BUTTONS */}
-      <div id="floating-buttons" className={` ${showToc || showSearch || showTips ? 'hide' : ''} ${sideMenuIsOpen ? 'open' : ''}`}>
-        <div id="menu-items">
-          {/* SCROLL TO TOP BUTTON */}
-          <div className="svg-wrapper">
-            <IoIosArrowUp id={'scroll-to-top-icon'} onClick={scrollToTop} />
+      <Actions shouldHide={showToc || showSearch || showTips} show={sideMenuIsOpen}>
+        {/* SCROLL TO TOP BUTTON */}
+        <div className="action-item">
+          <IoIosArrowUp id={'scroll-to-top-icon'} onClick={scrollToTop} />
+        </div>
+        {/* TOC BUTTON */}
+        {tocHeaders.length > 0 && (
+          <div className="action-item">
+            <IoListOutline
+              onClick={async () => {
+                await setTableOfContentsHeaders()
+                setShowToc(true)
+              }}
+              id="toc-icon"
+              className={`${theme}`}
+            />
           </div>
-          {/* TOC BUTTON */}
-          {tocHeaders.length > 0 && (
-            <div className="svg-wrapper">
-              <IoListOutline
-                onClick={async () => {
-                  await setTableOfContentsHeaders()
-                  setShowToc(true)
-                }}
-                id="toc-icon"
-                className={`${theme}`}
-              />
-            </div>
-          )}
+        )}
 
-          {/* SEARCH ICON FOR 800PX > */}
-          {!DomManager.isMobile() && (
-            <div className="svg-wrapper">
-              <TbFileSearch id={'desktop-search-icon'} onClick={() => setShowSearch(true)} />
-            </div>
-          )}
-
-          {/* RENAME ICON */}
-          <div className="svg-wrapper">
-            <MdDriveFileRenameOutline onClick={() => setShowRenameFile(true)} />
+        {/* SEARCH ICON FOR 800PX > */}
+        {!DomManager.isMobile() && (
+          <div className="action-item">
+            <TbFileSearch id={'desktop-search-icon'} onClick={() => setShowSearch(true)} />
           </div>
+        )}
 
-          {/* DOCUMENT IMAGE */}
-          {docType === 'image' && (
-            <div className="svg-wrapper">
-              <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
-                <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
-                <FaFileImage className={'file-image'} />
-              </LightGallery>
-            </div>
-          )}
-
-          {/* TIPS ICON */}
-          <div className="svg-wrapper">
-            <FaLightbulb id={'tips-icon'} onClick={() => setShowTips(true)} />
-          </div>
+        {/* RENAME ICON */}
+        <div className="action-item">
+          <MdDriveFileRenameOutline onClick={() => setShowRenameFile(true)} />
         </div>
 
-        {/* MENU ICON */}
-        <div className={`${sideMenuIsOpen ? 'close' : ''} svg-wrapper menu-icon`}>
-          {sideMenuIsOpen ? (
-            <IoClose className={'menu-icon close'} onClick={() => setSideMenuIsOpen(false)} />
-          ) : (
-            <IoMenuOutline className={'menu-icon'} onClick={() => setSideMenuIsOpen(true)} />
-          )}
+        {/* DOCUMENT IMAGE */}
+        {docType === 'image' && (
+          <div className="action-item">
+            <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
+              <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
+              <FaFileImage className={'file-image'} />
+            </LightGallery>
+          </div>
+        )}
+
+        {/* TIPS ICON */}
+        <div className="action-item">
+          <FaLightbulb id={'tips-icon'} onClick={() => setShowTips(true)} />
         </div>
+      </Actions>
+
+      {/* MENU ICON */}
+      <div className={`${sideMenuIsOpen ? 'close' : ''} action-item menu-icon`}>
+        {sideMenuIsOpen ? (
+          <IoClose className={'menu-icon close'} onClick={() => setSideMenuIsOpen(false)} />
+        ) : (
+          <IoMenuOutline className={'menu-icon'} onClick={() => setSideMenuIsOpen(true)} />
+        )}
       </div>
 
       {/* PAGE CONTAINER / TEXT */}

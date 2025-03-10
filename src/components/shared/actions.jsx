@@ -30,7 +30,9 @@ export default function Actions({ children, onOpen, shouldHide }) {
   }, [shouldHide])
 
   useEffect(() => {
-    onOpen()
+    if (onOpen) {
+      onOpen()
+    }
   }, [])
 
   return (

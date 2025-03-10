@@ -97,7 +97,7 @@ export default function CustomChildInfo({ hideCard, showCard }) {
       className="custom-child-info-wrapper"
       wrapperClass="custom-child-info-card"
       onClose={resetForm}
-      title={'Add Custom Info'}
+      title={'Add Your Own Info'}
       showCard={showCard}>
       <div className="form">
         {/* INFO SECTIONS */}

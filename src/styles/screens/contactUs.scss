@@ -3,8 +3,10 @@
 #external-overrides {
   #contact-us-container {
     .sections {
+      margin-top: 15px;
       .section {
         @include lineItem;
+        font-size: 18px;
         height: auto;
         justify-content: flex-start;
 

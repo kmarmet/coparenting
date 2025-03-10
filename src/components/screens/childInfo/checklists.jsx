@@ -155,7 +155,7 @@ export default function Checklists({ showCard, hideCard }) {
         Manager.isValid(checklist?.checklistItems) &&
         checklist?.checklistItems?.map((item, index) => {
           return (
-            <div key={index} id="checklist-item-wrapper" className="flex">
+            <div key={index} id="checklist-item-row" className="flex">
               <p onClick={toggleActive} className="row">
                 {activeItems.includes(item.toLowerCase()) && <PiListChecksFill />}
                 {StringManager.uppercaseFirstLetterOfAllWords(item)}

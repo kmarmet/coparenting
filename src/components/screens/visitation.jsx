@@ -49,7 +49,6 @@ export default function Visitation() {
   const [userHolidays, setUserHolidays] = useState([])
   const [selectedHolidayDates, setSelectedHolidayDates] = useState([])
   const [holidaysFromApi, setHolidaysFromApi] = useState([])
-  const [dataDates, setDataDates] = useState([])
 
   const updateDefaultTransferLocation = async (location, link) => {
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/visitation/transferNavLink`, link)
@@ -99,8 +98,6 @@ export default function Visitation() {
       selectedHolidayDates.forEach((holidayDateString) => {
         const dateObject = new CalendarEvent()
         const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format('MM/DD'))
-        console.log(holidayName)
-        console.log(moment(holidayDateString).format('MM/DD'))
         // Required
         dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Holiday Visitation`
         dateObject.startDate = moment(holidayDateString).format(DateFormats.dateForDb)
@@ -202,10 +199,7 @@ export default function Visitation() {
       const { holidays, userHolidays } = holidaysObject
       const userHolidaysList = Manager.convertToArray(CalendarMapper.eventsToHolidays(userHolidays))
       const userHolidaysDates = userHolidaysList.map((x) => x.date)
-      const allHolidayDates = holidays.map((x) => x.date)
-      setDataDates(allHolidayDates)
       setSelectedHolidayDates(DatasetManager.getUniqueArray(userHolidaysDates, true))
-
       setUserHolidays(userHolidaysList.map((x) => x.name))
       setTimeout(() => {
         setDefaultHolidayCheckboxes(holidays)
@@ -342,7 +336,9 @@ export default function Visitation() {
               {/* VISITATION SCHEDULE */}
               <div className="note-container mt-10 mb-15">
                 <Note
-                  message={'When you choose a visitation schedule, it will be visible in the calendar for you and who you allow access to view it.'}
+                  message={
+                    'When you establish a visitation schedule, it will be displayed on the calendar for you and anyone you permit to access it.'
+                  }
                 />
               </div>
 
@@ -387,6 +383,7 @@ export default function Visitation() {
             checkboxArray={Manager.buildCheckboxGroup({
               currentUser,
               customLabelArray: holidaysFromApi.map((x) => x.name),
+              defaultLabels: userHolidays,
             })}
           />
 
