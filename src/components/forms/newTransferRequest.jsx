@@ -29,7 +29,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
   const [requestTime, setRequestTime] = useState('')
   const [requestLocation, setRequestLocation] = useState('')
   const [requestDate, setRequestDate] = useState('')
-  const [requestRecipientPhone, setRequestRecipientPhone] = useState('')
+  const [requestRecipientKey, setRequestRecipientKey] = useState('')
   const [preferredLocation, setPreferredLocation] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
 
@@ -41,7 +41,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     setRequestTime('')
     setRequestLocation('')
     setRequestDate('')
-    setRequestRecipientPhone('')
+    setRequestRecipientKey('')
     setPreferredLocation('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({ ...state, currentUser: updatedCurrentUser })
@@ -58,7 +58,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
       )
       return false
     }
-    if (!Manager.isValid(requestRecipientPhone)) {
+    if (!Manager.isValid(requestRecipientKey)) {
       AlertManager.throwError('Please choose who to send the request to')
       return false
     }
@@ -87,13 +87,13 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     newRequest.location = requestLocation
     newRequest.startDate = moment(requestDate).format(DateFormats.dateForDb)
     newRequest.directionsLink = Manager.getDirectionsLink(requestLocation)
-    newRequest.recipientPhone = requestRecipientPhone
+    newRequest.recipientKey = requestRecipientKey
     newRequest.status = 'pending'
     newRequest.preferredTransferLocation = requestLocation
     newRequest.responseDueDate = responseDueDate
 
     if (preferredLocation.length > 0) {
-      const coparent = currentUser?.coparents.filter((x) => x.phone === requestRecipientPhone)[0]
+      const coparent = currentUser?.coparents.filter((x) => x.key === requestRecipientKey)[0]
       const key = await DB.getNestedSnapshotKey(`users/${currentUser?.key}/coparents`, coparent, 'id')
       await DB_UserScoped.updateUserRecord(currentUser?.key, `coparents/${key}/preferredTransferLocation`, requestLocation)
     }
@@ -106,7 +106,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     await NotificationManager.sendNotification(
       `Transfer Change Request`,
       `${StringManager.getFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
-      requestRecipientPhone,
+      requestRecipientKey,
       currentUser,
       ActivityCategory.transferRequest
     )
@@ -120,18 +120,12 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
   }
 
   const handleRequestRecipient = (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      async (e) => {
-        console.log(e)
-        const phone = await DB_UserScoped.getUserFromName(e)
-        setRequestRecipientPhone(phone)
-      },
-      async () => {
-        setRequestRecipientPhone('')
-      },
-      false
-    )
+    const coparentKey = e.getAttribute('data-key')
+    if (e.classList.contains('active')) {
+      setRequestRecipientKey(coparentKey)
+    } else {
+      setRequestRecipientKey('')
+    }
   }
 
   const handlePreferredLocation = (e) => {

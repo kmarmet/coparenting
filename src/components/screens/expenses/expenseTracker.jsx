@@ -16,6 +16,8 @@ import { GiMoneyStack } from 'react-icons/gi'
 import { PiUserCircleDuotone } from 'react-icons/pi'
 import { RxUpdate } from 'react-icons/rx'
 import { TbCalendarCheck, TbCalendarDollar } from 'react-icons/tb'
+import { CgDetailsMore } from 'react-icons/cg'
+
 import NewExpenseForm from '../../forms/newExpenseForm.jsx'
 import NavBar from '../../navBar.jsx'
 import BottomCard from '../../shared/bottomCard.jsx'
@@ -43,6 +45,7 @@ import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import ViewSelector from '../../shared/viewSelector.jsx'
+import { IoMdAdd } from 'react-icons/io'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -375,7 +378,10 @@ export default function ExpenseTracker() {
               {/* NOTES */}
               {Manager.isValid(activeExpense?.notes) && (
                 <div className={`flex ${StringManager.addLongTextClass(activeExpense?.notes)}`}>
-                  <b>Notes</b>
+                  <b>
+                    <CgDetailsMore />
+                    Notes
+                  </b>
                   <span className="notes">{activeExpense?.notes}</span>
                 </div>
               )}
@@ -439,6 +445,7 @@ export default function ExpenseTracker() {
 
               <Spacer height={5} />
 
+              {/* NOTES */}
               <InputWrapper
                 defaultValue={activeExpense?.notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -462,7 +469,6 @@ export default function ExpenseTracker() {
                 <button className="button default submit blue center" onClick={() => sendReminder(activeExpense)}>
                   Send Reminder
                 </button>
-                {/*)}*/}
               </div>
             </>
           )}
@@ -482,10 +488,14 @@ export default function ExpenseTracker() {
             option to either approve or decline it.
           </p>
           <Spacer height={8} />
+
+          {/* PAYMENT OPTIONS */}
           <p className="payment-options-link" onClick={() => setShowPaymentOptionsCard(true)}>
             Bill Payment & Money Transfer Options
           </p>
           <Spacer height={8} />
+
+          {/* FILTERS */}
           <Accordion expanded={showFilters} id={'filters-accordion'} className={showFilters ? 'open' : 'closed'}>
             <AccordionSummary onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'open' : 'closed'}>
               <p id="actions-button" className="expenses">
@@ -541,7 +551,7 @@ export default function ExpenseTracker() {
                 {Manager.isValid(categoriesInUse) && (
                   <div className="filter-row">
                     <div className="buttons flex category">
-                      {categoriesAsArray.sort().map((cat, index) => {
+                      {categoriesAsArray.map((cat, index) => {
                         return (
                           <>
                             {categoriesInUse.includes(cat) && Manager.isValid(cat, true) && (
@@ -558,7 +568,7 @@ export default function ExpenseTracker() {
                     </div>
                   </div>
                 )}
-                <Label text={'Sorting'} classes="sorting" />
+                <Label text={''} classes="sorting" />
                 <SelectDropdown wrapperClasses={'sorting-accordion'} selectValue={sortMethod} labelText={'Sort by'} onChange={handleSortBySelection}>
                   <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
                   <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
@@ -584,7 +594,7 @@ export default function ExpenseTracker() {
                 return (
                   <div
                     key={expense?.id}
-                    className="mt-20 row"
+                    className="row"
                     onClick={() => {
                       setActiveExpense(expense)
                       setShowDetails(true)
@@ -624,7 +634,7 @@ export default function ExpenseTracker() {
       </div>
       {!showNewExpenseCard && !showPaymentOptionsCard && !showDetails && (
         <NavBar navbarClass={'child-info'}>
-          <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />
+          <IoMdAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />
         </NavBar>
       )}
     </>

@@ -10,7 +10,7 @@ import DB_UserScoped from '../../database/db_userScoped.js'
 import DateManager from '/src/managers/dateManager.js'
 import NavBar from '../navBar'
 import { GrMapLocation } from 'react-icons/gr'
-import { IoAdd, IoLocationOutline } from 'react-icons/io5'
+import { IoAdd, IoHourglassOutline, IoLocationOutline } from 'react-icons/io5'
 import SecurityManager from '/src/managers/securityManager'
 import { PiCarProfileDuotone, PiCheckBold } from 'react-icons/pi'
 import { Fade } from 'react-awesome-reveal'
@@ -18,7 +18,6 @@ import { BiSolidNavigation } from 'react-icons/bi'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import { TbCalendarCheck } from 'react-icons/tb'
-import { IoHourglassOutline } from 'react-icons/io5'
 import { MdOutlineAccessTime } from 'react-icons/md'
 import AlertManager from '/src/managers/alertManager'
 import BottomCard from '/src/components/shared/bottomCard'
@@ -33,12 +32,12 @@ import StringManager from '/src/managers/stringManager'
 import Spacer from '../shared/spacer.jsx'
 import Map from '/src/components/shared/map.jsx'
 import { setKey } from 'react-geocode'
-import Checkbox from '../shared/checkbox.jsx'
 import Label from '../shared/label.jsx'
 import StringAsHtmlElement from '../shared/stringAsHtmlElement'
 import AddressInput from '../shared/addressInput'
 import { CgDetailsMore } from 'react-icons/cg'
 import ViewSelector from '../shared/viewSelector'
+import CheckboxGroup from '../shared/checkboxGroup'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -216,14 +215,14 @@ export default function TransferRequests() {
           {view === 'details' && (
             <>
               {/* TRANSFER DATE */}
-              {Manager.isValid(activeRequest?.date) && (
+              {Manager.isValid(activeRequest?.startDate) && (
                 <div className="flex">
                   <b>
                     <TbCalendarCheck />
                     Transfer Date
                   </b>
                   <p>{activeRequest.endDate}</p>
-                  <span>{DateManager.formatDate(activeRequest?.date)}</span>
+                  <span>{DateManager.formatDate(activeRequest?.startDate)}</span>
                 </div>
               )}
 
@@ -293,8 +292,14 @@ export default function TransferRequests() {
                     We&apos;re Here <IoLocationOutline />
                   </button>
                   <Spacer height={5} />
-                  <Checkbox wrapperClass="center" text={'Include Current Address'} onClick={() => setSendWithAddress(!sendWithAddress)} />
-
+                  <CheckboxGroup
+                    checkboxArray={Manager.buildCheckboxGroup({
+                      currentUser,
+                      customLabelArray: ['Include Current Address'],
+                    })}
+                    skipNameFormatting={true}
+                    onCheck={() => setSendWithAddress(!sendWithAddress)}
+                  />
                   <Spacer height={10} />
                   <Label text={'Transfer Location'} classes="center-text" />
                   <Spacer height={5} />
@@ -308,14 +313,20 @@ export default function TransferRequests() {
           {view === 'edit' && (
             <>
               {/* DATE */}
-              <InputWrapper inputType={'date'} labelText={'Date'}>
-                <MobileDatePicker
-                  onOpen={addThemeToDatePickers}
-                  className={`${theme}  w-100`}
-                  defaultValue={moment(activeRequest?.date)}
-                  onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
-                />
-              </InputWrapper>
+              {!DomManager.isMobile() && (
+                <InputWrapper inputType={'date'} labelText={'Date'}>
+                  <MobileDatePicker
+                    onOpen={addThemeToDatePickers}
+                    className={`${theme}  w-100`}
+                    defaultValue={moment(activeRequest?.date)}
+                    onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
+                  />
+                </InputWrapper>
+              )}
+
+              {DomManager.isMobile() && (
+                <InputWrapper useNativeDate={true} inputType={'date'} labelText={'Date'} required={true} defaultValue={moment(activeRequest?.date)} />
+              )}
 
               {/* TIME */}
               <InputWrapper inputType={'date'} labelText={'Time'}>
@@ -336,15 +347,29 @@ export default function TransferRequests() {
               <InputWrapper inputType={'location'} labelText={'Location'}>
                 <AddressInput defaultValue={requestLocation} onSelection={(address) => setRequestLocation(address)} />
               </InputWrapper>
+
               {/* RESPONSE DUE DATE */}
-              <InputWrapper inputType={'date'} labelText={'Respond by'}>
-                <MobileDatePicker
-                  onOpen={addThemeToDatePickers}
-                  className={`${theme} w-100`}
+              {!DomManager.isMobile() && (
+                <InputWrapper inputType={'date'} labelText={'Respond by'}>
+                  <MobileDatePicker
+                    onOpen={addThemeToDatePickers}
+                    className={`${theme}  w-100`}
+                    defaultValue={moment(activeRequest?.responseDueDate)}
+                    onChange={(e) => setResponseDueDate(moment(e).format(DateFormats.dateForDb))}
+                  />
+                </InputWrapper>
+              )}
+
+              {DomManager.isMobile() && (
+                <InputWrapper
+                  onChange={(e) => setResponseDueDate(moment(e.target.value).format(DateFormats.dateForDb))}
+                  useNativeDate={true}
+                  inputType={'date'}
+                  labelText={'Respond by'}
+                  required={true}
                   defaultValue={moment(activeRequest?.responseDueDate)}
-                  onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
                 />
-              </InputWrapper>
+              )}
 
               {/* BUTTONS */}
               <div className="card-buttons">
@@ -410,7 +435,7 @@ export default function TransferRequests() {
                       <div data-request-id={request.id} className="request " id="content">
                         {/* DATE */}
                         <p id="title" className="flex date row-title">
-                          {moment(request.date).format(DateFormats.readableMonthAndDay)}
+                          {moment(request.startDate).format(DateFormats.readableMonthAndDay)}
                           <span className={`${request.status} status`} id="request-status">
                             {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
                           </span>

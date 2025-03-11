@@ -22,8 +22,7 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
     <>
       <BottomCard
         hasSubmitButton={false}
-        subtitle="There are a multitude of simple and FREE ways to send money to a co-parent for expenses, or for any other reason. Please look below to
-              see which option works best for you."
+        subtitle="There are numerous straightforward and cost-free methods available for transferring money to a co-parent for expenses or other purposes. Please review the options below to determine which one suits your needs best."
         title={'Payment/Transfer Options'}
         className="payment-options-card"
         wrapperClass="payment-options-card"

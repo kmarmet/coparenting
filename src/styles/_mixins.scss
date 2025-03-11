@@ -74,8 +74,6 @@
   text-align: center;
   opacity: 1;
   color: $mainBlue;
-  font-family: 'DM Serif Text', serif;
-  font-family: 'Fredoka', sans-serif;
   font-family: 'Nunito', sans-serif;
   font-weight: 600;
   font-style: normal;
@@ -1159,12 +1157,13 @@
             min-width: 0;
             width: unset;
             background: white;
-            color: $lightDarkGrey;
+            color: #a3a3a3;
             opacity: 1;
-            font-weight: $fwMediumBold;
+            font-weight: $fwBold;
 
             &.active {
               color: $mainBlue;
+              font-weight: $fwExtraBold;
             }
           }
         }
@@ -1204,8 +1203,7 @@
             margin-left: 10px;
             margin-right: 0;
             font-size: 14px;
-            color: black;
-            opacity: 0.75;
+            color: #737373;
             position: relative;
             top: 0;
           }
@@ -1240,11 +1238,12 @@
   opacity: 0.75;
   border-radius: $borderRadius;
   transition: all 0.3s ease-in-out;
+  color: #737373;
 
   svg {
     margin-left: auto;
     align-self: flex-end;
-    color: $mediumGrey;
+    color: #737373;
     font-size: 22px;
     max-height: 20px;
     display: flex;
@@ -1442,6 +1441,7 @@
     &.approved {
       background-color: $lightestGreen;
       color: $green;
+      font-weight: $fwMedium;
       border: 1px solid $green;
     }
 
@@ -1479,7 +1479,7 @@
   }
 
   #primary-icon-wrapper {
-    background-color: $lightBlue;
+    background-color: $lightAccentBlue;
     height: 45px;
     width: 45px;
     border-radius: 50%;
@@ -1489,7 +1489,7 @@
 
     #primary-row-icon {
       font-size: 27px;
-      color: $mainBlue;
+      color: $accentBlue;
     }
 
     span,
@@ -1497,6 +1497,7 @@
       color: $mainBlue;
       font-size: 13px;
       font-weight: $fwMedium;
+      line-height: 1;
     }
   }
 
@@ -2612,20 +2613,18 @@
   #title-wrapper {
     position: sticky;
     top: 0;
-    background: $bestGreyForWhite;
     z-index: 10000000;
     right: 0;
     left: 0;
     width: 100%;
-    padding: 15px 10px 10px 15px;
+    padding: 15px 10px 0 15px;
     margin-bottom: 15px;
     display: flex;
     justify-content: space-between;
-    border-radius: 30px 30px 0 0;
 
     #large-title {
       justify-content: center;
-      color: #44403c;
+      color: $mainBlue;
       font-size: 22px;
       max-width: 87%;
       line-height: 1.3;
@@ -2759,23 +2758,19 @@
         left: inherit;
         right: inherit;
         bottom: 0;
-        border: 1px solid $green;
+        border: 0;
         font-weight: $fwRegular;
-        background-color: white;
         justify-self: flex-start;
         margin-right: auto;
         line-height: 1;
-        color: $green;
+        color: white;
+        background: $green;
         width: 50%;
         @include buttonPress;
 
         &#view-visitation-holidays-item {
-          color: $mainBlue;
-          border: 1px solid $mainBlue;
-        }
-
-        svg {
-          color: $green;
+          color: white;
+          background: $accentBlue;
         }
       }
     }
@@ -2879,16 +2874,16 @@
 
   // BUTTONS
   .buttons {
-    position: sticky;
+    position: fixed;
     display: flex;
     justify-content: center;
     border: 0;
     bottom: 0;
     margin: 0;
-    width: 100%;
-    padding: 8px 0 20px 0;
-    height: 80px;
+    width: 100vw;
+    padding: 8px 0 0 0;
     z-index: 999;
+    background: white;
 
     * {
       line-height: 1;
@@ -3500,8 +3495,7 @@
     #relative-wrapper {
       a {
         line-height: 1;
-        display: block;
-        margin-bottom: 25px;
+        display: inline-block;
       }
 
       .new-tab-icon {
@@ -3794,15 +3788,15 @@
       &.child-info,
       &.records,
       &.coparents {
-        border: 1px solid #f88379;
+        border: 1px solid #d9962b;
 
         * {
-          color: #f88379;
+          color: #d9962b;
         }
 
         &.active {
           background: rgba(255, 234, 234, 0.87);
-          box-shadow: 0 0 12px 0 #f88379;
+          box-shadow: 0 0 12px 0 #d9962b;
         }
       }
       &.account,
@@ -3811,15 +3805,15 @@
       &.theme,
       &.logout,
       &.install-app {
-        border: 1px solid $coparentPurple;
+        border: 1px solid #7e57c2;
 
         * {
-          color: $coparentPurple;
+          color: #7e57c2;
         }
 
         &.active {
           background: $lightPurple;
-          box-shadow: 0 0 12px 0 $coparentPurple;
+          box-shadow: 0 0 12px 0 #7e57c2;
         }
 
         &.contact-us {

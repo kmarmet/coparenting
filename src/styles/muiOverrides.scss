@@ -183,7 +183,7 @@
     }
     .MuiPickersCalendarHeader-root {
       margin: 0 !important;
-      padding: 0 0 0 10px !important;
+      padding: 0 5px 0 20px !important;
     }
   }
 
@@ -578,16 +578,15 @@
       }
       &.Mui-selected {
         transition: all 0.2s ease-in-out !important;
-        background: $bestGreyForWhite;
-        background: $lightAccentBlue;
+        background: $lightAccentBlue !important;
         width: 51px !important;
         height: 43px !important;
         margin-left: 5px;
         margin-right: 5px;
-        border-radius: 100% !important;
+        border-radius: $borderRadius !important;
         position: relative;
-        top: 2px;
         border: 1px solid $accentBlue;
+        top: 2px;
         opacity: 1 !important;
         color: $accentBlue !important;
         font-weight: $fwBold !important;
@@ -1451,4 +1450,14 @@
   .css-x79lsh {
     max-width: 380px;
   }
+  //  [role='row'] {
+  //    margin: 0 !important;
+  //    button {
+  //      &.MuiPickersDay-root {
+  //        border: 2px solid red;
+  //        border-radius: 0 !important;
+  //        margin: 0 0 8px 0 !important;
+  //      }
+  //    }
+  //  }
 }

@@ -3,6 +3,7 @@
 
 #external-overrides {
   #expenses-container {
+    margin-top: 15px;
     #below-title {
       justify-content: space-between;
       align-items: center;
@@ -10,9 +11,8 @@
 
       .due-date {
         font-weight: $fwRegular;
-        font-style: italic;
         font-size: 14px;
-        opacity: 0.75;
+        color: #737373;
       }
     }
   }
@@ -127,15 +127,12 @@
     #filters {
       margin-top: 15px;
       border-radius: $borderRadius;
+      padding-bottom: 15px;
       .filter-row {
         margin-bottom: 10px;
         #label-wrapper {
           label {
             line-height: 1;
-
-            font-size: 14px;
-            b {
-            }
 
             span {
               padding: 0;
@@ -246,7 +243,6 @@
       opacity: 1;
       border-bottom: 1px solid $mainBlue;
       display: inline;
-      padding-bottom: 3px;
       @include hover;
 
       span {
@@ -338,7 +334,7 @@
         }
         .name {
           line-height: 1;
-          font-weight: $fwRegular;
+          font-weight: $fwMedium;
           width: 100%;
           display: inline;
         }

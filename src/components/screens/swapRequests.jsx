@@ -36,6 +36,7 @@ import { TbCalendarCheck } from 'react-icons/tb'
 import ViewSelector from '../shared/viewSelector'
 import StringAsHtmlElement from '../shared/stringAsHtmlElement'
 import DB_UserScoped from '../../database/db_userScoped.js'
+import Spacer from '../shared/spacer'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -85,6 +86,7 @@ export default function SwapRequests() {
     await getSecuredRequests()
     setActiveRequest(updatedRequest)
     setShowDetails(false)
+    AlertManager.successAlert('Swap Request Updated')
     await resetForm()
   }
 
@@ -145,21 +147,21 @@ export default function SwapRequests() {
   }
 
   const handleChildSelection = (e) => {
-    const clickedEl = e.currentTarget
-    const selectedValue = clickedEl.getAttribute('data-label')
-    DomManager.toggleActive(clickedEl)
-    if (requestChildren.length > 0) {
-      setRequestChildren(requestChildren.filter((x) => x !== selectedValue))
-    }
-    if (Manager.isValid(requestChildren)) {
-      setRequestChildren([...requestChildren, selectedValue])
-    } else {
-      setRequestChildren([selectedValue])
-    }
+    let childrenArr = []
+    Manager.handleCheckboxSelection(
+      e,
+      (e) => {
+        childrenArr = [...requestChildren, e]
+      },
+      (e) => {
+        childrenArr = childrenArr.filter((x) => x !== e)
+      },
+      true
+    )
+    setRequestChildren(childrenArr)
   }
 
   const deleteRequest = async (action = 'deleted') => {
-    console.log(action)
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
         await DB.deleteById(`${DB.tables.swapRequests}/${currentUser?.key}`, activeRequest?.id)
@@ -169,7 +171,7 @@ export default function SwapRequests() {
     } else {
       if (activeRequest?.ownerKey === currentUser?.key) {
         await DB.delete(`${DB.tables.swapRequests}/${currentUser?.key}`, activeRequest?.id)
-        AlertManager.successAlert(`Swap Request has been deleted.`)
+        AlertManager.successAlert(`Swap Request has been deleted`)
       }
       setShowDetails(false)
     }
@@ -241,7 +243,7 @@ export default function SwapRequests() {
                     <div className="flex">
                       <b>
                         <IoHourglassOutline />
-                        <TbCalendarCheck /> Respond by
+                        Respond by
                       </b>
                       <span>
                         {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
@@ -252,7 +254,7 @@ export default function SwapRequests() {
                   {Manager.isValid(activeRequest?.endDate) && (
                     <div className="flex">
                       <b>
-                        <TbCalendarCheck />
+                        <IoHourglassOutline />
                         Respond by
                       </b>
                       <span>
@@ -323,7 +325,7 @@ export default function SwapRequests() {
         {view === 'edit' && (
           <Fade direction={'up'} duration={600} triggerOnce={true}>
             {/* SINGLE DATE */}
-            {swapDuration === SwapDurations.single && (
+            {!DomManager.isMobile() && swapDuration === SwapDurations.single && (
               <InputWrapper inputType={'date'} labelText={'Date'}>
                 <MobileDatePicker
                   defaultValue={moment(activeRequest?.startDate)}
@@ -333,17 +335,38 @@ export default function SwapRequests() {
                 />
               </InputWrapper>
             )}
+            {swapDuration === SwapDurations.single && DomManager.isMobile() && (
+              <InputWrapper
+                inputType={'date'}
+                labelText={'Date'}
+                useNativeDate={true}
+                defaultValue={moment(activeRequest?.startDate)}
+                onChange={(day) => setStartDate(moment(day.target.value).format(DateFormats.dateForDb))}
+              />
+            )}
 
             {/* RESPONSE DUE DATE */}
-            <InputWrapper inputType={'date'} labelText={'Respond by'}>
-              <MobileDatePicker
-                onOpen={addThemeToDatePickers}
-                className={`${theme}  w-100`}
+            {!DomManager.isMobile() && (
+              <InputWrapper inputType={'date'} labelText={'Respond by'}>
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  className={`${theme}  w-100`}
+                  defaultValue={moment(activeRequest?.responseDueDate)}
+                  onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+                />
+              </InputWrapper>
+            )}
+            {DomManager.isMobile() && (
+              <InputWrapper
+                inputType={'date'}
+                labelText={'Respond by'}
+                useNativeDate={true}
                 defaultValue={moment(activeRequest?.responseDueDate)}
-                onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+                onChange={(day) => setResponseDueDate(moment(day.target.value).format(DateFormats.dateForDb))}
               />
-            </InputWrapper>
+            )}
 
+            <Spacer height={5} />
             {/* INCLUDE CHILDREN */}
             {Manager.isValid(currentUser?.children) && (
               <div className="share-with-container">
@@ -356,13 +379,14 @@ export default function SwapRequests() {
                     }}
                     defaultChecked={activeRequest?.children?.length > 0}
                     className={'ml-auto reminder-toggle'}
-                    onChange={(e) => setIncludeChildren(!includeChildren)}
+                    onChange={() => setIncludeChildren(!includeChildren)}
                   />
                 </div>
                 {(activeRequest?.children?.length > 0 || includeChildren) && (
                   <CheckboxGroup
                     checkboxArray={Manager.buildCheckboxGroup({
                       currentUser,
+                      defaultLabels: activeRequest?.children,
                       labelType: 'children',
                     })}
                     onCheck={handleChildSelection}

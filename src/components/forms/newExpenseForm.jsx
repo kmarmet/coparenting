@@ -204,12 +204,10 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   }
 
   const handleChildSelection = (e) => {
-    const checkboxContainer = e.closest('#checkbox-wrapper')
-    const childName = checkboxContainer.getAttribute('data-label')
+    const childName = e.getAttribute('data-label')
     Manager.handleCheckboxSelection(
       e,
       async () => {
-        console.log(checkboxContainer)
         setExpenseChildren([...expenseChildren, childName])
       },
       async () => {
@@ -225,11 +223,11 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   }
 
   const handlePayerSelection = async (e) => {
-    const checkboxContainer = e.closest('#checkbox-wrapper')
     Manager.handleCheckboxSelection(
       e,
       async () => {
-        const coparentKey = checkboxContainer.getAttribute('data-key')
+        const coparentKey = e.getAttribute('data-key')
+
         const coparent = currentUser?.coparents?.filter((x) => x.key === coparentKey)[0]
         const coparentName = coparent.name
         setPayer({
@@ -404,6 +402,8 @@ export default function NewExpenseForm({ hideCard, showCard }) {
             })}
           </SelectDropdown>
 
+          <Spacer height={5} />
+
           {/* EXPENSE NAME */}
           <InputWrapper onChange={(e) => setExpenseName(e.target.value)} inputType={'input'} labelText={'Name'} required={true}></InputWrapper>
 
@@ -447,12 +447,12 @@ export default function NewExpenseForm({ hideCard, showCard }) {
             onCheck={handlePayerSelection}
           />
 
-          <Spacer height={10} />
+          <Spacer height={5} />
 
           {/* SHARE WITH */}
           <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
 
-          <Spacer height={10} />
+          <Spacer height={5} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {currentUser && currentUser?.children !== undefined && (
