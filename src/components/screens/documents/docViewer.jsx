@@ -85,17 +85,21 @@ export default function DocViewer() {
 
     const domHeaders = document.querySelectorAll('.header')
     if (Manager.isValid(domHeaders)) {
+      // Loop through DOM headers
       for (let header of domHeaders) {
-        let headerText = header.querySelector('.header-text')
+        let headerTextElement = header.querySelector('.header-text')
         // Add header event listeners
         header.addEventListener('click', deleteHeader)
-        if (!headerText) {
-          headerText = header.textContent.trim()
+
+        // Get header text
+        if (!headerTextElement) {
+          headerTextElement = header.textContent.trim()
         } else {
-          headerText = headerText.textContent.trim()
-          if (!_.isEmpty(headerText) && StringManager.wordCount(headerText) <= 10) {
-            if (!headersInDocument.includes(headerText)) {
-              headersInDocument.push(Manager.generateHash(headerText))
+          headerTextElement = headerTextElement.textContent.trim()
+          if (!_.isEmpty(headerTextElement) && StringManager.wordCount(headerTextElement) <= 10) {
+            // Add header to headersInDocument
+            if (!headersInDocument.includes(headerTextElement)) {
+              headersInDocument.push(Manager.generateHash(headerTextElement))
             }
           }
         }
@@ -168,9 +172,8 @@ export default function DocViewer() {
         docText.innerHTML = text
 
         await addAndFormatHeaders()
-
-        await setTableOfContentsHeaders()
         correctTextErrors()
+        await setTableOfContentsHeaders()
       } else {
         AlertManager.throwError('No Document Found')
         return false
@@ -282,8 +285,8 @@ export default function DocViewer() {
     }
 
     await addAndFormatHeaders()
-    await setTableOfContentsHeaders()
     correctTextErrors()
+    await setTableOfContentsHeaders()
     //#endregion STYLING/FORMATTING
   }
 
