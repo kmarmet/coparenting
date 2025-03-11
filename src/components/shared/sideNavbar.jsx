@@ -161,7 +161,6 @@ export default function SideNavbar() {
                 <BsPeople />
                 <p>Coparents</p>
               </div>
-              $accentBlue
               {/* NOTIFICATIONS */}
               <div
                 className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}

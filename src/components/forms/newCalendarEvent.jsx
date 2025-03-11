@@ -442,8 +442,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 />
               </InputWrapper>
             </div>
-
-            <hr />
+            <Spacer height={5} />
 
             {/* Share with */}
             <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
@@ -608,8 +607,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               </>
             )}
 
-            <hr />
-
+            <Spacer height={5} />
             {/* URL/WEBSITE */}
             <InputWrapper
               labelText={'Website'}

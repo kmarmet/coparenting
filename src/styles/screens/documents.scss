@@ -30,7 +30,7 @@
           content: 'DELETE';
           font-size: 12px;
           font-weight: $fwMediumBold;
-          color: $bootstrapRedColor;
+          color: $red;
           align-self: stretch;
           display: flex;
           justify-content: center;
@@ -45,7 +45,7 @@
           font-weight: $fwBold;
           margin-right: auto;
           margin-left: auto;
-          color: $accentBlue;
+          color: $accentBlue !important;
           text-align: center;
           display: flex;
           justify-content: center;
@@ -82,15 +82,22 @@
       input {
         display: none;
       }
+
+      span {
+        text-decoration: none !important;
+        color: black !important;
+      }
+
       a {
-        text-decoration: none;
+        border-bottom: 0;
+        text-decoration: none !important;
         line-height: 1;
 
         &[name='Check2'] {
           color: inherit;
         }
         &[name='']:empty {
-          display: none;
+          display: none !important;
         }
         &:empty {
           display: none;

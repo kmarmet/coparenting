@@ -1,4 +1,3 @@
-// Path: src\components\screens\documents\docViewer.jsx
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import FirebaseStorage from '/src/database/firebaseStorage'
@@ -39,11 +38,11 @@ export default function DocViewer() {
   const [imgUrl, setImgUrl] = useState('')
   const [docType, setDocType] = useState('document')
   const [showTips, setShowTips] = useState(false)
-  const [isFormatting, setIsFormatting] = useState(false)
   const [showRenameFile, setShowRenameFile] = useState(false)
   const [newFileName, setNewFileName] = useState('')
   const [sideMenuIsOpen, setSideMenuIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
+  const [shouldHideSidebar, setShouldHideSidebar] = useState(true)
 
   const scrollToHeader = (hashedHeader) => {
     const domHeader = document.querySelector(`#doc-text [data-hashed-header="${hashedHeader}"]`)
@@ -61,7 +60,6 @@ export default function DocViewer() {
 
   const onLoad = async () => {
     const fileType = `.${StringManager.getFileExtension(docToView.name)}`.toLowerCase()
-    setIsFormatting(true)
     const nonImageFileTypes = ['.docx', '.doc', '.pdf', '.odt', '.txt']
     if (currentUser && nonImageFileTypes.includes(fileType)) {
       setDocType('document')
@@ -86,11 +84,11 @@ export default function DocViewer() {
     }
 
     const domHeaders = document.querySelectorAll('.header')
-
     if (Manager.isValid(domHeaders)) {
       for (let header of domHeaders) {
         let headerText = header.querySelector('.header-text')
-
+        // Add header event listeners
+        header.addEventListener('click', deleteHeader)
         if (!headerText) {
           headerText = header.textContent.trim()
         } else {
@@ -149,16 +147,6 @@ export default function DocViewer() {
       if (docToView) {
         setImgUrl(docToView.url)
 
-        // Get all headers
-        let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-        userHeaders = userHeaders.map((x) => x.headerText)
-
-        let allHeaders = []
-        if (Manager.isValid(userHeaders)) {
-          allHeaders = [...predefinedHeaders, ...userHeaders].flat()
-        } else {
-          allHeaders = predefinedHeaders
-        }
         let text = docToView.docText
         if (!text) {
           AlertManager.throwError(
@@ -176,51 +164,27 @@ export default function DocViewer() {
           }
         }
 
-        // Format headers
-        for (let header of allHeaders) {
-          if (userHeaders.includes(header)) {
-            text = text.replaceAll(
-              header,
-              `<div data-hashed-header=${Manager.generateHash(header).replaceAll(' ', '')} class="header">
-                                <span class="header-text">${header}</span>
-                              </div>`
-            )
-          } else {
-            text = text.replaceAll(
-              header,
-              `<span data-hashed-header=${Manager.generateHash(header).replaceAll(' ', '')} class="header">${header}</span>`
-            )
-          }
-        }
-
         const docText = document.getElementById('doc-text')
         docText.innerHTML = text
-        // docText.innerHTML = docText.innerHTML.replaceAll(/([a-z])([A-Z])/g, '$1 $2')
-        setState({ ...state, isLoading: false, loadingText: '' })
 
-        // Add header event listeners
-        setTimeout(() => {
-          const _allHeaders = document.querySelectorAll('.header')
-          for (let _header of _allHeaders) {
-            _header.addEventListener('click', deleteHeader)
-          }
-          setTableOfContentsHeaders()
-        }, 500)
+        await addAndFormatHeaders()
+
+        await setTableOfContentsHeaders()
+        correctTextErrors()
       } else {
         AlertManager.throwError('No Document Found')
-        setState({ ...state, isLoading: false, loadingText: '' })
         return false
       }
     } catch (error) {
       AlertManager.throwError('Unable to find or load document')
-      setState({ ...state, isLoading: false, loadingText: '' })
     }
   }
 
   const formatDocument = async (firebaseText) => {
     const url = docToView.url
-    if (!Manager.isValid(url)) {
-      setState({ ...state, isLoading: false })
+    if (!Manager.isValid(docToView) || !Manager.isValid(url) || !Manager.isValid(firebaseText, true)) {
+      AlertManager.throwError('Unable to find or load document. Please try again after awhile.')
+      setState({ ...state, isLoading: false, currentScreen: ScreenNames.docsList })
       return false
     }
     const textContainer = document.getElementById('doc-text')
@@ -230,52 +194,21 @@ export default function DocViewer() {
 
     //#region VALIDATION
     if (!Manager.isValid(relevantDoc)) {
-      setState({ ...state, isLoading: false })
       return false
     }
 
-    //#region VALIDATION
     if (!Manager.isValid(allDocuments)) {
-      setState({ ...state, isLoading: false })
       return false
     }
 
     if (!Manager.isValid(coparents)) {
-      setState({ ...state, isLoading: false })
       return false
     }
     if (!Manager.isValid(relevantDoc)) {
-      setState({ ...state, isLoading: false })
       return false
     }
 
-    if (!Manager.isValid(firebaseText, true)) {
-      AlertManager.throwError('Unable to find or load document. Please try again after awhile.')
-      setState({ ...state, isLoading: false, currentScreen: ScreenNames.docsList })
-      return false
-    }
     //#endregion VALIDATION
-
-    // Get all headers
-    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-    userHeaders = userHeaders.map((x) => x.headerText)
-
-    // Format headers
-    for (let header of userHeaders) {
-      if (userHeaders.includes(header)) {
-        firebaseText = firebaseText.replaceAll(
-          header,
-          `<div data-hashed-header=${Manager.generateHash(header).replaceAll(' ', '')} class="header">
-                                <span class="header-text">${header}</span>
-                              </div>`
-        )
-      } else {
-        firebaseText = firebaseText.replaceAll(
-          header,
-          `<span data-hashed-header=${Manager.generateHash(header).replaceAll(' ', '')} class="header">${header}</span>`
-        )
-      }
-    }
 
     // APPEND HTML
     textContainer.innerHTML = firebaseText
@@ -297,27 +230,83 @@ export default function DocViewer() {
           const parent = element.parentElement
           if (parent) {
             parent.style.marginTop = '15px'
+            parent.style.marginBottom = '0'
             parent.style.display = 'block'
           }
         }
 
+        // PARAGRAPHS
+        if (element.tagName === 'P') {
+          const parStyles = window.getComputedStyle(element)
+          const parFontWeight = parStyles.fontWeight
+          const spans = element.querySelectorAll('span')
+          let parText = ''
+
+          if (parFontWeight !== '700') {
+            element.style.marginBottom = '15px'
+          }
+
+          // Get text and remove spans
+          for (let span of spans) {
+            const spanStyles = window.getComputedStyle(span)
+            const fontWeight = spanStyles.fontWeight
+            span.innerHTML = span.innerHTML.replace(/&nbsp;/g, '')
+
+            // Bold titles
+            if (fontWeight === '700') {
+              element.style.fontWeight = '700'
+              element.style.marginBottom = '0'
+              element.style.marginTop = '15px'
+            }
+
+            parText += span.textContent
+            span.remove()
+          }
+          element.style.textIndent = '0'
+          element.innerHTML = parText
+        }
+
+        // SPANS
         if (element.tagName === 'SPAN') {
           if (element.textContent.length === 1) {
             element.remove()
           }
-          element.innerHTML = element.innerHTML.replaceAll('&nbsp;', '').replaceAll('  ', ' ')
         }
 
+        // LINKS
         if (element.tagName === 'A') {
           element.style.display = 'inline'
           element.innerHTML = element.innerHTML.replaceAll('&nbsp;', '').replaceAll('  ', ' ')
         }
       }
     }
+
+    await addAndFormatHeaders()
+    await setTableOfContentsHeaders()
+    correctTextErrors()
     //#endregion STYLING/FORMATTING
   }
 
-  const addMenuItemAnimation = () => {
+  const correctTextErrors = () => {
+    const docText = document.getElementById('doc-text')
+    docText.innerHTML = docText.innerHTML.replaceAll('  ', ' ').replaceAll('Triday', 'Friday').replaceAll(')', ') ')
+  }
+
+  const addAndFormatHeaders = async () => {
+    const docText = document.getElementById('doc-text')
+    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
+    userHeaders = userHeaders.map((x) => x.headerText)
+    for (let header of userHeaders) {
+      docText.innerHTML = docText.innerHTML.replaceAll(
+        header,
+        `<div data-hashed-header=${Manager.generateHash(header).replaceAll(' ', '')} class="header">
+                          <span class="header-text">${header}</span>
+                        </div>`
+      )
+    }
+  }
+
+  const addFloatingMenuAnimations = () => {
     document.querySelectorAll('#floating-buttons .svg-wrapper').forEach((menuItem, i) => {
       setTimeout(() => {
         menuItem.classList.add('visible')
@@ -342,8 +331,9 @@ export default function DocViewer() {
     const text = DomManager.getSelectionText()
     let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
     const alreadyExists = Manager.isValid(userHeaders.find((x) => x.headerText.includes(text)))
+
     if (!alreadyExists) {
-      if (text.length > 0 && currentScreen === ScreenNames.docViewer) {
+      if (text.length > 5 && currentScreen === ScreenNames.docViewer) {
         AlertManager.confirmAlert(
           'Would you like to use the selected text as a header?',
           'Yes',
@@ -359,6 +349,11 @@ export default function DocViewer() {
             DomManager.clearTextSelection()
           }
         )
+      }
+    } else {
+      if (text.length > 5) {
+        AlertManager.throwError('This header already exists')
+        return false
       }
     }
   }
@@ -377,7 +372,7 @@ export default function DocViewer() {
   const scrollToTop = () => {
     const header = document.querySelector('.screen-title')
     header.scrollIntoView({ behavior: 'smooth', block: 'end' })
-    setSideMenuIsOpen(false)
+    setShouldHideSidebar(true)
   }
 
   const renameFile = async () => {
@@ -396,7 +391,7 @@ export default function DocViewer() {
 
   useEffect(() => {
     if (sideMenuIsOpen) {
-      addMenuItemAnimation()
+      addFloatingMenuAnimations()
     } else {
       const allMenuItems = document.querySelectorAll('#floating-buttons .svg-wrapper')
       allMenuItems.forEach((menuItem) => {
@@ -405,17 +400,14 @@ export default function DocViewer() {
     }
   }, [sideMenuIsOpen])
 
+  // CLOSE SIDEBAR
   useEffect(() => {
     if (showToc || showSearch || showTips || showRenameFile) {
-      setSideMenuIsOpen(false)
+      setShouldHideSidebar(true)
+    } else {
+      setShouldHideSidebar(false)
     }
   }, [showToc, showSearch, showTips])
-
-  useEffect(() => {
-    if (isFormatting === false) {
-      setTableOfContentsHeaders().then((r) => r)
-    }
-  }, [isFormatting])
 
   // PAGE LOAD
   useEffect(() => {
@@ -485,7 +477,8 @@ export default function DocViewer() {
             your own custom headers to make specific texts stand out to you.
           </p>
           <p className="tip-text">
-            To create a new header, just highlight the text you want to use, and then click the confirmation button when it appears.
+            To create a new header, just highlight the text you want to use, and then {DomManager.tapOrClick()} the confirmation button when it
+            appears.
           </p>
           <p className="tip-text">
             The page will refresh, and you&#39;ll be able to see the new header you&#39;ve just created! Your custom headers will appear each time you
@@ -539,7 +532,7 @@ export default function DocViewer() {
       </BottomCard>
 
       {/* FLOATING BUTTONS */}
-      <Actions shouldHide={showToc || showSearch || showTips} show={sideMenuIsOpen}>
+      <Actions shouldHide={shouldHideSidebar} show={sideMenuIsOpen}>
         {/* SCROLL TO TOP BUTTON */}
         <div className="action-item">
           <IoIosArrowUp id={'scroll-to-top-icon'} onClick={scrollToTop} />
