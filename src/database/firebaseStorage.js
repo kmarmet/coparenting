@@ -64,7 +64,6 @@ const FirebaseStorage = {
     const storage = getStorage()
     let imgLoadStatus = 'success'
     let imageUrl = ''
-    console.log(`${imageDir}/${id}/${imageName}`)
     await getDownloadURL(ref(storage, `${imageDir}/${id}/${imageName}`))
       .then((url) => {
         let image = new Image()
@@ -73,7 +72,6 @@ const FirebaseStorage = {
         image.onerror = function () {
           imgLoadStatus = 'error'
         }
-        console.log(image)
       })
       .catch((error) => {
         if (error.toString().includes('storage/object-not-found')) {

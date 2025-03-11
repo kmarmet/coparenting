@@ -1,11 +1,10 @@
 // Path: src\components\shared\inputWrapper.jsx
 import moment from 'moment'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager'
 import Label from './label'
-import DomManager from '../../managers/domManager'
 
 const DebounceLengths = {
   short: 500,
@@ -43,6 +42,7 @@ function InputWrapper({
       id="input-wrapper"
       className={`${wrapperClasses} ${inputType} input-container form`}>
       {Manager.isValid(labelText) && <Label text={`${labelText}`} required={required} />}
+
       {!noInputTypes.includes(inputType) && (
         <>
           <DebounceInput

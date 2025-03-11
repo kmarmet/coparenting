@@ -62,7 +62,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [eventIsCloned, setEventIsCloned] = useState(false)
 
   // COMPONENT STATE
-  const [isAllDay, setIsAllDay] = useState(false)
   const [showCloneInput, setShowCloneInput] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
@@ -88,7 +87,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     setEventReminderTimes([])
     setEventIsDateRange(false)
     setEventIsRepeating(false)
-    setIsAllDay(false)
     setShowCloneInput(false)
     setShowReminders(false)
     setIncludeChildren(false)
@@ -220,7 +218,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
   const handleShareWithSelection = (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
-    console.log(shareWithNumbers)
     setEventShareWith(shareWithNumbers)
   }
 
@@ -414,58 +411,71 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             )}
 
             {/* EVENT WITH TIME */}
-            {!isAllDay && (
-              <div className={'flex event-times-wrapper'}>
-                <InputWrapper
-                  labelText={'Start Time'}
-                  wrapperClasses={`${Manager.isValid(eventStartTime) ? 'has-value' : ''} start-time`}
-                  inputType="date">
-                  <MobileTimePicker onOpen={addThemeToDatePickers} minutesStep={5} key={refreshKey} onAccept={(e) => setEventStartTime(e)} />
-                </InputWrapper>
-                <InputWrapper labelText={'End Time'} wrapperClasses={`${Manager.isValid(eventEndTime) ? 'has-value' : ''} end-time`} inputType="date">
-                  <MobileTimePicker key={refreshKey} onOpen={addThemeToDatePickers} minutesStep={5} onAccept={(e) => setEventEndTime(e)} />
-                </InputWrapper>
-              </div>
-            )}
+            <div className={'flex event-times-wrapper'}>
+              <InputWrapper
+                labelText={'Start Time'}
+                wrapperClasses={`${Manager.isValid(eventStartTime) ? 'has-value' : ''} start-time`}
+                inputType="date">
+                <MobileTimePicker
+                  slotProps={{
+                    actionBar: {
+                      actions: ['clear', 'accept'],
+                    },
+                  }}
+                  onOpen={addThemeToDatePickers}
+                  minutesStep={5}
+                  key={refreshKey}
+                  onAccept={(e) => setEventStartTime(e)}
+                />
+              </InputWrapper>
+              <InputWrapper labelText={'End Time'} wrapperClasses={`${Manager.isValid(eventEndTime) ? 'has-value' : ''} end-time`} inputType="date">
+                <MobileTimePicker
+                  slotProps={{
+                    actionBar: {
+                      actions: ['clear', 'accept'],
+                    },
+                  }}
+                  key={refreshKey}
+                  onOpen={addThemeToDatePickers}
+                  minutesStep={5}
+                  onAccept={(e) => setEventEndTime(e)}
+                />
+              </InputWrapper>
+            </div>
 
-            <Spacer height={5} />
+            <hr />
 
             {/* Share with */}
             <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
 
-            <Spacer height={5} />
-
             {/* REMINDER */}
-            {!isAllDay && (
-              <Accordion id={'checkboxes'} expanded={showReminders}>
-                <AccordionSummary>
-                  <div className="flex">
-                    <p>Remind Me</p>
-                    <Toggle
-                      icons={{
-                        checked: <MdNotificationsActive />,
-                        unchecked: null,
-                      }}
-                      className={'ml-auto reminder-toggle'}
-                      onChange={() => setShowReminders(!showReminders)}
-                    />
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <CheckboxGroup
-                    elClass={`${theme} reminder-times`}
-                    checkboxArray={Manager.buildCheckboxGroup({
-                      currentUser,
-                      labelType: 'reminder-times',
-                    })}
-                    containerClass={'reminder-times'}
-                    skipNameFormatting={true}
-                    onCheck={handleReminderSelection}
+            <Accordion id={'checkboxes'} expanded={showReminders}>
+              <AccordionSummary>
+                <div className="flex">
+                  <p>Remind Me</p>
+                  <Toggle
+                    icons={{
+                      checked: <MdNotificationsActive />,
+                      unchecked: null,
+                    }}
+                    className={'ml-auto reminder-toggle'}
+                    onChange={() => setShowReminders(!showReminders)}
                   />
-                </AccordionDetails>
-                <Spacer height={2} />
-              </Accordion>
-            )}
+                </div>
+              </AccordionSummary>
+              <AccordionDetails>
+                <CheckboxGroup
+                  elClass={`${theme} reminder-times`}
+                  checkboxArray={Manager.buildCheckboxGroup({
+                    currentUser,
+                    labelType: 'reminder-times',
+                  })}
+                  containerClass={'reminder-times'}
+                  skipNameFormatting={true}
+                  onCheck={handleReminderSelection}
+                />
+              </AccordionDetails>
+            </Accordion>
 
             <Spacer height={1} />
 
@@ -512,7 +522,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     onCheck={handleChildSelection}
                   />
                 </AccordionDetails>
-                <Spacer height={2} />
               </Accordion>
             )}
 
@@ -564,10 +573,10 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                       </InputWrapper>
                     )}
                   </AccordionDetails>
-                  <Spacer height={2} />
                 </Accordion>
               </div>
             )}
+
             {/* CLONE */}
             {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
               <>
@@ -588,7 +597,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                     }}
                   />
                 </div>
-                <Spacer height={3} />
 
                 {/* CLONED INPUTS */}
                 <div className={`cloned-date-wrapper form ${showCloneInput ? 'active' : ''}`}></div>
@@ -599,7 +607,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 )}
               </>
             )}
-            <Spacer height={3} />
+
+            <hr />
 
             {/* URL/WEBSITE */}
             <InputWrapper

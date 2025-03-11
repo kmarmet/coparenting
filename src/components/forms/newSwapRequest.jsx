@@ -237,6 +237,11 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                   <InputWrapper inputType={'date'} labelText={'Start Time'} required={true}>
                     <MobileTimePicker
                       minutesStep={5}
+                      slotProps={{
+                        actionBar: {
+                          actions: ['clear', 'accept'],
+                        },
+                      }}
                       wrapperClasses="swap-request"
                       onOpen={addThemeToDatePickers}
                       className={`${theme} from-hour`}
@@ -245,6 +250,11 @@ export default function NewSwapRequest({ showCard, hideCard }) {
                   </InputWrapper>
                   <InputWrapper wrapperClasses="swap-request" inputType={'date'} labelText={'End Time'} required={true}>
                     <MobileTimePicker
+                      slotProps={{
+                        actionBar: {
+                          actions: ['clear', 'accept'],
+                        },
+                      }}
                       minutesStep={5}
                       onOpen={addThemeToDatePickers}
                       className={`${theme} to-hour`}

@@ -2,13 +2,11 @@
 
 #external-overrides {
   #documents-container {
-    * {
-      @include fontType;
-    }
-
     #doc-text {
       * {
         text-decoration: unset !important;
+        line-height: 1.4;
+        font-family: 'Nunito', sans-serif !important;
       }
       .text-highlight {
         color: white;
@@ -18,11 +16,11 @@
         padding: 0 5px;
         font-weight: $fwBold;
       }
+
       .header {
         width: 100%;
         align-items: stretch;
         justify-content: center;
-        display: flex;
         background: $lightAccentBlue;
         border-radius: $borderRadius;
         margin: 20px auto 5px auto;
@@ -32,24 +30,26 @@
           content: 'DELETE';
           font-size: 12px;
           font-weight: $fwMediumBold;
-          background: $bootstrapBgRed;
           color: $bootstrapRedColor;
           align-self: stretch;
           display: flex;
           justify-content: center;
+          padding: 3px;
           align-items: center;
-          padding: 0 10px;
           border-radius: 0 $borderRadius $borderRadius 0;
         }
 
         .header-text {
           font-size: 16px;
-          padding: 10px 10px 10px 80px;
-          font-weight: $fwMediumBold;
+          padding: 5px 10px 0 10px;
+          font-weight: $fwBold;
           margin-right: auto;
           margin-left: auto;
           color: $accentBlue;
           text-align: center;
+          display: flex;
+          justify-content: center;
+          width: 100%;
         }
       }
       .Text_Body {
@@ -75,7 +75,7 @@
           text-transform: capitalize;
           font-weight: $fwMediumBold;
           color: $mainBlue;
-          font-family: 'Inter', serif !important;
+
           text-indent: unset !important;
         }
       }
@@ -123,10 +123,8 @@
         font-size: 18px;
         font-weight: 400;
         margin: 0;
-        font-family: 'Inter', serif !important;
         span {
           line-height: 1.4 !important;
-          font-family: 'Inter', serif !important;
         }
         &.delete-header-button {
           margin: 5px auto 0 auto;

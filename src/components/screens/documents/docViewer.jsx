@@ -77,14 +77,29 @@ export default function DocViewer() {
 
   const setTableOfContentsHeaders = async () => {
     let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-    userHeaders = userHeaders.map((x) => x.headerText)
-    const domHeaders = document.querySelectorAll('.header')
     let headersInDocument = []
-    for (let header of domHeaders) {
-      const headerText = header.querySelector('.header-text').textContent.trim()
-      if (!_.isEmpty(headerText) && StringManager.wordCount(headerText) <= 10) {
-        if (!headersInDocument.includes(headerText)) {
-          headersInDocument.push(Manager.generateHash(headerText))
+
+    if (!userHeaders) {
+      userHeaders = predefinedHeaders
+    } else {
+      userHeaders = userHeaders?.map((x) => x.headerText)
+    }
+
+    const domHeaders = document.querySelectorAll('.header')
+
+    if (Manager.isValid(domHeaders)) {
+      for (let header of domHeaders) {
+        let headerText = header.querySelector('.header-text')
+
+        if (!headerText) {
+          headerText = header.textContent.trim()
+        } else {
+          headerText = headerText.textContent.trim()
+          if (!_.isEmpty(headerText) && StringManager.wordCount(headerText) <= 10) {
+            if (!headersInDocument.includes(headerText)) {
+              headersInDocument.push(Manager.generateHash(headerText))
+            }
+          }
         }
       }
     }
@@ -149,7 +164,6 @@ export default function DocViewer() {
           AlertManager.throwError(
             'Unable to find or convert document, please try again after awhile. In the meantime, you can view the document image while this is being resolved.'
           )
-          setState({ ...state, isLoading: false, loadingText: '' })
           return false
         }
 
@@ -213,13 +227,12 @@ export default function DocViewer() {
     const allDocuments = await SecurityManager.getDocuments(currentUser)
     const coparents = allDocuments.map((x) => x.coparent)
     const relevantDoc = allDocuments.find((x) => x?.name === docToView?.name)
-    const fileExtension = StringManager.getFileExtension(docToView?.name).toString()
 
+    //#region VALIDATION
     if (!Manager.isValid(relevantDoc)) {
       setState({ ...state, isLoading: false })
       return false
     }
-    let docHtml = firebaseText
 
     //#region VALIDATION
     if (!Manager.isValid(allDocuments)) {
@@ -236,165 +249,72 @@ export default function DocViewer() {
       return false
     }
 
-    if (!Manager.isValid(docHtml, true)) {
+    if (!Manager.isValid(firebaseText, true)) {
       AlertManager.throwError('Unable to find or load document. Please try again after awhile.')
       setState({ ...state, isLoading: false, currentScreen: ScreenNames.docsList })
       return false
     }
-
     //#endregion VALIDATION
 
+    // Get all headers
+    let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
+    userHeaders = userHeaders.map((x) => x.headerText)
+
+    // Format headers
+    for (let header of userHeaders) {
+      if (userHeaders.includes(header)) {
+        firebaseText = firebaseText.replaceAll(
+          header,
+          `<div data-hashed-header=${Manager.generateHash(header).replaceAll(' ', '')} class="header">
+                                <span class="header-text">${header}</span>
+                              </div>`
+        )
+      } else {
+        firebaseText = firebaseText.replaceAll(
+          header,
+          `<span data-hashed-header=${Manager.generateHash(header).replaceAll(' ', '')} class="header">${header}</span>`
+        )
+      }
+    }
+
     // APPEND HTML
+    textContainer.innerHTML = firebaseText
 
     //#region STYLING/FORMATTING
-    setTimeout(async () => {
-      var x = document.body.getElementsByTagName('style')
-      for (var i = x.length - 1; i >= 0; i--) x[i].parentElement.removeChild(x[i])
-      let allPars = textContainer?.querySelectorAll('p')
+    const allElements = textContainer.querySelectorAll('*')
 
-      if (fileExtension === 'pdf') {
-        allPars = textContainer?.querySelectorAll('span')
-      }
-      const allTags = textContainer?.querySelectorAll('h3,h2,p,span,li,p')
+    for (let element of allElements) {
+      const computedStyle = window.getComputedStyle(element)
+      const fontWeight = computedStyle.fontWeight
+      element.style.lineHeight = '1.4'
+      element.style.textAlign = 'left'
+      element.style.textIndent = '0'
+      element.style.marginLeft = '0'
 
-      // Remove JS styles
-      if (Manager.isValid(allTags)) {
-        for (let tag of allTags) {
-          tag.style = null
-        }
-      }
-
-      //#region PDF
-      if (fileExtension === 'pdf') {
-        const textWrappers = document.querySelectorAll('.stl_01')
-
-        for (let textElement of textWrappers) {
-          const spans = textElement.querySelectorAll('span')
-          let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-
-          for (let span of spans) {
-            for (let userHeader of userHeaders) {
-              if (span.textContent.includes(userHeader.headerText)) {
-                const newHeader = document.createElement('span')
-                newHeader.classList.add('header')
-                newHeader.setAttribute('data-header', userHeader.headerText)
-                span.replaceWith(newHeader)
-                newHeader.textContent = userHeader.headerText
-                const deleteIcon = document.createElement('p')
-                deleteIcon.classList.add('delete-header-button')
-                deleteIcon.onclick = async (e) => {
-                  await deleteHeader(e)
-                }
-                newHeader.append(deleteIcon)
-              }
-            }
+      if (!element.classList.contains('header')) {
+        // Add top margin to headers
+        if (fontWeight === '700') {
+          const parent = element.parentElement
+          if (parent) {
+            parent.style.marginTop = '15px'
+            parent.style.display = 'block'
           }
         }
-      }
-      //#endregion PDF
 
-      //#region NOT PDF
-      else {
-        // Format p/span
-        if (Manager.isValid(allPars)) {
-          for (let par of allPars) {
-            const spans = par.querySelectorAll('span')
-            const links = par.querySelectorAll('a')
-
-            // Get all headers
-            let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-            userHeaders = userHeaders.map((x) => x.headerText)
-
-            // Remove unnecessary pars
-            if (_.isEmpty(par.innerHTML.trim()) || _.isEmpty(par.innerText.trim()) || _.isEmpty(par.textContent.trim())) {
-              par.remove()
-            }
-
-            // LINKS (<a>)
-            for (let link of links) {
-              link.setAttribute('target', '_blank')
-            }
-
-            // SPANS
-            for (let span of spans) {
-              if (span) {
-                let elementText = span.textContent
-                const textLength = elementText.length
-                const spanInlineStyles = span.style.cssText
-                const header = span.parentNode
-                const onlyDashes = span.innerText.match(/__/g)
-
-                if (StringManager.isAllUppercase(span.innerText)) {
-                  span.classList.add('bold')
-                }
-
-                // Handle user headers
-                for (let userHeader of userHeaders) {
-                  if (elementText.includes(userHeader)) {
-                    const _span = document.createElement('span')
-                    const deleteIcon = document.createElement('p')
-                    deleteIcon.classList.add('delete-header-button')
-                    deleteIcon.onclick = async (e) => {
-                      await deleteHeader(e)
-                    }
-                    _span.innerText = userHeader
-                    _span.classList.add('header')
-                    _span.setAttribute('data-header', userHeader)
-                    _span.append(deleteIcon)
-                    par.append(_span)
-                  }
-                }
-                span.innerHTML = span.innerHTML.replace(/&nbsp;/g, '')
-                if (onlyDashes && onlyDashes.length > 1) {
-                  span.remove()
-                }
-                if (span.innerText.length < 5) {
-                  span.remove()
-                }
-
-                // Add header class
-                if (Manager.contains(spanInlineStyles, 'font-weight: bold') && textLength > 3) {
-                  header.classList.add('header')
-                  header.setAttribute('data-header', header.textContent)
-                }
-              }
-            }
-
-            // Remove unnecessary pars
-            if (_.isEmpty(par.innerHTML.trim()) || _.isEmpty(par.innerText.trim()) || _.isEmpty(par.textContent.trim())) {
-              par.remove()
-            }
+        if (element.tagName === 'SPAN') {
+          if (element.textContent.length === 1) {
+            element.remove()
           }
+          element.innerHTML = element.innerHTML.replaceAll('&nbsp;', '').replaceAll('  ', ' ')
+        }
+
+        if (element.tagName === 'A') {
+          element.style.display = 'inline'
+          element.innerHTML = element.innerHTML.replaceAll('&nbsp;', '').replaceAll('  ', ' ')
         }
       }
-      //#endregion NOT PDF
-
-      const docText = document.getElementById('doc-text')
-      const elements = docText.querySelectorAll('*')
-      for (let element of elements) {
-        if (
-          !element.hasChildNodes() ||
-          element?.innerHTML?.length === 0 ||
-          element?.textContent?.length === 0 ||
-          element?.value?.length === 0 ||
-          element?.textContent === '\n\n'
-        ) {
-          if (!element.classList.contains('delete-header-button')) {
-            element.style.display = 'none'
-          }
-          // console.log(element)
-          element.remove()
-        }
-      }
-
-      setIsFormatting(false)
-      // setState({ ...state, isLoading: false })
-    }, 400)
-    //#endregion STYLING/FORMATTING
-
-    if (!Manager.isValid(firebaseText)) {
-      setState({ ...state, isLoading: false })
     }
+    //#endregion STYLING/FORMATTING
   }
 
   const addMenuItemAnimation = () => {
@@ -457,6 +377,7 @@ export default function DocViewer() {
   const scrollToTop = () => {
     const header = document.querySelector('.screen-title')
     header.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    setSideMenuIsOpen(false)
   }
 
   const renameFile = async () => {

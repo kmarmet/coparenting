@@ -507,9 +507,9 @@
 
     .MuiPickersDay-today:not(.Mui-selected) {
       border: 0 !important;
-      color: $accentBlue;
+      color: #8b5cf6;
       opacity: 1 !important;
-      font-weight: $fwMediumBold !important;
+      font-weight: $fwBold !important;
     }
 
     // WEEKDAY LABEL (S M W)
@@ -518,6 +518,7 @@
       height: 30px !important;
       color: black !important;
       opacity: 0.6;
+      font-weight: $fwMediumBold !important;
     }
 
     .MuiPickersSlideTransition-root {
@@ -606,13 +607,15 @@
     &#legend-wrapper {
       background: $bestGreyForWhite !important;
       order: -1;
-      padding: 0 8px 0 12px !important;
+      padding: 0 0 0 12px !important;
       border-radius: $bigBorderRadius;
 
       #legend-button {
         border: 0 !important;
         padding-left: 3px !important;
         width: auto !important;
+        position: relative;
+        left: -10px;
       }
     }
 
@@ -681,6 +684,7 @@
       height: 5px;
       width: 5px;
       border-radius: 100%;
+      position: relative;
 
       &.in-legend {
         margin-right: 10px;
@@ -689,17 +693,22 @@
 
       &.coparent {
         background: $coparentPurple;
+        top: -5px;
       }
 
       &.holiday {
         background: $holidayOrange;
+        top: 5px;
+        right: 8px;
       }
 
       &.payday {
         background: $green;
+        right: 11px;
       }
 
       &.currentUser {
+        left: 3px;
         background: $mainBlue;
       }
     }
@@ -739,7 +748,6 @@
     button,
     p {
       opacity: 1 !important;
-      color: $black !important;
       text-transform: uppercase;
       margin: 0;
       font-size: 12px !important;
@@ -750,6 +758,7 @@
       border-radius: $bigBorderRadius;
       font-weight: $fwMediumBold !important;
       background: $bestGreyForWhite !important;
+      color: #6e6762 !important;
     }
 
     .divider {

@@ -67,11 +67,29 @@ export default function Settings() {
               <p className="pb-10">The summaries for the current and following day will be provided during the morning and evening summary hours.</p>
               {/* MORNING SUMMARY */}
               <InputWrapper labelText={'Morning Hour'} inputType={'date'}>
-                <MobileTimePicker className={`${theme} w-100`} views={['hours']} onAccept={(e) => setMorningSummaryTime(e)} />
+                <MobileTimePicker
+                  slotProps={{
+                    actionBar: {
+                      actions: ['clear', 'accept'],
+                    },
+                  }}
+                  className={`${theme} w-100`}
+                  views={['hours']}
+                  onAccept={(e) => setMorningSummaryTime(e)}
+                />
               </InputWrapper>
               {/* EVENING SUMMARY */}
               <InputWrapper labelText={'Evening Hour'} inputType={'date'}>
-                <MobileTimePicker className={`${theme} mt-0 w-100`} views={['hours']} onAccept={(e) => setEveningSummaryTime(e)} />
+                <MobileTimePicker
+                  slotProps={{
+                    actionBar: {
+                      actions: ['clear', 'accept'],
+                    },
+                  }}
+                  className={`${theme} mt-0 w-100`}
+                  views={['hours']}
+                  onAccept={(e) => setEveningSummaryTime(e)}
+                />
               </InputWrapper>
             </div>
             {currentUser && (

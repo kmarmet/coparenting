@@ -186,6 +186,11 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
               {/* TIME */}
               <InputWrapper inputType={'date'} labelText={'New Time'}>
                 <MobileTimePicker
+                  slotProps={{
+                    actionBar: {
+                      actions: ['clear', 'accept'],
+                    },
+                  }}
                   onOpen={addThemeToDatePickers}
                   className={`${theme}  mt-0 w-100`}
                   onChange={(e) => setRequestTime(moment(e).format(DateFormats.timeForDb))}

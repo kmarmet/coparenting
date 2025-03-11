@@ -320,6 +320,11 @@ export default function TransferRequests() {
               {/* TIME */}
               <InputWrapper inputType={'date'} labelText={'Time'}>
                 <MobileTimePicker
+                  slotProps={{
+                    actionBar: {
+                      actions: ['clear', 'accept'],
+                    },
+                  }}
                   onOpen={addThemeToDatePickers}
                   defaultValue={moment(activeRequest?.time, DateFormats.timeForDb)}
                   className={`${theme}  w-100`}

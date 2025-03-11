@@ -68,7 +68,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   // State
   const [clonedDates, setClonedDates] = useState([])
   const [repeatingDatesToSubmit, setRepeatingDatesToSubmit] = useState([])
-  const [isAllDay, setIsAllDay] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
@@ -92,7 +91,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     setEventIsDateRange(false)
     setClonedDates([])
     setRepeatingDatesToSubmit([])
-    setIsAllDay(false)
     setIncludeChildren(false)
     setShowReminders(false)
     setIsVisitation(false)
@@ -105,13 +103,14 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     // Fill/overwrite
     // Required
     const updatedEvent = { ...event }
+
     updatedEvent.title = eventName.trim()
     updatedEvent.reminderTimes = eventReminderTimes
     updatedEvent.shareWith = eventShareWith
     updatedEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
     updatedEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
 
-    if (!isAllDay) {
+    if (Manager.isValid(eventStartTime) && Manager.isValid(eventEndTime)) {
       updatedEvent.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
       updatedEvent.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
     }
@@ -240,7 +239,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     updatedEvent.isCloned = eventIsCloned
     updatedEvent.isRepeating = eventIsRepeating
 
-    if (!isAllDay) {
+    if (Manager.isValid(eventStartTime) || Manager.isValid(eventEndTime)) {
       updatedEvent.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
       updatedEvent.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
     }
@@ -441,17 +440,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     }, 100)
   }
 
-  useEffect(() => {
-    const pickers = document.querySelectorAll('[aria-label="Choose time"]')
-    if (pickers) {
-      pickers.forEach((x) => (x.value = ''))
-    }
-    if (isAllDay) {
-      setEventStartTime('')
-      setEventEndTime('')
-    }
-  }, [isAllDay])
-
   // Loading until date/name are loaded
   useEffect(() => {
     if (Manager.isValid(eventName) && Manager.isValid(eventStartDate)) {
@@ -474,14 +462,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     }
   }, [document.querySelector('.swal2-confirm')])
 
-  useEffect(() => {
-    const pageContainer = document.querySelector('.edit-calendar-event')
-    DomManager.showInputLabels(pageContainer)
-    setTimeout(() => {
-      // DomManager.setOnloadCheckboxes(event?.shareWith)
-    }, 500)
-  }, [view])
-
   return (
     <BottomCard
       onDelete={() => {
@@ -498,7 +478,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       onClose={async () => {
         await resetForm()
       }}
-      title={StringManager.uppercaseFirstLetterOfAllWords(event?.title)}
+      title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(event?.title))}
       showCard={showCard}
       className="edit-calendar-event"
       wrapperClass="edit-calendar-event">
@@ -731,6 +711,11 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                       {/* START TIME */}
                       <InputWrapper wrapperClasses="start-time" labelText={'Start Time'} required={false} inputType={'date'}>
                         <MobileTimePicker
+                          slotProps={{
+                            actionBar: {
+                              actions: ['clear', 'accept'],
+                            },
+                          }}
                           onOpen={addThemeToDatePickers}
                           value={getTime(event?.startTime)}
                           minutesStep={5}
@@ -744,6 +729,11 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                       <InputWrapper wrapperClasses="end-time" labelText={'End Time'} required={false} inputType={'date'}>
                         <MobileTimePicker
                           key={refreshKey}
+                          slotProps={{
+                            actionBar: {
+                              actions: ['clear', 'accept'],
+                            },
+                          }}
                           onOpen={addThemeToDatePickers}
                           value={getTime(event?.endTime)}
                           minutesStep={5}
@@ -753,6 +743,8 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                       </InputWrapper>
                     </div>
                   )}
+
+                  <Spacer height={5} />
 
                   {/* Share with */}
                   {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
@@ -764,54 +756,36 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                     />
                   )}
 
-                  <Spacer height={5} />
-                  {/* ALL DAY / HAS END DATE */}
-                  <div className={!DateManager.isValidDate(event?.startTime) ? 'flex all-day-toggle default-checked' : 'flex all-day-toggle'}>
-                    <p>All Day</p>
-                    <Toggle
-                      icons={{
-                        unchecked: null,
-                      }}
-                      className={'ml-auto'}
-                      defaultChecked={!DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime)}
-                      onChange={(e) => setIsAllDay(!!e.target.checked)}
-                    />
-                  </div>
-
                   {/* REMINDER */}
-                  {!isAllDay && (
-                    <>
-                      <Accordion expanded={showReminders} id={'checkboxes'}>
-                        <AccordionSummary>
-                          <div className="flex reminder-times-toggle">
-                            <p>Remind Me</p>
-                            <Toggle
-                              icons={{
-                                checked: <MdNotificationsActive />,
-                                unchecked: null,
-                              }}
-                              defaultChecked={Manager.isValid(event?.reminderTimes)}
-                              className={'ml-auto reminder-toggle'}
-                              onChange={() => setShowReminders(!showReminders)}
-                            />
-                          </div>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <CheckboxGroup
-                            checkboxArray={Manager.buildCheckboxGroup({
-                              currentUser,
-                              labelType: 'reminder-times',
-                              defaultLabels: event?.reminderTimes,
-                            })}
-                            elClass={`${theme}`}
-                            containerClass={'reminder-times'}
-                            skipNameFormatting={true}
-                            onCheck={handleReminderSelection}
-                          />
-                        </AccordionDetails>
-                      </Accordion>
-                    </>
-                  )}
+                  <Accordion expanded={showReminders} id={'checkboxes'}>
+                    <AccordionSummary>
+                      <div className="flex reminder-times-toggle">
+                        <p>Remind Me</p>
+                        <Toggle
+                          icons={{
+                            checked: <MdNotificationsActive />,
+                            unchecked: null,
+                          }}
+                          defaultChecked={Manager.isValid(event?.reminderTimes)}
+                          className={'ml-auto reminder-toggle'}
+                          onChange={() => setShowReminders(!showReminders)}
+                        />
+                      </div>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <CheckboxGroup
+                        checkboxArray={Manager.buildCheckboxGroup({
+                          currentUser,
+                          labelType: 'reminder-times',
+                          defaultLabels: event?.reminderTimes,
+                        })}
+                        elClass={`${theme}`}
+                        containerClass={'reminder-times'}
+                        skipNameFormatting={true}
+                        onCheck={handleReminderSelection}
+                      />
+                    </AccordionDetails>
+                  </Accordion>
 
                   {/* IS VISITATION? */}
                   <div className="flex visitation-toggle">
