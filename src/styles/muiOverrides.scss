@@ -183,7 +183,20 @@
     }
     .MuiPickersCalendarHeader-root {
       margin: 0 !important;
-      padding: 0 5px 0 20px !important;
+      order: 1 !important;
+      width: 100% !important;
+      justify-content: flex-end;
+      padding: 0;
+      position: relative;
+      top: -22px;
+
+      .MuiPickersCalendarHeader-labelContainer {
+        display: none !important;
+      }
+
+      .MuiButtonBase-root {
+        padding: 0 !important;
+      }
     }
   }
 
@@ -251,8 +264,8 @@
   // CALENDAR ARROWS
   .MuiPickersArrowSwitcher-rightArrowIcon,
   .MuiPickersArrowSwitcher-leftArrowIcon {
-    opacity: 0.4 !important;
-    font-size: 30px !important;
+    transform: scale(0.8);
+    color: $subtitleText;
   }
 
   // DATE RANGE
@@ -322,7 +335,7 @@
     &#pc {
       background-color: transparent;
       width: 100% !important;
-      margin-bottom: 10px !important;
+      margin-bottom: 5px !important;
       .MuiAccordion-region {
         padding: 10px 0;
       }
@@ -555,16 +568,17 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      color: black;
+      color: $primaryText;
       border-radius: $borderRadius !important;
 
       @media screen and (min-width: 650px) {
         &:hover {
-          background: $lightIconBgBlue !important;
-          color: $mainBlue;
+          background: $lightAccentBlue !important;
+          color: $accentBlue !important;
         }
       }
 
+      // Weekend
       &.weekend-day,
       &.MuiPickersDay-dayOutsideMonth,
       &[aria-colindex='7'],
@@ -576,21 +590,22 @@
           opacity: 1 !important;
         }
       }
+
       &.Mui-selected {
         transition: all 0.2s ease-in-out !important;
-        background: rgba(209, 196, 233, 0.54) !important;
+        background: $lightAccentBlue !important;
         width: 51px !important;
         height: 43px !important;
         margin-left: 5px;
         margin-right: 5px;
         border-radius: 50% !important;
         position: relative;
-        border: 1px solid #7e57c2;
+        border: 1px solid $accentBlue;
         top: 2px;
         opacity: 1 !important;
-        color: #7e57c2 !important;
+        color: $accentBlue !important;
         font-weight: $fwExtraBold !important;
-        box-shadow: 0 0 12px 0 #a17de3;
+        box-shadow: 0 0 12px 0 #1a5ca6ff;
 
         .dot-wrapper {
           position: relative;
@@ -602,20 +617,15 @@
 
   #legend-wrapper,
   #calendar-legend {
-    gap: 3px;
     margin-left: 0;
+
     &#legend-wrapper {
       background: $bestGreyForWhite !important;
       order: -1;
-      padding: 0 0 0 12px !important;
       border-radius: $bigBorderRadius;
 
       #legend-button {
         border: 0 !important;
-        padding-left: 3px !important;
-        width: auto !important;
-        position: relative;
-        left: -10px;
       }
     }
 
@@ -733,16 +743,29 @@
   .MuiDialogActions-root {
     max-width: 100vw !important;
     width: 100vw;
+    margin: 0 auto !important;
     display: flex;
     align-items: center;
-    gap: 10px !important;
+    gap: 8px !important;
     position: relative;
     z-index: 100000;
-    padding: 0 0 10px 0;
     justify-content: center;
 
     @media screen and (min-width: 1000px) {
       width: auto;
+    }
+
+    .MuiPickersArrowSwitcher-root {
+      margin: 0;
+      gap: 8px !important;
+      .MuiPickersArrowSwitcher-spacer {
+        display: none !important;
+      }
+
+      button {
+        padding: 0 !important;
+        border-radius: 50% !important;
+      }
     }
 
     button,
@@ -758,7 +781,7 @@
       border-radius: $bigBorderRadius;
       font-weight: $fwMediumBold !important;
       background: $bestGreyForWhite !important;
-      color: #6e6762 !important;
+      color: $primaryText !important;
     }
 
     .divider {
@@ -774,6 +797,7 @@
   .MuiPickersLayout-contentWrapper {
     width: 380px;
     margin: 0 auto !important;
+    max-height: 330px;
 
     @media screen and (min-width: 1000px) {
       width: auto !important;
@@ -1260,10 +1284,10 @@
   #static-calendar {
     .MuiPickersLayout-actionBar {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       justify-content: center;
       margin: 0;
-      padding: 0 15px;
+      padding: 10px 15px 0 10px;
     }
   }
 

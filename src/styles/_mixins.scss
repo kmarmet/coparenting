@@ -1100,7 +1100,9 @@
     overflow: hidden;
     color: $accentBlue;
 
-    &.magic {
+    &.magic,
+    &.paper-airplane,
+    &.remove-user {
       transform: scale(0.8);
     }
 
@@ -1450,8 +1452,7 @@
     width: 100%;
     line-height: 1;
     font-size: 14px;
-    color: black;
-    opacity: 0.78;
+    color: $subtitleText;
 
     &.calendar {
       margin-left: 20px;
@@ -2312,19 +2313,27 @@
     }
   }
 
+  .MuiAccordionDetails-root {
+    padding: 0 !important;
+  }
+
   .os-container {
+    background: $bestGreyForWhite;
+    padding: 12px;
+    border-radius: $borderRadius;
+
     .while-viewing {
       text-align-last: left;
-      font-weight: 500;
+      font-weight: $fwBold;
       margin-bottom: 5px;
-      font-size: 15px;
     }
 
     .emphasize {
-      background-color: #f0f0f0;
+      background-color: $lightAccentBlue;
+      color: $accentBlue;
       border-radius: 5px;
       padding: 3px 10px;
-      font-weight: 500;
+      font-weight: $fwBold;
       font-size: 14px;
 
       &.no-bold {
@@ -2345,6 +2354,10 @@
         width: 100%;
         align-items: center;
         margin-bottom: 10px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
 
         .step-number {
           font-weight: bold;

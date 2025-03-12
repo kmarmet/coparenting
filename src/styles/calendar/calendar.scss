@@ -2,8 +2,9 @@
 
 #external-overrides {
   #calendar-container {
-    #static-calendar {
-      //      padding-top: 30pt;
+    #calendar-month {
+      color: $subtitleText;
+      text-align: center;
     }
 
     // BELOW CALENDAR

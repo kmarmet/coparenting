@@ -168,11 +168,11 @@ StringManager = {
     }
   },
   formatTitle: function(title, uppercase = true) {
-    title = title.replaceAll(" To ", "to").replaceAll(" A ", " a ").replaceAll(" An ", " an ").replaceAll(" Or ", " or ").replaceAll(" Vs ", "vs").replaceAll(" With ", "with").replaceAll(" At", "at").replaceAll(" From ", "from").replaceAll(" The ", "the").replaceAll(" For ", " for ").replaceAll(" Thru ", " thru ").replaceAll(" And ", "and").replaceAll(" Is ", "is").replaceAll(" Not ", "not").replaceAll(" Off ", "off").replaceAll(" But ", "but").replaceAll(" On ", "on").replaceAll(" Per ", "per").replaceAll(" Up ", "up").replaceAll(" Via ", "via");
     if (uppercase) {
-      title = StringManager.uppercaseFirstLetterOfAllWords(title);
+      title = StringManager.uppercaseFirstLetterOfAllWords(title).trim();
     }
-    return title;
+    title = title.replaceAll(" To ", "to").replaceAll(" A ", " a ").replaceAll(" An ", " an ").replaceAll(" Or ", " or ").replaceAll(" Vs ", " vs ").replaceAll(" With ", " with ").replaceAll(" At", " at ").replaceAll(" From ", "from").replaceAll(" The ", " the ").replaceAll(" For ", " for ").replaceAll(" Thru ", " thru ").replaceAll(" And ", " and ").replaceAll(" Is ", " is ").replaceAll(" Not ", " not ").replaceAll(" Off ", " off ").replaceAll(" But ", " but ").replaceAll(" On ", " on ").replaceAll(" Per ", " per ").replaceAll(" Up ", " up ").replaceAll(" Via ", " via ");
+    return title.trim();
   }
 };
 

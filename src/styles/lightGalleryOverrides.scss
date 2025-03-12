@@ -29,16 +29,34 @@
     }
   }
 }
+
+.lg-backdrop {
+  backdrop-filter: blur(30px);
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.lg-outer {
+  .lg-object {
+    max-width: 95vw !important;
+    border-radius: $bigBorderRadius !important;
+    @include bestShadow;
+  }
+}
+
 .lg-sub-html {
   margin-bottom: 15px !important;
+  padding: 15px !important;
+
   .gallery-title {
     font-size: 18px !important;
+    text-align: left !important;
     font-weight: $fwBold !important;
     span {
       display: block;
       width: 100%;
       margin-top: 15px;
       font-size: 16px;
+      text-align: left !important;
       font-weight: $fwRegular !important;
     }
   }

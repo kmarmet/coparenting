@@ -146,31 +146,31 @@ StringManager = {
       return title
 
   formatTitle: (title, uppercase = true) ->
+    if uppercase
+      title = StringManager.uppercaseFirstLetterOfAllWords(title).trim()
+
     title = title.replaceAll(" To ", "to")
       .replaceAll(" A ", " a ")
       .replaceAll(" An ", " an ")
       .replaceAll(" Or ", " or ")
-      .replaceAll(" Vs ", "vs")
-      .replaceAll(" With ", "with")
-      .replaceAll(" At", "at")
+      .replaceAll(" Vs ", " vs ")
+      .replaceAll(" With ", " with ")
+      .replaceAll(" At", " at ")
       .replaceAll(" From ", "from")
-      .replaceAll(" The ", "the")
+      .replaceAll(" The ", " the ")
       .replaceAll(" For ", " for ")
       .replaceAll(" Thru ", " thru ")
-      .replaceAll(" And ", "and")
-      .replaceAll(" Is ", "is")
-      .replaceAll(" Not ", "not")
-      .replaceAll(" Off ", "off")
-      .replaceAll(" But ", "but")
-      .replaceAll(" On ", "on")
-      .replaceAll(" Per ", "per")
-      .replaceAll(" Up ", "up")
-      .replaceAll(" Via ", "via")
+      .replaceAll(" And ", " and ")
+      .replaceAll(" Is ", " is ")
+      .replaceAll(" Not ", " not ")
+      .replaceAll(" Off ", " off ")
+      .replaceAll(" But ", " but ")
+      .replaceAll(" On ", " on ")
+      .replaceAll(" Per ", " per ")
+      .replaceAll(" Up ", " up ")
+      .replaceAll(" Via ", " via ")
 
-    if uppercase
-      title = StringManager.uppercaseFirstLetterOfAllWords(title)
-
-    return title
+    return title.trim()
 
 }
 

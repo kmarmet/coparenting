@@ -7,10 +7,9 @@ import DatasetManager from '../../../managers/datasetManager.coffee'
 import DateFormats from '/src/constants/dateFormats'
 import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
-import { CgDetailsMore } from 'react-icons/cg'
 import { FaChildren } from 'react-icons/fa6'
 import { MdLocalPhone } from 'react-icons/md'
-import { PiBellSimpleRingingDuotone, PiGlobeDuotone } from 'react-icons/pi'
+import { PiBellSimpleRingingDuotone, PiGlobeDuotone, PiNotepadDuotone } from 'react-icons/pi'
 import { useSwipeable } from 'react-swipeable'
 import DomManager from '../../../managers/domManager'
 import AlertManager from '../../../managers/alertManager'
@@ -23,6 +22,7 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
   const { state, setState } = useContext(globalState)
   const { theme, currentUser, refreshKey } = state
 
+  // Swipe
   const handlers = useSwipeable({
     onSwipedLeft: async (eventData) => {
       const element = eventData.event.target
@@ -174,10 +174,11 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
                     <div className="flex space-between" id="title-wrapper">
                       <p className="title flex" id="title" data-event-id={event?.id}>
                         <span className={`${dotObject.className} event-type-dot`}></span>
-                        {StringManager.formatEventTitle(event?.title)}
+                        {StringManager.formatTitle(event?.title)}
                       </p>
                     </div>
-                    {/* DATE CONTAINER */}
+
+                    {/* DATE WRAPPER */}
                     <div id="subtitle" className="flex space-between calendar">
                       <div id="date-container">
                         {/* FROM DATE */}
@@ -214,18 +215,18 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
                         )}
                       </div>
                     </div>
-                    {/* ICONS */}
-                    {hasRowIcons(event) && (
-                      <div className="flex" id="icon-row">
-                        {Manager.isValid(event?.reminderTimes) && <PiBellSimpleRingingDuotone />}
-                        {Manager.isValid(event?.notes) && <CgDetailsMore />}
-                        {Manager.isValid(event?.websiteUrl) && <PiGlobeDuotone />}
-                        {Manager.isValid(event?.phone) && <MdLocalPhone />}
-                        {Manager.isValid(event?.location) && <TbLocationFilled />}
-                        {Manager.isValid(event?.children) && <FaChildren />}
-                      </div>
-                    )}
                   </div>
+                  {/* ICONS */}
+                  {hasRowIcons(event) && (
+                    <div id="icon-row">
+                      {Manager.isValid(event?.reminderTimes) && <PiBellSimpleRingingDuotone />}
+                      {Manager.isValid(event?.notes) && <PiNotepadDuotone />}
+                      {Manager.isValid(event?.websiteUrl) && <PiGlobeDuotone />}
+                      {Manager.isValid(event?.phone) && <MdLocalPhone />}
+                      {Manager.isValid(event?.location) && <TbLocationFilled className="location-icon" />}
+                      {Manager.isValid(event?.children) && <FaChildren />}
+                    </div>
+                  )}
                   <div className="delete-event-button">DELETE</div>
                 </div>
               </Fade>

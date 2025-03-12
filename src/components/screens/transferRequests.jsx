@@ -10,7 +10,8 @@ import DB_UserScoped from '../../database/db_userScoped.js'
 import DateManager from '/src/managers/dateManager.js'
 import NavBar from '../navBar'
 import { GrMapLocation } from 'react-icons/gr'
-import { IoAdd, IoHourglassOutline, IoLocationOutline } from 'react-icons/io5'
+import { IoAdd, IoHourglassOutline } from 'react-icons/io5'
+import { IoMdPin } from 'react-icons/io'
 import SecurityManager from '/src/managers/securityManager'
 import { PiCarProfileDuotone, PiCheckBold } from 'react-icons/pi'
 import { Fade } from 'react-awesome-reveal'
@@ -211,7 +212,7 @@ export default function TransferRequests() {
         showCard={showDetails}>
         <div id="details" className={`content ${activeRequest?.reason.length > 20 ? 'long-text' : ''}`}>
           <Spacer height={8} />
-          <ViewSelector labels={['Details', 'Edit']} updateState={(e) => setView(e.toLowerCase())} />
+          <ViewSelector shouldUpdateStateOnLoad={true} labels={['Details', 'Edit']} updateState={(e) => setView(e.toLowerCase())} />
           {view === 'details' && (
             <>
               {/* TRANSFER DATE */}
@@ -289,7 +290,7 @@ export default function TransferRequests() {
                   </a>
                   {/* ARRIVED */}
                   <button className="button default center" onClick={checkIn}>
-                    We&apos;re Here <IoLocationOutline />
+                    We&apos;re Here <IoMdPin />
                   </button>
                   <Spacer height={5} />
                   <CheckboxGroup

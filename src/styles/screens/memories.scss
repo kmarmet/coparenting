@@ -7,7 +7,7 @@
       display: inline-flex;
       border-radius: $borderRadius;
       padding: 6px 15px 5px 15px;
-      font-weight: $fwMediumBold;
+      font-weight: $fwBold;
       align-items: center;
       justify-content: space-between;
       margin-left: 30px;
@@ -185,7 +185,6 @@
         font-size: 20px;
         position: relative;
         top: 5px;
-        animation: beat 2s infinite;
         border-radius: 50%;
       }
     }

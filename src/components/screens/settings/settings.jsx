@@ -103,8 +103,8 @@ export default function Settings() {
             {/* IS VISITATION? */}
             <Label text={'Notifications'} labelId="medium-title" classes="mt-30" isBold={true} />
             <div className="flex">
-              {currentUser?.settings?.notificationsEnabled && <p>Disable</p>}
-              {!currentUser?.settings?.notificationsEnabled && <p>Enable</p>}
+              {currentUser?.settings?.notificationsEnabled && <p>Enabled</p>}
+              {!currentUser?.settings?.notificationsEnabled && <p>Disabled</p>}
               <Toggle
                 icons={{
                   unchecked: null,

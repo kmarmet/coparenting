@@ -2,10 +2,10 @@
 var DateFormats;
 
 DateFormats = {
-  withReadbleDay: 'dddd, MMMM DD, YYYY',
+  withReadableDay: 'dddd, MMMM DD, YYYY',
   readableDatetime: 'ddd, MMM DD (hh:mma)',
   fullDatetime: 'MM/DD/YYYY h:mma',
-  readableMonthAndDay: 'dddd, MMMM DD',
+  readableMonthAndDay: 'dddd, MMMM Do',
   readableMonthDayYear: 'MMMM DD, YYYY',
   monthAndDay: 'MM/DD',
   dateForDb: 'MM/DD/YYYY',

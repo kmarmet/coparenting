@@ -27,7 +27,7 @@
   #account-container {
     #user-name {
       font-size: 18px;
-      font-weight: 500;
+      font-weight: $fwBold;
       padding-bottom: 8px;
 
       svg {
@@ -40,15 +40,11 @@
 
     .sections {
       .section {
-        @include lineItem;
+        @include row;
         justify-content: flex-start;
-        border-bottom: 1px solid $borderColor;
+        font-size: 18px;
 
         @include hoverBlue();
-
-        p {
-          color: black;
-        }
 
         svg {
           color: $mainBlue;

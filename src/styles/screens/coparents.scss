@@ -2,15 +2,14 @@
 
 #coparents-container {
   #coparent-container {
-    display: grid;
+    display: flex;
     width: 100%;
     overflow: auto;
     background-color: transparent;
     border-radius: 0;
     border: 0;
-    padding: 10px;
-    margin: 0;
-    grid-template-columns: auto auto auto auto;
+    margin: 15px 0 0 0;
+    gap: 25px;
 
     .coparent {
       display: flex;
@@ -36,7 +35,7 @@
 
         .coparent-name {
           opacity: 1;
-          font-weight: $fwMedium;
+          font-weight: $fwMediumBold;
           color: $accentBlue;
         }
 
@@ -52,14 +51,14 @@
 
       span {
         font-size: 40px;
-        opacity: 0.7;
 
         &.coparent-type {
           font-size: 12px;
           text-align: center;
-          font-weight: 400;
           line-height: 1;
           font-style: italic;
+          font-weight: $fwMediumBold;
+          color: $subtitleText;
         }
       }
 
@@ -117,7 +116,7 @@
           .delete-icon {
             position: relative;
             display: block;
-            bottom: 10px;
+            bottom: 5px;
             font-size: 20px;
             color: $red;
           }

@@ -50,6 +50,7 @@ export default function EventCalendar() {
   const [showHolidays, setShowHolidays] = useState(false)
   const [loadingDisabled, setLoadingDisabled] = useState(false)
   const [eventsSetOnPageLoad, setEventsSetOnPageLoad] = useState(false)
+  const [currentMonth, setCurrentMonth] = useState(null)
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
@@ -61,6 +62,11 @@ export default function EventCalendar() {
     let _eventsOfDay = []
     setAllEventsFromDb(securedEvents)
     let dateToUse = activeDay
+
+    if (!Manager.isValid(currentMonth)) {
+      setCurrentMonth(moment(activeDay).format('MMMM'))
+    }
+
     if (!activeDay) {
       dateToUse = selectedDate
     }
@@ -346,6 +352,12 @@ export default function EventCalendar() {
         legendButton.classList.toggle('active')
       })
     }
+
+    const monthArrows = document.querySelector('.MuiPickersArrowSwitcher-root')
+    const belowCalendarButtons = document.querySelector('.MuiDialogActions-root.MuiDialogActions-spacing')
+    if (monthArrows) {
+      belowCalendarButtons.append(monthArrows)
+    }
   }, [])
 
   return (
@@ -441,13 +453,17 @@ export default function EventCalendar() {
         <p className="screen-title">Calendar</p>
         {/* STATIC CALENDAR */}
         <div id="static-calendar" className={theme}>
+          <p id="calendar-month">{currentMonth}</p>
           <StaticDatePicker
             showDaysOutsideCurrentMonth={true}
             defaultValue={moment(selectedDate)}
             views={['month', 'day']}
             minDate={moment(`${moment().year()}-01-01`)}
             maxDate={moment(`${moment().year()}-12-31`)}
-            onMonthChange={async () => await getSecuredEvents()}
+            onMonthChange={async (month) => {
+              await getSecuredEvents()
+              setCurrentMonth(moment(month).format('MMMM'))
+            }}
             onChange={async (day) => {
               setSelectedDate(day)
               setState({ ...state, refreshKey: Manager.getUid() })
@@ -468,15 +484,13 @@ export default function EventCalendar() {
         {!showHolidays && !showSearchCard && (
           <div id="below-calendar" className={`${theme} mt-10 flex`}>
             {/* LEGEND BUTTON */}
-            <div className="flex" id="legend-wrapper">
-              <span className="dot currentUser"></span>
-              <span className="dot coparent"></span>
-              <span className="dot holiday"></span>
-              <span className="dot payday"></span>
-              <p id="legend-button" className="animated-button">
-                Legend
-              </p>
-            </div>
+            {/*<span className="dot currentUser"></span>*/}
+            {/*<span className="dot coparent"></span>*/}
+            {/*<span className="dot holiday"></span>*/}
+            {/*<span className="dot payday"></span>*/}
+            <p id="legend-button" className="animated-button">
+              Legend
+            </p>
 
             {/* SEARCH BUTTON */}
             <p id="search-button">Search</p>

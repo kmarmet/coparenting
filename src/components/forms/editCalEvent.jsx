@@ -4,6 +4,8 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
+import { PiNotepadDuotone } from 'react-icons/pi'
+
 import { MdLocalPhone } from 'react-icons/md'
 import React, { useContext, useEffect, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
@@ -364,6 +366,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   }
 
   const setDefaultValues = async () => {
+    setView('Details')
     setEventName(event?.title)
     setEventStartDate(event?.startDate)
     setEventEndDate(event?.endDate)
@@ -374,9 +377,10 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     setEventNotes(event?.notes)
     setEventShareWith(event?.shareWith ?? [])
     setEventIsRepeating(event?.isRepeating)
-    setView('Details')
+    setEventPhone(event?.phone)
     setRecurInterval(event?.repeatInterval)
     setEventIsDateRange(event?.isDateRange)
+    setEventWebsiteUrl(event?.websiteUrl)
     setIncludeChildren(Manager.isValid(event?.children))
     setShowReminders(Manager.isValid(event?.reminderTimes))
 
@@ -617,7 +621,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                   {Manager.isValid(event?.notes) && (
                     <div className={`${StringManager.addLongTextClass(event?.notes)} flex`}>
                       <b>
-                        <CgDetailsMore />
+                        <PiNotepadDuotone />
                         Notes
                       </b>
                       <pre>
@@ -823,6 +827,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                             checkboxArray={Manager.buildCheckboxGroup({
                               currentUser,
                               labelType: 'children',
+                              defaultLabels: event?.children,
                             })}
                             elClass={`${theme} `}
                             containerClass={'include-children-checkbox-container'}

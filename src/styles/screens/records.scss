@@ -18,20 +18,19 @@
         width: 100%;
         margin: 10px 12px 10px 12px;
         thead {
-          background-color: $bestGreyForWhite;
           margin-bottom: 5px;
           padding: 0;
 
           th {
             color: black;
-            opacity: 0.7;
+            //            opacity: 0.7;
             font-size: 14px;
             line-height: 1;
             border-collapse: collapse;
             border: 0;
             border-radius: 0;
             padding: 0;
-            font-weight: $fwMedium;
+            font-weight: $fwMediumBold;
             &:first-child {
               border-radius: 5px 0 0 5px;
             }
@@ -51,7 +50,7 @@
         td {
           font-size: 13px;
           width: calc(100% / 4);
-          opacity: 0.85;
+          color: $subtitleText;
         }
       }
 
@@ -69,7 +68,7 @@
         align-items: center;
         span {
           font-size: 14px;
-          font-weight: $fwMedium;
+          font-weight: $fwMediumBold;
         }
       }
     }

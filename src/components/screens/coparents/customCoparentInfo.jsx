@@ -20,6 +20,7 @@ export default function CustomCoparentInfo({ hideCard, activeCoparent, showCard 
     Manager.resetForm('custom-coparent-info-wrapper')
     setTitle('')
     setValue('')
+    setState({ ...state, refreshKey: Manager.getUid() })
     hideCard()
   }
 

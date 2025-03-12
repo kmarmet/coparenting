@@ -12,7 +12,7 @@ export default function Legend() {
   useEffect(() => {
     // Append Holidays/Search Cal Buttons
     const staticCalendar = document.querySelector('.MuiDialogActions-root')
-    const legendButtonWrapper = document.getElementById('legend-wrapper')
+    const legendButtonWrapper = document.getElementById('legend-button')
     if (legendButtonWrapper) {
       staticCalendar.prepend(legendButtonWrapper)
 

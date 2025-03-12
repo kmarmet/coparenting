@@ -23,6 +23,7 @@ import { IoAddOutline, IoHeart } from 'react-icons/io5'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
+import Spacer from '../shared/spacer'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -120,10 +121,10 @@ export default function Memories() {
             <p className="screen-title">Memories</p>
             {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />}
           </div>
-          <p id="happy-subtitle" className={`${theme} mb-10`}>
+          <p id="happy-subtitle" className={`${theme}`}>
             Share photos of unforgettable memories that deserve to be seen! <IoHeart className={'heart'} />
           </p>
-
+          <Spacer height={10} />
           <Accordion expanded={showDisclaimer}>
             <AccordionSummary>
               <p id="disclaimer-header-button" onClick={() => setShowDisclaimer(!showDisclaimer)}>

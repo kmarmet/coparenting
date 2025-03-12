@@ -26,6 +26,8 @@ import EmailManager from '../../../managers/emailManager'
 import Actions from '../../shared/actions'
 import { HiOutlineDotsVertical } from 'react-icons/hi'
 import { PiUserCircleDuotone } from 'react-icons/pi'
+import Spacer from '../../shared/spacer'
+import { PiTrashSimpleDuotone } from 'react-icons/pi'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -36,11 +38,9 @@ export default function Coparents() {
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
   const [selectedCoparentRaw, setSelectedCoparentRaw] = useState()
-  const [currentCoparentAddress, setCurrentCoparentAddress] = useState('')
   const [showInvitationForm, setShowInvitationForm] = useState(false)
   const [invitedCoparentName, setInvitedCoparentName] = useState('')
   const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
-  const [hideActions, setHideActions] = useState(true)
   const [showActions, setShowActions] = useState(false)
   const deleteProp = async (prop) => {
     const coparent = await getCoparent()
@@ -96,14 +96,6 @@ export default function Coparents() {
     onTableChange().then((r) => r)
   }, [])
 
-  useEffect(() => {
-    if (showCustomInfoCard || showInvitationForm || showNewCoparentFormCard) {
-      setHideActions(true)
-    } else {
-      setHideActions(false)
-    }
-  }, [showCustomInfoCard, showInvitationForm, showNewCoparentFormCard])
-
   return (
     <>
       {/* CUSTOM INFO FORM */}
@@ -112,10 +104,52 @@ export default function Coparents() {
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
+      {/* ACTIONS BUTTON */}
+      {showActions ? (
+        <IoClose id={'actions-button'} onClick={() => setShowActions(false)} />
+      ) : (
+        <HiOutlineDotsVertical id={'actions-button'} onClick={() => setShowActions(true)} />
+      )}
+
+      <Actions show={showActions} shouldHide={showNewCoparentFormCard || showInvitationForm || showCustomInfoCard}>
+        <div className="action-items">
+          <div
+            className="action-item"
+            onClick={() => {
+              setShowActions(false)
+              setShowCustomInfoCard(true)
+            }}>
+            <FaWandMagicSparkles className={'magic'} />
+          </div>
+          <div
+            className="action-item"
+            onClick={() => {
+              setShowActions(false)
+              AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
+                await deleteCoparent()
+                AlertManager.successAlert('Co-Parent Removed')
+                setSelectedCoparentDataArray(null)
+              })
+            }}>
+            <IoPersonRemove className={'remove-user'} />
+          </div>
+
+          <div
+            className="action-item"
+            onClick={() => {
+              setShowInvitationForm(true)
+              setShowActions(false)
+            }}>
+            <BsFillSendFill className={'paper-airplane'} />
+          </div>
+        </div>
+      </Actions>
+
       <BottomCard
         submitText={'Send Invitation'}
         wrapperClass="invite-coparent-card"
         title={'Invite Co-Parent'}
+        subtitle="Extend an invitation to a co-parent to facilitate the sharing of essential information with them"
         onClose={() => setShowInvitationForm(false)}
         showCard={showInvitationForm}
         onSubmit={() => {
@@ -128,6 +162,7 @@ export default function Coparents() {
           setShowInvitationForm(false)
         }}
         hideCard={() => setShowInvitationForm(false)}>
+        <Spacer height={5} />
         <InputWrapper labelText={'Co-Parent Name'} required={true} onChange={(e) => setInvitedCoparentName(e.target.value)} />
         <InputWrapper labelText={'Co-Parent Email Address'} required={true} onChange={(e) => setInvitedCoparentEmail(e.target.value)} />
       </BottomCard>
@@ -139,62 +174,9 @@ export default function Coparents() {
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title beside-action-button">Co-Parents </p>
             {!DomManager.isMobile() && <BsPersonAdd id={'add-new-button'} onClick={() => setShowNewCoparentFormCard(true)} />}
-            {/* ACTIONS BUTTON */}
-            {showActions ? (
-              <IoClose id={'actions-button'} onClick={() => setShowActions(false)} />
-            ) : (
-              <HiOutlineDotsVertical id={'actions-button'} onClick={() => setShowActions(true)} />
-            )}
           </div>
           <p>Maintain accessible records of important information regarding your co-parent.</p>
-          <Actions show={showActions}>
-            <div className="action-items">
-              <div
-                className="action-item"
-                onClick={() => {
-                  setShowActions(false)
-                  setShowCustomInfoCard(true)
-                }}>
-                <div className="svg-wrapper">
-                  <FaWandMagicSparkles />
-                </div>
-                <span>
-                  Add Your <br /> Own Info
-                </span>
-              </div>
-              <div
-                className="action-item"
-                onClick={() => {
-                  setShowActions(false)
-                  AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
-                    await deleteCoparent()
-                    AlertManager.successAlert('Co-Parent Removed')
-                    setSelectedCoparentDataArray(null)
-                  })
-                }}>
-                <div className="svg-wrapper remove-user">
-                  <IoPersonRemove className={'remove-user'} />
-                </div>
-                <span>
-                  Remove <br /> Co-Parent
-                </span>
-              </div>
 
-              <div
-                className="action-item"
-                onClick={() => {
-                  setShowInvitationForm(true)
-                  setShowActions(false)
-                }}>
-                <div className="svg-wrapper airplane">
-                  <BsFillSendFill className={'airplane'} />
-                </div>
-                <span>
-                  Invite <br /> Co-Parent
-                </span>
-              </div>
-            </div>
-          </Actions>
           {/* COPARENT ICONS CONTAINER */}
           <div id="coparent-container">
             {selectedCoparentDataArray &&
@@ -205,7 +187,6 @@ export default function Coparents() {
                 return (
                   <div
                     onClick={() => {
-                      setCurrentCoparentAddress(coparent?.address)
                       setSelectedCoparentDataArray(Object.entries(coparent))
                       setSelectedCoparentRaw(coparent)
                     }}
@@ -262,7 +243,7 @@ export default function Coparents() {
                                   }}
                                   inputType={'input'}
                                   labelText={StringManager.addSpaceBetweenWords(infoLabel)}></InputWrapper>
-                                <IoMdRemoveCircle className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
+                                <PiTrashSimpleDuotone className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
                               </>
                             )}
                           </div>
