@@ -744,25 +744,10 @@
   }
 }
 
-@mixin bgEffect {
-  background: linear-gradient(-45deg, $translucent, $lightBlue, $mainBlue);
-  background-size: 400% 400%;
-  animation: gradient 7s ease infinite;
-}
-
 @mixin blurredBg() {
   backdrop-filter: blur(50px);
   background: none;
   transition: all 0.5s ease-in-out;
-}
-
-@mixin gradientButtonBg {
-  background-image: linear-gradient(to right, $darkBlue 0%, $mainBlue 51%, $lightBlue 100%);
-  text-align: center;
-  text-transform: uppercase;
-  transition: 0.5s;
-  background-size: 200% auto;
-  box-shadow: 0 0 5px $mainBlue;
 }
 
 @mixin sparkleOnClickButton {
@@ -1386,7 +1371,7 @@
   }
 
   &.chats {
-    padding-bottom: 8px;
+    padding-bottom: 0;
   }
 
   @include hover;
@@ -2630,14 +2615,24 @@
       line-height: 1.3;
     }
 
-    .close-icon {
-      font-size: 26px;
-      z-index: 1000;
-      position: relative;
-      font-weight: bold;
-      margin-right: 5px;
-      color: #52525b;
-      opacity: 0.7;
+    #close-icon-wrapper {
+      background: $bootstrapBgRed;
+      height: 22px;
+      width: 22px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 8px;
+
+      .close-icon {
+        transform: scale(0.9);
+        z-index: 1000;
+        position: relative;
+        font-weight: bold;
+        color: $bootstrapRedColor;
+        opacity: 0.6;
+      }
     }
   }
 
@@ -3297,7 +3292,12 @@
   // FULL MENU
   &.full-menu {
     #title-wrapper {
-      padding: 15px 20px 10px 25px;
+      padding: 15px 20px 5px 25px;
+      margin-bottom: 0;
+
+      #close-icon-wrapper {
+        margin-right: 8px;
+      }
     }
     &.animate__fadeInUp {
       top: 80px;
@@ -3475,7 +3475,7 @@
         @include hover;
         padding: 12px 10px;
         border: 0;
-        background: $bestGreyForWhite2;
+        background: $bestGreyForWhite;
         border-radius: $borderRadius;
         opacity: 0.95;
         justify-content: flex-start;
@@ -3771,15 +3771,15 @@
       &.notifications,
       &.expenses,
       &.swap-request {
-        border: 1px solid $mainBlue;
+        border: 1px solid #2563eb;
 
         * {
-          color: $mainBlue;
+          color: #2563eb;
         }
 
         &.active {
           background: rgba(85, 127, 255, 0.11);
-          box-shadow: 0 0 12px 0 $mainBlue;
+          box-shadow: 0 0 12px 0 #2563eb;
         }
       }
       &.transfer-change,
@@ -3788,15 +3788,15 @@
       &.child-info,
       &.records,
       &.coparents {
-        border: 1px solid #d9962b;
+        border: 1px solid #c75378;
 
         * {
-          color: #d9962b;
+          color: #c75378;
         }
 
         &.active {
-          background: rgba(255, 234, 234, 0.87);
-          box-shadow: 0 0 12px 0 #d9962b;
+          background: #fce4ec;
+          box-shadow: 0 0 12px 0 #c75378;
         }
       }
       &.account,
@@ -3805,15 +3805,15 @@
       &.theme,
       &.logout,
       &.install-app {
-        border: 1px solid #7e57c2;
+        border: 1px solid #9333ea;
 
         * {
-          color: #7e57c2;
+          color: #9333ea;
         }
 
         &.active {
           background: $lightPurple;
-          box-shadow: 0 0 12px 0 #7e57c2;
+          box-shadow: 0 0 12px 0 #9333ea;
         }
 
         &.contact-us {
@@ -4007,7 +4007,15 @@
         @include buttonPress;
 
         &.child-info {
-          font-size: 34px;
+          font-size: 33px;
+        }
+
+        &.memories {
+          font-size: 30px;
+        }
+
+        &.notifications {
+          font-size: 32px;
         }
       }
 

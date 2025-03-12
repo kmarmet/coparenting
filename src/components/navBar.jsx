@@ -1,9 +1,9 @@
 // Path: src\components\navBar.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
-import { PiCalendarDotsDuotone, PiChatsCircleDuotone, PiImagesSquareDuotone, PiBellDuotone } from 'react-icons/pi'
-import { TbGridDots } from 'react-icons/tb'
+import { PiBellDuotone, PiCalendarDotsDuotone, PiChatsCircleDuotone } from 'react-icons/pi'
+import { TbGridDots, TbPhotoHeart } from 'react-icons/tb'
 import { BiFace } from 'react-icons/bi'
 import DomManager from '../managers/domManager'
 import { Fade } from 'react-awesome-reveal'
@@ -77,15 +77,15 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               {/*/!* MEMORIES *!/*/}
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.memories)}
-                className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'}`}>
-                <PiImagesSquareDuotone />
+                className={`${currentScreen === ScreenNames.memories ? 'active menu-item memories' : 'menu-item memories'}`}>
+                <TbPhotoHeart className={'memories'} />
               </div>
 
               {/* NOTIFICATIONS */}
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.notifications)}
                 className={`${currentScreen === ScreenNames.notifications ? 'active menu-item notifications' : 'menu-item notifications'}`}>
-                <PiBellDuotone />
+                <PiBellDuotone className={'notifications'} />
                 {notificationCount > 0 && <span className="badge"></span>}
               </div>
             </Fade>

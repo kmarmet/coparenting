@@ -2,47 +2,6 @@
 @import './variables';
 @import './mixins';
 
-.light-gallery {
-  .memory {
-    position: relative;
-    width: 100%;
-    margin-bottom: 40px;
-
-    .memory-image {
-      width: 100% !important;
-      position: relative;
-      .delete-icon {
-        position: absolute;
-        top: 0;
-        z-index: 1000;
-        right: 0;
-        color: $red;
-        font-size: 30px;
-      }
-    }
-  }
-
-  #title-and-date {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between;
-
-    * {
-      display: inline;
-      margin: 0;
-    }
-    .title {
-      font-weight: $fwMediumBold !important;
-      font-size: 18px !important;
-    }
-    #date {
-      color: black;
-      font-size: 14px;
-      opacity: 0.7;
-    }
-  }
-}
 .lg-react-element {
   display: flex !important;
   flex-wrap: wrap;
@@ -55,44 +14,7 @@
     }
   }
 
-  #below-image {
-    width: 100%;
-    display: grid;
-    align-items: center;
-    grid-template-columns: auto auto;
-    justify-content: flex-end;
-    gap: 5px;
-
-    #download-text,
-    #delete-button {
-      color: white;
-      font-size: 12px;
-      font-weight: $fwMedium;
-      line-height: 1;
-      margin: 0;
-      padding: 8px 15px;
-      background: $accentBlue;
-      border-radius: 6px;
-      text-align: center;
-      @include transformHover;
-
-      &#delete-button {
-        background: #d64f5b;
-        color: white;
-      }
-    }
-  }
-
   .memory-image {
-    flex-basis: 30%;
-    width: 100px !important;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: top center;
-    border-radius: $borderRadius;
-    float: none !important;
-    min-height: 250px;
-
     @media screen and (min-width: 1100px) {
       flex-basis: 20%;
       max-width: 300px;
@@ -104,6 +26,20 @@
 
     @media screen and (max-width: 600px) {
       flex-basis: 100%;
+    }
+  }
+}
+.lg-sub-html {
+  margin-bottom: 15px !important;
+  .gallery-title {
+    font-size: 18px !important;
+    font-weight: $fwBold !important;
+    span {
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+      font-size: 16px;
+      font-weight: $fwRegular !important;
     }
   }
 }

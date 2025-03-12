@@ -507,9 +507,9 @@
 
     .MuiPickersDay-today:not(.Mui-selected) {
       border: 0 !important;
-      color: #8b5cf6;
+      color: $green;
       opacity: 1 !important;
-      font-weight: $fwBold !important;
+      font-weight: $fwMediumBold !important;
     }
 
     // WEEKDAY LABEL (S M W)
@@ -578,18 +578,19 @@
       }
       &.Mui-selected {
         transition: all 0.2s ease-in-out !important;
-        background: $lightAccentBlue !important;
+        background: rgba(209, 196, 233, 0.54) !important;
         width: 51px !important;
         height: 43px !important;
         margin-left: 5px;
         margin-right: 5px;
-        border-radius: $borderRadius !important;
+        border-radius: 50% !important;
         position: relative;
-        border: 1px solid $accentBlue;
+        border: 1px solid #7e57c2;
         top: 2px;
         opacity: 1 !important;
-        color: $accentBlue !important;
-        font-weight: $fwBold !important;
+        color: #7e57c2 !important;
+        font-weight: $fwExtraBold !important;
+        box-shadow: 0 0 12px 0 #a17de3;
 
         .dot-wrapper {
           position: relative;
@@ -719,8 +720,8 @@
     border-radius: 0;
 
     .MuiPickersCalendarHeader-label {
-      font-weight: $fwLight !important;
-      opacity: 0.8;
+      font-weight: $fwRegular !important;
+      color: $subtitleText;
     }
     .MuiPickersCalendarHeader-switchViewIcon {
       opacity: 0.6 !important;

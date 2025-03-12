@@ -1,40 +1,44 @@
 /*#region  BASE COLORS */
+
+// GREEN
 $green: #33b249;
-$red: #d92f54;
-$accentBlue: #1a5ca6;
-$lightAccentBlue: rgba(145, 192, 245, 0.32);
-$bootstrapBgRed: rgba(255, 231, 235, 0.65);
-$bootstrapRedBorder: #f5c2c7;
-$bootstrapRedColor: #842029;
 $bootstrapBgGreen: #d1e7dd;
 $bootstrapGreenBorder: #badbcc;
 $bootstrapGreenColor: #0f5132;
-$bootstrapBgYellow: #fff3cd;
-$bootstrapYellowBorder: #ffecb5;
-$bootstrapYellowColor: #664d03;
+$lightestGreen: rgba(173, 245, 203, 0.65);
+
+// RED
+$red: #d92f54;
+$bootstrapRedBorder: #f5c2c7;
+$bootstrapRedColor: #c71436;
+$bootstrapBgRed: #fbd9df;
 $bootstrapBgRed2: #fff6f7;
+
+// YELLOW
+$bootstrapBgYellow: #fff3cd;
+$bootstrapYellowBorder: #dcc990;
+$bootstrapYellowColor: #664d03;
 $yellow: #fbf5bf;
 $gold: #ffcb6b;
-$goldText: #7a6133;
 $orange: #c0742d;
+
+// PURPLE
 $lightPurple: #f5f0ff;
 $purple: #6741c9;
 $darkPurple: #513596;
-$linkColor: #0667f6;
-$mediumPurple: #d3bdff;
 $accent: $purple;
+
+// BLUE
+$lightAccentBlue: rgba(145, 192, 245, 0.32);
+$linkColor: #0667f6;
+$accentBlue: #1a5ca6;
 $mainBlue: #387ae9;
-$lightBlue: #e2ecff;
-$lightestGreen: rgba(173, 245, 203, 0.65);
 /*#endregion  BASE COLORS */
 
 /*#region  BLACKS (NOT NEGROS)*/
 $black: #232323;
 $lightBlack: #1c1c1c;
-$translucent: rgba(255, 255, 255, 0.02);
-$translucentLighter: rgba(255, 255, 255, 0.05);
 $translucentLightest: rgba(255, 255, 255, 0.09);
-$anotherBlack: #12130f;
 /*#endregion  BLACKS (NOT NEGROS)*/
 
 /*#region  GREYS*/
@@ -42,24 +46,19 @@ $borderColor: rgba(232, 235, 236, 0.17);
 $mediumGrey: #e0e0e0;
 $borderColorDark: #c0c2c4;
 $lightestGrey: #fafafa;
-$lightGrey: #f1f1f1;
-$offWhite: #e6e6e6;
 $buttonGrey: #efefef;
 $darkGrey: #757575;
 $iconGrey: #e3e8ee;
 $bestGreyForWhite: #f2f4f5;
-$bestGreyForWhite2: #eeeeec;
 $desktopBorderColor: #e0e0e0;
 /*#endregion  GREYS*/
 
 /*#region  VISITATION COLORS*/
 $coparentPurple: #8f7afa;
-$lightGreen: rgba(46, 204, 113, 0.65);
-$currentUserGreen: $green;
 $holidayOrange: #cc8411;
 /*#endregion  VISITATION COLORS*/
 
-/*#region  Dark Theme*/
+/*#region DARK THEME*/
 $darkBlueDarkest: #121735;
 $darkBg: black;
 $darkGreyText: #89868f;
@@ -78,7 +77,7 @@ $darkSmallShadow:
   0 3px 6px rgba(0, 0, 0, 0.16),
   0 3px 6px rgba(0, 0, 0, 0.23);
 $darkBorderColor: #252327;
-/*#endregion  Dark Theme*/
+/*#endregion DARK THEME*/
 
 /*#region  LIGHT THEME*/
 $lightBg: white;
@@ -90,6 +89,7 @@ $lightIconBgBlue: #dde5ff;
 $lightestBlue: #d3eafd;
 $lightMenuBg: white;
 $lightBorder: #e7e9ee;
+$lightBorderColor: #e5e5e5;
 $lightDesktopBg: #f3f7fa;
 $lightBlackLight: #1c1c1c;
 $lightBlue: #edf2fd;

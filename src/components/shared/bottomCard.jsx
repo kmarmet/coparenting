@@ -6,7 +6,8 @@ import Manager from '/src/managers/manager.js'
 import DB_UserScoped from '../../database/db_userScoped'
 import StringManager from '../../managers/stringManager'
 import { FiMinus } from 'react-icons/fi'
-
+import { IoIosCloseCircle } from 'react-icons/io'
+import { IoClose } from 'react-icons/io5'
 export default function BottomCard({
   submitText,
   submitIcon,
@@ -108,17 +109,19 @@ export default function BottomCard({
     <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
       <div className="flex" id="title-wrapper">
         <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
-        <FiMinus
-          className="close-icon"
-          onClick={() => {
-            const pageOverlay = document.getElementById('page-overlay')
-            if (pageOverlay) {
-              pageOverlay.classList.remove('active')
-            }
-            onClose()
-            hideCard()
-          }}
-        />
+        <div id="close-icon-wrapper">
+          <IoClose
+            className="close-icon"
+            onClick={() => {
+              const pageOverlay = document.getElementById('page-overlay')
+              if (pageOverlay) {
+                pageOverlay.classList.remove('active')
+              }
+              onClose()
+              hideCard()
+            }}
+          />
+        </div>
       </div>
       <div id="relative-wrapper">
         <div id="content">

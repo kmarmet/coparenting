@@ -3,6 +3,7 @@ DateFormats =
   readableDatetime: 'ddd, MMM DD (hh:mma)'
   fullDatetime: 'MM/DD/YYYY h:mma'
   readableMonthAndDay: 'dddd, MMMM DD'
+  readableMonthDayYear: 'MMMM DD, YYYY'
   monthAndDay: 'MM/DD'
   dateForDb: 'MM/DD/YYYY'
   jsDateTime: 'yyyy,MM,DD h:mm a'

@@ -889,16 +889,20 @@
     }
 
     #disclaimer {
+      width: 90vw;
+      display: block;
+      align-items: flex-end;
+      position: absolute;
+      bottom: 95px;
+      z-index: 999;
+      margin: 0 auto;
+      @include centerHoriz;
+
       p {
-        color: $lightDarkGrey;
+        color: $lightGreyText;
         font-size: 14px;
         text-align: center;
-        width: 90vw;
-        display: block;
-        margin-top: auto;
-        align-items: flex-end;
-        position: relative;
-        bottom: 0;
+        font-weight: $fwMedium;
       }
     }
 
@@ -1284,7 +1288,7 @@
     .accordion-header {
       padding: 10px;
       background-color: $darkBlue;
-      color: $offWhite;
+      color: $bestGreyForWhite;
       display: flex;
       font-weight: 500;
       flex-wrap: wrap;

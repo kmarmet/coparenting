@@ -621,7 +621,7 @@ export default function ExpenseTracker() {
                         )}
                         {!Manager.isValid(dueDate, true) && (
                           <>
-                            <p className="due-date">No due date</p>
+                            <p className="due-date">no due date</p>
                           </>
                         )}
                       </div>

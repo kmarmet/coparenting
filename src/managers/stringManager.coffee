@@ -142,10 +142,10 @@ StringManager = {
   formatEventTitle: (title) ->
     if title and title.length > 0
       title = StringManager.uppercaseFirstLetterOfAllWords(title)
-      title = StringManager.formatTitleWords(title)
+      title = StringManager.formatTitle(title)
       return title
 
-  formatTitleWords: (title) ->
+  formatTitle: (title, uppercase = true) ->
     title = title.replaceAll(" To ", "to")
       .replaceAll(" A ", " a ")
       .replaceAll(" An ", " an ")
@@ -166,6 +166,11 @@ StringManager = {
       .replaceAll(" Per ", "per")
       .replaceAll(" Up ", "up")
       .replaceAll(" Via ", "via")
+
+    if uppercase
+      title = StringManager.uppercaseFirstLetterOfAllWords(title)
+
+    return title
 
 }
 

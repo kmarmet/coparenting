@@ -6,20 +6,20 @@ import Manager from '../managers/manager'
 import AppManager from '../managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
 import { VscSettings } from 'react-icons/vsc'
-
+import { TbPhotoHeart } from 'react-icons/tb'
 import {
   PiBellDuotone,
   PiCalendarDotsDuotone,
   PiCarProfileDuotone,
   PiChatsCircleDuotone,
   PiHouseLineDuotone,
-  PiImagesSquareDuotone,
   PiMoneyWavyDuotone,
   PiMoonStarsDuotone,
   PiSignOutDuotone,
   PiSunDuotone,
   PiSwapDuotone,
 } from 'react-icons/pi'
+
 import { GrInstallOption } from 'react-icons/gr'
 import DB_UserScoped from '../database/db_userScoped'
 import { RiArchive2Fill, RiMailSendLine } from 'react-icons/ri'
@@ -159,7 +159,7 @@ export default function FullMenu() {
             <div
               className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.memories)}>
-              <PiImagesSquareDuotone />
+              <TbPhotoHeart />
               <p>Memories</p>
             </div>
 

@@ -64,11 +64,7 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
       <div className={`flex thread-item wrap`}>
         {/* COPARENT NAME */}
         <div className="flex">
-          {hasIcon && (
-            <div id="user-initial-wrapper">
-              <PiChatCircleTextDuotone />
-            </div>
-          )}
+          {hasIcon && <PiChatCircleTextDuotone className={'chat-bubble'} />}
           <p data-coparent-phone={coparent?.phone} className="coparent-name">
             {StringManager.getFirstNameOnly(coparent?.name)}
           </p>
@@ -79,7 +75,7 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
                 onClick={(e) => {
                   e.stopPropagation()
                   AlertManager.confirmAlert(
-                    'Once paused, the chat will still be available for your reference. However, you will not receive notifications for this specific chat until you unpause it. Are you sure?',
+                    'When you pause the chat, it will remain accessible for your reference. However, you will not receive notifications related to this particular chat until you decide to unpause it. Are you sure?',
                     "I'm Sure",
                     true,
                     async () => {

@@ -11,7 +11,7 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import moment from 'moment'
 import { Fade } from 'react-awesome-reveal'
-import { LuImagePlus } from 'react-icons/lu'
+import { LuImagePlus, LuMinus } from 'react-icons/lu'
 import ImageManager from '../../managers/imageManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
@@ -19,13 +19,17 @@ import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
-import { IoHeart } from 'react-icons/io5'
+import { IoAddOutline, IoHeart } from 'react-icons/io5'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
   const [memories, setMemories] = useState([])
   const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
+  const [showDisclaimer, setShowDisclaimer] = useState(false)
   const dbRef = ref(getDatabase())
 
   const getSecuredMemories = async () => {
@@ -49,13 +53,11 @@ export default function Memories() {
         if (Manager.isValid(validImages)) {
           setMemories(validImages)
         } else {
-          setState({ ...state, isLoading: false })
           setMemories([])
         }
       }
     } else {
       setMemories([])
-      setState({ ...state, isLoading: false })
     }
   }
 
@@ -103,12 +105,6 @@ export default function Memories() {
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      const skeleton = document.getElementById('skeleton')
-      if (Manager.isValid(skeleton)) {
-        skeleton.style.display = 'none'
-      }
-    }, 1500)
     onTableChange().then((r) => r)
   }, [])
 
@@ -127,63 +123,64 @@ export default function Memories() {
           <p id="happy-subtitle" className={`${theme} mb-10`}>
             Share photos of unforgettable memories that deserve to be seen! <IoHeart className={'heart'} />
           </p>
+
+          <Accordion expanded={showDisclaimer}>
+            <AccordionSummary>
+              <p id="disclaimer-header-button" onClick={() => setShowDisclaimer(!showDisclaimer)}>
+                Info {showDisclaimer ? <LuMinus /> : <IoAddOutline />}
+              </p>
+            </AccordionSummary>
+            <AccordionDetails>
+              <p>
+                All images will be automatically and <b>permanently</b> removed 30 days after their creation date. You are welcome to download them at
+                any time.
+              </p>
+            </AccordionDetails>
+          </Accordion>
+
           {/* NO DATA FALLBACK TEXT */}
           {memories && memories.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories available'} />}
+
           {/* GALLERY */}
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
             <Fade direction={'up'} duration={1000} className={'memories-fade-wrapper'} triggerOnce={true}>
-              <>
-                {Manager.isValid(memories) &&
-                  memories.map((imgObj, index) => {
-                    return (
-                      <div key={index} className="memory">
-                        {/* TITLE AND DATE */}
-                        {imgObj?.title.length > 0 && (
-                          <div id="title-and-date">
-                            {/* TITLE */}
-                            <p className="title">{StringManager.formatTitleWords(StringManager.uppercaseFirstLetterOfAllWords(imgObj.title))}</p>
-
-                            {/* DATE */}
-                            {DateManager.dateIsValid(imgObj.memoryCaptureDate) && (
-                              <p id="date">{moment(imgObj.memoryCaptureDate).format(DateFormats.readableMonthAndDay)}</p>
-                            )}
-                          </div>
-                        )}
-                        {Manager.isValid(imgObj?.notes) && <p className="notes">{imgObj?.notes}</p>}
-
-                        {/* IMAGE */}
-                        <div id="memory-image-wrapper">
-                          <div style={{ backgroundImage: `url(${imgObj?.url})` }} className="memory-image" data-src={imgObj?.url}></div>
-                        </div>
-
-                        {/* NOTES */}
-                        <div id="below-image">
-                          {/* SAVE ICON */}
-                          <p onClick={(e) => deleteMemory(imgObj.url, imgObj, e.currentTarget)} id="delete-button">
-                            DELETE
-                          </p>
-                          {/* SAVE ICON */}
-                          <p onClick={(e) => saveMemoryImage(e)} id="download-text">
-                            DOWNLOAD
-                          </p>
-                        </div>
+              {Manager.isValid(memories) &&
+                memories.map((imgObj, index) => {
+                  return (
+                    <div key={index} className="memory">
+                      {/* IMAGE */}
+                      <div id="memory-image-wrapper">
+                        <div
+                          data-sub-html={`<p class="gallery-title">${StringManager.formatTitle(StringManager.formatTitle(imgObj?.title, true))}<span>${imgObj?.notes}</span></p>`}
+                          style={{ backgroundImage: `url(${imgObj?.url})` }}
+                          className="memory-image"
+                          data-src={imgObj?.url}></div>
                       </div>
-                    )
-                  })}
-              </>
+
+                      {/* DATE */}
+                      {DateManager.dateIsValid(imgObj?.memoryCaptureDate) && (
+                        <p className="memory-date">Capture Date: {moment(imgObj?.memoryCaptureDate).format(DateFormats.readableMonthDayYear)}</p>
+                      )}
+
+                      {/* BELOW IMAGE */}
+                      <div id="below-image">
+                        {/* SAVE BUTTON */}
+                        <p onClick={(e) => deleteMemory(imgObj?.url, imgObj, e.currentTarget)} id="delete-button">
+                          DELETE
+                        </p>
+                        {/* DOWNLOAD BUTTON */}
+                        <p onClick={(e) => saveMemoryImage(e)} id="download-text">
+                          DOWNLOAD
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
             </Fade>
           </LightGallery>
-
-          {memories.length > 0 && (
-            <div id="disclaimer">
-              <p className="blue">
-                All images will be automatically and permanently removed 30 days after their creation date. You are welcome to download them at any
-                time.
-              </p>
-            </div>
-          )}
         </Fade>
       </div>
+
       {!showNewMemoryCard && (
         <NavBar navbarClass={'child-info'}>
           <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />

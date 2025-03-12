@@ -211,7 +211,7 @@
 @keyframes beat {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(123, 117, 255, 0.7);
+    box-shadow: 0 0 0 0 $red;
   }
   70% {
     transform: scale(1.1);

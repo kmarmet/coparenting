@@ -232,7 +232,7 @@ export default function Coparents() {
                   let infoLabel = propArray[0]
                   infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-                  infoLabel = StringManager.formatTitleWords(infoLabel)
+                  infoLabel = StringManager.formatTitle(infoLabel)
                   const value = propArray[1]
                   const inputsToSkip = ['address', 'key']
                   return (

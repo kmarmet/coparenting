@@ -17,7 +17,6 @@ import ChatRow from './chatRow.jsx'
 import { TbMessageCirclePlus } from 'react-icons/tb'
 import Spacer from '../../shared/spacer'
 import DB from '../../../database/DB'
-import DateManager from '../../../managers/dateManager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 
 const Chats = () => {
@@ -29,9 +28,7 @@ const Chats = () => {
   const [showNewChatButton, setShowNewChatButton] = useState(true)
   const openMessageThread = async (coparent) => {
     // Check if thread member (coparent) account exists in DB
-    console.log('before')
     let userCoparent = await DB_UserScoped.getCoparentByKey(coparent?.key, currentUser)
-    console.log(userCoparent, coparent)
     if (!Manager.isValid(userCoparent)) {
       AlertManager.oneButtonAlert(
         'Co-Parent Account not Found',
@@ -42,7 +39,6 @@ const Chats = () => {
         }
       )
     } else {
-      console.log(userCoparent)
       setState({ ...state, currentScreen: ScreenNames.chat, messageRecipient: userCoparent })
     }
   }
