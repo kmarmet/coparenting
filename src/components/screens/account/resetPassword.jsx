@@ -1,7 +1,6 @@
 // Path: src\components\screens\account\resetPassword.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
-import Manager from '../../../managers/manager'
 import ScreenNames from '../../../constants/screenNames'
 import validator from 'validator'
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth'
@@ -9,7 +8,7 @@ import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
-import DomManager from '../../../managers/domManager'
+import Spacer from '../../shared/spacer'
 
 export default function ResetPassword() {
   const { state, setState } = useContext(globalState)
@@ -43,6 +42,7 @@ export default function ResetPassword() {
     <>
       <div id="forgot-password-container" className="page-container light form">
         <p className="screen-title ">Reset Password</p>
+        <Spacer height={10} />
         <div className="form" autoComplete="off">
           <InputWrapper labelText={'Email Address'} required={true} inputValueType={'email'} onChange={(e) => setEmail(e.target.value)} />
           <div className="flex gap">

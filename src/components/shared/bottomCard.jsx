@@ -5,9 +5,12 @@ import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import Manager from '/src/managers/manager.js'
 import DB_UserScoped from '../../database/db_userScoped'
 import StringManager from '../../managers/stringManager'
-import { FiMinus } from 'react-icons/fi'
-import { IoIosCloseCircle } from 'react-icons/io'
-import { IoClose } from 'react-icons/io5'
+import { VscChromeClose } from 'react-icons/vsc'
+import { useSwipeable } from 'react-swipeable'
+import SecurityManager from '../../managers/securityManager'
+import AlertManager from '../../managers/alertManager'
+import DomManager from '../../managers/domManager'
+
 export default function BottomCard({
   submitText,
   submitIcon,
@@ -51,6 +54,20 @@ export default function BottomCard({
       }, 500)
     }
   }
+
+  // Swipe
+  const handlers = useSwipeable({
+    onSwipedDown: async () => {
+      const pageOverlay = document.getElementById('page-overlay')
+      if (pageOverlay) {
+        pageOverlay.classList.remove('active')
+      }
+      onClose()
+      hideCard()
+    },
+    delta: { down: 200 },
+    // swipeDuration: 350,
+  })
 
   useEffect(() => {
     const pageOverlay = document.getElementById('page-overlay')
@@ -106,22 +123,10 @@ export default function BottomCard({
   }, [showCard])
 
   return (
-    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`}>
+    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`} {...handlers}>
+      <div id="swipe-down-bar"></div>
       <div className="flex" id="title-wrapper">
         <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
-        <div id="close-icon-wrapper">
-          <IoClose
-            className="close-icon"
-            onClick={() => {
-              const pageOverlay = document.getElementById('page-overlay')
-              if (pageOverlay) {
-                pageOverlay.classList.remove('active')
-              }
-              onClose()
-              hideCard()
-            }}
-          />
-        </div>
       </div>
       <div id="relative-wrapper">
         <div id="content">
@@ -132,7 +137,7 @@ export default function BottomCard({
       {(hasSubmitButton || hasDelete) && (
         <div className={`flex buttons`}>
           {hasSubmitButton && (
-            <button className={`button card-button submit ${submitButtonColor}`} onClick={onSubmit}>
+            <button className={`button card-button submit ${hasDelete ? 'ml-15 mr-15' : ''} ${submitButtonColor}`} onClick={onSubmit}>
               {submitText} {submitIcon}
             </button>
           )}

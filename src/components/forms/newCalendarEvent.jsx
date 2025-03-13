@@ -330,7 +330,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         submitIcon={<FaRegCalendarCheck />}
         showCard={showCard}
         wrapperClass="new-calendar-event"
-        title={'Add New Event'}>
+        title={'Create New Event'}>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           <Fade direction={'up'} duration={600} delay={200} triggerOnce={true}>
             {/* Event Length */}

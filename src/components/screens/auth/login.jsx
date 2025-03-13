@@ -1,7 +1,7 @@
 // Path: src\components\screens\auth\login.jsx
 import { initializeApp } from 'firebase/app'
 import { browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
 import { GrInstallOption } from 'react-icons/gr'
 import { MdOutlinePassword } from 'react-icons/md'
@@ -194,12 +194,12 @@ export default function Login() {
             onClick={() => {
               setState({ ...state, menuIsOpen: false, currentScreen: ScreenNames.installApp })
             }}>
-            Install App <GrInstallOption className={'fs-18 ml-10'} />
+            Install <GrInstallOption className={'fs-16 ml-10'} />
           </p>
 
           {/* FORM/INPUTS */}
           <div className="flex form-container">
-            <div className="form w-80">
+            <div className="form">
               {/* EMAIL */}
               <InputWrapper
                 inputClasses="email login-input"
@@ -222,30 +222,33 @@ export default function Login() {
                 {viewPassword && <PiEyeClosedDuotone onClick={() => setViewPassword(false)} className={'blue eye-icon ml-10'} />}
               </div>
 
-              {/* REMEMBER ME */}
-              <CheckboxGroup
-                elClass={'light'}
-                onCheck={togglePersistence}
-                checkboxArray={Manager.buildCheckboxGroup({
-                  customLabelArray: ['Remember Me'],
-                })}
-                skipNameFormatting={true}
-              />
+              <div id="below-inputs-wrapper" className="flex space-between align-center">
+                {/* REMEMBER ME */}
+                <CheckboxGroup
+                  elClass={'light'}
+                  onCheck={togglePersistence}
+                  checkboxArray={Manager.buildCheckboxGroup({
+                    customLabelArray: ['Remember Me'],
+                  })}
+                  skipNameFormatting={true}
+                />
+                {/* FORGOT PASSWORD BUTTON */}
+                <p id="forgot-password-link" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
+                  Forgot Password
+                </p>
+              </div>
 
               <Spacer height={10} />
-              <div className="flex w-100 mb-15 gap buttons">
-                {recaptchaVerified && (
-                  <button className="button default green" onClick={signIn}>
-                    Login <SlLogin />
-                  </button>
-                )}
-                <button className="button default light" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
-                  {/*Sign Up <IoPersonAddOutline />*/}
-                  Sign Up
+
+              {/* LOGIN BUTTONS */}
+              {recaptchaVerified && (
+                <button className="button default green" id="login-button" onClick={signIn}>
+                  Login
                 </button>
-              </div>
+              )}
             </div>
 
+            {/* RECAPTCHA */}
             <ReCAPTCHA
               ref={recaptchaRef}
               sitekey={recaptchaSitekey}
@@ -256,9 +259,8 @@ export default function Login() {
               }}
             />
 
-            {/* FORGOT PASSWORD BUTTON */}
-            <p id="forgot-password-link" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
-              Reset Password <MdOutlinePassword />
+            <p id="sign-up-link" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
+              Don&#39;t have an account? <span>Sign Up</span>
             </p>
           </div>
         </Fade>

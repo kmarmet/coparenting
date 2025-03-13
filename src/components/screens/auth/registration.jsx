@@ -26,41 +26,33 @@ export default function Registration() {
 
   // SUBMIT
   const submit = async () => {
-    const validForm = await formIsValid() // Check for existing account
-
-    if (validForm) {
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(async (userCredential) => {
-          try {
-            // Signed up successfully
-            const user = userCredential.user
-            console.log('Signed up as:', user.email)
-            AlertManager.successAlert(`Welcome aboard!`)
-            setState({ ...state, currentScreen: ScreenNames.login })
-          } catch (error) {
-            LogManager.log(error.message, LogManager.logTypes.error)
-          }
-        })
-        .catch((error) => {
-          console.error('Sign up error:', error.message)
-          if (Manager.contains(error.message, 'email-already-in-use')) {
-            AlertManager.throwError(`Account already exists. If you meant to login, ${DomManager.tapOrClick()} Back to Login below`)
-            return false
-          }
-        })
-    }
-  }
-
-  const formIsValid = async () => {
-    let isValid = true
-
     if (!validator.isEmail(email)) {
       AlertManager.throwError('Email address is not valid')
-      isValid = false
       return false
     }
-
-    return isValid
+    if (!Manager.isValid(confirmedPassword) || !Manager.isValid(password)) {
+      AlertManager.throwError('Please enter a password')
+      return false
+    }
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        try {
+          // Signed up successfully
+          const user = userCredential.user
+          console.log('Signed up as:', user.email)
+          AlertManager.successAlert(`Welcome aboard!`)
+          setState({ ...state, currentScreen: ScreenNames.login })
+        } catch (error) {
+          LogManager.log(error.message, LogManager.logTypes.error)
+        }
+      })
+      .catch((error) => {
+        console.error('Sign up error:', error.message)
+        if (Manager.contains(error.message, 'email-already-in-use')) {
+          AlertManager.throwError(`Account already exists. If you meant to login, ${DomManager.tapOrClick()} Back to Login below`)
+          return false
+        }
+      })
   }
 
   useEffect(() => {
@@ -120,6 +112,14 @@ export default function Registration() {
           <button
             className="button mt-15 default green"
             onClick={() => {
+              if (!validator.isEmail(email)) {
+                AlertManager.throwError('Email address is not valid')
+                return false
+              }
+              if (!Manager.isValid(confirmedPassword) || !Manager.isValid(password)) {
+                AlertManager.throwError('Please enter a password')
+                return false
+              }
               AlertManager.confirmAlert('Are the details you provided correct?', 'Yes', 'No', submit)
             }}>
             Submit

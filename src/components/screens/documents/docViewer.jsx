@@ -379,7 +379,7 @@ export default function DocViewer() {
   }
 
   const renameFile = async () => {
-    if (newFileName.length > 0) {
+    if (Manager.isValid(newFileName, true)) {
       const newName = `${newFileName}.${StringManager.getFileExtension(docToView.name).toLowerCase()}`
       const childKey = await DB.getSnapshotKey(`${DB.tables.documents}/${currentUser?.key}`, docToView, 'id')
 
@@ -389,6 +389,9 @@ export default function DocViewer() {
       }
       setShowRenameFile(false)
       setNewFileName('')
+    } else {
+      AlertManager.throwError('Please enter a new document name')
+      return false
     }
   }
 

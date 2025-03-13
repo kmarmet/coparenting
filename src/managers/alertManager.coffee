@@ -42,7 +42,7 @@ AlertManager = {
                 animate__faster
               """
 
-   confirmAlert : (title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm, onDeny) ->
+  confirmAlert : (title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm, onDeny) ->
     Swal.fire
       showClass:
         popup: """
@@ -69,7 +69,7 @@ AlertManager = {
         if onDeny then onDeny(result)
       return result
 
-   oneButtonAlert : (title, subtitle = "", icon ="", onConfirm) ->
+  oneButtonAlert : (title, subtitle = "", icon ="", onConfirm) ->
     Swal.fire
       showClass:
         popup: """
@@ -95,7 +95,7 @@ AlertManager = {
       if result.isConfirmed
         if onConfirm then onConfirm(result)
 
-   inputAlert : (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "text") ->
+  inputAlert : (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "text") ->
     Swal.fire
       title: title
       text: text

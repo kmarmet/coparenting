@@ -119,7 +119,9 @@ export default function ExpenseTracker() {
         activeExpense.category
       )
       setShowDetails(false)
-      MyConfetti.fire()
+      if (updatedStatus === 'paid') {
+        MyConfetti.fire()
+      }
     })
   }
 

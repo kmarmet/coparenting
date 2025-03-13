@@ -1,9 +1,6 @@
 @import './palette';
 @import './_variables.scss';
 @import './_mixins.scss';
-* {
-  @include fontType;
-}
 .swal2-icon-error {
   background: #b12643;
   #swal2-title {
@@ -21,6 +18,7 @@ div {
   &:where(.swal2-icon) {
     * {
       user-select: none !important;
+      outline: none !important;
     }
     &.swal2-error {
       color: white !important;
@@ -43,19 +41,15 @@ div {
   &:where(.swal2-container) {
     button {
       &:where(.swal2-styled):where(.swal2-confirm) {
+        @include fontType;
         background-color: $green !important;
         color: white !important;
-        width: 140px !important;
-        @include fontType;
+        margin-bottom: 8px !important;
       }
       &:where(.swal2-styled):where(.swal2-deny) {
+        @include fontType;
         background-color: #e7e5e4 !important;
         color: #68615c !important;
-        width: 140px !important;
-        @include fontType;
-        &.blue {
-          background-color: $buttonGrey !important;
-        }
       }
     }
   }
@@ -65,37 +59,65 @@ div {
   * {
     @include fontType;
   }
-  //  background-color: $green !important;
   &.red {
     background-color: $red !important;
-  }
-  &.blue {
-    background-color: $buttonGrey !important;
   }
 }
 
 .swal2-title {
   @include fontType;
-  font-size: 20px;
-  font-weight: $fwMedium;
+  font-size: 18px;
+  font-weight: $fwMediumBold;
   line-height: 1.3;
+  margin: 0 !important;
+  padding: 0 20px 0 0;
+  text-align: left;
 }
 
 .swal2-icon {
   transform: scale(0.9);
+  display: none !important;
 }
 
 .swal2-popup {
   border-radius: $bigBorderRadius;
   @include bestShadow;
+  padding: 20px !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+
+  &.swal2-icon-success {
+    .swal2-html-container {
+      @include fontType;
+      font-size: 18px;
+      padding: 0;
+      margin: 0;
+      line-height: 1;
+      text-align: center;
+      width: 100%;
+      color: $green;
+    }
+  }
 }
 
 .swal2-backdrop-show {
-  background: rgba(0, 0, 0, 0.6) !important;
+  background: rgba(0, 0, 0, 0.72) !important;
+  backdrop-filter: blur(2px);
 }
 
 .swal2-actions {
+  margin: 0 0 0 auto !important;
+  gap: 8px 0 !important;
+  justify-content: flex-end !important;
+
   button {
-    border-radius: 8px !important;
+    @include fontType;
+    width: 90px !important;
+    border-radius: $borderRadius !important;
+    font-weight: $fwMediumBold;
+    text-align: center;
+    margin: 0 !important;
+    font-size: 13px;
   }
 }

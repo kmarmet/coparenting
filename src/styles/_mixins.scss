@@ -73,9 +73,9 @@
   margin-bottom: 5px;
   text-align: center;
   opacity: 1;
-  color: $mainBlue;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 600;
+  color: #262626;
+  font-family: 'Inter', sans-serif;
+  font-weight: $fwRegular;
   font-style: normal;
 
   &.active {
@@ -195,13 +195,13 @@
 }
 
 @mixin fontType() {
-  font-weight: 500;
+  font-weight: $fwRegular;
   font-size: 16px;
+  letter-spacing: 0.4px;
   line-height: 1.4;
   font-optical-sizing: auto;
   font-style: normal;
-  letter-spacing: 0.2px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 @mixin lengthSelection {
@@ -418,7 +418,7 @@
 }
 
 @mixin defaultButton() {
-  border-radius: 11px;
+  border-radius: $borderRadius;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1164,11 +1164,8 @@
         width: 100%;
 
         #toggle-button {
-          font-weight: $fwRegular;
-
-          &.active {
-            font-weight: $fwRegular;
-          }
+          font-weight: $fwMedium;
+          color: $primaryText;
         }
 
         #actions-button {
@@ -1213,6 +1210,14 @@
         }
       }
     }
+
+    &.Mui-disabled {
+      .MuiAccordionSummary-root {
+        #toggle-button {
+          font-weight: $fwLight !important;
+        }
+      }
+    }
   }
 }
 
@@ -1245,10 +1250,9 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: 15px;
   margin-bottom: 15px;
-  width: auto;
-  border-radius: 50px;
+  width: 100%;
+  gap: 10px;
 
   * {
     line-height: 1;
@@ -1259,25 +1263,20 @@
   .view {
     text-align: center;
     opacity: 0.65;
-    font-weight: $fwMedium;
+    font-weight: $fwRegular;
     color: #4b4b4b;
-    font-size: 13px;
-    width: 50%;
+    font-size: 14px;
     text-transform: uppercase;
-    padding: 5px;
     @include hover;
+    width: 100%;
 
     &.active {
-      padding: 7px 12px;
-      font-size: 12px;
-      border: 1px solid #525252;
-      font-weight: $fwMediumBold;
+      font-weight: $fwMedium;
       line-height: 1;
       display: flex;
-      color: #525252;
+      color: $accentBlue;
       justify-content: center;
       align-items: center;
-      border-radius: $borderRadius;
       opacity: 1;
     }
 
@@ -1543,11 +1542,7 @@
     font-weight: $fwRegular;
     margin: 0;
     line-height: 1.3;
-
-    &.bold {
-      font-weight: $fwMedium;
-      opacity: 0.9;
-    }
+    color: $primaryText;
   }
 }
 
@@ -1559,7 +1554,7 @@
   align-items: flex-start;
   width: 100%;
   margin-bottom: 8px;
-  height: 45px;
+  height: 50px;
   padding-top: 10px;
   border: 1px solid #e0e0e0;
   border-radius: $borderRadius;
@@ -1618,9 +1613,8 @@
     }
 
     label {
-      color: black;
-      font-weight: $fwMedium;
-      opacity: 0.75;
+      color: $subtitleText;
+      font-weight: $fwMediumBold;
       text-transform: uppercase;
       font-size: 12px;
       transition: all 0.3s ease-in-out;
@@ -1639,25 +1633,25 @@
   textarea {
     width: 100%;
     outline: 0;
-    font-weight: 400;
     transition: all 0.2s ease-in-out;
     max-height: unset;
     caret-color: black;
     display: flex;
     align-items: flex-end;
-    padding: 0 10px;
     justify-content: space-between;
     position: absolute;
     top: 20px;
     border: 0;
     font-size: 15px;
+    padding: 5px 10px;
     background: white;
+    font-weight: $fwLight;
     &::placeholder {
       opacity: 0;
     }
 
     &[type='date'] {
-      padding: 0 8px;
+      padding: 5px 8px;
       border-radius: $borderRadius;
       height: auto;
       width: 100%;
@@ -1906,7 +1900,7 @@
   .checkbox {
     height: 17px;
     width: 17px;
-    border-radius: 50%;
+    border-radius: 4px;
     border: 1px solid #a3a3a3;
     display: flex;
     justify-content: center;
@@ -1921,40 +1915,45 @@
     transition: all 0.2s ease-in-out;
   }
 
+  #label-wrapper {
+    width: 100%;
+    label {
+      font-size: 16px;
+      font-weight: $fwLight;
+      color: #656565;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      align-self: stretch;
+
+      &.asterisk {
+        color: $red;
+      }
+    }
+  }
+
   &.active {
     #label-wrapper {
       label {
         transition: all 0.3s ease-in-out;
         opacity: 1;
-        font-weight: $fwBold;
+        font-weight: $fwRegular;
+        color: $primaryText;
       }
     }
 
     .checkbox {
-      background-color: $green;
+      background-color: $bootstrapBgGreen;
       transition: all 0.3s ease-in-out;
-      border: 1px solid $green;
+      border: 1px solid #22945d;
     }
 
     svg {
-      color: white;
+      color: #22945d;
       position: relative;
       top: 0.5px;
-      transform: scale(0.7);
+      transform: scale(0.65);
       transition: all 0.2s ease-in-out;
-    }
-  }
-
-  #label-wrapper {
-    label {
-      line-height: 1;
-      font-weight: 350;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      align-self: stretch;
-      color: black;
-      opacity: 0.7;
     }
   }
 }
@@ -1968,18 +1967,6 @@
     #checkboxes {
       &#checkboxes {
         height: unset;
-      }
-    }
-  }
-
-  #label-wrapper {
-    width: 100%;
-    label {
-      font-size: 16px;
-      font-weight: $fwMedium;
-
-      &.asterisk {
-        color: $red;
       }
     }
   }
@@ -2608,6 +2595,27 @@
     }
   }
 
+  #swipe-down-bar {
+    width: 80px;
+    height: 2px;
+    background: #a3a3a3;
+    position: relative;
+    top: 10px;
+    margin: 0 auto 15px auto;
+    border-radius: 20px;
+  }
+
+  #close-icon-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    .close-icon {
+      font-size: 20px;
+      color: $subtitleText;
+    }
+  }
+
   #title-wrapper {
     position: sticky;
     top: 0;
@@ -2615,37 +2623,18 @@
     right: 0;
     left: 0;
     width: 100%;
-    padding: 15px 10px 0 15px;
-    margin-bottom: 15px;
+    padding: 15px;
+    margin-bottom: 8px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
 
     #large-title {
       justify-content: center;
-      color: $mainBlue;
-      font-size: 22px;
-      max-width: 87%;
-      line-height: 1.3;
-    }
-
-    #close-icon-wrapper {
-      background: $bootstrapBgRed;
-      height: 22px;
-      width: 22px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-right: 8px;
-
-      .close-icon {
-        transform: scale(0.9);
-        z-index: 1000;
-        position: relative;
-        font-weight: bold;
-        color: $bootstrapRedColor;
-        opacity: 0.6;
-      }
+      color: rgba(0, 0, 0, 0.8);
+      text-align: center;
+      font-weight: $fwBold;
+      font-size: 24px;
+      line-height: 1;
     }
   }
 
@@ -2705,11 +2694,13 @@
             line-height: 1;
             display: flex;
             align-items: center;
+            font-weight: $fwRegular;
           }
 
           span {
             text-align: right;
             font-size: 15px;
+            color: $subtitleText;
 
             &.notes {
               text-align: left;
@@ -2792,6 +2783,10 @@
       border-bottom: 1px solid $lightBorder;
       padding: 12px 0;
       margin-bottom: 0;
+
+      &:first-child {
+        padding-top: 0;
+      }
 
       &.views-wrapper {
         padding: 0;
@@ -2910,15 +2905,15 @@
     }
 
     .card-button {
-      border-radius: $bigBorderRadius;
-      padding: 12px 0;
+      border-radius: 10px;
+      padding: 15px 0;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       z-index: 10000;
       position: relative;
-      width: 80%;
+      width: calc(100% - 30px);
       -ms-transform: none;
       transform: none;
       box-shadow: none;
@@ -2928,17 +2923,19 @@
       justify-self: flex-start;
       margin: 0 auto;
       line-height: 1;
-      font-weight: $fwRegular;
+      font-weight: $fwMediumBold;
+      font-size: 15px;
 
       svg {
         color: white;
         opacity: 1;
-        font-size: 20px;
+        font-size: 18px;
         margin-left: 8px;
         display: flex;
         justify-content: center;
         align-self: center;
         line-height: 1;
+        height: 18px;
       }
 
       &.submit {
@@ -2947,8 +2944,6 @@
         border: 0;
         left: 0;
         color: white;
-        font-weight: $fwMedium;
-        font-size: 17px;
 
         svg {
           color: white;
@@ -3304,14 +3299,6 @@
 
   // FULL MENU
   &.full-menu {
-    #title-wrapper {
-      padding: 15px 20px 5px 25px;
-      margin-bottom: 0;
-
-      #close-icon-wrapper {
-        margin-right: 8px;
-      }
-    }
     &.animate__fadeInUp {
       top: 80px;
     }
@@ -3438,12 +3425,15 @@
   // DOC TIPS
   &.doc-tips-card {
     #label-wrapper {
-      margin-top: 20px;
+      margin-top: 15px;
 
+      &:first-child {
+        margin-top: 0;
+      }
       label {
         font-size: 18px;
-        color: $mainBlue;
-        font-weight: $fwRegular;
+        color: $accentBlue;
+        font-weight: $fwMedium;
       }
     }
 
@@ -3454,10 +3444,8 @@
     .text-highlight {
       color: white;
       background: $mainBlue;
-      font-size: 18px;
       border-radius: 5px;
-      padding: 0 5px;
-      font-weight: $fwBold;
+      padding: 2px 10px;
     }
 
     #toc-button-inline {
@@ -3739,14 +3727,14 @@
     gap: 10px;
     width: 100%;
     margin: 0;
-    padding: 10px 12px 0 12px;
+    //    padding: 10px 12px 0 12px;
 
     .menu-item {
       opacity: 0;
       transform: scale(0);
       transition: all 0.6s ease-in-out;
       background-color: transparent;
-      height: 100px;
+      height: 110px;
       border-radius: $bigBorderRadius;
       padding: 0;
       width: 100%;
@@ -3792,7 +3780,6 @@
 
         &.active {
           background: rgba(85, 127, 255, 0.11);
-          box-shadow: 0 0 12px 0 #2563eb;
         }
       }
       &.transfer-change,
@@ -3860,8 +3847,9 @@
         transition: all 0.6s ease-in-out;
         transform: scale(1);
         opacity: 1;
+
         p {
-          font-weight: $fwRegular;
+          font-weight: $fwLight;
         }
 
         svg {
