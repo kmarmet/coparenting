@@ -29,17 +29,15 @@ import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { RiMoneyDollarCircleFill } from 'react-icons/ri'
-import reactStringReplace from 'react-string-replace'
+import { BsCalendarPlusFill } from 'react-icons/bs'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser, authUser } = state
+  const { theme, currentUser, authUser, refreshKey } = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
   const [searchResults, setSearchResults] = useState([])
   const [holidays, setHolidays] = useState([])
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [selectedDate, setSelectedDate] = useState()
   const [searchQuery, setSearchQuery] = useState('')
   const [eventToEdit, setEventToEdit] = useState(null)
@@ -224,10 +222,12 @@ export default function EventCalendar() {
     setSearchQuery('')
     setShowSearchCard(false)
     getSecuredEvents(moment().format(DateFormats.dateForDb).toString()).then((r) => r)
+    setState({ ...state, refreshKey: Manager.getUid() })
   }
 
   const setHolidaysState = async () => {
-    const holidaysState = await DB.getTable(DB.tables.holidayEvents)
+    let holidaysState = await DB.getTable(DB.tables.holidayEvents)
+    holidaysState = DatasetManager.sortByProperty(holidaysState, 'startDate', 'asc')
     setHolidays(holidaysState)
   }
 
@@ -296,15 +296,29 @@ export default function EventCalendar() {
     }
   }
 
+  // SEARCH
+  const search = async () => {
+    if (searchQuery.length === 0) {
+      AlertManager.throwError('Please enter a search value')
+      return false
+    }
+    const searchResults = allEventsFromDb.filter((x) => x.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1)
+    if (searchResults.length === 0) {
+      AlertManager.throwError('No events found')
+      return false
+    } else {
+      setSearchResults(searchResults)
+      setEventsOfActiveDay(searchResults)
+      setShowSearchCard(false)
+      setState({ ...state, refreshKey: Manager.getUid() })
+    }
+  }
+
   useEffect(() => {
     redirectChildIfNecessary().then((r) => r)
     // eslint-disable-next-line no-prototype-builtins
     if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
       setLoadingDisabled(true)
-      const appContentWithSidebar = document.getElementById('app-content-with-sidebar')
-      if (appContentWithSidebar) {
-        appContentWithSidebar.classList.add('logged-in')
-      }
       if (!eventsSetOnPageLoad) {
         getSecuredEvents().then((r) => r)
         setEventsSetOnPageLoad(true)
@@ -355,7 +369,7 @@ export default function EventCalendar() {
 
     const monthArrows = document.querySelector('.MuiPickersArrowSwitcher-root')
     const belowCalendarButtons = document.querySelector('.MuiDialogActions-root.MuiDialogActions-spacing')
-    if (monthArrows) {
+    if (monthArrows && DomManager.isMobile()) {
       belowCalendarButtons.append(monthArrows)
     }
   }, [])
@@ -367,7 +381,7 @@ export default function EventCalendar() {
         {/* HOLIDAYS CARD */}
         <BottomCard
           hasSubmitButton={false}
-          className={`${theme} view-holidays`}
+          className={`${theme} view-holidays half`}
           wrapperClass={`view-holidays`}
           onClose={viewAllEvents}
           showCard={showHolidaysCard}
@@ -386,59 +400,18 @@ export default function EventCalendar() {
         <BottomCard
           submitIcon={<LuCalendarSearch />}
           submitText={'Search'}
-          className="form search-card"
+          className="search-card half"
           wrapperClass="search-card"
           title={'Find Events'}
           onClose={viewAllEvents}
           showCard={showSearchCard}
-          onSubmit={() => {
-            if (searchQuery.length === 0) {
-              AlertManager.throwError('Please enter a search value')
-              return false
-            }
-
-            if (!Manager.isValid(searchResults)) {
-              AlertManager.throwError('No results found')
-              return false
-            } else {
-              setEventsOfActiveDay(searchResults)
-              setShowSearchCard(false)
-              setTimeout(() => {
-                const rows = document.querySelectorAll('.event-row')
-
-                if (rows) {
-                  rows[0].scrollIntoView({ behavior: 'smooth' })
-                }
-              }, 400)
-            }
-          }}>
-          <div className={'mb-5 flex form search-card'} id="search-container">
-            <InputWrapper
-              labelText="Enter event name..."
-              refreshKey={refreshKey}
-              inputValue={searchQuery}
-              onChange={async (e) => {
-                const inputValue = e.target.value
-                if (inputValue.length > 3) {
-                  setSearchQuery(inputValue)
-                  let results = []
-                  if (Manager.isValid(allEventsFromDb)) {
-                    results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
-                  }
-                  if (results.length > 0) {
-                    setSearchResults(results)
-                  }
-                } else {
-                  if (inputValue.length === 0) {
-                    setShowSearchCard(false)
-
-                    await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-                    setRefreshKey(Manager.getUid())
-                  }
-                }
-              }}
-            />
-          </div>
+          onSubmit={search}>
+          <InputWrapper
+            labelText="Enter event name..."
+            refreshKey={refreshKey}
+            inputValue={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </BottomCard>
 
         {/* NEW EVENT */}
@@ -484,10 +457,6 @@ export default function EventCalendar() {
         {!showHolidays && !showSearchCard && (
           <div id="below-calendar" className={`${theme} mt-10 flex`}>
             {/* LEGEND BUTTON */}
-            {/*<span className="dot currentUser"></span>*/}
-            {/*<span className="dot coparent"></span>*/}
-            {/*<span className="dot holiday"></span>*/}
-            {/*<span className="dot payday"></span>*/}
             <p id="legend-button" className="animated-button">
               Legend
             </p>
@@ -539,10 +508,10 @@ export default function EventCalendar() {
           {/* DESKTOP LEGEND WRAPPER */}
           <DesktopLegend />
 
+          {/* DESKTOP SIDEBAR */}
           <InputWrapper
             labelText="Find events..."
             refreshKey={refreshKey}
-            placeholder={''}
             inputValue={searchQuery}
             onChange={async (e) => {
               const inputValue = e.target.value
@@ -559,7 +528,6 @@ export default function EventCalendar() {
                 if (inputValue.length === 0) {
                   setShowSearchCard(false)
                   await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-                  setRefreshKey(Manager.getUid())
                   e.target.value = ''
                   setSearchQuery('')
                 }
@@ -575,7 +543,7 @@ export default function EventCalendar() {
           {!showNewEventCard && !showSearchCard && !showEditCard && !showHolidaysCard && !showHolidays && (
             <NavBar navbarClass={'calendar search-results'} addOrClose={searchResults.length === 0 ? 'add' : 'close'}>
               {searchResults.length === 0 && (
-                <PiCalendarPlusDuotone className={'new-event'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
+                <BsCalendarPlusFill className={'new-event-icon'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
               )}
               {searchResults.length > 0 && (
                 <CgClose

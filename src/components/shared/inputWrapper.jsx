@@ -49,7 +49,7 @@ function InputWrapper({
             value={defaultValue}
             element={inputType}
             minLength={2}
-            placeholder={labelText}
+            // placeholder={Manager.isValid(placeholder) ? placeholder : ''}
             className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
             onChange={onChange}
             debounceTimeout={isDebounced ? (customDebounceDelay ? customDebounceDelay : DebounceLengths.long) : 0}

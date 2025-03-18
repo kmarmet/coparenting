@@ -24,6 +24,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Spacer from '../shared/spacer'
+import { BiSolidImageAdd } from 'react-icons/bi'
 
 export default function Memories() {
   const { state, setState } = useContext(globalState)
@@ -62,19 +63,17 @@ export default function Memories() {
     }
   }
 
-  const deleteMemory = async (path, record, deleteButton) => {
-    document.querySelectorAll('.memory-image').forEach((memoryImage) => memoryImage.classList.remove('active'))
-    const imageName = FirebaseStorage.getImageNameFromUrl(path)
-    const imageToRemove = deleteButton.closest('.memory').querySelector('#memory-image-wrapper')
+  const deleteMemory = async (firebaseImagePath, record, deleteButton) => {
+    const imageName = FirebaseStorage.getImageNameFromUrl(firebaseImagePath)
+    const imageToRemove = deleteButton.closest('.memory')
     const deleteButtonParent = deleteButton.parentNode
 
     if (Manager.isValid(imageToRemove) && Manager.isValid(deleteButtonParent)) {
-      deleteButtonParent.remove()
-      imageToRemove.remove()
+      // imageToRemove.remove()
     }
 
     // Current user is record owner
-    if (record.ownerKey === currentUser?.key) {
+    if (record?.ownerKey === currentUser?.key) {
       // Delete from Firebase Realtime DB
       await DB.deleteMemory(currentUser?.key, record).then(async () => {
         // Delete from Firebase Storage
@@ -124,7 +123,6 @@ export default function Memories() {
           <p id="happy-subtitle" className={`${theme}`}>
             Share photos of unforgettable memories that deserve to be seen! <IoHeart className={'heart'} />
           </p>
-          <Spacer height={10} />
           <Accordion expanded={showDisclaimer}>
             <AccordionSummary>
               <p id="disclaimer-header-button" onClick={() => setShowDisclaimer(!showDisclaimer)}>
@@ -143,8 +141,8 @@ export default function Memories() {
           {memories && memories.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories available'} />}
 
           {/* GALLERY */}
-          <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
-            <Fade direction={'up'} duration={1000} className={'memories-fade-wrapper'} triggerOnce={true}>
+          <Fade direction={'up'} duration={1000} className={'memories-fade-wrapper'} triggerOnce={true}>
+            <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
               {Manager.isValid(memories) &&
                 memories.map((imgObj, index) => {
                   return (
@@ -177,14 +175,14 @@ export default function Memories() {
                     </div>
                   )
                 })}
-            </Fade>
-          </LightGallery>
+            </LightGallery>
+          </Fade>
         </Fade>
       </div>
 
       {!showNewMemoryCard && (
         <NavBar navbarClass={'child-info'}>
-          <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />
+          <BiSolidImageAdd onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />
         </NavBar>
       )}
     </>

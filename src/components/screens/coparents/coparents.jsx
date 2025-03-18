@@ -104,13 +104,6 @@ export default function Coparents() {
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
-      {/* ACTIONS BUTTON */}
-      {showActions ? (
-        <IoClose id={'actions-button'} onClick={() => setShowActions(false)} />
-      ) : (
-        <HiOutlineDotsVertical id={'actions-button'} onClick={() => setShowActions(true)} />
-      )}
-
       <Actions show={showActions} shouldHide={showNewCoparentFormCard || showInvitationForm || showCustomInfoCard}>
         <div className="action-items">
           <div

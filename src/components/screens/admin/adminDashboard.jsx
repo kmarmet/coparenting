@@ -14,6 +14,8 @@ import CheckboxGroup from '../../shared/checkboxGroup'
 import DateManager from '/src/managers/dateManager'
 import NavBar from '/src/components/navBar'
 import AlertManager from '/src/managers/alertManager'
+import InputWrapper from '../../shared/inputWrapper'
+import Spacer from '../../shared/spacer'
 
 export default function AdminDashboard() {
   const { state, setState, currentUser } = useContext(globalState)
@@ -21,7 +23,6 @@ export default function AdminDashboard() {
   const [chatRequests, setChatRequests] = useState([])
   const [getUserEmail, setGetUserEmail] = useState('')
   const [userToDisplayPhone, setUserToDisplayPhone] = useState(null)
-  const [getRecordsEvents, setGetRecordsEvents] = useState([])
   const [getRecordsTable, setGetRecordsTable] = useState('')
   const [getRecordsSearchValue, setGetRecordsSearchValue] = useState('')
   const [tableName, setTableName] = useState(DB.tables.calendarEvents)
@@ -171,7 +172,7 @@ export default function AdminDashboard() {
   }
 
   const getTextBeltCount = async () => {
-    return fetch('https://textbelt.com/text', {
+    fetch('https://textbelt.com/text', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
@@ -183,26 +184,27 @@ export default function AdminDashboard() {
       }),
     })
       .then((response) => {
+        console.log(response)
         return response.json()
       })
       .then((data) => {
         const { quotaRemaining } = data
+        AlertManager.successAlert(`Text Quota Remaining: ${quotaRemaining}`)
         setRemainingTextBeltTexts(quotaRemaining)
-      })
-      .catch((error) => {
-        AlertManager.throwError(error.message)
       })
   }
 
   return (
     <div id="admin-dashboard-wrapper" className="page-container form">
       <p className="screen-title">Admin</p>
+      <Spacer height={10} />
       <div className="flex grid gap-10">
         {/* Get Database Record */}
         <div className="tool-box">
           <p className="box-title">Get Records</p>
           <CheckboxGroup checkboxLabels={['Calendar', 'Expenses', 'Users']} onCheck={handleGetRecordTypeSelection} />
-          <input type="text" className="mb-10" onChange={(e) => setGetRecordsSearchValue(e.target.value)} />
+
+          <InputWrapper labelText={'Get Records'} onChange={(e) => setGetRecordsSearchValue(e.target.value)} />
           <div className="buttons flex">
             <button className="button center" onClick={appendGetRecordsCode}>
               Return Records
@@ -237,7 +239,6 @@ export default function AdminDashboard() {
         {/* TEXTBELT */}
         <div className="tool-box">
           <p className="box-title">TextBelt</p>
-          <p className="center-text">{remainingTextBeltTexts}</p>
           <div className="buttons">
             <button className="button center" onClick={getTextBeltCount}>
               Get Remaining Texts Count
@@ -290,61 +291,6 @@ export default function AdminDashboard() {
               Remove
             </button>
           </div>
-        </div>
-
-        {/* CHAT RECOVERY SIGNATURE IMAGE/TIMESTAMP */}
-        <div className="tool-box">
-          <p className="box-title">Chat Recovery</p>
-          <input type="email" placeholder="User's Email Address" onChange={(e) => setChatRecoveryRequestEmail(e.target.value)} />
-          <div className="buttons flex mt-10">
-            <button className="button  center" onClick={getChatRecoveryRequest}>
-              Get Chat Requests
-            </button>
-          </div>
-          {Manager.isValid(chatRequests) &&
-            chatRequests.map((request, index) => {
-              return (
-                <div key={index} className="data-ui">
-                  <p>
-                    <b className="prop">Created by:</b> {request.createdBy}
-                  </p>
-                  <p>
-                    <b className="prop">Timestamp:</b> {moment(request.timestamp, DateFormats.fullDatetime).format(DateFormats.readableDatetime)}
-                  </p>
-                  <a className="mt-15" href={request.signatureImageUrl} target="_blank">
-                    Go to Signature Image
-                  </a>
-                  <p className="mt-15">
-                    <b className="prop">Members</b>
-                  </p>
-                  <div className="data-subset">
-                    {Manager.isValid(request.members) &&
-                      request.members.map((member, memberIndex) => {
-                        return (
-                          <div key={memberIndex}>
-                            <div className="chat-recovery-request-member">
-                              <p>
-                                <b className="subset-prop">User:</b> {member.name}
-                              </p>
-                              <p>
-                                <b className="subset-prop">User Phone:</b> {member.phone}
-                              </p>
-                            </div>
-                          </div>
-                        )
-                      })}
-                    <buttons className="flex buttons">
-                      <button className="red" onClick={() => deleteChatRecoveryRequest(request)}>
-                        Delete <span className="material-icons-round">remove</span>
-                      </button>
-                      <button className="chat-recovery-clipboard-button" data-clipboard-target=".data-ui">
-                        <span className="material-icons-round">content_copy</span>
-                      </button>
-                    </buttons>
-                  </div>
-                </div>
-              )
-            })}
         </div>
       </div>
       <NavBar navbarClass={'visitation no-add-new-button'}></NavBar>

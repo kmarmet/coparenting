@@ -2,9 +2,8 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
-import { PiBellDuotone, PiCalendarDotsDuotone, PiChatsCircleDuotone } from 'react-icons/pi'
+import { PiBellDuotone, PiCalendarDotsDuotone, PiChatsCircleDuotone, PiIdentificationCardDuotone } from 'react-icons/pi'
 import { TbGridDots, TbPhotoHeart } from 'react-icons/tb'
-import { BiFace } from 'react-icons/bi'
 import DomManager from '../managers/domManager'
 import { Fade } from 'react-awesome-reveal'
 
@@ -70,7 +69,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
                 <div
                   onClick={() => changeCurrentScreen(ScreenNames.childInfo)}
                   className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>
-                  <BiFace className={'child-info'} />
+                  <PiIdentificationCardDuotone className={'child-info'} />
                 </div>
               )}
 

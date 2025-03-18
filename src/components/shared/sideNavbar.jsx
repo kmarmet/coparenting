@@ -16,6 +16,7 @@ import {
   PiSignOutDuotone,
   PiSunDuotone,
   PiSwapDuotone,
+  PiIdentificationCardFill,
   PiToolboxDuotone,
 } from 'react-icons/pi'
 import { RxActivityLog } from 'react-icons/rx'
@@ -151,7 +152,7 @@ export default function SideNavbar() {
               <div
                 className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
                 onClick={() => changeCurrentScreen(ScreenNames.childInfo)}>
-                <BiFace />
+                <PiIdentificationCardFill />
                 <p>Child Info</p>
               </div>
               {/* COPARENTS */}

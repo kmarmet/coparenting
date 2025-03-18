@@ -437,7 +437,7 @@ export default function DocViewer() {
   }, [])
 
   return (
-    <div className="doc-viewer-container">
+    <>
       {/* SEARCH CARD */}
       <BottomCard
         wrapperClass="doc-search-card"
@@ -585,15 +585,6 @@ export default function DocViewer() {
         </div>
       </Actions>
 
-      {/* MENU ICON */}
-      <div className={`${sideMenuIsOpen ? 'close' : ''} action-item menu-icon`}>
-        {sideMenuIsOpen ? (
-          <IoClose className={'menu-icon close'} onClick={() => setSideMenuIsOpen(false)} />
-        ) : (
-          <IoMenuOutline className={'menu-icon'} onClick={() => setSideMenuIsOpen(true)} />
-        )}
-      </div>
-
       {/* PAGE CONTAINER / TEXT */}
       <div id="documents-container" className={`${theme} page-container form documents`}>
         <p className="screen-title">
@@ -617,6 +608,6 @@ export default function DocViewer() {
           )}
         </>
       )}
-    </div>
+    </>
   )
 }

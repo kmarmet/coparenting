@@ -619,7 +619,7 @@
 
             #archive-wrapper,
             #mute-wrapper {
-              @include transformHover;
+              @include hover;
             }
 
             span {
@@ -635,7 +635,7 @@
           #close-thread-actions-icon {
             color: $darkText;
             opacity: 0.7;
-            @include transformHover;
+            @include hover;
           }
 
           #user-initial-wrapper {

@@ -32,14 +32,13 @@ export default function Checklist({ fromOrTo }) {
   }
 
   const deleteItem = async (el) => {
-    console.log(true)
     const element = el.currentTarget
     const checklistItemWrapper = element.closest('.checklist-item-row')
     const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
     const path = `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`
     const childChecklists = await DB.getTable(path)
     const activeChecklist = childChecklists.filter((x) => x.fromOrTo === fromOrTo)[0]
-    console.log(activeChecklist)
+
     if (activeChecklist) {
       const items = activeChecklist.checklistItems
       const text = checklistItemWrapper.textContent.toLowerCase()
@@ -98,7 +97,7 @@ export default function Checklist({ fromOrTo }) {
         <AccordionSummary onClick={() => setShowChecklist(!showChecklist)} className={'header checklist'}>
           <PiListChecksFill className={`${fromOrTo} svg`} />
           <p id="toggle-button" className={showChecklist ? 'active' : ''}>
-            Transfer Checklist<span className="smaller-text">({fromOrTo} Co-Parent)</span>
+            Transfer Checklist<span className="smaller-text">({fromOrTo})</span>
             {showChecklist ? <FaMinus className={`plus-minus ${fromOrTo}`} /> : <FaPlus className={`plus-minus ${fromOrTo}`} />}
           </p>
         </AccordionSummary>

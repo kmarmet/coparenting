@@ -79,6 +79,12 @@ div {
   display: none !important;
 }
 
+div {
+  &:where(.swal2-container) {
+    height: 100vh !important;
+  }
+}
+
 .swal2-popup {
   border-radius: $bigBorderRadius;
   @include bestShadow;
@@ -86,16 +92,39 @@ div {
   margin: 0 !important;
   display: flex !important;
   align-items: center !important;
+  animation-duration: 0.8s !important;
 
+  @media screen and (min-width: 800px) {
+    flex-wrap: wrap;
+
+    * {
+      text-align: center !important;
+    }
+
+    .swal2-title {
+      margin: 0 auto !important;
+    }
+
+    .swal2-actions {
+      gap: 8px !important;
+    }
+  }
+
+  #swal2-input {
+    width: 100%;
+  }
+
+  .swal2-html-container {
+    @include fontType;
+    font-size: 18px;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    text-align: center;
+    width: 100%;
+  }
   &.swal2-icon-success {
     .swal2-html-container {
-      @include fontType;
-      font-size: 18px;
-      padding: 0;
-      margin: 0;
-      line-height: 1;
-      text-align: center;
-      width: 100%;
       color: $green;
     }
   }
@@ -103,7 +132,8 @@ div {
 
 .swal2-backdrop-show {
   background: rgba(0, 0, 0, 0.72) !important;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(3px);
+  transition: all 0.3s ease-in-out !important;
 }
 
 .swal2-actions {
@@ -113,7 +143,7 @@ div {
 
   button {
     @include fontType;
-    width: 90px !important;
+    width: 100px !important;
     border-radius: $borderRadius !important;
     font-weight: $fwMediumBold;
     text-align: center;

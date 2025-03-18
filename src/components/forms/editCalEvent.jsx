@@ -4,19 +4,16 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import { PiNotepadDuotone } from 'react-icons/pi'
+import { PiBellSimpleRingingDuotone, PiCalendarDotDuotone, PiGlobeDuotone, PiNotepadDuotone, PiUserCircleDuotone } from 'react-icons/pi'
+import { BsCalendar2CheckFill } from 'react-icons/bs'
 
-import { MdLocalPhone } from 'react-icons/md'
+import { MdEventRepeat, MdLocalPhone, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
 import React, { useContext, useEffect, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
 import { BiSolidNavigation } from 'react-icons/bi'
-import { CgDetailsMore } from 'react-icons/cg'
 import { FaChildren } from 'react-icons/fa6'
 import { IoTimeOutline } from 'react-icons/io5'
 import { LiaMapMarkedAltSolid } from 'react-icons/lia'
-import { LuCalendarCheck } from 'react-icons/lu'
-import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
-import { PiBellSimpleRingingDuotone, PiCalendarDotDuotone, PiGlobeDuotone, PiUserCircleDuotone } from 'react-icons/pi'
 import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import globalState from '../../context'
@@ -474,10 +471,10 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
           AlertManager.successAlert('Event Deleted')
         })
       }}
-      hasDelete={view === 'Edit' && currentUser?.key === event?.ownerKey}
+      hasDelete={currentUser?.key === event?.ownerKey}
       onSubmit={currentUser?.key === event?.ownerKey ? submit : nonOwnerSubmit}
       submitText={'Update'}
-      submitIcon={<LuCalendarCheck />}
+      submitIcon={<BsCalendar2CheckFill className={'edit-calendar-icon'} />}
       hasSubmitButton={view === 'Edit'}
       onClose={async () => {
         await resetForm()
@@ -624,9 +621,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                         <PiNotepadDuotone />
                         Notes
                       </b>
-                      <pre>
-                        <StringAsHtmlElement text={event?.notes} />
-                      </pre>
+                      <StringAsHtmlElement text={event?.notes} />
                     </div>
                   )}
 

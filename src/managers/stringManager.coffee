@@ -34,6 +34,14 @@ StringManager = {
       .replace(/\+1/g, '')
     input
 
+  formatPhoneWithDashes: (phone) ->
+    cleaned = ('' + phone).replace /\D/g, ''
+    match = cleaned.match /^(\d{3})(\d{3})(\d{4})$/
+    if match
+      return "#{match[1]}-#{match[2]}-#{match[3]}"
+    return phone
+
+
   compressString: (string) ->
     # Import the lz-string library dependency
     compressed = lzstring.compress(string)

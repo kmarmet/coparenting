@@ -265,7 +265,7 @@
   .MuiPickersArrowSwitcher-rightArrowIcon,
   .MuiPickersArrowSwitcher-leftArrowIcon {
     transform: scale(0.8);
-    color: $subtitleText;
+    color: $accentBlue;
   }
 
   // DATE RANGE
@@ -385,7 +385,7 @@
 
         &.general {
           svg {
-            color: #f4d03f;
+            color: $mainBlue;
           }
         }
         &.schooling {
@@ -416,8 +416,6 @@
         }
 
         svg {
-          margin-right: 10px;
-
           &.visitation-card {
             font-size: 20px !important;
             color: $lightDarkGrey;
@@ -758,7 +756,9 @@
       margin: 0;
       gap: 8px !important;
       .MuiPickersArrowSwitcher-spacer {
-        display: none !important;
+        @media screen and (max-width: 800px) {
+          display: none !important;
+        }
       }
 
       button {
@@ -794,11 +794,14 @@
   }
 
   .MuiPickersLayout-contentWrapper {
-    width: 380px;
     margin: 0 auto !important;
-    max-height: 330px;
+    width: 380px;
 
-    @media screen and (min-width: 1000px) {
+    @media screen and (max-width: 800px) {
+      max-height: 330px;
+    }
+
+    @media screen and (min-width: 800px) {
       width: auto !important;
       max-width: 500px !important;
       display: block !important;
@@ -1287,6 +1290,31 @@
       justify-content: center;
       margin: 0;
       padding: 10px 15px 0 10px;
+
+      @media screen and (max-width: 400px) {
+        display: flex;
+        width: 100% !important;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        #search-button {
+          grid-area: search-button;
+        }
+        #holidays-button {
+          grid-area: holidays-button;
+        }
+        #legend-button {
+          grid-area: legend-button;
+        }
+
+        .MuiPickersArrowSwitcher-root {
+          grid-area: arrows;
+          width: 100%;
+          margin-left: auto;
+          display: flex;
+          justify-content: center;
+        }
+      }
     }
   }
 

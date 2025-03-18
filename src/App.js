@@ -90,7 +90,7 @@ export default function App() {
   })
 
   // State to include in App.js
-  const { isLoading, currentScreen, menuIsOpen, currentUser, loadingText, theme } = state
+  const { isLoading, currentScreen, menuIsOpen, currentUser, loadingText, theme, authUser } = state
 
   const deleteMenuAnimation = () => {
     document.querySelectorAll('#full-menu .menu-item').forEach((menuItem, i) => {
@@ -218,7 +218,9 @@ export default function App() {
           {!screensToHideBrandbar.includes(currentScreen) && <BrandBar />}
 
           {/* SCREENS */}
-          <div id="app-content-with-sidebar" className={fullscreenScreens.includes(currentScreen) ? 'fullscreen' : ''}>
+          <div
+            id="app-content-with-sidebar"
+            className={`${fullscreenScreens.includes(currentScreen) ? 'fullscreen' : ''} ${Manager.isValid(authUser) ? 'logged-in' : ''} ${currentScreen === ScreenNames.calendar ? 'three-columns' : ''}`}>
             {/* SIDE NAVBAR */}
             {!screensToHideSidebar.includes(currentScreen) && !DomManager.isMobile() && <SideNavbar />}
 

@@ -2,8 +2,18 @@
 
 #external-overrides {
   #child-info-container {
+    #remove-child-button {
+      background: $bootstrapBgRed;
+      color: $bootstrapRedColor;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
     @include accordion;
 
+    .MuiAccordionDetails-root {
+      padding: 0 !important;
+    }
     .MuiAccordionSummary-content {
       #toggle-button {
         width: 100%;
@@ -13,8 +23,20 @@
         margin: 0 !important;
         font-size: 22px !important;
         color: $primaryText;
+
         svg {
           margin-left: auto;
+        }
+
+        .text-flex {
+          display: flex;
+          align-items: flex-start;
+          flex-wrap: wrap;
+          font-size: 22px !important;
+
+          .from-or-to {
+            width: 100%;
+          }
         }
 
         .smaller-text {
@@ -23,7 +45,7 @@
         }
 
         @media screen and (max-width: 400px) {
-          font-size: 16px !important;
+          font-size: 20px !important;
         }
       }
     }
@@ -151,14 +173,16 @@
       @include hover;
 
       .child-name {
+        line-height: 1;
         color: black;
         font-weight: $fwMedium;
         font-size: 20px;
         text-align: center;
         width: 100%;
         display: block;
-        margin-top: 8px;
+        margin: 15px 0 8px 0;
       }
+
       .profile-pic-container {
         height: 125px;
         width: 125px;
@@ -263,14 +287,14 @@
           align-items: center;
           width: 100%;
           justify-content: space-between;
+          max-width: 100%;
           &.input {
             .delete-icon {
               color: $red;
               position: relative;
-              font-size: 26px;
+              font-size: 24px;
               margin-left: 10px;
               bottom: 5px;
-              right: -8px;
             }
           }
         }
@@ -334,8 +358,7 @@
                   font-size: 26px;
                   padding: 0;
                   position: relative;
-                  right: -8px;
-                  margin: 0;
+                  margin: 0 0 0 10px;
                 }
               }
 
@@ -414,7 +437,7 @@
             }
 
             &.general {
-              font-size: 28px;
+              font-size: 32px;
             }
           }
         }

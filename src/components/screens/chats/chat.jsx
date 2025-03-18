@@ -245,7 +245,7 @@ const Chats = () => {
     <>
       <BottomCard
         title={'Search'}
-        className="form conversation-search-card"
+        className="form conversation-search-card half"
         wrapperClass="conversation-search"
         submitText={'Search'}
         submitIcon={<TbMessageCircleSearch />}

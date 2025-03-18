@@ -13,6 +13,7 @@ import {
   PiCarProfileDuotone,
   PiChatsCircleDuotone,
   PiHouseLineDuotone,
+  PiIdentificationCardDuotone,
   PiMoneyWavyDuotone,
   PiMoonStarsDuotone,
   PiSignOutDuotone,
@@ -26,7 +27,6 @@ import { RiArchive2Fill, RiMailSendLine } from 'react-icons/ri'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
 import { BsPeople } from 'react-icons/bs'
 import { MdOutlineManageAccounts } from 'react-icons/md'
-import { BiFace } from 'react-icons/bi'
 import BottomCard from './shared/bottomCard'
 
 export default function FullMenu() {
@@ -167,7 +167,7 @@ export default function FullMenu() {
             <div
               className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.childInfo)}>
-              <BiFace />
+              <PiIdentificationCardDuotone />
               <p>Child Info</p>
             </div>
 

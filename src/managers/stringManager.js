@@ -36,6 +36,15 @@ StringManager = {
     input = input.toString().replace(/-/g, '').replace(/\s+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\+/g, '').replace(/\+1/g, '');
     return input;
   },
+  formatPhoneWithDashes: function(phone) {
+    var cleaned, match;
+    cleaned = ('' + phone).replace(/\D/g, '');
+    match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `${match[1]}-${match[2]}-${match[3]}`;
+    }
+    return phone;
+  },
   compressString: function(string) {
     var compressed;
     // Import the lz-string library dependency

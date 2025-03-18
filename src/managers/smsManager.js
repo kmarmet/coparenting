@@ -67,6 +67,7 @@ export default SmsManager = {
     requestOptions = {
       method: 'POST',
       body: formData,
+      mode: 'no-cors',
       redirect: 'follow'
     };
     try {

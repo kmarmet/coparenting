@@ -71,6 +71,7 @@ const DB_UserScoped = {
     const coparents = []
     if (Manager.isValid(currentUser?.coparents)) {
       for (let coparent of currentUser.coparents) {
+        // Will only get coparents that have a key (account)
         if (coparent?.key) {
           const coparentAccount = await DB.find(DB.tables.users, ['key', coparent?.key], true)
           if (Manager.isValid(coparentAccount)) {

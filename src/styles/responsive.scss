@@ -16,9 +16,6 @@
     }
 
     #bottom-card {
-      max-width: 40vw;
-      width: 40vw;
-
       #relative-wrapper {
         .buttons {
           padding-bottom: 0;
@@ -33,18 +30,6 @@
     }
   }
   @media screen and (min-width: 815px) {
-    #side-navbar {
-      &.calendar {
-        width: 25vw;
-      }
-      &.docViewer {
-        width: 25vw;
-      }
-    }
-    #calendar-sidebar {
-      width: 35vw;
-    }
-
     #bottom-actions {
       left: unset;
       right: 120px;
@@ -131,7 +116,10 @@
       }
       #screen-title-wrapper {
         svg {
-          transform: scale(1.4);
+          transform: scale(1.1);
+          color: $green;
+          @include hover;
+
           &.actions-button {
             transform: scale(1);
             bottom: unset;
@@ -145,15 +133,14 @@
         max-height: calc(100vh - 110px);
         border: 1px solid $desktopBorderColor;
         border-radius: $bigBorderRadius;
+
         &.calendar {
-          width: 100vw;
           overflow-y: auto;
           overflow-x: hidden;
         }
 
         &.documents {
           background: white;
-          width: 50vw;
           max-height: unset;
         }
       }
@@ -166,16 +153,8 @@
 
       // DOCUMENTS
       #documents-container {
-        min-width: 70vw;
-        justify-self: flex-start;
-        .header {
-          min-width: 300px;
-          width: 100%;
-          margin: 20px auto 5px auto;
-
-          .header {
-            margin: 0;
-          }
+        #doc-text {
+          max-width: 100%;
         }
       }
 
@@ -251,6 +230,15 @@
         max-width: 100%;
       }
       #static-calendar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        #calendar-month {
+          width: 100%;
+        }
+
         .MuiYearCalendar-root {
           background: $bestGreyForWhite;
         }
@@ -365,13 +353,16 @@
               text-align: center;
               justify-content: center;
               &.currentUser {
-                color: $green;
+                color: $mainBlue;
               }
               &.coparent {
-                color: $coparentPurple;
+                color: $purple;
               }
               &.standard {
-                color: $orange;
+                color: $holidayOrange;
+              }
+              &.financial {
+                color: $green;
               }
             }
           }
@@ -488,16 +479,23 @@
       #memories-container {
         .light-gallery {
           gap: 20px;
+          display: grid !important;
+          flex-wrap: nowrap;
+          grid-template-columns: repeat(4, 1fr);
+
           .memory {
-            width: 180px;
-            height: 180px;
             background: unset;
             padding: unset;
             border: unset;
+
+            #below-image {
+              margin: 0;
+              justify-content: center;
+            }
           }
 
           .memory-image {
-            @include transformHover;
+            @include hover;
             height: 150px;
             min-height: 0;
             border: 1px solid $bestGreyForWhite;
@@ -539,7 +537,7 @@
       // SHARE WITH WRAPPER
       .share-with-container {
         width: 100%;
-        @media screen and (min-width: 1000px) {
+        @media screen and (min-width: 800px) {
           display: flex;
           justify-content: space-between;
           flex-wrap: wrap;
@@ -569,81 +567,68 @@
 
       // BOTTOM CARD
       #bottom-card {
-        @media screen and (min-width: 800px) {
-          max-width: 50vw;
-          left: unset;
-          right: unset;
-          transform: unset;
+        max-height: 65vh;
+        max-width: 50vw;
+        border-radius: $bigBorderRadius;
+        left: unset;
+        bottom: unset;
+        top: unset;
+        width: 45vw;
+        grid-column: 1;
+        grid-row: 1;
+        place-self: center center;
+
+        &.animate__fadeInUp {
           bottom: unset;
-          @include bestShadow;
-          border-radius: $bigBorderRadius;
-          .buttons {
-            .card-button {
-              &:hover {
-                cursor: pointer;
-                color: white;
-                background: $mainBlue;
-                svg {
-                  color: white;
-                }
-              }
+        }
 
-              &.submit {
-              }
-            }
+        .buttons {
+          padding-bottom: 15px;
+
+          .card-button {
+            @include hover;
           }
+        }
+        #relative-wrapper {
+          overflow-y: scroll;
+
+          #title-wrapper {
+            top: 0;
+          }
+        }
+
+        &.active {
+          min-height: unset;
+          max-height: unset;
+          height: 90vh;
+        }
+
+        &.view-holidays {
+          max-height: 25vh;
+          min-height: 0;
+          button {
+            transform: unset;
+          }
+
           #relative-wrapper {
-            overflow-y: scroll;
-
-            #title-wrapper {
-              top: 0;
-            }
-
-            .buttons {
-              position: fixed;
-              padding: 0;
-              bottom: 0;
-              margin: 0;
-            }
-          }
-
-          &.animate__fadeInUp {
-            bottom: unset;
-          }
-
-          &.active {
-            min-height: unset;
-            max-height: unset;
-            height: 90vh;
-          }
-
-          &.view-holidays {
-            max-height: 25vh;
-            min-height: 0;
-            button {
-              transform: unset;
-            }
-
-            #relative-wrapper {
-              #holiday-card-buttons {
-                margin: 15px 0;
-                @media screen and (min-width: 650px) {
-                  button {
-                    &#view-all-holidays-item {
-                      &:hover {
-                        background: $green;
-                        color: white;
-                      }
+            #holiday-card-buttons {
+              margin: 15px 0;
+              @media screen and (min-width: 650px) {
+                button {
+                  &#view-all-holidays-item {
+                    &:hover {
+                      background: $green;
+                      color: white;
                     }
+                  }
 
-                    &#view-visitation-holidays-item {
-                      &:hover {
-                        background: $mainBlue;
+                  &#view-visitation-holidays-item {
+                    &:hover {
+                      background: $mainBlue;
+                      color: white;
+
+                      &.blue {
                         color: white;
-
-                        &.blue {
-                          color: white;
-                        }
                       }
                     }
                   }
@@ -716,7 +701,7 @@
           .message {
             svg {
               @media screen and (min-width: 650px) {
-                @include transformHover;
+                @include hover;
               }
             }
           }
@@ -827,7 +812,7 @@
 
       // Navbar
       #navbar {
-        @media screen and (min-width: 1000px) {
+        @media screen and (min-width: 800px) {
           width: auto;
           background: transparent;
           position: sticky;
@@ -836,6 +821,7 @@
           padding: 0;
           top: 50%;
           bottom: 50%;
+          display: none;
 
           #menu-items {
             background: transparent;
@@ -872,8 +858,8 @@
           //          max-width: 100vw;
         }
         @media screen and (min-width: 1600px) {
-          width: 50vw;
-          max-width: 50vw;
+          //          width: 50vw;
+          //          max-width: 50vw;
         }
       }
     }

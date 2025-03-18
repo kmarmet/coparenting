@@ -157,7 +157,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
       refreshKey={refreshKey}
       submitText={'Add Memory'}
       submitIcon={<LuImagePlus />}
-      title={'New Memory'}
+      title={'Share Memory'}
       onClose={resetForm}
       showCard={showCard}>
       <div className="new-memory-wrapper">

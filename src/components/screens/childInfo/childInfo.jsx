@@ -19,6 +19,7 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import { IoPersonAddOutline } from 'react-icons/io5'
 import NavBar from '/src/components/navBar'
 import AlertManager from '/src/managers/alertManager'
+import { FaUserPlus } from 'react-icons/fa'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager'
@@ -29,6 +30,7 @@ import Actions from '../../shared/actions'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import { BiFace } from 'react-icons/bi'
 import Checklist from './checklist'
+import { BsTelephoneFill } from 'react-icons/bs'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
@@ -39,7 +41,6 @@ export default function ChildInfo() {
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
-  const [activeChildChecklists, setActiveChildChecklists] = useState(false)
 
   const uploadProfilePic = async () => {
     const imgFiles = document.getElementById('upload-image-input').files
@@ -61,26 +62,38 @@ export default function ChildInfo() {
     })
   }
 
-  const checkForChecklists = async () => {
+  const setDefaultActiveChild = async (forceSet) => {
     const children = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children`)
     if (Manager.isValid(children)) {
       if (!Manager.isValid(activeInfoChild)) {
         setTimeout(() => {
           setState({ ...state, activeInfoChild: children[0] })
         }, 300)
-        setActiveChildChecklists([])
       } else {
-        const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
-        if (childKey) {
-          const checklists = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`)
-          setActiveChildChecklists(checklists)
+        if (forceSet) {
+          setState({ ...state, activeInfoChild: children[0] })
         }
       }
     }
   }
 
+  const deleteChild = async () => {
+    AlertManager.confirmAlert(
+      `Are you sure you want to remove ${StringManager.getFirstNameOnly(activeInfoChild?.general?.name)} from your profile?`,
+      `I'm Sure`,
+      true,
+      async () => {
+        const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
+        if (Manager.isValid(childKey)) {
+          await DB.deleteByPath(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`)
+          setDefaultActiveChild(true).then((r) => r)
+        }
+      }
+    )
+  }
+
   useEffect(() => {
-    checkForChecklists().then((r) => r)
+    setDefaultActiveChild().then((r) => r)
   }, [])
 
   return (
@@ -107,7 +120,7 @@ export default function ChildInfo() {
 
       {/* ACTIONS */}
       {Manager.isValid(currentUser?.children) && (
-        <Actions shouldHide={showInfoCard || showSelectorCard || showNewChecklistCard} onOpen={checkForChecklists}>
+        <Actions shouldHide={showInfoCard || showSelectorCard || showNewChecklistCard} onOpen={setDefaultActiveChild}>
           <div className="action-items">
             {/* CUSTOM INFO */}
             <div
@@ -164,8 +177,9 @@ export default function ChildInfo() {
             />
           )}
 
-          {/* PROFILE PIC */}
+          {/* IMAGE AND ACTIONS */}
           <div id="image-and-actions-wrapper">
+            {/* PROFILE PIC */}
             {Manager.isValid(activeInfoChild?.general?.profilePic) && (
               <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general?.profilePic})` }}>
                 <div className="after">
@@ -174,6 +188,8 @@ export default function ChildInfo() {
                 </div>
               </div>
             )}
+
+            {/* DEFAULT AVATAR */}
             {!Manager.isValid(activeInfoChild?.general?.profilePic, true) && (
               <div className="profile-pic-container no-image">
                 <div className="after">
@@ -182,11 +198,17 @@ export default function ChildInfo() {
                 </div>
               </div>
             )}
+
+            {/* CHILD NAME */}
             <span className="child-name">{StringManager.getFirstNameOnly(activeInfoChild?.general?.name)}</span>
+
+            {/* REMOVE CHILD BUTTON*/}
+            <button id="remove-child-button" className="default red" onClick={deleteChild}>
+              Remove
+            </button>
           </div>
 
           {/* INFO */}
-
           <div id="child-info">
             {activeInfoChild && (
               <div className="form">
@@ -203,7 +225,7 @@ export default function ChildInfo() {
       </div>
       {!showNewChildForm && !showSelectorCard && !showInfoCard && (
         <NavBar navbarClass={'child-info'}>
-          <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />
+          <FaUserPlus onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />
         </NavBar>
       )}
     </>

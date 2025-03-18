@@ -18,6 +18,12 @@ import { TbMessageCirclePlus } from 'react-icons/tb'
 import Spacer from '../../shared/spacer'
 import DB from '../../../database/DB'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import { LuPlus, LuMinus } from 'react-icons/lu'
+import EmailManager from '../../../managers/emailManager'
+import InputWrapper from '../../shared/inputWrapper'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -26,6 +32,10 @@ const Chats = () => {
   const [activeChatKeys, setActiveChatKeys] = useState([])
   const [showNewConvoCard, setShowNewConvoCard] = useState(false)
   const [showNewChatButton, setShowNewChatButton] = useState(true)
+  const [showInfo, setShowInfo] = useState(false)
+  const [showInvitationCard, setShowInvitationCard] = useState(false)
+  const [inviteeName, setInviteeName] = useState('')
+  const [inviteeEmail, setInviteeEmail] = useState('')
   const openMessageThread = async (coparent) => {
     // Check if thread member (coparent) account exists in DB
     let userCoparent = await DB_UserScoped.getCoparentByKey(coparent?.key, currentUser)
@@ -49,6 +59,7 @@ const Chats = () => {
     const activeChats = members.filter((x) => x?.key && x?.key !== currentUser?.key)
     const activeChatKeys = activeChats.map((x) => x?.key)
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+    console.log(validAccounts)
     if (activeChatKeys.length === validAccounts) {
       setShowNewChatButton(false)
     }
@@ -126,6 +137,29 @@ const Chats = () => {
           })}
       </BottomCard>
 
+      {/* INVITATION FORM */}
+      <BottomCard
+        submitText={'Send Invitation'}
+        wrapperClass="invite-coparent-card"
+        title={'Invite Co-Parent or Child'}
+        subtitle="Extend an invitation to a co-parent or child to facilitate the sharing of essential information with them"
+        onClose={() => setShowInvitationCard(false)}
+        showCard={showInvitationCard}
+        onSubmit={() => {
+          if (!Manager.isValid(inviteeEmail) || !Manager.isValid(inviteeName)) {
+            AlertManager.throwError('Please field out all fields')
+            return false
+          }
+          EmailManager.SendEmailToUser(EmailManager.Templates.coparentInvitation, '', inviteeEmail, inviteeName)
+          AlertManager.successAlert('Invitation Sent!')
+          setShowInvitationCard(false)
+        }}
+        hideCard={() => setShowInvitationCard(false)}>
+        <Spacer height={5} />
+        <InputWrapper labelText={'Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
+        <InputWrapper labelText={'Email Address'} required={true} onChange={(e) => setInviteeEmail(e.target.value)} />
+      </BottomCard>
+
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
         {/*<VideoCall />*/}
@@ -139,7 +173,31 @@ const Chats = () => {
             Your space to peacefully chat with your co-parent and pass along any important info they need to know, or to seek clarification on
             information that is unfamiliar to you.
           </p>
-          <Spacer height={5} />
+
+          {/* INFO BUTTON */}
+          <Accordion expanded={showInfo}>
+            <AccordionSummary>
+              <p id="info-button" onClick={() => setShowInfo(!showInfo)}>
+                Info {showInfo ? <LuMinus /> : <LuPlus />}
+              </p>
+            </AccordionSummary>
+            <AccordionDetails>
+              <p>
+                Right now, your account is connected to {currentUser?.coparents?.length} members (children and co-parents). If you’d like to chat with
+                another co-parent or child, go ahead and send them an invite.
+              </p>
+
+              <button
+                className="default"
+                id="send-invite-button"
+                onClick={() => {
+                  setShowInvitationCard(true)
+                  setShowInfo(false)
+                }}>
+                Send Invite
+              </button>
+            </AccordionDetails>
+          </Accordion>
 
           {/* CHAT ROWS */}
           {chats.length > 0 &&

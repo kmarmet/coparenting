@@ -138,7 +138,6 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       setRecipientKey(coparentKey)
     } else {
       setRecipientKey('')
-      console.log('here')
     }
   }
 
@@ -152,218 +151,211 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   }
 
   return (
-    <div className="swap-request-wrapper">
-      <BottomCard
-        submitText={'Send Request'}
-        refreshKey={refreshKey}
-        onSubmit={submit}
-        wrapperClass="new-swap-request"
-        title={'New Swap Request'}
-        showCard={showCard}
-        onClose={resetForm}>
-        <div id="new-swap-request-container" className={`${theme} form`}>
-          {/* DURATION OPTIONS */}
-          <ViewSelector
-            labels={['Day', 'Days', 'Hours']}
-            updateState={(e) => {
-              if (e === 'Day') {
-                changeSwapDuration(SwapDurations.single)
-              }
-              if (e === 'Days') {
-                changeSwapDuration(SwapDurations.multiple)
-              }
-              if (e === 'Hours') {
-                changeSwapDuration(SwapDurations.intra)
-              }
+    <BottomCard
+      submitText={'Send Request'}
+      refreshKey={refreshKey}
+      onSubmit={submit}
+      wrapperClass="new-swap-request"
+      title={'New Swap Request'}
+      showCard={showCard}
+      onClose={resetForm}>
+      <div id="new-swap-request-container" className={`${theme} form`}>
+        {/* DURATION OPTIONS */}
+        <ViewSelector
+          labels={['Day', 'Days', 'Hours']}
+          updateState={(e) => {
+            if (e === 'Day') {
+              changeSwapDuration(SwapDurations.single)
+            }
+            if (e === 'Days') {
+              changeSwapDuration(SwapDurations.multiple)
+            }
+            if (e === 'Hours') {
+              changeSwapDuration(SwapDurations.intra)
+            }
+          }}
+        />
+        {/* FORM */}
+        <div id="request-form" className="form single">
+          {/* SINGLE DATE */}
+          {swapDuration === SwapDurations.single && (
+            <>
+              {!DomManager.isMobile() && (
+                <InputWrapper wrapperClasses="swap-request" inputType={'date'} labelText={'Date'} required={true}>
+                  <MobileDatePicker
+                    onOpen={addThemeToDatePickers}
+                    className={`${theme}`}
+                    onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
+                  />
+                </InputWrapper>
+              )}
+              {DomManager.isMobile() && (
+                <InputWrapper
+                  useNativeDate={true}
+                  wrapperClasses="swap-request"
+                  inputType={'date'}
+                  labelText={'Date'}
+                  required={true}
+                  onChange={(input) => {
+                    const day = input.target.value
+                    setStartDate(moment(day).format(DateFormats.dateForDb))
+                  }}
+                />
+              )}
+            </>
+          )}
+
+          {/* INTRADAY - HOURS */}
+          {swapDuration === SwapDurations.intra && (
+            <>
+              {!DomManager.isMobile() && (
+                <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
+                  <MobileDatePicker
+                    onOpen={addThemeToDatePickers}
+                    className={`${theme}`}
+                    onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
+                  />
+                </InputWrapper>
+              )}
+              {DomManager.isMobile() && (
+                <InputWrapper
+                  onChange={(input) => {
+                    const day = input.target.value
+                    setStartDate(moment(day).format(DateFormats.dateForDb))
+                  }}
+                  useNativeDate={true}
+                  inputType={'date'}
+                  labelText={'Day'}
+                  required={true}
+                />
+              )}
+
+              {/* TIMES */}
+              <div className="flex gap ">
+                <InputWrapper inputType={'date'} labelText={'Start Time'} required={true}>
+                  <MobileTimePicker
+                    minutesStep={5}
+                    slotProps={{
+                      actionBar: {
+                        actions: ['clear', 'accept'],
+                      },
+                    }}
+                    wrapperClasses="swap-request"
+                    onOpen={addThemeToDatePickers}
+                    className={`${theme} from-hour`}
+                    onChange={(e) => setRequestFromHour(moment(e).format('h a'))}
+                  />
+                </InputWrapper>
+                <InputWrapper wrapperClasses="swap-request" inputType={'date'} labelText={'End Time'} required={true}>
+                  <MobileTimePicker
+                    slotProps={{
+                      actionBar: {
+                        actions: ['clear', 'accept'],
+                      },
+                    }}
+                    minutesStep={5}
+                    onOpen={addThemeToDatePickers}
+                    className={`${theme} to-hour`}
+                    onChange={(e) => setRequestToHour(moment(e).format('h a'))}
+                  />
+                </InputWrapper>
+              </div>
+            </>
+          )}
+
+          {/* MULTIPLE DAYS */}
+          {swapDuration === SwapDurations.multiple && (
+            <InputWrapper useNativeDate={true} labelText={'Date Range'} required={true} inputType={'date'}>
+              <MobileDateRangePicker
+                onOpen={addThemeToDatePickers}
+                className={'w-100'}
+                onAccept={(dateArray) => {
+                  if (Manager.isValid(dateArray)) {
+                    setStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
+                    setEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
+                  }
+                }}
+                slots={{ field: SingleInputDateRangeField }}
+                name="allowedRange"
+              />
+            </InputWrapper>
+          )}
+
+          {/* RESPONSE DUE DATE */}
+          {!DomManager.isMobile() && (
+            <InputWrapper inputType={'date'} labelText={'Respond by'}>
+              <MobileDatePicker
+                onOpen={addThemeToDatePickers}
+                className={`${theme}  w-100`}
+                onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+              />
+            </InputWrapper>
+          )}
+          {DomManager.isMobile() && (
+            <InputWrapper
+              onChange={(input) => {
+                const day = input.target.value
+                setResponseDueDate(moment(day).format(DateFormats.dateForDb))
+              }}
+              useNativeDate={true}
+              inputType={'date'}
+              labelText={'Respond by'}
+            />
+          )}
+
+          <Spacer height={5} />
+
+          {/* SEND REQUEST TO */}
+          <CheckboxGroup
+            required={true}
+            parentLabel={'Who are you sending the request to?'}
+            checkboxArray={Manager.buildCheckboxGroup({
+              currentUser,
+              predefinedType: 'coparents',
+            })}
+            onCheck={(e) => {
+              handleRecipientSelection(e)
             }}
           />
-          {/* FORM */}
-          <div id="request-form" className="form single">
-            {/* SINGLE DATE */}
-            {swapDuration === SwapDurations.single && (
-              <>
-                {!DomManager.isMobile() && (
-                  <InputWrapper wrapperClasses="swap-request" inputType={'date'} labelText={'Date'} required={true}>
-                    <MobileDatePicker
-                      onOpen={addThemeToDatePickers}
-                      className={`${theme}`}
-                      onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
-                    />
-                  </InputWrapper>
-                )}
-                {DomManager.isMobile() && (
-                  <InputWrapper
-                    useNativeDate={true}
-                    wrapperClasses="swap-request"
-                    inputType={'date'}
-                    labelText={'Date'}
-                    required={true}
-                    onChange={(input) => {
-                      const day = input.target.value
-                      setStartDate(moment(day).format(DateFormats.dateForDb))
-                    }}
-                  />
-                )}
-              </>
-            )}
 
-            {/* INTRADAY - HOURS */}
-            {swapDuration === SwapDurations.intra && (
-              <>
-                {!DomManager.isMobile() && (
-                  <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
-                    <MobileDatePicker
-                      onOpen={addThemeToDatePickers}
-                      className={`${theme}`}
-                      onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
-                    />
-                  </InputWrapper>
-                )}
-                {DomManager.isMobile() && (
-                  <InputWrapper
-                    onChange={(input) => {
-                      const day = input.target.value
-                      setStartDate(moment(day).format(DateFormats.dateForDb))
-                    }}
-                    useNativeDate={true}
-                    inputType={'date'}
-                    labelText={'Day'}
-                    required={true}
-                  />
-                )}
+          <Spacer height={5} />
 
-                {/* TIMES */}
-                <div className="flex gap ">
-                  <InputWrapper inputType={'date'} labelText={'Start Time'} required={true}>
-                    <MobileTimePicker
-                      minutesStep={5}
-                      slotProps={{
-                        actionBar: {
-                          actions: ['clear', 'accept'],
-                        },
-                      }}
-                      wrapperClasses="swap-request"
-                      onOpen={addThemeToDatePickers}
-                      className={`${theme} from-hour`}
-                      onChange={(e) => setRequestFromHour(moment(e).format('h a'))}
-                    />
-                  </InputWrapper>
-                  <InputWrapper wrapperClasses="swap-request" inputType={'date'} labelText={'End Time'} required={true}>
-                    <MobileTimePicker
-                      slotProps={{
-                        actionBar: {
-                          actions: ['clear', 'accept'],
-                        },
-                      }}
-                      minutesStep={5}
-                      onOpen={addThemeToDatePickers}
-                      className={`${theme} to-hour`}
-                      onChange={(e) => setRequestToHour(moment(e).format('h a'))}
-                    />
-                  </InputWrapper>
-                </div>
-              </>
-            )}
+          {/* WHO SHOULD SEE IT? */}
+          <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
+          <Spacer height={5} />
 
-            {/* MULTIPLE DAYS */}
-            {swapDuration === SwapDurations.multiple && (
-              <InputWrapper useNativeDate={true} labelText={'Date Range'} required={true} inputType={'date'}>
-                <MobileDateRangePicker
-                  onOpen={addThemeToDatePickers}
-                  className={'w-100'}
-                  onAccept={(dateArray) => {
-                    if (Manager.isValid(dateArray)) {
-                      setStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
-                      setEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
-                    }
+          {/* INCLUDE CHILDREN */}
+          {Manager.isValid(currentUser?.children) && (
+            <div className="share-with-container ">
+              <div className="flex">
+                <p>Include Child(ren)</p>
+                <Toggle
+                  icons={{
+                    checked: <MdOutlineFace />,
+                    unchecked: null,
                   }}
-                  slots={{ field: SingleInputDateRangeField }}
-                  name="allowedRange"
+                  className={'ml-auto reminder-toggle'}
+                  onChange={() => setIncludeChildren(!includeChildren)}
                 />
-              </InputWrapper>
-            )}
-
-            {/* RESPONSE DUE DATE */}
-            {!DomManager.isMobile() && (
-              <InputWrapper inputType={'date'} labelText={'Respond by'}>
-                <MobileDatePicker
-                  onOpen={addThemeToDatePickers}
-                  className={`${theme}  w-100`}
-                  onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
-                />
-              </InputWrapper>
-            )}
-            {DomManager.isMobile() && (
-              <InputWrapper
-                onChange={(input) => {
-                  const day = input.target.value
-                  setResponseDueDate(moment(day).format(DateFormats.dateForDb))
-                }}
-                useNativeDate={true}
-                inputType={'date'}
-                labelText={'Respond by'}
-              />
-            )}
-
-            <Spacer height={5} />
-
-            {/* SEND REQUEST TO */}
-            <CheckboxGroup
-              required={true}
-              parentLabel={'Who are you sending the request to?'}
-              checkboxArray={Manager.buildCheckboxGroup({
-                currentUser,
-                predefinedType: 'coparents',
-              })}
-              onCheck={(e) => {
-                handleRecipientSelection(e)
-              }}
-            />
-
-            <Spacer height={5} />
-
-            {/* WHO SHOULD SEE IT? */}
-            <ShareWithCheckboxes
-              required={true}
-              onCheck={handleShareWithSelection}
-              labelText={'Share with'}
-              containerClass={'share-with-coparents'}
-            />
-            <Spacer height={5} />
-
-            {/* INCLUDE CHILDREN */}
-            {Manager.isValid(currentUser?.children) && (
-              <div className="share-with-container ">
-                <div className="flex">
-                  <p>Include Child(ren)</p>
-                  <Toggle
-                    icons={{
-                      checked: <MdOutlineFace />,
-                      unchecked: null,
-                    }}
-                    className={'ml-auto reminder-toggle'}
-                    onChange={() => setIncludeChildren(!includeChildren)}
-                  />
-                </div>
-                {includeChildren && (
-                  <CheckboxGroup
-                    checkboxArray={Manager.buildCheckboxGroup({
-                      currentUser,
-                      labelType: 'children',
-                    })}
-                    onCheck={handleChildSelection}
-                  />
-                )}
               </div>
-            )}
+              {includeChildren && (
+                <CheckboxGroup
+                  checkboxArray={Manager.buildCheckboxGroup({
+                    currentUser,
+                    labelType: 'children',
+                  })}
+                  onCheck={handleChildSelection}
+                />
+              )}
+            </div>
+          )}
 
-            <Spacer height={10} />
+          <Spacer height={10} />
 
-            {/* NOTES */}
-            <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
-          </div>
+          {/* NOTES */}
+          <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
         </div>
-      </BottomCard>
-    </div>
+      </div>
+    </BottomCard>
   )
 }

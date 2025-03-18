@@ -7,13 +7,12 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
-import { MdContactEmergency } from 'react-icons/md'
+import { PiIdentificationCardFill, PiTrashSimpleDuotone } from 'react-icons/pi'
 import DB from '/src/database/DB'
 import StringManager from '/src/managers/stringManager.coffee'
 import { FaMinus, FaPlus } from 'react-icons/fa6'
 import DB_UserScoped from '../../../database/db_userScoped'
 import AddressInput from '/src/components/shared/addressInput'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
 
 function General() {
   const { state, setState } = useContext(globalState)
@@ -77,7 +76,7 @@ function General() {
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
           className={!Manager.isValid(activeInfoChild?.general) ? 'disabled header general' : 'header general'}>
-          <MdContactEmergency className={'svg general'} />
+          <PiIdentificationCardFill className={'svg general'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             General
             {!Manager.isValid(activeInfoChild?.general) ? '- no info' : ''}
@@ -90,9 +89,9 @@ function General() {
               let infoLabel = StringManager.spaceBetweenWords(prop[0])
               const value = prop[1]
               return (
-                <div key={index}>
-                  {prop[0] !== 'profilePic' && (
-                    <div className="flex input">
+                <div key={index} className={`flex input ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''}`}>
+                  {!Manager.contains(prop[0], 'profilePic') && (
+                    <>
                       {Manager.contains(infoLabel.toLowerCase(), 'address') && (
                         <InputWrapper inputType={'location'} labelText={`ADDRESS: ${value.replace(/\d{5}/, '').replaceAll(', USA', '')}`}>
                           <AddressInput
@@ -103,27 +102,18 @@ function General() {
                         </InputWrapper>
                       )}
                       {!Manager.contains(infoLabel.toLowerCase(), 'address') && (
-                        <>
-                          {infoLabel.toLowerCase().includes('phone') && (
-                            <a className="label child-info" href={`tel:${StringManager.formatPhone(value).toString()}`}>
-                              {infoLabel}: {value}
-                            </a>
-                          )}
-                          {!infoLabel.toLowerCase().includes('phone') && (
-                            <InputWrapper
-                              inputType={'input'}
-                              labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
-                              defaultValue={value}
-                              onChange={async (e) => {
-                                const inputValue = e.target.value
-                                await update(infoLabel, inputValue)
-                              }}
-                            />
-                          )}
-                        </>
+                        <InputWrapper
+                          inputType={'input'}
+                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                          defaultValue={value}
+                          onChange={async (e) => {
+                            const inputValue = e.target.value
+                            await update(infoLabel, inputValue)
+                          }}
+                        />
                       )}
                       {infoLabel.toLowerCase() !== 'name' && <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />}
-                    </div>
+                    </>
                   )}
                 </div>
               )

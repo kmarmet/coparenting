@@ -1,15 +1,12 @@
 // Path: src\components\shared\bottomCard.jsx
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import Manager from '/src/managers/manager.js'
 import DB_UserScoped from '../../database/db_userScoped'
 import StringManager from '../../managers/stringManager'
-import { VscChromeClose } from 'react-icons/vsc'
 import { useSwipeable } from 'react-swipeable'
-import SecurityManager from '../../managers/securityManager'
-import AlertManager from '../../managers/alertManager'
-import DomManager from '../../managers/domManager'
+import { MdDelete } from 'react-icons/md'
+import { IoClose } from 'react-icons/io5'
 
 export default function BottomCard({
   submitText,
@@ -65,8 +62,9 @@ export default function BottomCard({
       onClose()
       hideCard()
     },
-    delta: { down: 200 },
-    // swipeDuration: 350,
+    delta: { down: 180 },
+    // swipeDuration: 180,
+    // preventScrollOnSwipe: true,
   })
 
   useEffect(() => {
@@ -74,6 +72,7 @@ export default function BottomCard({
     const body = document.body
     const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
     const checkboxContainer = document.getElementById('share-with-checkbox-container')
+
     if (StringManager.wordCount(title) >= 4) {
       const title = bottomCard.querySelector('#large-title')
       if (title) {
@@ -124,24 +123,39 @@ export default function BottomCard({
 
   return (
     <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`} {...handlers}>
-      <div id="swipe-down-bar"></div>
+      {/*{DomManager.isMobile() && <div id="swipe-down-bar"></div>}*/}
+
       <div className="flex" id="title-wrapper">
         <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
       </div>
       <div id="relative-wrapper">
         <div id="content">
           {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
+
           {children}
         </div>
       </div>
       {(hasSubmitButton || hasDelete) && (
         <div className={`flex buttons`}>
           {hasSubmitButton && (
-            <button className={`button card-button submit ${hasDelete ? 'ml-15 mr-15' : ''} ${submitButtonColor}`} onClick={onSubmit}>
+            <button className={`button card-button submit  ${submitButtonColor}`} onClick={onSubmit}>
               {submitText} {submitIcon}
             </button>
           )}
-          {hasDelete && <PiTrashSimpleDuotone className={'delete-icon'} onClick={onDelete} />}
+          {hasDelete && (
+            <button className={'delete-button default red card-button'} onClick={onDelete}>
+              Delete <MdDelete />
+            </button>
+          )}
+          <div id="close-icon-wrapper">
+            <IoClose
+              className={'close-icon'}
+              onClick={() => {
+                onClose()
+                hideCard()
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

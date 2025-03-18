@@ -5,10 +5,11 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
-import { FaClone, FaRegCalendarCheck } from 'react-icons/fa6'
+import { FaClone } from 'react-icons/fa6'
 import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
 import Toggle from 'react-toggle'
 import { Fade } from 'react-awesome-reveal'
+import { BsCalendar2CheckFill } from 'react-icons/bs'
 
 import validator from 'validator'
 import globalState from '../../context'
@@ -327,7 +328,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         className={`${theme} new-event-form new-calendar-event`}
         onClose={resetForm}
         onSubmit={submit}
-        submitIcon={<FaRegCalendarCheck />}
+        submitIcon={<BsCalendar2CheckFill />}
         showCard={showCard}
         wrapperClass="new-calendar-event"
         title={'Create New Event'}>
