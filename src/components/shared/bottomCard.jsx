@@ -33,6 +33,7 @@ export default function BottomCard({
     const bottomCard = document.querySelector(`.${wrapperClass}#bottom-card`)
     const fadeOutDown = 'animate__fadeOutDown'
     const fadeInUp = 'animate__fadeInUp'
+
     if (bottomCard) {
       bottomCard.classList.add(fadeOutDown)
 
@@ -55,12 +56,12 @@ export default function BottomCard({
   // Swipe
   const handlers = useSwipeable({
     onSwipedDown: async () => {
-      const pageOverlay = document.getElementById('page-overlay')
-      if (pageOverlay) {
-        pageOverlay.classList.remove('active')
-      }
-      onClose()
-      hideCard()
+      // const pageOverlay = document.getElementById('page-overlay')
+      // if (pageOverlay) {
+      //   pageOverlay.classList.remove('active')
+      // }
+      // onClose()
+      // hideCard()
     },
     delta: { down: 180 },
     // swipeDuration: 180,
@@ -84,8 +85,10 @@ export default function BottomCard({
       const fadeOutDown = 'animate__fadeOutDown'
       // Toggle pageOverlay
       if (showCard && bottomCard) {
+        console.log(bottomCard)
         body.style.position = 'fixed'
-        bottomCard.classList.add(fadeInUp)
+        // bottomCard.classList.add(fadeInUp)
+        bottomCard.classList.add('active')
 
         if (checkboxContainer) {
           checkboxContainer.classList.remove('active')
@@ -97,9 +100,11 @@ export default function BottomCard({
           }
         }
       } else {
+        console.log('else')
         if (bottomCard) {
-          bottomCard.classList.add(fadeOutDown)
+          // bottomCard.classList.add(fadeOutDown)
 
+          bottomCard.classList.remove('active')
           setTimeout(() => {
             bottomCard.classList.remove(fadeInUp)
             bottomCard.classList.remove(fadeOutDown)
@@ -121,10 +126,12 @@ export default function BottomCard({
     }
   }, [showCard])
 
+  {
+    /* animate__animated */
+  }
   return (
-    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} animate__animated`} {...handlers}>
+    <div id="bottom-card" className={`${theme} ${wrapperClass} ${className} `} {...handlers}>
       {/*{DomManager.isMobile() && <div id="swipe-down-bar"></div>}*/}
-
       <div className="flex" id="title-wrapper">
         <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
       </div>
@@ -135,19 +142,19 @@ export default function BottomCard({
           {children}
         </div>
       </div>
-      {(hasSubmitButton || hasDelete) && (
-        <div className={`flex buttons`}>
-          {hasSubmitButton && (
-            <button className={`button card-button submit  ${submitButtonColor}`} onClick={onSubmit}>
-              {submitText} {submitIcon}
-            </button>
-          )}
-          {hasDelete && (
-            <button className={'delete-button default red card-button'} onClick={onDelete}>
-              Delete <MdDelete />
-            </button>
-          )}
-          <div id="close-icon-wrapper">
+      <div className={`flex buttons`}>
+        {hasSubmitButton && (
+          <button className={`button card-button submit  ${submitButtonColor}`} onClick={onSubmit}>
+            {submitText} {submitIcon}
+          </button>
+        )}
+        {hasDelete && (
+          <button className={'delete-button default red card-button'} onClick={onDelete}>
+            Delete <MdDelete />
+          </button>
+        )}
+        <div id="close-icon-wrapper">
+          <div id="close-icon-bg">
             <IoClose
               className={'close-icon'}
               onClick={() => {
@@ -157,7 +164,7 @@ export default function BottomCard({
             />
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

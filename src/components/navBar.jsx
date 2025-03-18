@@ -2,10 +2,13 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
-import { PiBellDuotone, PiCalendarDotsDuotone, PiChatsCircleDuotone, PiIdentificationCardDuotone } from 'react-icons/pi'
-import { TbGridDots, TbPhotoHeart } from 'react-icons/tb'
+import { PiBellFill } from 'react-icons/pi'
+import { TbGridDots } from 'react-icons/tb'
 import DomManager from '../managers/domManager'
 import { Fade } from 'react-awesome-reveal'
+import { BsCalendarWeekFill, BsPersonVcardFill } from 'react-icons/bs'
+import { IoChatbubbles } from 'react-icons/io5'
+import { IoMdPhotos } from 'react-icons/io'
 
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
@@ -44,7 +47,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.calendar)}
                 className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
-                <PiCalendarDotsDuotone />
+                <BsCalendarWeekFill className={'calendar'} />
               </div>
 
               {/* CHATS */}
@@ -53,7 +56,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
                   id="chat-menu-item"
                   onClick={() => changeCurrentScreen(ScreenNames.chats)}
                   className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
-                  <PiChatsCircleDuotone />
+                  <IoChatbubbles />
                 </div>
               )}
 
@@ -69,7 +72,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
                 <div
                   onClick={() => changeCurrentScreen(ScreenNames.childInfo)}
                   className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>
-                  <PiIdentificationCardDuotone className={'child-info'} />
+                  <BsPersonVcardFill className={'child-info'} />
                 </div>
               )}
 
@@ -77,14 +80,14 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.memories)}
                 className={`${currentScreen === ScreenNames.memories ? 'active menu-item memories' : 'menu-item memories'}`}>
-                <TbPhotoHeart className={'memories'} />
+                <IoMdPhotos className={'memories'} />
               </div>
 
               {/* NOTIFICATIONS */}
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.notifications)}
                 className={`${currentScreen === ScreenNames.notifications ? 'active menu-item notifications' : 'menu-item notifications'}`}>
-                <PiBellDuotone className={'notifications'} />
+                <PiBellFill className={'notifications'} />
                 {notificationCount > 0 && <span className="badge"></span>}
               </div>
             </Fade>

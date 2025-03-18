@@ -151,6 +151,10 @@
   height: 22px !important;
 }
 
+.react-toggle-track-x {
+  right: 5px !important;
+}
+
 .react-toggle--checked,
 .react-toggle--focus,
 .react-toggle-thumb {
@@ -158,22 +162,27 @@
   background-color: white !important;
 
   &.react-toggle-thumb {
-    //    border: 0;
     border-color: #a3a3a3;
+    border-radius: 5px;
+    width: 25px !important;
   }
 
   &.react-toggle--checked {
+    margin-right: 3px !important;
     .react-toggle-thumb {
-      border: 1px solid $lightDarkGrey;
+      border: 5px solid $accentBlue !important;
+      background: $accentBlue !important;
+      margin-right: 10px !important;
     }
 
     .react-toggle-track {
-      background-color: $accentBlue !important;
+      background: $lightAccentBlue !important;
     }
   }
 }
 
 .react-toggle-track {
+  border-radius: 5px !important;
   background: $bestGreyForWhite !important;
 }
 
@@ -186,14 +195,16 @@
 
   .material-icons-round,
   svg {
-    margin: auto 0;
     color: white !important;
     font-size: 18px !important;
+    align-self: stretch !important;
+    display: none;
   }
 }
 
 .react-toggle {
-  height: 25px;
+  //  height: 25px;
+  transform: scale(0.9);
 
   &.clone-toggle {
     svg {

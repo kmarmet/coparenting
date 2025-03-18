@@ -48,12 +48,21 @@
   }
 
   @media screen and (max-width: 800px) {
-    #login-container {
-      .form-container {
-        .form {
-          .buttons {
-            button {
-              width: 50%;
+    #app-container {
+      #bottom-card {
+        #relative-wrapper {
+          #content {
+            padding-bottom: 250px;
+          }
+        }
+      }
+      #login-container {
+        .form-container {
+          .form {
+            .buttons {
+              button {
+                width: 50%;
+              }
             }
           }
         }
@@ -90,7 +99,7 @@
   }
   /*#endregion OUTSIDE APP CONTAINER */
 
-  /*#region  > 800px PHONE CONTAINER*/
+  /*#region  > 800px CONTAINER*/
   #app-container {
     @media screen and (min-width: 800px) {
       .actions {
@@ -864,5 +873,5 @@
       }
     }
   }
-  /*#endregion  > 800px PHONE CONTAINER*/
+  /*#endregion  > 800px CONTAINER*/
 }

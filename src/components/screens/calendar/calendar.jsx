@@ -381,7 +381,7 @@ export default function EventCalendar() {
         {/* HOLIDAYS CARD */}
         <BottomCard
           hasSubmitButton={false}
-          className={`${theme} view-holidays half`}
+          className={`${theme} view-holidays`}
           wrapperClass={`view-holidays`}
           onClose={viewAllEvents}
           showCard={showHolidaysCard}
@@ -400,7 +400,7 @@ export default function EventCalendar() {
         <BottomCard
           submitIcon={<LuCalendarSearch />}
           submitText={'Search'}
-          className="search-card half"
+          className="search-card"
           wrapperClass="search-card"
           title={'Find Events'}
           onClose={viewAllEvents}

@@ -181,8 +181,8 @@ export default function Memories() {
       </div>
 
       {!showNewMemoryCard && (
-        <NavBar navbarClass={'child-info'}>
-          <BiSolidImageAdd onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />
+        <NavBar navbarClass={'memories'}>
+          <BiSolidImageAdd onClick={() => setShowNewMemoryCard(true)} className={'memories`'} id={'add-new-button'} />
         </NavBar>
       )}
     </>

@@ -7,6 +7,7 @@ import AppManager from '../managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
 import { VscSettings } from 'react-icons/vsc'
 import { TbPhotoHeart } from 'react-icons/tb'
+import { BsFillHousesFill } from 'react-icons/bs'
 import {
   PiBellDuotone,
   PiCalendarDotsDuotone,
@@ -20,7 +21,14 @@ import {
   PiSunDuotone,
   PiSwapDuotone,
 } from 'react-icons/pi'
-
+import { TbGridDots } from 'react-icons/tb'
+import DomManager from '../managers/domManager'
+import { Fade } from 'react-awesome-reveal'
+import { BsCalendarWeekFill } from 'react-icons/bs'
+import { IoChatbubbles } from 'react-icons/io5'
+import { IoMdPhotos } from 'react-icons/io'
+import { PiBellFill } from 'react-icons/pi'
+import { BsPersonVcardFill } from 'react-icons/bs'
 import { GrInstallOption } from 'react-icons/gr'
 import DB_UserScoped from '../database/db_userScoped'
 import { RiArchive2Fill, RiMailSendLine } from 'react-icons/ri'
@@ -88,7 +96,7 @@ export default function FullMenu() {
         <div
           className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
           onClick={() => changeCurrentScreen(ScreenNames.calendar)}>
-          <PiCalendarDotsDuotone />
+          <BsCalendarWeekFill />
           <p>Calendar</p>
         </div>
 
@@ -96,7 +104,7 @@ export default function FullMenu() {
         <div
           className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}
           onClick={() => changeCurrentScreen(ScreenNames.notifications)}>
-          <PiBellDuotone />
+          <PiBellFill />
           {notificationCount > 0 && <div className="badge"></div>}
           <p>Notifications</p>
         </div>
@@ -108,7 +116,7 @@ export default function FullMenu() {
             <div
               className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.visitation)}>
-              <PiHouseLineDuotone />
+              <BsFillHousesFill />
               <p>Visitation</p>
             </div>
 
@@ -116,7 +124,7 @@ export default function FullMenu() {
             <div
               className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.chats)}>
-              <PiChatsCircleDuotone />
+              <IoChatbubbles />
               <p className="text">Chats</p>
             </div>
 
@@ -159,7 +167,7 @@ export default function FullMenu() {
             <div
               className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.memories)}>
-              <TbPhotoHeart />
+              <IoMdPhotos />
               <p>Memories</p>
             </div>
 
@@ -167,7 +175,7 @@ export default function FullMenu() {
             <div
               className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
               onClick={() => changeCurrentScreen(ScreenNames.childInfo)}>
-              <PiIdentificationCardDuotone />
+              <BsPersonVcardFill />
               <p>Child Info</p>
             </div>
 
