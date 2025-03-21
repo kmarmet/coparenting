@@ -15,7 +15,7 @@
       }
     }
 
-    #bottom-card {
+    #modal {
       #relative-wrapper {
         .buttons {
           padding-bottom: 0;
@@ -49,10 +49,9 @@
 
   @media screen and (max-width: 800px) {
     #app-container {
-      #bottom-card {
+      #modal {
         #relative-wrapper {
           #content {
-            padding-bottom: 250px;
           }
         }
       }
@@ -575,7 +574,7 @@
       }
 
       // BOTTOM CARD
-      #bottom-card {
+      #modal {
         max-height: 65vh;
         max-width: 50vw;
         border-radius: $bigBorderRadius;

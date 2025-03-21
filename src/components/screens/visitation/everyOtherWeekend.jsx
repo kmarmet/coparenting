@@ -1,5 +1,5 @@
 // Path: src\components\screens\visitation\everyOtherWeekend.jsx
-import BottomCard from '../../../components/shared/bottomCard'
+import Modal from '../../../components/shared/modal'
 import globalState from '../../../context'
 import React, { useContext, useState } from 'react'
 import Manager from '../../../managers/manager'
@@ -69,7 +69,7 @@ export default function EveryOtherWeekend({ hide, showCard }) {
   }
 
   return (
-    <BottomCard
+    <Modal
       submitText={'Add Schedule'}
       subtitle="Add an every other weekend visitation schedule."
       className="form"
@@ -91,6 +91,6 @@ export default function EveryOtherWeekend({ hide, showCard }) {
         containerClass={'share-with-coparents'}
         dataKey={currentUser?.coparents?.map((x) => x.name)}
       />
-    </BottomCard>
+    </Modal>
   )
 }

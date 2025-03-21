@@ -5,7 +5,7 @@ import globalState from '../../../context.js'
 import DB_UserScoped from '../../../database/db_userScoped.js'
 import { BiMessageRoundedAdd } from 'react-icons/bi'
 import { Fade } from 'react-awesome-reveal'
-import BottomCard from '../../shared/bottomCard'
+import Modal from '../../shared/modal'
 import SecurityManager from '/src/managers/securityManager'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import NavBar from '../../navBar'
@@ -82,7 +82,7 @@ const Chats = () => {
   return (
     <>
       {/* NEW THREAD FORM */}
-      <BottomCard
+      <Modal
         hasSubmitButton={false}
         className="new-conversation"
         wrapperClass="new-conversation"
@@ -135,10 +135,10 @@ const Chats = () => {
               </div>
             )
           })}
-      </BottomCard>
+      </Modal>
 
       {/* INVITATION FORM */}
-      <BottomCard
+      <Modal
         submitText={'Send Invitation'}
         wrapperClass="invite-coparent-card"
         title={'Invite Co-Parent or Child'}
@@ -158,7 +158,7 @@ const Chats = () => {
         <Spacer height={5} />
         <InputWrapper labelText={'Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
         <InputWrapper labelText={'Email Address'} required={true} onChange={(e) => setInviteeEmail(e.target.value)} />
-      </BottomCard>
+      </Modal>
 
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>

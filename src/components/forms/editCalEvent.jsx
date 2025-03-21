@@ -6,15 +6,15 @@ import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import { PiBellSimpleRingingDuotone, PiCalendarDotDuotone, PiGlobeDuotone, PiNotepadDuotone, PiUserCircleDuotone } from 'react-icons/pi'
 import { BsCalendar2CheckFill } from 'react-icons/bs'
-
-import { MdEventRepeat, MdLocalPhone, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
+import { PiUsersFill } from 'react-icons/pi'
+import { FaBell } from 'react-icons/fa6'
+import { MdEventRepeat, MdLocalPhone } from 'react-icons/md'
 import React, { useContext, useEffect, useState } from 'react'
-import { Fade } from 'react-awesome-reveal'
 import { BiSolidNavigation } from 'react-icons/bi'
 import { FaChildren } from 'react-icons/fa6'
 import { IoTimeOutline } from 'react-icons/io5'
+import { BsHouseFill } from 'react-icons/bs'
 import { LiaMapMarkedAltSolid } from 'react-icons/lia'
-import Toggle from 'react-toggle'
 import 'react-toggle/style.css'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager.coffee'
@@ -23,7 +23,7 @@ import Map from '../shared/map.jsx'
 import Spacer from '../shared/spacer.jsx'
 import StringAsHtmlElement from '../shared/stringAsHtmlElement'
 import ViewSelector from '../shared/viewSelector'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
@@ -41,6 +41,7 @@ import StringManager from '/src/managers/stringManager'
 import { default as CalendarMapper, default as CalMapper } from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
+import ToggleButton from '../shared/toggleButton'
 
 export default function EditCalEvent({ event, showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -309,7 +310,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
 
       // Update Single Event
       else {
-        console.log(cleanedEvent)
         await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updatedEvent.id)
       }
     }
@@ -464,7 +464,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   }, [document.querySelector('.swal2-confirm')])
 
   return (
-    <BottomCard
+    <Modal
       onDelete={() => {
         AlertManager.confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
           await deleteEvent()
@@ -473,7 +473,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       }}
       hasDelete={currentUser?.key === event?.ownerKey}
       onSubmit={currentUser?.key === event?.ownerKey ? submit : nonOwnerSubmit}
-      submitText={'Update'}
+      submitText={'Update Event'}
       submitIcon={<BsCalendar2CheckFill className={'edit-calendar-icon'} />}
       hasSubmitButton={view === 'Edit'}
       onClose={async () => {
@@ -481,8 +481,9 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       }}
       title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(event?.title))}
       showCard={showCard}
+      deleteButtonText="Delete Event"
       className="edit-calendar-event"
-      wrapperClass="edit-calendar-event">
+      wrapperClass={`edit-calendar-event`}>
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
         {/* READONLY IF CHILD ACCOUNT */}
         {currentUser?.accountType !== 'child' && (
@@ -498,374 +499,354 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
         {!dataIsLoading && (
           <>
             {/* DETAILS */}
-            {view === 'Details' && (
-              <Fade direction={'up'} duration={900} triggerOnce={true}>
-                <div id="details">
-                  {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
-                    <div className="flex">
-                      <b>
-                        <PiCalendarDotDuotone /> Date
-                      </b>
-                      <span className="">{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</span>
-                    </div>
-                  )}
-                  {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
-                    <div className="flex">
-                      <b>Dates</b>
-                      <span className="">
-                        {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}&nbsp;to&nbsp;
-                        {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* START TIME */}
-                  {DateManager.isValidDate(event?.startTime) && DateManager.isValidDate(event?.endTime) && (
-                    <div className="flex">
-                      <b>
-                        <IoTimeOutline />
-                        Time
-                      </b>
-                      <span className="">
-                        {event?.startTime} to {event?.endTime}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* END TIME */}
-                  {DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime) && (
-                    <div className="flex">
-                      <b>
-                        <IoTimeOutline />
-                        Time
-                      </b>
-                      <span className="">{event?.startTime}</span>
-                    </div>
-                  )}
-
-                  {/* SHARE WITH */}
-                  {Manager.isValid(eventShareWith) && (
-                    <div className="flex">
-                      <b>
-                        <PiUserCircleDuotone />
-                        Shared with
-                      </b>
-                      <span className="">{shareWithNames?.join(', ')}</span>
-                    </div>
-                  )}
-
-                  {/* REMINDERS */}
-                  {Manager.isValid(event?.reminderTimes) && (
-                    <div className="flex reminders">
-                      <b>
-                        <PiBellSimpleRingingDuotone />
-                        Reminders
-                      </b>
-                      <div id="reminder-times">
-                        {Manager.isValid(event?.reminderTimes) &&
-                          event?.reminderTimes.map((time, index) => {
-                            time = CalMapper.readableReminderBeforeTimeframes(time)
-                            time = StringManager.uppercaseFirstLetterOfAllWords(time).replaceAll('Of', 'of')
-                            return <span key={index}>{time}</span>
-                          })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* CHILDREN */}
-                  {Manager.isValid(event?.children) && (
-                    <div className="flex children">
-                      <b>
-                        <FaChildren />
-                        Children
-                      </b>
-                      <div id="children">
-                        {Manager.isValid(event?.children) &&
-                          event?.children.map((child, index) => {
-                            return <span key={index}>{child}</span>
-                          })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* WEBSITE */}
-                  {Manager.isValid(event?.websiteUrl) && (
-                    <div className="flex">
-                      <b>
-                        <PiGlobeDuotone />
-                        Website
-                      </b>
-                      <a className="" href={decodeURIComponent(event?.websiteUrl)} target="_blank" rel="noreferrer">
-                        {decodeURIComponent(event?.websiteUrl)}
-                      </a>
-                    </div>
-                  )}
-
-                  {/* PHONE */}
-                  {Manager.isValid(event?.phone) && (
-                    <div className="flex">
-                      <b>
-                        <MdLocalPhone />
-                        Phone
-                      </b>
-                      <a className="" href={`tel:${event?.phone}`} target="_blank" rel="noreferrer">
-                        {StringManager.getReadablePhoneNumber(event?.phone)}
-                      </a>
-                    </div>
-                  )}
-
-                  {/* NOTES */}
-                  {Manager.isValid(event?.notes) && (
-                    <div className={`${StringManager.addLongTextClass(event?.notes)} flex`}>
-                      <b>
-                        <PiNotepadDuotone />
-                        Notes
-                      </b>
-                      <StringAsHtmlElement text={event?.notes} />
-                    </div>
-                  )}
-
-                  {/* LOCATION */}
-                  {Manager.isValid(event?.location) && (
-                    <>
-                      <div className="flex">
-                        <b>
-                          <LiaMapMarkedAltSolid />
-                          Location
-                        </b>
-                        <span>{event?.location}</span>
-                      </div>
-
-                      <a className=" nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
-                        <BiSolidNavigation /> Navigation
-                      </a>
-                      <Map key={event?.id} locationString={event?.location} />
-                    </>
-                  )}
-
-                  {/* REPEAT INTERVAL */}
-                  {Manager.isValid(event?.repeatInterval) && (
-                    <div className="flex">
-                      <b>
-                        <MdEventRepeat />
-                        Recurrence Interval
-                      </b>
-                      <span className="">{StringManager.uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</span>
-                    </div>
-                  )}
+            <div id="details" className={view === 'Details' ? 'view-wrapper details active' : 'view-wrapper'}>
+              {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
+                <div className="flex">
+                  <b>
+                    <PiCalendarDotDuotone /> Date
+                  </b>
+                  <span className="">{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</span>
                 </div>
-              </Fade>
-            )}
+              )}
+              {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
+                <div className="flex">
+                  <b>Dates</b>
+                  <span className="">
+                    {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}&nbsp;to&nbsp;
+                    {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
+                  </span>
+                </div>
+              )}
 
-            {view === 'Edit' && (
-              <Fade direction={'up'} duration={900} triggerOnce={true}>
-                <div className="content">
-                  {/* EVENT NAME */}
-                  <InputWrapper
-                    inputType={'input'}
-                    labelText={'Event Name'}
-                    defaultValue={event?.title}
-                    required={true}
-                    onChange={async (e) => {
-                      const inputValue = e.target.value
-                      if (inputValue.length > 1) {
-                        setEventName(inputValue)
-                      }
-                    }}
-                  />
-                  {/* DATE */}
-                  <div className="flex" id={'date-input-container'}>
-                    {!eventIsDateRange && (
-                      <>
-                        {!DomManager.isMobile() && (
-                          <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
-                            <MobileDatePicker
-                              onOpen={addThemeToDatePickers}
-                              defaultValue={DateManager.dateOrNull(moment(event?.startDate))}
-                              className={`${theme} m-0 w-100 event-from-date mui-input`}
-                              yearsPerRow={4}
-                              onAccept={(e) => {
-                                setEventStartDate(e)
-                              }}
-                            />
-                          </InputWrapper>
-                        )}
-                        {DomManager.isMobile() && (
-                          <InputWrapper
-                            defaultValue={moment(event?.startDate)}
-                            onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
-                            useNativeDate={true}
-                            labelText={'Date'}
-                            inputType={'date'}
-                            required={true}
-                          />
-                        )}
-                      </>
-                    )}
+              {/* START TIME */}
+              {DateManager.isValidDate(event?.startTime) && DateManager.isValidDate(event?.endTime) && (
+                <div className="flex">
+                  <b>
+                    <IoTimeOutline />
+                    Time
+                  </b>
+                  <span className="">
+                    {event?.startTime} to {event?.endTime}
+                  </span>
+                </div>
+              )}
+
+              {/* END TIME */}
+              {DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime) && (
+                <div className="flex">
+                  <b>
+                    <IoTimeOutline />
+                    Time
+                  </b>
+                  <span className="">{event?.startTime}</span>
+                </div>
+              )}
+
+              {/* SHARE WITH */}
+              {Manager.isValid(eventShareWith) && (
+                <div className="flex">
+                  <b>
+                    <PiUserCircleDuotone />
+                    Shared with
+                  </b>
+                  <span className="">{shareWithNames?.join(', ')}</span>
+                </div>
+              )}
+
+              {/* REMINDERS */}
+              {Manager.isValid(event?.reminderTimes) && (
+                <div className="flex reminders">
+                  <b>
+                    <PiBellSimpleRingingDuotone />
+                    Reminders
+                  </b>
+                  <div id="reminder-times">
+                    {Manager.isValid(event?.reminderTimes) &&
+                      event?.reminderTimes.map((time, index) => {
+                        time = CalMapper.readableReminderBeforeTimeframes(time)
+                        time = StringManager.uppercaseFirstLetterOfAllWords(time).replaceAll('Of', 'of')
+                        return <span key={index}>{time}</span>
+                      })}
+                  </div>
+                </div>
+              )}
+
+              {/* CHILDREN */}
+              {Manager.isValid(event?.children) && (
+                <div className="flex children">
+                  <b>
+                    <FaChildren />
+                    Children
+                  </b>
+                  <div id="children">
+                    {Manager.isValid(event?.children) &&
+                      event?.children.map((child, index) => {
+                        return <span key={index}>{child}</span>
+                      })}
+                  </div>
+                </div>
+              )}
+
+              {/* WEBSITE */}
+              {Manager.isValid(event?.websiteUrl) && (
+                <div className="flex">
+                  <b>
+                    <PiGlobeDuotone />
+                    Website
+                  </b>
+                  <a className="" href={decodeURIComponent(event?.websiteUrl)} target="_blank" rel="noreferrer">
+                    {decodeURIComponent(event?.websiteUrl)}
+                  </a>
+                </div>
+              )}
+
+              {/* PHONE */}
+              {Manager.isValid(event?.phone) && (
+                <div className="flex">
+                  <b>
+                    <MdLocalPhone />
+                    Phone
+                  </b>
+                  <a className="" href={`tel:${event?.phone}`} target="_blank" rel="noreferrer">
+                    {StringManager.getReadablePhoneNumber(event?.phone)}
+                  </a>
+                </div>
+              )}
+
+              {/* NOTES */}
+              {Manager.isValid(event?.notes) && (
+                <div className={`${StringManager.addLongTextClass(event?.notes)} flex`}>
+                  <b>
+                    <PiNotepadDuotone />
+                    Notes
+                  </b>
+                  <StringAsHtmlElement text={event?.notes} />
+                </div>
+              )}
+
+              {/* LOCATION */}
+              {Manager.isValid(event?.location) && (
+                <>
+                  <div className="flex">
+                    <b>
+                      <LiaMapMarkedAltSolid />
+                      Location
+                    </b>
+                    <span>{event?.location}</span>
                   </div>
 
-                  {/* EVENT START/END TIME */}
-                  {!eventIsDateRange && (
-                    <div className="flex gap time-inputs-wrapper">
-                      {/* START TIME */}
-                      <InputWrapper wrapperClasses="start-time" labelText={'Start Time'} required={false} inputType={'date'}>
-                        <MobileTimePicker
-                          slotProps={{
-                            actionBar: {
-                              actions: ['clear', 'accept'],
-                            },
-                          }}
+                  <a className=" nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
+                    <BiSolidNavigation /> Navigation
+                  </a>
+                  <Map key={event?.id} locationString={event?.location} />
+                </>
+              )}
+
+              {/* REPEAT INTERVAL */}
+              {Manager.isValid(event?.repeatInterval) && (
+                <div className="flex">
+                  <b>
+                    <MdEventRepeat />
+                    Recurrence Interval
+                  </b>
+                  <span className="">{StringManager.uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</span>
+                </div>
+              )}
+            </div>
+
+            <div id="edit" className={view === 'Edit' ? 'view-wrapper edit active content' : 'view-wrapper content'}>
+              {/* EVENT NAME */}
+              <InputWrapper
+                inputType={'input'}
+                labelText={'Event Name'}
+                defaultValue={event?.title}
+                required={true}
+                onChange={async (e) => {
+                  const inputValue = e.target.value
+                  if (inputValue.length > 1) {
+                    setEventName(inputValue)
+                  }
+                }}
+              />
+              {/* DATE */}
+              <div className="flex" id={'date-input-container'}>
+                {!eventIsDateRange && (
+                  <>
+                    {!DomManager.isMobile() && (
+                      <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
+                        <MobileDatePicker
                           onOpen={addThemeToDatePickers}
-                          value={getTime(event?.startTime)}
-                          minutesStep={5}
-                          key={refreshKey}
-                          className={`${theme}`}
-                          onAccept={(e) => setEventStartTime(e)}
+                          defaultValue={DateManager.dateOrNull(moment(event?.startDate))}
+                          className={`${theme} m-0 w-100 event-from-date mui-input`}
+                          yearsPerRow={4}
+                          onAccept={(e) => {
+                            setEventStartDate(e)
+                          }}
                         />
                       </InputWrapper>
+                    )}
+                    {DomManager.isMobile() && (
+                      <InputWrapper
+                        defaultValue={moment(event?.startDate)}
+                        onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
+                        useNativeDate={true}
+                        labelText={'Date'}
+                        inputType={'date'}
+                        required={true}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
 
-                      {/* END TIME */}
-                      <InputWrapper wrapperClasses="end-time" labelText={'End Time'} required={false} inputType={'date'}>
-                        <MobileTimePicker
-                          key={refreshKey}
-                          slotProps={{
-                            actionBar: {
-                              actions: ['clear', 'accept'],
-                            },
-                          }}
-                          onOpen={addThemeToDatePickers}
-                          value={getTime(event?.endTime)}
-                          minutesStep={5}
-                          className={`${theme}`}
-                          onAccept={(e) => setEventEndTime(e)}
-                        />
-                      </InputWrapper>
-                    </div>
-                  )}
-
-                  <Spacer height={5} />
-
-                  {/* Share with */}
-                  {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
-                    <ShareWithCheckboxes
-                      defaultKeys={event?.shareWith}
-                      required={false}
-                      onCheck={handleShareWithSelection}
-                      containerClass={`share-with-coparents`}
+              {/* EVENT START/END TIME */}
+              {!eventIsDateRange && (
+                <div className="flex gap time-inputs-wrapper">
+                  {/* START TIME */}
+                  <InputWrapper wrapperClasses="start-time" labelText={'Start Time'} required={false} inputType={'date'}>
+                    <MobileTimePicker
+                      slotProps={{
+                        actionBar: {
+                          actions: ['clear', 'accept'],
+                        },
+                      }}
+                      onOpen={addThemeToDatePickers}
+                      value={getTime(event?.startTime)}
+                      minutesStep={5}
+                      key={refreshKey}
+                      className={`${theme}`}
+                      onAccept={(e) => setEventStartTime(e)}
                     />
-                  )}
+                  </InputWrapper>
 
-                  {/* REMINDER */}
-                  <Accordion expanded={showReminders} id={'checkboxes'}>
-                    <AccordionSummary>
-                      <div className="flex reminder-times-toggle">
-                        <p>Remind Me</p>
-                        <Toggle
-                          icons={{
-                            checked: <MdNotificationsActive />,
-                            unchecked: null,
-                          }}
-                          defaultChecked={Manager.isValid(event?.reminderTimes)}
-                          className={'ml-auto reminder-toggle'}
-                          onChange={() => setShowReminders(!showReminders)}
-                        />
-                      </div>
-                    </AccordionSummary>
-                    <AccordionDetails>
+                  {/* END TIME */}
+                  <InputWrapper wrapperClasses="end-time" labelText={'End Time'} required={false} inputType={'date'}>
+                    <MobileTimePicker
+                      key={refreshKey}
+                      slotProps={{
+                        actionBar: {
+                          actions: ['clear', 'accept'],
+                        },
+                      }}
+                      onOpen={addThemeToDatePickers}
+                      value={getTime(event?.endTime)}
+                      minutesStep={5}
+                      className={`${theme}`}
+                      onAccept={(e) => setEventEndTime(e)}
+                    />
+                  </InputWrapper>
+                </div>
+              )}
+
+              <Spacer height={5} />
+
+              {/* Share with */}
+              {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
+                <ShareWithCheckboxes
+                  defaultKeys={event?.shareWith}
+                  required={false}
+                  onCheck={handleShareWithSelection}
+                  containerClass={`share-with-coparents`}
+                />
+              )}
+
+              {/* REMINDER */}
+              <Accordion expanded={showReminders} id={'checkboxes'}>
+                <AccordionSummary>
+                  <div className="flex reminder-times-toggle">
+                    <p className="label">Remind Me</p>
+                    <ToggleButton
+                      isDefaultChecked={event?.reminderTimes?.length > 0}
+                      onCheck={() => setShowReminders(!showReminders)}
+                      onUncheck={() => setShowReminders(!showReminders)}
+                    />
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <CheckboxGroup
+                    checkboxArray={Manager.buildCheckboxGroup({
+                      currentUser,
+                      labelType: 'reminder-times',
+                      defaultLabels: event?.reminderTimes,
+                    })}
+                    elClass={`${theme}`}
+                    containerClass={'reminder-times'}
+                    skipNameFormatting={true}
+                    onCheck={handleReminderSelection}
+                  />
+                </AccordionDetails>
+              </Accordion>
+
+              {/* IS VISITATION? */}
+              <div className="flex visitation-toggle">
+                <p className="label">Visitation Event</p>
+                <ToggleButton
+                  isDefaultChecked={event?.fromVisitationSchedule}
+                  onCheck={() => setIsVisitation(!isVisitation)}
+                  onUncheck={() => setIsVisitation(!isVisitation)}
+                />
+              </div>
+
+              {/* INCLUDING WHICH CHILDREN */}
+              {currentUser?.accountType === 'parent' && (
+                <Accordion expanded={includeChildren} id={'checkboxes'}>
+                  <AccordionSummary>
+                    <div className="flex children-toggle">
+                      <p className="label">Include Children</p>
+                      <ToggleButton
+                        isDefaultChecked={event?.children?.length > 0}
+                        onCheck={() => setIncludeChildren(!includeChildren)}
+                        onUncheck={() => setIncludeChildren(!includeChildren)}
+                      />
+                    </div>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <div id="include-children-checkbox-container">
                       <CheckboxGroup
                         checkboxArray={Manager.buildCheckboxGroup({
                           currentUser,
-                          labelType: 'reminder-times',
-                          defaultLabels: event?.reminderTimes,
+                          labelType: 'children',
+                          defaultLabels: event?.children,
                         })}
-                        elClass={`${theme}`}
-                        containerClass={'reminder-times'}
-                        skipNameFormatting={true}
-                        onCheck={handleReminderSelection}
+                        elClass={`${theme} `}
+                        containerClass={'include-children-checkbox-container'}
+                        onCheck={handleChildSelection}
                       />
-                    </AccordionDetails>
-                  </Accordion>
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+              )}
+              {/* URL/WEBSITE */}
+              <InputWrapper
+                wrapperClasses="mt-15"
+                defaultValue={event?.websiteUrl}
+                labelText={'URL/Website'}
+                required={false}
+                inputType={'input'}
+                onChange={(e) => setEventWebsiteUrl(e.target.value)}
+              />
 
-                  {/* IS VISITATION? */}
-                  <div className="flex visitation-toggle">
-                    <p>Visitation Event</p>
-                    <Toggle
-                      icons={{
-                        unchecked: null,
-                      }}
-                      defaultChecked={event?.fromVisitationSchedule}
-                      className={'ml-auto'}
-                      onChange={(e) => setIsVisitation(!!e.target.checked)}
-                    />
-                  </div>
+              {/* LOCATION/ADDRESS */}
+              <InputWrapper defaultValue={event?.location} labelText={'Location'} required={false} inputType={'location'}>
+                <AddressInput defaultValue={event?.location} onSelection={(address) => setEventLocation(address)} />
+              </InputWrapper>
 
-                  {/* INCLUDING WHICH CHILDREN */}
-                  {currentUser?.accountType === 'parent' && (
-                    <Accordion expanded={includeChildren} id={'checkboxes'}>
-                      <AccordionSummary>
-                        <div className="flex children-toggle">
-                          <p>Include Children</p>
-                          <Toggle
-                            icons={{
-                              checked: <MdOutlineFaceUnlock />,
-                              unchecked: null,
-                            }}
-                            defaultChecked={Manager.isValid(event?.children)}
-                            className={'ml-auto'}
-                            onChange={() => setIncludeChildren(!includeChildren)}
-                          />
-                        </div>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                        <div id="include-children-checkbox-container">
-                          <CheckboxGroup
-                            checkboxArray={Manager.buildCheckboxGroup({
-                              currentUser,
-                              labelType: 'children',
-                              defaultLabels: event?.children,
-                            })}
-                            elClass={`${theme} `}
-                            containerClass={'include-children-checkbox-container'}
-                            onCheck={handleChildSelection}
-                          />
-                        </div>
-                      </AccordionDetails>
-                    </Accordion>
-                  )}
-                </div>
+              {/* PHONE */}
+              <InputWrapper defaultValue={event?.phone} inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
 
-                {/* URL/WEBSITE */}
-                <InputWrapper
-                  wrapperClasses="mt-15"
-                  defaultValue={event?.websiteUrl}
-                  labelText={'URL/Website'}
-                  required={false}
-                  inputType={'input'}
-                  onChange={(e) => setEventWebsiteUrl(e.target.value)}
-                />
-
-                {/* LOCATION/ADDRESS */}
-                <InputWrapper defaultValue={event?.location} labelText={'Location'} required={false} inputType={'location'}>
-                  <AddressInput defaultValue={event?.location} onSelection={(address) => setEventLocation(address)} />
-                </InputWrapper>
-
-                {/* PHONE */}
-                <InputWrapper defaultValue={event?.phone} inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
-
-                {/* NOTES */}
-                <InputWrapper
-                  defaultValue={event?.notes}
-                  labelText={'Notes'}
-                  required={false}
-                  inputType={'textarea'}
-                  onChange={(e) => setEventNotes(e.target.value)}
-                />
-              </Fade>
-            )}
+              {/* NOTES */}
+              <InputWrapper
+                defaultValue={event?.notes}
+                labelText={'Notes'}
+                required={false}
+                inputType={'textarea'}
+                onChange={(e) => setEventNotes(e.target.value)}
+              />
+            </div>
           </>
         )}
-        {dataIsLoading && <img id="bottom-card-loading-gif" src={require('../../img/loading.gif')} alt="Loading" />}
+        {dataIsLoading && <img id="modal-loading-gif" src={require('../../img/loading.gif')} alt="Loading" />}
       </div>
-    </BottomCard>
+    </Modal>
   )
 }

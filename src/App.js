@@ -47,7 +47,7 @@ import TransferRequests from '/src/components/screens/transferRequests.jsx'
 import Visitation from '/src/components/screens/visitation.jsx'
 import BrandBar from '/src/components/shared/brandBar'
 import Loading from '/src/components/shared/loading'
-import SideNavbar from '/src/components/shared/sideNavbar'
+import DesktopLeftSidebar from '/src/components/shared/desktopLeftSidebar'
 import ScreenNames from '/src/constants/screenNames'
 import StateObj from '/src/constants/stateObj' // Menus
 import DB_UserScoped from '/src/database/db_userScoped'
@@ -93,7 +93,7 @@ export default function App() {
   const { isLoading, currentScreen, menuIsOpen, currentUser, loadingText, theme, authUser } = state
 
   const deleteMenuAnimation = () => {
-    document.querySelectorAll('#full-menu .menu-item').forEach((menuItem, i) => {
+    document.querySelectorAll('#full-menu .menu-item').forEach((menuItem) => {
       menuItem.classList.remove('visible')
     })
   }
@@ -102,7 +102,7 @@ export default function App() {
     document.querySelectorAll('#full-menu .menu-item').forEach((menuItem, i) => {
       setTimeout(() => {
         menuItem.classList.add('visible')
-      }, 55 * i)
+      }, 70 * i)
     })
   }
 
@@ -116,9 +116,9 @@ export default function App() {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
     }
-    const allBottomCards = document.querySelectorAll('#bottom-card')
-    for (let bottomCard of allBottomCards) {
-      bottomCard.classList.remove('animate__fadeInUp')
+    const allModals = document.querySelectorAll('#modal')
+    for (let modal of allModals) {
+      modal.classList.remove('animate__fadeInUp')
     }
     if (Manager.isValid(currentUser) && currentScreen !== ScreenNames.calendar) {
       updateCurrentUser().then((r) => r)
@@ -222,7 +222,7 @@ export default function App() {
             id="app-content-with-sidebar"
             className={`${fullscreenScreens.includes(currentScreen) ? 'fullscreen' : ''} ${Manager.isValid(authUser) ? 'logged-in' : ''} ${currentScreen === ScreenNames.calendar ? 'three-columns' : ''}`}>
             {/* SIDE NAVBAR */}
-            {!screensToHideSidebar.includes(currentScreen) && !DomManager.isMobile() && <SideNavbar />}
+            {!screensToHideSidebar.includes(currentScreen) && !DomManager.isMobile() && <DesktopLeftSidebar />}
 
             {/* ADMIN */}
             {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}

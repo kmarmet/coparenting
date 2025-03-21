@@ -13,7 +13,7 @@ import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
 import { FaPlus, FaMinus } from 'react-icons/fa6'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
-
+import { FaBrain } from 'react-icons/fa6'
 export default function Behavior() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, activeInfoChild } = state
@@ -75,7 +75,7 @@ export default function Behavior() {
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
           className={!Manager.isValid(activeInfoChild.behavior) ? 'disabled header behavior' : 'header behavior'}>
-          <GiBrain className={'svg'} />{' '}
+          <FaBrain className={'svg behavior'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Behavior {!Manager.isValid(activeInfoChild.behavior) ? '- no info' : ''}
             {Manager.isValid(activeInfoChild?.behavior) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}

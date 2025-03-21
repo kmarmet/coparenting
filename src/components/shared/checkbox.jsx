@@ -30,7 +30,7 @@ export default function Checkbox({ isActive, text, onCheck, wrapperClass = '', d
       <div className="checkbox">
         <ImCheckmark />
       </div>
-      <Label classes={``} text={text} isBold={true} />
+      <p className="checkbox-text">{text}</p>
     </div>
   )
 }

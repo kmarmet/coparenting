@@ -20,7 +20,7 @@ import { CgDetailsMore } from 'react-icons/cg'
 
 import NewExpenseForm from '../../forms/newExpenseForm.jsx'
 import NavBar from '../../navBar.jsx'
-import BottomCard from '../../shared/bottomCard.jsx'
+import Modal from '../../shared/modal.jsx'
 import InputWrapper from '../../shared/inputWrapper.jsx'
 import Label from '../../shared/label.jsx'
 import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
@@ -268,7 +268,7 @@ export default function ExpenseTracker() {
       <PaymentOptions onClose={() => setShowPaymentOptionsCard(false)} showPaymentOptionsCard={showPaymentOptionsCard} />
 
       {/* DETAILS CARD */}
-      <BottomCard
+      <Modal
         submitText={'Update'}
         title={`${StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name || '')}`}
         submitIcon={<RxUpdate className={'fs-16'} />}
@@ -475,7 +475,7 @@ export default function ExpenseTracker() {
             </>
           )}
         </div>
-      </BottomCard>
+      </Modal>
 
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>

@@ -15,7 +15,7 @@ import NoDataFallbackText from '../../shared/noDataFallbackText'
 import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
-
+import { HiDocumentPlus } from 'react-icons/hi2'
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
@@ -94,7 +94,7 @@ export default function DocsList() {
       </div>
       {!showCard && (
         <NavBar navbarClass={'documents'}>
-          <GrDocumentUpload id={'add-new-button'} onClick={() => setShowCard(true)} />
+          <HiDocumentPlus id={'add-new-button'} onClick={() => setShowCard(true)} />
         </NavBar>
       )}
     </>

@@ -9,7 +9,7 @@ import { RiUserAddLine } from 'react-icons/ri'
 import ModelNames from '/src/models/modelNames'
 import ObjectManager from '/src/managers/objectManager'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import AlertManager from '/src/managers/alertManager'
 import LogManager from '/src/managers/logManager'
 import DB_UserScoped from '../../../database/db_userScoped'
@@ -101,11 +101,11 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
   }
 
   return (
-    <BottomCard
+    <Modal
       refreshKey={refreshKey}
       onSubmit={submit}
       submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
-      title={'New Co-Parent'}
+      title={'Add Co-Parent'}
       wrapperClass="new-coparent-card"
       showCard={showCard}
       submitIcon={<RiUserAddLine />}
@@ -122,7 +122,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
                 }}
               />
             </InputWrapper>
-            <Spacer height={10} />
+            <Spacer height={5} />
             {/* PARENT TYPE */}
             <CheckboxGroup
               parentLabel={'Parent Type'}
@@ -137,7 +137,6 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
 
             {/* RELATIONSHIP */}
             <CheckboxGroup
-              elClass={'mt-15'}
               parentLabel={'Relationship to Me'}
               className="relationship-to-me mt-15"
               skipNameFormatting={true}
@@ -150,7 +149,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
           </div>
         </div>
       </div>
-    </BottomCard>
+    </Modal>
   )
 }
 

@@ -10,9 +10,6 @@ import StringManager from '/src/managers/stringManager'
 import { FaChildren } from 'react-icons/fa6'
 import { MdLocalPhone } from 'react-icons/md'
 import { PiBellSimpleRingingDuotone, PiGlobeDuotone, PiNotepadDuotone } from 'react-icons/pi'
-import { useSwipeable } from 'react-swipeable'
-import DomManager from '../../../managers/domManager'
-import AlertManager from '../../../managers/alertManager'
 import DB from '../../../database/DB'
 import SecurityManager from '../../../managers/securityManager'
 import CalendarManager from '../../../managers/calendarManager'
@@ -21,40 +18,6 @@ import { TbLocationFilled } from 'react-icons/tb'
 export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (event) => {} }) {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser, refreshKey } = state
-
-  // Swipe
-  const handlers = useSwipeable({
-    onSwipedLeft: async (eventData) => {
-      const element = eventData.event.target
-      const eventRow = element.closest('.event-row')
-      const deleteButton = eventRow.querySelector('.delete-event-button')
-      const eventId = eventRow.getAttribute('data-event-id')
-      const allEvents = await SecurityManager.getCalendarEvents(currentUser)
-      const event = allEvents.find((x) => x.id === eventId)
-      const multipleEvents = event.isCloned || event.isDateRange || event.isRecurring || event.isRepeating
-      let alertMessage = 'Are you sure you want to delete this event?'
-      if (multipleEvents) {
-        alertMessage = 'Are you sure you want to delete all events with these details?'
-      }
-      if (event?.ownerKey !== currentUser?.key && event?.fromVisitationSchedule) {
-        return false
-      }
-      deleteButton.addEventListener('click', () => {
-        AlertManager.confirmAlert(alertMessage, "I'm Sure", true, async () => {
-          const eventId = eventRow.getAttribute('data-event-id')
-          await deleteEvent(eventId)
-          AlertManager.successAlert('Event Deleted')
-        })
-      })
-      DomManager.toggleActive(deleteButton)
-    },
-    onSwipedRight: (eventData) => {
-      const element = eventData.event.target
-      const eventRow = element.closest('.event-row')
-      const deleteButton = eventRow.querySelector('.delete-event-button')
-      DomManager.toggleActive(deleteButton)
-    },
-  })
 
   const deleteEvent = async (eventId) => {
     const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
@@ -169,7 +132,7 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
                   className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className} ${
                     index === eventsOfActiveDay.length - 2 ? 'last-child' : ''
                   }`}>
-                  <div className="text flex space-between" {...handlers}>
+                  <div className="text flex space-between">
                     {/* EVENT NAME */}
                     <div className="flex space-between" id="title-wrapper">
                       <p className="title flex" id="title" data-event-id={event?.id}>

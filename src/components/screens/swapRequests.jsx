@@ -12,7 +12,7 @@ import NewSwapRequest from '../forms/newSwapRequest'
 import NavBar from '../navBar'
 import { IoHourglassOutline } from 'react-icons/io5'
 import AlertManager from '/src/managers/alertManager'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import { PiCheckBold, PiSwapDuotone } from 'react-icons/pi'
 import { MdOutlineFaceUnlock } from 'react-icons/md'
 import { IoAdd } from 'react-icons/io5'
@@ -192,7 +192,7 @@ export default function SwapRequests() {
     <>
       <NewSwapRequest showCard={showCard} hideCard={() => setShowCard(false)} />
       {/* DETAILS CARD */}
-      <BottomCard
+      <Modal
         onDelete={deleteRequest}
         hasDelete={activeRequest?.ownerKey === currentUser?.key && view === 'edit'}
         hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
@@ -425,7 +425,7 @@ export default function SwapRequests() {
             </div>
           </Fade>
         )}
-      </BottomCard>
+      </Modal>
 
       {/* PAGE CONTAINER */}
       <div id="swap-requests" className={`${theme} page-container form`}>

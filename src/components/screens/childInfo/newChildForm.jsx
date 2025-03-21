@@ -7,11 +7,12 @@ import Manager from '../../../managers/manager'
 import General from '../../../models/child/general'
 import Child from '../../../models/child/child'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
+import { BsGenderAmbiguous } from 'react-icons/bs'
 import DB_UserScoped from '../../../database/db_userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import ModelNames from '../../../models/modelNames'
 import InputWrapper from '../../shared/inputWrapper'
-import BottomCard from '../../shared/bottomCard'
+import Modal from '../../shared/modal'
 import ObjectManager from '../../../managers/objectManager'
 import AlertManager from '../../../managers/alertManager'
 import UploadInputs from '../../shared/uploadInputs'
@@ -24,7 +25,8 @@ import AddressInput from '/src/components/shared/addressInput.jsx'
 import StringManager from '../../../managers/stringManager.js'
 import CalendarManager from '../../../managers/calendarManager'
 import CalendarEvent from '../../../models/calendarEvent'
-
+import { FaChildren } from 'react-icons/fa6'
+import { BsCameraFill } from 'react-icons/bs'
 const NewChildForm = ({ hideCard, showCard }) => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, authUser, refreshKey } = state
@@ -111,7 +113,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
   }, [])
 
   return (
-    <BottomCard
+    <Modal
       submitText={`Add ${name.length > 0 ? name : 'Child'}`}
       onSubmit={submit}
       className="new-child-wrapper"
@@ -150,6 +152,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
           <CheckboxGroup
             parentLabel={'Gender'}
             required={true}
+            icon={<FaChildren />}
             checkboxArray={Manager.buildCheckboxGroup({
               currentUser,
               customLabelArray: ['Male', 'Female'],
@@ -157,7 +160,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
             onCheck={handleGenderSelect}
           />
           <Spacer height={5} />
-          <Label text={'Child Picture'}></Label>
+          <Label classes="standalone-label-wrapper" text={'Photo'} icon={<BsCameraFill />}></Label>
 
           {/* UPLOAD BUTTON */}
           <UploadInputs
@@ -173,7 +176,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
           />
         </div>
       </div>
-    </BottomCard>
+    </Modal>
   )
 }
 

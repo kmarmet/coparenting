@@ -8,7 +8,7 @@ import SwapRequest from '/src/models/swapRequest'
 import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import NotificationManager from '/src/managers/notificationManager'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import Toggle from 'react-toggle'
 import ModelNames from '/src/models/modelNames'
@@ -151,7 +151,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
   }
 
   return (
-    <BottomCard
+    <Modal
       submitText={'Send Request'}
       refreshKey={refreshKey}
       onSubmit={submit}
@@ -356,6 +356,6 @@ export default function NewSwapRequest({ showCard, hideCard }) {
           <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
         </div>
       </div>
-    </BottomCard>
+    </Modal>
   )
 }

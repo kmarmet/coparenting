@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 // Path: src\components\screens\childInfo\checklists.jsx
-import BottomCard from '../../shared/bottomCard'
+import Modal from '../../shared/modal'
 import globalState from '../../../context'
 import Spacer from '/src/components/shared/spacer'
 import ViewSelector from '/src/components/shared/viewSelector'
@@ -125,7 +125,7 @@ export default function Checklists({ showCard, hideCard }) {
   }, [showCard])
 
   return (
-    <BottomCard
+    <Modal
       onSubmit={addToDb}
       wrapperClass="child-info-checklists"
       submitIcon={<MdOutlineChecklist />}
@@ -164,6 +164,6 @@ export default function Checklists({ showCard, hideCard }) {
             </div>
           )
         })}
-    </BottomCard>
+    </Modal>
   )
 }

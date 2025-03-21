@@ -29,7 +29,7 @@ import CalendarMapper from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import Expense from '/src/models/expense.js'
 import ModelNames from '/src/models/modelNames'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import SelectDropdown from '/src/components/shared/selectDropdown'
 import Spacer from '/src/components/shared/spacer.jsx'
@@ -316,13 +316,13 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   }
 
   return (
-    <BottomCard
+    <Modal
       refreshKey={refreshKey}
       hasDelete={false}
       onSubmit={submitNewExpense}
       submitIcon={<PiMoneyWavyDuotone />}
-      submitText={'Create Expense'}
-      title={'Add Expense'}
+      submitText={'Submit'}
+      title={'Create Expense'}
       className="new-expense-card"
       wrapperClass="new-expense-card"
       showCard={showCard}
@@ -532,6 +532,6 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           )}
         </div>
       </div>
-    </BottomCard>
+    </Modal>
   )
 }

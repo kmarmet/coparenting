@@ -17,7 +17,7 @@ import SecurityManager from '/src/managers/securityManager'
 import ModelNames from '/src/models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
-import BottomCard from '../shared/bottomCard'
+import Modal from '../shared/modal'
 import ObjectManager from '/src/managers/objectManager'
 import ImageManager from '/src/managers/imageManager'
 import AlertManager from '/src/managers/alertManager'
@@ -151,7 +151,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
   }, [])
 
   return (
-    <BottomCard
+    <Modal
       onSubmit={submit}
       wrapperClass="new-memory"
       refreshKey={refreshKey}
@@ -162,8 +162,6 @@ export default function NewMemoryForm({ hideCard, showCard }) {
       showCard={showCard}>
       <div className="new-memory-wrapper">
         <div id="new-memory-form-container" className={`${theme} form`}>
-          <Spacer height={5} />
-
           <div className="form">
             {/* SHARE WITH */}
             {currentUser && <ShareWithCheckboxes onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />}
@@ -218,6 +216,6 @@ export default function NewMemoryForm({ hideCard, showCard }) {
           </div>
         </div>
       </div>
-    </BottomCard>
+    </Modal>
   )
 }

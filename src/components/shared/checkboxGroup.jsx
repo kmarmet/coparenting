@@ -6,18 +6,22 @@ import StringManager from '../../managers/stringManager.js'
 import { IoCloseOutline } from 'react-icons/io5'
 import Label from './label.jsx'
 import Checkbox from './checkbox.jsx'
-export default function CheckboxGroup({ onCheck, elClass = '', skipNameFormatting = false, required = false, parentLabel = '', checkboxArray = [] }) {
+export default function CheckboxGroup({
+  onCheck,
+  elClass = '',
+  skipNameFormatting = false,
+  required = false,
+  parentLabel = '',
+  checkboxArray = [],
+  icon = null,
+}) {
   const { state, setState } = useContext(globalState)
   const { theme } = state
 
   return (
     <>
       <div id="checkbox-group" className={`${theme} ${elClass}`}>
-        {parentLabel.length > 0 && (
-          <div id="parent-label-wrapper">
-            <Label text={parentLabel} required={required} />
-          </div>
-        )}
+        {parentLabel.length > 0 && <Label classes="standalone-label-wrapper" text={parentLabel} required={required} icon={icon ? icon : ''} />}
         <div id="checkboxes" className={checkboxArray.length > 2 ? 'more-than-two-checkboxes' : 'two-checkboxes'}>
           {Manager.isValid(checkboxArray) &&
             checkboxArray.map((obj, index) => {

@@ -118,7 +118,7 @@
         }
 
         #coparent-label,
-        #parent-label,
+        #group-label,
         #child-label {
           color: $blue;
           font-size: 18px;
@@ -222,7 +222,7 @@
       margin-top: 10px;
       #forgot-password-link {
         font-size: 14px;
-        color: $accentBlue;
+        color: $accentLight;
         width: 50%;
         text-align: right;
       }
@@ -350,7 +350,7 @@
 
         span {
           font-weight: $fwBold;
-          color: $accentBlue;
+          color: $accentLight;
         }
       }
 

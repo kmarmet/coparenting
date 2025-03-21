@@ -67,8 +67,8 @@ div {
 .swal2-title {
   @include fontType;
   font-size: 18px;
-  font-weight: $fwMediumBold;
-  line-height: 1.3;
+  font-weight: $fwMedium;
+  line-height: 1.5;
   margin: 0 !important;
   padding: 0 20px 0 0;
   text-align: left;
@@ -86,13 +86,14 @@ div {
 }
 
 .swal2-popup {
-  border-radius: $bigBorderRadius;
+  border-radius: $borderRadius;
   @include bestShadow;
   padding: 20px !important;
   margin: 0 !important;
   display: flex !important;
   align-items: center !important;
   animation-duration: 0.8s !important;
+  flex-wrap: wrap;
 
   @media screen and (min-width: 800px) {
     flex-wrap: wrap;
@@ -137,8 +138,8 @@ div {
 }
 
 .swal2-actions {
-  margin: 0 0 0 auto !important;
-  gap: 8px 0 !important;
+  margin: 8px 0 0 auto !important;
+  gap: 8px !important;
   justify-content: flex-end !important;
 
   button {

@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
 import DB from '/src/database/DB'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import StringManager from '../../../managers/stringManager'
 
 function ChildSelector({ hideCard, showCard }) {
@@ -21,7 +21,7 @@ function ChildSelector({ hideCard, showCard }) {
   }, [activeInfoChild])
 
   return (
-    <BottomCard
+    <Modal
       hasSubmitButton={false}
       onClose={hideCard}
       title={'View Another Child'}
@@ -56,7 +56,7 @@ function ChildSelector({ hideCard, showCard }) {
             )
           })}
       </div>
-    </BottomCard>
+    </Modal>
   )
 }
 

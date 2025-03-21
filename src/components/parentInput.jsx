@@ -20,7 +20,7 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
 
   return (
     <div id="parent-input-container">
-      <p id="parent-label">
+      <p id="group-label">
         Parent #{parentsLength} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
       </p>
       <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />

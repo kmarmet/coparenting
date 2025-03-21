@@ -9,7 +9,7 @@ import NotificationManager from '/src/managers/notificationManager'
 import UploadInputs from '/src/components/shared/uploadInputs'
 import SecurityManager from '/src/managers/securityManager'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import DatasetManager from '/src/managers/datasetManager'
 import AlertManager from '/src/managers/alertManager'
 import ImageManager from '/src/managers/imageManager'
@@ -195,9 +195,9 @@ export default function UploadDocuments({ hideCard, showCard }) {
   }
 
   return (
-    <BottomCard
+    <Modal
       className="upload-document-card"
-      wrapperClass="upload-document-bottom-card"
+      wrapperClass="upload-document-modal"
       onSubmit={upload}
       submitText={'Upload'}
       showCard={showCard}
@@ -233,6 +233,6 @@ export default function UploadDocuments({ hideCard, showCard }) {
           />
         </div>
       </div>
-    </BottomCard>
+    </Modal>
   )
 }

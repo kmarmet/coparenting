@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AlertManager from '/src/managers/alertManager'
 import AppManager from '/src/managers/appManager'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import DB from '../../../database/DB.js'
 import DatasetManager from '/src/managers/datasetManager'
 import DateFormats from '/src/constants/dateFormats'
@@ -29,7 +29,7 @@ import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { BsCalendarPlusFill } from 'react-icons/bs'
+import { BiSolidCalendarPlus } from 'react-icons/bi'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -367,19 +367,25 @@ export default function EventCalendar() {
       })
     }
 
-    const monthArrows = document.querySelector('.MuiPickersArrowSwitcher-root')
-    const belowCalendarButtons = document.querySelector('.MuiDialogActions-root.MuiDialogActions-spacing')
-    if (monthArrows && DomManager.isMobile()) {
-      belowCalendarButtons.append(monthArrows)
-    }
+    appendMonthArrows()
   }, [])
+
+  const appendMonthArrows = () => {
+    const monthArrows = document.querySelector('.MuiPickersArrowSwitcher-root')
+    const calendarMonth = document.getElementById('calendar-month')
+    if (monthArrows && DomManager.isMobile()) {
+      setTimeout(() => {
+        calendarMonth.append(monthArrows)
+      }, 500)
+    }
+  }
 
   return (
     <>
       {/* CARDS */}
       <>
         {/* HOLIDAYS CARD */}
-        <BottomCard
+        <Modal
           hasSubmitButton={false}
           className={`${theme} view-holidays`}
           wrapperClass={`view-holidays`}
@@ -394,10 +400,10 @@ export default function EventCalendar() {
               Visitation
             </button>
           </div>
-        </BottomCard>
+        </Modal>
 
         {/* SEARCH CARD */}
-        <BottomCard
+        <Modal
           submitIcon={<LuCalendarSearch />}
           submitText={'Search'}
           className="search-card"
@@ -412,7 +418,7 @@ export default function EventCalendar() {
             inputValue={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </BottomCard>
+        </Modal>
 
         {/* NEW EVENT */}
         <NewCalendarEvent selectedNewEventDay={selectedDate} showCard={showNewEventCard} hideCard={() => setShowNewEventCard(false)} />
@@ -436,10 +442,10 @@ export default function EventCalendar() {
             onMonthChange={async (month) => {
               await getSecuredEvents()
               setCurrentMonth(moment(month).format('MMMM'))
+              appendMonthArrows()
             }}
             onChange={async (day) => {
-              setSelectedDate(day)
-              setState({ ...state, refreshKey: Manager.getUid() })
+              setSelectedDate(moment(day).format('YYYY-MM-DD'))
               await getSecuredEvents(day).then((r) => r)
             }}
             slotProps={{
@@ -537,13 +543,13 @@ export default function EventCalendar() {
         </div>
       )}
 
-      {/* NAVBARS */}
+      {/* NAV BARS */}
       {DomManager.isMobile() && (
         <>
           {!showNewEventCard && !showSearchCard && !showEditCard && !showHolidaysCard && !showHolidays && (
             <NavBar navbarClass={'calendar search-results'} addOrClose={searchResults.length === 0 ? 'add' : 'close'}>
               {searchResults.length === 0 && (
-                <BsCalendarPlusFill className={'new-event-icon'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
+                <BiSolidCalendarPlus className={'new-event-icon'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
               )}
               {searchResults.length > 0 && (
                 <CgClose

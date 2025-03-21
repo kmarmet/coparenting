@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 // Path: src\components\screens\visitation\fiftyFifty.jsx
 import Label from '../../../components/shared/label'
-import BottomCard from '../../../components/shared/bottomCard'
+import Modal from '../../../components/shared/modal'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -96,7 +96,7 @@ export default function FiftyFifty({ hide, showCard }) {
   }
 
   return (
-    <BottomCard
+    <Modal
       onSubmit={addToCalendar}
       submitText={'Add Schedule'}
       className="form"
@@ -200,6 +200,6 @@ export default function FiftyFifty({ hide, showCard }) {
           dataKey={currentUser?.coparents?.map((x) => x.name)}
         />
       </div>
-    </BottomCard>
+    </Modal>
   )
 }

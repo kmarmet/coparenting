@@ -13,6 +13,7 @@ import { FaBriefcaseMedical } from 'react-icons/fa'
 import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
 import { FaPlus, FaMinus } from 'react-icons/fa6'
+import { PiIdentificationCardFill, PiTrashSimpleDuotone } from 'react-icons/pi'
 
 export default function Medical() {
   const { state, setState } = useContext(globalState)
@@ -116,7 +117,7 @@ export default function Medical() {
                         }}
                       />
                     )}
-                    <IoCloseOutline className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                   </div>
                 </div>
               )

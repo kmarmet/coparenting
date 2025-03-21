@@ -1,6 +1,6 @@
 // Path: src\components\screens\childInfo\addOrUpdateTransferChecklists.jsx
 import React, { useContext, useEffect, useState } from 'react'
-import BottomCard from '../../shared/bottomCard'
+import Modal from '../../shared/modal'
 import globalState from '../../../context'
 import Spacer from '/src/components/shared/spacer'
 import ViewSelector from '/src/components/shared/viewSelector'
@@ -130,11 +130,11 @@ export default function AddOrUpdateTransferChecklists({ showCard, hideCard }) {
   }, [showCard])
 
   return (
-    <BottomCard
+    <Modal
       onSubmit={addOrUpdate}
       wrapperClass="new-checklist"
       submitIcon={<MdOutlineChecklist />}
-      submitText={'Create/Update Checklist'}
+      submitText={'DONE'}
       showCard={showCard}
       subtitle="A transfer checklist allows you and your child to ensure that nothing is left behind when transferring to or from your co-parent's home"
       title={'Transfer Checklists'}
@@ -167,6 +167,6 @@ export default function AddOrUpdateTransferChecklists({ showCard, hideCard }) {
       <button className="button default center mt-15 new-item-button" onClick={addInput}>
         New Checklist Item <CgMathPlus />
       </button>
-    </BottomCard>
+    </Modal>
   )
 }

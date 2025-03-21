@@ -1,10 +1,11 @@
 // Path: src\components\shared\inputWrapper.jsx
 import moment from 'moment'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { DebounceInput } from 'react-debounce-input'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager'
 import Label from './label'
+import DateFormats from '../../constants/dateFormats'
 
 const DebounceLengths = {
   short: 500,
@@ -30,6 +31,28 @@ function InputWrapper({
   const { state, setState } = useContext(globalState)
   const { currentUser, refreshKey } = state
   const noInputTypes = ['location', 'textarea', 'date']
+
+  // Set the height of the textarea
+  useEffect(() => {
+    const activeModal = document.querySelector('#modal-wrapper.active')
+    if (activeModal) {
+      const inputWrapper = activeModal.querySelector('#input-wrapper.textarea')
+
+      if (inputWrapper) {
+        const textarea = inputWrapper.querySelector('textarea')
+
+        if (textarea) {
+          if (inputWrapper) {
+            inputWrapper.style.height = 'auto'
+            inputWrapper.style.height = `${textarea.scrollHeight + 25}px`
+            textarea.style.height = 'auto'
+            textarea.style.height = `${textarea.scrollHeight}px`
+          }
+        }
+      }
+    }
+    console.log(defaultValue)
+  }, [])
 
   return (
     <div
@@ -73,7 +96,7 @@ function InputWrapper({
         </>
       )}
 
-      {/* DATE/LOCATION */}
+      {/* DATE */}
       {noInputTypes.includes(inputType) && useNativeDate && (
         <input
           onBlur={(e) => {
@@ -83,7 +106,7 @@ function InputWrapper({
             }
           }}
           className="date-input"
-          defaultValue={moment(defaultValue).format('yyyy-MM-DD')}
+          value={defaultValue}
           type="date"
           onChange={onChange}
         />
@@ -94,6 +117,7 @@ function InputWrapper({
       {/* TEXTAREA */}
       {inputType === 'textarea' && (
         <textarea
+          id="textarea"
           onBlur={(e) => {
             const wrapper = e.currentTarget.parentElement
             if (wrapper) {

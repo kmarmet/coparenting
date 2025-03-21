@@ -1,22 +1,36 @@
 import React, { useContext, useEffect, useState } from 'react'
+import globalState from '../../context'
 
-function ToggleButton() {
-  const [checked, setChecked] = useState(false)
+function ToggleButton({ isDefaultChecked = false, onCheck = () => {}, onUncheck = () => {} }) {
+  const { state, setState } = useContext(globalState)
+  const { currentUser, theme, refreshKey } = state
+  const [checked, setChecked] = useState(isDefaultChecked)
   return (
-    /* From Uiverse.io by Na3ar-17 */
-    <div className="container">
-      <label className="switch">
-        <input type="checkbox" />
-        <span className="slider">
-          <span className="title">Play</span>
-          <span className="ball">
-            <span className="icon">
-              <span className="material-icons-round">event</span>
-              <span className="material-icons-round">date_range</span>
-            </span>
-          </span>
-        </span>
-      </label>
+    <div className="toggle-button-wrapper">
+      <div id="toggle-button">
+        <input
+          type="checkbox"
+          className="checkbox"
+          checked={checked}
+          key={refreshKey}
+          onChange={() => {
+            if (checked) {
+              if (onUncheck) {
+                onUncheck()
+              }
+            } else {
+              if (onCheck) {
+                onCheck()
+              }
+            }
+            setChecked(!checked)
+          }}
+        />
+        <div className="knobs">
+          <span></span>
+        </div>
+        <div className="layer"></div>
+      </div>
     </div>
   )
 }

@@ -21,7 +21,7 @@ import moment from 'moment'
 import { TbCalendarCheck } from 'react-icons/tb'
 import { MdOutlineAccessTime } from 'react-icons/md'
 import AlertManager from '/src/managers/alertManager'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import DomManager from '/src/managers/domManager'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import ActivityCategory from '/src/models/activityCategory'
@@ -197,7 +197,7 @@ export default function TransferRequests() {
       <NewTransferChangeRequest showCard={showNewRequestCard} hideCard={() => setShowNewRequestCard(false)} />
 
       {/* DETAILS CARD */}
-      <BottomCard
+      <Modal
         refreshKey={refreshKey}
         submitText={'Approve'}
         onDelete={() => deleteRequest('deleted')}
@@ -403,7 +403,7 @@ export default function TransferRequests() {
             </>
           )}
         </div>
-      </BottomCard>
+      </Modal>
 
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}

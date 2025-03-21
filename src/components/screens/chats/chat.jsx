@@ -14,18 +14,21 @@ import { PiBookmarkSimpleDuotone, PiBookmarksSimpleDuotone } from 'react-icons/p
 import ModelNames from '/src/models/modelNames'
 import { Fade } from 'react-awesome-reveal'
 import { IoChevronBack } from 'react-icons/io5'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import { TbMessageCircleSearch } from 'react-icons/tb'
+import { BsBookmarkPlus } from 'react-icons/bs'
 import { DebounceInput } from 'react-debounce-input'
 import { useLongPress } from 'use-long-press'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import DomManager from '/src/managers/domManager'
+import { BsFillBookmarkStarFill } from 'react-icons/bs'
 import ActivityCategory from '/src/models/activityCategory'
 import ChatThread from '/src/models/chat/chatThread'
 import StringManager from '/src/managers/stringManager.coffee'
 import { IoSend } from 'react-icons/io5'
+import { BsFillBookmarksFill } from 'react-icons/bs'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -243,7 +246,7 @@ const Chats = () => {
 
   return (
     <>
-      <BottomCard
+      <Modal
         title={'Search'}
         className="form conversation-search-card"
         wrapperClass="conversation-search"
@@ -279,7 +282,7 @@ const Chats = () => {
           }}
           inputClasses="search-input"
         />
-      </BottomCard>
+      </Modal>
 
       {/* PAGE CONTAINER */}
       <div key={refreshKey} id="chat-wrapper" className={`${theme} conversation`}>
@@ -299,7 +302,7 @@ const Chats = () => {
             <div id="right-side" className="flex">
               <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />
               {bookmarks.length > 0 && (
-                <PiBookmarksSimpleDuotone
+                <BsFillBookmarksFill
                   id="conversation-bookmark-icon"
                   className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
                   onClick={viewBookmarks}
@@ -346,7 +349,7 @@ const Chats = () => {
                 <div key={index} className={'message-fade-wrapper'}>
                   <div className="flex">
                     <p className={bookmark.sender === currentUser?.name ? 'message from' : 'to message'}>{bookmark.message}</p>
-                    <PiBookmarkSimpleDuotone className={'active'} onClick={() => toggleMessageBookmark(bookmark)} />
+                    <BsFillBookmarkStarFill className={'active'} onClick={() => toggleMessageBookmark(bookmark)} />
                   </div>
                   <span className={bookmark.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                     From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD (hh:mma)')}
@@ -379,7 +382,10 @@ const Chats = () => {
                         <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
                           {message.message}
                         </p>
-                        <PiBookmarkSimpleDuotone className={isBookmarked ? 'active' : ''} onClick={() => toggleMessageBookmark(message, false)} />
+                        {isBookmarked && <BsFillBookmarkStarFill className={'active'} onClick={() => toggleMessageBookmark(message)} />}
+                        {!isBookmarked && (
+                          <BsBookmarkPlus className={isBookmarked ? 'active' : ''} onClick={() => toggleMessageBookmark(message, false)} />
+                        )}
                       </div>
                       <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
                     </div>

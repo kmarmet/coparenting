@@ -2,10 +2,38 @@
 
 #external-overrides {
   #calendar-container {
+    #static-calendar {
+      .MuiPickersCalendarHeader-root {
+        display: none !important;
+      }
+    }
     #calendar-month {
       color: $subtitleText;
       text-align: center;
       margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 100vw;
+
+      .MuiPickersArrowSwitcher-root {
+        gap: 3px;
+        position: absolute;
+        right: 30px;
+        button {
+          padding: 0;
+
+          svg {
+            -webkit-transform: scale(0.9);
+            -moz-transform: scale(0.9);
+            -ms-transform: scale(0.9);
+            -o-transform: scale(0.9);
+            transform: scale(0.9);
+            color: $accentLight;
+          }
+        }
+      }
     }
 
     // BELOW CALENDAR

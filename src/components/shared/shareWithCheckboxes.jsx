@@ -6,7 +6,7 @@ import Label from './label'
 import DB from '../../database/DB'
 import StringManager from '../../managers/stringManager.coffee'
 import Checkbox from './checkbox.jsx'
-
+import { PiShareNetworkFill } from 'react-icons/pi'
 export default function ShareWithCheckboxes({
   defaultKeys = [],
   onCheck,

@@ -1,4 +1,4 @@
-// Path: src\components\shared\sideNavbar.jsx
+// Path: src\components\shared\desktopLeftSidebar.jsx
 import React, { useContext } from 'react'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
@@ -26,10 +26,9 @@ import { HiOutlineDocumentText } from 'react-icons/hi2'
 import { BsPeople } from 'react-icons/bs'
 import { MdOutlineManageAccounts } from 'react-icons/md'
 import { FiSettings } from 'react-icons/fi'
-import { BiFace } from 'react-icons/bi'
 import { Fade } from 'react-awesome-reveal'
 
-export default function SideNavbar() {
+export default function DesktopLeftSidebar() {
   const { state, setState } = useContext(globalState)
   const { theme, currentUser, currentScreen, notificationCount } = state
 

@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '../../../managers/manager'
 import DB_UserScoped from '../../../database/db_userScoped'
-import BottomCard from '../../shared/bottomCard'
+import Modal from '../../shared/modal'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import _ from 'lodash'
 import AlertManager from '../../../managers/alertManager'
@@ -35,7 +35,7 @@ export default function CustomCoparentInfo({ hideCard, activeCoparent, showCard 
   }
 
   return (
-    <BottomCard
+    <Modal
       submitIcon={<FaWandMagicSparkles />}
       submitText={'Add'}
       onSubmit={add}
@@ -45,10 +45,10 @@ export default function CustomCoparentInfo({ hideCard, activeCoparent, showCard 
       onClose={resetForm}>
       <div className="custom-coparent-info-wrapper">
         <div className={`${theme} form`}>
-          <InputWrapper key={`${refreshKey}jdklskd`} inputType={'input'} labelText={'Title/Label*'} onChange={(e) => setTitle(e.target.value)} />
+          <InputWrapper key={refreshKey} inputType={'input'} labelText={'Title/Label*'} onChange={(e) => setTitle(e.target.value)} />
           <InputWrapper key={refreshKey} inputType={'input'} labelText={'Value*'} onChange={(e) => setValue(e.target.value)} />
         </div>
       </div>
-    </BottomCard>
+    </Modal>
   )
 }

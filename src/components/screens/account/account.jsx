@@ -13,7 +13,7 @@ import firebaseConfig from '../../../firebaseConfig'
 import { initializeApp } from 'firebase/app'
 import DB_UserScoped from '../../../database/db_userScoped'
 import DB from '../../../database/DB'
-import BottomCard from '../../shared/bottomCard'
+import Modal from '../../shared/modal'
 import InputWrapper from '../../shared/inputWrapper'
 import validator from 'validator'
 import { EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail } from 'firebase/auth'
@@ -180,7 +180,7 @@ export default function Account() {
   return (
     <>
       {/* UPDATE CARD */}
-      <BottomCard
+      <Modal
         onSubmit={async () => {
           if (updateType === 'phone') {
             await updateUserPhone()
@@ -205,10 +205,10 @@ export default function Account() {
             {/*)}*/}
           </div>
         </div>
-      </BottomCard>
+      </Modal>
 
       {/* RE-AUTHENTICATE CARD */}
-      <BottomCard
+      <Modal
         onSubmit={async () => {
           console.log('here')
         }}
@@ -228,7 +228,7 @@ export default function Account() {
             inputValueType="password"
             required={true}></InputWrapper>
         </div>
-      </BottomCard>
+      </Modal>
 
       {/* PAGE CONTAINER */}
       <div id="account-container" className={`${theme} page-container`}>

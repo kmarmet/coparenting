@@ -8,30 +8,28 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import CustomCoparentInfo from './customCoparentInfo'
 import NewCoparentForm from './newCoparentForm'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
-import { IoClose, IoPersonRemove } from 'react-icons/io5'
+import { IoPersonRemove } from 'react-icons/io5'
 import { Fade } from 'react-awesome-reveal'
-import { IoMdRemoveCircle } from 'react-icons/io'
 import NavBar from '/src/components/navBar.jsx'
 import { BsFillSendFill, BsPersonAdd } from 'react-icons/bs'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
+import { FaUserPlus } from 'react-icons/fa6'
 import DatasetManager from '/src/managers/datasetManager'
 import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager.coffee'
-import { PiUserCircle } from 'react-icons/pi'
+import { PiTrashSimpleDuotone, PiUserCircle, PiUserCircleDuotone } from 'react-icons/pi'
 import AddressInput from '../../shared/addressInput'
-import BottomCard from '../../shared/bottomCard'
+import Modal from '../../shared/modal'
 import EmailManager from '../../../managers/emailManager'
-import Actions from '../../shared/actions'
-import { HiOutlineDotsVertical } from 'react-icons/hi'
-import { PiUserCircleDuotone } from 'react-icons/pi'
 import Spacer from '../../shared/spacer'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
+import MobilePushMenu from '../../shared/mobilePushMenu'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
+
   // State
   const [userCoparents, setUserCoparents] = useState([])
   const [selectedCoparentDataArray, setSelectedCoparentDataArray] = useState(null)
@@ -41,7 +39,8 @@ export default function Coparents() {
   const [showInvitationForm, setShowInvitationForm] = useState(false)
   const [invitedCoparentName, setInvitedCoparentName] = useState('')
   const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
-  const [showActions, setShowActions] = useState(false)
+  const [showingDeleteAlert, setShowingDeleteAlert] = useState(false)
+
   const deleteProp = async (prop) => {
     const coparent = await getCoparent()
     await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), coparent)
@@ -104,41 +103,42 @@ export default function Coparents() {
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
-      <Actions show={showActions} shouldHide={showNewCoparentFormCard || showInvitationForm || showCustomInfoCard}>
+      <MobilePushMenu hide={showCustomInfoCard || showNewCoparentFormCard || showInvitationForm || showingDeleteAlert}>
         <div className="action-items">
-          <div
-            className="action-item"
-            onClick={() => {
-              setShowActions(false)
-              setShowCustomInfoCard(true)
-            }}>
-            <FaWandMagicSparkles className={'magic'} />
-          </div>
-          <div
-            className="action-item"
-            onClick={() => {
-              setShowActions(false)
-              AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
-                await deleteCoparent()
-                AlertManager.successAlert('Co-Parent Removed')
-                setSelectedCoparentDataArray(null)
-              })
-            }}>
-            <IoPersonRemove className={'remove-user'} />
-          </div>
+          <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={500} triggerOnce={false} cascade={true}>
+            <div className="action-item" onClick={() => setShowCustomInfoCard(true)}>
+              <p>Add your Own Info</p>
+              <FaWandMagicSparkles className={'magic'} />
+            </div>
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowingDeleteAlert(true)
+                AlertManager.confirmAlert(
+                  `Are you sure you would like to remove this co-parent?`,
+                  "I'm Sure",
+                  true,
+                  async () => {
+                    await deleteCoparent()
+                    AlertManager.successAlert('Co-Parent Removed')
+                    setSelectedCoparentDataArray(null)
+                  },
+                  () => setShowingDeleteAlert(false)
+                )
+              }}>
+              <p>Remove Co-Parent</p>
+              <IoPersonRemove className={'remove-user'} />
+            </div>
 
-          <div
-            className="action-item"
-            onClick={() => {
-              setShowInvitationForm(true)
-              setShowActions(false)
-            }}>
-            <BsFillSendFill className={'paper-airplane'} />
-          </div>
+            <div className="action-item" onClick={() => setShowInvitationForm(true)}>
+              <p>Invite Co-Parent</p>
+              <BsFillSendFill className={'paper-airplane'} />
+            </div>
+          </Fade>
         </div>
-      </Actions>
+      </MobilePushMenu>
 
-      <BottomCard
+      <Modal
         submitText={'Send Invitation'}
         wrapperClass="invite-coparent-card"
         title={'Invite Co-Parent'}
@@ -158,7 +158,7 @@ export default function Coparents() {
         <Spacer height={5} />
         <InputWrapper labelText={'Co-Parent Name'} required={true} onChange={(e) => setInvitedCoparentName(e.target.value)} />
         <InputWrapper labelText={'Co-Parent Email Address'} required={true} onChange={(e) => setInvitedCoparentEmail(e.target.value)} />
-      </BottomCard>
+      </Modal>
 
       {/*{!selectedCoparentDataArray && <NoDataFallbackText text={'No Co-Parents Added'} />}*/}
       {/* COPARENTS CONTAINER */}
@@ -251,7 +251,7 @@ export default function Coparents() {
       </div>
       {!showNewCoparentFormCard && !showCustomInfoCard && (
         <NavBar navbarClass={'calendar'}>
-          <BsPersonAdd id={'add-new-button'} onClick={() => setShowNewCoparentFormCard(true)} />
+          <FaUserPlus id={'add-new-button'} onClick={() => setShowNewCoparentFormCard(true)} />
         </NavBar>
       )}
     </>

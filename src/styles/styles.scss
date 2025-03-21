@@ -170,8 +170,8 @@
   &.react-toggle--checked {
     margin-right: 3px !important;
     .react-toggle-thumb {
-      border: 5px solid $accentBlue !important;
-      background: $accentBlue !important;
+      border: 5px solid $accentLight !important;
+      background: $accentLight !important;
       margin-right: 10px !important;
     }
 
@@ -400,21 +400,12 @@
       }
     }
 
-    .label {
-      color: #000;
-      opacity: 0.75;
-      text-transform: uppercase;
-      font-size: 12px;
-      font-weight: 500;
-      transition: all 0.3s ease-in-out;
-    }
-
     #numpad-wrapper {
       @include numpad;
     }
 
     #label-wrapper {
-      @include label;
+      @include labelWrapper;
     }
 
     #upload-inputs {
@@ -525,6 +516,17 @@
       color: $subtitleText;
     }
 
+    #mobile-push-menu-wrapper {
+      @include mobilePushMenu;
+    }
+
+    .toggle-button-wrapper {
+      * {
+        text-align: right;
+      }
+      @include toggle;
+    }
+
     #install-app-wrapper {
       @include installApp;
     }
@@ -584,11 +586,11 @@
       max-width: calc(100vw - 30px);
       position: relative;
       gap: 25px;
-      overflow: hidden;
+      transition: all 0.5s ease-in-out;
+      height: 100vh;
+      top: 0;
 
       @media screen and (min-width: 800px) {
-        height: calc(100vh - 80px);
-        max-height: calc(100vh - 110px);
         overflow: auto;
       }
 
@@ -700,8 +702,8 @@
       }
     }
 
-    #bottom-card {
-      @include bottomCard;
+    #modal-wrapper {
+      @include modal;
     }
 
     #share-with-checkbox-group {
@@ -893,10 +895,28 @@
       width: 100%;
     }
 
+    .label {
+      font-weight: $fwRegular;
+      margin: 0;
+      line-height: 1.3;
+      color: black;
+      display: flex;
+      align-items: center;
+
+      svg {
+        margin-right: 5px;
+        font-size: 18px;
+        width: 20px;
+        opacity: 0.35;
+        &.type {
+          font-size: 16px;
+        }
+      }
+    }
+
     .asterisk {
       color: $red;
       font-weight: bold;
-      max-height: 15px;
     }
 
     #disclaimer {

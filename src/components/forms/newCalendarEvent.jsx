@@ -17,7 +17,7 @@ import DomManager from '../../managers/domManager.coffee'
 import AddressInput from '../shared/addressInput'
 import Spacer from '../shared/spacer.jsx'
 import ViewSelector from '../shared/viewSelector'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import MyConfetti from '/src/components/shared/myConfetti.js'
@@ -35,6 +35,7 @@ import CalendarMapper from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import CalendarEvent from '/src/models/calendarEvent'
 import ModelNames from '/src/models/modelNames'
+import ToggleButton from '../shared/toggleButton'
 
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
@@ -309,13 +310,14 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   }
 
   useEffect(() => {
+    console.log(selectedNewEventDay)
     if (selectedNewEventDay) {
       setEventStartDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
     }
   }, [selectedNewEventDay])
 
   useEffect(() => {
-    if (selectedNewEventDay) {
+    if (!selectedNewEventDay) {
       setEventStartDate(moment().format(DateFormats.dateForDb))
     }
   }, [])
@@ -323,14 +325,15 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   return (
     <>
       {/* FORM WRAPPER */}
-      <BottomCard
+      <Modal
         submitText={'Create Event'}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={resetForm}
         onSubmit={submit}
         submitIcon={<BsCalendar2CheckFill />}
         showCard={showCard}
-        wrapperClass="new-calendar-event"
+        wrapperClass={`new-calendar-event`}
+        contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
         title={'Create New Event'}>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           <Fade direction={'up'} duration={600} delay={200} triggerOnce={true}>
@@ -379,7 +382,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               )}
               {eventLength === EventLengths.single && DomManager.isMobile() && (
                 <InputWrapper
-                  defaultValue={moment(selectedNewEventDay)}
+                  defaultValue={selectedNewEventDay}
                   onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
                   useNativeDate={true}
                   labelText={'Date'}
@@ -453,14 +456,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               <AccordionSummary>
                 <div className="flex">
                   <p>Remind Me</p>
-                  <Toggle
-                    icons={{
-                      checked: <MdNotificationsActive />,
-                      unchecked: null,
-                    }}
-                    className={'ml-auto reminder-toggle'}
-                    onChange={() => setShowReminders(!showReminders)}
-                  />
+                  <ToggleButton onCheck={() => setShowReminders(true)} onUncheck={() => setShowReminders(false)} />
                 </div>
               </AccordionSummary>
               <AccordionDetails>
@@ -483,13 +479,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             <div>
               <div className="flex">
                 <p>Visitation Event</p>
-                <Toggle
-                  icons={{
-                    unchecked: null,
-                  }}
-                  className={'ml-auto visitation-toggle'}
-                  onChange={() => setIsVisitation(!isVisitation)}
-                />
+                <ToggleButton onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
               </div>
             </div>
 
@@ -501,14 +491,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 <AccordionSummary>
                   <div className="flex">
                     <p>Include Children</p>
-                    <Toggle
-                      icons={{
-                        checked: <MdOutlineFaceUnlock />,
-                        unchecked: null,
-                      }}
-                      className={'ml-auto reminder-toggle'}
-                      onChange={() => setIncludeChildren(!includeChildren)}
-                    />
+                    <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -532,14 +515,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                   <AccordionSummary>
                     <div className="flex">
                       <p>Recurring</p>
-                      <Toggle
-                        icons={{
-                          checked: <MdEventRepeat />,
-                          unchecked: null,
-                        }}
-                        className={'ml-auto reminder-toggle'}
-                        onChange={() => setEventIsRepeating(!eventIsRepeating)}
-                      />
+                      <ToggleButton onCheck={() => setEventIsRepeating(!eventIsRepeating)} onUncheck={() => setEventIsRepeating(!eventIsRepeating)} />
                     </div>
                   </AccordionSummary>
                   <AccordionDetails>
@@ -582,27 +558,23 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               <>
                 <div className="flex">
                   <p>Copy Event to other Dates</p>
-                  <Toggle
-                    icons={{
-                      checked: <FaClone />,
-                      unchecked: null,
-                    }}
-                    className={'ml-auto clone-toggle clone'}
-                    onChange={(e) => {
-                      setShowCloneInput(e.target.checked)
+                  <ToggleButton
+                    onCheck={() => {
+                      setShowCloneInput(true)
                       const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
-                      if (e.target.checked && dateWrapperElements.length === 0) {
+                      if (showCloneInput && dateWrapperElements.length === 0) {
                         addDateInput()
                       }
                     }}
+                    onUncheck={() => setShowCloneInput(false)}
                   />
                 </div>
 
                 {/* CLONED INPUTS */}
-                <div className={`cloned-date-wrapper form ${showCloneInput ? 'active' : ''}`}></div>
-                {Manager.isValid(clonedDates) && (
-                  <button className="default button" onClick={addDateInput}>
-                    Add Another Date
+                <div className={`cloned-date-wrapper form  ${showCloneInput === true ? 'active' : ''}`}></div>
+                {showCloneInput && (
+                  <button className="default button" id="add-date-button" onClick={addDateInput}>
+                    Add Date
                   </button>
                 )}
               </>
@@ -634,7 +606,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
           </Fade>
         </div>
-      </BottomCard>
+      </Modal>
     </>
   )
 }

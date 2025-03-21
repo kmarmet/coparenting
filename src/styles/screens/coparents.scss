@@ -22,21 +22,31 @@
       svg {
         font-size: 45px;
         opacity: 0.4;
+        transform: scale(0.8);
+      }
+
+      .coparent-name,
+      .coparent-type {
+        opacity: 0.75;
+      }
+      .coparent-type {
+        padding-top: 3px;
       }
 
       &.active {
         transition: all 0.3s ease-in-out;
 
         svg {
-          color: $accentBlue;
+          color: $accentLight;
           opacity: 1;
-          transition: all 0.3s ease-in-out;
+          transition: all 3s ease-in-out;
+          transform: scale(1);
         }
 
         .coparent-name {
           opacity: 1;
           font-weight: $fwMediumBold;
-          color: $accentBlue;
+          color: $accentLight;
         }
 
         .child-name {
@@ -56,8 +66,7 @@
           font-size: 12px;
           text-align: center;
           line-height: 1;
-          font-style: italic;
-          font-weight: $fwMediumBold;
+          font-weight: $fwMedium;
           color: $subtitleText;
         }
       }
@@ -66,6 +75,7 @@
         font-size: 16px;
         font-weight: $fwRegular;
         border: 0;
+        color: $subtitleText;
       }
     }
   }

@@ -10,7 +10,7 @@ import AlertManager from '/src/managers/alertManager.coffee'
 import ChatManager from '/src/managers/chatManager.js'
 import Manager from '/src/managers/manager.js'
 import StringManager from '/src/managers/stringManager.coffee'
-
+import { FaCirclePause } from 'react-icons/fa6'
 export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
@@ -71,7 +71,7 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
           {/* PAUSE CHAT BUTTON */}
           {!chat?.isPausedFor?.includes(currentUser?.key) && (
             <div id="pause-wrapper">
-              <HiPause
+              <FaCirclePause
                 onClick={(e) => {
                   e.stopPropagation()
                   AlertManager.confirmAlert(

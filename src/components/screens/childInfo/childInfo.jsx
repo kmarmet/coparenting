@@ -27,10 +27,13 @@ import AddOrUpdateTransferChecklists from './addOrUpdateTransferChecklists'
 import Checklists from './checklists'
 import Spacer from '../../shared/spacer'
 import Actions from '../../shared/actions'
+import { PiListChecksFill } from 'react-icons/pi'
 import { FaWandMagicSparkles } from 'react-icons/fa6'
 import { BiFace } from 'react-icons/bi'
 import Checklist from './checklist'
 import { BsTelephoneFill } from 'react-icons/bs'
+import MobilePushMenu from '../../shared/mobilePushMenu'
+import { BiSolidUserCircle } from 'react-icons/bi'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
@@ -104,12 +107,14 @@ export default function ChildInfo() {
         <>
           {/* CUSTOM INFO FORM */}
           <CustomChildInfo showCard={showInfoCard} activeChild={activeInfoChild} hideCard={() => setShowInfoCard(false)} />
+
           {/* NEW CHECKLIST */}
           <AddOrUpdateTransferChecklists
             activeChild={activeInfoChild}
             showCard={showNewChecklistCard}
             hideCard={() => setShowNewChecklistCard(false)}
           />
+
           {/* VIEW CHECKLISTS */}
           <Checklists showCard={showChecklistsCard} hideCard={() => setShowChecklistsCard(false)} activeChild={activeInfoChild} />
         </>
@@ -118,17 +123,18 @@ export default function ChildInfo() {
       {/* NEW CHILD  */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
-      {/* ACTIONS */}
-      {Manager.isValid(currentUser?.children) && (
-        <Actions shouldHide={showInfoCard || showSelectorCard || showNewChecklistCard} onOpen={setDefaultActiveChild}>
-          <div className="action-items">
+      <MobilePushMenu hide={showNewChildForm || showInfoCard || showSelectorCard || showNewChecklistCard || showChecklistsCard}>
+        <div className="action-items">
+          <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={500} triggerOnce={false} cascade={true}>
             {/* CUSTOM INFO */}
             <div
               className="action-item"
               onClick={() => {
                 setShowInfoCard(true)
               }}>
-              <FaWandMagicSparkles className={'magic'} />
+              <div className="content">
+                <FaWandMagicSparkles className={'magic'} /> <span>Add your Own Info</span>
+              </div>
             </div>
 
             {/* VIEW ANOTHER CHILD */}
@@ -138,7 +144,9 @@ export default function ChildInfo() {
                   setShowSelectorCard(true)
                 }}
                 className="action-item">
-                <BiFace className={'child'} />
+                <div className="content">
+                  <BiSolidUserCircle className={'child'} /> <span>View Another Child</span>
+                </div>
               </div>
             )}
 
@@ -148,11 +156,13 @@ export default function ChildInfo() {
               onClick={() => {
                 setShowNewChecklistCard(true)
               }}>
-              <TbChecklist className={'checklist'} />
+              <div className="content">
+                <PiListChecksFill className={'checklist'} /> <span>Add or Edit Checklists</span>
+              </div>
             </div>
-          </div>
-        </Actions>
-      )}
+          </Fade>
+        </div>
+      </MobilePushMenu>
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container child-info form`}>

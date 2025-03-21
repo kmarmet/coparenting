@@ -7,7 +7,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import CheckboxGroup from './checkboxGroup'
 import InputWrapper from './inputWrapper'
-import BottomCard from './bottomCard'
+import Modal from './modal'
 import AlertManager from '../../managers/alertManager'
 import ShareWithCheckboxes from './shareWithCheckboxes'
 import NotificationManager from '../../managers/notificationManager.js'
@@ -18,7 +18,8 @@ import ViewSelector from './viewSelector'
 import AddressInput from './addressInput'
 import validator from 'validator'
 import DomManager from '../../managers/domManager'
-
+import { FaPencilAlt } from 'react-icons/fa'
+import { PiTextboxFill } from 'react-icons/pi'
 export default function CustomChildInfo({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, activeInfoChild } = state
@@ -91,7 +92,7 @@ export default function CustomChildInfo({ hideCard, showCard }) {
   }
 
   return (
-    <BottomCard
+    <Modal
       onSubmit={add}
       submitText={'Add'}
       className="custom-child-info-wrapper"
@@ -108,11 +109,12 @@ export default function CustomChildInfo({ hideCard, showCard }) {
         />
         <Spacer height={5} />
         <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with" required={false} />
-        <Spacer height={10} />
+        <Spacer height={5} />
         {/* INFO TYPE */}
         <CheckboxGroup
           parentLabel="Type"
           required={true}
+          icon={<FaPencilAlt className={'type'} />}
           checkboxArray={Manager.buildCheckboxGroup({
             currentUser,
             defaultLabels: ['Text'],
@@ -120,6 +122,7 @@ export default function CustomChildInfo({ hideCard, showCard }) {
           })}
           onCheck={handleInfoTypeSelection}
         />
+        <Spacer height={5} />
 
         {/* INPUTS */}
         {infoType === 'text' && (
@@ -171,6 +174,6 @@ export default function CustomChildInfo({ hideCard, showCard }) {
           </>
         )}
       </div>
-    </BottomCard>
+    </Modal>
   )
 }

@@ -11,7 +11,7 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '/src/constants/dateFormats'
 import DateManager from '/src/managers/dateManager'
-import BottomCard from '../shared/bottomCard'
+import Modal from '../shared/modal'
 import InputWrapper from '../shared/inputWrapper'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import AlertManager from '/src/managers/alertManager'
@@ -149,7 +149,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
   }
 
   return (
-    <BottomCard
+    <Modal
       onSubmit={submit}
       submitText={'Send Request'}
       wrapperClass="new-transfer-request"
@@ -261,6 +261,6 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
           </div>
         </div>
       </div>
-    </BottomCard>
+    </Modal>
   )
 }

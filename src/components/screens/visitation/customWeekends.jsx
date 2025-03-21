@@ -1,5 +1,5 @@
 // Path: src\components\screens\visitation\customWeekends.jsx
-import BottomCard from '../../../components/shared/bottomCard'
+import Modal from '../../../components/shared/modal'
 import globalState from '../../../context'
 import React, { useContext, useState } from 'react'
 import Manager from '../../../managers/manager'
@@ -103,7 +103,7 @@ export default function CustomWeekends({ hide, showCard }) {
   }
 
   return (
-    <BottomCard
+    <Modal
       submitText={'Add Schedule'}
       className={'long-title form'}
       onSubmit={addSpecificWeekendsToCalendar}
@@ -133,6 +133,6 @@ export default function CustomWeekends({ hide, showCard }) {
         <Spacer height={5} />
       </>
       <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
-    </BottomCard>
+    </Modal>
   )
 }

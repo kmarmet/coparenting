@@ -4,7 +4,7 @@ import FirebaseStorage from '/src/database/firebaseStorage'
 import searchTextHL from 'search-text-highlight'
 import DocumentConversionManager from '/src/managers/documentConversionManager'
 import Manager from '/src/managers/manager'
-import BottomCard from '/src/components/shared/bottomCard'
+import Modal from '/src/components/shared/modal'
 import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../../navBar'
 import DB from '/src/database/DB'
@@ -439,7 +439,7 @@ export default function DocViewer() {
   return (
     <>
       {/* SEARCH CARD */}
-      <BottomCard
+      <Modal
         wrapperClass="doc-search-card"
         className="form search-card"
         submitText={'Find Text'}
@@ -454,10 +454,10 @@ export default function DocViewer() {
           onChange={(e) => setSearchValue(e.target.value)}
           inputValueType="text"
         />
-      </BottomCard>
+      </Modal>
 
       {/* TIPS CARD */}
-      <BottomCard
+      <Modal
         wrapperClass="doc-tips-card"
         hasSubmitButton={false}
         showCard={showTips}
@@ -491,11 +491,11 @@ export default function DocViewer() {
             open the document.
           </p>
         </>
-      </BottomCard>
+      </Modal>
 
       {/* TABLE OF CONTENTS */}
       {tocHeaders?.length > 0 && (
-        <BottomCard
+        <Modal
           wrapperClass="toc-card"
           hasSubmitButton={false}
           showCard={showToc}
@@ -522,11 +522,11 @@ export default function DocViewer() {
                 })}
             </div>
           </div>
-        </BottomCard>
+        </Modal>
       )}
 
       {/* RENAME FILE */}
-      <BottomCard
+      <Modal
         showCard={showRenameFile}
         submitText={'Rename'}
         wrapperClass="rename-file-card"
@@ -535,7 +535,7 @@ export default function DocViewer() {
         className="rename-file"
         title={'Rename Document'}>
         <InputWrapper labelText={'Enter new document name...'} onChange={(e) => setNewFileName(e.target.value)} />
-      </BottomCard>
+      </Modal>
 
       {/* FLOATING BUTTONS */}
       <Actions shouldHide={shouldHideSidebar} show={sideMenuIsOpen}>

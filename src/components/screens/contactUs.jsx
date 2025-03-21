@@ -2,7 +2,7 @@
 import React, { useContext, useState } from 'react'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
-import BottomCard from '../shared/bottomCard'
+import Modal from '../shared/modal'
 import EmailManager from '../../managers/emailManager'
 import { Fade } from 'react-awesome-reveal'
 import { MdOutlineAppShortcut, MdOutlineEmail } from 'react-icons/md'
@@ -79,7 +79,7 @@ export default function ContactUs() {
   return (
     <>
       {/* FEATURE REQUEST */}
-      <BottomCard
+      <Modal
         onSubmit={submitFeatureRequest}
         submitText={'Send Request'}
         wrapperClass="feature-request"
@@ -105,10 +105,10 @@ export default function ContactUs() {
             </div>
           </div>
         </div>
-      </BottomCard>
+      </Modal>
 
       {/* FEEDBACK */}
-      <BottomCard
+      <Modal
         submitText={'Send Feedback'}
         className="feedback-wrapper"
         wrapperClass="feedback-wrapper"
@@ -129,10 +129,10 @@ export default function ContactUs() {
             </div>
           </div>
         </div>
-      </BottomCard>
+      </Modal>
 
       {/* CONTACT SUPPORT */}
-      <BottomCard
+      <Modal
         submitText={'Send Support Request'}
         onSubmit={submitSupportRequest}
         wrapperClass="support-wrapper"
@@ -153,7 +153,7 @@ export default function ContactUs() {
             </div>
           </div>
         </div>
-      </BottomCard>
+      </Modal>
 
       {/* CONTACT US */}
       <div id="contact-us-container" className={`${theme} page-container form`}>

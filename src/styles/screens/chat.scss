@@ -294,7 +294,7 @@
 
       #conversation-bookmark-icon {
         &.active {
-          color: $mainBlue;
+          color: $accentLight;
         }
       }
     }
@@ -383,17 +383,19 @@
       .flex {
         width: 100%;
       }
+
       svg {
-        font-size: 26px;
+        font-size: 22px;
         transition: all 0.3s ease-in-out;
         position: relative;
         right: -5px;
         color: $subtitleText;
-        opacity: 0.75;
+        opacity: 0.55;
+        margin-left: 5px;
 
         &.active {
           transition: all 0.3s ease-in-out;
-          color: $accentBlue;
+          color: $accentLight;
           opacity: 1;
         }
       }
@@ -421,7 +423,7 @@
             z-index: 100;
             margin-right: auto;
             background-color: #e1eefc;
-            color: $accentBlue;
+            color: $accentLight;
             display: flex;
             justify-content: space-between;
 

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import BottomCard from '../../shared/bottomCard.jsx'
+import Modal from '../../shared/modal.jsx'
 import { RxOpenInNewWindow } from 'react-icons/rx'
 import { ImAppleinc } from 'react-icons/im'
 import { IoLogoVenmo } from 'react-icons/io5'
@@ -20,7 +20,7 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
   const { currentUser, theme } = state
   return (
     <>
-      <BottomCard
+      <Modal
         hasSubmitButton={false}
         subtitle="There are numerous straightforward and cost-free methods available for transferring money to a co-parent for expenses or other purposes. Please review the options below to determine which one suits your needs best."
         title={'Payment/Transfer Options'}
@@ -127,7 +127,7 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
             </div>
           </div>
         </div>
-      </BottomCard>
+      </Modal>
     </>
   )
 }

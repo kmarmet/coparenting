@@ -7,6 +7,8 @@
       color: $bootstrapRedColor;
       padding: 5px 10px;
       font-size: 12px;
+      border-radius: 4px;
+      text-transform: uppercase;
     }
 
     @include accordion;
@@ -276,7 +278,8 @@
       overflow: hidden;
 
       .MuiCollapse-root {
-        background: transparent;
+        background: $bestGreyForWhite;
+        padding: 12px;
       }
       .rs-panel-body {
         padding: 0 10px;
@@ -438,6 +441,10 @@
 
             &.general {
               font-size: 32px;
+            }
+
+            &.behavior {
+              font-size: 26px;
             }
           }
         }

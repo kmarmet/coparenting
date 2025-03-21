@@ -5,37 +5,26 @@ import ScreenNames from '../constants/screenNames'
 import Manager from '../managers/manager'
 import AppManager from '../managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
-import { VscSettings } from 'react-icons/vsc'
-import { TbPhotoHeart } from 'react-icons/tb'
-import { BsFillHousesFill } from 'react-icons/bs'
 import {
-  PiBellDuotone,
-  PiCalendarDotsDuotone,
-  PiCarProfileDuotone,
-  PiChatsCircleDuotone,
-  PiHouseLineDuotone,
-  PiIdentificationCardDuotone,
-  PiMoneyWavyDuotone,
-  PiMoonStarsDuotone,
-  PiSignOutDuotone,
-  PiSunDuotone,
-  PiSwapDuotone,
-} from 'react-icons/pi'
-import { TbGridDots } from 'react-icons/tb'
-import DomManager from '../managers/domManager'
-import { Fade } from 'react-awesome-reveal'
-import { BsCalendarWeekFill } from 'react-icons/bs'
-import { IoChatbubbles } from 'react-icons/io5'
+  BsCalendarWeekFill,
+  BsFillArrowDownSquareFill,
+  BsFillArrowRightCircleFill,
+  BsFillHousesFill,
+  BsFillMoonStarsFill,
+  BsPersonVcardFill,
+  BsSendFill,
+} from 'react-icons/bs'
+import { IoChatbubbles, IoDocuments, IoPeopleCircleSharp } from 'react-icons/io5'
+import { PiBellFill, PiSunDuotone } from 'react-icons/pi'
 import { IoMdPhotos } from 'react-icons/io'
-import { PiBellFill } from 'react-icons/pi'
-import { BsPersonVcardFill } from 'react-icons/bs'
-import { GrInstallOption } from 'react-icons/gr'
+import { FaMoneyCheckDollar } from 'react-icons/fa6'
 import DB_UserScoped from '../database/db_userScoped'
-import { RiArchive2Fill, RiMailSendLine } from 'react-icons/ri'
-import { HiOutlineDocumentText } from 'react-icons/hi2'
-import { BsPeople } from 'react-icons/bs'
-import { MdOutlineManageAccounts } from 'react-icons/md'
-import BottomCard from './shared/bottomCard'
+import { RiArchive2Fill, RiMapPinTimeFill } from 'react-icons/ri'
+import { MdSettingsSuggest, MdSwapHorizontalCircle } from 'react-icons/md'
+import Modal from './shared/modal'
+import { BiSolidDashboard } from 'react-icons/bi'
+import { HiUserCircle } from 'react-icons/hi2'
+import { FaDonate } from 'react-icons/fa'
 
 export default function FullMenu() {
   const { state, setState } = useContext(globalState)
@@ -43,8 +32,9 @@ export default function FullMenu() {
 
   const auth = getAuth()
 
-  const changeCurrentScreen = async (screen) => {
+  const changeCurrentScreen = async (screen, menuItem) => {
     const _user = await DB_UserScoped.getCurrentUser(authUser?.email)
+
     setState({ ...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: _user })
   }
 
@@ -62,6 +52,7 @@ export default function FullMenu() {
     if (pageOverlay) {
       pageOverlay.classList.remove('active')
     }
+
     signOut(auth)
       .then(() => {
         window.location.reload()
@@ -74,7 +65,7 @@ export default function FullMenu() {
   }
 
   return (
-    <BottomCard
+    <Modal
       wrapperClass="full-menu"
       title={'Menu'}
       className={`full-menu ${theme}`}
@@ -84,18 +75,18 @@ export default function FullMenu() {
       hasSubmitButton={false}>
       <div id="full-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
         {/* ADMIN DASHBOARD */}
-        {/*{currentUser?.email === 'kmarmet1@gmail.com' && (*/}
-        {/*  <div*/}
-        {/*    className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}*/}
-        {/*    onClick={() => changeCurrentScreen(ScreenNames.adminDashboard)}>*/}
-        {/*    <PiToolboxDuotone />*/}
-        {/*    <p>Admin Dashboard</p>*/}
-        {/*  </div>*/}
-        {/*)}*/}
+        {currentUser?.email === 'kmarmet1@gmail.com' && (
+          <div
+            className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
+            onClick={(e) => changeCurrentScreen(ScreenNames.adminDashboard, e)}>
+            <BiSolidDashboard />
+            <p>Dashboard</p>
+          </div>
+        )}
         {/* CALENDAR */}
         <div
           className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.calendar)}>
+          onClick={(e) => changeCurrentScreen(ScreenNames.calendar, e)}>
           <BsCalendarWeekFill />
           <p>Calendar</p>
         </div>
@@ -103,7 +94,7 @@ export default function FullMenu() {
         {/* NOTIFICATIONS */}
         <div
           className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.notifications)}>
+          onClick={(e) => changeCurrentScreen(ScreenNames.notifications, e)}>
           <PiBellFill />
           {notificationCount > 0 && <div className="badge"></div>}
           <p>Notifications</p>
@@ -115,7 +106,7 @@ export default function FullMenu() {
             {/* VISITATION */}
             <div
               className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.visitation)}>
+              onClick={(e) => changeCurrentScreen(ScreenNames.visitation, e)}>
               <BsFillHousesFill />
               <p>Visitation</p>
             </div>
@@ -123,7 +114,7 @@ export default function FullMenu() {
             {/* CHATS */}
             <div
               className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.chats)}>
+              onClick={(e) => changeCurrentScreen(ScreenNames.chats, e)}>
               <IoChatbubbles />
               <p className="text">Chats</p>
             </div>
@@ -131,32 +122,32 @@ export default function FullMenu() {
             {/* EXPENSES */}
             <div
               className={`menu-item expenses ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.expenseTracker)}>
-              <PiMoneyWavyDuotone />
+              onClick={(e) => changeCurrentScreen(ScreenNames.expenseTracker, e)}>
+              <FaDonate />
               <p>Expenses</p>
             </div>
 
             {/* SWAP REQUESTS */}
             <div
               className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.swapRequests)}>
-              <PiSwapDuotone />
+              onClick={(e) => changeCurrentScreen(ScreenNames.swapRequests, e)}>
+              <MdSwapHorizontalCircle />
               <p>Swaps</p>
             </div>
 
             {/* TRANSFER CHANGE */}
             <div
               className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.transferRequests)}>
-              <PiCarProfileDuotone />
+              onClick={(e) => changeCurrentScreen(ScreenNames.transferRequests, e)}>
+              <RiMapPinTimeFill />
               <p>Transfers</p>
             </div>
 
             {/* DOCUMENTS */}
             <div
               className={`menu-item documents ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.docsList)}>
-              <HiOutlineDocumentText />
+              onClick={(e) => changeCurrentScreen(ScreenNames.docsList, e)}>
+              <IoDocuments />
               <p>Documents</p>
             </div>
           </>
@@ -166,7 +157,7 @@ export default function FullMenu() {
             {/* MEMORIES */}
             <div
               className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.memories)}>
+              onClick={(e) => changeCurrentScreen(ScreenNames.memories, e)}>
               <IoMdPhotos />
               <p>Memories</p>
             </div>
@@ -174,7 +165,7 @@ export default function FullMenu() {
             {/* CHILD INFO */}
             <div
               className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.childInfo)}>
+              onClick={(e) => changeCurrentScreen(ScreenNames.childInfo, e)}>
               <BsPersonVcardFill />
               <p>Child Info</p>
             </div>
@@ -182,15 +173,15 @@ export default function FullMenu() {
             {/* COPARENTS */}
             <div
               className={`menu-item coparents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.coparents)}>
-              <BsPeople />
+              onClick={(e) => changeCurrentScreen(ScreenNames.coparents, e)}>
+              <IoPeopleCircleSharp />
               <p>Co-Parents</p>
             </div>
 
             {/* ARCHIVES */}
             <div
               className={`menu-item records ${currentScreen === ScreenNames.archives ? 'active' : ''}`}
-              onClick={() => changeCurrentScreen(ScreenNames.archives)}>
+              onClick={(e) => changeCurrentScreen(ScreenNames.archives, e)}>
               <RiArchive2Fill />
               <p>Archives</p>
             </div>
@@ -200,23 +191,23 @@ export default function FullMenu() {
         {/* ACCOUNT */}
         <div
           className={`menu-item account ${currentScreen === ScreenNames.account ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.account)}>
-          <MdOutlineManageAccounts />
+          onClick={(e) => changeCurrentScreen(ScreenNames.account, e)}>
+          <HiUserCircle />
           <p>Account</p>
         </div>
 
         {/* SETTINGS */}
         <div
           className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.settings)}>
-          <VscSettings /> <p>Settings</p>
+          onClick={(e) => changeCurrentScreen(ScreenNames.settings, e)}>
+          <MdSettingsSuggest /> <p>Settings</p>
         </div>
 
         {/* CONTACT US */}
         <div
           className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.contactUs)}>
-          <RiMailSendLine />
+          onClick={(e) => changeCurrentScreen(ScreenNames.contactUs, e)}>
+          <BsSendFill />
           <p>Contact Us</p>
         </div>
 
@@ -229,23 +220,23 @@ export default function FullMenu() {
         )}
         {currentUser?.settings?.theme === 'light' && (
           <div onClick={() => changeTheme('dark')} className="menu-item theme">
-            <PiMoonStarsDuotone />
+            <BsFillMoonStarsFill />
             <p>Dark Mode</p>
           </div>
         )}
         {/* INSTALL APP BUTTON */}
         <div
           className={`menu-item install-app ${currentScreen === ScreenNames.installApp ? 'active' : ''}`}
-          onClick={() => changeCurrentScreen(ScreenNames.installApp)}>
-          <GrInstallOption />
+          onClick={(e) => changeCurrentScreen(ScreenNames.installApp, e)}>
+          <BsFillArrowDownSquareFill />
           <p>Install</p>
         </div>
         {/* LOGOUT BUTTON */}
         <div className={`menu-item logout`} onClick={logout}>
-          <PiSignOutDuotone />
+          <BsFillArrowRightCircleFill />
           <p>Logout</p>
         </div>
       </div>
-    </BottomCard>
+    </Modal>
   )
 }
