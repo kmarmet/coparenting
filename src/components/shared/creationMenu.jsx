@@ -1,35 +1,108 @@
 import React, { useContext } from 'react'
-import ScreenActions from './screenActions'
-import { IoIosArrowDown } from 'react-icons/io'
-import { FaCameraRotate, FaWandMagicSparkles } from 'react-icons/fa6'
+import BottomMenu from './bottomMenu'
+import { IoIosArrowDown, IoMdPhotos } from 'react-icons/io'
 import { Fade } from 'react-awesome-reveal'
 import globalState from '../../context'
+import { BsCalendarWeekFill } from 'react-icons/bs'
+import { RiMapPinTimeFill } from 'react-icons/ri'
+import { MdSwapHorizontalCircle } from 'react-icons/md'
+import { FaDonate, FaFileUpload } from 'react-icons/fa'
+import CreationForms from '../../constants/creationForms'
+
 const CreationMenu = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+  const { currentUser, theme } = state
   return (
-    <ScreenActions>
-      <div className="action-items">
-        <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={500} triggerOnce={false} cascade={true}>
-          {/* CUSTOM INFO */}
+    <BottomMenu>
+      <div className="action-items creation">
+        <Fade direction={'up'} className={'creation-fade-wrapper'} duration={400} triggerOnce={false} cascade={true} damping={0.2}>
+          {/* CALENDAR */}
           <div
             className="action-item"
             onClick={() => {
-              setState({ ...state, showBottomMenu: false })
+              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.calendar })
             }}>
             <div className="content">
-              <div className="svg-wrapper">
-                <FaWandMagicSparkles className={'magic'} />
+              <div className="svg-wrapper calendar">
+                <BsCalendarWeekFill className={'calendar'} />
               </div>
-              <p>
-                Add your Own Info<span className="subtitle">Include personalized details about your child</span>
-              </p>
+              <p className="calendar">Calendar Event</p>
             </div>
           </div>
-          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showBottomMenu: false })} />
+
+          {/* EXPENSE */}
+          <div
+            className="action-item"
+            onClick={() => {
+              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.expense })
+            }}>
+            <div className="content">
+              <div className="svg-wrapper expense">
+                <FaDonate className={'expense'} />
+              </div>
+              <p className="expense">Expense</p>
+            </div>
+          </div>
+
+          {/* TRANSFER */}
+          <div
+            className="action-item"
+            onClick={() => {
+              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.transferRequest })
+            }}>
+            <div className="content">
+              <div className="svg-wrapper transfer">
+                <RiMapPinTimeFill className={'transfer'} />
+              </div>
+              <p className="transfer">Transfer Change Request</p>
+            </div>
+          </div>
+
+          {/* MEMORY */}
+          <div
+            className="action-item"
+            onClick={() => {
+              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.memories })
+            }}>
+            <div className="content">
+              <div className="svg-wrapper memory">
+                <IoMdPhotos className={'memory'} />
+              </div>
+              <p className="memory">Memory</p>
+            </div>
+          </div>
+
+          {/* SWAPS */}
+          <div
+            className="action-item"
+            onClick={() => {
+              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.swapRequest })
+            }}>
+            <div className="content">
+              <div className="svg-wrapper swap">
+                <MdSwapHorizontalCircle className={'swap'} />
+              </div>
+              <p className="swap">Swap Request</p>
+            </div>
+          </div>
+
+          {/* DOCS */}
+          <div
+            className="action-item"
+            onClick={() => {
+              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.documents })
+            }}>
+            <div className="content">
+              <div className="svg-wrapper document">
+                <FaFileUpload className={'document'} />
+              </div>
+              <p className="document">Document Upload</p>
+            </div>
+          </div>
         </Fade>
+        <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showBottomMenu: false, creationFormToShow: '' })} />
       </div>
-    </ScreenActions>
+    </BottomMenu>
   )
 }
 

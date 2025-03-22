@@ -34,11 +34,10 @@ export default function UploadDocuments({ hideCard, showCard }) {
   const [docName, setDocName] = useState('')
 
   const resetForm = () => {
-    hideCard()
     Manager.resetForm('upload-doc-wrapper')
     setShareWith([])
     setDocType(null)
-    setState({ ...state, refreshKey: Manager.getUid(), isLoading: false })
+    setState({ ...state, refreshKey: Manager.getUid(), isLoading: false, creationFormToShow: '' })
   }
 
   const upload = async () => {

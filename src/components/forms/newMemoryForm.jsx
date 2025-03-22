@@ -26,18 +26,18 @@ import StringManager from '/src/managers/stringManager'
 import DB_UserScoped from '../../database/db_userScoped'
 import DomManager from '../../managers/domManager'
 import { LuImagePlus } from 'react-icons/lu'
+import creationForms from '../../constants/creationForms'
 
-export default function NewMemoryForm({ hideCard, showCard }) {
+export default function NewMemoryForm() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, authUser, refreshKey, theme } = state
+  const { currentUser, authUser, refreshKey, theme, creationFormToShow } = state
   const [images, setImages] = useState([])
   const [newMemory, setNewMemory] = useState(new Memory())
 
   const resetForm = async () => {
     Manager.resetForm('new-memory-wrapper')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser, isLoading: false, refreshKey: Manager.getUid() })
-    hideCard()
+    setState({ ...state, currentUser: updatedCurrentUser, isLoading: false, refreshKey: Manager.getUid(), creationFormToShow: '' })
   }
 
   const handleShareWithSelection = async (e) => {
@@ -99,7 +99,6 @@ export default function NewMemoryForm({ hideCard, showCard }) {
     }
 
     MyConfetti.fire()
-    hideCard()
 
     // Upload Image
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.key, localImages)
@@ -159,7 +158,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
       submitIcon={<LuImagePlus />}
       title={'Share Memory'}
       onClose={resetForm}
-      showCard={showCard}>
+      showCard={creationFormToShow === creationForms.memories}>
       <div className="new-memory-wrapper">
         <div id="new-memory-form-container" className={`${theme} form`}>
           <div className="form">
@@ -203,7 +202,7 @@ export default function NewMemoryForm({ hideCard, showCard }) {
               labelText={'Image Description/Notes'}></InputWrapper>
             {/* UPLOAD BUTTON */}
             <UploadInputs
-              onClose={hideCard}
+              onClose={() => setState({ ...state, creationFormToShow: '', showBottomMenu: false })}
               containerClass={`${theme} new-memory-card`}
               uploadType={'image'}
               actualUploadButtonText={'Upload'}

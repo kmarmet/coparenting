@@ -17,16 +17,13 @@ import {
 import { IoChatbubbles, IoDocuments, IoPeopleCircleSharp } from 'react-icons/io5'
 import { PiBellFill, PiSunDuotone } from 'react-icons/pi'
 import { IoMdPhotos } from 'react-icons/io'
-
-import { FaMoneyCheckDollar } from 'react-icons/fa6'
-import DB_UserScoped from '../database/db_userScoped'
 import { RiArchive2Fill, RiMapPinTimeFill } from 'react-icons/ri'
 import { MdSettingsSuggest, MdSwapHorizontalCircle } from 'react-icons/md'
-import Modal from './shared/modal'
-import { RiParentFill } from 'react-icons/ri'
 import { BiSolidDashboard } from 'react-icons/bi'
 import { HiUserCircle } from 'react-icons/hi2'
 import { FaDonate } from 'react-icons/fa'
+import DB_UserScoped from '../database/db_userScoped'
+import Modal from './shared/modal'
 
 export default function FullMenu() {
   const { state, setState } = useContext(globalState)

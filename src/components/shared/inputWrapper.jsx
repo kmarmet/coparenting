@@ -104,7 +104,6 @@ function InputWrapper({
             }
           }}
           className="date-input"
-          value={defaultValue}
           type="date"
           onChange={onChange}
         />

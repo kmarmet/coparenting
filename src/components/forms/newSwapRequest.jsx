@@ -24,10 +24,12 @@ import { MdOutlineFace } from 'react-icons/md'
 import ViewSelector from '../shared/viewSelector'
 import Spacer from '../shared/spacer'
 import DomManager from '../../managers/domManager'
+import creationForms from '../../constants/creationForms'
+import ToggleButton from '../shared/toggleButton'
 
-export default function NewSwapRequest({ showCard, hideCard }) {
+export default function NewSwapRequest() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, authUser, refreshKey } = state
+  const { currentUser, theme, authUser, refreshKey, creationFormToShow } = state
   const [requestReason, setRequestReason] = useState('')
   const [requestChildren, setRequestChildren] = useState([])
   const [shareWith, setShareWith] = useState([])
@@ -51,9 +53,8 @@ export default function NewSwapRequest({ showCard, hideCard }) {
     setIncludeChildren(false)
     setStartDate('')
     setEndDate('')
-    hideCard()
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
+    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid(), isLoading: false, creationFormToShow: '' })
   }
 
   const submit = async () => {
@@ -156,8 +157,8 @@ export default function NewSwapRequest({ showCard, hideCard }) {
       refreshKey={refreshKey}
       onSubmit={submit}
       wrapperClass="new-swap-request"
-      title={'New Swap Request'}
-      showCard={showCard}
+      title={'Create Swap Request'}
+      showCard={creationFormToShow === creationForms.swapRequest}
       onClose={resetForm}>
       <div id="new-swap-request-container" className={`${theme} form`}>
         {/* DURATION OPTIONS */}
@@ -329,14 +330,7 @@ export default function NewSwapRequest({ showCard, hideCard }) {
             <div className="share-with-container ">
               <div className="flex">
                 <p>Include Child(ren)</p>
-                <Toggle
-                  icons={{
-                    checked: <MdOutlineFace />,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={() => setIncludeChildren(!includeChildren)}
-                />
+                <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
               </div>
               {includeChildren && (
                 <CheckboxGroup

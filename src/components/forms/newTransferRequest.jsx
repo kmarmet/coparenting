@@ -20,10 +20,11 @@ import ActivityCategory from '/src/models/activityCategory'
 import DomManager from '../../managers/domManager.coffee'
 import AddressInput from '../shared/addressInput'
 import Spacer from '../shared/spacer'
+import creationForms from '../../constants/creationForms'
 
-export default function NewTransferChangeRequest({ hideCard, showCard }) {
+export default function NewTransferChangeRequest({ showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, authUser } = state
+  const { currentUser, theme, authUser, creationFormToShow } = state
   const [requestReason, setRequestReason] = useState('')
   const [shareWith, setShareWith] = useState([])
   const [requestTime, setRequestTime] = useState('')
@@ -35,7 +36,6 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
 
   const resetForm = async () => {
     Manager.resetForm('transfer-request-wrapper')
-    hideCard()
     setRequestReason('')
     setShareWith([])
     setRequestTime('')
@@ -44,7 +44,7 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
     setRequestRecipientKey('')
     setPreferredLocation('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser })
+    setState({ ...state, currentUser: updatedCurrentUser, creationFormToShow: '', refreshKey: Manager.getUid(), isLoading: false })
   }
 
   const submit = async () => {
@@ -153,8 +153,8 @@ export default function NewTransferChangeRequest({ hideCard, showCard }) {
       onSubmit={submit}
       submitText={'Send Request'}
       wrapperClass="new-transfer-request"
-      title={'New Request'}
-      showCard={showCard}
+      title={'Create Transfer Change Request'}
+      showCard={creationFormToShow === creationForms.transferRequest}
       onClose={resetForm}>
       <div className="transfer-request-wrapper">
         <div id="transfer-change-container" className={`${theme} form`}>

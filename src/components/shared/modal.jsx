@@ -23,11 +23,12 @@ export default function Modal({
   deleteButtonText = 'Delete',
 }) {
   const { state, setState } = useContext(globalState)
-  const { theme, authUser } = state
+  const { theme, authUser, creationFormToShow } = state
   const [contentHeight, setContentHeight] = useState(0)
 
   const hideCard = () => {
     const modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper`)
+
     if (modalWrapper) {
       const modal = modalWrapper.querySelector('#modal')
       const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
@@ -38,7 +39,7 @@ export default function Modal({
       if (modal) {
         modal.classList.add(fadeOutDown)
         DB_UserScoped.getCurrentUser(authUser?.email).then((user) => {
-          setState({ ...state, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: user })
+          setState({ ...state, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: user, showBottomMenu: false, creationFormToShow: '' })
         })
 
         // Remove disable-scroll class
@@ -64,71 +65,73 @@ export default function Modal({
   }
 
   useEffect(() => {
-    const modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper`)
+    if (Manager.isValid(creationFormToShow, true)) {
+      const modalWrapper = document.querySelector(`.${creationFormToShow}#modal-wrapper`)
 
-    if (modalWrapper) {
-      const modal = modalWrapper.querySelector('#modal')
-      const checkboxContainer = document.getElementById('share-with-checkbox-container')
-      const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
-      const pageContainer = document.querySelector('.page-container')
-      const fadeOutDown = 'animate__fadeOutDown'
-      const fadeInUp = 'animate__fadeInUp'
-
-      if (modalWrapper && StringManager.wordCount(title) >= 4) {
-        const title = modalWrapper.querySelector('#large-title')
-        if (title) {
-          title.classList.add('long-title')
-        }
-      }
-
-      // show or hide card
-      if (Manager.isValid(wrapperClass, true) && Manager.isValid(modalWrapper)) {
-        // show card
-        if (showCard) {
-          document.body.classList.add('disable-scroll')
-          appContentWithSidebar.classList.add('disable-scroll')
-
-          if (modalWrapper) {
-            modal.classList.add(fadeInUp)
-            setTimeout(() => {
-              modal.classList.remove(fadeOutDown)
-            }, 500)
-          }
-
-          if (checkboxContainer) {
-            checkboxContainer.classList.remove('active')
-          }
-
-          if (pageContainer) {
-            pageContainer.classList.add('disable-scroll')
-          }
-        }
-
-        // hide card
-        else {
-          document.body.classList.remove('disable-scroll')
-          appContentWithSidebar.classList.remove('disable-scroll')
-          modal.classList.remove(fadeInUp)
-          if (pageContainer) {
-            pageContainer.classList.remove('disable-scroll')
-          }
-        }
-      }
-
-      // Set MUI datetime picker placeholders
-      const startTimeInput = document.querySelector('#input-wrapper.start-time .MuiInputBase-input')
-      const endTimeInput = document.querySelector('#input-wrapper.end-time .MuiInputBase-input')
-
-      if (startTimeInput && endTimeInput) {
-        startTimeInput.placeholder = 'Start time'
-        endTimeInput.placeholder = 'End time'
-      }
-
-      // Add bottom padding to content based on height
       if (modalWrapper) {
-        const relativeWrapper = modalWrapper.querySelector('#relative-wrapper')
-        if (relativeWrapper) {
-          setContentHeight(relativeWrapper.offsetHeight)
+        const modal = modalWrapper.querySelector('#modal')
+        const checkboxContainer = document.getElementById('share-with-checkbox-container')
+        const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
+        const pageContainer = document.querySelector('.page-container')
+        const fadeOutDown = 'animate__fadeOutDown'
+        const fadeInUp = 'animate__fadeInUp'
+
+        if (modalWrapper && StringManager.wordCount(title) >= 4) {
+          const title = modalWrapper.querySelector('#large-title')
+          if (title) {
+            title.classList.add('long-title')
+          }
+        }
+
+        // show or hide card
+        if (Manager.isValid(wrapperClass, true) && Manager.isValid(modalWrapper)) {
+          // show card
+          if (showCard) {
+            document.body.classList.add('disable-scroll')
+            appContentWithSidebar.classList.add('disable-scroll')
+            if (modalWrapper) {
+              modal.classList.add(fadeInUp)
+              console.log(modal)
+              setTimeout(() => {
+                modal.classList.remove(fadeOutDown)
+              }, 500)
+            }
+
+            if (checkboxContainer) {
+              checkboxContainer.classList.remove('active')
+            }
+
+            if (pageContainer) {
+              pageContainer.classList.add('disable-scroll')
+            }
+          }
+
+          // hide card
+          else {
+            document.body.classList.remove('disable-scroll')
+            appContentWithSidebar.classList.remove('disable-scroll')
+            modal.classList.remove(fadeInUp)
+            if (pageContainer) {
+              pageContainer.classList.remove('disable-scroll')
+            }
+          }
+        }
+
+        // Set MUI datetime picker placeholders
+        const startTimeInput = document.querySelector('#input-wrapper.start-time .MuiInputBase-input')
+        const endTimeInput = document.querySelector('#input-wrapper.end-time .MuiInputBase-input')
+
+        if (startTimeInput && endTimeInput) {
+          startTimeInput.placeholder = 'Start time'
+          endTimeInput.placeholder = 'End time'
+        }
+
+        // Add bottom padding to content based on height
+        if (modalWrapper) {
+          const relativeWrapper = modalWrapper.querySelector('#relative-wrapper')
+          if (relativeWrapper) {
+            setContentHeight(relativeWrapper.offsetHeight)
+          }
         }
       }
     }

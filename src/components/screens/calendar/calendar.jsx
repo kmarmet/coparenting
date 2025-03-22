@@ -420,9 +420,6 @@ export default function EventCalendar() {
           />
         </Modal>
 
-        {/* NEW EVENT */}
-        <NewCalendarEvent selectedNewEventDay={selectedDate} showCard={showNewEventCard} hideCard={() => setShowNewEventCard(false)} />
-
         {/* EDIT EVENT */}
         <EditCalEvent showCard={showEditCard} hideCard={() => setShowEditCard(false)} event={eventToEdit} />
       </>

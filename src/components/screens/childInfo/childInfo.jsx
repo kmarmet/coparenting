@@ -30,7 +30,7 @@ import Checklist from './checklist'
 import { FaAngleUp } from 'react-icons/fa6'
 
 import { IoIosArrowDown } from 'react-icons/io'
-import ScreenActions from '../../shared/screenActions'
+import BottomMenu from '../../shared/bottomMenu'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
@@ -120,9 +120,9 @@ export default function ChildInfo() {
       {/* NEW CHILD  */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
-      {!showBottomMenu && <FaAngleUp className={'screen-actions-menu-icon'} onClick={() => setState({ ...state, showBottomMenu: true })} />}
+      {!showBottomMenu && <FaAngleUp className={'bottom-menu-menu-icon'} onClick={() => setState({ ...state, showBottomMenu: true })} />}
 
-      <ScreenActions>
+      <BottomMenu>
         <div className="action-items">
           <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={500} triggerOnce={false} cascade={true}>
             {/* CUSTOM INFO */}
@@ -180,7 +180,7 @@ export default function ChildInfo() {
           </Fade>
           <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showBottomMenu: false })} />
         </div>
-      </ScreenActions>
+      </BottomMenu>
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container child-info form`}>

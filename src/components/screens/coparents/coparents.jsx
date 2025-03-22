@@ -26,7 +26,7 @@ import EmailManager from '../../../managers/emailManager'
 import Spacer from '../../shared/spacer'
 import { FaAngleUp } from 'react-icons/fa6'
 
-import ScreenActions from '../../shared/screenActions'
+import BottomMenu from '../../shared/bottomMenu'
 import { IoIosArrowDown } from 'react-icons/io'
 
 export default function Coparents() {
@@ -105,9 +105,9 @@ export default function Coparents() {
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
-      {!showBottomMenu && <FaAngleUp className={'screen-actions-menu-icon'} onClick={() => setState({ ...state, showBottomMenu: true })} />}
+      {!showBottomMenu && <FaAngleUp className={'bottom-menu-menu-icon'} onClick={() => setState({ ...state, showBottomMenu: true })} />}
 
-      <ScreenActions>
+      <BottomMenu>
         <div className="action-items">
           <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={500} triggerOnce={false} cascade={true}>
             <div
@@ -163,7 +163,7 @@ export default function Coparents() {
           </Fade>
           <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showBottomMenu: false })} />
         </div>
-      </ScreenActions>
+      </BottomMenu>
 
       <Modal
         submitText={'Send Invitation'}

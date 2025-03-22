@@ -9,7 +9,18 @@ import { BsPersonVcard } from 'react-icons/bs'
 import { IoChatbubblesOutline, IoNotificationsOutline } from 'react-icons/io5'
 import { LuCalendarDays } from 'react-icons/lu'
 import { HiOutlineMenu } from 'react-icons/hi'
+import { PiPlusBold } from 'react-icons/pi'
+import { IoChatbubbles, IoNotifications } from 'react-icons/io5'
 import { IoAdd } from 'react-icons/io5'
+import {
+  BsCalendarWeekFill,
+  BsFillArrowDownSquareFill,
+  BsFillArrowRightCircleFill,
+  BsFillHousesFill,
+  BsFillMoonStarsFill,
+  BsPersonVcardFill,
+  BsSendFill,
+} from 'react-icons/bs'
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
   const { currentScreen, currentUser, menuIsOpen, theme, notificationCount } = state
@@ -42,7 +53,11 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.calendar)}
                 className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
-                <LuCalendarDays className={'calendar'} />
+                {currentScreen === ScreenNames.calendar ? (
+                  <BsCalendarWeekFill className={'calendar fs-26'} />
+                ) : (
+                  <LuCalendarDays className={'calendar'} />
+                )}
                 <p>Calendar</p>
               </div>
 
@@ -52,7 +67,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
                   id="chat-menu-item"
                   onClick={() => changeCurrentScreen(ScreenNames.chats)}
                   className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
-                  <IoChatbubblesOutline className={'chats'} />
+                  {currentScreen === ScreenNames.chats ? <IoChatbubbles className={'chats'} /> : <IoChatbubblesOutline className={'chats'} />}
                   <p>Chats</p>
                 </div>
               )}
@@ -68,14 +83,18 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.notifications)}
                 className={`${currentScreen === ScreenNames.notifications ? 'active menu-item notifications' : 'menu-item notifications'}`}>
-                <IoNotificationsOutline className={'notifications'} />
+                {currentScreen === ScreenNames.notifications ? (
+                  <IoNotifications className={'notifications'} />
+                ) : (
+                  <IoNotificationsOutline className={'notifications'} />
+                )}
                 <p>Notifications</p>
                 {notificationCount > 0 && <span className="badge"></span>}
               </div>
 
               {/* CREATE */}
-              <div onClick={() => setState({ ...state, showCreationMenu: true })} className={`menu-item`}>
-                <IoAdd className={'create'} />
+              <div onClick={() => setState({ ...state, showBottomMenu: true })} className={`menu-item`}>
+                <PiPlusBold className={'create'} />
                 <p>Create</p>
               </div>
             </Fade>

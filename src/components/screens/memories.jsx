@@ -110,9 +110,6 @@ export default function Memories() {
 
   return (
     <>
-      {/* NEW MEMORY FORM */}
-      <NewMemoryForm hideCard={() => setShowNewMemoryCard(false)} showCard={showNewMemoryCard} />
-
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
         <Fade direction={'up'} duration={1000} className={'memories-fade-wrapper'} triggerOnce={true}>

@@ -37,6 +37,7 @@ import ViewSelector from '../shared/viewSelector'
 import StringAsHtmlElement from '../shared/stringAsHtmlElement'
 import DB_UserScoped from '../../database/db_userScoped.js'
 import Spacer from '../shared/spacer'
+import ToggleButton from '../shared/toggleButton'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -190,7 +191,6 @@ export default function SwapRequests() {
 
   return (
     <>
-      <NewSwapRequest showCard={showCard} hideCard={() => setShowCard(false)} />
       {/* DETAILS CARD */}
       <Modal
         onDelete={deleteRequest}
@@ -372,15 +372,7 @@ export default function SwapRequests() {
               <div className="share-with-container">
                 <div className="flex">
                   <p>Include Child(ren)</p>
-                  <Toggle
-                    icons={{
-                      checked: <MdOutlineFaceUnlock />,
-                      unchecked: null,
-                    }}
-                    defaultChecked={activeRequest?.children?.length > 0}
-                    className={'ml-auto reminder-toggle'}
-                    onChange={() => setIncludeChildren(!includeChildren)}
-                  />
+                  <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
                 </div>
                 {(activeRequest?.children?.length > 0 || includeChildren) && (
                   <CheckboxGroup

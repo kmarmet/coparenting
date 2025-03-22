@@ -50,8 +50,6 @@ export default function DocsList() {
 
   return (
     <>
-      <UploadDocuments showCard={showCard} hideCard={() => setShowCard(false)} />
-
       <div id="doc-selection-container" className={`${theme} page-container`}>
         {docs.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>

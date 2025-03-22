@@ -1,6 +1,5 @@
 // Path: src\components\forms\newExpenseForm.jsx
 import React, { useContext, useState } from 'react'
-
 import MenuItem from '@mui/material/MenuItem'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
@@ -34,10 +33,12 @@ import InputWrapper from '/src/components/shared/inputWrapper'
 import SelectDropdown from '/src/components/shared/selectDropdown'
 import Spacer from '/src/components/shared/spacer.jsx'
 import DatasetManager from '../../managers/datasetManager.coffee'
+import CreationForms from '../../constants/creationForms'
+import ToggleButton from '../shared/toggleButton'
 
 export default function NewExpenseForm({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey, authUser } = state
+  const { currentUser, theme, refreshKey, authUser, creationFormToShow } = state
   const [expenseName, setExpenseName] = useState('')
   const [expenseChildren, setExpenseChildren] = useState([])
   const [expenseDueDate, setExpenseDueDate] = useState('')
@@ -76,8 +77,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     setShowNumpad(false)
     setExpenseAmount('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
-    hideCard()
+    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid(), creationFormToShow: '' })
   }
 
   const submitNewExpense = async () => {
@@ -325,7 +325,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       title={'Create Expense'}
       className="new-expense-card"
       wrapperClass="new-expense-card"
-      showCard={showCard}
+      showCard={creationFormToShow === CreationForms.expense}
       onClose={resetForm}>
       <div className="expenses-wrapper">
         {/* PAGE CONTAINER */}
@@ -344,17 +344,9 @@ export default function NewExpenseForm({ hideCard, showCard }) {
             </p>
           </div>
 
-          {/* NUMPAD */}
-          <Numpad
-            onSubmit={() => setShowNumpad(false)}
-            onNumClick={(e) => onNumpadPress(e)}
-            onBackspace={deleteLastNumber}
-            className={showNumpad ? 'active mt-10' : ''}
-          />
-
           {/* DEFAULT EXPENSE AMOUNTS */}
           <>
-            <div className="flex mb-15" id="default-expense-amounts">
+            <div id="default-expense-amounts">
               <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
                 $10
               </button>
@@ -382,11 +374,11 @@ export default function NewExpenseForm({ hideCard, showCard }) {
               <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
                 $90
               </button>
-              <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
-                RESET
-              </button>
               <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
                 $100
+              </button>
+              <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
+                RESET
               </button>
             </div>
           </>
@@ -459,14 +451,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
             <div className="share-with-container ">
               <div className="flex">
                 <p>Applicable Child(ren)</p>
-                <Toggle
-                  icons={{
-                    checked: <MdOutlineFaceUnlock />,
-                    unchecked: null,
-                  }}
-                  className={'ml-auto reminder-toggle'}
-                  onChange={() => setIncludeChildren(!includeChildren)}
-                />
+                <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
               </div>
               {includeChildren && (
                 <CheckboxGroup

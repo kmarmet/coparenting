@@ -194,8 +194,6 @@ export default function TransferRequests() {
 
   return (
     <>
-      <NewTransferChangeRequest showCard={showNewRequestCard} hideCard={() => setShowNewRequestCard(false)} />
-
       {/* DETAILS CARD */}
       <Modal
         refreshKey={refreshKey}

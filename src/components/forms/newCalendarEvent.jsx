@@ -4,10 +4,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
-import { FaClone } from 'react-icons/fa6'
-import { MdEventRepeat, MdNotificationsActive, MdOutlineFaceUnlock } from 'react-icons/md'
-import Toggle from 'react-toggle'
+import React, { useContext, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
 import { BsCalendar2CheckFill } from 'react-icons/bs'
 
@@ -36,15 +33,16 @@ import ActivityCategory from '/src/models/activityCategory'
 import CalendarEvent from '/src/models/calendarEvent'
 import ModelNames from '/src/models/modelNames'
 import ToggleButton from '../shared/toggleButton'
+import CreationForms from '../../constants/creationForms'
 
-export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
+export default function NewCalendarEvent() {
   // APP STATE
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, refreshKey, creationFormToShow } = state
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
-  const [eventStartDate, setEventStartDate] = useState(moment(selectedNewEventDay).format(DateFormats.dateForDb))
+  const [eventStartDate, setEventStartDate] = useState(moment().format(DateFormats.dateForDb))
   const [eventEndDate, setEventEndDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
   const [eventTitle, setEventTitle] = useState('')
@@ -70,7 +68,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   const [isVisitation, setIsVisitation] = useState(false)
 
   const resetForm = async () => {
-    hideCard()
     Manager.resetForm('new-event-form')
     setEventLength(EventLengths.single)
     setEventStartDate('')
@@ -93,6 +90,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
     setShowReminders(false)
     setIncludeChildren(false)
     setIsVisitation(false)
+    setState({ ...state, showBottomMenu: false, creationFormToShow: '', refreshKey: Manager.getUid() })
     // const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     // setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
@@ -161,9 +159,6 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
       //#endregion VALIDATION
 
-      setState({ ...state, creationFormToShow: '' })
-
-      hideCard()
       MyConfetti.fire()
       const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
 
@@ -310,19 +305,19 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
 
     cloneDateWrapper.append(wrapper)
   }
-
-  useEffect(() => {
-    if (selectedNewEventDay) {
-      setEventStartDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
-    }
-  }, [selectedNewEventDay])
-
-  useEffect(() => {
-    setState({ ...state, creationFormToShow: '' })
-    if (!selectedNewEventDay) {
-      setEventStartDate(moment().format(DateFormats.dateForDb))
-    }
-  }, [])
+  //
+  // useEffect(() => {
+  //   if (selectedNewEventDay) {
+  //     setEventStartDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
+  //   }
+  // }, [selectedNewEventDay])
+  //
+  // useEffect(() => {
+  //   // setState({ ...state, creationFormToShow: '' })
+  //   if (!selectedNewEventDay) {
+  //     setEventStartDate(moment().format(DateFormats.dateForDb))
+  //   }
+  // }, [])
 
   return (
     <>
@@ -333,7 +328,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         onClose={resetForm}
         onSubmit={submit}
         submitIcon={<BsCalendar2CheckFill />}
-        showCard={creationFormToShow === 'calendar'}
+        showCard={creationFormToShow === CreationForms.calendar}
         wrapperClass={`new-calendar-event`}
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
         title={'Create New Event'}>
@@ -374,7 +369,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
                 <InputWrapper labelText={'Date'} inputType={'date'} required={true}>
                   <MobileDatePicker
                     onOpen={addThemeToDatePickers}
-                    value={moment(selectedNewEventDay)}
+                    // value={moment(selectedNewEventDay)}
                     className={`${theme} m-0  event-from-date mui-input`}
                     onAccept={(e) => {
                       setEventStartDate(e)
@@ -384,7 +379,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
               )}
               {eventLength === EventLengths.single && DomManager.isMobile() && (
                 <InputWrapper
-                  defaultValue={selectedNewEventDay}
+                  // defaultValue={selectedNewEventDay}
                   onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
                   useNativeDate={true}
                   labelText={'Date'}

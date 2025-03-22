@@ -1,14 +1,12 @@
 import ScreenNames from "./screenNames"
-
 StateObj =
   activeInfoChild: null
   activeInfoCoparent: [],
-  notificationCount: 0,
   authUser: null
   childAccessGranted: false,
+  creationFormToShow: ''
   currentScreen: ScreenNames.home
   currentUser: {}
-  creationFormToShow: ''
   docToView: ''
   firebaseUser: null,
   isLoading: true
@@ -16,30 +14,18 @@ StateObj =
   menuIsOpen: false
   messageToUser: null
   modalIsOpen: false
+  notificationCount: 0,
   parentAccessGranted: false
   refreshKey: 0,
   registrationUserName: ''
   selectedChild: null
   selectedNewEventDay: null
-  showCenterNavbarButton: true
-  showNavbar: true
-  showBottomMenu: false
-  showCreationMenu: false
-  swapRequestToRevise: null
-  theme: 'light'
-  transferRequestToEdit: {}
-  unreadMessageCount: 0
-  userIsLoggedIn: false
-  users: []
-  viewExpenseForm: false
-  viewSwapRequestForm: false
-  viewTransferRequestForm: false
   setActiveInfoChild: (child) ->
   setActiveInfoCoparent: (coparent) ->
-  setNotificationCount: (count) ->
   setAuthUser: (user) ->
   setChildAccessGranted: (bool) ->
   setContactInfoToUpdateType: ->
+  setCreationFormToShow: (form) ->
   setCurrentScreen: (screen) ->
   setCurrentUser: (user) ->
   setDateToEdit: (date) ->
@@ -49,16 +35,15 @@ StateObj =
   setIsLoading: (bool) ->
   setLoadingText: (text) ->
   setMenuIsOpen: (isOpen) ->
-  setCreationFormToShow: (form) ->
   setMessageToUser: (user) ->
   setModalIsOpen: (bool) ->
+  setNotificationCount: (count) ->
   setParentAccessGranted: (bool) ->
   setRefreshKey: (num) ->
   setRegistrationUserName: (name) ->
-  setShowCreationMenu: (bool) ->
-  setShowBottomMenu: (bool) ->
   setSelectedChild: (child) ->
   setSelectedNewEventDay: (day) ->
+  setShowBottomMenu: (bool) ->
   setShowCenterNavbarButton: (bool) ->
   setShowOverlay: (bool) ->
   setSwapRequestToRevise: (request) ->
@@ -70,5 +55,17 @@ StateObj =
   setViewExpenseForm: (show) ->
   setViewSwapRequestForm: (show) ->
   setViewTransferRequestForm: (show) ->
+  showBottomMenu: false
+  showCenterNavbarButton: true
+  showNavbar: true
+  swapRequestToRevise: null
+  theme: 'light'
+  transferRequestToEdit: {}
+  unreadMessageCount: 0
+  userIsLoggedIn: false
+  users: []
+  viewExpenseForm: false
+  viewSwapRequestForm: false
+  viewTransferRequestForm: false
 
 export default StateObj

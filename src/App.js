@@ -57,8 +57,9 @@ import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
-import ScreenActions from './components/shared/screenActions'
+import BottomMenu from './components/shared/bottomMenu'
 import CreationMenu from './components/shared/creationMenu'
+import CreationForms from './constants/creationForms'
 
 export default function App() {
   // Initialize Firebase
@@ -92,7 +93,7 @@ export default function App() {
   })
 
   // State to include in App.js
-  const { isLoading, currentScreen, menuIsOpen, currentUser, loadingText, theme, authUser } = state
+  const { isLoading, currentScreen, menuIsOpen, currentUser, loadingText, theme, authUser, creationFormToShow } = state
 
   const deleteMenuAnimation = () => {
     document.querySelectorAll('#full-menu .menu-item').forEach((menuItem) => {
@@ -218,6 +219,13 @@ export default function App() {
 
           {/* CREATION MENU */}
           <CreationMenu />
+
+          <NewCalendarEvent showCard={creationFormToShow === CreationForms.calendar} />
+          <NewSwapRequest showCard={creationFormToShow === CreationForms.swapRequest} />
+          <NewTransferChangeRequest showCard={creationFormToShow === CreationForms.transferRequest} />
+          <NewMemoryForm showCard={creationFormToShow === CreationForms.memories} />
+          <UploadDocuments showCard={creationFormToShow === CreationForms.documents} />
+          <NewExpenseForm showCard={creationFormToShow === CreationForms.expense} />
 
           {/* BRAND BAR */}
           {!screensToHideBrandbar.includes(currentScreen) && <BrandBar />}
