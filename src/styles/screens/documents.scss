@@ -264,7 +264,8 @@
             display: flex;
             align-items: center;
             font-size: 18px;
-
+            opacity: 0.8;
+            font-weight: $fwMedium;
             @include hoverBlue;
           }
 

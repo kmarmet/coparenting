@@ -6,6 +6,7 @@ import { IoLogoVenmo } from 'react-icons/io5'
 import { SiCashapp, SiZelle } from 'react-icons/si'
 import { LiaCcPaypal } from 'react-icons/lia'
 import globalState from '../../../context.js'
+import Spacer from '../../shared/spacer'
 
 const zelleLink = 'https://www.zellepay.com/how-it-works'
 const zelleVideoLink = 'https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO'
@@ -29,6 +30,7 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
         onClose={onClose}
         showCard={showPaymentOptionsCard}>
         <div id="payment-options-card">
+          <Spacer height={10} />
           <div className="options">
             {/* ZELLE */}
             <div className="option zelle">
@@ -39,7 +41,7 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
               <div className="flex">
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Safely send money to co-parent, no matter where they bank.</p>
-                  <a href={zelleLink} target="_blank" className="setup-instructions">
+                  <a href={zelleLink} target="_blank" className="setup-instructions" rel="noreferrer">
                     Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
                   </a>
                 </div>
@@ -53,7 +55,8 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen></iframe>
             </div>
-            <hr />
+
+            <Spacer height={10} />
             {/* VENMO */}
             <div className="option venmo">
               <div className="flex brand-name-wrapper venmo">
@@ -76,7 +79,8 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen></iframe>
             </div>
-            <hr />
+
+            <Spacer height={10} />
 
             {/* APPLE PAY */}
             <div className="option apple-cash">
@@ -93,7 +97,8 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
                 </div>
               </div>
             </div>
-            <hr />
+
+            <Spacer height={10} />
             {/* PAYPAL */}
             <div className="option paypal">
               <div className="flex brand-name-wrapper paypal">
@@ -109,7 +114,8 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
                 </div>
               </div>
             </div>
-            <hr />
+
+            <Spacer height={10} />
             {/* CASHAPP */}
             <div className="option cashapp">
               <div className="flex brand-name-wrapper cashapp">

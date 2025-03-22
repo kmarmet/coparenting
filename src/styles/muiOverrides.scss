@@ -366,10 +366,10 @@
 
       .MuiAccordion-heading {
         max-height: 40px;
-        .react-toggle {
-          margin-left: auto !important;
-          position: relative;
-          right: -10px;
+
+        p {
+          font-weight: $fwMedium !important;
+          opacity: 0.9;
         }
       }
 
@@ -771,7 +771,7 @@
       position: relative;
       border-radius: 6px;
       font-weight: $fwMediumBold !important;
-      color: $lessSubtitleText !important;
+      color: $darkerSubtleText !important;
       border: 1px solid rgba(115, 115, 115, 0.51);
     }
 

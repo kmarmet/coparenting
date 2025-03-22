@@ -141,7 +141,7 @@ export default function Modal({
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
-        <Fade direction={'up'} duration={800} triggerOnce={true} className={'modal-fade-wrapper'}>
+        <Fade direction={'up'} duration={600} triggerOnce={true} className={'modal-fade-wrapper'}>
           <div id="modal" className="animate__animated">
             <div id="relative-wrapper">
               <div id="content" className={contentHeight >= 200 ? 'with-bottom-padding' : ''}>

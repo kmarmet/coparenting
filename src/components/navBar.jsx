@@ -9,7 +9,7 @@ import { BsPersonVcard } from 'react-icons/bs'
 import { IoChatbubblesOutline, IoNotificationsOutline } from 'react-icons/io5'
 import { LuCalendarDays } from 'react-icons/lu'
 import { HiOutlineMenu } from 'react-icons/hi'
-
+import { IoAdd } from 'react-icons/io5'
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
   const { currentScreen, currentUser, menuIsOpen, theme, notificationCount } = state
@@ -38,16 +38,12 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
         <div id="navbar" className={`${theme} ${currentUser?.accountType} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
           <div id="menu-items" className="flex">
             <Fade cascade={true} direction={'up'} delay={0} damping={0.1} duration={600} triggerOnce={true}>
-              {/* FULL MENU ICON  */}
-              <div onClick={() => setState({ ...state, menuIsOpen: true })} className={`full-menu-icon menu-item`}>
-                <HiOutlineMenu />
-              </div>
-
               {/* CALENDAR */}
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.calendar)}
                 className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
                 <LuCalendarDays className={'calendar'} />
+                <p>Calendar</p>
               </div>
 
               {/* CHATS */}
@@ -57,30 +53,15 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
                   onClick={() => changeCurrentScreen(ScreenNames.chats)}
                   className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
                   <IoChatbubblesOutline className={'chats'} />
+                  <p>Chats</p>
                 </div>
               )}
 
-              {/* ADD NEW BUTTON */}
-              {DomManager.isMobile() && (
-                <div id="svg-wrapper" className={`${navbarClass} ${addOrClose}`}>
-                  {children}
+              {/* MENU BUTTON */}
+              <div onClick={() => setState({ ...state, menuIsOpen: true })}>
+                <div id="svg-wrapper">
+                  <HiOutlineMenu className={'menu'} />
                 </div>
-              )}
-
-              {/* CHILD INFO */}
-              {currentUser && currentUser?.accountType === 'parent' && (
-                <div
-                  onClick={() => changeCurrentScreen(ScreenNames.childInfo)}
-                  className={`${currentScreen === ScreenNames.childInfo ? 'active menu-item' : 'menu-item'}`}>
-                  <BsPersonVcard className={'child-info'} />
-                </div>
-              )}
-
-              {/*/!* MEMORIES *!/*/}
-              <div
-                onClick={() => changeCurrentScreen(ScreenNames.memories)}
-                className={`${currentScreen === ScreenNames.memories ? 'active menu-item memories' : 'menu-item memories'}`}>
-                <TbPhotoHeart className={'memories'} />
               </div>
 
               {/* NOTIFICATIONS */}
@@ -88,7 +69,14 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
                 onClick={() => changeCurrentScreen(ScreenNames.notifications)}
                 className={`${currentScreen === ScreenNames.notifications ? 'active menu-item notifications' : 'menu-item notifications'}`}>
                 <IoNotificationsOutline className={'notifications'} />
+                <p>Notifications</p>
                 {notificationCount > 0 && <span className="badge"></span>}
+              </div>
+
+              {/* CREATE */}
+              <div onClick={() => setState({ ...state, showCreationMenu: true })} className={`menu-item`}>
+                <IoAdd className={'create'} />
+                <p>Create</p>
               </div>
             </Fade>
           </div>

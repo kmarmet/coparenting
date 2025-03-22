@@ -58,8 +58,8 @@
 // SCREEN TITLE
 @mixin screenTitle {
   font-size: 26px;
-  width: 100vw;
-  max-width: 100%;
+  //  width: 100vw;
+  //  max-width: 100%;
   word-break: break-word;
   transition: all 0.6s linear;
   line-height: 1;
@@ -72,8 +72,7 @@
   opacity: 1;
   color: $primaryText;
   font-family: 'Inter', sans-serif;
-  font-weight: $fwMediumBold;
-  font-style: normal;
+  font-weight: $fwMedium;
 
   &.active {
     transform: scale(1);
@@ -136,8 +135,8 @@
   opacity: 0;
   z-index: -1;
   transition: all 0.5s ease-out;
-  backdrop-filter: blur(2px);
-  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.25);
   position: fixed;
   display: table;
   height: 100vh;
@@ -436,7 +435,6 @@
     color: white;
     border: 0;
     background: $accentLight;
-    letter-spacing: 1.2px;
 
     @media screen and (min-width: 800px) {
       &:hover {
@@ -849,7 +847,7 @@
         text-align: center;
         line-height: 1;
         transition: 0.3s ease all;
-        color: $lessSubtitleText;
+        color: $darkerSubtleText;
         z-index: 1;
         content: 'NO';
         left: 10px;
@@ -1013,13 +1011,43 @@
   }
 }
 
-@mixin mobilePushMenu {
+@mixin bottomMenuWrapper {
   position: fixed;
-  right: 0;
+  //  z-index: -1;
+  width: 100vw;
   height: 100vh;
-  z-index: 999999;
+  transition: all 0.6s ease-in-out;
+  z-index: 9;
 
-  #mobile-push-menu {
+  &.open {
+    z-index: 999999999;
+    .action-items {
+      transition: all 0.6s ease-in-out;
+      bottom: 0;
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  &.closed {
+    .menu-icon-wrapper {
+      opacity: 0;
+      transform: scale(0);
+    }
+  }
+
+  #creation-menu-title {
+    font-size: 24px;
+    font-weight: $fwBold;
+    color: $mainBlue;
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
+    z-index: 9999999999;
+    opacity: 1;
+  }
+
+  #screen-actions {
     height: 100vh;
     position: fixed;
     z-index: 1;
@@ -1032,37 +1060,39 @@
     right: 0;
     width: 100vw;
     padding: 0 5px 20vh 0;
-
     &.open {
-      right: 0;
       opacity: 1;
 
       .action-items {
-        transform: scale(1);
-        transition: all 0.5s ease-in-out;
-        @include bestShadow;
+        transition: all 0.6s ease-in-out;
+        bottom: 0;
+        opacity: 1;
+        box-shadow: 10px 12px 30px 24px #0000008f;
       }
     }
 
     &.closed {
       opacity: 0;
-      right: -380px;
       z-index: -1;
     }
   }
 
+  .close-arrow {
+    color: #bdbdbd;
+    margin: 0 auto;
+  }
+
   .action-items {
-    background: #e0e0e0;
-    padding: 15px;
-    margin-right: 15px;
-    border-radius: $borderRadius;
-    transform: scale(0);
-    width: 280px;
-    transition: all 0.5s ease-in-out;
-    margin-left: auto;
+    background: white;
+    padding: 20px 20px 35pt 20px;
+    transition: all 0.7s ease-in-out;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    position: fixed;
+    width: 100vw;
+    opacity: 0;
+    bottom: -100%;
+    border-radius: 25px 25px 0 0;
 
     .child-info-fade-wrapper {
       display: flex;
@@ -1074,42 +1104,69 @@
 
     .action-item,
     .menu-item {
-      padding: 15px 8px;
       text-align: center;
-      @include hover;
-      width: 100%;
-      background: white;
-      border-radius: $borderRadius;
       justify-content: center;
       position: relative;
-      border: 1px solid #bdbdbd;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
+      width: 60vw;
+      @include hover;
+      @include row;
+      border: 0;
 
       .content {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 15px;
       }
 
       svg,
       span,
       p {
         font-weight: $fwMedium;
-        color: $accentLight;
+        color: $primaryText;
         line-height: 1;
+
+        &.subtitle {
+          width: 100%;
+          display: block;
+          text-align: left;
+          font-size: 13px;
+          font-weight: $fwRegular;
+          padding-top: 4px;
+          line-height: 1.3;
+          color: $subtitleText;
+        }
+      }
+
+      p {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 85%;
       }
 
       svg {
-        font-size: 24px;
-        display: block;
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        transform: scale(0.65);
+        color: $accentLight;
+      }
+
+      .svg-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: $borderRadius;
+        background: $bestGreyForWhite;
+        height: 40px;
+        width: 42px;
+        padding: 8px;
+
+        svg {
+          font-size: 22px;
+          display: block;
+
+          &.child,
+          &.checklist {
+            transform: scale(1.25);
+          }
+        }
       }
     }
   }
@@ -1121,12 +1178,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    bottom: 0;
+    bottom: 100px;
     z-index: 999999;
-    position: relative;
+    position: fixed;
     padding: 10px 0;
     border-radius: 5px 0 0 5px;
-    right: 10px;
+    right: 12px;
     width: 30px;
     @include hover;
     transition: all 1s cubic-bezier(0.17, 0.67, 0.21, 0.95);
@@ -1138,17 +1195,6 @@
       width: 20px;
       color: $green;
       transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
-    }
-
-    &.close {
-      margin: 0;
-      right: 15px;
-      background: transparent;
-      transition: all 1s cubic-bezier(0.17, 0.67, 0.21, 0.95);
-      svg {
-        transform: rotate(180deg);
-        color: $bootstrapBgRed;
-      }
     }
   }
 }
@@ -1323,7 +1369,7 @@
 
         #toggle-button {
           font-weight: $fwMedium;
-          color: $primaryText;
+          color: $lessSubtleText;
         }
 
         #actions-button {
@@ -1451,8 +1497,7 @@
       opacity: 1;
       font-weight: $fwMediumBold;
       display: flex;
-      letter-spacing: 0.8px;
-      color: $accentLight;
+      color: $mainBlue;
       justify-content: center;
       align-items: center;
 
@@ -1461,10 +1506,10 @@
         display: block;
         width: 100%;
         height: 1px;
-        background: $accentLight;
+        background: $mainBlue;
         border-radius: 100%;
         position: absolute;
-        bottom: -3px;
+        bottom: -5px;
       }
     }
 
@@ -1842,6 +1887,7 @@
     align-items: flex-end;
     justify-content: space-between;
     position: absolute;
+    color: $primaryText;
     top: 20px;
     border: 0;
     font-size: 15px;
@@ -1857,6 +1903,7 @@
       padding: 5px 8px;
       border-radius: $borderRadius;
       height: auto;
+      color: $primaryText;
       width: 100%;
       display: block;
     }
@@ -2781,8 +2828,8 @@
     right: 0;
     bottom: 0;
     z-index: 99999;
-    backdrop-filter: blur(3px);
-    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.65);
   }
 
   /*#region  MODAL*/
@@ -2794,11 +2841,12 @@
     position: relative;
     z-index: -1;
     left: 2.4vw;
-    border-radius: 12px;
+    border-radius: 15px;
     max-height: calc(100vh - 250pt);
     align-self: center;
     bottom: -100vh;
-
+    @include bestShadow;
+    box-shadow: rgba(0, 0, 0, 0.56) 0 18px 20px 12px;
     // ANIMATION
     &.animate__fadeInUp {
       z-index: 9999999;
@@ -2806,9 +2854,8 @@
     }
 
     &.animate__fadeOutDown {
-      transition: all 3s ease-out;
+      transition: all 2s ease-out;
     }
-    @include bestShadow;
 
     @media screen and (max-width: 400px) {
       max-height: 60vh;
@@ -3134,7 +3181,6 @@
       justify-content: center;
       align-items: center;
       z-index: 99999999999;
-      background: #f4f6f7;
       padding: 8px 0;
       border-radius: $borderRadius;
       border: 0;
@@ -3144,8 +3190,7 @@
 
       .close-icon {
         font-size: 38px;
-        color: rgba(0, 0, 0, 0.4);
-        transform: scale(0.8);
+        color: white;
       }
     }
 
@@ -3166,7 +3211,6 @@
       justify-self: flex-start;
       line-height: 1;
       font-weight: $fwMedium;
-      letter-spacing: 1px;
       text-transform: uppercase;
       font-size: 13px;
 
@@ -3727,15 +3771,30 @@
       }
 
       .option {
+        border-radius: $borderRadius;
+        background: $bestGreyForWhite;
         .description {
           padding-top: 5px;
           padding-bottom: 10px;
         }
+        &.zelle {
+          border: 2px solid #6d1fd4;
+        }
+        &.venmo {
+          border: 2px solid #008cff;
+        }
+        &.apple-cash {
+          border: 2px solid #4c4e54;
+        }
+        &.paypal {
+          border: 2px solid #002991;
+        }
+        &.cashapp {
+          border: 2px solid #00d64f;
+        }
         .brand-name-wrapper {
-          margin-top: 30px;
           align-items: center;
           padding: 10px;
-          border-radius: $borderRadius;
 
           .brand-name {
             opacity: 1;
@@ -3782,9 +3841,10 @@
         iframe {
           margin: 10px auto 0 auto;
           display: block;
-          border-radius: $borderRadius;
+          border-radius: 0 0 $borderRadius $borderRadius;
           max-width: 100%;
           width: 100%;
+          border: 0;
           height: auto;
         }
 
@@ -3796,6 +3856,7 @@
 
       .text {
         width: 100%;
+        padding: 10px;
 
         p {
           margin: 0;
@@ -4105,7 +4166,6 @@
       &.visible {
         margin-top: 0;
         transition: all 0.6s ease-in-out;
-        transform: scale(1);
         opacity: 1;
         right: 0;
         p {
@@ -4147,12 +4207,6 @@
     display: none;
   }
 
-  &.no-add-new-button {
-    #menu-items {
-      grid-template-columns: repeat(6, 1fr);
-    }
-  }
-
   &.child-info {
     #svg-wrapper {
       #add-new-button {
@@ -4164,7 +4218,7 @@
   &.calendar {
     #svg-wrapper {
       #add-new-button {
-        transform: scale(0.9);
+        transform: scale(1.1);
       }
     }
   }
@@ -4182,27 +4236,19 @@
   #svg-wrapper {
     background-color: $mainBlue;
     border-radius: 50%;
-    height: 48px;
-    width: 48px;
+    height: 60px;
+    width: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
+    opacity: 1;
+    margin: 0 15px;
+    box-shadow: 0 6px 12px 6px #96afe6;
+    position: relative;
+    left: -5px;
 
-    &.add {
-      margin: 0 15px;
-      box-shadow: 0 6px 22px 6px #96afe6;
-      svg {
-        color: white;
-        transform: scale(0.9);
-
-        &.new-event-icon {
-          transform: scale(1);
-        }
-      }
-    }
-
-    #add-new-button {
-      font-size: 32px;
+    svg {
+      transform: scale(1.2);
       color: white;
     }
 
@@ -4218,19 +4264,32 @@
   #menu-items {
     display: grid;
     justify-content: space-between;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     align-items: center;
     width: 100vw;
     height: 55px;
 
     .menu-item {
-      opacity: 0.3;
       flex-wrap: wrap;
       transition: all 0.3s ease-in-out;
       justify-content: center;
       display: flex;
       color: black;
       position: relative;
+
+      svg {
+        opacity: 0.3;
+      }
+
+      p {
+        color: black;
+        opacity: 0.5;
+        font-size: 12px;
+        width: 100%;
+        text-align: center;
+        padding-top: 5px;
+        font-weight: $fwMedium;
+      }
 
       &.notifications {
         .badge {
@@ -4249,15 +4308,6 @@
         }
       }
 
-      &.full-menu-icon {
-        opacity: 0.3;
-        svg {
-          border-radius: $borderRadius;
-          font-size: 32px;
-          color: black;
-        }
-      }
-
       span {
         font-size: 13px;
       }
@@ -4270,54 +4320,22 @@
           transform: scale(1.08);
         }
 
-        &.notifications {
-          //          font-size: 32px;
-        }
-
-        &.calendar {
-          //          font-size: 28px;
-        }
-
         &.chats {
           transform: scale(1.08);
         }
       }
 
-      &.active:not(#add-new-button) {
+      &.active {
         opacity: 1;
         color: $accentLight;
         position: relative;
         transition: all 0.3s ease-in-out;
-      }
 
-      &#add-new-button {
-        border-radius: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 40px;
-        width: 40px;
-        border: 0;
-        opacity: 1;
-
-        .material-icons-round {
-          background-color: $green;
-          border-radius: 100%;
-          color: white;
-          font-size: 30px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 45px;
-          width: 45px;
-          border: 0;
-          padding: 0;
-          margin: 0;
-          line-height: 1;
-
-          &.red {
-            background-color: $red;
-          }
+        p,
+        svg {
+          color: $accentLight;
+          opacity: 1;
+          font-weight: $fwMediumBold;
         }
       }
     }

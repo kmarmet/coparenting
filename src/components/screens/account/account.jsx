@@ -4,8 +4,10 @@ import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import Manager from '../../../managers/manager'
 import { Fade } from 'react-awesome-reveal'
-// ICONS
 import { PiHandWavingDuotone, PiUserCircleMinusDuotone } from 'react-icons/pi'
+import { MdContactMail } from 'react-icons/md'
+import { IoIosRemoveCircle } from 'react-icons/io'
+import { TiUserDelete } from 'react-icons/ti'
 import { MdOutlineContactMail, MdOutlinePassword } from 'react-icons/md'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
@@ -200,9 +202,6 @@ export default function Account() {
             {updateType === 'email' && (
               <InputWrapper onChange={(e) => setEmail(e.target.value)} labelText={'New Email Address'} required={true}></InputWrapper>
             )}
-            {/*{updateType === 'phone' && (*/}
-            {/*  <InputWrapper onChange={(e) => setPhone(e.currentTarget.value)} labelText={'New Phone Number'} required={true}></InputWrapper>*/}
-            {/*)}*/}
           </div>
         </div>
       </Modal>
@@ -239,30 +238,21 @@ export default function Account() {
           </p>
           <div className="sections">
             <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
-              <MdOutlinePassword className={'mr-10'} />
+              <MdOutlinePassword />
               Reset Password
             </p>
-            {/*<p*/}
-            {/*  onClick={() => {*/}
-            {/*    setUpdateType('phone')*/}
-            {/*    setShowUpdateCard(true)*/}
-            {/*  }}*/}
-            {/*  className="section">*/}
-            {/*  <MdOutlineContactPhone className={'mr-10'} />*/}
-            {/*  Update Phone Number*/}
-            {/*</p>*/}
             <p
-              className="section"
+              className="section email"
               onClick={() => {
                 setUpdateType('email')
                 setShowUpdateCard(true)
               }}>
-              <MdOutlineContactMail className={'mr-10'} />
+              <MdContactMail />
               Update Email Address
             </p>
             <p className="section close-account" onClick={closeAccount}>
-              <PiUserCircleMinusDuotone className={'mr-10'} />
-              Close Account
+              <IoIosRemoveCircle />
+              Deactivate Account
             </p>
           </div>
         </Fade>

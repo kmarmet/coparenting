@@ -8,6 +8,7 @@ StateObj =
   childAccessGranted: false,
   currentScreen: ScreenNames.home
   currentUser: {}
+  creationFormToShow: ''
   docToView: ''
   firebaseUser: null,
   isLoading: true
@@ -22,6 +23,8 @@ StateObj =
   selectedNewEventDay: null
   showCenterNavbarButton: true
   showNavbar: true
+  showBottomMenu: false
+  showCreationMenu: false
   swapRequestToRevise: null
   theme: 'light'
   transferRequestToEdit: {}
@@ -46,11 +49,14 @@ StateObj =
   setIsLoading: (bool) ->
   setLoadingText: (text) ->
   setMenuIsOpen: (isOpen) ->
+  setCreationFormToShow: (form) ->
   setMessageToUser: (user) ->
   setModalIsOpen: (bool) ->
   setParentAccessGranted: (bool) ->
   setRefreshKey: (num) ->
   setRegistrationUserName: (name) ->
+  setShowCreationMenu: (bool) ->
+  setShowBottomMenu: (bool) ->
   setSelectedChild: (child) ->
   setSelectedNewEventDay: (day) ->
   setShowCenterNavbarButton: (bool) ->

@@ -9,9 +9,8 @@ import Behavior from '/src/components/screens/childInfo/behavior'
 import General from '/src/components/screens/childInfo/general'
 import Medical from '/src/components/screens/childInfo/medical'
 import Schooling from '/src/components/screens/childInfo/schooling'
-import { FaCameraRotate } from 'react-icons/fa6'
-import { BiImageAdd } from 'react-icons/bi'
-import { TbChecklist } from 'react-icons/tb'
+import { FaCameraRotate, FaWandMagicSparkles } from 'react-icons/fa6'
+import { BiImageAdd, BiSolidUserCircle } from 'react-icons/bi'
 import { Fade } from 'react-awesome-reveal'
 import NewChildForm from '/src/components/screens/childInfo/newChildForm'
 import ChildSelector from '/src/components/screens/childInfo/childSelector'
@@ -26,18 +25,16 @@ import StringManager from '/src/managers/stringManager'
 import AddOrUpdateTransferChecklists from './addOrUpdateTransferChecklists'
 import Checklists from './checklists'
 import Spacer from '../../shared/spacer'
-import Actions from '../../shared/actions'
 import { PiListChecksFill } from 'react-icons/pi'
-import { FaWandMagicSparkles } from 'react-icons/fa6'
-import { BiFace } from 'react-icons/bi'
 import Checklist from './checklist'
-import { BsTelephoneFill } from 'react-icons/bs'
-import MobilePushMenu from '../../shared/mobilePushMenu'
-import { BiSolidUserCircle } from 'react-icons/bi'
+import { FaAngleUp } from 'react-icons/fa6'
+
+import { IoIosArrowDown } from 'react-icons/io'
+import ScreenActions from '../../shared/screenActions'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+  const { currentUser, theme, activeInfoChild, showBottomMenu } = state
   const imgRef = useRef()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showSelectorCard, setShowSelectorCard] = useState(false)
@@ -123,7 +120,9 @@ export default function ChildInfo() {
       {/* NEW CHILD  */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
-      <MobilePushMenu hide={showNewChildForm || showInfoCard || showSelectorCard || showNewChecklistCard || showChecklistsCard}>
+      {!showBottomMenu && <FaAngleUp className={'screen-actions-menu-icon'} onClick={() => setState({ ...state, showBottomMenu: true })} />}
+
+      <ScreenActions>
         <div className="action-items">
           <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={500} triggerOnce={false} cascade={true}>
             {/* CUSTOM INFO */}
@@ -131,9 +130,15 @@ export default function ChildInfo() {
               className="action-item"
               onClick={() => {
                 setShowInfoCard(true)
+                setState({ ...state, showBottomMenu: false })
               }}>
               <div className="content">
-                <FaWandMagicSparkles className={'magic'} /> <span>Add your Own Info</span>
+                <div className="svg-wrapper">
+                  <FaWandMagicSparkles className={'magic'} />
+                </div>
+                <p>
+                  Add your Own Info<span className="subtitle">Include personalized details about your child</span>
+                </p>
               </div>
             </div>
 
@@ -142,10 +147,16 @@ export default function ChildInfo() {
               <div
                 onClick={() => {
                   setShowSelectorCard(true)
+                  setState({ ...state, showBottomMenu: false })
                 }}
                 className="action-item">
                 <div className="content">
-                  <BiSolidUserCircle className={'child'} /> <span>View Another Child</span>
+                  <div className="svg-wrapper">
+                    <BiSolidUserCircle className={'child'} />
+                  </div>
+                  <p>
+                    View Another Child <p className="subtitle">Visit information details for a different child</p>
+                  </p>
                 </div>
               </div>
             )}
@@ -155,14 +166,21 @@ export default function ChildInfo() {
               className="action-item"
               onClick={() => {
                 setShowNewChecklistCard(true)
+                setState({ ...state, showBottomMenu: false })
               }}>
               <div className="content">
-                <PiListChecksFill className={'checklist'} /> <span>Add or Edit Checklists</span>
+                <div className="svg-wrapper">
+                  <PiListChecksFill className={'checklist'} />
+                </div>
+                <p>
+                  Manage Checklists <p className="subtitle">Checklists for transferring to or from a co-parent&#39;s home</p>
+                </p>
               </div>
             </div>
           </Fade>
+          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showBottomMenu: false })} />
         </div>
-      </MobilePushMenu>
+      </ScreenActions>
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container child-info form`}>

@@ -376,6 +376,11 @@
 
     p {
       color: $primaryText;
+
+      &.screen-intro-text {
+        color: $subtitleText;
+        color: $darkerSubtleText;
+      }
     }
 
     b {
@@ -516,8 +521,52 @@
       color: $subtitleText;
     }
 
-    #mobile-push-menu-wrapper {
-      @include mobilePushMenu;
+    .screen-actions-menu-icon {
+      position: fixed;
+      right: 15px;
+      bottom: 100px;
+      z-index: 999999;
+      color: black;
+      opacity: 0.2;
+    }
+
+    #screen-actions-wrapper,
+    #creation-menu-wrapper {
+      @include bottomMenuWrapper;
+
+      &#creation-menu-wrapper {
+        #screen-actions {
+          .action-items {
+            .action-item {
+              @include row;
+
+              .content {
+                align-items: center;
+
+                p {
+                  font-size: 18px;
+                  font-weight: $fwRegular;
+                }
+
+                .svg-wrapper {
+                  height: 35px;
+                  width: 35px;
+                  &.child-profile {
+                    svg {
+                      transform: scale(1.1);
+                    }
+                  }
+                  &.swap-request {
+                    svg {
+                      transform: scale(1.3);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
 
     .toggle-button-wrapper {

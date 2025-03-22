@@ -152,7 +152,6 @@ const NewChildForm = ({ hideCard, showCard }) => {
           <CheckboxGroup
             parentLabel={'Gender'}
             required={true}
-            icon={<FaChildren />}
             checkboxArray={Manager.buildCheckboxGroup({
               currentUser,
               customLabelArray: ['Male', 'Female'],
@@ -160,7 +159,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
             onCheck={handleGenderSelect}
           />
           <Spacer height={5} />
-          <Label classes="standalone-label-wrapper" text={'Photo'} icon={<BsCameraFill />}></Label>
+          <Label classes="standalone-label-wrapper" text={'Photo'}></Label>
 
           {/* UPLOAD BUTTON */}
           <UploadInputs

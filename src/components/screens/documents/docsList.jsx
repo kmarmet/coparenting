@@ -5,6 +5,7 @@ import DB from '../../../database/DB'
 import Manager from '../../../managers/manager'
 import globalState from '../../../context'
 import DocumentsManager from '../../../managers/documentsManager'
+import { HiDocumentRemove } from 'react-icons/hi'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import { GrDocumentImage, GrDocumentText, GrDocumentUpload } from 'react-icons/gr'
 import { Fade } from 'react-awesome-reveal'
@@ -14,8 +15,11 @@ import NavBar from '../../navBar'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
+import { HiDocumentText } from 'react-icons/hi2'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
 import { HiDocumentPlus } from 'react-icons/hi2'
+import { FaFileImage } from 'react-icons/fa'
+
 export default function DocsList() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
@@ -55,7 +59,7 @@ export default function DocsList() {
             <p className="screen-title">Documents</p>
             {!DomManager.isMobile() && <GrDocumentUpload id={'add-new-button'} onClick={() => setShowCard(true)} />}
           </div>
-          <p className="mb-10">
+          <p className="screen-intro-text">
             You may upload legal documents, such as a separation agreement or custody agreement, among others. If you wish, these documents can also
             be shared with a co-parent.
           </p>
@@ -78,11 +82,11 @@ export default function DocsList() {
                       }}>
                       <div className="flex section">
                         <p data-id={doc.id}>
-                          {fileType === 'Document' ? <GrDocumentText className={'file-type'} /> : <GrDocumentImage className={'file-type'} />}
+                          {fileType === 'Document' ? <HiDocumentText className={'file-type'} /> : <FaFileImage className={'file-type'} />}
                           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
                         </p>
                         <div className={`checkbox delete`} onClick={deleteDoc}>
-                          <PiTrashSimpleDuotone className={'delete-icon'} />
+                          <HiDocumentRemove className={'delete-icon'} />
                         </div>
                       </div>
                     </div>

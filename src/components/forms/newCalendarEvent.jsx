@@ -40,7 +40,7 @@ import ToggleButton from '../shared/toggleButton'
 export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventDay }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+  const { currentUser, theme, refreshKey, creationFormToShow } = state
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
@@ -160,6 +160,8 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
       }
 
       //#endregion VALIDATION
+
+      setState({ ...state, creationFormToShow: '' })
 
       hideCard()
       MyConfetti.fire()
@@ -310,13 +312,13 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
   }
 
   useEffect(() => {
-    console.log(selectedNewEventDay)
     if (selectedNewEventDay) {
       setEventStartDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
     }
   }, [selectedNewEventDay])
 
   useEffect(() => {
+    setState({ ...state, creationFormToShow: '' })
     if (!selectedNewEventDay) {
       setEventStartDate(moment().format(DateFormats.dateForDb))
     }
@@ -331,7 +333,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
         onClose={resetForm}
         onSubmit={submit}
         submitIcon={<BsCalendar2CheckFill />}
-        showCard={showCard}
+        showCard={creationFormToShow === 'calendar'}
         wrapperClass={`new-calendar-event`}
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
         title={'Create New Event'}>
@@ -557,7 +559,7 @@ export default function NewCalendarEvent({ showCard, hideCard, selectedNewEventD
             {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
               <>
                 <div className="flex">
-                  <p>Copy Event to other Dates</p>
+                  <p>Duplicate</p>
                   <ToggleButton
                     onCheck={() => {
                       setShowCloneInput(true)

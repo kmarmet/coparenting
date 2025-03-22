@@ -40,8 +40,8 @@
 
       #zero {
         font-size: 30px;
-        opacity: 0.7;
         margin-right: 15px;
+        border-bottom: 1px solid $primaryText;
 
         &.active {
           opacity: 1;
@@ -74,6 +74,8 @@
 
       .reset {
         font-weight: $fwMedium;
+        background: $accentLight;
+        color: white;
       }
 
       button {

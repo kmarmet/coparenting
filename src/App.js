@@ -57,6 +57,8 @@ import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
+import ScreenActions from './components/shared/screenActions'
+import CreationMenu from './components/shared/creationMenu'
 
 export default function App() {
   // Initialize Firebase
@@ -102,7 +104,7 @@ export default function App() {
     document.querySelectorAll('#full-menu .menu-item').forEach((menuItem, i) => {
       setTimeout(() => {
         menuItem.classList.add('visible')
-      }, 70 * i)
+      }, 75 * i)
     })
   }
 
@@ -213,6 +215,9 @@ export default function App() {
         <globalState.Provider value={stateToUpdate}>
           {/* FULL MENU */}
           <FullMenu />
+
+          {/* CREATION MENU */}
+          <CreationMenu />
 
           {/* BRAND BAR */}
           {!screensToHideBrandbar.includes(currentScreen) && <BrandBar />}

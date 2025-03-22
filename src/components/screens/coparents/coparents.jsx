@@ -24,11 +24,14 @@ import AddressInput from '../../shared/addressInput'
 import Modal from '../../shared/modal'
 import EmailManager from '../../../managers/emailManager'
 import Spacer from '../../shared/spacer'
-import MobilePushMenu from '../../shared/mobilePushMenu'
+import { FaAngleUp } from 'react-icons/fa6'
+
+import ScreenActions from '../../shared/screenActions'
+import { IoIosArrowDown } from 'react-icons/io'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, showBottomMenu } = state
 
   // State
   const [userCoparents, setUserCoparents] = useState([])
@@ -39,7 +42,6 @@ export default function Coparents() {
   const [showInvitationForm, setShowInvitationForm] = useState(false)
   const [invitedCoparentName, setInvitedCoparentName] = useState('')
   const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
-  const [showingDeleteAlert, setShowingDeleteAlert] = useState(false)
 
   const deleteProp = async (prop) => {
     const coparent = await getCoparent()
@@ -103,40 +105,65 @@ export default function Coparents() {
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
-      <MobilePushMenu hide={showCustomInfoCard || showNewCoparentFormCard || showInvitationForm || showingDeleteAlert}>
+      {!showBottomMenu && <FaAngleUp className={'screen-actions-menu-icon'} onClick={() => setState({ ...state, showBottomMenu: true })} />}
+
+      <ScreenActions>
         <div className="action-items">
           <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={500} triggerOnce={false} cascade={true}>
-            <div className="action-item" onClick={() => setShowCustomInfoCard(true)}>
-              <p>Add your Own Info</p>
-              <FaWandMagicSparkles className={'magic'} />
+            <div
+              className="action-item"
+              onClick={() => {
+                setState({ ...state, showBottomMenu: false })
+                setShowCustomInfoCard(true)
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <FaWandMagicSparkles className={'magic'} />
+                </div>
+                <p>
+                  Add your Own Info<span className="subtitle">Include personalized details about your co-parent</span>
+                </p>
+              </div>
             </div>
             <div
               className="action-item"
               onClick={() => {
-                setShowingDeleteAlert(true)
-                AlertManager.confirmAlert(
-                  `Are you sure you would like to remove this co-parent?`,
-                  "I'm Sure",
-                  true,
-                  async () => {
-                    await deleteCoparent()
-                    AlertManager.successAlert('Co-Parent Removed')
-                    setSelectedCoparentDataArray(null)
-                  },
-                  () => setShowingDeleteAlert(false)
-                )
+                setState({ ...state, showBottomMenu: false })
+                AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
+                  await deleteCoparent()
+                  AlertManager.successAlert('Co-Parent Removed')
+                  setSelectedCoparentDataArray(null)
+                })
               }}>
-              <p>Remove Co-Parent</p>
-              <IoPersonRemove className={'remove-user'} />
+              <div className="content">
+                <div className="svg-wrapper">
+                  <IoPersonRemove className={'remove-user'} />
+                </div>
+                <p>
+                  Remove Co-Parent <span className="subtitle">Remove the chosen coparent from your profile</span>
+                </p>
+              </div>
             </div>
 
-            <div className="action-item" onClick={() => setShowInvitationForm(true)}>
-              <p>Invite Co-Parent</p>
-              <BsFillSendFill className={'paper-airplane'} />
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowInvitationForm(true)
+                setState({ ...state, showBottomMenu: false })
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <BsFillSendFill className={'paper-airplane'} />
+                </div>
+                <p>
+                  Invite Co-Parent <span className="subtitle">Send invitation to a co-parent you would like to share essential information with</span>
+                </p>
+              </div>
             </div>
           </Fade>
+          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showBottomMenu: false })} />
         </div>
-      </MobilePushMenu>
+      </ScreenActions>
 
       <Modal
         submitText={'Send Invitation'}
