@@ -93,7 +93,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               </div>
 
               {/* CREATE */}
-              <div onClick={() => setState({ ...state, showBottomMenu: true })} className={`menu-item`}>
+              <div onClick={() => setState({ ...state, showCreationMenu: true })} className={`menu-item`}>
                 <PiPlusBold className={'create'} />
                 <p>Create</p>
               </div>

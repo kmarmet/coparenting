@@ -26,12 +26,12 @@ import EmailManager from '../../../managers/emailManager'
 import Spacer from '../../shared/spacer'
 import { FaAngleUp } from 'react-icons/fa6'
 
-import BottomMenu from '../../shared/bottomMenu'
+import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import { IoIosArrowDown } from 'react-icons/io'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, showBottomMenu } = state
+  const { currentUser, theme, showScreenActions } = state
 
   // State
   const [userCoparents, setUserCoparents] = useState([])
@@ -105,15 +105,17 @@ export default function Coparents() {
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
-      {!showBottomMenu && <FaAngleUp className={'bottom-menu-menu-icon'} onClick={() => setState({ ...state, showBottomMenu: true })} />}
+      {!showScreenActions && (
+        <FaAngleUp className={'screen-actions-menu-menu-icon'} onClick={() => setState({ ...state, showScreenActions: true })} />
+      )}
 
-      <BottomMenu>
+      <ScreenActionsMenu>
         <div className="action-items">
           <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={500} triggerOnce={false} cascade={true}>
             <div
               className="action-item"
               onClick={() => {
-                setState({ ...state, showBottomMenu: false })
+                setState({ ...state, showScreenActions: false })
                 setShowCustomInfoCard(true)
               }}>
               <div className="content">
@@ -128,7 +130,7 @@ export default function Coparents() {
             <div
               className="action-item"
               onClick={() => {
-                setState({ ...state, showBottomMenu: false })
+                setState({ ...state, showScreenActions: false })
                 AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
                   await deleteCoparent()
                   AlertManager.successAlert('Co-Parent Removed')
@@ -149,7 +151,7 @@ export default function Coparents() {
               className="action-item"
               onClick={() => {
                 setShowInvitationForm(true)
-                setState({ ...state, showBottomMenu: false })
+                setState({ ...state, showScreenActions: false })
               }}>
               <div className="content">
                 <div className="svg-wrapper">
@@ -161,9 +163,9 @@ export default function Coparents() {
               </div>
             </div>
           </Fade>
-          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showBottomMenu: false })} />
+          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showScreenActions: false })} />
         </div>
-      </BottomMenu>
+      </ScreenActionsMenu>
 
       <Modal
         submitText={'Send Invitation'}

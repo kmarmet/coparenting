@@ -145,10 +145,6 @@ export default function NewMemoryForm() {
     }, 100)
   }
 
-  useEffect(() => {
-    Manager.showPageContainer()
-  }, [])
-
   return (
     <Modal
       onSubmit={submit}
@@ -164,8 +160,6 @@ export default function NewMemoryForm() {
           <div className="form">
             {/* SHARE WITH */}
             {currentUser && <ShareWithCheckboxes onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />}
-
-            <Spacer height={10} />
 
             {/* TITLE */}
             <InputWrapper

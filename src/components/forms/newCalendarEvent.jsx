@@ -148,7 +148,7 @@ export default function NewCalendarEvent() {
       }
 
       if (!Manager.isValid(eventTitle, true)) {
-        AlertManager.throwError('Please enter an event title')
+        AlertManager.throwError('Please enter an event name')
         return false
       }
 
@@ -333,7 +333,7 @@ export default function NewCalendarEvent() {
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
         title={'Create New Event'}>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
-          <Fade direction={'up'} duration={600} delay={200} triggerOnce={true}>
+          <Fade direction={'up'} duration={600} triggerOnce={true}>
             {/* Event Length */}
             <ViewSelector
               defaultView={'Single Day'}

@@ -17,9 +17,12 @@ StateObj =
   notificationCount: 0,
   parentAccessGranted: false
   refreshKey: 0,
+  showCreationMenu: false
+  showScreenActions: false
   registrationUserName: ''
   selectedChild: null
   selectedNewEventDay: null
+  setShowScreenActions: (bool) ->
   setActiveInfoChild: (child) ->
   setActiveInfoCoparent: (coparent) ->
   setAuthUser: (user) ->

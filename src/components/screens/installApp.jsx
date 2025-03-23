@@ -1,9 +1,7 @@
 // Path: src\components\screens\installApp.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../context'
-import Manager from '../../managers/manager'
-import PopupCard from '../shared/popupCard'
-import { FaApple } from 'react-icons/fa6'
+import { FaApple, FaMinus, FaPlus } from 'react-icons/fa6'
 import { BsAndroid2 } from 'react-icons/bs'
 import { TbDeviceDesktopDown } from 'react-icons/tb'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -13,9 +11,9 @@ import DomManager from '../../managers/domManager'
 import { MdOutlineIosShare } from 'react-icons/md'
 import Spacer from '../shared/spacer'
 import NavBar from '../navBar'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
 import { IoIosArrowBack } from 'react-icons/io'
 import ScreenNames from '../../constants/screenNames'
+
 export default function InstallApp() {
   const { state, setState } = useContext(globalState)
   const { userIsLoggedIn } = state

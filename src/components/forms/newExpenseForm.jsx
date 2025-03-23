@@ -377,7 +377,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
               <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
                 $100
               </button>
-              <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
+              <button className="default button reset" onClick={() => setExpenseAmount('')}>
                 RESET
               </button>
             </div>

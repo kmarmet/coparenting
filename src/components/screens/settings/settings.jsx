@@ -14,6 +14,7 @@ import InputWrapper from '/src/components/shared/inputWrapper'
 import Label from '/src/components/shared/label'
 import DB from '/src/database/DB'
 import NotificationManager from '/src/managers/notificationManager.js'
+import ToggleButton from '../../shared/toggleButton'
 
 export default function Settings() {
   const { state, setState } = useContext(globalState)
@@ -103,15 +104,11 @@ export default function Settings() {
             {/* IS VISITATION? */}
             <Label text={'Notifications'} labelId="medium-title" classes="mt-30" isBold={true} />
             <div className="flex">
-              {currentUser?.settings?.notificationsEnabled && <p>Enabled</p>}
-              {!currentUser?.settings?.notificationsEnabled && <p>Disabled</p>}
-              <Toggle
-                icons={{
-                  unchecked: null,
-                }}
-                defaultChecked={currentUser?.settings?.notificationsEnabled}
-                className={'ml-auto visitation-toggle'}
-                onChange={toggleNotifications}
+              <p>Enabled</p>
+              <ToggleButton
+                isDefaultChecked={currentUser?.settings?.notificationsEnabled}
+                onCheck={toggleNotifications}
+                onUncheck={toggleNotifications}
               />
             </div>
           </div>

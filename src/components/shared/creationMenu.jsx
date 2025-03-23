@@ -1,5 +1,5 @@
-import React, { useContext } from 'react'
-import BottomMenu from './bottomMenu'
+import React, { useContext, useEffect } from 'react'
+import ScreenActionsMenu from './screenActionsMenu'
 import { IoIosArrowDown, IoMdPhotos } from 'react-icons/io'
 import { Fade } from 'react-awesome-reveal'
 import globalState from '../../context'
@@ -11,16 +11,32 @@ import CreationForms from '../../constants/creationForms'
 
 const CreationMenu = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const { currentUser, theme, showCreationMenu } = state
+
+  useEffect(() => {
+    const pageContainer = document.querySelector('.page-container')
+    const pageOverlay = document.getElementById('page-overlay')
+
+    if (pageContainer) {
+      if (showCreationMenu) {
+        pageOverlay.classList.add('active')
+        pageContainer.classList.add('disable-scroll')
+      } else {
+        pageOverlay.classList.remove('active')
+        pageContainer.classList.remove('disable-scroll')
+      }
+    }
+  }, [showCreationMenu])
+
   return (
-    <BottomMenu>
+    <div id="creation-menu-wrapper" className={showCreationMenu ? 'open' : 'closed'}>
       <div className="action-items creation">
         <Fade direction={'up'} className={'creation-fade-wrapper'} duration={400} triggerOnce={false} cascade={true} damping={0.2}>
           {/* CALENDAR */}
           <div
             className="action-item"
             onClick={() => {
-              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.calendar })
+              setState({ ...state, showCreationMenu: false, creationFormToShow: CreationForms.calendar })
             }}>
             <div className="content">
               <div className="svg-wrapper calendar">
@@ -34,7 +50,7 @@ const CreationMenu = () => {
           <div
             className="action-item"
             onClick={() => {
-              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.expense })
+              setState({ ...state, showCreationMenu: false, creationFormToShow: CreationForms.expense })
             }}>
             <div className="content">
               <div className="svg-wrapper expense">
@@ -48,7 +64,7 @@ const CreationMenu = () => {
           <div
             className="action-item"
             onClick={() => {
-              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.transferRequest })
+              setState({ ...state, showCreationMenu: false, creationFormToShow: CreationForms.transferRequest })
             }}>
             <div className="content">
               <div className="svg-wrapper transfer">
@@ -62,7 +78,7 @@ const CreationMenu = () => {
           <div
             className="action-item"
             onClick={() => {
-              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.memories })
+              setState({ ...state, showCreationMenu: false, creationFormToShow: CreationForms.memories })
             }}>
             <div className="content">
               <div className="svg-wrapper memory">
@@ -76,7 +92,7 @@ const CreationMenu = () => {
           <div
             className="action-item"
             onClick={() => {
-              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.swapRequest })
+              setState({ ...state, showCreationMenu: false, creationFormToShow: CreationForms.swapRequest })
             }}>
             <div className="content">
               <div className="svg-wrapper swap">
@@ -90,7 +106,7 @@ const CreationMenu = () => {
           <div
             className="action-item"
             onClick={() => {
-              setState({ ...state, showBottomMenu: false, creationFormToShow: CreationForms.documents })
+              setState({ ...state, showCreationMenu: false, creationFormToShow: CreationForms.documents })
             }}>
             <div className="content">
               <div className="svg-wrapper document">
@@ -100,9 +116,9 @@ const CreationMenu = () => {
             </div>
           </div>
         </Fade>
-        <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showBottomMenu: false, creationFormToShow: '' })} />
+        <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showCreationMenu: false, creationFormToShow: '' })} />
       </div>
-    </BottomMenu>
+    </div>
   )
 }
 

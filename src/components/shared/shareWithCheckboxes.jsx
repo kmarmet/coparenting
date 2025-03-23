@@ -16,7 +16,7 @@ export default function ShareWithCheckboxes({
   labelText = '',
 }) {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser } = state
+  const { theme, currentUser, menuIsOpen } = state
   const [shareWith, setShareWith] = useState([])
 
   const setShareWithUsers = async () => {
@@ -57,7 +57,7 @@ export default function ShareWithCheckboxes({
     if (Manager.isValid(currentUser)) {
       setShareWithUsers().then((r) => r)
     }
-  }, [])
+  }, [menuIsOpen])
 
   return (
     <>

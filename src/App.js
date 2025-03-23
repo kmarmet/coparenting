@@ -57,7 +57,7 @@ import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
-import BottomMenu from './components/shared/bottomMenu'
+import ScreenActionsMenu from './components/shared/screenActionsMenu'
 import CreationMenu from './components/shared/creationMenu'
 import CreationForms from './constants/creationForms'
 
@@ -193,6 +193,7 @@ export default function App() {
         console.log('signed out or user doesnt exist')
       }
     })
+    // eslint-disable-next-line no-undef
     LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
   }, [])
 
@@ -209,11 +210,12 @@ export default function App() {
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div className={`App ${theme}`} id="app-container">
         {/* LOADING */}
-        {isLoading && <Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />}
-
-        <div className={theme} id="page-overlay"></div>
+        <Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />
 
         <globalState.Provider value={stateToUpdate}>
+          {/* PAGE OVERLAY */}
+          <div className={theme} id="page-overlay" onClick={() => setState({ ...state, showCreationMenu: false })}></div>
+
           {/* FULL MENU */}
           <FullMenu />
 

@@ -46,6 +46,22 @@
       margin-top: 8px;
 
       .memory {
+        #memory-image-wrapper {
+          .memory-title {
+            font-weight: $fwBold !important;
+            backdrop-filter: blur(25px);
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            display: inline-block;
+            padding: 10px;
+            width: auto;
+            position: relative;
+            top: 38px;
+            border-radius: $borderRadius 0 $borderRadius 0;
+            z-index: 99999;
+            font-size: 14px;
+            color: white;
+          }
+        }
         .memory-image {
           position: relative;
           flex-basis: 30%;

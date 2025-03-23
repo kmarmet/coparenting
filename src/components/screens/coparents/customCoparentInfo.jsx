@@ -44,10 +44,8 @@ export default function CustomCoparentInfo({ hideCard, activeCoparent, showCard 
       showCard={showCard}
       onClose={resetForm}>
       <div className="custom-coparent-info-wrapper">
-        <div className={`${theme} form`}>
-          <InputWrapper key={refreshKey} inputType={'input'} labelText={'Title/Label*'} onChange={(e) => setTitle(e.target.value)} />
-          <InputWrapper key={refreshKey} inputType={'input'} labelText={'Value*'} onChange={(e) => setValue(e.target.value)} />
-        </div>
+        <InputWrapper inputType={'input'} labelText={'Title/Label*'} onChange={(e) => setTitle(e.target.value)} />
+        <InputWrapper inputType={'input'} labelText={'Value*'} onChange={(e) => setValue(e.target.value)} />
       </div>
     </Modal>
   )

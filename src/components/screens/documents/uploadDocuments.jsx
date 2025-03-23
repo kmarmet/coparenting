@@ -210,21 +210,19 @@ export default function UploadDocuments({ hideCard, showCard }) {
           <div className="form">
             <>
               <InputWrapper labelText={'Document Name'} onChange={(e) => setDocName(e.target.value)} />
-              <Spacer height={5} />
               <CheckboxGroup
                 parentLabel={'Document Type'}
                 required={true}
                 checkboxArray={Manager.buildCheckboxGroup({ currentUser, customLabelArray: ['Document', 'Image'] })}
                 onCheck={handleCheckboxSelection}
               />
-              <Spacer height={5} />
               <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
             </>
           </div>
           {/* UPLOAD BUTTONS */}
           <UploadInputs
             onClose={hideCard}
-            containerClass={`${theme} new-document-card mt-15`}
+            containerClass={`${theme} new-document-card`}
             actualUploadButtonText={'Upload'}
             uploadButtonText={docType === 'document' ? 'Document' : 'Choose'}
             uploadType={docType}

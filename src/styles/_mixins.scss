@@ -1045,7 +1045,7 @@
     opacity: 1;
   }
 
-  #bottom-menu {
+  #screen-actions-menu {
     height: 100vh;
     position: fixed;
     z-index: 1;
@@ -1599,9 +1599,9 @@
         width: 100%;
         height: 1px;
         background: $mainBlue;
-        border-radius: 100%;
+        border-radius: 8px;
         position: absolute;
-        bottom: -5px;
+        bottom: -6px;
       }
     }
 
@@ -2927,8 +2927,8 @@
     right: 0;
     bottom: 0;
     z-index: 99999;
-    backdrop-filter: blur(4px);
-    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(7px);
+    background-color: rgba(0, 0, 0, 0.35);
   }
 
   /*#region  MODAL*/
@@ -2943,7 +2943,8 @@
     border-radius: 15px;
     max-height: calc(100vh - 250pt);
     align-self: center;
-    bottom: -100vh;
+    bottom: -100%;
+    transition: all 2s ease-in;
     @include bestShadow;
     box-shadow: rgba(0, 0, 0, 0.56) 0 18px 20px 12px;
     // ANIMATION
@@ -2953,7 +2954,7 @@
     }
 
     &.animate__fadeOutDown {
-      transition: all 2s ease-out;
+      //      transition: all 4s ease-out;
     }
 
     @media screen and (max-width: 400px) {
@@ -2968,7 +2969,7 @@
     z-index: 10000000;
     right: 0;
     left: 0;
-    margin: 0 auto 15px auto;
+    margin: 0 auto 20px auto;
     display: block;
     border-radius: $borderRadius;
     align-self: flex-end;
@@ -2976,10 +2977,12 @@
     #large-title {
       justify-content: center;
       text-align: center;
-      font-weight: $fwBold;
-      font-size: 24px;
+      font-weight: $fwExtraBold;
+      font-size: 26px;
       line-height: 1;
       color: white;
+      max-width: 90%;
+      margin: 0 auto;
 
       &.long-title {
         line-height: 1.3;
@@ -4343,8 +4346,6 @@
     opacity: 1;
     margin: 0 15px;
     box-shadow: 0 6px 12px 6px #96afe6;
-    position: relative;
-    left: -5px;
 
     svg {
       transform: scale(1.2);

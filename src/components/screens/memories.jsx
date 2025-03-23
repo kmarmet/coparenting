@@ -146,8 +146,16 @@ export default function Memories() {
                     <div key={index} className="memory">
                       {/* IMAGE */}
                       <div id="memory-image-wrapper">
+                        {Manager.isValid(imgObj?.title) && <p className="memory-title">{StringManager.formatTitle(imgObj?.title, true)}</p>}
                         <div
-                          data-sub-html={`<p class="gallery-title">${StringManager.formatTitle(StringManager.formatTitle(imgObj?.title, true))}<span>${imgObj?.notes}</span></p>`}
+                          data-sub-html={`${
+                            Manager.isValid(imgObj?.notes, true)
+                              ? `<p class="gallery-title">
+${StringManager.formatTitle(StringManager.formatTitle(imgObj?.title, true))}
+                                <span>${imgObj?.notes}</span>
+                              </p>`
+                              : ''
+                          }`}
                           style={{ backgroundImage: `url(${imgObj?.url})` }}
                           className="memory-image"
                           data-src={imgObj?.url}></div>

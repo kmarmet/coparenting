@@ -521,7 +521,7 @@
       color: $subtitleText;
     }
 
-    .bottom-menu-menu-icon {
+    .screen-actions-menu-menu-icon {
       position: fixed;
       right: 15px;
       bottom: 100px;
@@ -530,12 +530,12 @@
       opacity: 0.2;
     }
 
-    #bottom-menu-wrapper,
+    #screen-actions-menu-wrapper,
     #creation-menu-wrapper {
       @include bottomMenuWrapper;
 
       &#creation-menu-wrapper {
-        #bottom-menu {
+        #screen-actions-menu {
           .action-items {
             .action-item {
               @include row;

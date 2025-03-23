@@ -1,18 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
-import { FaAngleLeft } from 'react-icons/fa6'
-import { Fade } from 'react-awesome-reveal'
 
-const BottomMenu = ({ children }) => {
+const ScreenActionsMenu = ({ children }) => {
   const { state, setState } = useContext(globalState)
-  const { theme, showBottomMenu } = state
+  const { theme, showScreenActions } = state
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
     const pageOverlay = document.getElementById('page-overlay')
 
     if (pageContainer) {
-      if (showBottomMenu) {
+      if (showScreenActions) {
         pageOverlay.classList.add('active')
         pageContainer.classList.add('disable-scroll')
       } else {
@@ -20,16 +18,19 @@ const BottomMenu = ({ children }) => {
         pageContainer.classList.remove('disable-scroll')
       }
     }
-  }, [showBottomMenu])
+  }, [showScreenActions])
 
   return (
-    <div id="bottom-menu-wrapper" className={showBottomMenu ? 'open' : 'closed'}>
+    <div id="screen-actions-menu-wrapper" className={showScreenActions ? 'open' : 'closed'}>
       {/* MENU ICON */}
-      <div id="bottom-menu" className={showBottomMenu ? 'open' : 'closed'}>
+      <div
+        id="screen-actions-menu"
+        onClick={() => setState({ ...state, showScreenActions: false })}
+        className={showScreenActions ? 'open' : 'closed'}>
         {children}
       </div>
     </div>
   )
 }
 
-export default BottomMenu
+export default ScreenActionsMenu
