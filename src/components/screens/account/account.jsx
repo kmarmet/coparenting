@@ -4,11 +4,9 @@ import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import Manager from '../../../managers/manager'
 import { Fade } from 'react-awesome-reveal'
-import { PiHandWavingDuotone, PiUserCircleMinusDuotone } from 'react-icons/pi'
-import { MdContactMail } from 'react-icons/md'
+import { PiHandWavingDuotone } from 'react-icons/pi'
+import { MdContactMail, MdOutlinePassword } from 'react-icons/md'
 import { IoIosRemoveCircle } from 'react-icons/io'
-import { TiUserDelete } from 'react-icons/ti'
-import { MdOutlineContactMail, MdOutlinePassword } from 'react-icons/md'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import firebaseConfig from '../../../firebaseConfig'
@@ -80,31 +78,39 @@ export default function Account() {
       AlertManager.throwError('Email is not valid')
       return false
     }
-    AlertManager.inputAlert('Enter Your Password', 'To update your email, we need to re-authenticate your account for security purposes', (e) => {
-      const user = auth.currentUser
-      const credential = EmailAuthProvider.credential(user.email, e.value)
-      reauthenticateWithCredential(auth.currentUser, credential)
-        .then(async () => {
-          // User re-authenticated.
-          await updateEmail(auth.currentUser, email, {
-            email: email,
+    AlertManager.inputAlert(
+      'Enter Your Password',
+      'To update your email, we need to re-authenticate your account for security purposes',
+      (e) => {
+        const user = auth.currentUser
+        const credential = EmailAuthProvider.credential(user.email, e.value)
+        reauthenticateWithCredential(auth.currentUser, credential)
+          .then(async () => {
+            // User re-authenticated.
+            await updateEmail(auth.currentUser, email, {
+              email: email,
+            })
+            await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/email`, email)
+            setState({ ...state, isLoading: false })
+            logout()
           })
-          await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/email`, email)
-          setState({ ...state, isLoading: false })
-          logout()
-        })
-        .catch((error) => {
-          // An error ocurred
-          if (Manager.contains(error.message, 'auth/wrong-password')) {
-            AlertManager.throwError('Password is incorrect')
-          }
-          if (Manager.contains(error.message, 'email-already-in-use')) {
-            AlertManager.throwError('Account already exists with this email')
-          }
-          console.log(error.message)
-          // ...
-        })
-    })
+          .catch((error) => {
+            // An error ocurred
+            if (Manager.contains(error.message, 'auth/wrong-password')) {
+              AlertManager.throwError('Password is incorrect')
+            }
+            if (Manager.contains(error.message, 'email-already-in-use')) {
+              AlertManager.throwError('Account already exists with this email')
+            }
+            console.log(error.message)
+            // ...
+          })
+      },
+      true,
+      true,
+      'text',
+      'yellow'
+    )
   }
 
   const updateUserPhone = async () => {
@@ -126,57 +132,65 @@ export default function Account() {
   }
 
   const closeAccount = async () => {
-    AlertManager.inputAlert('Enter Your Password', 'To proceed with the account deletion, you must provide your password for verification', (e) => {
-      const user = auth.currentUser
-      const credential = EmailAuthProvider.credential(user.email, e.value)
-      if (!Manager.isValid(e.value, true)) {
-        AlertManager.throwError('Password is required')
-        return false
-      }
-      reauthenticateWithCredential(auth.currentUser, credential)
-        .then(async () => {
-          // // Delete from Firebase Storage
-          const allStorageDirectories = Object.keys(FirebaseStorage.directories)
-          for (let dir of allStorageDirectories) {
-            await FirebaseStorage.deleteDirectory(dir, currentUser.key)
-          }
+    AlertManager.inputAlert(
+      'Enter Your Password',
+      'In order to continue with the account deletion process, you are required to enter your password for security (verification) purposes',
+      (e) => {
+        const user = auth.currentUser
+        const credential = EmailAuthProvider.credential(user.email, e.value)
+        if (!Manager.isValid(e.value, true)) {
+          AlertManager.throwError('Password is required')
+          return false
+        }
+        reauthenticateWithCredential(auth.currentUser, credential)
+          .then(async () => {
+            // // Delete from Firebase Storage
+            const allStorageDirectories = Object.keys(FirebaseStorage.directories)
+            for (let dir of allStorageDirectories) {
+              await FirebaseStorage.deleteDirectory(dir, currentUser.key)
+            }
 
-          // Delete from OneSignal
-          const subscriber = await DB.find(DB.tables.notificationSubscribers, ['key', currentUser.key], true)
+            // Delete from OneSignal
+            const subscriber = await DB.find(DB.tables.notificationSubscribers, ['key', currentUser.key], true)
 
-          if (subscriber) {
-            await NotificationManager.deleteUser(subscriber?.oneSignalId, subscriber?.subscriptionId)
-          }
+            if (subscriber) {
+              await NotificationManager.deleteUser(subscriber?.oneSignalId, subscriber?.subscriptionId)
+            }
 
-          // Delete from Realtime Database
-          await DB_UserScoped.deleteUserData(currentUser)
+            // Delete from Realtime Database
+            await DB_UserScoped.deleteUserData(currentUser)
 
-          // Delete from Firebase Auth
-          firebaseUser
-            .delete()
-            .then(async () => {
-              // Sign Out
-              signOut(auth)
-                .then(() => {
-                  window.location.reload()
-                  // Sign-out successful.
-                  console.log('User signed out')
-                })
-                .catch((error) => {
-                  // An error happened.
-                  console.log(error.message)
-                })
-            })
-            .catch((error) => {
-              console.log(error.message)
-            })
-        })
-        .catch((error) => {
-          // An error ocurred
-          console.log(error.message)
-          // ...
-        })
-    })
+            // Delete from Firebase Auth
+            firebaseUser
+              .delete()
+              .then(async () => {
+                // Sign Out
+                signOut(auth)
+                  .then(() => {
+                    window.location.reload()
+                    // Sign-out successful.
+                    console.log('User signed out')
+                  })
+                  .catch((error) => {
+                    // An error happened.
+                    console.log(error.message)
+                  })
+              })
+              .catch((error) => {
+                console.log(error.message)
+              })
+          })
+          .catch((error) => {
+            // An error ocurred
+            console.log(error.message)
+            // ...
+          })
+      },
+      true,
+      true,
+      'text',
+      'yellow'
+    )
   }
 
   return (

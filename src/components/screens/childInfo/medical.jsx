@@ -23,6 +23,15 @@ export default function Medical() {
 
   const deleteProp = async (prop) => {
     const sharedInfoRecords = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
+    const existingPropCount = Object.keys(activeInfoChild?.medical).length
+
+    if (existingPropCount <= 1) {
+      const accordion = document.querySelector('.medical.info-section')
+      if (accordion) {
+        accordion.querySelector('.MuiCollapse-root').remove()
+      }
+      setShowInputs(false)
+    }
 
     // Delete Shared
     const sharedProps = sharedInfoRecords?.map((x) => x?.prop)

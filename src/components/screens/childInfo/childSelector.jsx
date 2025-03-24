@@ -5,6 +5,7 @@ import Manager from '/src/managers/manager'
 import DB from '/src/database/DB'
 import Modal from '/src/components/shared/modal'
 import StringManager from '../../../managers/stringManager'
+import Spacer from '../../shared/spacer'
 
 function ChildSelector({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -25,11 +26,12 @@ function ChildSelector({ hideCard, showCard }) {
       hasSubmitButton={false}
       onClose={hideCard}
       title={'View Another Child'}
-      subtitle="Select which child you would like to view and/or edit"
+      subtitle="Choose the child whose information you wish to view or modify"
       showCard={showCard}
       wrapperClass="child-selector-card"
       className={`child-selector`}>
-      <div className="mt-15" id="child-selector">
+      <Spacer height={10} />
+      <div id="child-selector">
         {Manager.isValid(children) &&
           children.map((child, index) => {
             return (

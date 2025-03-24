@@ -72,7 +72,7 @@ export default function FullMenu() {
       onClose={() => {}}
       hasDelete={false}
       hasSubmitButton={false}>
-      <div id="full-menu" className={`${theme} ${menuIsOpen ? 'active' : ''}`}>
+      <div id="full-menu" className={`${theme}`}>
         {/* ADMIN DASHBOARD */}
         {currentUser?.email === 'kmarmet1@gmail.com' && (
           <div

@@ -4,7 +4,6 @@ import globalState from '../../context.js'
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-import NewTransferChangeRequest from '../forms/newTransferRequest.jsx'
 import NotificationManager from '/src/managers/notificationManager.js'
 import DB_UserScoped from '../../database/db_userScoped.js'
 import DateManager from '/src/managers/dateManager.js'
@@ -189,6 +188,7 @@ export default function TransferRequests() {
   useEffect(() => {
     onTableChange().then((r) => r)
     getCurrentUserAddress().then((r) => r)
+    // eslint-disable-next-line no-undef
     setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
   }, [])
 
@@ -316,7 +316,7 @@ export default function TransferRequests() {
                 <InputWrapper inputType={'date'} labelText={'Date'}>
                   <MobileDatePicker
                     onOpen={addThemeToDatePickers}
-                    className={`${theme}  w-100`}
+                    className={`${theme}`}
                     defaultValue={moment(activeRequest?.date)}
                     onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
                   />
@@ -337,7 +337,7 @@ export default function TransferRequests() {
                   }}
                   onOpen={addThemeToDatePickers}
                   defaultValue={moment(activeRequest?.time, DateFormats.timeForDb)}
-                  className={`${theme}  w-100`}
+                  className={`${theme}`}
                   onChange={(e) => setRequestTime(moment(e).format(DateFormats.timeForDb))}
                 />
               </InputWrapper>
@@ -352,7 +352,7 @@ export default function TransferRequests() {
                 <InputWrapper inputType={'date'} labelText={'Respond by'}>
                   <MobileDatePicker
                     onOpen={addThemeToDatePickers}
-                    className={`${theme}  w-100`}
+                    className={`${theme}`}
                     defaultValue={moment(activeRequest?.responseDueDate)}
                     onChange={(e) => setResponseDueDate(moment(e).format(DateFormats.dateForDb))}
                   />
@@ -373,14 +373,14 @@ export default function TransferRequests() {
               {/* BUTTONS */}
               <div className="card-buttons">
                 <>
-                  <button className="button default submit center mt-15 mb-10" data-request-id={activeRequest?.id} onClick={update}>
+                  <button className="button default submit center" data-request-id={activeRequest?.id} onClick={update}>
                     Update Request
                   </button>
                   {activeRequest?.ownerKey !== currentUser?.key && (
                     <button
-                      className="button default red center mt-5"
+                      className="button default red center"
                       data-request-id={activeRequest?.id}
-                      onClick={async (e) => {
+                      onClick={async () => {
                         AlertManager.inputAlert(
                           'Rejection Reason',
                           'Please enter a rejection reason.',

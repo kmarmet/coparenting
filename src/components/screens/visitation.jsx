@@ -310,9 +310,9 @@ export default function Visitation() {
                 another schedule, please delete the current schedule first.
               </p>
               {showDeleteButton && (
-                <div className="buttons flex mt-15">
+                <div className="buttons flex">
                   <button
-                    className="button red default center mb-20"
+                    className="button red default center"
                     onClick={() => {
                       AlertManager.confirmAlert(
                         'Are you sure you would like to permanently delete your current visitation schedule?',
@@ -334,7 +334,7 @@ export default function Visitation() {
           {existingScheduleEvents.length === 0 && (
             <div className="sections">
               {/* VISITATION SCHEDULE */}
-              <div className="note-container mt-10 mb-15">
+              <div className="note-container">
                 <Note
                   message={
                     'When you establish a visitation schedule, it will be displayed on the calendar for you and anyone you permit to access it.'
@@ -342,10 +342,12 @@ export default function Visitation() {
                 />
               </div>
 
+              <Spacer height={10} />
+
               {/* SCHEDULE SELECTION */}
-              <div className="section visitation-schedule mt-10 mb-10">
+              <div className="section visitation-schedule">
                 <CheckboxGroup
-                  elClass="mt-10 schedule-type-checkboxes gap-10"
+                  elClass="schedule-type-checkboxes"
                   parentLabel={'Choose Visitation Schedule'}
                   onCheck={handleScheduleTypeSelection}
                   skipNameFormatting={true}
@@ -359,7 +361,6 @@ export default function Visitation() {
               {/* SHARE WITH */}
               <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
 
-              <Spacer height={10} />
               {/* LOCATION */}
               <InputWrapper inputType="location" childrenOnly={true} labelText={'Preferred Transfer Location'}>
                 <AddressInput
@@ -377,7 +378,7 @@ export default function Visitation() {
           <CheckboxGroup
             containerClass="holidays"
             parentLabel={'Select the holidays YOU have your child(ren) this year'}
-            elClass={'holiday-checkboxes-wrapper gap-10'}
+            elClass={'holiday-checkboxes-wrapper'}
             onCheck={handleHolidaySelection}
             skipNameFormatting={true}
             checkboxArray={Manager.buildCheckboxGroup({
@@ -388,7 +389,7 @@ export default function Visitation() {
           />
 
           {showUpdateHolidaysButton && (
-            <button className="button default green center mt-30" onClick={() => setHolidaysInDatabase()}>
+            <button className="button default green center" onClick={() => setHolidaysInDatabase()}>
               Update Holidays
             </button>
           )}

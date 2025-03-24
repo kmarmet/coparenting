@@ -105,9 +105,7 @@ export default function Coparents() {
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
-      {!showScreenActions && (
-        <FaAngleUp className={'screen-actions-menu-menu-icon'} onClick={() => setState({ ...state, showScreenActions: true })} />
-      )}
+      {!showScreenActions && <FaAngleUp className={'screen-actions-menu-icon'} onClick={() => setState({ ...state, showScreenActions: true })} />}
 
       <ScreenActionsMenu>
         <div className="action-items">

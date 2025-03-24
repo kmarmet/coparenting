@@ -7,14 +7,11 @@ const ScreenActionsMenu = ({ children }) => {
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
-    const pageOverlay = document.getElementById('page-overlay')
 
     if (pageContainer) {
       if (showScreenActions) {
-        pageOverlay.classList.add('active')
         pageContainer.classList.add('disable-scroll')
       } else {
-        pageOverlay.classList.remove('active')
         pageContainer.classList.remove('disable-scroll')
       }
     }
@@ -22,11 +19,9 @@ const ScreenActionsMenu = ({ children }) => {
 
   return (
     <div id="screen-actions-menu-wrapper" className={showScreenActions ? 'open' : 'closed'}>
+      <div id="screen-actions-background"></div>
       {/* MENU ICON */}
-      <div
-        id="screen-actions-menu"
-        onClick={() => setState({ ...state, showScreenActions: false })}
-        className={showScreenActions ? 'open' : 'closed'}>
+      <div id="screen-actions-menu" className={showScreenActions ? 'open' : 'closed'}>
         {children}
       </div>
     </div>

@@ -34,6 +34,7 @@ import CalendarEvent from '/src/models/calendarEvent'
 import ModelNames from '/src/models/modelNames'
 import ToggleButton from '../shared/toggleButton'
 import CreationForms from '../../constants/creationForms'
+import Label from '../shared/label'
 
 export default function NewCalendarEvent() {
   // APP STATE
@@ -475,7 +476,7 @@ export default function NewCalendarEvent() {
             {/* IS VISITATION? */}
             <div>
               <div className="flex">
-                <p>Visitation Event</p>
+                <Label text={'Visitation Event'} />
                 <ToggleButton onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
               </div>
             </div>
@@ -487,7 +488,7 @@ export default function NewCalendarEvent() {
               <Accordion id={'checkboxes'} expanded={includeChildren}>
                 <AccordionSummary>
                   <div className="flex">
-                    <p>Include Children</p>
+                    <Label text={'Include Children'} />
                     <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
                   </div>
                 </AccordionSummary>
@@ -554,7 +555,7 @@ export default function NewCalendarEvent() {
             {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
               <>
                 <div className="flex">
-                  <p>Duplicate</p>
+                  <Label text={'Duplicate'} />
                   <ToggleButton
                     onCheck={() => {
                       setShowCloneInput(true)

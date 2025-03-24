@@ -4,8 +4,21 @@
   #calendar-container {
     #static-calendar {
       .MuiPickersCalendarHeader-root {
-        display: none !important;
+        //        display: none !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        .MuiPickersCalendarHeader-labelContainer {
+          margin: 0 auto !important;
+        }
       }
+    }
+    #close-holidays-button,
+    #close-search-button {
+      margin: 0 auto 15px auto;
+      background: $bootstrapBgRed;
+      color: $bootstrapRedColor;
+      border: 1px solid $bootstrapRedBorder;
     }
     #calendar-month {
       color: $subtitleText;

@@ -171,9 +171,6 @@
 
   // STATIC CALENDAR
   #static-calendar {
-    .MuiPickersLayout-root {
-      max-width: calc(100vw - 3px) !important;
-    }
     .MuiPickersLayout-contentWrapper {
       max-width: 100% !important;
 
@@ -191,7 +188,7 @@
       //      top: -22px;
 
       .MuiPickersCalendarHeader-labelContainer {
-        display: none !important;
+        //        display: none !important;
       }
 
       .MuiButtonBase-root {
@@ -278,10 +275,16 @@
   .MuiDateRangeCalendar-root {
     width: calc(100% - 22px);
 
+    .MuiPickersSlideTransition-root {
+      min-height: 350px !important;
+    }
+
     .MuiDateRangePickerDay-rangeIntervalPreview {
       button {
         &.Mui-selected {
           width: 45px !important;
+          position: relative;
+          top: 3px;
         }
       }
     }
@@ -369,7 +372,6 @@
 
         p {
           font-weight: $fwMedium !important;
-          opacity: 0.9;
         }
       }
 
@@ -599,10 +601,10 @@
         transition: all 0.2s ease-in-out !important;
         background: $bootstrapBgGreen !important;
         width: 51px !important;
-        height: 43px !important;
+        height: 45px !important;
         margin-left: 5px;
         margin-right: 5px;
-        border-radius: 11px !important;
+        border-radius: 50% !important;
         position: relative;
         border: 1px solid rgba(15, 81, 50, 0.53);
         top: 2px;
@@ -794,7 +796,8 @@
     width: 412px;
 
     @media screen and (max-width: 800px) {
-      //      max-height: 330px;
+      //      max-width: 100vw !important;
+      //      width: 100vw !important;
     }
 
     @media screen and (min-width: 800px) {
@@ -936,8 +939,8 @@
 
     .MuiDialogActions-root {
       button {
-        color: white !important;
-        background-color: $accentLight !important;
+        color: $disabledText !important;
+        background-color: $buttonGrey !important;
 
         &:nth-child(2) {
           background: $green !important;
@@ -1280,6 +1283,9 @@
   }
 
   #static-calendar {
+    .MuiPickersLayout-root {
+      max-width: 100vw !important;
+    }
     .MuiPickersLayout-actionBar,
     .MuiDialogActions-root {
       display: grid;
@@ -1488,5 +1494,9 @@
     //    background: $bootstrapBgGreen;
     //    border-radius: $borderRadius;
     //    padding: 8px;
+  }
+
+  .MuiPickersArrowSwitcher-root {
+    display: none !important;
   }
 }

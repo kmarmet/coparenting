@@ -34,7 +34,7 @@ import ScreenActionsMenu from '../../shared/screenActionsMenu'
 
 export default function ChildInfo() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild, showBottomMenu } = state
+  const { currentUser, theme, activeInfoChild, showScreenActions } = state
   const imgRef = useRef()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showSelectorCard, setShowSelectorCard] = useState(false)
@@ -120,7 +120,7 @@ export default function ChildInfo() {
       {/* NEW CHILD  */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
-      {!showBottomMenu && <FaAngleUp className={'screen-actions-menu-menu-icon'} onClick={() => setState({ ...state, showBottomMenu: true })} />}
+      {!showScreenActions && <FaAngleUp className={'screen-actions-menu-icon'} onClick={() => setState({ ...state, showScreenActions: true })} />}
 
       <ScreenActionsMenu>
         <div className="action-items">
@@ -130,7 +130,7 @@ export default function ChildInfo() {
               className="action-item"
               onClick={() => {
                 setShowInfoCard(true)
-                setState({ ...state, showBottomMenu: false })
+                setState({ ...state, showScreenActions: false })
               }}>
               <div className="content">
                 <div className="svg-wrapper">
@@ -147,7 +147,7 @@ export default function ChildInfo() {
               <div
                 onClick={() => {
                   setShowSelectorCard(true)
-                  setState({ ...state, showBottomMenu: false })
+                  setState({ ...state, showScreenActions: false })
                 }}
                 className="action-item">
                 <div className="content">
@@ -166,7 +166,7 @@ export default function ChildInfo() {
               className="action-item"
               onClick={() => {
                 setShowNewChecklistCard(true)
-                setState({ ...state, showBottomMenu: false })
+                setState({ ...state, showScreenActions: false })
               }}>
               <div className="content">
                 <div className="svg-wrapper">
@@ -178,7 +178,7 @@ export default function ChildInfo() {
               </div>
             </div>
           </Fade>
-          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showBottomMenu: false })} />
+          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showScreenActions: false })} />
         </div>
       </ScreenActionsMenu>
 

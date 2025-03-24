@@ -15,6 +15,7 @@ import moment from 'moment'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import Label from '../../shared/label'
+import Spacer from '../../shared/spacer'
 
 export default function EveryOtherWeekend({ hide, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -78,8 +79,9 @@ export default function EveryOtherWeekend({ hide, showCard }) {
       title={'Every other Weekend Visitation Schedule'}
       showCard={showCard}
       onClose={resetForm}>
-      <Label classes="mt-15" text={'Friday of the next weekend you have your child(ren)'} />
-      <InputWrapper labelText={''} required={true} inputType={'date'}>
+      <Label classes="mt-15" text={'Please specify the upcoming Friday you would like to use as the starting point for the visitation schedule'} />
+      <Spacer height={5} />
+      <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
         <MobileDatePicker onOpen={addThemeToDatePickers} onAccept={(e) => setFirstEveryOtherWeekend(e)} className={`${theme} w-100`} />
       </InputWrapper>
       {/* SHARE WITH */}

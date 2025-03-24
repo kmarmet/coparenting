@@ -19,7 +19,7 @@ import AddressInput from './addressInput'
 import validator from 'validator'
 import DomManager from '../../managers/domManager'
 import { FaPencilAlt } from 'react-icons/fa'
-import { PiTextboxFill } from 'react-icons/pi'
+
 export default function CustomChildInfo({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, activeInfoChild } = state
@@ -59,7 +59,7 @@ export default function CustomChildInfo({ hideCard, showCard }) {
 
     AlertManager.successAlert(`${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`)
     resetForm()
-    setState({ ...state, activeInfoChild: updatedChild })
+    setState({ ...state, activeInfoChild: updatedChild, refreshKey: Manager.getUid() })
   }
 
   const handleInfoTypeSelection = (e) => {

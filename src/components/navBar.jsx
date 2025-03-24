@@ -2,25 +2,13 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
-import { TbPhotoHeart } from 'react-icons/tb'
-import DomManager from '../managers/domManager'
 import { Fade } from 'react-awesome-reveal'
-import { BsPersonVcard } from 'react-icons/bs'
-import { IoChatbubblesOutline, IoNotificationsOutline } from 'react-icons/io5'
+import { IoChatbubbles, IoChatbubblesOutline, IoNotifications, IoNotificationsOutline } from 'react-icons/io5'
 import { LuCalendarDays } from 'react-icons/lu'
 import { HiOutlineMenu } from 'react-icons/hi'
 import { PiPlusBold } from 'react-icons/pi'
-import { IoChatbubbles, IoNotifications } from 'react-icons/io5'
-import { IoAdd } from 'react-icons/io5'
-import {
-  BsCalendarWeekFill,
-  BsFillArrowDownSquareFill,
-  BsFillArrowRightCircleFill,
-  BsFillHousesFill,
-  BsFillMoonStarsFill,
-  BsPersonVcardFill,
-  BsSendFill,
-} from 'react-icons/bs'
+import { FaCalendarAlt } from 'react-icons/fa'
+
 export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
   const { state, setState } = useContext(globalState)
   const { currentScreen, currentUser, menuIsOpen, theme, notificationCount } = state
@@ -53,11 +41,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.calendar)}
                 className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
-                {currentScreen === ScreenNames.calendar ? (
-                  <BsCalendarWeekFill className={'calendar fs-26'} />
-                ) : (
-                  <LuCalendarDays className={'calendar'} />
-                )}
+                {currentScreen === ScreenNames.calendar ? <FaCalendarAlt className={'calendar fs-26'} /> : <LuCalendarDays className={'calendar'} />}
                 <p>Calendar</p>
               </div>
 

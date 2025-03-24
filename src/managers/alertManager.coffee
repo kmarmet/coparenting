@@ -29,6 +29,7 @@ AlertManager = {
       timer: 1500
       showConfirmButton: false
       allowOutsideClick: allowOutsideClick
+      customClass: 'success-alert'
       showClass:
         popup: """
                 animate__animated
@@ -61,7 +62,9 @@ AlertManager = {
       showCancelButton: false
       confirmButtonText: confirmButtonText
       denyButtonText: "Nevermind"
+      background: "#fff3cd !important"
       confirmButtonColor: '#00b389 !important'
+      customClass: 'confirm-alert'
     .then (result) ->
       if result.isConfirmed
         if onConfirm then onConfirm(result)
@@ -95,7 +98,7 @@ AlertManager = {
       if result.isConfirmed
         if onConfirm then onConfirm(result)
 
-  inputAlert : (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "text") ->
+  inputAlert : (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "text", bg = 'white') ->
     Swal.fire
       title: title
       text: text
@@ -104,6 +107,7 @@ AlertManager = {
       showCancelButton: showCancelButton
       confirmButtonText: "Confirm"
       allowOutsideClick: allowOutsideClick
+      customClass: bg
       showClass:
         popup: """
               animate__animated

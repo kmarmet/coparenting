@@ -278,8 +278,10 @@
       overflow: hidden;
 
       .MuiCollapse-root {
-        background: $bestGreyForWhite;
-        padding: 12px;
+        &.MuiCollapse-entered {
+          background: $bestGreyForWhite;
+          padding: 12px;
+        }
       }
       .rs-panel-body {
         padding: 0 10px;

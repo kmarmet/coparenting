@@ -59,7 +59,6 @@ const Chats = () => {
     const activeChats = members.filter((x) => x?.key && x?.key !== currentUser?.key)
     const activeChatKeys = activeChats.map((x) => x?.key)
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-    console.log(validAccounts)
     if (activeChatKeys.length === validAccounts) {
       setShowNewChatButton(false)
     }

@@ -32,6 +32,7 @@ animate__faster`
       timer: 1500,
       showConfirmButton: false,
       allowOutsideClick: allowOutsideClick,
+      customClass: 'success-alert',
       showClass: {
         popup: `animate__animated
 animate__fadeInUp
@@ -61,7 +62,9 @@ animate__faster`
       showCancelButton: false,
       confirmButtonText: confirmButtonText,
       denyButtonText: "Nevermind",
-      confirmButtonColor: '#00b389 !important'
+      background: "#fff3cd !important",
+      confirmButtonColor: '#00b389 !important',
+      customClass: 'confirm-alert'
     }).then(function(result) {
       if (result.isConfirmed) {
         if (onConfirm) {
@@ -104,7 +107,7 @@ animate__faster`
       }
     });
   },
-  inputAlert: function(title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "text") {
+  inputAlert: function(title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "text", bg = 'white') {
     return Swal.fire({
       title: title,
       text: text,
@@ -113,6 +116,7 @@ animate__faster`
       showCancelButton: showCancelButton,
       confirmButtonText: "Confirm",
       allowOutsideClick: allowOutsideClick,
+      customClass: bg,
       showClass: {
         popup: `animate__animated
 animate__fadeInUp

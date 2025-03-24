@@ -23,6 +23,16 @@ export default function Schooling() {
   const deleteProp = async (prop) => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
 
+    const existingPropCount = Object.keys(activeInfoChild?.schooling).length
+
+    if (existingPropCount <= 1) {
+      const accordion = document.querySelector('.schooling.info-section')
+      if (accordion) {
+        accordion.querySelector('.MuiCollapse-root').remove()
+      }
+      setShowInputs(false)
+    }
+
     // Delete Shared
     const sharedProps = sharing?.map((x) => x?.prop)
     if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {

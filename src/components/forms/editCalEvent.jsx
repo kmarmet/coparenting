@@ -454,15 +454,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
     }
   }, [event])
 
-  useEffect(() => {
-    const confirmButton = document.querySelector('.swal2-confirm')
-    const denyButton = document.querySelector('.swal2-deny')
-    if (confirmButton && denyButton) {
-      confirmButton.classList.add('red')
-      denyButton.classList.add('blue')
-    }
-  }, [document.querySelector('.swal2-confirm')])
-
   return (
     <Modal
       onDelete={() => {

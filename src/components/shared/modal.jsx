@@ -59,79 +59,84 @@ export default function Modal({
           }
           modal.classList.remove(fadeInUp)
           modal.classList.remove(fadeOutDown)
-        }, 500)
+        }, 1200)
       }
     }
   }
 
   useEffect(() => {
+    let modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper`)
+
+    // Check if creationFormToShow is valid and if so, find the modal wrapper
     if (Manager.isValid(creationFormToShow, true)) {
-      const modalWrapper = document.querySelector(`.${creationFormToShow}#modal-wrapper`)
+      modalWrapper = document.querySelector(`.${creationFormToShow}#modal-wrapper`)
+    }
 
+    if (modalWrapper) {
+      const modal = modalWrapper.querySelector('#modal')
+      const checkboxContainer = document.getElementById('share-with-checkbox-container')
+      const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
+      const pageContainer = document.querySelector('.page-container')
+      const fadeOutDown = 'animate__fadeOutDown'
+      const fadeInUp = 'animate__fadeInUp'
+
+      if (modalWrapper && StringManager.wordCount(title) >= 4) {
+        const title = modalWrapper.querySelector('#large-title')
+        if (title) {
+          title.classList.add('long-title')
+        }
+      }
+
+      // show or hide card
+      if (Manager.isValid(wrapperClass, true) && Manager.isValid(modalWrapper)) {
+        // show card
+
+        if (showCard) {
+          document.body.classList.add('disable-scroll')
+          appContentWithSidebar.classList.add('disable-scroll')
+          console.log(modalWrapper)
+          if (modalWrapper) {
+            modal.classList.add(fadeInUp)
+            console.log(modal)
+            setTimeout(() => {
+              modal.classList.remove(fadeOutDown)
+            }, 500)
+          }
+
+          if (checkboxContainer) {
+            checkboxContainer.classList.remove('active')
+          }
+
+          if (pageContainer) {
+            pageContainer.classList.add('disable-scroll')
+          }
+        }
+
+        // hide card
+        else {
+          document.body.classList.remove('disable-scroll')
+          appContentWithSidebar.classList.remove('disable-scroll')
+          modal.classList.remove(fadeInUp)
+          if (pageContainer) {
+            pageContainer.classList.remove('disable-scroll')
+          }
+        }
+      }
+
+      // Set MUI datetime picker placeholders
+      const startTimeInput = document.querySelector('#input-wrapper.start-time .MuiInputBase-input')
+      const endTimeInput = document.querySelector('#input-wrapper.end-time .MuiInputBase-input')
+
+      if (startTimeInput && endTimeInput) {
+        startTimeInput.placeholder = 'Start time'
+        endTimeInput.placeholder = 'End time'
+      }
+
+      // Add bottom padding to content based on height
       if (modalWrapper) {
-        const modal = modalWrapper.querySelector('#modal')
-        const checkboxContainer = document.getElementById('share-with-checkbox-container')
-        const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
-        const pageContainer = document.querySelector('.page-container')
-        const fadeOutDown = 'animate__fadeOutDown'
-        const fadeInUp = 'animate__fadeInUp'
-
-        if (modalWrapper && StringManager.wordCount(title) >= 4) {
-          const title = modalWrapper.querySelector('#large-title')
-          if (title) {
-            title.classList.add('long-title')
-          }
-        }
-
-        // show or hide card
-        if (Manager.isValid(wrapperClass, true) && Manager.isValid(modalWrapper)) {
-          // show card
-          if (showCard) {
-            document.body.classList.add('disable-scroll')
-            appContentWithSidebar.classList.add('disable-scroll')
-            if (modalWrapper) {
-              modal.classList.add(fadeInUp)
-              console.log(modal)
-              setTimeout(() => {
-                modal.classList.remove(fadeOutDown)
-              }, 500)
-            }
-
-            if (checkboxContainer) {
-              checkboxContainer.classList.remove('active')
-            }
-
-            if (pageContainer) {
-              pageContainer.classList.add('disable-scroll')
-            }
-          }
-
-          // hide card
-          else {
-            document.body.classList.remove('disable-scroll')
-            appContentWithSidebar.classList.remove('disable-scroll')
-            modal.classList.remove(fadeInUp)
-            if (pageContainer) {
-              pageContainer.classList.remove('disable-scroll')
-            }
-          }
-        }
-
-        // Set MUI datetime picker placeholders
-        const startTimeInput = document.querySelector('#input-wrapper.start-time .MuiInputBase-input')
-        const endTimeInput = document.querySelector('#input-wrapper.end-time .MuiInputBase-input')
-
-        if (startTimeInput && endTimeInput) {
-          startTimeInput.placeholder = 'Start time'
-          endTimeInput.placeholder = 'End time'
-        }
-
-        // Add bottom padding to content based on height
-        if (modalWrapper) {
-          const relativeWrapper = modalWrapper.querySelector('#relative-wrapper')
-          if (relativeWrapper) {
-            setContentHeight(relativeWrapper.offsetHeight)
-          }
+        const relativeWrapper = modalWrapper.querySelector('#relative-wrapper')
+        if (relativeWrapper) {
+          setContentHeight(relativeWrapper.offsetHeight)
         }
       }
     }
@@ -144,7 +149,7 @@ export default function Modal({
         <div className="flex" id="title-wrapper">
           <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
-        <Fade direction={'up'} duration={600} triggerOnce={true} className={'modal-fade-wrapper'}>
+        <Fade direction={'up'} duration={600} delay={2000} triggerOnce={true} className={'modal-fade-wrapper'}>
           <div id="modal" className="animate__animated">
             <div id="relative-wrapper">
               <div id="content" className={contentHeight >= 200 ? 'with-bottom-padding' : ''}>

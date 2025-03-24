@@ -145,7 +145,7 @@
 
   &.active {
     opacity: 1;
-    z-index: 999999;
+    z-index: 9999999;
     transition: all 0.5s ease-in;
   }
 }
@@ -415,7 +415,7 @@
   font-weight: $fwMedium;
   color: white;
   line-height: 1;
-  padding: 15px 15px;
+  padding: 15px 25px;
   border: 0;
   font-size: 13px;
   text-transform: uppercase;
@@ -1025,6 +1025,10 @@
       opacity: 1;
       transform: scale(1);
     }
+    #screen-actions-background {
+      transition: all 0.6s ease-in-out;
+      opacity: 1;
+    }
   }
 
   &.closed {
@@ -1032,6 +1036,18 @@
       opacity: 0;
       transform: scale(0);
     }
+  }
+
+  #screen-actions-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    bottom: 0;
+    backdrop-filter: blur(7px);
+    background-color: rgba(0, 0, 0, 0.35);
+    transition: all 0.6s ease-in-out;
   }
 
   #creation-menu-title {
@@ -1048,7 +1064,7 @@
   #screen-actions-menu {
     height: 100vh;
     position: fixed;
-    z-index: 1;
+    z-index: -1;
     top: 0;
     overflow-x: hidden;
     transition: 0.5s;
@@ -1058,14 +1074,88 @@
     right: 0;
     width: 100vw;
     padding: 0 5px 20vh 0;
+
     &.open {
       opacity: 1;
-
+      z-index: 999999;
       .action-items {
         transition: all 0.6s ease-in-out;
         bottom: 0;
         opacity: 1;
         box-shadow: 10px 12px 30px 24px #0000008f;
+
+        &.doc-viewer {
+          .action-item {
+            svg {
+              transform: scale(1.2);
+            }
+            &.rename-document {
+              .svg-wrapper {
+                background: $lightIconBgBlue;
+              }
+              svg {
+                transform: scale(1.3);
+              }
+              p {
+                color: $mainBlue;
+              }
+            }
+            &.tips {
+              .svg-wrapper {
+                background: #cbeef3;
+              }
+              svg,
+              p {
+                color: #00838f;
+              }
+            }
+            &.toc {
+              .svg-wrapper {
+                background: $lightPurple;
+              }
+
+              svg,
+              p {
+                color: $darkPurple;
+              }
+            }
+            &.scroll-to-top {
+              p {
+                color: #208e59;
+              }
+              .svg-wrapper {
+                background: $bootstrapBgGreen;
+                svg {
+                  color: #208e59;
+                }
+              }
+            }
+            &.document-image {
+              .svg-wrapper {
+                background: $lightAccentBlue;
+              }
+              img {
+                border-radius: 10px;
+                height: 120px;
+                width: auto;
+                position: relative;
+              }
+              svg,
+              p {
+                color: $accentLight;
+              }
+            }
+          }
+          p {
+            font-weight: $fwMedium;
+            font-size: 18px;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+            position: relative;
+            top: 5px;
+          }
+        }
       }
     }
 
@@ -1091,6 +1181,7 @@
     opacity: 0;
     bottom: -100%;
     border-radius: 25px 25px 0 0;
+    box-shadow: rgba(0, 0, 0, 0.56) 0 0 15px 18px;
 
     &.creation {
       .action-item {
@@ -1249,7 +1340,9 @@
         height: 40px;
         width: 42px;
         padding: 8px;
-
+        .lg-react-element {
+          z-index: -1;
+        }
         svg {
           font-size: 22px;
           display: block;
@@ -1440,13 +1533,14 @@
             min-width: 0;
             width: unset;
             background: white;
-            color: #a3a3a3;
+            color: $disabledText;
             opacity: 1;
-            font-weight: $fwBold;
+            font-weight: $fwMedium;
+            border: 1px solid $lightBorderColor;
 
             &.active {
               color: $mainBlue;
-              font-weight: $fwExtraBold;
+              font-weight: $fwBold;
             }
           }
         }
@@ -1865,7 +1959,7 @@
   }
 
   label {
-    font-weight: $fwRegular;
+    font-weight: $fwMedium;
     margin: 0;
     line-height: 1.3;
     color: $primaryText;
@@ -1979,14 +2073,14 @@
     align-items: flex-end;
     justify-content: space-between;
     position: absolute;
-    color: $primaryText;
     top: 20px;
     border: 0;
     font-size: 15px;
     padding: 5px 10px;
     background: white;
     font-weight: $fwRegular;
-
+    z-index: 9999;
+    color: $primaryText;
     &::placeholder {
       opacity: 0;
     }
@@ -2233,7 +2327,7 @@
   transition: all 0.5s ease-out;
   display: flex;
   gap: 5px;
-  margin-right: 10px;
+  margin-right: 15px;
 
   &.center {
     justify-content: center;
@@ -2901,6 +2995,7 @@
     .modal-fade-wrapper {
       z-index: 999999999999;
       position: relative;
+      transition: all 0.6s ease-in;
 
       #modal {
         bottom: 0;
@@ -2946,7 +3041,8 @@
     bottom: -100%;
     transition: all 2s ease-in;
     @include bestShadow;
-    box-shadow: rgba(0, 0, 0, 0.56) 0 18px 20px 12px;
+    box-shadow: rgba(0, 0, 0, 0.56) 0 18px 20px 2px;
+
     // ANIMATION
     &.animate__fadeInUp {
       z-index: 9999999;
@@ -3006,6 +3102,17 @@
 
     #content {
       overflow: hidden;
+
+      #table-of-contents {
+        p {
+          background: $buttonGrey;
+          width: 100%;
+          margin-bottom: 8px;
+          border-radius: $borderRadius;
+          padding: 10px;
+          font-weight: $fwMedium;
+        }
+      }
 
       #details {
         .flex {
@@ -3312,9 +3419,10 @@
       bottom: 0;
       justify-self: flex-start;
       line-height: 1;
-      font-weight: $fwMedium;
+      font-weight: $fwMediumBold;
       text-transform: uppercase;
       font-size: 13px;
+      @include shadow;
 
       svg {
         color: white;
@@ -3448,8 +3556,11 @@
   &.new-calendar-event {
     #relative-wrapper {
       #add-date-button {
-        width: 100%;
-        margin-top: 15px;
+        width: 30%;
+        margin: 15px auto 0 auto;
+        background: $buttonGrey;
+        border: 1px solid $lightBorderColor;
+        color: $primaryText;
       }
 
       .cloned-date-wrapper {
@@ -3692,7 +3803,6 @@
       #content {
         padding-top: 0;
         max-height: unset;
-        padding-bottom: 15px;
       }
     }
   }
@@ -4345,6 +4455,8 @@
     align-items: center;
     opacity: 1;
     margin: 0 15px;
+    position: relative;
+    bottom: 10px;
     box-shadow: 0 6px 12px 6px #96afe6;
 
     svg {
@@ -4392,6 +4504,7 @@
       }
 
       &.notifications {
+        left: 5px;
         .badge {
           background: $red;
           color: white;

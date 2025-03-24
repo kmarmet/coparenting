@@ -8,12 +8,11 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
-import { GiBrain } from 'react-icons/gi'
 import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
+import { FaBrain, FaMinus, FaPlus } from 'react-icons/fa6'
 import { PiTrashSimpleDuotone } from 'react-icons/pi'
-import { FaBrain } from 'react-icons/fa6'
+
 export default function Behavior() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, activeInfoChild } = state
@@ -22,6 +21,16 @@ export default function Behavior() {
 
   const deleteProp = async (prop) => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
+
+    const existingPropCount = Object.keys(activeInfoChild?.behavior).length
+
+    if (existingPropCount <= 1) {
+      const accordion = document.querySelector('.behavior.info-section')
+      if (accordion) {
+        accordion.querySelector('.MuiCollapse-root').remove()
+      }
+      setShowInputs(false)
+    }
 
     // Delete Shared
     const sharedProps = sharing?.map((x) => x?.prop)

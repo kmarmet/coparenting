@@ -12,7 +12,6 @@ import EditCalEvent from '/src/components/forms/editCalEvent'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Manager from '/src/managers/manager'
 import NavBar from '/src/components/navBar.jsx'
-import NewCalendarEvent from '/src/components/forms/newCalendarEvent'
 import SecurityManager from '/src/managers/securityManager'
 import globalState from '/src/context.js'
 import moment from 'moment'
@@ -366,19 +365,7 @@ export default function EventCalendar() {
         legendButton.classList.toggle('active')
       })
     }
-
-    appendMonthArrows()
   }, [])
-
-  const appendMonthArrows = () => {
-    const monthArrows = document.querySelector('.MuiPickersArrowSwitcher-root')
-    const calendarMonth = document.getElementById('calendar-month')
-    if (monthArrows && DomManager.isMobile()) {
-      setTimeout(() => {
-        calendarMonth.append(monthArrows)
-      }, 500)
-    }
-  }
 
   return (
     <>
@@ -412,12 +399,7 @@ export default function EventCalendar() {
           onClose={viewAllEvents}
           showCard={showSearchCard}
           onSubmit={search}>
-          <InputWrapper
-            labelText="Enter event name..."
-            refreshKey={refreshKey}
-            inputValue={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <InputWrapper labelText="event name" refreshKey={refreshKey} inputValue={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
         </Modal>
 
         {/* EDIT EVENT */}
@@ -426,10 +408,10 @@ export default function EventCalendar() {
 
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme}`}>
-        <p className="screen-title">Calendar</p>
+        <p className="screen-title mb-0">Calendar</p>
+
         {/* STATIC CALENDAR */}
         <div id="static-calendar" className={theme}>
-          <p id="calendar-month">{currentMonth}</p>
           <StaticDatePicker
             showDaysOutsideCurrentMonth={true}
             defaultValue={moment(selectedDate)}
@@ -439,7 +421,6 @@ export default function EventCalendar() {
             onMonthChange={async (month) => {
               await getSecuredEvents()
               setCurrentMonth(moment(month).format('MMMM'))
-              appendMonthArrows()
             }}
             onChange={async (day) => {
               setSelectedDate(moment(day).format('YYYY-MM-DD'))
@@ -470,6 +451,30 @@ export default function EventCalendar() {
             {/* HOLIDAY BUTTON */}
             <p id="holidays-button">Holidays</p>
           </div>
+        )}
+
+        {Manager.isValid(searchResults) && (
+          <button
+            id="close-search-button"
+            className="button default"
+            onClick={async () => {
+              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+              setSearchResults([])
+              setSearchQuery('')
+            }}>
+            close search
+          </button>
+        )}
+        {showHolidays && (
+          <button
+            id="close-holidays-button"
+            className="button default"
+            onClick={async () => {
+              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+              setShowHolidays(false)
+            }}>
+            hide holidays
+          </button>
         )}
 
         {/* CONTENT WITH PADDING */}
@@ -548,27 +553,6 @@ export default function EventCalendar() {
               {searchResults.length === 0 && (
                 <BiSolidCalendarPlus className={'new-event-icon'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
               )}
-              {searchResults.length > 0 && (
-                <CgClose
-                  id={'close-button'}
-                  onClick={async () => {
-                    await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-                    setSearchResults([])
-                    setSearchQuery('')
-                  }}
-                />
-              )}
-            </NavBar>
-          )}
-          {showHolidays && (
-            <NavBar navbarClass={'calendar'} addOrClose={showHolidays ? 'close' : 'add'}>
-              <CgClose
-                id={'close-button'}
-                onClick={async () => {
-                  await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-                  setShowHolidays(false)
-                }}
-              />
             </NavBar>
           )}
         </>

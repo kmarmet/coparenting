@@ -13,6 +13,8 @@
   }
 }
 .swal2-html-container {
+  line-height: 1.3 !important;
+  text-align: left !important;
 }
 div {
   &:where(.swal2-icon) {
@@ -66,7 +68,7 @@ div {
 
 .swal2-title {
   @include fontType;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: $fwMedium;
   line-height: 1.5;
   margin: 0 !important;
@@ -90,10 +92,69 @@ div {
   @include bestShadow;
   padding: 20px !important;
   margin: 0 !important;
-  display: flex !important;
+  //  display: flex !important;
   align-items: center !important;
   animation-duration: 0.8s !important;
   flex-wrap: wrap;
+
+  .swal2-actions {
+    margin: 15px auto 0 auto !important;
+  }
+
+  &.confirm-alert,
+  &.yellow,
+  &.success-alert {
+    &.success-alert {
+      background: $bootstrapBgGreen !important;
+      color: $bootstrapGreenColor !important;
+
+      .swal2-html-container {
+        text-align: center !important;
+        font-weight: $fwMediumBold !important;
+        font-size: 21px !important;
+      }
+    }
+
+    &.confirm-alert,
+    &.yellow {
+      .swal2-html-container {
+        border: 1px solid $bootstrapYellowBorder !important;
+        background: $bootstrapBgYellow !important;
+        color: $bootstrapYellowColor;
+        padding: 15px;
+        border-radius: $borderRadius;
+      }
+
+      &.confirm-alert {
+        .swal2-title {
+          border: 1px solid $bootstrapYellowBorder !important;
+          background: $bootstrapBgYellow !important;
+          color: $bootstrapYellowColor;
+          padding: 15px;
+          border-radius: $borderRadius;
+        }
+      }
+    }
+
+    &.yellow,
+    &.confirm-alert {
+      input {
+        @include fontType;
+        outline: 0 !important;
+        user-select: none !important;
+        background: white !important;
+        color: black;
+      }
+    }
+
+    .swal2-confirm {
+      //      background: $gold !important;
+      //      color: $bootstrapYellowColor !important;
+    }
+    .swal2-deny {
+      background: $buttonGrey !important;
+    }
+  }
 
   @media screen and (min-width: 800px) {
     flex-wrap: wrap;
@@ -113,11 +174,14 @@ div {
 
   #swal2-input {
     width: 100%;
+    border-radius: $borderRadius !important;
+    margin: 0 !important;
+    margin-top: 15px !important;
   }
 
   .swal2-html-container {
     @include fontType;
-    font-size: 18px;
+    font-size: 16px;
     padding: 0;
     margin: 0;
     line-height: 1;
@@ -144,7 +208,10 @@ div {
 
   button {
     @include fontType;
-    width: 100px !important;
+    background: $buttonGrey;
+    color: $disabledText;
+    text-transform: uppercase;
+    width: 120px !important;
     border-radius: $borderRadius !important;
     font-weight: $fwMediumBold;
     text-align: center;

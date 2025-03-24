@@ -14,24 +14,28 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import DomManager from '/src/managers/domManager'
 import debounce from 'debounce'
-import { IoListOutline, IoMenuOutline } from 'react-icons/io5'
+import { IoListOutline } from 'react-icons/io5'
 import DocumentHeader from '/src/models/documentHeader'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import { TbFileSearch } from 'react-icons/tb'
 import { MdDriveFileRenameOutline, MdSearchOff } from 'react-icons/md'
 import { FaFileImage, FaLightbulb } from 'react-icons/fa6'
+import { IoIosArrowDown } from 'react-icons/io'
+
 import ScreenNames from '/src/constants/screenNames'
 import { IoIosArrowUp } from 'react-icons/io'
-import { IoClose } from 'react-icons/io5'
 import _ from 'lodash'
 import Label from '../../shared/label.jsx'
+import { FaAngleUp } from 'react-icons/fa6'
+
 import DatasetManager from '../../../managers/datasetManager.coffee'
-import Actions from '../../shared/actions'
+import { Fade } from 'react-awesome-reveal'
+import ScreenActionsMenu from '../../shared/screenActionsMenu'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, docToView, isLoading, currentScreen, refreshKey } = state
+  const { currentUser, theme, docToView, isLoading, currentScreen, refreshKey, showScreenActions } = state
   const [tocHeaders, setTocHeaders] = useState([])
   const [showToc, setShowToc] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
@@ -508,7 +512,6 @@ export default function DocViewer() {
                 tocHeaders.sort().map((header, index) => {
                   return (
                     <div key={index} className="flex" id="toc-header-wrapper">
-                      <span>•</span>
                       <p
                         onClick={() => {
                           setShowToc(false)
@@ -537,53 +540,101 @@ export default function DocViewer() {
         <InputWrapper labelText={'Enter new document name...'} onChange={(e) => setNewFileName(e.target.value)} />
       </Modal>
 
-      {/* FLOATING BUTTONS */}
-      <Actions shouldHide={shouldHideSidebar} show={sideMenuIsOpen}>
-        {/* SCROLL TO TOP BUTTON */}
-        <div className="action-item">
-          <IoIosArrowUp id={'scroll-to-top-icon'} onClick={scrollToTop} />
+      {!showScreenActions && (
+        <FaAngleUp className={'screen-actions-menu-icon doc-viewer'} onClick={() => setState({ ...state, showScreenActions: true })} />
+      )}
+
+      {/* SCREEN ACTIONS */}
+      <ScreenActionsMenu>
+        <div className="action-items doc-viewer">
+          <Fade direction={'right'} className={'doc-viewer-fade-wrapper'} duration={400} triggerOnce={false} cascade={true} damping={0.2}>
+            {/* SCROLL TO TOP BUTTON */}
+            <div
+              className="action-item scroll-to-top"
+              onClick={() => {
+                setState({ ...state, showScreenActions: false })
+                scrollToTop()
+              }}>
+              <div className="content">
+                <div className="svg-wrapper ">
+                  <IoIosArrowUp id={'scroll-to-top-icon'} />
+                </div>
+                <p>Scroll to Top</p>
+              </div>
+            </div>
+
+            {/* TOC BUTTON */}
+            {tocHeaders.length > 0 && (
+              <div
+                className="action-item toc"
+                onClick={async () => {
+                  await setTableOfContentsHeaders()
+                  setShowToc(true)
+                  setState({ ...state, showScreenActions: false })
+                }}>
+                <div className="content">
+                  <div className="svg-wrapper">
+                    <IoListOutline id="toc-icon" className={`${theme}`} />
+                  </div>
+                  <p>Table of Contents</p>
+                </div>
+              </div>
+            )}
+
+            {/* SEARCH ICON FOR 800PX > */}
+            {!DomManager.isMobile() && (
+              <div
+                className="action-item"
+                onClick={() => {
+                  setShowSearch(true)
+                  setState({ ...state, showScreenActions: false })
+                }}>
+                <TbFileSearch id={'desktop-search-icon'} />
+              </div>
+            )}
+
+            {/* RENAME ICON */}
+            <div
+              className="action-item rename-document"
+              onClick={() => {
+                setShowRenameFile(true)
+                setState({ ...state, showScreenActions: false })
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <MdDriveFileRenameOutline />
+                </div>
+                <p>Rename Document</p>
+              </div>
+            </div>
+
+            {/* TIPS ICON */}
+            <div
+              className="action-item tips"
+              onClick={() => {
+                setShowTips(true)
+                setState({ ...state, showScreenActions: false })
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <FaLightbulb className={'lightbulb'} />
+                </div>
+                <p>Tips</p>
+              </div>
+            </div>
+
+            {/* DOCUMENT IMAGE */}
+            {docType === 'image' && (
+              <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
+                <div className="action-item document-image">
+                  <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
+                </div>
+              </LightGallery>
+            )}
+          </Fade>
+          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showScreenActions: false })} />
         </div>
-        {/* TOC BUTTON */}
-        {tocHeaders.length > 0 && (
-          <div className="action-item">
-            <IoListOutline
-              onClick={async () => {
-                await setTableOfContentsHeaders()
-                setShowToc(true)
-              }}
-              id="toc-icon"
-              className={`${theme}`}
-            />
-          </div>
-        )}
-
-        {/* SEARCH ICON FOR 800PX > */}
-        {!DomManager.isMobile() && (
-          <div className="action-item">
-            <TbFileSearch id={'desktop-search-icon'} onClick={() => setShowSearch(true)} />
-          </div>
-        )}
-
-        {/* RENAME ICON */}
-        <div className="action-item">
-          <MdDriveFileRenameOutline onClick={() => setShowRenameFile(true)} />
-        </div>
-
-        {/* DOCUMENT IMAGE */}
-        {docType === 'image' && (
-          <div className="action-item">
-            <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
-              <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
-              <FaFileImage className={'file-image'} />
-            </LightGallery>
-          </div>
-        )}
-
-        {/* TIPS ICON */}
-        <div className="action-item">
-          <FaLightbulb id={'tips-icon'} onClick={() => setShowTips(true)} />
-        </div>
-      </Actions>
+      </ScreenActionsMenu>
 
       {/* PAGE CONTAINER / TEXT */}
       <div id="documents-container" className={`${theme} page-container form documents`}>
