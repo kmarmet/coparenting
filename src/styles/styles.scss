@@ -653,6 +653,7 @@
 
       @media screen and (min-width: 800px) {
         overflow: auto;
+        position: relative;
       }
 
       &.disable-scroll {

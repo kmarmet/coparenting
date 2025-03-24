@@ -128,18 +128,16 @@
 
     #choose-peace-text {
       color: black;
-      font-style: italic;
       font-weight: $fwRegular;
       width: 80%;
       margin-left: auto;
-      b {
-        text-align: center;
-        line-height: 1.4;
-        opacity: 1;
-        font-weight: $fwBold;
-      }
-      span {
-        opacity: 0.8;
+      text-align: center;
+      line-height: 1.4;
+      opacity: 1;
+
+      .emphasize {
+        color: $darkPurple;
+        font-weight: $fwMedium;
       }
     }
 
@@ -367,14 +365,22 @@
           width: 50%;
         }
 
+        .lg-react-element {
+          width: 60%;
+
+          @media screen and (max-width: 800px) {
+            width: 100%;
+          }
+        }
+
         .lazy-load-image-loaded {
-          width: 50%;
           margin-left: auto;
 
           img {
-            width: 60%;
+            width: 100%;
             height: auto;
             margin: 0 auto;
+            border-radius: $bigBorderRadius;
           }
         }
 
@@ -1092,7 +1098,7 @@
             width: 100%;
             border-left: 0;
             @media screen and (max-width: 600px) {
-              width: 70%;
+              width: 100%;
               margin: 20px auto 0 auto;
             }
           }

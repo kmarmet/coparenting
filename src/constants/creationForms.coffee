@@ -8,6 +8,7 @@ CreationForms = {
   transferRequest: "new-transfer-request"
   memories: "memories"
   documents: "documents"
+  chat: "new-chat"
 }
 
 

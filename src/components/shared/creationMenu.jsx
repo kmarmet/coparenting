@@ -88,6 +88,20 @@ const CreationMenu = () => {
             </div>
           </div>
 
+          {/* CHAT */}
+          <div
+            className="action-item"
+            onClick={() => {
+              setState({ ...state, showCreationMenu: false, creationFormToShow: CreationForms.chat })
+            }}>
+            <div className="content">
+              <div className="svg-wrapper chat">
+                <IoMdPhotos className={'chat'} />
+              </div>
+              <p className="chat">Chat</p>
+            </div>
+          </div>
+
           {/* SWAPS */}
           <div
             className="action-item"

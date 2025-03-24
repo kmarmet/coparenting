@@ -317,6 +317,8 @@
           #message-input-container {
             #input-and-send-button {
               .message-input {
+                border: 0;
+                border-radius: 0;
                 border-bottom: 1px solid $darkBorderColor;
                 color: $darkText;
 
@@ -338,12 +340,20 @@
           }
 
           .message {
+            color: white;
             &.from {
-              &.from {
-                background: $darkMainBlue;
-                &:after {
-                  background: radial-gradient(30px at 0 0, #0000 99%, $darkMainBlue 102%);
-                }
+              background: $accentLight;
+              &:after {
+                background: radial-gradient(30px at 0 0, #0000 99%, $accentLight 102%);
+              }
+            }
+            &.to {
+              background: white;
+              font-weight: $fwMedium;
+              color: $accentLight;
+
+              &:after {
+                background: radial-gradient(30px at 100% 0, #0000 99%, white 102%);
               }
             }
           }

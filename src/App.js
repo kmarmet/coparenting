@@ -60,6 +60,7 @@ import NotificationManager from './managers/notificationManager'
 import ScreenActionsMenu from './components/shared/screenActionsMenu'
 import CreationMenu from './components/shared/creationMenu'
 import CreationForms from './constants/creationForms'
+import NewChat from './components/forms/newChat'
 
 export default function App() {
   // Initialize Firebase
@@ -228,6 +229,7 @@ export default function App() {
           <NewMemoryForm showCard={creationFormToShow === CreationForms.memories} />
           <UploadDocuments showCard={creationFormToShow === CreationForms.documents} />
           <NewExpenseForm showCard={creationFormToShow === CreationForms.expense} />
+          <NewChat />
 
           {/* BRAND BAR */}
           {!screensToHideBrandbar.includes(currentScreen) && <BrandBar />}

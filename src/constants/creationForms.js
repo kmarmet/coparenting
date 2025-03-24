@@ -10,7 +10,8 @@ CreationForms = {
   swapRequest: "swapRequest",
   transferRequest: "new-transfer-request",
   memories: "memories",
-  documents: "documents"
+  documents: "documents",
+  chat: "new-chat"
 };
 
 export default CreationForms;

@@ -137,8 +137,8 @@ export default function Home() {
               {/*</button>*/}
               <div id="choose-peace-text" className="flex">
                 <p id="choose-peace-text">
-                  <b>Choose Peace</b>
-                  <span>ful Co-Parenting</span>
+                  <span className="emphasize">Choose Peace</span>
+                  ful Co-Parenting
                 </p>
               </div>
             </div>
@@ -641,7 +641,9 @@ export default function Home() {
                 costs and avoid conflicts over money.
               </p>
             </div>
-            <LazyLoadImage src={require('/src/img/homepage/expense-tracker.png')} alt="Expenses" effect="blur" delay={1000} />
+            <LightGallery elementClassNames={`images expense-tracker no-wrap ${theme}`} speed={500} selector={'.image'}>
+              <LazyLoadImage className={'image'} src={require('/src/img/homepage/expense-tracker.png')} alt="Expenses" effect="blur" delay={1000} />
+            </LightGallery>
           </div>
         </Fade>
 
@@ -666,7 +668,9 @@ export default function Home() {
                 environment for your children.
               </p>
             </div>
-            <LazyLoadImage src={require('/src/img/homepage/menu.png')} alt="Menu" effect="blur" delay={1000} />
+            <LightGallery elementClassNames={`images expense-tracker no-wrap ${theme}`} speed={500} selector={'.image'}>
+              <LazyLoadImage className={'image'} src={require('/src/img/homepage/menu.png')} alt="Menu" effect="blur" delay={1000} />
+            </LightGallery>
           </div>
         </Fade>
 
@@ -718,11 +722,13 @@ export default function Home() {
             </div>
 
             <div className="flex images mt-15">
-              <LazyLoadImage src={require('/src/img/homepage/devices/phone.png')} alt="Phone" effect="blur" delay={1000} />
+              <LightGallery elementClassNames={`images no-wrap ${theme}`} speed={500} selector={'.image'}>
+                <LazyLoadImage className={'image'} src={require('/src/img/homepage/devices/phone.png')} alt="Phone" effect="blur" delay={1000} />
 
-              <LazyLoadImage src={require('/src/img/homepage/devices/laptop.png')} alt="Computer" effect="blur" delay={1000} />
+                <LazyLoadImage className={'image'} src={require('/src/img/homepage/devices/laptop.png')} alt="Computer" effect="blur" delay={1000} />
 
-              <LazyLoadImage src={require('/src/img/homepage/devices/tablet.png')} alt="Tablet" effect="blur" delay={1000} />
+                <LazyLoadImage className={'image'} src={require('/src/img/homepage/devices/tablet.png')} alt="Tablet" effect="blur" delay={1000} />
+              </LightGallery>
             </div>
 
             <p className="subtitle mt-25 mb-0" id="multiple-device-usage">

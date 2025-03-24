@@ -49,7 +49,6 @@ function InputWrapper({
         }
       }
     }
-    console.log(defaultValue)
   }, [])
 
   return (
