@@ -360,6 +360,13 @@
       width: 100%;
       margin: 20px auto;
 
+      &.hr {
+        height: 1px;
+        border-color: rgba(242, 244, 245, 0.37);
+        width: 50vw;
+        margin: 40px auto;
+      }
+
       &.event-hr {
         margin: 10px auto;
         width: 70%;
@@ -958,10 +965,10 @@
     }
 
     .label {
-      font-weight: $fwRegular;
+      font-weight: $fwMedium;
       margin: 0;
       line-height: 1.3;
-      color: black;
+      color: $labelText;
       display: flex;
       align-items: center;
 

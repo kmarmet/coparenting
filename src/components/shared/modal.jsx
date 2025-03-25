@@ -81,7 +81,7 @@ export default function Modal({
       const fadeInUp = 'animate__fadeInUp'
 
       if (modalWrapper && StringManager.wordCount(title) >= 4) {
-        const title = modalWrapper.querySelector('#large-title')
+        const title = modalWrapper.querySelector('#modal-title')
         if (title) {
           title.classList.add('long-title')
         }
@@ -94,10 +94,8 @@ export default function Modal({
         if (showCard) {
           document.body.classList.add('disable-scroll')
           appContentWithSidebar.classList.add('disable-scroll')
-          console.log(modalWrapper)
           if (modalWrapper) {
             modal.classList.add(fadeInUp)
-            console.log(modal)
             setTimeout(() => {
               modal.classList.remove(fadeOutDown)
             }, 500)
@@ -144,13 +142,10 @@ export default function Modal({
 
   return (
     <div id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
-      <div id="modal-background"></div>
-      <div>
-        <div className="flex" id="title-wrapper">
-          <div id="large-title" dangerouslySetInnerHTML={{ __html: title }}></div>
-        </div>
+      <div id="modal-content">
         <Fade direction={'up'} duration={600} delay={2000} triggerOnce={true} className={'modal-fade-wrapper'}>
           <div id="modal" className="animate__animated">
+            <p id="modal-title" dangerouslySetInnerHTML={{ __html: title }}></p>
             <div id="relative-wrapper">
               <div id="content" className={contentHeight >= 200 ? 'with-bottom-padding' : ''}>
                 {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}

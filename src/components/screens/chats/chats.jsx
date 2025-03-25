@@ -17,6 +17,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import { LuMinus, LuPlus } from 'react-icons/lu'
 import EmailManager from '../../../managers/emailManager'
 import InputWrapper from '../../shared/inputWrapper'
+import NavBar from '../../navBar'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -116,6 +117,7 @@ const Chats = () => {
               return <ChatRow key={index} coparent={coparent} chat={chat} index={index} />
             })}
         </Fade>
+        <NavBar />
       </div>
     </>
   )

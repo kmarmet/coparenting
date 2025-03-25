@@ -1,6 +1,35 @@
 @import '../mixins';
 
 #external-overrides {
+  #visitation-section,
+  #visitation-holidays-section {
+    background: $oneMillionGrey !important;
+    border-radius: $borderRadius !important;
+    padding: 0 10px;
+    border: 1px solid $greyOnGreyBorder;
+    #checkbox-group {
+      margin: 0;
+    }
+    .MuiAccordionDetails-root {
+      padding: 0;
+    }
+    .MuiPaper-root {
+      border: 2px solid blue !important;
+      .MuiButtonBase-root {
+        width: 100% !important;
+        min-height: 0 !important;
+      }
+    }
+
+    .MuiCollapse-root {
+      background: $oneMillionGrey !important;
+      border-radius: $borderRadius;
+    }
+
+    .accordion-title {
+      width: 100%;
+    }
+  }
   #visitation-container {
     .holiday-checkboxes-wrapper {
       margin-top: 25px;

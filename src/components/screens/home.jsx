@@ -7,12 +7,20 @@ import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool } from 'rea
 import DomManager from '/src/managers/domManager'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { IoDocumentText } from 'react-icons/io5'
+import { BsFillEnvelopeHeartFill } from 'react-icons/bs'
+import { PiDevicesFill } from 'react-icons/pi'
+import { IoPeopleCircle } from 'react-icons/io5'
 import firebaseConfig from '/src/firebaseConfig'
 import { initializeApp } from 'firebase/app'
+import { MdPeopleAlt } from 'react-icons/md'
 import { TbArrowBadgeRight, TbSunMoon } from 'react-icons/tb'
+import { MdLooksOne } from 'react-icons/md'
+import { IoIosChatbubbles } from 'react-icons/io'
 import Logo from '../../img/logo.png'
-import { MdOutlineStar } from 'react-icons/md'
+import { GiStarFormation } from 'react-icons/md'
+import { IoSyncCircle } from 'react-icons/io5'
 import { FaRegHandshake } from 'react-icons/fa'
+import { MdStyle } from 'react-icons/md'
 import { useLongPress } from 'use-long-press'
 import ScreenNames from '/src/constants/screenNames'
 import Manager from '/src/managers/manager'
@@ -21,6 +29,7 @@ import 'lightgallery/css/lightgallery.css'
 import AppManager from '/src/managers/appManager.js'
 import HomescreenSections from '/src/models/homescreenSections.js'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
+import { GiStarFormation } from 'react-icons/gi'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import Spacer from '../shared/spacer'
 
@@ -138,22 +147,20 @@ export default function Home() {
               <div id="choose-peace-text" className="flex">
                 <p id="choose-peace-text">
                   <span className="emphasize">Choose Peace</span>
-                  ful Co-Parenting
+                  <span>ful Co-Parenting</span>
                 </p>
               </div>
             </div>
           </div>
           <div className="section page-title">
-            <p id="title">Peaceful {DomManager.isMobile() ? <br /> : ''} Co-Parenting</p>
-            <p id="subtitle">
-              Built for Families {DomManager.isMobile() ? '' : '-'} {DomManager.isMobile() ? <br /> : ''} Focused on Peace
-            </p>
+            <p id="title">Peaceful Co-Parenting</p>
+            <p id="subtitle">Built for Families - Focused on Peace</p>
           </div>
-          <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.image'}>
+          <LightGallery elementClassNames={`light-gallery home ${theme}`} speed={500} selector={'.image'}>
             <div className="flex" id="images">
               <img className={'image'} src={require('/src/img/homepage/memories.png')} alt="Memories" />
               <img className={'image'} src={require('/src/img/homepage/calendar.png')} alt="Calendar" />
-              <img className={'image'} src={require('/src/img/homepage/childInfo.png')} alt="Child Info" />
+              <img className={'image'} src={require('/src/img/homepage/child-info.png')} alt="Child Info" />
             </div>
           </LightGallery>
         </Fade>
@@ -166,6 +173,8 @@ export default function Home() {
           <b>you can focus on what matters most, your children&#39;s well-being</b>.
         </p>
       </div>
+
+      <hr className="hr" />
       {/* BELOW FOLD */}
       <div id="below-fold-wrapper">
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
@@ -201,6 +210,7 @@ export default function Home() {
             </div>
           </div>
         </Fade>
+        <hr className="hr" />
 
         {/* UNIQUE FEATURES */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
@@ -216,12 +226,15 @@ export default function Home() {
               <span className="feature-toggle-instructions">{DomManager.tapOrClick(true)} any feature to view or hide details</span>
             </div>
 
-            <div className="flex" id="feature-grid">
+            {/* FEATURE GRID */}
+            <div id="feature-grid">
+              {/* ANY DEVICE */}
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'any-device'}>
-                <p className="feature-title">
-                  Available on&nbsp;<b>Any</b>&nbsp;Device
-                </p>
-                <MdOutlineStar className={'star'} />
+                <div className="star-wrapper"></div>
+                <div className="feature-title-wrapper">
+                  <p className="feature-title">Available on Any Device</p>
+                  <PiDevicesFill className={'star'} />
+                </div>
                 <p className="feature-subtitle">
                   Unlike other co-parenting applications that require installation through an app store, which limits them to specific devices and
                   operating systems (such as Apple and Android), Peaceful Co-Parenting offers a more flexible solution.
@@ -231,119 +244,109 @@ export default function Home() {
                   systems, including Android and Apple.
                 </p>
                 <div className="content">
-                  <ul>
-                    <li className="list-title">
-                      <TbArrowBadgeRight /> Simple (2-step) Installation
-                      <ul>
-                        <li>You do not have to us an app store to install the application</li>
+                  <div className="feature-details-boxes">
+                    <ul className="parent-ul">
+                      <div className="feature-details-box">
+                        <p className="box-title">Simple Installation</p>
+                        <p>You do not have to us an app store to install the application</p>
+                        <Spacer height={2} />
+                        <p>
+                          <b className="smaller">Installation Steps</b>
+                        </p>
+                        <li>Visit the website</li>
+                        <li>Click the share button</li>
                         <li>
-                          Installation Steps
-                          <ul>
-                            <li>Visit the website</li>
-                            <li>Click the share button</li>
-                            <li>
-                              Click <i>Add to Homescreen</i>
-                            </li>
-                          </ul>
+                          Click <i>Add to Homescreen</i>
                         </li>
-                        <li>These steps are provided for Android, iOS (Apple) and Laptop/Desktop computers</li>
-                      </ul>
-                    </li>
-                    <li className="list-title">
-                      Device Support
-                      <ul>
-                        <li>
+                        <Spacer height={2} />
+                        <p className="center">These steps are provided for Android, iOS (Apple) and Laptop/Desktop computers</p>
+                      </div>
+
+                      <div className="feature-details-box">
+                        <p className="box-title">Device Support</p>
+                        <p>
                           You can install our application on any device, including phones, tablets, and computers, without the need for an app store
-                        </li>
-                        <li>All of your activities and data will be synchronized across all devices if you utilize multiple devices</li>
-                      </ul>
-                    </li>
-                    <li className="list-title">
-                      Operating System Support
-                      <ul>
-                        <li>You can install our application on any device, whether it is a Windows, Mac, Android, or Apple device</li>
-                      </ul>
-                    </li>
-                    <li className="list-title">
-                      Updates
-                      <ul>
-                        <li>
+                        </p>
+                        <Spacer height={2} />
+                        <p>All of your activities and data will be synchronized across all devices if you utilize multiple devices</p>
+                      </div>
+                      <div className="feature-details-box">
+                        <p className="box-title">Operating System Support</p>
+                        <p>You can install our application on any device, whether it is a Windows, Mac, Android, or Apple device</p>
+                      </div>
+                      <div className="feature-details-box">
+                        <p className="box-title">Updates</p>
+                        <p>
                           All updates, including feature enhancements and bug fixes, are performed automatically in the background, requiring no
                           action on your part
-                        </li>
-                        <li>Each time you launch the application, it will be completely up to date</li>
-                      </ul>
-                    </li>
-                  </ul>
+                        </p>
+                        <Spacer height={2} />
+                        <p>Each time you launch the application, it will be completely up to date</p>
+                      </div>
+                    </ul>
+                  </div>
                 </div>
               </div>
+
+              {/* ONE SUBSCRIPTION */}
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'one-subscription'}>
-                <p className="feature-title">One Subscription = ALL Features</p>
-                <MdOutlineStar className={'star'} />
+                <div className="feature-title-wrapper">
+                  <p className="feature-title">One Subscription = ALL Features</p>
+                  <MdLooksOne className={'star'} />
+                </div>
                 <p className="feature-subtitle">
                   Many co-parenting apps offer various pricing tiers. You receive basic features at one price, but they often upsell for access to
                   more valuable/useful features. That&#39;s not the case with us!
                 </p>
                 <div className="content">
-                  <ul>
-                    <li className="list-title">
-                      Fair Pricing that Everyone can Afford
+                  <div className="feature-details-boxes">
+                    <div className="feature-details-box">
+                      <p className="box-title">Fair Pricing that Everyone can Afford</p>
+                      <Spacer height={5} />
+                      <p>
+                        <b>Only $4.99 per month!</b>
+                      </p>
+                      <Spacer height={5} />
+                      <p>For example: The OurFamilyWizard application costs $150 per year - PER co-parent/user!</p>
+                      <Spacer height={5} />
+                      <p>
+                        The annual cost of Peaceful Co-Parenting is significantly reduced, being <b>85% less expensive</b>!
+                      </p>
+                      <Spacer height={5} />
+                      <p>
+                        <b>That makes the annual cost $120 for BOTH co-parents instead of $300</b>. You and your co-parent can take advantage of our
+                        application and all its features for less than half the cost of a single OurFamilyWizard subscription.
+                      </p>
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">Access to ALL Features - ZERO Upselling</p>
+                      <p>Too often subscriptions (such as OurFamilyWizard) have several pricing tiers. Basic, Premium, Max, .etc.</p>
                       <ul>
-                        <li>
-                          <b>Only $4.99 per month!</b>
-                        </li>
-                        <li>
-                          For example: The OurFamilyWizard application costs $150 per year - <b>PER co-parent/user!</b>
-                          <ul>
-                            <li>
-                              The annual cost of Peaceful Co-Parenting is significantly reduced, being <b>85% less expensive</b>!
-                            </li>
-                            <li>
-                              $120 for <b>BOTH co-parents</b> instead of $300
-                              <ul>
-                                <li>
-                                  You and your co-parent can take advantage of our application and all its features for{' '}
-                                  <b>less than half the price of a single OurFamilyWizard subscription</b>
-                                </li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
+                        <li>That is NOT keeping you in mind.</li>
                       </ul>
-                    </li>
-                    <li className="list-title">
-                      Access to ALL Features - ZERO Upselling
-                      <ul>
-                        <li>
-                          Too often subscriptions (such as OurFamilyWizard) have several pricing tiers. Basic, Premium, Max, .etc.
-                          <ul>
-                            <li>That is NOT keeping you in mind</li>
-                            <ul>
-                              <li>You should have the opportunity to enjoy all the features at a price that is very budget-friendly</li>
-                            </ul>
-                          </ul>
-                        </li>
-                        <li>
-                          For the price of a cup of coffee ($4.99) you get <b>ALL</b> features
-                          <ul>
-                            <li>
-                              It&#39;s essential for every co-parent to have access to the full range of resources and tools that our application
-                              offers
-                            </li>
-                            <li>
-                              We aim to simplify and bring harmony to your co-parenting experience, which is why we don’t impose extra fees for
-                              accessing essential features
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
+                      <Spacer height={5} />
+                      <p>You should have the opportunity to enjoy all the features at a price that is very budget-friendly.</p>
+                      <Spacer height={5} />
+                      <p>
+                        For the price of a cup of coffee ($4.99) you get <b>ALL</b> features because it&#39;s essential for every co-parent to have
+                        access to the full range of resources and tools that our application offers.
+                      </p>
+                      <Spacer height={5} />
+                      <p>
+                        We aim to simplify and bring harmony to your co-parenting experience, which is why we don’t impose extra fees for accessing
+                        essential features.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* UI DESIGN */}
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'ui'}>
-                <p className="feature-title">Designed with You in Mind</p>
-                <MdOutlineStar className={'star'} />
+                <div className="feature-title-wrapper">
+                  <p className="feature-title">Designed with You in Mind</p>
+                  <MdStyle className={'star'} />
+                </div>
                 <p className="feature-subtitle">
                   Numerous applications can often be quite challenging to navigate. Picture this: you need to log an expense to share with your
                   co-parent, but you&#39;re unable to locate the option to do so.
@@ -352,152 +355,146 @@ export default function Home() {
                   We aim to <b>remove that frustration</b> and save you time, allowing you to focus on what truly matters.
                 </p>
                 <div className="content">
-                  <ul>
-                    <li className="list-title">
-                      Menu
+                  <div className="feature-details-boxes">
+                    <div className="feature-details-box">
+                      <p className="box-title">Menu</p>
+                      <p>
+                        The main menu includes large, clickable menu items that have a name that easily conveys where you will go when you click it.
+                      </p>
+                      <Spacer height={5} />
+                      <p>The design facilitates quick and effortless navigation to your desired destination or task</p>
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">Straightforward Pages</p>
+                      <p>Each page (e.g Expense Tracker, Memories, .etc) features a header text that clearly states its intended purpose.</p>
+                      <Spacer height={5} />
+                      <p>
+                        You will find that any potential questions are usually accompanied by supportive text and visual aids to enhance
+                        understanding.
+                      </p>
+                      <Spacer height={5} />
+                      <p>
+                        <b>Viewing the Calendar, for example:</b>
+                      </p>
                       <ul>
-                        <li>
-                          The main menu includes large, clickable menu items
-                          <ul>
-                            <li>These menu items each have a name that easily conveys where you go when you click it</li>
-                            <li>Each item also includes an icon to associate with the text quickly</li>
-                          </ul>
-                        </li>
-                        <li>The design facilitates quick and effortless navigation to your desired destination or task</li>
+                        <li>Each day with scheduled events is marked by color-coordinated dots</li>
+                        <li>The calendar is accompanied by a legend that indicates the meaning of each dot&#39;s color</li>
                       </ul>
-                    </li>
-                    <li className="list-title">
-                      Straightforward Pages (e.g Expense Tracker, Memories, .etc)
-                      <ul>
-                        <li>Each page features a header that clearly states its intended purpose</li>
-                        <li>
-                          You will find that any potential questions are usually accompanied by supportive text and visual aids to enhance
-                          understanding{' '}
-                          <ul>
-                            <li>
-                              Viewing the Calendar, for example
-                              <ul>
-                                <li>Each day with scheduled events is marked by color-coordinated dots</li>
-                                <li>The calendar is accompanied by a legend that indicates the meaning of each dot&#39;s color</li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* REALTIME ENGAGEMENT */}
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'realtime'}>
-                <p className="feature-title">Realtime Engagement</p>
-                <MdOutlineStar className={'star'} />
+                <div className="feature-title-wrapper">
+                  <p className="feature-title">Realtime Engagement</p>
+                  <IoSyncCircle className={'star'} />
+                </div>
                 <p className="feature-subtitle">
                   You will receive all updates, changes, and notifications <b>instantly</b>, whether the application is open or closed.
                 </p>
                 <div className="content">
-                  <ul>
-                    <li className="list-title">
-                      Notifications
-                      <ul>
-                        <li>
-                          Whenever a co-parent schedules a calendar event, shares a medical record, or sends you a message, you will receive an
-                          instant notification
-                        </li>
-                      </ul>
-                    </li>
-                    <li className="list-title">
-                      Application, Activity & Data
-                      <ul>
-                        <li>
-                          If you make an update (add a child, update a calendar event, .etc) you will see the updates <b>automatically</b>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
+                  <div className="feature-details-boxes">
+                    <div className="feature-details-box">
+                      <p className="box-title">Notifications</p>
+                      <p>
+                        Whenever a co-parent schedules a calendar event, shares a medical record, or sends you a message, you will receive an instant
+                        notification.
+                      </p>
+                    </div>
+
+                    <div className="feature-details-box">
+                      <div className="box-title">Application, Activity & Data</div>
+                      <p>
+                        If you make an update (add a child, update a calendar event, .etc) you will see the updates <b>automatically.</b>
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* MULTIPLE COPARENTS */}
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'multiple-coparents'}>
-                <p className="feature-title">Multiple Co-Parent Support</p>
-                <MdOutlineStar className={'star'} />
+                <div className="feature-title-wrapper">
+                  <p className="feature-title">Multiple Co-Parent Support</p>
+                  <MdPeopleAlt className={'star'} />
+                </div>
                 <p className="feature-subtitle">
-                  We recognize that you or your spouse might have several co-parents from previous relationships or marriages. We have acknowledged
-                  this situation and offer support tailored to this dynamic.
+                  We recognize that you or your spouse might have several co-parents from previous relationships or marriages.
                 </p>
+
+                <p className="feature-subtitle">We have acknowledged this situation and offer support tailored to this dynamic.</p>
+
                 <div className="content">
-                  <ul>
-                    <li className="list-title">
-                      Multiple Co-Parents
-                      <ul>
-                        <li>Add as many co-parents as you need to</li>
-                        <li>Easily utilize all of our application&#39;s features for each co-parent</li>
-                        <li>
-                          You have the option to share important information either with individual co-parents or with all of them simultaneously
-                        </li>
-                      </ul>
-                    </li>
-                    <li className="list-title">
-                      Children from More than One Parent
-                      <ul>
-                        <li>
-                          You have the capability to include an unlimited number of children for the purpose of storing information or sharing updates
-                        </li>
-                        <li>
-                          Any child (with a valid phone number) can create an account and also use our application
-                          <ul>
-                            <li>
-                              If your child has their own account, they will be able to access features such as the calendar, ensuring they stay
-                              informed
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
+                  <div className="feature-details-boxes">
+                    <div className="feature-details-box">
+                      <p className="box-title">Co-Parent Accounts</p>
+                      <p>
+                        You can create multiple co-parent accounts, each with their own unique set of features and permissions. This allows you to
+                      </p>
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">Multiple Co-Parents</p>
+                      <p>Add as many co-parents as you need to and easily utilize all of our application&#39;s features for each co-parent.</p>
+                      <Spacer height={5} />
+
+                      <p>You have the option to share important information either with individual co-parents or with all of them simultaneously.</p>
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">Children from More than One Parent</p>
+                      <p>
+                        You have the capability to include an unlimited number of children for the purpose of storing information or sharing updates.
+                      </p>
+                      <Spacer height={5} />
+                      <p>
+                        Any child (with a valid phone number) can create an account and also use our application and access features such as the
+                        calendar, ensuring they stay informed.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* MESSAGING */}
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'messaging'}>
-                <p className="feature-title">Messaging/Communication</p>
-                <MdOutlineStar className={'star'} />
+                <div className="feature-title-wrapper">
+                  <p className="feature-title">Messaging/Communication</p>
+                  <IoIosChatbubbles className={'star'} />
+                </div>
                 <p className="feature-subtitle">Other applications might offer messaging capabilities, but they lack these specific features</p>
                 <div className="content">
-                  <ul>
-                    <li className="list-title">
-                      Pause/Resume Conversations
-                      <ul>
-                        <li>You can pause a conversation and its notifications at any moment, and later resume it whenever you choose.</li>
-                        <li>
-                          Search
-                          <ul>
-                            <li>
-                              Enter more than three characters to view all messages sent or received, including the specific text you are looking for
-                            </li>
-                          </ul>
-                        </li>
-                        <li>
-                          Bookmarking
-                          <ul>
-                            <li>
-                              Bookmark any message at any time
-                              <ul>
-                                <li>You can access all your bookmarks (saved messages) instantly with a single click of a button</li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
-                        <li>
-                          Message Copying
-                          <ul>
-                            <li>Long-press any message to copy it so you can paste it anywhere you would like</li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
+                  <div className="feature-details-boxes">
+                    <div className="feature-details-box">
+                      <p className="box-title">Pause/Resume Conversations</p>
+                      <p>You can pause a conversation and its notifications at any moment, and later resume it whenever you choose.</p>
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">Message Search</p>
+                      <p>Enter more than three characters to view all messages sent or received, including the specific text you are looking for.</p>
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">Bookmarking</p>
+                      <p>Bookmark any message at any time.</p>
+                      <Spacer height={5} />
+                      <p>You can access all your bookmarks (saved messages) instantly with a single click of a button.</p>
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">Message Copying</p>
+                      <p>Bookmark any message at any time.</p>
+                      <Spacer height={5} />
+                      <p>Long-press any message to copy it so you can paste it anywhere you would like.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* SUPPORT */}
               <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'support'}>
-                <p className="feature-title">Support Team that Caters to You</p>
-                <MdOutlineStar className={'star'} />
+                <div className="feature-title-wrapper">
+                  <p className="feature-title">Support Team that Truly Cares</p>
+                  <BsFillEnvelopeHeartFill classname={'star'} />
+                </div>
                 <p className="feature-subtitle">
                   It&#39;s frustrating when you contact customer support and have to wait days for a response, only to receive a generic answer that
                   feels like it was sent to countless others.
@@ -507,81 +504,65 @@ export default function Home() {
                   We understand how important your time is, and that&#39;s why <b>we prioritize you!</b>
                 </p>
                 <div className="content">
-                  <ul>
-                    <li className="list-title">
-                      Lightning Fast Response Time
+                  <div className="feature-details-boxes">
+                    <div className="feature-details-box">
+                      <p className="box-title">Lightning Fast Response Time</p>
+                      <p>
+                        You will have a reply from our response team <b>within hours</b>, not days.
+                      </p>
+                      <Spacer height={5} />
+                      <p>
+                        <b>This includes:</b>
+                      </p>
                       <ul>
-                        <li>
-                          You will have a reply from our response team <b>within hours</b>, not days
-                        </li>
-                        <li>
-                          This includes
-                          <ul>
-                            <li>Technical issues encountered in the app</li>
-                            <li>Feature requests</li>
-                            <li>App feedback</li>
-                            <li>Anything else you would like to contact us about</li>
-                          </ul>
-                        </li>
+                        <li>Technical issues encountered in the app</li>
+                        <li>Feature requests</li>
+                        <li>App feedback</li>
+                        <li>Anything else you would like to contact us about</li>
                       </ul>
-                    </li>
-                    <li className="list-title">
-                      No hidden or extra cost for support
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">No hidden or extra cost for support</p>
+                      <p>All support requests and feature addition requests are included in your subscription.</p>
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">No Middleman</p>
+                      <p>
+                        When you reach out to us for support, your request/concern will go <b>directly</b> to the technical/development team that will
+                        be working on handling the issue, which will eliminate any unnecessary wait time for your concern/request.
+                      </p>
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">Feature Requests</p>
+                      <p>
+                        If you would like to have a feature added to our app, let us know! We are more than happy to consider <b>all</b> feature
+                        requests.
+                      </p>
+                      <Spacer height={5} />
+                      <p>The goal is provide an all-in-one application that fits your needs exactly.</p>
+                    </div>
+                    <div className="feature-details-box">
+                      <p className="box-title">Authentic Support from Real People</p>
+                      <p>We promise to provide help that is 100% related to the concern/request you send us.</p>
+                      <Spacer height={5} />
+                      <p>The goal is provide an all-in-one application that fits your needs exactly.</p>
+                      <Spacer height={5} />
+                      <p>
+                        <b>The benefits:</b>
+                      </p>
                       <ul>
-                        <li>All support requests and feature addition requests are included in your subscription</li>
+                        <li>No bots</li>
+                        <li>No &#39;canned&#39; responses</li>
+                        <li>No vague responses that do not directly address your concern</li>
                       </ul>
-                    </li>
-                    <li className="list-title">
-                      No Middleman
-                      <ul>
-                        <li>
-                          When you reach out to us for support, your request/concern will go <b>directly</b> to the technical/development team that
-                          will be working on handling the issue
-                          <ul>
-                            <li>Eliminates any unnecessary wait time for your concern/request</li>
-                            <li>
-                              The technical team will be making the changes to resolve issues or add feature requests - so it makes sense to be able
-                              to engage with them directly
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                    <li className="list-title">
-                      Feature Requests
-                      <ul>
-                        <li>
-                          If you would like to have a feature added to our app, let us know!
-                          <ul>
-                            <li>
-                              We are more than happy to consider <b>all</b> feature requests
-                              <ul>
-                                <li>The goal is provide an all-in-one application that fits your needs exactly</li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                    <li className="list-title">
-                      Authentic Support from Real People
-                      <ul>
-                        <li>
-                          We promise to provide help that is 100% related to the concern/request you send us
-                          <ul>
-                            <li>No bots</li>
-                            <li>No &#39;canned&#39; responses</li>
-                            <li>No vague responses that do not directly address your concern</li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </Fade>
+        <hr className="hr" />
 
         {/* DOCUMENTS */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
@@ -602,20 +583,17 @@ export default function Home() {
               </div>
               <div className="right">
                 <h2>How we Simplify this Task</h2>
-                <ul>
-                  <li>
-                    Easily upload your documents
-                    <ul>
-                      <li>Text will be extracted from image documents</li>
-                    </ul>
-                  </li>
-                  <li>Set your own headers by simply selecting text you would like to stand out</li>
-                  <li>
-                    A table of contents is generated for you, allowing quick navigation to any section, utilizing both predefined headers and your own
-                    custom headers
-                  </li>
-                  <li>Use the search feature to quickly find a word or words you are looking for</li>
-                </ul>
+                <Spacer height={2} />
+                <p>Easily upload your documents. All text will be extracted from image documents.</p>
+                <Spacer height={5} />
+                <p>Set your own headers by simply selecting text you would like to stand out.</p>
+                <Spacer height={5} />
+                <p>
+                  A table of contents is generated for you, allowing quick navigation to any section, utilizing both predefined headers and your own
+                  custom headers.
+                </p>
+                <Spacer height={5} />
+                <p>Use the search feature to quickly find a word or words you are looking for.</p>
               </div>
             </div>
             <p className="light-gallery-instructions">{DomManager.tapOrClick()} an image to enlarge</p>
@@ -627,8 +605,7 @@ export default function Home() {
             </Fade>
           </div>
         </Fade>
-        <Spacer height={20} />
-
+        <hr className="hr" />
         {/* EXPENSES */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div id="expenses-wrapper" className="section expenses">
@@ -647,12 +624,12 @@ export default function Home() {
           </div>
         </Fade>
 
-        <Spacer height={20} />
+        <hr className="hr" />
 
         {/* COLLABORATION */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
-          <div id="collaboration" className="section text-box flex">
-            <FaRegHandshake />
+          <div id="collaboration" className="section text-box">
+            {/*<FaRegHandshake />*/}
             <div className="text-wrapper">
               <p className="title">Collaborate on Decisions that Matter Most</p>
               <p className="text">
@@ -673,7 +650,7 @@ export default function Home() {
             </LightGallery>
           </div>
         </Fade>
-
+        <hr className="hr" />
         {/* SECURITY & PRIVACY */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="box section security-and-privacy with-bg">
@@ -692,7 +669,7 @@ export default function Home() {
             </div>
           </div>
         </Fade>
-
+        <hr className="hr" />
         {/* COMPATIBLE */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="section text-box all-devices" id="all-devices">
@@ -712,7 +689,7 @@ export default function Home() {
             </div>
             <div className="text">
               <p className="subtitle">
-                <b>Supports both Light & Dark Modes </b>
+                <b>Supports both Light & Dark Modes</b>
               </p>
               <span>
                 We understand that visual impairments and glare from lighting can be challenging. That&#39;s why our application offers both Light and
@@ -736,7 +713,7 @@ export default function Home() {
             </p>
           </div>
         </Fade>
-
+        <hr className="hr" />
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="flex" id="double">
             <div className="text-wrapper text-only box">

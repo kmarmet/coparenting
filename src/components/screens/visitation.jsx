@@ -5,10 +5,14 @@ import globalState from '../../context'
 import ScheduleTypes from '/src/constants/scheduleTypes'
 import DB from '/src/database/DB'
 import { Fade } from 'react-awesome-reveal'
+import { FaPlus, FaMinus } from 'react-icons/fa6'
 import CalendarEvent from '/src/models/calendarEvent'
 import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import VisitationManager from '/src/managers/visitationManager'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
 import MyConfetti from '/src/components/shared/myConfetti'
 import Note from '/src/components/shared/note'
 import DB_UserScoped from '/src/database/db_userScoped'
@@ -30,6 +34,8 @@ import CustomWeekends from '/src/components/screens/visitation/customWeekends'
 import DateManager from '/src/managers/dateManager.js'
 import AddressInput from '../../components/shared/addressInput'
 import Spacer from '../shared/spacer'
+import ToggleButton from '../shared/toggleButton'
+import Label from '../shared/label'
 
 export default function Visitation() {
   const { state, setState } = useContext(globalState)
@@ -44,6 +50,8 @@ export default function Visitation() {
   const [existingScheduleEvents, setExistingScheduleEvents] = useState([])
   const [showUpdateHolidaysButton, setShowUpdateHolidaysButton] = useState(true)
   const [showDeleteButton, setShowDeleteButton] = useState(false)
+  const [showVisitationSection, setShowVisitationSection] = useState(false)
+  const [showHolidaysSection, setShowHolidaysSection] = useState(false)
 
   // Holiday
   const [userHolidays, setUserHolidays] = useState([])
@@ -344,55 +352,80 @@ export default function Visitation() {
 
               <Spacer height={10} />
 
-              {/* SCHEDULE SELECTION */}
-              <div className="section visitation-schedule">
-                <CheckboxGroup
-                  elClass="schedule-type-checkboxes"
-                  parentLabel={'Choose Visitation Schedule'}
-                  onCheck={handleScheduleTypeSelection}
-                  skipNameFormatting={true}
-                  checkboxArray={Manager.buildCheckboxGroup({
-                    currentUser,
-                    labelType: 'visitation',
-                  })}
-                />
-              </div>
+              <Accordion id={'visitation-section'} expanded={showVisitationSection}>
+                <AccordionSummary id={'visitation-section-accordion-title'}>
+                  <div className="flex accordion-title" onClick={() => setShowVisitationSection(!showVisitationSection)}>
+                    <Label text={'Visitation Schedule & Location'} />
+                    {showVisitationSection ? <FaMinus /> : <FaPlus />}
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {/* SCHEDULE SELECTION */}
+                  <div className="section visitation-schedule">
+                    <CheckboxGroup
+                      elClass="schedule-type-checkboxes"
+                      parentLabel={'Choose Visitation Schedule'}
+                      onCheck={handleScheduleTypeSelection}
+                      skipNameFormatting={true}
+                      checkboxArray={Manager.buildCheckboxGroup({
+                        currentUser,
+                        labelType: 'visitation',
+                      })}
+                    />
+                  </div>
 
-              {/* SHARE WITH */}
-              <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
+                  {/* SHARE WITH */}
+                  <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
 
-              {/* LOCATION */}
-              <InputWrapper inputType="location" childrenOnly={true} labelText={'Preferred Transfer Location'}>
-                <AddressInput
-                  defaultValue={currentUser?.defaultTransferLocation}
-                  onSelection={(place) => {
-                    updateDefaultTransferLocation(place, `https://www.google.com/maps?daddr=7${encodeURIComponent(place)}`).then(() =>
-                      AlertManager.successAlert('Preferred Transfer Location Set')
-                    )
-                  }}
-                />
-              </InputWrapper>
+                  {/* LOCATION */}
+                  <InputWrapper inputType="location" childrenOnly={true} labelText={'Preferred Transfer Location'}>
+                    <AddressInput
+                      defaultValue={currentUser?.defaultTransferLocation}
+                      onSelection={(place) => {
+                        updateDefaultTransferLocation(place, `https://www.google.com/maps?daddr=7${encodeURIComponent(place)}`).then(() =>
+                          AlertManager.successAlert('Preferred Transfer Location Set')
+                        )
+                      }}
+                    />
+                  </InputWrapper>
+                </AccordionDetails>
+              </Accordion>
             </div>
           )}
-          {/* HOLIDAY SELECTION */}
-          <CheckboxGroup
-            containerClass="holidays"
-            parentLabel={'Select the holidays YOU have your child(ren) this year'}
-            elClass={'holiday-checkboxes-wrapper'}
-            onCheck={handleHolidaySelection}
-            skipNameFormatting={true}
-            checkboxArray={Manager.buildCheckboxGroup({
-              currentUser,
-              customLabelArray: holidaysFromApi.map((x) => x.name),
-              defaultLabels: userHolidays,
-            })}
-          />
 
-          {showUpdateHolidaysButton && (
-            <button className="button default green center" onClick={() => setHolidaysInDatabase()}>
-              Update Holidays
-            </button>
-          )}
+          <Spacer height={5} />
+
+          <Accordion id={'visitation-holidays-section'} expanded={showHolidaysSection}>
+            <AccordionSummary id={'visitation-holidays-section-accordion-title'}>
+              <div className="flex accordion-title" onClick={() => setShowHolidaysSection(!showHolidaysSection)}>
+                <Label text={'Visitation Holidays'} />
+                {showHolidaysSection ? <FaMinus /> : <FaPlus />}
+              </div>
+            </AccordionSummary>
+            <AccordionDetails>
+              {/* HOLIDAY SELECTION */}
+              <CheckboxGroup
+                containerClass="holidays"
+                parentLabel={'Select the holidays YOU have your child(ren) this year'}
+                elClass={'holiday-checkboxes-wrapper'}
+                onCheck={handleHolidaySelection}
+                skipNameFormatting={true}
+                checkboxArray={Manager.buildCheckboxGroup({
+                  currentUser,
+                  customLabelArray: holidaysFromApi.map((x) => x.name),
+                  defaultLabels: userHolidays,
+                })}
+              />
+
+              {showUpdateHolidaysButton && (
+                <button className="button default green center" onClick={() => setHolidaysInDatabase()}>
+                  Update Holidays
+                </button>
+              )}
+
+              <Spacer height={5} />
+            </AccordionDetails>
+          </Accordion>
         </Fade>
       </div>
       {!showEveryOtherWeekendCard && !showCustomWeekendsCard && !showFiftyFiftyCard && <NavBar navbarClass={'visitation no-add-new-button'}></NavBar>}

@@ -1,5 +1,4 @@
 import React, { useContext, useEffect } from 'react'
-import ScreenActionsMenu from './screenActionsMenu'
 import { IoIosArrowDown, IoMdPhotos } from 'react-icons/io'
 import { Fade } from 'react-awesome-reveal'
 import globalState from '../../context'
@@ -8,6 +7,7 @@ import { RiMapPinTimeFill } from 'react-icons/ri'
 import { MdSwapHorizontalCircle } from 'react-icons/md'
 import { FaDonate, FaFileUpload } from 'react-icons/fa'
 import CreationForms from '../../constants/creationForms'
+import { IoChatbubbles } from 'react-icons/io5'
 
 const CreationMenu = () => {
   const { state, setState } = useContext(globalState)
@@ -15,14 +15,11 @@ const CreationMenu = () => {
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
-    const pageOverlay = document.getElementById('page-overlay')
 
     if (pageContainer) {
       if (showCreationMenu) {
-        pageOverlay.classList.add('active')
         pageContainer.classList.add('disable-scroll')
       } else {
-        pageOverlay.classList.remove('active')
         pageContainer.classList.remove('disable-scroll')
       }
     }
@@ -31,6 +28,7 @@ const CreationMenu = () => {
   return (
     <div id="creation-menu-wrapper" className={showCreationMenu ? 'open' : 'closed'}>
       <div className="action-items creation">
+        <p id="creation-menu-title">Select a Resource to Create</p>
         <Fade direction={'up'} className={'creation-fade-wrapper'} duration={400} triggerOnce={false} cascade={true} damping={0.2}>
           {/* CALENDAR */}
           <div
@@ -96,7 +94,7 @@ const CreationMenu = () => {
             }}>
             <div className="content">
               <div className="svg-wrapper chat">
-                <IoMdPhotos className={'chat'} />
+                <IoChatbubbles className={'chat'} />
               </div>
               <p className="chat">Chat</p>
             </div>

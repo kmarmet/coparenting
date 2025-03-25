@@ -193,6 +193,7 @@
 @mixin fontType() {
   font-weight: $fwRegular;
   font-size: 16px;
+  text-align: left;
   line-height: 1.4;
   font-optical-sizing: auto;
   font-style: normal;
@@ -1011,19 +1012,25 @@
 }
 
 @mixin bottomMenuWrapper {
-  position: fixed;
   width: 100vw;
   height: 100vh;
-  transition: all 0.6s ease-in-out;
-  z-index: 9;
+  transition: all 0.6s ease-out;
+  z-index: -1;
+  backdrop-filter: blur(5px);
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 
   &.open {
     z-index: 999999999;
+    background-color: rgba(0, 0, 0, 0.35);
+    transition: all 0.6s ease-in;
     .action-items {
       transition: all 0.6s ease-in-out;
       bottom: 0;
       opacity: 1;
-      transform: scale(1);
     }
     #screen-actions-background {
       transition: all 0.6s ease-in-out;
@@ -1038,27 +1045,17 @@
     }
   }
 
-  #screen-actions-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    opacity: 0;
-    bottom: 0;
-    backdrop-filter: blur(7px);
-    background-color: rgba(0, 0, 0, 0.35);
-    transition: all 0.6s ease-in-out;
-  }
-
   #creation-menu-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: $fwBold;
-    color: $mainBlue;
-    margin-bottom: 10px;
-    width: 100%;
+    color: #616161;
+    margin-bottom: 15px;
     text-align: center;
-    z-index: 9999999999;
     opacity: 1;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 3px;
+    display: inline;
+    width: auto;
   }
 
   #screen-actions-menu {
@@ -1193,6 +1190,8 @@
           p {
             font-size: 18px;
             font-weight: $fwMedium;
+            position: relative;
+            top: -1px;
           }
           .svg-wrapper {
             transform: scale(0.8);
@@ -1238,11 +1237,17 @@
                 transform: scale(1.15);
               }
             }
+
+            &.chat {
+              background: $bootstrapBgYellow;
+              svg {
+                transform: scale(1.3);
+                color: $bootstrapYellowColor;
+              }
+            }
+
             &.swap {
               background: #cbeef3;
-              p {
-                color: #00838f;
-              }
               svg {
                 transform: scale(1.3);
                 color: #00838f;
@@ -1320,6 +1325,10 @@
 
         &.swap {
           color: #00838f;
+        }
+
+        &.chat {
+          color: $bootstrapYellowColor;
         }
 
         &.document {
@@ -1638,10 +1647,9 @@
 
 @mixin viewsWrapper {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 10px;
-  width: 100%;
 
   @media screen and (max-width: 400px) {
     flex-wrap: wrap;
@@ -1663,40 +1671,32 @@
   }
 
   .view {
-    text-align: center;
-    font-weight: $fwMedium;
+    text-align: left;
+    font-weight: $fwRegular;
     text-transform: uppercase;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     line-height: 1;
     @include hover;
-    color: $subtitleText;
+    color: $primaryText;
     opacity: 0.8;
-    padding: 0 8px;
     font-size: 14px;
     margin-top: 8px;
     position: relative;
     margin-bottom: 10px;
-    width: 50%;
+    padding: 0 15px 0 0;
+
+    &:last-child {
+      padding-right: 0;
+    }
 
     &.active {
       opacity: 1;
-      font-weight: $fwMediumBold;
+      font-weight: $fwMedium;
       display: flex;
-      color: $mainBlue;
-      justify-content: center;
+      color: $accentLight;
+      justify-content: flex-start;
       align-items: center;
-
-      &:after {
-        content: '';
-        display: block;
-        width: 100%;
-        height: 1px;
-        background: $mainBlue;
-        border-radius: 8px;
-        position: absolute;
-        bottom: -6px;
-      }
     }
 
     &.hide {
@@ -1962,7 +1962,7 @@
     font-weight: $fwMedium;
     margin: 0;
     line-height: 1.3;
-    color: $primaryText;
+    color: $labelText;
 
     svg {
       position: relative;
@@ -2975,7 +2975,6 @@
 @mixin modal {
   overflow: hidden;
   position: absolute;
-  display: flex;
   height: 100vh;
   width: 100vw;
   align-items: center;
@@ -2986,6 +2985,60 @@
   z-index: -1;
   opacity: 0;
   transition: all 0.5s ease-out;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.35);
+  padding: 0 10px;
+
+  #modal-content {
+    @include deadCenter;
+    height: auto;
+    width: calc(100vw - 15px);
+
+    /*#region  MODAL*/
+    #modal {
+      background: $bestGreyForWhiteLight;
+      width: 100%;
+      overflow: auto;
+      position: relative;
+      z-index: -1;
+      border-radius: 15px;
+      max-height: calc(100vh - 220px);
+      align-self: center;
+      bottom: -100%;
+      transition: all 2s ease-in;
+      @include bestShadow;
+      box-shadow: rgba(0, 0, 0, 0.56) 0 18px 20px 2px;
+
+      &.animate__fadeInUp {
+        z-index: 9999999;
+        bottom: 0;
+      }
+
+      @media screen and (max-width: 400px) {
+        max-height: 60vh;
+      }
+
+      #modal-title {
+        justify-content: center;
+        text-align: center;
+        font-weight: $fwBold;
+        font-size: 22px;
+        display: block;
+        line-height: 1;
+        color: $primaryText;
+        padding: 15px 0;
+        background: white;
+        width: 100%;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #e7e9ee;
+
+        &.long-title {
+          line-height: 1.3;
+        }
+      }
+    }
+    /*#endregion  MODAL*/
+  }
 
   &.active {
     opacity: 1;
@@ -2996,9 +3049,9 @@
       z-index: 999999999999;
       position: relative;
       transition: all 0.6s ease-in;
-
+      margin: 0;
+      width: 100%;
       #modal {
-        bottom: 0;
         transition: all 0.6s ease-in;
         opacity: 1;
         z-index: 999999999999;
@@ -3039,80 +3092,9 @@
     }
   }
 
-  #modal-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 99999;
-    backdrop-filter: blur(7px);
-    background-color: rgba(0, 0, 0, 0.35);
-  }
-
-  /*#region  MODAL*/
-  #modal {
-    display: inline-block;
-    background: $bestGreyForWhiteLight;
-    width: 95vw;
-    overflow: auto;
-    position: relative;
-    z-index: -1;
-    left: 2.4vw;
-    border-radius: 15px;
-    max-height: calc(100vh - 250pt);
-    align-self: center;
-    bottom: -100%;
-    transition: all 2s ease-in;
-    @include bestShadow;
-    box-shadow: rgba(0, 0, 0, 0.56) 0 18px 20px 2px;
-
-    // ANIMATION
-    &.animate__fadeInUp {
-      z-index: 9999999;
-      bottom: 0;
-    }
-
-    &.animate__fadeOutDown {
-      //      transition: all 4s ease-out;
-    }
-
-    @media screen and (max-width: 400px) {
-      max-height: 60vh;
-    }
-  }
-  /*#endregion  MODAL*/
-
-  #title-wrapper {
-    position: relative;
-    top: 0;
-    z-index: 10000000;
-    right: 0;
-    left: 0;
-    margin: 0 auto 20px auto;
-    display: block;
-    border-radius: $borderRadius;
-    align-self: flex-end;
-    width: 100vw;
-    #large-title {
-      justify-content: center;
-      text-align: center;
-      font-weight: $fwExtraBold;
-      font-size: 26px;
-      line-height: 1;
-      color: white;
-      max-width: 90%;
-      margin: 0 auto;
-
-      &.long-title {
-        line-height: 1.3;
-      }
-    }
-  }
-
   #relative-wrapper {
     position: relative;
-    padding: 15px;
+    padding: 0 15px 15px 15px;
     height: 100%;
     margin-bottom: auto;
     display: block;
@@ -3443,7 +3425,7 @@
       bottom: 0;
       justify-self: flex-start;
       line-height: 1;
-      font-weight: $fwMediumBold;
+      font-weight: $fwBold;
       text-transform: uppercase;
       font-size: 13px;
       @include shadow;
@@ -3477,7 +3459,7 @@
 
       &.warning {
         background: #ffe75b;
-        color: $bootstrapYellowColor;
+        color: #977e3a;
       }
 
       &.delete,
@@ -4564,13 +4546,13 @@
 
       &.active {
         opacity: 1;
-        color: $accentLight;
+        color: $purple;
         position: relative;
         transition: all 0.3s ease-in-out;
 
         p,
         svg {
-          color: $accentLight;
+          color: #6171ea;
           opacity: 1;
           font-weight: $fwMediumBold;
         }
