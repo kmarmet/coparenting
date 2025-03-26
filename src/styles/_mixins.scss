@@ -977,7 +977,7 @@
   }
 }
 @mixin yellowBox {
-  background: $bootstrapBgYellow;
+  background: $bootstrapYellowBg;
   border-radius: $bigBorderRadius;
   padding: 10px !important;
   border: 1px solid $bootstrapYellowBorder;
@@ -1049,7 +1049,7 @@
     line-height: 1;
     width: 100%;
     text-align: left;
-    padding: 20px 20px 0 20px;
+    padding: 25px 20px 0 0;
     font-size: 22px;
     color: $headerText;
     font-weight: $fwMedium;
@@ -1060,6 +1060,7 @@
     justify-content: space-between;
     border-radius: 25px 25px 0 0;
     margin-bottom: 10px;
+    white-space: nowrap;
 
     svg {
       font-size: 30px;
@@ -1192,13 +1193,17 @@
     border-radius: 25px 25px 0 0;
     box-shadow: rgba(0, 0, 0, 0.56) 0 0 15px 18px;
     padding-bottom: 35pt;
-    padding-top: 20px;
-    padding-left: 5px;
+    padding-top: 30px;
+    padding-left: 20px;
+
+    #menu-content {
+      max-width: calc(100% - 20px);
+      position: relative;
+      left: -4px;
+    }
 
     &.creation {
-      #menu-content {
-        padding: 10px 20px 0 20px;
-      }
+      padding-top: 0;
       .action-item {
         margin-bottom: 0;
         .content {
@@ -1257,7 +1262,7 @@
             }
 
             &.chat {
-              background: $bootstrapBgYellow;
+              background: $bootstrapYellowBg;
               svg {
                 transform: scale(1.3);
                 color: $bootstrapYellowColor;
@@ -1324,6 +1329,12 @@
         display: flex;
         flex-wrap: wrap;
         max-width: 85%;
+        font-size: 18px;
+        color: $blurple;
+
+        .subtitle {
+          font-size: 15px;
+        }
 
         &.calendar {
           color: $mainBlue;
@@ -1354,25 +1365,24 @@
         }
       }
 
-      svg {
-        color: $accentLight;
-      }
-
       .svg-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: $borderRadius;
-        background: $bestGreyForWhite;
+        background: rgba(97, 113, 234, 0.18);
         height: 40px;
         width: 42px;
         padding: 8px;
+        white-space: nowrap;
         .lg-react-element {
           z-index: -1;
         }
         svg {
           font-size: 22px;
           display: block;
+          color: $blurple;
+          white-space: nowrap;
 
           &.child,
           &.checklist {
@@ -1671,14 +1681,15 @@
   gap: 8px;
   margin-left: auto;
   width: 100%;
-  justify-content: center;;
+  justify-content: center;
   max-width: 100vw;
   overflow: auto;
   
   &.child-info {
-    padding-left: 115px;
+    padding-left: 80px;
+    max-width: 100%;
+    overflow: auto;
   }
-  
 
   * {
     line-height: 1;
@@ -1690,28 +1701,31 @@
     text-transform: uppercase;
     display: flex;
     line-height: 1;
-    font-size:       14px;
-    position:        relative;
-    border-radius:   6px;
+    font-size: 14px;
+    position: relative;
     justify-content: center;
-    align-items:     center;
-    padding:         8px 20px;
-    text-align:      center;
-    margin:          3px 0;
-    white-space:     nowrap;
-    background:      rgb(211, 211, 211);
+    align-items: center;
+    padding: 8px 20px;
+    width: 50%;
+    border-radius: 15px;
+    text-align: center;
+    margin: 3px 0;
+    white-space: nowrap;
+    background: rgb(211, 211, 211);
     background: rgba(242, 244, 245, 0.6);
-    color:           $subtitleText;
+    color: $subtitleText;
     @include hover;
 
     &.active {
-      opacity:     1;
+      opacity: 1;
       font-weight: $fwMediumBold;
-      display:     flex;
-      color:       $accentLight;
-      background:  rgb(185, 195, 255);
-      border:      0;
+      display: flex;
+      color: $accentLight;
+      background: rgb(185, 195, 255);
+      border: 0;
     }
+    
+   
 
     &.hide {
       display: none;
@@ -1859,17 +1873,17 @@
     white-space: nowrap;
     text-align: center;
     justify-content: center;
+    
     &.paid,
     &.approved {
       background-color: $lightestGreen;
       color: $green;
-      font-weight: $fwMedium;
       border: 1px solid $green;
     }
 
     &.pending,
     &.soon {
-      background-color: $bootstrapBgYellow;
+      background-color: $bootstrapYellowBg;
       color: $bootstrapYellowColor;
       border: 1px solid $bootstrapYellowBorder;
     }
@@ -2344,52 +2358,27 @@
   transition: all 0.5s ease-out;
   display: flex;
   gap: 5px;
-  margin-right: 15px;
+  padding: 6px 15px;
+  border-radius: 20px;
+  border: 1px solid $greyOnGreyDarker;
 
   &.center {
     justify-content: center;
     width: 100%;
   }
 
-  .checkbox {
-    height: 17px;
-    width: 17px;
-    border-radius: 4px;
-    border: 1px solid #a3a3a3;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.3s ease-in-out;
-  }
-
   .checkbox-text {
-    font-size: 14px;
-  }
-
-  svg {
-    color: white;
-    position: unset;
-    transform: scale(0);
-    transition: all 0.2s ease-in-out;
+    font-size: 12px;
+    line-height: 1;
+    white-space: nowrap;
   }
 
   &.active {
+    background: $bootstrapBgGreen;
+    border: 1px solid rgba(15, 81, 50, 0.37);
     .checkbox-text {
       font-weight: $fwMedium;
-    }
-
-    .checkbox {
-      background-color: $bootstrapBgGreen;
-      transition: all 0.3s ease-in-out;
-      border: 1px solid #22945d;
-    }
-
-    svg {
-      color: #22945d;
-      position: relative;
-      top: 0.5px;
-      transform: scale(0.65);
-      transition: all 0.2s ease-in-out;
+      color: $bootstrapGreenColor;
     }
   }
 }
@@ -2446,14 +2435,11 @@
       white-space: nowrap;
       max-height: unset;
       display: flex;
-      gap: 8px 0;
+      gap: 8px;
       grid-template-columns: repeat(2, 1fr);
       align-items: center;
       padding-bottom: 15px;
-      &.more-than-two-checkboxes {
-        grid-template-columns: repeat(2, 1fr);
-        display: grid;
-      }
+      flex-wrap: wrap;
 
       #label-wrapper {
         margin-right: 10px;
@@ -2486,10 +2472,11 @@
     width: 100%;
 
     &::file-selector-button {
-      border: 0;
-      padding: 8px 15px;
+      padding: 10px 20px;
       border-radius: 6px;
-      background: $mediumGrey;
+      background: white;
+      border: 1px solid $greyOnGreyBorder;
+      color: $primaryText;
       margin-right: 10px;
       margin-top: 5px;
       font-size: 14px;
@@ -3008,12 +2995,9 @@
   flex-direction: column;
   justify-content: center;
   gap: 5px;
-  
 
   #modal-content {
     height: auto;
-
-
 
     /*#region  MODAL*/
     #modal {
@@ -3023,11 +3007,13 @@
       z-index: -1;
       max-height: calc(100vh - 230px);
       align-self: center;
+      
       bottom: -100%;
       transition: all 2s ease-in;
       border-radius: 15px;
       box-shadow: 0 12px 12px 0 #0000008f;
       width: calc(100vw - 20px);
+
       &.animate__fadeInUp {
         z-index: 9999999;
         bottom: 0;
@@ -3037,26 +3023,38 @@
         max-height: calc(100vh - 215px);
       }
 
+      #modal-title-and-text {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #e5e5e5;
+        position: sticky;
+        top: 0;
+        backdrop-filter: blur(8px);
+
+        &.with-subtitle {
+          padding: 15px;
+        }
+      }
+
       #modal-title {
         text-align: left;
-        padding: 15px;
-        font-size: 22px;
-        color: $accentLight;
+
+        font-size: 24px;
+        color: $headerText;
         font-weight: $fwMedium;
         z-index: 9999999;
         width: 100%;
-        position: sticky;
-        top: 0;
+
         display: flex;
         align-items: center;
         justify-content: space-between;
-        backdrop-filter: blur(8px);
+
         border-radius: 25px 25px 0 0;
         white-space: nowrap;
 
         svg {
-          font-size: 30px;
-          color: $accentLight;
+          font-size: 28px;
+          color: #259f64;
         }
 
         &.long-title {
@@ -3447,10 +3445,11 @@
 
     .card-button {
       border-radius: 10px;
-      padding: 17px 0 15px 0;
+      padding: 15px 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      white-space: nowrap;
       color: white;
       z-index: 10000;
       position: relative;
@@ -3584,7 +3583,7 @@
     }
 
     .new-item-button {
-      background: #f0f0f0;
+      background: $greyOnGreyBorder;
       color: black;
       font-weight: $fwMedium;
     }
@@ -3788,7 +3787,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     justify-content: center;
-    gap: 20px 0;
+    gap: 30px 10px;
 
     #child-wrapper {
       height: auto;

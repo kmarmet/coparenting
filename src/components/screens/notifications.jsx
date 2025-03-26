@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import globalState from '../../context'
 import { Fade } from 'react-awesome-reveal'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-import { FaCheck } from 'react-icons/fa6'
+import { FaMinus, FaPlus } from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -20,7 +20,6 @@ import ActivityCategory from '../../models/activityCategory'
 import { PiSealWarningDuotone } from 'react-icons/pi'
 import StringManager from '../../managers/stringManager'
 import AppManager from '../../managers/appManager.coffee'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io'
 
 export default function Notifications() {
@@ -108,9 +107,7 @@ export default function Notifications() {
       <div id="activity-wrapper" className={`${theme} form page-container`}>
         {notifications.length === 0 && <NoDataFallbackText text={'No current activity'} />}
         <p className="screen-title">Notifications</p>
-        <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
           <p className="intro-text mb-15">Stay updated with all developments and notifications as they happen.</p>
-          #38E480
           {/* LEGENDS */}
           {currentUser?.accountType === 'parent' && (
             <div className="flex">
@@ -140,6 +137,7 @@ export default function Notifications() {
               Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
             </button>
           )}
+        <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
           {/* LOOP ACTIVITIES */}
           <div id="activity-cards">
             {Manager.isValid(notifications) &&

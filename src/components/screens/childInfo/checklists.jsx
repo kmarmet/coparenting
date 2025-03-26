@@ -8,10 +8,9 @@ import Manager from '/src/managers/manager'
 import { MdOutlineChecklist } from 'react-icons/md'
 import DB from '/src/database/DB'
 import Checklist from '/src/models/checklist.js'
-import { PiListChecksFill } from 'react-icons/pi'
+import { PiListChecksFill, PiTrashSimpleDuotone } from 'react-icons/pi'
 import StringManager from '../../../managers/stringManager'
 import DomManager from '../../../managers/domManager'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
 
 export default function Checklists({ showCard, hideCard }) {
   const { state, setState } = useContext(globalState)
@@ -132,12 +131,7 @@ export default function Checklists({ showCard, hideCard }) {
       showCard={showCard}
       hasSubmitButton={false}
       title={'Checklists'}
-      subtitle={`Review transfer checklists to guarantee that all items are accounted for during transitions to or from a co-parent's home.  ${DomManager.tapOrClick(
-        true
-      )} each item to mark completed. ${DomManager.tapOrClick(true)} the delete icon to remove the item from the checklist permanently.`}
-      onClose={hideCard}>
-      <Spacer height={5} />
-      <ViewSelector
+      viewSelector={ <ViewSelector
         shouldUpdateStateOnLoad={false}
         updateState={(text) => {
           const _view = text.toLowerCase()
@@ -149,7 +143,13 @@ export default function Checklists({ showCard, hideCard }) {
         }}
         wrapperClasses={'child-info'}
         labels={destinationLabels}
-      />
+      />}
+      subtitle={`Review transfer checklists to guarantee that all items are accounted for during transitions to or from a co-parent's home.  ${DomManager.tapOrClick(
+        true
+      )} each item to mark completed. ${DomManager.tapOrClick(true)} the delete icon to remove the item from the checklist permanently.`}
+      onClose={hideCard}>
+      <Spacer height={5} />
+
 
       {Manager.isValid(checklist) &&
         Manager.isValid(checklist?.checklistItems) &&

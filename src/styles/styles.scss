@@ -362,9 +362,13 @@
 
       &.hr {
         height: 1px;
-        border-color: rgba(242, 244, 245, 0.37);
-        width: 50vw;
+        border-color: rgba(242, 244, 245, 0.25);
+        width: 70vw;
         margin: 40px auto;
+        
+        &.less-margin {
+          margin: 20px auto;
+        }
       }
 
       &.event-hr {
@@ -531,7 +535,7 @@
     .screen-actions-menu-icon {
       position: fixed;
       right: 15px;
-      bottom: 100px;
+      bottom: 120px;
       z-index: 999999;
       color: black;
       opacity: 0.2;
@@ -542,9 +546,9 @@
         width: 40px;
         color: $subtitleText;
         border-radius: $borderRadius;
-        @include shadow;
         opacity: 1;
         padding: 5px;
+        @include shadow;
       }
     }
 

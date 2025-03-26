@@ -23,6 +23,7 @@ function UploadInputs({ upload, containerClass = '', getImages = () => {}, uploa
             upload()
             getImages(files)
           }}
+          multiple
           id="upload-input"
           name="file-upload"
           type="file"

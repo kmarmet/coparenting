@@ -5,7 +5,7 @@ import globalState from '../../context'
 import ScheduleTypes from '/src/constants/scheduleTypes'
 import DB from '/src/database/DB'
 import { Fade } from 'react-awesome-reveal'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
+import { FaMinus, FaPlus } from 'react-icons/fa6'
 import CalendarEvent from '/src/models/calendarEvent'
 import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
@@ -34,7 +34,6 @@ import CustomWeekends from '/src/components/screens/visitation/customWeekends'
 import DateManager from '/src/managers/dateManager.js'
 import AddressInput from '../../components/shared/addressInput'
 import Spacer from '../shared/spacer'
-import ToggleButton from '../shared/toggleButton'
 import Label from '../shared/label'
 
 export default function Visitation() {
@@ -306,7 +305,7 @@ export default function Visitation() {
 
       {/* PAGE CONTAINER */}
       <div id="visitation-container" className={`${theme} page-container form`}>
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+        <Fade direction={'right'} duration={1000} triggerOnce={true}>
           {/* SCREEN TITLE */}
           <p className="screen-title">Visitation</p>
 

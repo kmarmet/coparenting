@@ -567,8 +567,28 @@
     }
 
     .MuiDateCalendar-viewTransitionContainer {
-      width: 100% !important;
-      margin: 0 !important;
+      .MuiMonthCalendar-root {
+        background: $oneMillionGrey !important;
+        margin: 0 auto 25px auto !important;
+        width: calc(100vw - 30px) !important;
+        border-radius: $bigBorderRadius;
+        @include bestShadow;
+        padding: 15px 0;
+        
+        .MuiPickersMonth-monthButton {
+          opacity: .6;
+          font-weight: $fwMedium !important;
+          
+          &.Mui-selected {
+            background: $accentLight !important;
+            opacity: 1;
+          }
+        }
+      }
+
+      * {
+        text-align: center !important;
+      }
     }
 
     .MuiPickersDay-root {
@@ -866,7 +886,7 @@
   // Primary calendar picker container
   .MuiPaper-root {
     background-color: $lightBg;
-    border-radius: $bigBorderRadius !important;
+    border-radius: $borderRadius !important;
     width: 380px !important;
     @include bestShadow;
 
@@ -1189,9 +1209,6 @@
         align-items: center;
         justify-content: center;
         height: 40px;
-      }
-      &.css-bw88rr-MuiPickersMonth-monthButton {
-        background-color: $accent;
       }
     }
 

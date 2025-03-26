@@ -22,7 +22,7 @@
       }
     }
     .MuiAccordionDetails-root {
-      background: $bootstrapBgYellow;
+      background: $bootstrapYellowBg;
       border-radius: $bigBorderRadius;
       padding: 10px !important;
       border: 1px solid $bootstrapYellowBorder;
@@ -44,6 +44,10 @@
     // LIGHT GALLERY
     .light-gallery {
       margin-top: 8px;
+      
+      .memories-fade-wrapper {
+        width: 100%;
+      }
 
       .memory {
         position: relative;

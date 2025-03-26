@@ -5,7 +5,6 @@ import moment from 'moment'
 import DB_UserScoped from '/src/database/db_userScoped'
 import { MobileTimePicker } from '@mui/x-date-pickers-pro'
 import DateFormats from '/src/constants/dateFormats'
-import Toggle from 'react-toggle'
 import { Fade } from 'react-awesome-reveal'
 import DateManager from '/src/managers/dateManager'
 import NavBar from '/src/components/navBar'
@@ -17,8 +16,8 @@ import NotificationManager from '/src/managers/notificationManager.js'
 import ToggleButton from '../../shared/toggleButton'
 
 export default function Settings() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, authUser } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, authUser} = state
   const [morningSummaryTime, setMorningSummaryTime] = useState('')
   const [eveningSummaryTime, setEveningSummaryTime] = useState('')
   const [notificationsToggled, setNotificationsToggled] = useState(0)
@@ -44,10 +43,10 @@ export default function Settings() {
   const toggleNotifications = async () => {
     setNotificationsToggled(!notificationsToggled)
     const subscriber = await DB.find(DB.tables.notificationSubscribers, ['key', currentUser.key], true)
-    const { subscriptionId } = subscriber
+    const {subscriptionId} = subscriber
     await DB_UserScoped.updateUserRecord(currentUser?.key, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser })
+    setState({...state, currentUser: updatedCurrentUser})
 
     if (notificationsToggled === true) {
       await NotificationManager.enableNotifications(subscriptionId)
@@ -62,9 +61,9 @@ export default function Settings() {
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <p className="screen-title">Settings</p>
           {/* CALENDAR SETTINGS */}
-          <Label text={'Calendar'} labelId="medium-title" isBold={true} />
+          <Label text={'Calendar'} />
           <div className="calendar-settings form">
-            <div className="section summary gap-10">
+            <div className="section summary">
               <p className="pb-10">The summaries for the current and following day will be provided during the morning and evening summary hours.</p>
               {/* MORNING SUMMARY */}
               <InputWrapper labelText={'Morning Hour'} inputType={'date'}>
@@ -74,20 +73,22 @@ export default function Settings() {
                       actions: ['clear', 'accept'],
                     },
                   }}
-                  className={`${theme} w-100`}
+                  className={`${theme}`}
                   views={['hours']}
                   onAccept={(e) => setMorningSummaryTime(e)}
+                  defaultValue={moment(currentUser?.dailySummaries?.morningReminderSummaryHour, 'hh:mma')}
                 />
               </InputWrapper>
               {/* EVENING SUMMARY */}
-              <InputWrapper labelText={'Evening Hour'} inputType={'date'}>
+              <InputWrapper labelText={'Evening Hour'} inputType={'date'} onChange={(e) => setEveningSummaryTime(e.target.value)}>
                 <MobileTimePicker
+                  defaultValue={moment(currentUser?.dailySummaries?.eveningReminderSummaryHour, 'hh:mma')}
                   slotProps={{
                     actionBar: {
                       actions: ['clear', 'accept'],
                     },
                   }}
-                  className={`${theme} mt-0 w-100`}
+                  className={`${theme}`}
                   views={['hours']}
                   onAccept={(e) => setEveningSummaryTime(e)}
                 />
@@ -100,9 +101,9 @@ export default function Settings() {
                 </button>
               </div>
             )}
-
-            {/* IS VISITATION? */}
-            <Label text={'Notifications'} labelId="medium-title" classes="mt-30" isBold={true} />
+            <hr className="hr less-margin"/>
+            {/*  NOTIFICATIONS */}
+            <Label text={'Notifications'} />
             <div className="flex">
               <p>Enabled</p>
               <ToggleButton

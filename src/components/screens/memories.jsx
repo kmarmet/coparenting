@@ -6,7 +6,6 @@ import { child, getDatabase, onValue, ref } from 'firebase/database'
 import Manager from '../../managers/manager'
 import globalState from '../../context'
 import SecurityManager from '../../managers/securityManager'
-import NewMemoryForm from '../forms/newMemoryForm'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import moment from 'moment'
@@ -23,12 +22,11 @@ import { IoAddOutline, IoHeart } from 'react-icons/io5'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import Spacer from '../shared/spacer'
 import { BiSolidImageAdd } from 'react-icons/bi'
 
 export default function Memories() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme} = state
   const [memories, setMemories] = useState([])
   const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
   const [showDisclaimer, setShowDisclaimer] = useState(false)
@@ -106,77 +104,75 @@ export default function Memories() {
     <>
       {/* PAGE CONTAINER */}
       <div id="memories-container" className={`${theme} page-container`}>
-        <Fade direction={'up'} duration={1000} className={'memories-fade-wrapper'} triggerOnce={true}>
-          <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title">Memories</p>
-            {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />}
-          </div>
-          <p id="happy-subtitle" className={`${theme}`}>
-            Share photos of unforgettable memories that deserve to be seen! <IoHeart className={'heart'} />
-          </p>
-          <Accordion expanded={showDisclaimer}>
-            <AccordionSummary>
-              <p id="disclaimer-header-button" onClick={() => setShowDisclaimer(!showDisclaimer)}>
-                Info {showDisclaimer ? <LuMinus /> : <IoAddOutline />}
-              </p>
-            </AccordionSummary>
-            <AccordionDetails>
-              <p>
-                All images will be automatically and <b>permanently</b> removed 30 days after their creation date. You are welcome to download them at
-                any time.
-              </p>
-            </AccordionDetails>
-          </Accordion>
+        <div className="flex" id="screen-title-wrapper">
+          <p className="screen-title">Memories</p>
+          {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />}
+        </div>
+        <p id="happy-subtitle" className={`${theme}`}>
+          Share photos of unforgettable memories that deserve to be seen! <IoHeart className={'heart'} />
+        </p>
+        <Accordion expanded={showDisclaimer}>
+          <AccordionSummary>
+            <p id="disclaimer-header-button" onClick={() => setShowDisclaimer(!showDisclaimer)}>
+              Info {showDisclaimer ? <LuMinus /> : <IoAddOutline />}
+            </p>
+          </AccordionSummary>
+          <AccordionDetails>
+            <p>
+              All images will be automatically and <b>permanently</b> removed 30 days after their creation date. You are welcome to download them at
+              any time.
+            </p>
+          </AccordionDetails>
+        </Accordion>
 
-          {/* NO DATA FALLBACK TEXT */}
-          {memories && memories.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories available'} />}
+        {/* NO DATA FALLBACK TEXT */}
+        {memories && memories.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories available'} />}
 
-          {/* GALLERY */}
-          <Fade direction={'up'} duration={1000} className={'memories-fade-wrapper'} triggerOnce={true}>
-            <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'.memory-image'}>
-              {Manager.isValid(memories) &&
-                memories.map((imgObj, index) => {
-                  return (
-                    <div key={index} className="memory">
-                      {/* IMAGE */}
-                      <div id="memory-image-wrapper">
-                        {Manager.isValid(imgObj?.title) && <p className="memory-title">{StringManager.formatTitle(imgObj?.title, true)}</p>}
-                        <div
-                          data-sub-html={`${
-                            Manager.isValid(imgObj?.notes, true)
-                              ? `<p class="gallery-title">
+        {/* GALLERY */}
+        <LightGallery elementClassNames={`light-gallery ${theme}`} selector={'.memory-image'}>
+          <Fade direction={'left'} duration={700} className={'memories-fade-wrapper'} triggerOnce={true} cascade={true} damping={0.2}>
+            {Manager.isValid(memories) &&
+              memories.map((imgObj, index) => {
+                return (
+                  <div className="memory" key={index}>
+                    {/* IMAGE */}
+                    <div id="memory-image-wrapper">
+                      {Manager.isValid(imgObj?.title) && <p className="memory-title">{StringManager.formatTitle(imgObj?.title, true)}</p>}
+                      <div
+                        data-sub-html={`${
+                          Manager.isValid(imgObj?.notes, true)
+                            ? `<p class="gallery-title">
                                   ${StringManager.formatTitle(StringManager.formatTitle(imgObj?.title, true))}
                                 <span>${imgObj?.notes}</span>
                               </p>`
-                              : ''
-                          }`}
-                          style={{ backgroundImage: `url(${imgObj?.url})` }}
-                          className="memory-image"
-                          data-src={imgObj?.url}></div>
-                      </div>
-
-                      {/* DATE */}
-                      {DateManager.dateIsValid(imgObj?.memoryCaptureDate) && (
-                        <p className="memory-date">Capture Date: {moment(imgObj?.memoryCaptureDate).format(DateFormats.readableMonthDayYear)}</p>
-                      )}
-
-                      {/* BELOW IMAGE */}
-                      <div id="below-image">
-                        {/* SAVE BUTTON */}
-                        <p onClick={(e) => deleteMemory(imgObj?.url, imgObj)} id="delete-button">
-                          DELETE
-                        </p>
-                        {/* DOWNLOAD BUTTON */}
-                        <p onClick={(e) => saveMemoryImage(e)} id="download-text">
-                          DOWNLOAD
-                        </p>
-                      </div>
+                            : ''
+                        }`}
+                        style={{backgroundImage: `url(${imgObj?.url})`}}
+                        className="memory-image"
+                        data-src={imgObj?.url}></div>
                     </div>
-                  )
-                })}
-            </LightGallery>
+
+                    {/* DATE */}
+                    {DateManager.dateIsValid(imgObj?.memoryCaptureDate) && (
+                      <p className="memory-date">Capture Date: {moment(imgObj?.memoryCaptureDate).format(DateFormats.readableMonthDayYear)}</p>
+                    )}
+
+                    {/* BELOW IMAGE */}
+                    <div id="below-image">
+                      {/* SAVE BUTTON */}
+                      <p onClick={() => deleteMemory(imgObj?.url, imgObj)} id="delete-button">
+                        DELETE
+                      </p>
+                      {/* DOWNLOAD BUTTON */}
+                      <p onClick={(e) => saveMemoryImage(e)} id="download-text">
+                        DOWNLOAD
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
           </Fade>
-        </Fade>
+        </LightGallery>
       </div>
 
       {!showNewMemoryCard && (

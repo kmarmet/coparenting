@@ -2,7 +2,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Modal from '../../shared/modal'
 import globalState from '../../../context'
-import Spacer from '/src/components/shared/spacer'
 import ViewSelector from '/src/components/shared/viewSelector'
 import Manager from '/src/managers/manager'
 import { MdOutlineChecklist } from 'react-icons/md'
@@ -14,9 +13,9 @@ import AlertManager from '../../../managers/alertManager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import { CgMathPlus } from 'react-icons/cg'
 
-export default function AddOrUpdateTransferChecklists({ showCard, hideCard }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, activeInfoChild, refreshKey } = state
+export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, activeInfoChild, refreshKey} = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
   const [view, setView] = useState('from')
   const [existingItems, setExistingItems] = useState([])
@@ -102,7 +101,7 @@ export default function AddOrUpdateTransferChecklists({ showCard, hideCard }) {
     if (childKey) {
       onValue(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${childKey}`), async (snapshot) => {
         const updatedChild = snapshot.val()
-        setState({ ...state, activeInfoChild: updatedChild })
+        setState({...state, activeInfoChild: updatedChild})
         setTimeout(async () => {
           await setChecklists()
         }, 300)
@@ -136,25 +135,24 @@ export default function AddOrUpdateTransferChecklists({ showCard, hideCard }) {
       submitIcon={<MdOutlineChecklist />}
       submitText={'DONE'}
       showCard={showCard}
+      viewSelector={
+        <ViewSelector
+          shouldUpdateStateOnLoad={false}
+          updateState={(text) => {
+            const _view = text.toLowerCase()
+
+            if (Manager.contains(_view, 'to')) {
+              setView('to')
+            } else {
+              setView('from')
+            }
+          }}
+          labels={['From Co-Parent', 'To Co-Parent']}
+        />
+      }
       subtitle="A transfer checklist allows you and your child to ensure that nothing is left behind when transferring to or from your co-parent's home"
       title={'Transfer Checklists'}
       onClose={hideCard}>
-      <Spacer height={5} />
-      <ViewSelector
-        shouldUpdateStateOnLoad={false}
-        updateState={(text) => {
-          const _view = text.toLowerCase()
-
-          if (Manager.contains(_view, 'to')) {
-            setView('to')
-          } else {
-            setView('from')
-          }
-        }}
-        wrapperClasses={'child-info'}
-        labels={['From Co-Parent', 'To Co-Parent']}
-      />
-
       <div id="inputs" key={refreshKey}></div>
       {Manager.isValid(existingItems) &&
         existingItems?.map((item, index) => {

@@ -76,7 +76,6 @@ const Chats = () => {
       <div id="chats-container" className={`${theme} page-container`}>
         {/*<VideoCall />*/}
         {chats.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
-        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'chats-fade-wrapper'}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Chats</p>
           </div>
@@ -109,6 +108,7 @@ const Chats = () => {
               </button>
             </AccordionDetails>
           </Accordion>
+        <Fade direction={'up'} duration={800} triggerOnce={true} className={'chats-fade-wrapper'}>
 
           {/* CHAT ROWS */}
           {chats.length > 0 &&

@@ -21,10 +21,10 @@ export default function Modal({
   wrapperClass = '',
   deleteButtonText = 'Delete',
   titleIcon = null,
-  viewSelector
+  viewSelector,
 }) {
-  const { state, setState } = useContext(globalState)
-  const { theme, authUser, creationFormToShow } = state
+  const {state, setState} = useContext(globalState)
+  const {theme, authUser, creationFormToShow} = state
   const [contentHeight, setContentHeight] = useState(0)
 
   const hideCard = () => {
@@ -40,7 +40,7 @@ export default function Modal({
       if (modal) {
         modal.classList.add(fadeOutDown)
         DB_UserScoped.getCurrentUser(authUser?.email).then((user) => {
-          setState({ ...state, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: user, showBottomMenu: false, creationFormToShow: '' })
+          setState({...state, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: user, showBottomMenu: false, creationFormToShow: ''})
         })
 
         // Remove disable-scroll class
@@ -72,7 +72,6 @@ export default function Modal({
     if (Manager.isValid(creationFormToShow, true)) {
       modalWrapper = document.querySelector(`.${creationFormToShow}#modal-wrapper`)
     }
-
     if (modalWrapper) {
       const modal = modalWrapper.querySelector('#modal')
       const checkboxContainer = document.getElementById('share-with-checkbox-container')
@@ -143,43 +142,46 @@ export default function Modal({
 
   return (
     <div id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
-      {viewSelector}
-      <div id="modal-content">
-        <Fade direction={'up'} duration={600} delay={2000} triggerOnce={true} className={'modal-fade-wrapper'}>
+      <Fade direction={'up'} duration={600} delay={2000} triggerOnce={true} className={'modal-fade-wrapper'}>
+        {viewSelector}
+        <div id="modal-content">
           <div id="modal" className="animate__animated">
-            <p id="modal-title">{title} {titleIcon && titleIcon}</p>
+            <div id="modal-title-and-text" className={Manager.isValid(subtitle, true) ? 'with-subtitle' : ''}>
+              <p id="modal-title">
+                {title} {titleIcon && titleIcon}
+              </p>
+              {Manager.isValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
+            </div>
             <div id="relative-wrapper">
               <div id="content" className={contentHeight >= 200 ? 'with-bottom-padding' : ''}>
-                {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
-
                 {children}
               </div>
             </div>
           </div>
-        </Fade>
-      </div>
-
-      <div className={`flex buttons`}>
-        {hasSubmitButton && (
-          <button className={`button card-button submit`} onClick={onSubmit}>
-            {submitText}
-          </button>
-        )}
-        {hasDelete && (
-          <button className={'delete-button default warning card-button'} onClick={onDelete}>
-            {deleteButtonText}
-          </button>
-        )}
-
-        <div
-          id="close-icon-bg"
-          onClick={() => {
-            onClose()
-            hideCard()
-          }}>
-          <IoClose className={'close-icon'} />
         </div>
-      </div>
+
+        <div className={`flex buttons`}>
+          {hasSubmitButton && (
+            <button className={`button card-button submit`} onClick={onSubmit}>
+              {submitText}
+            </button>
+          )}
+          {hasDelete && (
+            <button className={'delete-button default warning card-button'} onClick={onDelete}>
+              {deleteButtonText}
+            </button>
+          )}
+
+          <div
+            id="close-icon-bg"
+            onClick={() => {
+              onClose()
+              hideCard()
+            }}>
+            <IoClose className={'close-icon'} />
+          </div>
+        </div>
+      </Fade>
     </div>
   )
 }

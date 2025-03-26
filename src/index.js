@@ -24,8 +24,9 @@ if ('serviceWorker' in navigator) {
     }
   }
   window.addEventListener('offline', handleConnection)
+  // eslint-disable-next-line no-undef
   const publicUrl = window.location.hostname.indexOf("localhost") > -1 ? "http://localhost:1234" : process.env.REACT_APP_PUBLIC_URL
-  console.log(`${publicUrl}/OneSignalSDKWorker.js`)
+  // console.log(`${publicUrl}/OneSignalSDKWorker.js`)
   navigator.serviceWorker
     .register(`${publicUrl}/OneSignalSDKWorker.js`)
     .then((registration) => {
@@ -69,6 +70,20 @@ if ('serviceWorker' in navigator) {
     // eslint-disable-next-line no-restricted-globals
     self.skipWaiting()
   })
+
+  // Listen for the appinstalled event (is app installed?)
+  window.addEventListener('appinstalled', () => {
+    // If visible, hide the install promotion
+    // Log install to analytics
+    console.log('INSTALL: Success');
+  });
+
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    // do things here
+    // set a variable to be used when calling something
+    // e.g. call Google Analytics to track standalone use
+    console.log('installed')
+  }
 
   // function forceSWupdate() {
   //   navigator.serviceWorker.getRegistrations().then(function (registrations) {

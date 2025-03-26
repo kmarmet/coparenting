@@ -10,30 +10,12 @@ import StringManager from '/src/managers/stringManager'
 import { FaChildren } from 'react-icons/fa6'
 import { MdLocalPhone } from 'react-icons/md'
 import { PiBellSimpleRingingDuotone, PiGlobeDuotone, PiNotepadDuotone } from 'react-icons/pi'
-import DB from '../../../database/DB'
-import SecurityManager from '../../../managers/securityManager'
-import CalendarManager from '../../../managers/calendarManager'
 import { TbLocationFilled } from 'react-icons/tb'
 
-export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (event) => {} }) {
-  const { state, setState } = useContext(globalState)
-  const { theme, currentUser, refreshKey } = state
+export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (event) => {}}) {
+  const {state, setState} = useContext(globalState)
+  const {theme, currentUser, refreshKey} = state
 
-  const deleteEvent = async (eventId) => {
-    const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
-    const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
-    const event = allEvents.find((x) => x.id === eventId)
-    const eventCount = allEvents.filter((x) => x.title === event?.title).length
-    if (eventCount === 1) {
-      await CalendarManager.deleteEvent(currentUser, eventId)
-    } else {
-      let clonedEvents = await DB.getTable(`${dbPath}`)
-      if (Manager.isValid(clonedEvents)) {
-        clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
-        await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser)
-      }
-    }
-  }
 
   const getRowDotColor = (dayDate) => {
     const arr = [...eventsOfActiveDay]
@@ -103,30 +85,28 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
   return (
     <>
       <div className="events" key={refreshKey}>
-        {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">No events on this day</p>}
-        {Manager.isValid(eventsOfActiveDay) &&
-          eventsOfActiveDay.map((event, index) => {
-            let startDate = event?.startDate
-            if (event?.isDateRange) {
-              startDate = event?.staticStartDate
-            }
-            let dotObjects = getRowDotColor(event.startDate)
-            const dotObject = dotObjects?.filter((x) => x.id === event.id)[0]
-            return (
-              <Fade
-                key={index}
-                direction={'up'}
-                delay={0}
-                duration={800}
-                cascade={true}
-                className={'calendar-events-fade-wrapper'}
-                triggerOnce={true}>
+        <Fade
+          direction={'right'}
+          delay={0}
+          duration={800}
+          triggerOnce={false}
+          cascade={true}
+          damping={0.2}
+          className={'calendar-events-fade-wrapper'}>
+          {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">No events on this day</p>}
+          {Manager.isValid(eventsOfActiveDay) &&
+            eventsOfActiveDay.map((event, index) => {
+              let startDate = event?.startDate
+              if (event?.isDateRange) {
+                startDate = event?.staticStartDate
+              }
+              let dotObjects = getRowDotColor(event.startDate)
+              const dotObject = dotObjects?.filter((x) => x.id === event.id)[0]
+              return (
                 <div
-                  onClick={(e) => {
-                    if (!e.target.classList.contains('delete-event-button')) {
-                      handleEventRowClick(event).then((r) => r)
-                    }
-                  }}
+                  onClick={() =>  handleEventRowClick(event).then((r) => r)
+                  }
+                  key={event?.id}
                   data-event-id={event?.id}
                   data-from-date={startDate}
                   className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className} ${
@@ -192,9 +172,9 @@ export default function CalendarEvents({ eventsOfActiveDay, setEventToEdit = (ev
                   )}
                   <div className="delete-event-button">DELETE</div>
                 </div>
-              </Fade>
-            )
-          })}
+              )
+            })}
+        </Fade>
       </div>
     </>
   )

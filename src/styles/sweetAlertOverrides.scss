@@ -68,13 +68,11 @@ div {
 
 .swal2-title {
   @include fontType;
-  font-size: 16px;
-  font-weight: $fwMedium;
-  line-height: 1.5;
+  font-weight: $fwBold !important;
+  line-height: 1.3;
   margin: 0 !important;
-  padding: 0 ;
+  padding: 0;
   text-align: left;
-  margin-bottom: 15px !important;
 }
 
 .swal2-icon {
@@ -89,21 +87,23 @@ div {
 }
 
 .swal2-popup {
-  border-radius: $borderRadius;
-  @include bestShadow;
+  border-radius: 12px;
   padding: 20px !important;
   margin: 0 !important;
   align-items: center !important;
   animation-duration: 0.8s !important;
   display: flex !important;
-  justify-content: space-between;;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  @include bestShadow;
 
   .swal2-actions {
     margin: 0 !important;
     padding: 0 !important;
     gap: 8px !important;
     justify-content: flex-end !important;
-    
+
     button {
       @include fontType;
       background: $buttonGrey;
@@ -111,9 +111,15 @@ div {
       text-transform: uppercase;
       width: 120px !important;
       border-radius: $borderRadius !important;
-      font-weight: $fwMediumBold;
       text-align: center;
       margin: 0 !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: $fwMedium;
+      line-height: 1;
+      padding: 10px 20px !important;
+      border: 0;
       font-size: 13px;
     }
   }
@@ -121,7 +127,6 @@ div {
   &.confirm-alert,
   &.yellow,
   &.success-alert {
-
     &.success-alert {
       background: $bootstrapBgGreen !important;
       color: $bootstrapGreenColor !important;
@@ -137,21 +142,19 @@ div {
     &.yellow {
       .swal2-html-container {
         border: 1px solid $bootstrapYellowBorder !important;
-        background: $bootstrapBgYellow !important;
+        background: $bootstrapYellowBg !important;
         color: $bootstrapYellowColor;
         padding: 15px;
         border-radius: $borderRadius;
-
       }
 
       &.confirm-alert {
         .swal2-title {
           border: 1px solid $bootstrapYellowBorder !important;
-          background: $bootstrapBgYellow !important;
+          background: $bootstrapYellowBg !important;
           color: $bootstrapYellowColor;
           padding: 15px;
           border-radius: $borderRadius;
-          margin-right: 10px !important;
         }
       }
     }

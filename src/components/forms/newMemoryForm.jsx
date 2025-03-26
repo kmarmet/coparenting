@@ -1,7 +1,6 @@
 // Path: src\components\forms\newMemoryForm.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../context'
-import Spacer from '/src/components/shared/spacer.jsx'
 import UploadInputs from '/src/components/shared/uploadInputs'
 import DB from '/src/database/DB'
 import FirebaseStorage from '/src/database/firebaseStorage'
@@ -9,6 +8,7 @@ import AppManager from '/src/managers/appManager'
 import MyConfetti from '/src/components/shared/myConfetti'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
+import { TbPhotoHeart } from 'react-icons/tb'
 import DateFormats from '/src/constants/dateFormats'
 import moment from 'moment'
 import Memory from '/src/models/memory.js'
@@ -157,6 +157,7 @@ export default function NewMemoryForm() {
       submitText={'Add Memory'}
       submitIcon={<LuImagePlus />}
       title={'Share Memory'}
+      titleIcon={<TbPhotoHeart/>}
       onClose={resetForm}
       showCard={creationFormToShow === creationForms.memories}>
       <div className="new-memory-wrapper">
