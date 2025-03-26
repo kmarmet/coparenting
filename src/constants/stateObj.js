@@ -3,6 +3,12 @@ var StateObj;
 
 import ScreenNames from "./screenNames";
 
+import DateFormats from "./dateFormats";
+
+import moment from "moment";
+
+import DateManager from "../managers/dateManager";
+
 StateObj = {
   activeInfoChild: null,
   activeInfoCoparent: [],
@@ -13,6 +19,7 @@ StateObj = {
   currentUser: {},
   docToView: '',
   firebaseUser: null,
+  defaultDate: moment().format('YYYY-MM-DD'),
   isLoading: true,
   loadingText: 'Preparing your pathway to peace...',
   menuIsOpen: false,
@@ -48,6 +55,7 @@ StateObj = {
   setParentAccessGranted: function(bool) {},
   setRefreshKey: function(num) {},
   setRegistrationUserName: function(name) {},
+  setDefaultDate: function(date) {},
   setSelectedChild: function(child) {},
   setSelectedNewEventDay: function(day) {},
   setShowBottomMenu: function(bool) {},

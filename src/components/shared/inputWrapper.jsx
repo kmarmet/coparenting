@@ -4,6 +4,8 @@ import { DebounceInput } from 'react-debounce-input'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager'
 import Label from './label'
+import moment from 'moment'
+import DateManager from '../../managers/dateManager'
 
 const DebounceLengths = {
   short: 500,
@@ -27,7 +29,7 @@ function InputWrapper({
   customDebounceDelay = DebounceLengths.medium,
 }) {
   const { state, setState } = useContext(globalState)
-  const { currentUser, refreshKey } = state
+  const { defaultDate, refreshKey } = state
   const noInputTypes = ['location', 'textarea', 'date']
 
   // Set the height of the textarea
@@ -69,7 +71,7 @@ function InputWrapper({
             value={defaultValue}
             element={inputType}
             minLength={2}
-            // placeholder={Manager.isValid(placeholder) ? placeholder : ''}
+            autofocus={true}
             className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
             onChange={onChange}
             debounceTimeout={isDebounced ? (customDebounceDelay ? customDebounceDelay : DebounceLengths.long) : 0}
@@ -104,6 +106,7 @@ function InputWrapper({
           }}
           className="date-input"
           type="date"
+          value={Manager.isValid(defaultValue) ? defaultValue : null}
           onChange={onChange}
         />
       )}

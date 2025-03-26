@@ -35,15 +35,16 @@ import ModelNames from '/src/models/modelNames'
 import ToggleButton from '../shared/toggleButton'
 import CreationForms from '../../constants/creationForms'
 import Label from '../shared/label'
+import DateManager from '../../managers/dateManager'
 
 export default function NewCalendarEvent() {
   // APP STATE
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey, creationFormToShow } = state
+  const { currentUser, theme, refreshKey, creationFormToShow, defaultDate } = state
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
-  const [eventStartDate, setEventStartDate] = useState(moment().format(DateFormats.dateForDb))
+  const [eventStartDate, setEventStartDate] = useState(defaultDate)
   const [eventEndDate, setEventEndDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
   const [eventTitle, setEventTitle] = useState('')
@@ -92,8 +93,6 @@ export default function NewCalendarEvent() {
     setIncludeChildren(false)
     setIsVisitation(false)
     setState({ ...state, showBottomMenu: false, creationFormToShow: '', refreshKey: Manager.getUid() })
-    // const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    // setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
   }
 
   const submit = async () => {
@@ -108,8 +107,11 @@ export default function NewCalendarEvent() {
     if (isVisitation) {
       newEvent.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Visitation`
     }
-    newEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
-
+    if (DomManager.isMobile()) {
+      newEvent.startDate = moment(defaultDate, 'YYYY-MM-DD').format(DateFormats.dateForDb)
+    } else {
+      newEvent.startDate = moment(defaultDate).format(DateFormats.dateForDb)
+    }
     newEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
     newEvent.startTime = moment(eventStartTime).format(DateFormats.timeForDb)
     newEvent.endTime = moment(eventEndTime).format(DateFormats.timeForDb)
@@ -132,17 +134,22 @@ export default function NewCalendarEvent() {
     newEvent.isDateRange = eventIsDateRange
     //#endregion FILL NEW EVENT
 
-    if (Manager.isValid(eventPhone, true)) {
-      if (!validator.isMobilePhone(eventPhone)) {
-        AlertManager.throwError('Phone number is not valid')
-        return false
-      }
-    } else {
-      newEvent.phone = eventPhone
-    }
-
     if (Manager.isValid(newEvent)) {
       //#region VALIDATION
+      if (Manager.isValid(eventPhone, true)) {
+        if (!validator.isMobilePhone(eventPhone)) {
+          AlertManager.throwError('Phone number is not valid')
+          return false
+        }
+      } else {
+        newEvent.phone = eventPhone
+      }
+
+      if (Manager.isValid(eventReminderTimes) && !Manager.isValid(eventStartTime)) {
+        AlertManager.throwError('Please select a start time when using reminders')
+        return false
+      }
+
       if (Manager.isValid(repeatingEndDate) && !Manager.isValid(repeatInterval)) {
         AlertManager.throwError('If you have chosen to repeat this event, please select an end month')
         return false
@@ -153,7 +160,7 @@ export default function NewCalendarEvent() {
         return false
       }
 
-      if (!Manager.isValid(eventStartDate)) {
+      if (!Manager.isValid(moment(defaultDate, 'YYYY-MM-DD').format(DateFormats.dateForDb))) {
         AlertManager.throwError('Please select an event date')
         return false
       }
@@ -370,7 +377,6 @@ export default function NewCalendarEvent() {
                 <InputWrapper labelText={'Date'} inputType={'date'} required={true}>
                   <MobileDatePicker
                     onOpen={addThemeToDatePickers}
-                    // value={moment(selectedNewEventDay)}
                     className={`${theme} m-0  event-from-date mui-input`}
                     onAccept={(e) => {
                       setEventStartDate(e)
@@ -380,11 +386,11 @@ export default function NewCalendarEvent() {
               )}
               {eventLength === EventLengths.single && DomManager.isMobile() && (
                 <InputWrapper
-                  // defaultValue={selectedNewEventDay}
-                  onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
+                  onChange={(e) => setState({ ...state, defaultDate: e.target.value })}
                   useNativeDate={true}
                   labelText={'Date'}
                   inputType={'date'}
+                  defaultValue={defaultDate}
                   required={true}
                 />
               )}
@@ -453,7 +459,7 @@ export default function NewCalendarEvent() {
             <Accordion id={'checkboxes'} expanded={showReminders}>
               <AccordionSummary>
                 <div className="flex">
-                  <p>Remind Me</p>
+                  <p className="label">Remind Me</p>
                   <ToggleButton onCheck={() => setShowReminders(true)} onUncheck={() => setShowReminders(false)} />
                 </div>
               </AccordionSummary>

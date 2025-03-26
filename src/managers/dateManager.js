@@ -3,7 +3,6 @@ import Manager from '../managers/manager'
 import CalendarEvent from '../models/calendarEvent'
 import DateFormats from '../constants/dateFormats'
 import CalendarManager from './calendarManager.js'
-import _ from 'lodash'
 import ObjectManager from './objectManager'
 import ModelNames from '../models/modelNames'
 import DatasetManager from '../managers/datasetManager.coffee'
@@ -12,6 +11,15 @@ const DateManager = {
   reminderTimes: {
     oneHour: 'hour',
     halfHour: 'halfHour',
+  },
+  getTodayJsDate: () => {
+    const today = new Date()
+
+    const day = String(today.getDate()).padStart(2, '0')
+    const month = String(today.getMonth() + 1).padStart(2, '0') // Month is 0-indexed
+    const year = today.getFullYear()
+
+    return `${year}-${month}-${day}`
   },
   formatDate: (inputDate, inputFormat = 'M-DD-YYYY', outputFormat = 'dddd, MMM DD') => {
     let inputFormatString = inputFormat

@@ -123,7 +123,7 @@ const FirebaseStorage = {
         firebaseUrls.forEach(async (url) => {
           const imageName = FirebaseStorage.getImageNameFromUrl(url)
           const fileImageNames = imgFiles.map((x) => x.name)
-          if (fileImageNames.includes(imageName)) {
+          if (fileImageNames.includes(Manager.decodeHash(imageName))) {
             urls.push(url)
           }
         })
@@ -215,7 +215,7 @@ const FirebaseStorage = {
   uploadMultiple: async (imgDirectory, id, images) => {
     const storage = getStorage()
     for (let i = 0; i < images.length; i++) {
-      const storageRef = ref(storage, `${imgDirectory}/${id}/${images[i].name}`.replace('//', '/'))
+      const storageRef = ref(storage, `${imgDirectory}/${id}/${Manager.generateHash(images[i].name)}`.replace('//', '/'))
       await uploadBytes(storageRef, images[i])
     }
   },

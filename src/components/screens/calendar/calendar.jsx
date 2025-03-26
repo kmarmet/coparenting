@@ -424,6 +424,7 @@ export default function EventCalendar() {
             }}
             onChange={async (day) => {
               setSelectedDate(moment(day).format('YYYY-MM-DD'))
+              setState({ ...state, defaultDate: moment(day).format('YYYY-MM-DD') })
               await getSecuredEvents(day).then((r) => r)
             }}
             slotProps={{

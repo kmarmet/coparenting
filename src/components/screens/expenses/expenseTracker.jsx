@@ -46,6 +46,7 @@ import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import ViewSelector from '../../shared/viewSelector.jsx'
 import { IoMdAdd } from 'react-icons/io'
+import EventLengths from '../../../constants/eventLengths'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -426,13 +427,26 @@ export default function ExpenseTracker() {
               />
 
               {/* DUE DATE */}
-              <InputWrapper inputType={'date'} labelText={'Due Date'}>
-                <MobileDatePicker
-                  value={moment(activeExpense?.dueDate)}
-                  className="mt-0 w-100"
-                  onAccept={(e) => setDueDate(moment(e).format('MM/DD/yyyy'))}
+
+              {DomManager.isMobile() && (
+                <InputWrapper
+                  onChange={(e) => setDueDate(moment(e.target.value).format('MM/DD/yyyy'))}
+                  useNativeDate={true}
+                  labelText={'Due date'}
+                  inputType={'date'}
+                  required={true}
                 />
-              </InputWrapper>
+              )}
+
+              {!DomManager.isMobile() && (
+                <InputWrapper inputType={'date'} labelText={'Due Date'}>
+                  <MobileDatePicker
+                    value={moment(activeExpense?.dueDate)}
+                    className="mt-0 w-100"
+                    onAccept={(e) => setDueDate(moment(e).format('MM/DD/yyyy'))}
+                  />
+                </InputWrapper>
+              )}
 
               {/* CATEGORY */}
               <SelectDropdown labelClasses={'mb-5'} selectValue={category} onChange={(e) => setCategory(e.target.value)} labelText={'Category'}>
@@ -609,23 +623,19 @@ export default function ExpenseTracker() {
                       <div id="name-wrapper" className="flex align-center">
                         <p className="name row-title">{StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}</p>
                         <span className={`${expense?.paidStatus} status`} id="request-status">
-                          {StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
+                          {moment(moment(expense?.dueDate).startOf('day')).fromNow().toString().includes('ago') && 'PAST DUE'}
+                          {!moment(moment(expense?.dueDate).startOf('day')).fromNow().toString().includes('ago') &&
+                            StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
                         </span>
                       </div>
 
                       <div className="flex" id="below-title">
                         {Manager.isValid(dueDate, true) && (
-                          <>
-                            <p className={`due-date ${overdue ? 'red' : ''}`}>
-                              {DateManager.formatDate(expense?.dueDate)} ({moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()})
-                            </p>
-                          </>
+                          <p className={`due-date ${overdue ? 'red' : ''}`}>
+                            {DateManager.formatDate(expense?.dueDate)} ({moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()})
+                          </p>
                         )}
-                        {!Manager.isValid(dueDate, true) && (
-                          <>
-                            <p className="due-date">no due date</p>
-                          </>
-                        )}
+                        {!Manager.isValid(dueDate, true) && <p className="due-date">no due date</p>}
                       </div>
                     </div>
                   </div>

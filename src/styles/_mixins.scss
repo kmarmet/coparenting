@@ -1573,20 +1573,21 @@
           align-items: center;
           justify-content: space-between;
           line-height: 1;
-          font-size: 14px;
           padding: 8px 15px;
           opacity: 1;
           font-weight: $fwBold;
 
           &.expenses {
             margin-left: 0;
+            width: 100%;
+            justify-content: space-between;
           }
 
           svg {
             margin-left: 10px;
             margin-right: 0;
-            font-size: 14px;
-            color: #737373;
+            font-size: 16px;
+            color: $disabledText;
             position: relative;
             top: 0;
           }
@@ -1647,9 +1648,12 @@
 
 @mixin viewsWrapper {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  margin-bottom: 10px;
+  background: #e0e0e0;
+  margin-bottom: 8px;
+  margin-top: 8px;
+  border-radius: $borderRadius;
+  width: auto;
 
   @media screen and (max-width: 400px) {
     flex-wrap: wrap;
@@ -1671,32 +1675,31 @@
   }
 
   .view {
-    text-align: left;
-    font-weight: $fwRegular;
+    font-weight: $fwLight;
     text-transform: uppercase;
     display: flex;
-    justify-content: flex-start;
     line-height: 1;
-    @include hover;
     color: $primaryText;
-    opacity: 0.8;
     font-size: 14px;
-    margin-top: 8px;
     position: relative;
-    margin-bottom: 10px;
-    padding: 0 15px 0 0;
-
-    &:last-child {
-      padding-right: 0;
-    }
+    border-radius: $borderRadius;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 12px;
+    text-align: center;
+    margin: 3px 0;
+    @include hover;
+    width: 50%;
+    white-space: nowrap;
 
     &.active {
       opacity: 1;
-      font-weight: $fwMedium;
+      font-weight: $fwRegular;
       display: flex;
-      color: $accentLight;
-      justify-content: flex-start;
-      align-items: center;
+      width: 100%;
+      margin: 3px;
+      color: black;
+      background: white;
     }
 
     &.hide {
@@ -1842,7 +1845,9 @@
     align-items: center;
     line-height: 1;
     text-transform: uppercase;
-
+    white-space: nowrap;
+    text-align: center;
+    justify-content: center;
     &.paid,
     &.approved {
       background-color: $lightestGreen;
@@ -1959,7 +1964,7 @@
   }
 
   label {
-    font-weight: $fwMedium;
+    font-weight: $fwMediumBold;
     margin: 0;
     line-height: 1.3;
     color: $labelText;
@@ -3002,7 +3007,7 @@
       position: relative;
       z-index: -1;
       border-radius: 15px;
-      max-height: calc(100vh - 220px);
+      max-height: calc(100vh - 240px);
       align-self: center;
       bottom: -100%;
       transition: all 2s ease-in;
@@ -3022,14 +3027,17 @@
         justify-content: center;
         text-align: center;
         font-weight: $fwBold;
+        position: sticky;
+        top: 0;
+        background: white;
         font-size: 22px;
         display: block;
+        z-index: 999;
         line-height: 1;
-        color: $primaryText;
+        color: $headerText;
         padding: 15px 0;
-        background: white;
         width: 100%;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
         border-bottom: 1px solid #e7e9ee;
 
         &.long-title {
@@ -3397,15 +3405,18 @@
       align-items: center;
       z-index: 99999999999;
       padding: 8px 0;
-      border-radius: $borderRadius;
+      border-radius: 50%;
+      margin-left: 10px;
       border: 0;
+      background: white;
       height: 45px;
-      width: 47px;
+      width: 45px;
       right: 0;
+      @include shadow;
 
       .close-icon {
-        font-size: 38px;
-        color: white;
+        font-size: 32px;
+        color: $disabledText;
       }
     }
 

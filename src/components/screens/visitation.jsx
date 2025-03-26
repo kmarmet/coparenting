@@ -402,6 +402,7 @@ export default function Visitation() {
                 {showHolidaysSection ? <FaMinus /> : <FaPlus />}
               </div>
             </AccordionSummary>
+
             <AccordionDetails>
               {/* HOLIDAY SELECTION */}
               <CheckboxGroup

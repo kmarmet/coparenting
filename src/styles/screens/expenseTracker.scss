@@ -89,6 +89,7 @@
         border: 0;
         color: black;
         padding: 15px 10px;
+        text-align: center;
         &.pressed {
           border-radius: $borderRadius;
           transform: scale(1.1);
@@ -134,12 +135,14 @@
     // Filters Accordion
     @include accordion;
     #filters-accordion {
+      background: $oneMillionGrey;
     }
 
     #filters {
       margin-top: 15px;
       border-radius: $borderRadius;
       padding-bottom: 15px;
+
       .filter-row {
         margin-bottom: 10px;
         #label-wrapper {

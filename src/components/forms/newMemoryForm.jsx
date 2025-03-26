@@ -46,6 +46,7 @@ export default function NewMemoryForm() {
   }
 
   const submit = async () => {
+    setState({ ...state, isLoading: true })
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
     if (validAccounts === 0) {
       AlertManager.throwError(
@@ -81,7 +82,6 @@ export default function NewMemoryForm() {
     for (let img of images) {
       localImages.push(await ImageManager.compressImage(img))
     }
-    setState({ ...state, isLoading: true })
 
     // Check for existing memory
     const securedMemories = await SecurityManager.getMemories(currentUser)
@@ -110,29 +110,33 @@ export default function NewMemoryForm() {
       })
       .finally(async () => {
         // Add memories to 'memories' property for currentUser
-        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.memories, currentUser?.key, localImages).then(async (urls) => {
-          // Add to user memories object
-          for (const url of urls) {
-            const imageName = FirebaseStorage.getImageNameFromUrl(url)
-            const cleanedObject = ObjectManager.cleanObject(newMemory, ModelNames.memory)
+        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.memories, currentUser?.key, localImages)
+          .then(async (urls) => {
+            // Add to user memories object
+            for (const url of urls) {
+              const imageName = FirebaseStorage.getImageNameFromUrl(url)
+              const cleanedObject = ObjectManager.cleanObject(newMemory, ModelNames.memory)
 
-            cleanedObject.url = url
-            cleanedObject.memoryName = imageName
-            cleanedObject.ownerKey = currentUser?.key
+              cleanedObject.url = url
+              cleanedObject.memoryName = Manager.generateHash(imageName)
+              cleanedObject.ownerKey = currentUser?.key
 
-            // Add to Database
-            await DB.add(`${DB.tables.memories}/${currentUser?.key}`, cleanedObject)
-          }
+              // Add to Database
+              await DB.add(`${DB.tables.memories}/${currentUser?.key}`, cleanedObject)
+            }
 
-          // Send Notification
-          await NotificationManager.sendToShareWith(
-            newMemory.shareWith,
-            currentUser,
-            `New Memory`,
-            `${StringManager.getFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
-            ActivityCategory.memories
-          )
-        })
+            // Send Notification
+            await NotificationManager.sendToShareWith(
+              newMemory.shareWith,
+              currentUser,
+              `New Memory`,
+              `${StringManager.getFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
+              ActivityCategory.memories
+            )
+          })
+          .catch((error) => {
+            console.error(error)
+          })
         AppManager.setAppBadge(1)
         await resetForm()
       })

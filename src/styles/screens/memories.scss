@@ -48,18 +48,21 @@
       .memory {
         position: relative;
         .memory-title {
-          font-weight: $fwBold !important;
           backdrop-filter: blur(25px);
-          display: inline-block;
-          padding: 10px;
+          padding: 8px;
           width: 100%;
           text-align: center;
           border-radius: $borderRadius $borderRadius 0 0;
           z-index: 99999;
-          font-size: 14px;
           color: white;
           position: absolute;
           top: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: $fwMediumBold;
+          font-size: 14px;
+          line-height: 1.3;
         }
         .memory-image {
           position: relative;
@@ -80,16 +83,6 @@
             color: $red;
             font-size: 30px;
           }
-        }
-
-        .memory-title {
-          display: flex;
-          align-items: center;
-          width: 100%;
-          justify-content: space-between;
-          font-weight: $fwMediumBold;
-          font-size: 16px;
-          line-height: 1.3;
         }
 
         .memory-toggle-button {

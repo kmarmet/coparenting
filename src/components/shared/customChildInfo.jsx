@@ -114,7 +114,6 @@ export default function CustomChildInfo({ hideCard, showCard }) {
         <CheckboxGroup
           parentLabel="Type"
           required={true}
-          icon={<FaPencilAlt className={'type'} />}
           checkboxArray={Manager.buildCheckboxGroup({
             currentUser,
             defaultLabels: ['Text'],

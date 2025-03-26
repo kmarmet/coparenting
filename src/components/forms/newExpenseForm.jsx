@@ -4,11 +4,10 @@ import MenuItem from '@mui/material/MenuItem'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import globalState from '../../context'
-import { MdEventRepeat, MdOutlineFaceUnlock } from 'react-icons/md'
+import { MdEventRepeat } from 'react-icons/md'
 import { PiMoneyWavyDuotone } from 'react-icons/pi'
 import Toggle from 'react-toggle'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
-import Numpad from '/src/components/shared/numpad'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import UploadInputs from '/src/components/shared/uploadInputs'
 import DateFormats from '/src/constants/dateFormats'
@@ -54,7 +53,6 @@ export default function NewExpenseForm({ hideCard, showCard }) {
   const [shareWith, setShareWith] = useState([])
   const [repeatInterval, setRepeatInterval] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
-  const [showNumpad, setShowNumpad] = useState(false)
   const [expenseAmount, setExpenseAmount] = useState('')
 
   const resetForm = async () => {
@@ -74,7 +72,6 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     setShareWith([])
     setRepeatInterval('')
     setRepeatingEndDate('')
-    setShowNumpad(false)
     setExpenseAmount('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid(), creationFormToShow: '' })
@@ -173,7 +170,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       // Go back to expense screen
       await resetForm()
     })
-    AlertManager.successAlert(`${expenseName} Added`)
+    AlertManager.successAlert(`${StringManager.formatTitle(expenseName)} Added`)
   }
 
   const addRepeatingExpensesToDb = async () => {
@@ -331,7 +328,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
         {/* PAGE CONTAINER */}
         <div id="add-expense-form" className={`${theme} form`}>
           {/* AMOUNT */}
-          <div id="amount-input-wrapper" onClick={() => setShowNumpad(true)}>
+          <div id="amount-input-wrapper">
             <p id="amount-input">
               <span className="flex defaults">
                 <span id="dollar-sign" className="pr-5">

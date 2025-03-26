@@ -1,4 +1,8 @@
 import ScreenNames from "./screenNames"
+import DateFormats from "./dateFormats"
+import moment from "moment"
+import DateManager from "../managers/dateManager"
+
 StateObj =
   activeInfoChild: null
   activeInfoCoparent: [],
@@ -9,6 +13,7 @@ StateObj =
   currentUser: {}
   docToView: ''
   firebaseUser: null,
+  defaultDate: moment().format('YYYY-MM-DD')
   isLoading: true
   loadingText: 'Preparing your pathway to peace...'
   menuIsOpen: false
@@ -44,6 +49,7 @@ StateObj =
   setParentAccessGranted: (bool) ->
   setRefreshKey: (num) ->
   setRegistrationUserName: (name) ->
+  setDefaultDate: (date) ->
   setSelectedChild: (child) ->
   setSelectedNewEventDay: (day) ->
   setShowBottomMenu: (bool) ->

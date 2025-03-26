@@ -63,14 +63,8 @@ export default function Memories() {
     }
   }
 
-  const deleteMemory = async (firebaseImagePath, record, deleteButton) => {
+  const deleteMemory = async (firebaseImagePath, record) => {
     const imageName = FirebaseStorage.getImageNameFromUrl(firebaseImagePath)
-    const imageToRemove = deleteButton.closest('.memory')
-    const deleteButtonParent = deleteButton.parentNode
-
-    if (Manager.isValid(imageToRemove) && Manager.isValid(deleteButtonParent)) {
-      // imageToRemove.remove()
-    }
 
     // Current user is record owner
     if (record?.ownerKey === currentUser?.key) {
@@ -151,7 +145,7 @@ export default function Memories() {
                           data-sub-html={`${
                             Manager.isValid(imgObj?.notes, true)
                               ? `<p class="gallery-title">
-${StringManager.formatTitle(StringManager.formatTitle(imgObj?.title, true))}
+                                  ${StringManager.formatTitle(StringManager.formatTitle(imgObj?.title, true))}
                                 <span>${imgObj?.notes}</span>
                               </p>`
                               : ''
@@ -169,7 +163,7 @@ ${StringManager.formatTitle(StringManager.formatTitle(imgObj?.title, true))}
                       {/* BELOW IMAGE */}
                       <div id="below-image">
                         {/* SAVE BUTTON */}
-                        <p onClick={(e) => deleteMemory(imgObj?.url, imgObj, e.currentTarget)} id="delete-button">
+                        <p onClick={(e) => deleteMemory(imgObj?.url, imgObj)} id="delete-button">
                           DELETE
                         </p>
                         {/* DOWNLOAD BUTTON */}

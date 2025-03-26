@@ -6,6 +6,7 @@ import Label from './label'
 import DB from '../../database/DB'
 import StringManager from '../../managers/stringManager.coffee'
 import Checkbox from './checkbox.jsx'
+import DB_UserScoped from '../../database/db_userScoped'
 
 export default function ShareWithCheckboxes({
   defaultKeys = [],
@@ -16,48 +17,47 @@ export default function ShareWithCheckboxes({
   labelText = '',
 }) {
   const { state, setState } = useContext(globalState)
-  const { theme, currentUser, menuIsOpen } = state
+  const { theme, currentUser, menuIsOpen, creationFormToShow } = state
   const [shareWith, setShareWith] = useState([])
 
   const setShareWithUsers = async () => {
     let people = []
-
-    // COPARENTS
-    if (Manager.isValid(currentUser?.coparents)) {
-      people = [...people, [...currentUser.coparents]].filter((x) => x)
-    }
-
-    // PARENTS
-    if (Manager.isValid(currentUser?.parents)) {
-      people = [...people, [...currentUser.parents]].filter((x) => x)
-    }
-
-    // CHILDREN
-    if (Manager.isValid(currentUser?.childAccounts)) {
-      let childrenAccounts = []
-      for (let child of currentUser.childAccounts) {
-        childrenAccounts.push(child)
+    if (Manager.isValid(currentUser)) {
+      // COPARENTS
+      if (Manager.isValid(currentUser?.coparents)) {
+        people = [...people, [...currentUser.coparents]].filter((x) => x)
       }
-      people = [...people, [...childrenAccounts]].filter((x) => x)
-    }
 
-    let peopleWithAccounts = []
-    if (Manager.isValid(people)) {
-      for (let person of people.flat()) {
-        const account = await DB.find(DB.tables.users, ['key', person?.key], true)
-        if (account) {
-          peopleWithAccounts.push(account)
+      // PARENTS
+      if (Manager.isValid(currentUser?.parents)) {
+        people = [...people, [...currentUser.parents]].filter((x) => x)
+      }
+
+      // CHILDREN
+      if (Manager.isValid(currentUser?.childAccounts)) {
+        let childrenAccounts = []
+        for (let child of currentUser.childAccounts) {
+          childrenAccounts.push(child)
         }
+        people = [...people, [...childrenAccounts]].filter((x) => x)
       }
-      setShareWith(Manager.convertToArray(peopleWithAccounts).flat())
+
+      let peopleWithAccounts = []
+      if (Manager.isValid(people)) {
+        for (let person of people.flat()) {
+          const account = await DB.find(DB.tables.users, ['key', person?.key], true)
+          if (account) {
+            peopleWithAccounts.push(account)
+          }
+        }
+        setShareWith(Manager.convertToArray(peopleWithAccounts).flat())
+      }
     }
   }
 
   useEffect(() => {
-    if (Manager.isValid(currentUser)) {
-      setShareWithUsers().then((r) => r)
-    }
-  }, [menuIsOpen])
+    setShareWithUsers().then((r) => r)
+  }, [creationFormToShow])
 
   return (
     <>
