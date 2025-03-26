@@ -53,13 +53,12 @@
       <option name="ELSE_ON_NEW_LINE" value="true" />
       <option name="SOFT_MARGINS" value="150" />
       <indentOptions>
-        <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
-        <option name="TAB_SIZE" value="2" />
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="SCSS">
       <option name="LINE_COMMENT_AT_FIRST_COLUMN" value="true" />
+      <option name="BLOCK_COMMENT_ADD_SPACE" value="true" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="0" />
       <indentOptions>
         <option name="USE_TAB_CHARACTER" value="true" />

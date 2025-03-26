@@ -1,6 +1,5 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Modal from '../../shared/modal.jsx'
-import { RxOpenInNewWindow } from 'react-icons/rx'
 import { ImAppleinc } from 'react-icons/im'
 import { IoLogoVenmo } from 'react-icons/io5'
 import { SiCashapp, SiZelle } from 'react-icons/si'
@@ -19,6 +18,11 @@ const cashappLink = 'https://cash.app/help/6485-getting-started-with-cash-app'
 export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme } = state
+
+  useEffect(() => {
+    console.log('ran')
+  }, [])
+
   return (
     <>
       <Modal
@@ -29,8 +33,9 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
         wrapperClass="payment-options-card"
         onClose={onClose}
         showCard={showPaymentOptionsCard}>
+        {showPaymentOptionsCard &&
         <div id="payment-options-card">
-          <Spacer height={10} />
+          <Spacer height={5} />
           <div className="options">
             {/* ZELLE */}
             <div className="option zelle">
@@ -42,7 +47,7 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Safely send money to co-parent, no matter where they bank.</p>
                   <a href={zelleLink} target="_blank" className="setup-instructions" rel="noreferrer">
-                    Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
+                    Learn More
                   </a>
                 </div>
               </div>
@@ -56,7 +61,7 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
                 allowFullScreen></iframe>
             </div>
 
-            <Spacer height={10} />
+            <Spacer height={5} />
             {/* VENMO */}
             <div className="option venmo">
               <div className="flex brand-name-wrapper venmo">
@@ -66,8 +71,8 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
               <div className="flex">
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Fast, safe, social payments.</p>
-                  <a href={venmoLink} target="_blank" className="setup-instructions">
-                    Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
+                  <a href={venmoLink} target="_blank" className="setup-instructions" rel="noreferrer">
+                    Learn More
                   </a>
                 </div>
               </div>
@@ -80,7 +85,7 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
                 allowFullScreen></iframe>
             </div>
 
-            <Spacer height={10} />
+            <Spacer height={5} />
 
             {/* APPLE PAY */}
             <div className="option apple-cash">
@@ -91,14 +96,14 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
               <div className="flex ">
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Use Apple Cash to send and receive money with people you know.</p>
-                  <a href={appleLink} target="_blank" className="setup-instructions">
-                    Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
+                  <a href={appleLink} target="_blank" className="setup-instructions" rel="noreferrer">
+                    Learn More
                   </a>
                 </div>
               </div>
             </div>
 
-            <Spacer height={10} />
+            <Spacer height={5} />
             {/* PAYPAL */}
             <div className="option paypal">
               <div className="flex brand-name-wrapper paypal">
@@ -108,14 +113,14 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
               <div className="flex">
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Send and request money, quickly and securely.</p>
-                  <a href={paypalLink} target="_blank" className="setup-instructions">
-                    Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
+                  <a href={paypalLink} target="_blank" className="setup-instructions" rel="noreferrer">
+                    Learn More
                   </a>
                 </div>
               </div>
             </div>
 
-            <Spacer height={10} />
+            <Spacer height={5} />
             {/* CASHAPP */}
             <div className="option cashapp">
               <div className="flex brand-name-wrapper cashapp">
@@ -125,14 +130,15 @@ export default function PaymentOptions({ onClose, showPaymentOptionsCard }) {
               <div className="flex">
                 <div className="text">
                   <p className={`${theme} description payment-options`}>Pay anyone, instantly.</p>
-                  <a href={cashappLink} target="_blank" className="setup-instructions">
-                    Learn More <RxOpenInNewWindow className={'new-tab-icon'} />
+                  <a href={cashappLink} target="_blank" className="setup-instructions" rel="noreferrer">
+                    Learn More
                   </a>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        }
       </Modal>
     </>
   )

@@ -9,7 +9,6 @@ import { Fade } from 'react-awesome-reveal'
 
 export default function Modal({
   submitText,
-  submitButtonColor = '',
   onSubmit,
   onDelete,
   onClose,
@@ -21,6 +20,8 @@ export default function Modal({
   hasSubmitButton = true,
   wrapperClass = '',
   deleteButtonText = 'Delete',
+  titleIcon = null,
+  viewSelector
 }) {
   const { state, setState } = useContext(globalState)
   const { theme, authUser, creationFormToShow } = state
@@ -142,10 +143,11 @@ export default function Modal({
 
   return (
     <div id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
+      {viewSelector}
       <div id="modal-content">
         <Fade direction={'up'} duration={600} delay={2000} triggerOnce={true} className={'modal-fade-wrapper'}>
           <div id="modal" className="animate__animated">
-            <p id="modal-title" dangerouslySetInnerHTML={{ __html: title }}></p>
+            <p id="modal-title">{title} {titleIcon && titleIcon}</p>
             <div id="relative-wrapper">
               <div id="content" className={contentHeight >= 200 ? 'with-bottom-padding' : ''}>
                 {subtitle.length > 0 && <p id="subtitle">{subtitle}</p>}
@@ -156,9 +158,10 @@ export default function Modal({
           </div>
         </Fade>
       </div>
+
       <div className={`flex buttons`}>
         {hasSubmitButton && (
-          <button className={`button card-button submit ${submitButtonColor}`} onClick={onSubmit}>
+          <button className={`button card-button submit`} onClick={onSubmit}>
             {submitText}
           </button>
         )}

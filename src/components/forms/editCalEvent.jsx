@@ -11,6 +11,7 @@ import { FaBell } from 'react-icons/fa6'
 import { MdEventRepeat, MdLocalPhone } from 'react-icons/md'
 import React, { useContext, useEffect, useState } from 'react'
 import { BiSolidNavigation } from 'react-icons/bi'
+import { PiCalendarDotsDuotone } from "react-icons/pi";
 import { FaChildren } from 'react-icons/fa6'
 import { IoTimeOutline } from 'react-icons/io5'
 import { BsHouseFill } from 'react-icons/bs'
@@ -470,13 +471,13 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       onClose={async () => {
         await resetForm()
       }}
+      titleIcon={<PiCalendarDotsDuotone/>}
       title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(event?.title))}
       showCard={showCard}
       deleteButtonText="Delete Event"
       className="edit-calendar-event"
-      wrapperClass={`edit-calendar-event`}>
-      <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
-        {/* READONLY IF CHILD ACCOUNT */}
+      viewSelector={
+      <>
         {currentUser?.accountType !== 'child' && (
           <ViewSelector
             key={refreshKey}
@@ -485,8 +486,11 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
               setView(labelText)
             }}
           />
-        )}
 
+        )}</>
+      }
+      wrapperClass={`edit-calendar-event`}>
+      <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
         {!dataIsLoading && (
           <>
             {/* DETAILS */}
@@ -678,7 +682,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                     )}
                     {DomManager.isMobile() && (
                       <InputWrapper
-                        defaultValue={moment(event?.startDate)}
+                        defaultValue={moment(event?.startDate).format("YYYY-MM-DD")}
                         onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
                         useNativeDate={true}
                         labelText={'Date'}
@@ -834,6 +838,8 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                 onChange={(e) => setEventNotes(e.target.value)}
               />
             </div>
+
+
           </>
         )}
         {dataIsLoading && <img id="modal-loading-gif" src={require('../../img/loading.gif')} alt="Loading" />}

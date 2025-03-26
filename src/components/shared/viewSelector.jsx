@@ -4,7 +4,7 @@ import globalState from '../../context'
 import DomManager from '/src/managers/domManager'
 import Manager from '../../managers/manager'
 
-export default function ViewSelector({ labels, updateState, wrapperClasses, defaultView, shouldUpdateStateOnLoad = true }) {
+export default function ViewSelector({ labels, updateState, wrapperClasses = "", defaultView, shouldUpdateStateOnLoad = true }) {
   // APP STATE
   const { state, setState } = useContext(globalState)
   const { theme, refreshKey } = state

@@ -58,8 +58,6 @@
 // SCREEN TITLE
 @mixin screenTitle {
   font-size: 26px;
-  //  width: 100vw;
-  //  max-width: 100%;
   word-break: break-word;
   transition: all 0.6s linear;
   line-height: 1;
@@ -70,7 +68,7 @@
   margin-bottom: 5px;
   text-align: center;
   opacity: 1;
-  color: $primaryText;
+  color: $headerText;
   font-family: 'Inter', sans-serif;
   font-weight: $fwMedium;
 
@@ -1046,16 +1044,31 @@
   }
 
   #creation-menu-title {
-    font-size: 22px;
-    font-weight: $fwBold;
-    color: #616161;
-    margin-bottom: 15px;
-    text-align: center;
     opacity: 1;
-    border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 3px;
-    display: inline;
-    width: auto;
+    z-index: 999;
+    line-height: 1;
+    width: 100%;
+    text-align: left;
+    padding: 20px 20px 0 20px;
+    font-size: 22px;
+    color: $headerText;
+    font-weight: $fwMedium;
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 25px 25px 0 0;
+    margin-bottom: 10px;
+
+    svg {
+      font-size: 30px;
+      color: $green;
+    }
+
+    &.long-title {
+      line-height: 1.3;
+    }
   }
 
   #screen-actions-menu {
@@ -1169,7 +1182,6 @@
 
   .action-items {
     background: white;
-    padding: 20px 20px 35pt 20px;
     transition: all 0.7s ease-in-out;
     display: flex;
     flex-direction: column;
@@ -1179,8 +1191,14 @@
     bottom: -100%;
     border-radius: 25px 25px 0 0;
     box-shadow: rgba(0, 0, 0, 0.56) 0 0 15px 18px;
+    padding-bottom: 35pt;
+    padding-top: 20px;
+    padding-left: 5px;
 
     &.creation {
+      #menu-content {
+        padding: 10px 20px 0 20px;
+      }
       .action-item {
         margin-bottom: 0;
         .content {
@@ -1628,7 +1646,7 @@
   font-weight: 500;
   flex-wrap: wrap;
   opacity: 0.75;
-  border-radius: $borderRadius;
+  border-radius: 6px;
   transition: all 0.3s ease-in-out;
   color: #737373;
 
@@ -1649,25 +1667,18 @@
 @mixin viewsWrapper {
   display: flex;
   align-items: center;
-  background: #e0e0e0;
-  margin-bottom: 8px;
-  margin-top: 8px;
   border-radius: $borderRadius;
-  width: auto;
-
-  @media screen and (max-width: 400px) {
-    flex-wrap: wrap;
-    margin-bottom: 0;
-    justify-content: flex-start;
-
-    .view {
-      padding: 0;
-
-      &.active {
-        padding: 0;
-      }
-    }
+  gap: 8px;
+  margin-left: auto;
+  width: 100%;
+  justify-content: center;;
+  max-width: 100vw;
+  overflow: auto;
+  
+  &.child-info {
+    padding-left: 115px;
   }
+  
 
   * {
     line-height: 1;
@@ -1675,31 +1686,31 @@
   }
 
   .view {
-    font-weight: $fwLight;
+    font-weight: $fwRegular;
     text-transform: uppercase;
     display: flex;
     line-height: 1;
-    color: $primaryText;
-    font-size: 14px;
-    position: relative;
-    border-radius: $borderRadius;
+    font-size:       14px;
+    position:        relative;
+    border-radius:   6px;
     justify-content: center;
-    align-items: center;
-    padding: 10px 12px;
-    text-align: center;
-    margin: 3px 0;
+    align-items:     center;
+    padding:         8px 20px;
+    text-align:      center;
+    margin:          3px 0;
+    white-space:     nowrap;
+    background:      rgb(211, 211, 211);
+    background: rgba(242, 244, 245, 0.6);
+    color:           $subtitleText;
     @include hover;
-    width: 50%;
-    white-space: nowrap;
 
     &.active {
-      opacity: 1;
-      font-weight: $fwRegular;
-      display: flex;
-      width: 100%;
-      margin: 3px;
-      color: black;
-      background: white;
+      opacity:     1;
+      font-weight: $fwMediumBold;
+      display:     flex;
+      color:       $accentLight;
+      background:  rgb(185, 195, 255);
+      border:      0;
     }
 
     &.hide {
@@ -1856,7 +1867,8 @@
       border: 1px solid $green;
     }
 
-    &.pending {
+    &.pending,
+    &.soon {
       background-color: $bootstrapBgYellow;
       color: $bootstrapYellowColor;
       border: 1px solid $bootstrapYellowBorder;
@@ -2986,62 +2998,76 @@
   left: 0;
   bottom: 0;
   right: 0;
-  flex-wrap: wrap;
   z-index: -1;
   opacity: 0;
   transition: all 0.5s ease-out;
   backdrop-filter: blur(5px);
   background-color: rgba(0, 0, 0, 0.35);
-  padding: 0 10px;
+  padding: $statusBarHeight 10px $homeIndicatorHeight 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  
 
   #modal-content {
-    @include deadCenter;
     height: auto;
-    width: calc(100vw - 15px);
+
+
 
     /*#region  MODAL*/
     #modal {
-      background: $bestGreyForWhiteLight;
-      width: 100%;
+      background: $oneMillionGrey;
       overflow: auto;
       position: relative;
       z-index: -1;
-      border-radius: 15px;
-      max-height: calc(100vh - 240px);
+      max-height: calc(100vh - 230px);
       align-self: center;
       bottom: -100%;
       transition: all 2s ease-in;
-      @include bestShadow;
-      box-shadow: rgba(0, 0, 0, 0.56) 0 18px 20px 2px;
-
+      border-radius: 15px;
+      box-shadow: 0 12px 12px 0 #0000008f;
+      width: calc(100vw - 20px);
       &.animate__fadeInUp {
         z-index: 9999999;
         bottom: 0;
       }
 
       @media screen and (max-width: 400px) {
-        max-height: 60vh;
+        max-height: calc(100vh - 215px);
       }
 
       #modal-title {
-        justify-content: center;
-        text-align: center;
-        font-weight: $fwBold;
+        text-align: left;
+        padding: 15px;
+        font-size: 22px;
+        color: $accentLight;
+        font-weight: $fwMedium;
+        z-index: 9999999;
+        width: 100%;
         position: sticky;
         top: 0;
-        background: white;
-        font-size: 22px;
-        display: block;
-        z-index: 999;
-        line-height: 1;
-        color: $headerText;
-        padding: 15px 0;
-        width: 100%;
-        margin-bottom: 5px;
-        border-bottom: 1px solid #e7e9ee;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        backdrop-filter: blur(8px);
+        border-radius: 25px 25px 0 0;
+        white-space: nowrap;
+
+        svg {
+          font-size: 30px;
+          color: $accentLight;
+        }
 
         &.long-title {
           line-height: 1.3;
+        }
+        @media screen and (max-width: 400px) {
+          font-size: 18px;
+
+          svg {
+            font-size: 24px;
+          }
         }
       }
     }
@@ -3052,13 +3078,12 @@
     opacity: 1;
     z-index: 9999999;
     transition: all 0.6s ease-in;
-
     .modal-fade-wrapper {
       z-index: 999999999999;
       position: relative;
       transition: all 0.6s ease-in;
       margin: 0;
-      width: 100%;
+      width: calc(100vw - 20px);
       #modal {
         transition: all 0.6s ease-in;
         opacity: 1;
@@ -3080,13 +3105,14 @@
     #content {
       #users-wrapper {
         @include row;
+        border: 0;
 
         .user-wrapper {
           display: flex;
           align-items: center;
 
           svg {
-            color: $accentLight;
+            color: $green;
             margin-right: 10px;
           }
 
@@ -3373,16 +3399,15 @@
   // BUTTONS
   .buttons {
     display: flex;
-    justify-content: flex-end;
     bottom: 0;
-    width: calc(100% - 20px);
     border: 0;
+    width: 100%;
     background: transparent;
-    padding: 10px 0 35pt 10px;
     gap: 0 8px;
     z-index: 9999999;
-    position: fixed;
-    left: 10px;
+    align-self: center;
+    justify-content: center;
+    padding-top: 20px;
 
     * {
       line-height: 1;
@@ -3988,6 +4013,10 @@
       a {
         line-height: 1;
         display: inline-block;
+        opacity: 1;
+        color: $linkColor;
+        text-decoration: none;
+        padding-bottom: 3px;
       }
 
       .new-tab-icon {
@@ -4008,18 +4037,41 @@
         }
         &.zelle {
           border: 2px solid #6d1fd4;
+          background: rgba(109, 31, 212, 0.13);
+
+          p {
+            color: #541ca8;
+          }
         }
         &.venmo {
+          background: rgba(0, 140, 255, 0.25);
           border: 2px solid #008cff;
+
+          p {
+            color: #0073d8;
+          }
         }
         &.apple-cash {
-          border: 2px solid #4c4e54;
+          border: 2px solid #181818;
+          background: white;
         }
         &.paypal {
+          background: rgba(0, 72, 255, 0.23);
           border: 2px solid #002991;
+
+          p {
+            color: #002991;
+          }
         }
         &.cashapp {
+          background: rgba(0, 214, 79, 0.15);
           border: 2px solid #00d64f;
+
+          p {
+            color: $bootstrapGreenColor;
+            font-weight: $fwRegular;
+            opacity: 1;
+          }
         }
         .brand-name-wrapper {
           align-items: center;
@@ -4049,7 +4101,7 @@
           }
 
           &.apple {
-            background: #4c4e54;
+            background: #181818;
           }
 
           svg {
@@ -4426,6 +4478,7 @@
   opacity: 1;
   z-index: 99999;
   padding: 15px 0 30pt 0;
+  left: 0;
 
   &.hidden {
     bottom: -200px;

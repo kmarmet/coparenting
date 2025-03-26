@@ -7,7 +7,7 @@ import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { Fade } from 'react-awesome-reveal'
 import { BsCalendar2CheckFill } from 'react-icons/bs'
-
+import { PiCalendarPlusDuotone } from 'react-icons/pi'
 import validator from 'validator'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager.coffee'
@@ -35,12 +35,11 @@ import ModelNames from '/src/models/modelNames'
 import ToggleButton from '../shared/toggleButton'
 import CreationForms from '../../constants/creationForms'
 import Label from '../shared/label'
-import DateManager from '../../managers/dateManager'
 
 export default function NewCalendarEvent() {
   // APP STATE
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey, creationFormToShow, defaultDate } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, refreshKey, creationFormToShow, defaultDate} = state
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
@@ -92,7 +91,7 @@ export default function NewCalendarEvent() {
     setShowReminders(false)
     setIncludeChildren(false)
     setIsVisitation(false)
-    setState({ ...state, showBottomMenu: false, creationFormToShow: '', refreshKey: Manager.getUid() })
+    setState({...state, showBottomMenu: false, creationFormToShow: '', refreshKey: Manager.getUid()})
   }
 
   const submit = async () => {
@@ -331,7 +330,7 @@ export default function NewCalendarEvent() {
     <>
       {/* FORM WRAPPER */}
       <Modal
-        submitText={'Create Event'}
+        submitText={`Create Event`}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={resetForm}
         onSubmit={submit}
@@ -339,22 +338,23 @@ export default function NewCalendarEvent() {
         showCard={creationFormToShow === CreationForms.calendar}
         wrapperClass={`new-calendar-event`}
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
-        title={'Create New Event'}>
+        title={`Create New Event`}
+        viewSelector={
+          <ViewSelector
+            defaultView={'Single Day'}
+            labels={['Single Day', 'Multiple Days']}
+            updateState={(labelText) => {
+              if (Manager.contains(labelText, 'Single')) {
+                setEventLength(EventLengths.single)
+              } else {
+                setEventLength(EventLengths.multiple)
+              }
+            }}
+          />
+        }
+        titleIcon={<PiCalendarPlusDuotone />}>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           <Fade direction={'up'} duration={600} triggerOnce={true}>
-            {/* Event Length */}
-            <ViewSelector
-              defaultView={'Single Day'}
-              labels={['Single Day', 'Multiple Days']}
-              updateState={(labelText) => {
-                if (Manager.contains(labelText, 'Single')) {
-                  setEventLength(EventLengths.single)
-                } else {
-                  setEventLength(EventLengths.multiple)
-                }
-              }}
-            />
-
             {/* EVENT NAME */}
             <InputWrapper
               inputClasses="event-title-input"
@@ -386,7 +386,7 @@ export default function NewCalendarEvent() {
               )}
               {eventLength === EventLengths.single && DomManager.isMobile() && (
                 <InputWrapper
-                  onChange={(e) => setState({ ...state, defaultDate: e.target.value })}
+                  onChange={(e) => setState({...state, defaultDate: e.target.value})}
                   useNativeDate={true}
                   labelText={'Date'}
                   inputType={'date'}
@@ -412,7 +412,7 @@ export default function NewCalendarEvent() {
                       setEventIsDateRange(true)
                     }
                   }}
-                  slots={{ field: SingleInputDateRangeField }}
+                  slots={{field: SingleInputDateRangeField}}
                   name="allowedRange"
                 />
               </InputWrapper>

@@ -72,8 +72,9 @@ div {
   font-weight: $fwMedium;
   line-height: 1.5;
   margin: 0 !important;
-  padding: 0 20px 0 0;
+  padding: 0 ;
   text-align: left;
+  margin-bottom: 15px !important;
 }
 
 .swal2-icon {
@@ -92,18 +93,35 @@ div {
   @include bestShadow;
   padding: 20px !important;
   margin: 0 !important;
-  //  display: flex !important;
   align-items: center !important;
   animation-duration: 0.8s !important;
-  flex-wrap: wrap;
+  display: flex !important;
+  justify-content: space-between;;
 
   .swal2-actions {
-    margin: 15px auto 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 8px !important;
+    justify-content: flex-end !important;
+    
+    button {
+      @include fontType;
+      background: $buttonGrey;
+      color: $disabledText;
+      text-transform: uppercase;
+      width: 120px !important;
+      border-radius: $borderRadius !important;
+      font-weight: $fwMediumBold;
+      text-align: center;
+      margin: 0 !important;
+      font-size: 13px;
+    }
   }
 
   &.confirm-alert,
   &.yellow,
   &.success-alert {
+
     &.success-alert {
       background: $bootstrapBgGreen !important;
       color: $bootstrapGreenColor !important;
@@ -123,6 +141,7 @@ div {
         color: $bootstrapYellowColor;
         padding: 15px;
         border-radius: $borderRadius;
+
       }
 
       &.confirm-alert {
@@ -132,6 +151,7 @@ div {
           color: $bootstrapYellowColor;
           padding: 15px;
           border-radius: $borderRadius;
+          margin-right: 10px !important;
         }
       }
     }
@@ -199,23 +219,4 @@ div {
   background: rgba(0, 0, 0, 0.72) !important;
   backdrop-filter: blur(3px);
   transition: all 0.3s ease-in-out !important;
-}
-
-.swal2-actions {
-  margin: 8px 0 0 auto !important;
-  gap: 8px !important;
-  justify-content: flex-end !important;
-
-  button {
-    @include fontType;
-    background: $buttonGrey;
-    color: $disabledText;
-    text-transform: uppercase;
-    width: 120px !important;
-    border-radius: $borderRadius !important;
-    font-weight: $fwMediumBold;
-    text-align: center;
-    margin: 0 !important;
-    font-size: 13px;
-  }
 }

@@ -11,7 +11,12 @@
       .due-date {
         font-weight: $fwRegular;
         font-size: 14px;
+
         color: $subtitleText;
+
+        &.no-due-date {
+          font-style: italic;
+        }
       }
     }
   }

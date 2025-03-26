@@ -18,7 +18,6 @@ import ViewSelector from './viewSelector'
 import AddressInput from './addressInput'
 import validator from 'validator'
 import DomManager from '../../managers/domManager'
-import { FaPencilAlt } from 'react-icons/fa'
 
 export default function CustomChildInfo({ hideCard, showCard }) {
   const { state, setState } = useContext(globalState)
@@ -99,15 +98,15 @@ export default function CustomChildInfo({ hideCard, showCard }) {
       wrapperClass="custom-child-info-card"
       onClose={resetForm}
       title={'Add Your Own Info'}
+      viewSelector={     <ViewSelector
+        defaultView={'General'}
+        wrapperClasses="child-info"
+        labels={['General', 'Medical', 'Schooling', 'Behavior']}
+        updateState={(e) => setInfoSection(e.toLowerCase())}
+      />}
       showCard={showCard}>
       <div className="form">
-        {/* INFO SECTIONS */}
-        <ViewSelector
-          defaultView={'General'}
-          labels={['General', 'Medical', 'Schooling', 'Behavior']}
-          updateState={(e) => setInfoSection(e.toLowerCase())}
-        />
-        <Spacer height={5} />
+
         <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with" required={false} />
         <Spacer height={5} />
         {/* INFO TYPE */}
