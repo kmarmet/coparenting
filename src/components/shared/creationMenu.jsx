@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import { IoIosArrowDown, IoMdPhotos } from 'react-icons/io'
+import { IoIosArrowDown, IoIosCheckmarkCircle, IoMdPhotos } from 'react-icons/io'
 import { Fade } from 'react-awesome-reveal'
 import globalState from '../../context'
 import { BsCalendarWeekFill } from 'react-icons/bs'
@@ -8,8 +8,7 @@ import { MdSwapHorizontalCircle } from 'react-icons/md'
 import { FaDonate, FaFileUpload } from 'react-icons/fa'
 import CreationForms from '../../constants/creationForms'
 import { IoChatbubbles } from 'react-icons/io5'
-import { LuBadgePlus } from "react-icons/lu";
-import { IoIosCheckmarkCircle } from "react-icons/io";
+
 const CreationMenu = () => {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, showCreationMenu } = state
@@ -31,7 +30,7 @@ const CreationMenu = () => {
       <div className="action-items creation">
         <p id="creation-menu-title">Select a Resource to Create <IoIosCheckmarkCircle/></p>
        <div id="menu-content">
-        <Fade direction={'right'} className={'creation-fade-wrapper'} duration={400} triggerOnce={false} cascade={true} damping={0.2}>
+        <Fade direction={'right'} className={'creation-fade-wrapper'} duration={800} triggerOnce={false} cascade={true} damping={0.2}>
          {/* CALENDAR */}
          <div
            className="action-item"

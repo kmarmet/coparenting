@@ -205,12 +205,13 @@ export default function TransferRequests() {
         onSubmit={() => selectDecision(Decisions.approved)}
         wrapperClass="transfer-change"
         submitIcon={<PiCheckBold />}
+        viewSelector={<ViewSelector shouldUpdateStateOnLoad={true} labels={['Details', 'Edit']} updateState={(e) => setView(e.toLowerCase())} />}
         className="transfer-change"
         onClose={() => setShowDetails(false)}
         showCard={showDetails}>
         <div id="details" className={`content ${activeRequest?.reason.length > 20 ? 'long-text' : ''}`}>
           <Spacer height={8} />
-          <ViewSelector shouldUpdateStateOnLoad={true} labels={['Details', 'Edit']} updateState={(e) => setView(e.toLowerCase())} />
+
           {view === 'details' && (
             <>
               {/* TRANSFER DATE */}
@@ -406,7 +407,6 @@ export default function TransferRequests() {
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
 
-        <Fade direction={'up'} duration={1000} className={'transfer-requests-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Transfer Change Requests</p>
             {!DomManager.isMobile() && <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />}
@@ -416,6 +416,7 @@ export default function TransferRequests() {
           {/* LOOP REQUESTS */}
           {!showNewRequestCard && (
             <div id="all-transfer-requests-container" className="mt-15">
+        <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={.2}>
               {Manager.isValid(existingRequests) &&
                 existingRequests.map((request, index) => {
                   return (
@@ -450,9 +451,9 @@ export default function TransferRequests() {
                     </div>
                   )
                 })}
+        </Fade>
             </div>
           )}
-        </Fade>
       </div>
 
       {!showNewRequestCard && !showDetails && (

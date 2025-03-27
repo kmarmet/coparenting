@@ -9,7 +9,7 @@ import Behavior from '/src/components/screens/childInfo/behavior'
 import General from '/src/components/screens/childInfo/general'
 import Medical from '/src/components/screens/childInfo/medical'
 import Schooling from '/src/components/screens/childInfo/schooling'
-import { FaCameraRotate, FaWandMagicSparkles } from 'react-icons/fa6'
+import { FaAngleUp, FaCameraRotate, FaWandMagicSparkles } from 'react-icons/fa6'
 import { BiImageAdd, BiSolidUserCircle } from 'react-icons/bi'
 import { Fade } from 'react-awesome-reveal'
 import NewChildForm from '/src/components/screens/childInfo/newChildForm'
@@ -27,7 +27,6 @@ import Checklists from './checklists'
 import Spacer from '../../shared/spacer'
 import { PiListChecksFill } from 'react-icons/pi'
 import Checklist from './checklist'
-import { FaAngleUp } from 'react-icons/fa6'
 
 import { IoIosArrowDown } from 'react-icons/io'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
@@ -184,7 +183,6 @@ export default function ChildInfo() {
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container child-info form`}>
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title beside-action-button">Child Info</p>
 
@@ -240,16 +238,17 @@ export default function ChildInfo() {
           <div id="child-info">
             {activeInfoChild && (
               <div className="form">
+        <Fade direction={'right'} duration={800} cascade={true} damping={.2} triggerOnce={true}>
                 <General />
                 <Medical />
                 <Schooling />
                 <Behavior />
                 {activeInfoChild?.checklists?.find((x) => x?.fromOrTo === 'from') && <Checklist fromOrTo={'from'} />}
                 {activeInfoChild?.checklists?.find((x) => x?.fromOrTo === 'to') && <Checklist fromOrTo={'to'} />}
+        </Fade>
               </div>
             )}
           </div>
-        </Fade>
       </div>
       {!showNewChildForm && !showSelectorCard && !showInfoCard && (
         <NavBar navbarClass={'child-info'}>

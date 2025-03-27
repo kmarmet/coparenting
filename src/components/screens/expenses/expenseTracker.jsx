@@ -44,7 +44,6 @@ import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import ViewSelector from '../../shared/viewSelector.jsx'
-import { IoMdAdd } from 'react-icons/io'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -272,12 +271,14 @@ export default function ExpenseTracker() {
         title={`${StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name || '')}`}
         submitIcon={<RxUpdate className={'fs-16'} />}
         onSubmit={update}
+        hasSubmitButton={view === 'edit'}
         className="expense-tracker form"
         titleIcon={<FaMoneyCheckDollar />}
         wrapperClass="expense-tracker"
         onClose={() => {
           setActiveExpense(null)
           setShowDetails(false)
+          setState({...state, refreshKey: Manager.getUid()})
         }}
         onDelete={deleteExpense}
         viewSelector={<ViewSelector labels={['Details', 'Edit']} updateState={(e) => setView(e.toLowerCase())} />}
@@ -448,7 +449,7 @@ export default function ExpenseTracker() {
               )}
 
               {/* CATEGORY */}
-              <SelectDropdown labelClasses={'mb-5'} selectValue={category} onChange={(e) => setCategory(e.target.value)} labelText={'Category'}>
+              <SelectDropdown wrapperClasses={"expense-tracker"} selectValue={category} onChange={(e) => setCategory(e.target.value)} labelText={'Category'}>
                 {categoriesAsArray.map((cat, index) => {
                   return (
                     <MenuItem key={index} value={cat}>
@@ -493,7 +494,6 @@ export default function ExpenseTracker() {
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>
         {expenses.length === 0 && <NoDataFallbackText text={'There are currently no expenses'} />}
-        <Fade direction={'up'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Expense Tracker </p>
             {!DomManager.isMobile() && <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />}
@@ -597,6 +597,8 @@ export default function ExpenseTracker() {
 
           {/* LOOP EXPENSES */}
           <div id="expenses-container">
+            <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={.2}>
+
             {Manager.isValid(expenses) &&
               expenses.map((expense) => {
                 let dueDate = moment(expense?.dueDate).format(DateFormats.readableMonthAndDay) ?? ''
@@ -651,14 +653,10 @@ export default function ExpenseTracker() {
                   </div>
                 )
               })}
-          </div>
         </Fade>
+          </div>
       </div>
-      {!showNewExpenseCard && !showPaymentOptionsCard && !showDetails && (
-        <NavBar navbarClass={'child-info'}>
-          <IoMdAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />
-        </NavBar>
-      )}
+        <NavBar navbarClass={'child-info'}/>
     </>
   )
 }

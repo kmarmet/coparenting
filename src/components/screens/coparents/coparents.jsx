@@ -7,7 +7,7 @@ import Manager from '/src/managers/manager'
 import DB_UserScoped from '/src/database/db_userScoped'
 import CustomCoparentInfo from './customCoparentInfo'
 import NewCoparentForm from './newCoparentForm'
-import { FaWandMagicSparkles } from 'react-icons/fa6'
+import { FaAngleUp, FaUserPlus, FaWandMagicSparkles } from 'react-icons/fa6'
 import { IoPersonRemove } from 'react-icons/io5'
 import { Fade } from 'react-awesome-reveal'
 import NavBar from '/src/components/navBar.jsx'
@@ -15,7 +15,6 @@ import { BsFillSendFill, BsPersonAdd } from 'react-icons/bs'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
-import { FaUserPlus } from 'react-icons/fa6'
 import DatasetManager from '/src/managers/datasetManager'
 import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager.coffee'
@@ -24,7 +23,6 @@ import AddressInput from '../../shared/addressInput'
 import Modal from '../../shared/modal'
 import EmailManager from '../../../managers/emailManager'
 import Spacer from '../../shared/spacer'
-import { FaAngleUp } from 'react-icons/fa6'
 
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import { IoIosArrowDown } from 'react-icons/io'
@@ -109,7 +107,7 @@ export default function Coparents() {
 
       <ScreenActionsMenu>
         <div className="action-items">
-          <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={500} triggerOnce={false} cascade={true}>
+          <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={.2} triggerOnce={false} cascade={true}>
             <div
               className="action-item"
               onClick={() => {
@@ -174,7 +172,7 @@ export default function Coparents() {
         showCard={showInvitationForm}
         onSubmit={() => {
           if (!Manager.isValid(invitedCoparentEmail) || !Manager.isValid(invitedCoparentName)) {
-            AlertManager.throwError('Please field out all fields')
+            AlertManager.throwError('Please fill out all fields')
             return false
           }
           EmailManager.SendEmailToUser(EmailManager.Templates.coparentInvitation, '', invitedCoparentEmail, invitedCoparentName)
@@ -227,6 +225,7 @@ export default function Coparents() {
           {/* COPARENT INFO */}
           <div id="coparent-info">
             <div className="form">
+              <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={.2} triggerOnce={false} cascade={true}>
               {/* ITERATE COPARENT INFO */}
               {Manager.isValid(selectedCoparentDataArray) &&
                 selectedCoparentDataArray.map((propArray, index) => {
@@ -272,6 +271,7 @@ export default function Coparents() {
                     </div>
                   )
                 })}
+              </Fade>
             </div>
           </div>
         </Fade>

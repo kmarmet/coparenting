@@ -130,7 +130,8 @@ export default function Memories() {
 
         {/* GALLERY */}
         <LightGallery elementClassNames={`light-gallery ${theme}`} selector={'.memory-image'}>
-          <Fade direction={'left'} duration={700} className={'memories-fade-wrapper'} triggerOnce={true} cascade={true} damping={0.2}>
+          <Fade direction={'left'} duration={800} className={'memories-fade-wrapper'} triggerOnce={true} cascade={true} damping={0.2}>
+            <></>
             {Manager.isValid(memories) &&
               memories.map((imgObj, index) => {
                 return (

@@ -246,6 +246,7 @@
   background: white;
   height: 100vh;
   justify-content: space-between;
+  padding-top: $statusBarHeight;
 
   .search-results {
     display: none;
@@ -260,11 +261,8 @@
     z-index: 999;
     border-bottom: 1px solid $lightBorder;
     width: 100vw;
-    padding: 60px 10px 10px 10px;
-    backdrop-filter: blur(50px);
-    background: none;
-    position: absolute;
-    top: 0;
+    padding: 10px;
+    background: transparent;
 
     #user-info {
       justify-content: center;
@@ -335,7 +333,7 @@
     overflow-x: hidden;
     padding: 15px 15px 125px 15px;
     position: relative;
-    top: 90px;
+    overscroll-behavior: none;
     @media screen and (min-width: 800px) {
       min-width: 10%;
       width: 28vw;
@@ -351,7 +349,7 @@
       display: block;
       margin-bottom: 15px;
       color: #b2b2b2;
-      font-size: 14px;
+      font-size: 12px;
       padding-top: 5px;
       font-style: italic;
       &.from {

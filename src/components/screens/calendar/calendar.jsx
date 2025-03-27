@@ -15,7 +15,6 @@ import NavBar from '/src/components/navBar.jsx'
 import SecurityManager from '/src/managers/securityManager'
 import globalState from '/src/context.js'
 import moment from 'moment'
-import { CgClose } from 'react-icons/cg'
 import { LuCalendarSearch } from 'react-icons/lu'
 import { PiCalendarPlusDuotone, PiCalendarXDuotone } from 'react-icons/pi'
 import { StaticDatePicker } from '@mui/x-date-pickers-pro'
@@ -364,6 +363,12 @@ export default function EventCalendar() {
       legendButton.addEventListener('click', () => {
         legendButton.classList.toggle('active')
       })
+    }
+    console.log(window.innerHeight)
+    const screenHeight = window.innerHeight
+    const pageContainer = document.querySelector('.page-container')
+    if (pageContainer) {
+      pageContainer.style.maxHeight = `${screenHeight}px`
     }
   }, [])
 

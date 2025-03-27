@@ -1,6 +1,6 @@
 // Path: src\components\forms\newSwapRequest.jsx
 import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import globalState from '../../context'
 import SwapDurations from '/src/constants/swapDurations'
 import DB from '/src/database/DB'
@@ -10,7 +10,6 @@ import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import NotificationManager from '/src/managers/notificationManager'
 import Modal from '/src/components/shared/modal'
 import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
-import Toggle from 'react-toggle'
 import ModelNames from '/src/models/modelNames'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
@@ -20,7 +19,6 @@ import AlertManager from '/src/managers/alertManager'
 import DB_UserScoped from '/src/database/db_userScoped'
 import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
-import { MdOutlineFace } from 'react-icons/md'
 import ViewSelector from '../shared/viewSelector'
 import Spacer from '../shared/spacer'
 import DomManager from '../../managers/domManager'
@@ -28,8 +26,8 @@ import creationForms from '../../constants/creationForms'
 import ToggleButton from '../shared/toggleButton'
 
 export default function NewSwapRequest() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, authUser, refreshKey, creationFormToShow } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, authUser, refreshKey, creationFormToShow} = state
   const [requestReason, setRequestReason] = useState('')
   const [requestChildren, setRequestChildren] = useState([])
   const [shareWith, setShareWith] = useState([])
@@ -54,7 +52,7 @@ export default function NewSwapRequest() {
     setStartDate('')
     setEndDate('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid(), isLoading: false, creationFormToShow: '' })
+    setState({...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid(), isLoading: false, creationFormToShow: ''})
   }
 
   const submit = async () => {
@@ -158,10 +156,7 @@ export default function NewSwapRequest() {
       onSubmit={submit}
       wrapperClass="new-swap-request"
       title={'Create Swap Request'}
-      showCard={creationFormToShow === creationForms.swapRequest}
-      onClose={resetForm}>
-      <div id="new-swap-request-container" className={`${theme} form`}>
-        {/* DURATION OPTIONS */}
+      viewSelector={
         <ViewSelector
           labels={['Day', 'Days', 'Hours']}
           updateState={(e) => {
@@ -176,6 +171,10 @@ export default function NewSwapRequest() {
             }
           }}
         />
+      }
+      showCard={creationFormToShow === creationForms.swapRequest}
+      onClose={resetForm}>
+      <div id="new-swap-request-container" className={`${theme} form`}>
         {/* FORM */}
         <div id="request-form" className="form single">
           {/* SINGLE DATE */}
@@ -276,7 +275,7 @@ export default function NewSwapRequest() {
                     setEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
                   }
                 }}
-                slots={{ field: SingleInputDateRangeField }}
+                slots={{field: SingleInputDateRangeField}}
                 name="allowedRange"
               />
             </InputWrapper>
@@ -309,7 +308,7 @@ export default function NewSwapRequest() {
           {/* SEND REQUEST TO */}
           <CheckboxGroup
             required={true}
-            parentLabel={'Who are you sending the request to?'}
+            parentLabel={'Request Recipient'}
             checkboxArray={Manager.buildCheckboxGroup({
               currentUser,
               predefinedType: 'coparents',
@@ -319,11 +318,8 @@ export default function NewSwapRequest() {
             }}
           />
 
-          <Spacer height={5} />
-
           {/* WHO SHOULD SEE IT? */}
           <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
-          <Spacer height={5} />
 
           {/* INCLUDE CHILDREN */}
           {Manager.isValid(currentUser?.children) && (
@@ -344,7 +340,7 @@ export default function NewSwapRequest() {
             </div>
           )}
 
-          <Spacer height={10} />
+          <Spacer height={5} />
 
           {/* NOTES */}
           <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />

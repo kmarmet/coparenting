@@ -23,8 +23,8 @@ import FirebaseStorage from '../../../database/firebaseStorage'
 import StringManager from '../../../managers/stringManager.coffee'
 
 export default function Account() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme} = state
   const [updateType, setUpdateType] = useState('email')
   const [showUpdateCard, setShowUpdateCard] = useState(false)
   const [email, setEmail] = useState('')
@@ -39,7 +39,7 @@ export default function Account() {
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
       console.log('User Swiped!', eventData)
-      setState({ ...state, currentScreen: ScreenNames.account })
+      setState({...state, currentScreen: ScreenNames.account})
     },
   })
 
@@ -91,7 +91,7 @@ export default function Account() {
               email: email,
             })
             await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/email`, email)
-            setState({ ...state, isLoading: false })
+            setState({...state, isLoading: false})
             logout()
           })
           .catch((error) => {
@@ -245,13 +245,13 @@ export default function Account() {
 
       {/* PAGE CONTAINER */}
       <div id="account-container" className={`${theme} page-container`}>
-        <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
-          <p className="screen-title">Account</p>
-          <p id="user-name">
-            Hey {StringManager.getFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
-          </p>
-          <div className="sections">
-            <p className="section" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
+        <p className="screen-title">Account</p>
+        <p id="user-name">
+          Hey {StringManager.getFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
+        </p>
+        <div className="sections">
+          <Fade direction={'right'} duration={800} className={'visitation-fade-wrapper'} triggerOnce={true} damping={0.2} cascade={true}>
+            <p className="section" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
               <MdOutlinePassword />
               Reset Password
             </p>
@@ -268,8 +268,8 @@ export default function Account() {
               <IoIosRemoveCircle />
               Deactivate Account
             </p>
-          </div>
-        </Fade>
+          </Fade>
+        </div>
       </div>
       {!showUpdateCard && !showLoginForm && <NavBar navbarClass={'account no-add-new-button'}></NavBar>}
     </>

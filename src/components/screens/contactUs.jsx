@@ -157,10 +157,10 @@ export default function ContactUs() {
 
       {/* CONTACT US */}
       <div id="contact-us-container" className={`${theme} page-container form`}>
-        <Fade direction={'up'} duration={1000} className={'contact-us-fade-wrapper'} triggerOnce={true} cascade={true}>
           <p className="screen-title">Get in Touch</p>
           {/* SECTIONS */}
           <div className="sections">
+        <Fade direction={'right'} duration={800} damping={.2} className={'contact-us-fade-wrapper'} triggerOnce={true} cascade={true}>
             <p className="section" onClick={() => setShowFeatureRequestCard(true)}>
               <MdOutlineAppShortcut />
               Feature Request
@@ -173,8 +173,8 @@ export default function ContactUs() {
               <MdOutlineEmail />
               Contact Support
             </p>
-          </div>
         </Fade>
+          </div>
       </div>
       {!showFeatureRequestCard && !showFeedbackCard && !showSupportCard && <NavBar navbarClass={'no-add-new-button'}></NavBar>}
     </>

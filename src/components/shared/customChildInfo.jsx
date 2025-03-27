@@ -162,7 +162,7 @@ export default function CustomChildInfo({ hideCard, showCard }) {
         {infoType === 'location' && (
           <>
             <InputWrapper inputType={'input'} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
-            <InputWrapper inputType={'location'} labelText={'Location'}>
+            <InputWrapper inputType={'location'} labelText={'Location'} required={true}>
               <AddressInput
                 onSelection={(place) => {
                   setValue(place)

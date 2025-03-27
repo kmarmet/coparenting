@@ -652,6 +652,7 @@
     .views-wrapper {
       @include viewsWrapper;
     }
+    
     #app-content-with-sidebar {
       margin: 0 15px;
       max-width: calc(100vw - 30px);
@@ -661,6 +662,7 @@
       height: 100vh;
       top: 0;
       z-index: 999999;
+      overscroll-behavior: none;
 
       @media screen and (min-width: 800px) {
         overflow: auto;

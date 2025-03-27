@@ -59,7 +59,7 @@ const Chats = () => {
         showCard={showInvitationCard}
         onSubmit={() => {
           if (!Manager.isValid(inviteeEmail) || !Manager.isValid(inviteeName)) {
-            AlertManager.throwError('Please field out all fields')
+            AlertManager.throwError('Please fill out all fields')
             return false
           }
           EmailManager.SendEmailToUser(EmailManager.Templates.coparentInvitation, '', inviteeEmail, inviteeName)

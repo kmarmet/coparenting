@@ -18,17 +18,15 @@ import ObjectManager from '/src/managers/objectManager'
 import DocumentsManager from '/src/managers/documentsManager'
 import { HiOutlineDocumentArrowUp } from 'react-icons/hi2'
 import ActivityCategory from '/src/models/activityCategory'
-import DB_UserScoped from '/src/database/db_userScoped'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import DB from '/src/database/DB'
 import StringManager from '/src/managers/stringManager'
 import DocumentConversionManager from '/src/managers/documentConversionManager.js'
-import { ref, uploadString, getStorage } from 'firebase/storage'
-import Spacer from '../../shared/spacer'
+import { getStorage, ref, uploadString } from 'firebase/storage'
 
-export default function UploadDocuments({ hideCard, showCard }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+export default function UploadDocuments({hideCard, showCard}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme} = state
   const [shareWith, setShareWith] = useState([])
   const [docType, setDocType] = useState(null)
   const [docName, setDocName] = useState('')
@@ -37,16 +35,16 @@ export default function UploadDocuments({ hideCard, showCard }) {
     Manager.resetForm('upload-doc-wrapper')
     setShareWith([])
     setDocType(null)
-    setState({ ...state, refreshKey: Manager.getUid(), isLoading: false, creationFormToShow: '' })
+    setState({...state, refreshKey: Manager.getUid(), isLoading: false, creationFormToShow: ''})
   }
 
   const upload = async () => {
-    setState({ ...state, isLoading: true, loadingText: 'Making the magic happen! Your patience is appreciated!' })
+    setState({...state, isLoading: true, loadingText: 'Making the magic happen! Your patience is appreciated!'})
     let files = document.querySelector('#upload-input').files
     let file = files[0]
     if (files.length === 0 || !file) {
       AlertManager.throwError('Please choose a file to upload')
-      setState({ ...state, isLoading: false })
+      setState({...state, isLoading: false})
       return false
     }
     const fileExtension = StringManager.getFileExtension(file?.name).toString()
@@ -58,7 +56,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     //#region VALIDATION
     if (!Manager.isValid(docType)) {
       AlertManager.throwError('Please choose a document type')
-      setState({ ...state, isLoading: false })
+      setState({...state, isLoading: false})
       return false
     }
 
@@ -80,7 +78,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     if (existingDocument) {
       // error
       AlertManager.throwError('Document has already been uploaded')
-      setState({ ...state, isLoading: false })
+      setState({...state, isLoading: false})
       return false
     }
     //#endregion VALIDATION
@@ -158,7 +156,7 @@ export default function UploadDocuments({ hideCard, showCard }) {
     //#endregion ADD TO DB / SEND NOTIFICATION
 
     AlertManager.successAlert('Document Uploaded!')
-    setState({ ...state, isLoading: false })
+    setState({...state, isLoading: false})
     hideCard()
     // resetForm()
   }
@@ -208,16 +206,14 @@ export default function UploadDocuments({ hideCard, showCard }) {
         <div id="upload-documents-container" className={`${theme} form `}>
           {/* FORM */}
           <div className="form">
-            <>
-              <InputWrapper labelText={'Document Name'} onChange={(e) => setDocName(e.target.value)} />
-              <CheckboxGroup
-                parentLabel={'Document Type'}
-                required={true}
-                checkboxArray={Manager.buildCheckboxGroup({ currentUser, customLabelArray: ['Document', 'Image'] })}
-                onCheck={handleCheckboxSelection}
-              />
-              <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
-            </>
+            <InputWrapper labelText={'Document Name'} onChange={(e) => setDocName(e.target.value)} />
+            <CheckboxGroup
+              parentLabel={'Document Type'}
+              required={true}
+              checkboxArray={Manager.buildCheckboxGroup({currentUser, customLabelArray: ['Document', 'Image']})}
+              onCheck={handleCheckboxSelection}
+            />
+            <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />
           </div>
           {/* UPLOAD BUTTONS */}
           <UploadInputs

@@ -37,8 +37,8 @@ import Spacer from '../shared/spacer'
 import Label from '../shared/label'
 
 export default function Visitation() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme} = state
 
   // State
   const [showEveryOtherWeekendCard, setShowEveryOtherWeekendCard] = useState(false)
@@ -63,11 +63,11 @@ export default function Visitation() {
   }
 
   const deleteSchedule = async () => {
-    setState({ ...state, isLoading: true })
+    setState({...state, isLoading: true})
     await VisitationManager.deleteSchedule(currentUser, existingScheduleEvents)
     setExistingScheduleEvents([])
     setShowDeleteButton(false)
-    setState({ ...state, isLoading: false })
+    setState({...state, isLoading: false})
     AlertManager.successAlert('Visitation Schedule Removed')
   }
 
@@ -203,7 +203,7 @@ export default function Visitation() {
     const apiHolidays = await DateManager.getHolidays()
     setHolidaysFromApi(apiHolidays)
     await getVisitationHolidays(currentUser).then((holidaysObject) => {
-      const { holidays, userHolidays } = holidaysObject
+      const {holidays, userHolidays} = holidaysObject
       const userHolidaysList = Manager.convertToArray(CalendarMapper.eventsToHolidays(userHolidays))
       const userHolidaysDates = userHolidaysList.map((x) => x.date)
       setSelectedHolidayDates(DatasetManager.getUniqueArray(userHolidaysDates, true))
@@ -305,52 +305,50 @@ export default function Visitation() {
 
       {/* PAGE CONTAINER */}
       <div id="visitation-container" className={`${theme} page-container form`}>
-        <Fade direction={'right'} duration={1000} triggerOnce={true}>
-          {/* SCREEN TITLE */}
-          <p className="screen-title">Visitation</p>
+        {/* SCREEN TITLE */}
+        <p className="screen-title">Visitation</p>
 
-          {/* ALREADY HAS EXISTING SCHEDULE */}
-          {existingScheduleEvents.length > 0 && (
-            <>
-              <p>
-                You currently have a 50/50 visitation schedule added to your calendar. If you would like to modify the current schedule or switch to
-                another schedule, please delete the current schedule first.
-              </p>
-              {showDeleteButton && (
-                <div className="buttons flex">
-                  <button
-                    className="button red default center"
-                    onClick={() => {
-                      AlertManager.confirmAlert(
-                        'Are you sure you would like to permanently delete your current visitation schedule?',
-                        "I'm Sure",
-                        true,
-                        async () => {
-                          await deleteSchedule()
-                        },
-                        setScheduleType('')
-                      )
-                    }}>
-                    Delete Current Schedule
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-          {/* NO EXISTING SCHEDULE */}
-          {existingScheduleEvents.length === 0 && (
-            <div className="sections">
-              {/* VISITATION SCHEDULE */}
-              <div className="note-container">
-                <Note
-                  message={
-                    'When you establish a visitation schedule, it will be displayed on the calendar for you and anyone you permit to access it.'
-                  }
-                />
+        {/* ALREADY HAS EXISTING SCHEDULE */}
+        {existingScheduleEvents.length > 0 && (
+          <>
+            <p>
+              You currently have a 50/50 visitation schedule added to your calendar. If you would like to modify the current schedule or switch to
+              another schedule, please delete the current schedule first.
+            </p>
+            {showDeleteButton && (
+              <div className="buttons flex">
+                <button
+                  className="button red default center"
+                  onClick={() => {
+                    AlertManager.confirmAlert(
+                      'Are you sure you would like to permanently delete your current visitation schedule?',
+                      "I'm Sure",
+                      true,
+                      async () => {
+                        await deleteSchedule()
+                      },
+                      setScheduleType('')
+                    )
+                  }}>
+                  Delete Current Schedule
+                </button>
               </div>
+            )}
+          </>
+        )}
+        {/* NO EXISTING SCHEDULE */}
+        {existingScheduleEvents.length === 0 && (
+          <div className="sections">
+            {/* VISITATION SCHEDULE */}
+            <div className="note-container">
+              <Note
+                message={'When you establish a visitation schedule, it will be displayed on the calendar for you and anyone you permit to access it.'}
+              />
+            </div>
 
               <Spacer height={10} />
-
+            <Fade direction={'up'} duration={1000} triggerOnce={true}>
+              {/*  VISITATION SECTION */}
               <Accordion id={'visitation-section'} expanded={showVisitationSection}>
                 <AccordionSummary id={'visitation-section-accordion-title'}>
                   <div className="flex accordion-title" onClick={() => setShowVisitationSection(!showVisitationSection)}>
@@ -389,43 +387,45 @@ export default function Visitation() {
                   </InputWrapper>
                 </AccordionDetails>
               </Accordion>
+            </Fade>
+          </div>
+        )}
+
+        <Spacer height={5} />
+        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+        {/*  HOLIDAYS */}
+        <Accordion id={'visitation-holidays-section'} expanded={showHolidaysSection}>
+          <AccordionSummary id={'visitation-holidays-section-accordion-title'}>
+            <div className="flex accordion-title" onClick={() => setShowHolidaysSection(!showHolidaysSection)}>
+              <Label text={'Visitation Holidays'} />
+              {showHolidaysSection ? <FaMinus /> : <FaPlus />}
             </div>
-          )}
+          </AccordionSummary>
 
-          <Spacer height={5} />
+          <AccordionDetails>
+            {/* HOLIDAY SELECTION */}
+            <CheckboxGroup
+              containerClass="holidays"
+              parentLabel={'Select the holidays YOU have your child(ren) this year'}
+              elClass={'holiday-checkboxes-wrapper'}
+              onCheck={handleHolidaySelection}
+              skipNameFormatting={true}
+              checkboxArray={Manager.buildCheckboxGroup({
+                currentUser,
+                customLabelArray: holidaysFromApi.map((x) => x.name),
+                defaultLabels: userHolidays,
+              })}
+            />
 
-          <Accordion id={'visitation-holidays-section'} expanded={showHolidaysSection}>
-            <AccordionSummary id={'visitation-holidays-section-accordion-title'}>
-              <div className="flex accordion-title" onClick={() => setShowHolidaysSection(!showHolidaysSection)}>
-                <Label text={'Visitation Holidays'} />
-                {showHolidaysSection ? <FaMinus /> : <FaPlus />}
-              </div>
-            </AccordionSummary>
+            {showUpdateHolidaysButton && (
+              <button className="button default green center" onClick={() => setHolidaysInDatabase()}>
+                Update Holidays
+              </button>
+            )}
 
-            <AccordionDetails>
-              {/* HOLIDAY SELECTION */}
-              <CheckboxGroup
-                containerClass="holidays"
-                parentLabel={'Select the holidays YOU have your child(ren) this year'}
-                elClass={'holiday-checkboxes-wrapper'}
-                onCheck={handleHolidaySelection}
-                skipNameFormatting={true}
-                checkboxArray={Manager.buildCheckboxGroup({
-                  currentUser,
-                  customLabelArray: holidaysFromApi.map((x) => x.name),
-                  defaultLabels: userHolidays,
-                })}
-              />
-
-              {showUpdateHolidaysButton && (
-                <button className="button default green center" onClick={() => setHolidaysInDatabase()}>
-                  Update Holidays
-                </button>
-              )}
-
-              <Spacer height={5} />
-            </AccordionDetails>
-          </Accordion>
+            <Spacer height={5} />
+          </AccordionDetails>
+        </Accordion>
         </Fade>
       </div>
       {!showEveryOtherWeekendCard && !showCustomWeekendsCard && !showFiftyFiftyCard && <NavBar navbarClass={'visitation no-add-new-button'}></NavBar>}

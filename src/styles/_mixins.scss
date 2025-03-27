@@ -10,14 +10,11 @@
   transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
   background: white;
   height: 100vh;
-  padding: $statusBarHeight 15px 20px 15px;
+  padding: $statusBarHeight 15px 120px 15px;
   width: 100%;
-  position: fixed;
-  top: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
   z-index: 99999;
-  max-height: calc(100vh - 110px);
+  overscroll-behavior: none;
 
   &.active {
     transition: all 0.5s ease-in-out;
@@ -43,7 +40,7 @@
   }
 
   &.calendar {
-    padding: 44pt 0 0 0;
+    padding: 44pt 0 120px 0;
   }
 
   &.login {
@@ -407,7 +404,7 @@
 }
 
 @mixin defaultButton() {
-  border-radius: $borderRadius;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1684,7 +1681,8 @@
   justify-content: center;
   max-width: 100vw;
   overflow: auto;
-  
+  overscroll-behavior: none;
+
   &.child-info {
     padding-left: 80px;
     max-width: 100%;
@@ -1705,15 +1703,16 @@
     position: relative;
     justify-content: center;
     align-items: center;
-    padding: 8px 20px;
+    padding: 10px 20px;
     width: 50%;
     border-radius: 15px;
     text-align: center;
     margin: 3px 0;
     white-space: nowrap;
     background: rgb(211, 211, 211);
-    background: rgba(242, 244, 245, 0.6);
+    background: $oneMillionGrey;
     color: $subtitleText;
+    opacity: .65;
     @include hover;
 
     &.active {
@@ -1723,9 +1722,8 @@
       color: $accentLight;
       background: rgb(185, 195, 255);
       border: 0;
+      width: 100%;
     }
-    
-   
 
     &.hide {
       display: none;
@@ -1873,7 +1871,7 @@
     white-space: nowrap;
     text-align: center;
     justify-content: center;
-    
+
     &.paid,
     &.approved {
       background-color: $lightestGreen;
@@ -2460,7 +2458,6 @@
   &.new-expense-card,
   &.new-memory-card,
   &.new-document-card {
-    margin-top: 10px;
 
     .flex {
       align-items: stretch;
@@ -2473,10 +2470,10 @@
 
     &::file-selector-button {
       padding: 10px 20px;
-      border-radius: 6px;
+      border-radius: 10px;
       background: white;
       border: 1px solid $greyOnGreyBorder;
-      color: $primaryText;
+      color: $labelText;
       margin-right: 10px;
       margin-top: 5px;
       font-size: 14px;
@@ -2986,6 +2983,7 @@
   bottom: 0;
   right: 0;
   z-index: -1;
+  overscroll-behavior: none;
   opacity: 0;
   transition: all 0.5s ease-out;
   backdrop-filter: blur(5px);
@@ -2998,6 +2996,8 @@
 
   #modal-content {
     height: auto;
+    position: relative;
+    z-index: 999;
 
     /*#region  MODAL*/
     #modal {
@@ -3007,7 +3007,7 @@
       z-index: -1;
       max-height: calc(100vh - 230px);
       align-self: center;
-      
+
       bottom: -100%;
       transition: all 2s ease-in;
       border-radius: 15px;
@@ -3025,46 +3025,47 @@
 
       #modal-title-and-text {
         padding: 10px 15px;
-        margin-bottom: 15px;
         border-bottom: 1px solid #e5e5e5;
         position: sticky;
         top: 0;
-        backdrop-filter: blur(8px);
+        backdrop-filter: blur(18px);
+        background: rgba(245, 245, 245, 0.69);
+        z-index: 9999999;
+        margin-bottom: 15px;
 
         &.with-subtitle {
           padding: 15px;
         }
-      }
 
-      #modal-title {
-        text-align: left;
+        #modal-title {
+          text-align: left;
+          font-size: 24px;
+          color: $headerText;
+          font-weight: $fwMedium;
 
-        font-size: 24px;
-        color: $headerText;
-        font-weight: $fwMedium;
-        z-index: 9999999;
-        width: 100%;
+          width: 100%;
 
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
 
-        border-radius: 25px 25px 0 0;
-        white-space: nowrap;
-
-        svg {
-          font-size: 28px;
-          color: #259f64;
-        }
-
-        &.long-title {
-          line-height: 1.3;
-        }
-        @media screen and (max-width: 400px) {
-          font-size: 18px;
+          border-radius: 25px 25px 0 0;
+          white-space: nowrap;
 
           svg {
-            font-size: 24px;
+            font-size: 28px;
+            color: $subtitleText;
+          }
+
+          &.long-title {
+            line-height: 1.3;
+          }
+          @media screen and (max-width: 400px) {
+            font-size: 18px;
+
+            svg {
+              font-size: 24px;
+            }
           }
         }
       }
@@ -3130,6 +3131,7 @@
     height: 100%;
     margin-bottom: auto;
     display: block;
+    overscroll-behavior: none;
     overflow: hidden;
 
     #share-with-checkbox-group {

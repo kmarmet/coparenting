@@ -784,7 +784,7 @@
 
     @media screen and (max-width: 800px) {
       width: auto !important;
-      padding: 0 10px !important;
+      padding: 0 15px !important;
       margin: 0 !important;
     }
 
@@ -1557,6 +1557,18 @@
   .MuiPaper-rounded {
     &:before {
       display: none;
+    }
+  }
+
+  .expense-tracker {
+    .MuiOutlinedInput-root {
+      [role='combobox'] {
+        padding: 10px;
+        background: white;
+        border: 1px solid $greyOnGreyBorder !important;
+        border-radius: $borderRadius;
+        font-size: 14px !important;
+      }
     }
   }
   .expenses-wrapper {
