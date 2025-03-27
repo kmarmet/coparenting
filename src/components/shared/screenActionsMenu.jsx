@@ -1,9 +1,10 @@
 import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
+import Overlay from './overlay'
 
-const ScreenActionsMenu = ({ children }) => {
-  const { state, setState } = useContext(globalState)
-  const { theme, showScreenActions } = state
+const ScreenActionsMenu = ({children}) => {
+  const {state, setState} = useContext(globalState)
+  const {theme, showScreenActions} = state
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
@@ -18,13 +19,14 @@ const ScreenActionsMenu = ({ children }) => {
   }, [showScreenActions])
 
   return (
-    <div id="screen-actions-menu-wrapper" className={showScreenActions ? 'open' : 'closed'}>
-      <div id="screen-actions-background"></div>
-      {/* MENU ICON */}
-      <div id="screen-actions-menu" className={showScreenActions ? 'open' : 'closed'}>
-        {children}
+    <Overlay show={showScreenActions}>
+      <div className={`${showScreenActions ? 'open' : 'closed'} bottom-menu-wrapper`}>
+          <div className="action-items">
+            <p className="bottom-menu-title">Actions</p>
+            {children}
+          </div>
       </div>
-    </div>
+    </Overlay>
   )
 }
 

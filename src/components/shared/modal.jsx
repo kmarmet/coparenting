@@ -5,7 +5,7 @@ import Manager from '/src/managers/manager.js'
 import DB_UserScoped from '../../database/db_userScoped'
 import StringManager from '../../managers/stringManager'
 import { IoClose } from 'react-icons/io5'
-import { Fade } from 'react-awesome-reveal'
+import Overlay from './overlay'
 
 export default function Modal({
   submitText,
@@ -73,12 +73,9 @@ export default function Modal({
       modalWrapper = document.querySelector(`.${creationFormToShow}#modal-wrapper`)
     }
     if (modalWrapper) {
-      const modal = modalWrapper.querySelector('#modal')
       const checkboxContainer = document.getElementById('share-with-checkbox-container')
       const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
       const pageContainer = document.querySelector('.page-container')
-      const fadeOutDown = 'animate__fadeOutDown'
-      const fadeInUp = 'animate__fadeInUp'
 
       if (modalWrapper && StringManager.wordCount(title) >= 4) {
         const title = modalWrapper.querySelector('#modal-title')
@@ -94,12 +91,6 @@ export default function Modal({
         if (showCard) {
           document.body.classList.add('disable-scroll')
           appContentWithSidebar.classList.add('disable-scroll')
-          if (modalWrapper) {
-            modal.classList.add(fadeInUp)
-            setTimeout(() => {
-              modal.classList.remove(fadeOutDown)
-            }, 500)
-          }
 
           if (checkboxContainer) {
             checkboxContainer.classList.remove('active')
@@ -114,7 +105,6 @@ export default function Modal({
         else {
           document.body.classList.remove('disable-scroll')
           appContentWithSidebar.classList.remove('disable-scroll')
-          modal.classList.remove(fadeInUp)
           if (pageContainer) {
             pageContainer.classList.remove('disable-scroll')
           }
@@ -141,11 +131,11 @@ export default function Modal({
   }, [showCard])
 
   return (
-    <div id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
-      <Fade direction={'up'} duration={600} delay={2000} triggerOnce={true} className={'modal-fade-wrapper'}>
+    <Overlay show={showCard}>
+      <div id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
         {viewSelector}
         <div id="modal-content">
-          <div id="modal" className="animate__animated">
+          <div id="modal">
             <div id="modal-title-and-text" className={Manager.isValid(subtitle, true) ? 'with-subtitle' : ''}>
               <p id="modal-title">
                 {title} {titleIcon && titleIcon}
@@ -181,7 +171,7 @@ export default function Modal({
             <IoClose className={'close-icon'} />
           </div>
         </div>
-      </Fade>
-    </div>
+      </div>
+    </Overlay>
   )
 }

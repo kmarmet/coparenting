@@ -213,8 +213,6 @@ export default function App() {
         <Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />
 
         <globalState.Provider value={stateToUpdate}>
-          {/* PAGE OVERLAY */}
-          <div className={theme} id="page-overlay" onClick={() => setState({ ...state, showCreationMenu: false })}></div>
 
           {/* FULL MENU */}
           <FullMenu />

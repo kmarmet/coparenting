@@ -103,7 +103,7 @@ export default function Coparents() {
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
 
-      <ScreenActionsMenu>
+      <ScreenActionsMenu title="Actions">
         <div className="action-items">
           <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={.2} triggerOnce={false} cascade={true}>
             {/* ADD COPARENT */}
@@ -152,6 +152,7 @@ export default function Coparents() {
                 <div className="svg-wrapper">
                   <IoPersonRemove className={'remove-user'} />
                 </div>
+
                 <p>
                   Remove Co-Parent <span className="subtitle">Remove {selectedCoparentDataArray?.find(x => x[0] === 'name')[1]} from your profile</span>
                 </p>
@@ -165,7 +166,7 @@ export default function Coparents() {
                 setState({ ...state, showScreenActions: false })
               }}>
               <div className="content">
-                <div className="svg-wrapper">
+                <div className="svg-wrapper invite-coparent">
                   <BsFillSendFill className={'paper-airplane'} />
                 </div>
                 <p>
@@ -239,7 +240,7 @@ export default function Coparents() {
           {/* COPARENT INFO */}
           <div id="coparent-info">
             <div className="form">
-              <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={.2} triggerOnce={false} cascade={true}>
+              <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={.08} triggerOnce={false} cascade={true}>
               {/* ITERATE COPARENT INFO */}
               {Manager.isValid(selectedCoparentDataArray) &&
                 selectedCoparentDataArray.map((propArray, index) => {

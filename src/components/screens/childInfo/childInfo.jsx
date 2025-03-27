@@ -119,8 +119,6 @@ export default function ChildInfo() {
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
       <ScreenActionsMenu>
-        <div className="action-items">
-          <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={0.2} triggerOnce={false} cascade={true}>
             {/* ADD CHILD */}
             <div
               className="action-item"
@@ -129,7 +127,7 @@ export default function ChildInfo() {
                 setState({...state, showScreenActions: false})
               }}>
               <div className="content">
-                <div className="svg-wrapper">
+                <div className="svg-wrapper add-child">
                   <TiUserAdd className={'add-child'} />
                 </div>
                 <p>
@@ -190,9 +188,7 @@ export default function ChildInfo() {
                 </p>
               </div>
             </div>
-          </Fade>
           <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
-        </div>
       </ScreenActionsMenu>
 
       {/* PAGE CONTAINER */}

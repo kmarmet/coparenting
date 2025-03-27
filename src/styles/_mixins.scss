@@ -1016,19 +1016,16 @@
   left: 0;
   bottom: 0;
   right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 
   &.open {
-  backdrop-filter: blur(5px);
-    z-index: 999999999;
-    background-color: rgba(0, 0, 0, 0.35);
-    transition: all 0.6s ease-in;
     .action-items {
       bottom: 0;
+      transition: all 0.6s ease-out;
       opacity: 1;
-    }
-    #screen-actions-background {
-      transition: all 0.6s ease-in-out;
-      opacity: 1;
+      box-shadow: $boxShadow_float;
     }
   }
 
@@ -1039,12 +1036,12 @@
     }
   }
 
-  #creation-menu-title {
+  .bottom-menu-title{
     opacity: 1;
     z-index: 999;
     line-height: 1;
     width: 100%;
-    text-align: left;
+    text-align: center;
     font-size: 22px;
     color: $headerText;
     font-weight: $fwMedium;
@@ -1052,12 +1049,11 @@
     position: sticky;
     top: 0;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 25px 25px 0 0;
-    margin-bottom: 10px;
-    padding: 20px 0 10px 0;
+    justify-content: center;
     white-space: nowrap;
+    padding: 0 0 20px 0;
+    align-items: flex-end;
+    margin-bottom: 15px;
 
     svg {
       font-size: 30px;
@@ -1069,215 +1065,112 @@
     }
   }
 
-  #screen-actions-menu {
-    height: 100vh;
-    position: fixed;
-    z-index: -1;
-    top: 0;
-    overflow-x: hidden;
-    transition: 0.5s;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    right: 0;
-    width: 100vw;
-    padding: 0 5px 20vh 0;
-
-    &.open {
-      opacity: 1;
-      z-index: 999999;
-      .action-items {
-        transition: all 0.6s ease-in-out;
-        bottom: 0;
-        opacity: 1;
-        box-shadow: 10px 12px 30px 24px #0000008f;
-
-        &.doc-viewer {
-          .action-item {
-            svg {
-              transform: scale(1.2);
-            }
-            &.rename-document {
-              .svg-wrapper {
-                background: $lightIconBgBlue;
-              }
-              svg {
-                transform: scale(1.3);
-              }
-              p {
-                color: $mainBlue;
-              }
-            }
-            &.tips {
-              .svg-wrapper {
-                background: #cbeef3;
-              }
-              svg,
-              p {
-                color: #00838f;
-              }
-            }
-            &.toc {
-              .svg-wrapper {
-                background: $lightPurple;
-              }
-
-              svg,
-              p {
-                color: $darkPurple;
-              }
-            }
-            &.scroll-to-top {
-              p {
-                color: #208e59;
-              }
-              .svg-wrapper {
-                background: $bootstrapBgGreen;
-                svg {
-                  color: #208e59;
-                }
-              }
-            }
-            &.document-image {
-              .svg-wrapper {
-                background: $lightAccentBlue;
-              }
-              img {
-                border-radius: 10px;
-                height: 120px;
-                width: auto;
-                position: relative;
-              }
-              svg,
-              p {
-                color: $accentLight;
-              }
-            }
-          }
-          p {
-            font-weight: $fwMedium;
-            font-size: 18px;
-            padding: 0;
-            margin: 0;
-            line-height: 1;
-            position: relative;
-            top: 5px;
-          }
-        }
-      }
-    }
-
-    &.closed {
-      opacity: 0;
-      z-index: -1;
-    }
-  }
-
   .close-button {
-    color: $primaryText;
-    margin:20px auto 0 auto;
+    color: #929292;
+    margin: 20px auto 0 auto;
     background: $mediumGrey;
     height: 35px;
     width: 35px;
     border-radius: 50%;
     padding: 4px;
     border: 1px solid $greyOnGreyBorder;
+    transform: scale(1.2);
   }
 
   .action-items {
-    background: white;
-    transition: all 0.6s ease-in-out;
+    padding: 20px 20px $homeIndicatorHeight 20px;
+    transition: all 0.8s ease-out;
     display: flex;
     flex-direction: column;
-    position: fixed;
-    width: 100vw;
     opacity: 0;
     bottom: -100%;
+    position: relative;
+    background: white;
+    width: 100vw;
     border-radius: 25px 25px 0 0;
-    box-shadow: $boxShadow_float;
-    padding: 30px 20px $homeIndicatorHeight 20px;
-
     #menu-content {
       max-width: calc(100% - 20px);
       position: relative;
       left: -4px;
     }
-
+    
     &.creation {
-      transition: all 0.6s ease-in-out;
-      padding-top: 0;
       .action-item {
-        margin-bottom: 0;
         .content {
           align-items: center;
-          gap: 10px;
+        }
+      }
+    }
 
-          p {
-            font-size: 18px;
-            font-weight: $fwMedium;
-            position: relative;
-            top: -1px;
+    .action-item {
+      margin-bottom: 0;
+      .content {
+        align-items: center;
+        gap: 10px;
+
+        p {
+          font-size: 18px;
+          font-weight: $fwMedium;
+          position: relative;
+          top: -1px;
+        }
+        .svg-wrapper {
+          width: 40px;
+          height: 40px;
+          flex: 1;
+
+          &.memory {
+            background: $bootstrapBgGreen;
+            svg {
+              color: #208e59;
+            }
           }
-          .svg-wrapper {
-            transform: scale(0.85);
+
+          &.transfer {
+            background: $lightPurple;
 
             svg {
+              color: $darkPurple;
+            }
+          }
+
+          &.calendar {
+            background: $lightIconBgBlue;
+            svg {
+              transform: scale(1.1);
+              color: $mainBlue;
+            }
+          }
+
+          &.document {
+            background: $lightAccentBlue;
+            svg {
+              color: $accentLight;
+              transform: scale(1);
+            }
+          }
+
+          &.expense {
+            background: $bootstrapBgRed;
+            svg {
+              color: $bootstrapRedColor;
+              transform: scale(1.08);
+            }
+          }
+
+          &.chat {
+            background: $bootstrapYellowBg;
+            svg {
               transform: scale(1.2);
+              color: #c29323;
             }
+          }
 
-            &.memory {
-              background: $bootstrapBgGreen;
-              svg {
-                color: #208e59;
-              }
-            }
-
-            &.transfer {
-              background: $lightPurple;
-
-              svg {
-                color: $darkPurple;
-              }
-            }
-
-            &.calendar {
-              background: $lightIconBgBlue;
-              svg {
-                transform: scale(1.1);
-                color: $mainBlue;
-              }
-            }
-
-            &.document {
-              background: $lightAccentBlue;
-              svg {
-                color: $accentLight;
-                transform: scale(1);
-              }
-            }
-
-            &.expense {
-              background: $bootstrapBgRed;
-              svg {
-                color: $bootstrapRedColor;
-                transform: scale(1.08);
-              }
-            }
-
-            &.chat {
-              background: $bootstrapYellowBg;
-              svg {
-                transform: scale(1.2);
-                color: #c29323;
-              }
-            }
-
-            &.swap {
-              background: #cbeef3;
-              svg {
-                transform: scale(1.3);
-                color: #00838f;
-              }
+          &.swap {
+            background: #cbeef3;
+            svg {
+              transform: scale(1.3);
+              color: #00838f;
             }
           }
         }
@@ -1329,7 +1222,7 @@
       }
 
       p {
-        display: flex;
+        display: inline;
         flex-wrap: wrap;
         max-width: 85%;
         font-size: 18px;
@@ -1386,11 +1279,11 @@
           display: block;
           color: $blurple;
           white-space: nowrap;
-          
+
           &.add-child {
             font-size: 26px;
           }
-          
+
           &.magic {
             font-size: 20px;
           }
@@ -1402,160 +1295,6 @@
         }
       }
     }
-  }
-
-  .menu-icon-wrapper {
-    top: calc(100vh - 150px);
-    opacity: 1;
-    transform: scale(1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    bottom: 100px;
-    z-index: 999999;
-    position: fixed;
-    padding: 10px 0;
-    border-radius: 5px 0 0 5px;
-    right: 12px;
-    width: 30px;
-    @include hover;
-    transition: all 1s cubic-bezier(0.17, 0.67, 0.21, 0.95);
-
-    svg {
-      font-size: 28px;
-      padding: 0;
-      margin: 0;
-      width: 20px;
-      color: $green;
-      transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
-    }
-  }
-}
-
-@mixin floatingActions {
-  position: fixed;
-  bottom: 105px;
-  right: 0;
-  z-index: 999999;
-  transition: all 0.6s ease-in-out;
-
-  &.open {
-    padding: 10px 8px;
-    border-radius: 50px;
-    backdrop-filter: blur(20px);
-    background: transparent;
-    right: 10px;
-    background: $lightAccentBlue;
-    @include shadow;
-    #action-items {
-      transition: all 0.3s ease-in-out;
-      right: 0;
-    }
-  }
-
-  #action-items {
-    opacity: 1;
-    position: relative;
-    z-index: -1;
-    right: -100px;
-    transition: all 0.3s ease-in-out;
-
-    .action-item {
-      position: relative;
-      right: -100px;
-      opacity: 0;
-      @include hover;
-      &.visible {
-        right: 0;
-        transform: scale(1);
-        top: 0;
-        opacity: 1;
-        transition: all 0.5s ease-in-out;
-      }
-    }
-  }
-
-  .menu-icon-wrapper {
-    top: unset;
-    opacity: 1;
-    transform: scale(1);
-    background: #dcebfc;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    bottom: 0;
-    right: -15px;
-    position: relative;
-    transition: all 0.4s ease-in-out;
-    padding: 10px 0;
-    border-radius: 5px 0 0 5px;
-    width: 30px;
-    @include hover;
-
-    svg {
-      font-size: 28px;
-      padding: 0;
-      margin: 0;
-      width: 20px;
-      color: $accentLight;
-    }
-
-    &.close {
-      right: 0;
-      background: white;
-      border-radius: 50%;
-      height: 44px;
-      width: 44px;
-      margin: 0;
-      svg {
-        width: unset;
-        color: $red;
-      }
-    }
-  }
-
-  .action-item {
-    background: $lightAccentBlue;
-    height: 44px;
-    width: 44px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 10px;
-    top: 10vh;
-    position: relative;
-    transition: all 0.5s ease-in-out;
-    opacity: 0;
-    transform: scale(0);
-  }
-
-  svg {
-    font-size: 30px;
-    line-height: 1;
-    padding: 0;
-    overflow: hidden;
-    color: $accentLight;
-
-    &.magic,
-    &.paper-airplane,
-    &.remove-user {
-      transform: scale(0.8);
-    }
-
-    &.menu-icon {
-      margin-bottom: 0;
-      position: relative;
-      bottom: 0;
-    }
-  }
-  #document-image {
-    background-size: cover;
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    z-index: 9999;
-    opacity: 0;
   }
 }
 
@@ -1720,7 +1459,7 @@
     padding: 10px 20px;
     border-radius: 15px;
     text-align: center;
-    transition: all .3s ease-in-out;
+    transition: all 0.3s ease-in-out;
     margin: 3px 0;
     white-space: nowrap;
     background: $oneMillionGrey;
@@ -1734,7 +1473,7 @@
       font-weight: $fwMediumBold;
       display: flex;
       color: $headerText;
-      transition: all .4s ease-in-out;
+      transition: all 0.4s ease-in-out;
       background: white;
       flex: 1;
       border: 0;
@@ -2003,7 +1742,7 @@
   }
 
   label {
-    font-weight: $fwMediumBold;
+    font-weight: $fwMedium;
     margin: 0;
     line-height: 1.3;
     color: $labelText;
@@ -2999,57 +2738,58 @@
   z-index: -1;
   overscroll-behavior: none;
   opacity: 0;
-  transition: all 0.5s ease-out;
-  backdrop-filter: blur(5px);
-  background-color: rgba(0, 0, 0, 0.35);
+  transition: all 0.6s ease-out;
   padding: $statusBarHeight 10px $homeIndicatorHeight 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 5px;
-      box-shadow: $boxShadow_fade_bottom;
+
+  &.active {
+    #modal-content {
+      top: 0;
+      transition: all 0.6s ease-in;
+      z-index: 999;
+    }
+  }
 
   #modal-content {
     height: auto;
     position: relative;
-    z-index: 999;
-
+    z-index: -1;
+    top: 100%;
+    transition: all 0.8s ease-out;
+    border-radius: 20px;
+    max-height: calc(100vh - 230px);
+    align-self: center;
+    overflow: hidden;
+    width: calc(100vw - 20px);
+    box-shadow: $boxShadow_surround_big;
+    background: white;
+    
     /*#region  MODAL*/
     #modal {
-      background: $oneMillionGrey;
       overflow: auto;
+      overscroll-behavior: none;
       position: relative;
-      z-index: -1;
-      max-height: calc(100vh - 230px);
-      align-self: center;
-      bottom: -100%;
-      transition: all 2s ease-in;
-      border-radius: 15px;
-      width: calc(100vw - 20px);
-      box-shadow: $boxShadow_surround_big;
-
-      &.animate__fadeInUp {
-        z-index: 99;
-        bottom: 0;
-      }
-
+      transition: all 0.6s ease-out;
       @media screen and (max-width: 400px) {
         max-height: calc(100vh - 215px);
       }
-      
+
       #subtitle {
         font-size: 15px;
       }
 
       #modal-title-and-text {
-        padding: 10px 15px 8px 15px;
+        padding: 15px 15px 8px 15px;
         border-bottom: 1px solid #e5e5e5;
         position: sticky;
         top: 0;
         backdrop-filter: blur(18px);
-        background: rgba(245, 245, 245, 0.69);
         z-index: 9999999;
         margin-bottom: 15px;
+        border-radius: 15px 15px 0 0;
 
         &.with-subtitle {
           padding: 15px;
@@ -3059,14 +2799,10 @@
           text-align: left;
           font-size: 24px;
           color: $headerText;
-          font-weight: $fwMedium;
-
           width: 100%;
-
           display: flex;
           align-items: center;
           justify-content: space-between;
-
           border-radius: 25px 25px 0 0;
           white-space: nowrap;
 
@@ -4511,7 +4247,7 @@
     #menu-items {
       flex-wrap: nowrap;
       display: flex;
-      
+
       .menu-item {
         &.notifications {
           display: none;
@@ -4556,7 +4292,6 @@
     position: relative;
     bottom: 10px;
     box-shadow: 0 6px 10px 6px rgba(76, 114, 197, 0.6);
-    
 
     svg {
       transform: scale(1.2);

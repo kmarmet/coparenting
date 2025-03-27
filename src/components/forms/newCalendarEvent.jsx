@@ -518,7 +518,7 @@ export default function NewCalendarEvent() {
                 <Accordion id={'checkboxes'} expanded={eventIsRepeating}>
                   <AccordionSummary>
                     <div className="flex">
-                      <p>Recurring</p>
+                      <p className="label">Recurring</p>
                       <ToggleButton onCheck={() => setEventIsRepeating(!eventIsRepeating)} onUncheck={() => setEventIsRepeating(!eventIsRepeating)} />
                     </div>
                   </AccordionSummary>
