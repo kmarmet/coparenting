@@ -195,7 +195,6 @@ const DB_UserScoped = {
   },
   addUserChild: async (currentUser, newChild) => {
     const dbRef = ref(getDatabase())
-    console.log(newChild)
     const currentChildren = await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'children')
     await set(child(dbRef, `users/${currentUser?.key}/children`), [...currentChildren, newChild])
   },

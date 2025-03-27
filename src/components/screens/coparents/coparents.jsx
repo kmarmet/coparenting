@@ -28,7 +28,7 @@ import ScreenActionsMenu from '../../shared/screenActionsMenu'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, showScreenActions } = state
+  const { currentUser, theme } = state
 
   // State
   const [userCoparents, setUserCoparents] = useState([])
@@ -102,10 +102,9 @@ export default function Coparents() {
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
-
-      <ScreenActionsMenu title="Actions">
-        <div className="action-items">
-          <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={.2} triggerOnce={false} cascade={true}>
+      {/*  SCREEN ACTIONS */}
+      <ScreenActionsMenu>
+          <Fade direction={'right'} className={'fade-wrapper'} duration={800} damping={.2} triggerOnce={false} cascade={true}>
             {/* ADD COPARENT */}
             <div
               className="action-item"
@@ -123,6 +122,8 @@ export default function Coparents() {
                 </p>
               </div>
             </div>
+
+            {/*  ADD CUSTOM INFO */}
             <div
               className="action-item"
               onClick={() => {
@@ -138,6 +139,8 @@ export default function Coparents() {
                 </p>
               </div>
             </div>
+
+            {/*  REMOVE COPARENT */}
             <div
               className="action-item"
               onClick={() => {
@@ -154,7 +157,8 @@ export default function Coparents() {
                 </div>
 
                 <p>
-                  Remove Co-Parent <span className="subtitle">Remove {selectedCoparentDataArray?.find(x => x[0] === 'name')[1]} from your profile</span>
+                  Unlink {selectedCoparentDataArray?.find(x => x[0] === 'name')[1]} from Your Profile
+                   <span className="subtitle">Remove all information about {selectedCoparentDataArray?.find(x => x[0] === 'name')[1]} from your profile</span>
                 </p>
               </div>
             </div>
@@ -176,7 +180,6 @@ export default function Coparents() {
             </div>
           </Fade>
           <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
-        </div>
       </ScreenActionsMenu>
 
       <Modal
@@ -247,7 +250,7 @@ export default function Coparents() {
                   let infoLabel = propArray[0]
                   infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-                  infoLabel = StringManager.formatTitle(infoLabel)
+                  infoLabel = StringManager.formatTitle(infoLabel, true, true)
                   const value = propArray[1]
                   const inputsToSkip = ['address', 'key']
                   return (

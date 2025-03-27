@@ -49,7 +49,7 @@ export default function NewCalendarEvent() {
   const [eventTitle, setEventTitle] = useState('')
   const [eventWebsite, setEventWebsite] = useState('')
   const [eventNotes, setEventNotes] = useState('')
-  const [repeatingEndDate, setRepeatingEndDate] = useState('')
+  const [recurringEndDate, setRecurringEndDate] = useState('')
   const [repeatInterval, setRepeatInterval] = useState('')
   const [eventStartTime, setEventStartTime] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
@@ -58,7 +58,7 @@ export default function NewCalendarEvent() {
   const [clonedDates, setClonedDates] = useState([])
   const [eventChildren, setEventChildren] = useState([])
   const [eventReminderTimes, setEventReminderTimes] = useState([])
-  const [eventIsRepeating, setEventIsRepeating] = useState(false)
+  const [eventIsRecurring, setEventIsRecurring] = useState(false)
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
   const [eventIsCloned, setEventIsCloned] = useState(false)
 
@@ -77,7 +77,7 @@ export default function NewCalendarEvent() {
     setEventTitle('')
     setEventWebsite('')
     setEventNotes('')
-    setRepeatingEndDate('')
+    setRecurringEndDate('')
     setRepeatInterval('')
     setEventStartTime('')
     setEventEndTime('')
@@ -86,7 +86,7 @@ export default function NewCalendarEvent() {
     setEventChildren([])
     setEventReminderTimes([])
     setEventIsDateRange(false)
-    setEventIsRepeating(false)
+    setEventIsRecurring(false)
     setShowCloneInput(false)
     setShowReminders(false)
     setIncludeChildren(false)
@@ -100,9 +100,6 @@ export default function NewCalendarEvent() {
 
     // Required
     newEvent.title = eventTitle.trim()
-    if (Manager.contains(eventTitle, 'birthday')) {
-      newEvent.title += ' 🎂'
-    }
     if (isVisitation) {
       newEvent.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Visitation`
     }
@@ -128,7 +125,7 @@ export default function NewCalendarEvent() {
     newEvent.reminderTimes = eventReminderTimes
     newEvent.repeatInterval = repeatInterval
     newEvent.fromVisitationSchedule = isVisitation
-    newEvent.isRepeating = eventIsRepeating
+    newEvent.isRecurring = eventIsRecurring
     newEvent.isCloned = Manager.isValid(clonedDates)
     newEvent.isDateRange = eventIsDateRange
     //#endregion FILL NEW EVENT
@@ -149,7 +146,7 @@ export default function NewCalendarEvent() {
         return false
       }
 
-      if (Manager.isValid(repeatingEndDate) && !Manager.isValid(repeatInterval)) {
+      if (Manager.isValid(recurringEndDate) && !Manager.isValid(repeatInterval)) {
         AlertManager.throwError('If you have chosen to repeat this event, please select an end month')
         return false
       }
@@ -172,25 +169,25 @@ export default function NewCalendarEvent() {
       //#region MULTIPLE DATES
       // Date Range
       if (eventIsDateRange) {
-        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'range', eventStartDate, eventEndDate)
+        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'range', moment(eventStartDate).format(DateFormats.dateForDb), moment(eventEndDate).format(DateFormats.dateForDb))
         await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
 
       // Add cloned dates
       if (Manager.isValid(clonedDates)) {
-        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'cloned', clonedDates[0], clonedDates[clonedDates.length - 1])
+        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'cloned', moment(clonedDates[0]).format(DateFormats.dateForDb), moment(clonedDates[clonedDates.length - 1]).format(DateFormats.dateForDb))
         await CalendarManager.addMultipleCalEvents(currentUser, dates)
       }
 
-      // Repeating
-      if (eventIsRepeating) {
-        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'recurring', eventStartDate, eventEndDate)
+      // Recurring
+      if (eventIsRecurring) {
+        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'recurring', moment(eventStartDate).format(DateFormats.dateForDb), moment(eventEndDate).format(DateFormats.dateForDb))
         await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
       //#endregion MULTIPLE DATES
 
       //#region SINGLE DATE
-      if (!eventIsRepeating && !eventIsDateRange && !eventIsCloned) {
+      if (!eventIsRecurring && !eventIsDateRange && !eventIsCloned) {
         await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
 
         // Send notification
@@ -515,11 +512,11 @@ export default function NewCalendarEvent() {
             {/* RECURRING/CLONED */}
             {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
               <div id="repeating-container">
-                <Accordion id={'checkboxes'} expanded={eventIsRepeating}>
+                <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
                   <AccordionSummary>
                     <div className="flex">
                       <p className="label">Recurring</p>
-                      <ToggleButton onCheck={() => setEventIsRepeating(!eventIsRepeating)} onUncheck={() => setEventIsRepeating(!eventIsRepeating)} />
+                      <ToggleButton onCheck={() => setEventIsRecurring(!eventIsRecurring)} onUncheck={() => setEventIsRecurring(!eventIsRecurring)} />
                     </div>
                   </AccordionSummary>
                   <AccordionDetails>
@@ -532,7 +529,6 @@ export default function NewCalendarEvent() {
                       })}
                     />
 
-                    <Spacer height={5} />
                     {Manager.isValid(repeatInterval) && (
                       <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
                         {!DomManager.isMobile() && (

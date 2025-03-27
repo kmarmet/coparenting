@@ -5,7 +5,6 @@ import globalState from '../../context.js'
 import Manager from '../../managers/manager'
 import Label from './label'
 import moment from 'moment'
-import DateManager from '../../managers/dateManager'
 
 const DebounceLengths = {
   short: 500,
@@ -95,7 +94,7 @@ function InputWrapper({
         </>
       )}
 
-      {/* DATE */}
+      {/* NATIVE DATE */}
       {noInputTypes.includes(inputType) && useNativeDate && (
         <input
           onBlur={(e) => {
@@ -106,7 +105,7 @@ function InputWrapper({
           }}
           className="date-input"
           type="date"
-          value={Manager.isValid(defaultValue) ? defaultValue : null}
+          value={Manager.isValid(defaultValue) ? moment(defaultValue).format("YYYY-MM-DD") : null}
           onChange={onChange}
         />
       )}

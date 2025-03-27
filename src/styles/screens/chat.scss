@@ -245,7 +245,7 @@
   overflow: hidden;
   background: white;
   height: 100vh;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding-top: $statusBarHeight;
 
   .search-results {

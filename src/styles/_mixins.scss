@@ -1036,7 +1036,7 @@
     }
   }
 
-  .bottom-menu-title{
+  .bottom-menu-title {
     opacity: 1;
     z-index: 999;
     line-height: 1;
@@ -1093,7 +1093,7 @@
       position: relative;
       left: -4px;
     }
-    
+
     &.creation {
       .action-item {
         .content {
@@ -1102,76 +1102,176 @@
       }
     }
 
+    .fade-wrapper {
+      /*#region  ROW COLORS*/
+      &:nth-of-type(1) {
+        .content {
+          color: #208e59;
+
+          .svg-wrapper {
+            background: $bootstrapBgGreen;
+          }
+
+          svg,
+          p {
+            color: #208e59;
+          }
+        }
+      }
+
+      &:nth-of-type(2) {
+        .content {
+          svg,
+          p {
+            color: $darkPurple;
+          }
+
+          .svg-wrapper {
+            background: $lightPurple;
+          }
+        }
+      }
+
+      &:nth-child(3) {
+        .content {
+          svg,
+          p {
+            color: $accentLight;
+          }
+
+          .svg-wrapper {
+            background: $lightAccentBlue;
+          }
+        }
+      }
+
+      &:nth-child(4) {
+        .content {
+          svg,
+          p {
+            color: $darkPurple;
+          }
+
+          .svg-wrapper {
+            background: $lightPurple;
+          }
+        }
+      }
+
+      &:nth-child(5) {
+        .content {
+          svg,
+          p {
+            color: #c29323;
+          }
+
+          .svg-wrapper {
+            background: #fff3cd;
+          }
+        }
+      }
+
+      &:nth-child(6) {
+        .content {
+          svg,
+          p {
+            color: $mainBlue;
+          }
+
+          .svg-wrapper {
+            background: $lightIconBgBlue;
+          }
+        }
+      }
+      &:nth-child(7) {
+        .content {
+          svg,
+          p {
+            color: #00838f;
+          }
+
+          .svg-wrapper {
+            background: #cbeef3;
+          }
+        }
+      }
+      &:nth-child(8) {
+        .content {
+          svg,
+          p {
+            color: #cb6789;
+          }
+
+          .svg-wrapper {
+            background: #fce4eca1;
+          }
+        }
+      }
+      /*#endregion  ROW COLORS*/
+    }
+
     .action-item {
-      margin-bottom: 0;
+      text-align: center;
+      justify-content: center;
+      position: relative;
+      width: 60vw;
+      @include hover;
+      @include row;
+      border: 0;
+      margin-bottom: 10px;
+
       .content {
-        align-items: center;
-        gap: 10px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 15px;
+
+        svg,
+        span,
+        p {
+          font-weight: $fwMedium;
+          color: $primaryText;
+          line-height: 1;
+
+          &.subtitle {
+            width: 100%;
+            display: block;
+            text-align: left;
+            font-size: 13px;
+            font-weight: $fwRegular;
+            padding-top: 2px;
+            line-height: 1.3;
+            color: $subtitleText;
+          }
+        }
 
         p {
+          display: inline;
           font-size: 18px;
-          font-weight: $fwMedium;
-          position: relative;
-          top: -1px;
+
+          .subtitle {
+            font-size: 14.5px;
+          }
         }
+
         .svg-wrapper {
-          width: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 10px;
+          padding: 8px;
+          white-space: nowrap;
           height: 40px;
           flex: 1;
 
-          &.memory {
-            background: $bootstrapBgGreen;
-            svg {
-              color: #208e59;
-            }
+          .lg-react-element {
+            z-index: -1;
           }
 
-          &.transfer {
-            background: $lightPurple;
-
-            svg {
-              color: $darkPurple;
-            }
-          }
-
-          &.calendar {
-            background: $lightIconBgBlue;
-            svg {
-              transform: scale(1.1);
-              color: $mainBlue;
-            }
-          }
-
-          &.document {
-            background: $lightAccentBlue;
-            svg {
-              color: $accentLight;
-              transform: scale(1);
-            }
-          }
-
-          &.expense {
-            background: $bootstrapBgRed;
-            svg {
-              color: $bootstrapRedColor;
-              transform: scale(1.08);
-            }
-          }
-
-          &.chat {
-            background: $bootstrapYellowBg;
-            svg {
-              transform: scale(1.2);
-              color: #c29323;
-            }
-          }
-
-          &.swap {
-            background: #cbeef3;
-            svg {
-              transform: scale(1.3);
-              color: #00838f;
-            }
+          svg {
+            font-size: 22px;
+            display: block;
+            white-space: nowrap;
           }
         }
       }
@@ -1183,117 +1283,6 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-    }
-
-    .action-item,
-    .menu-item {
-      text-align: center;
-      justify-content: center;
-      position: relative;
-      width: 60vw;
-      @include hover;
-      @include row;
-      border: 0;
-
-      .content {
-        display: flex;
-        align-items: flex-start;
-        justify-content: flex-start;
-        gap: 15px;
-      }
-
-      svg,
-      span,
-      p {
-        font-weight: $fwMedium;
-        color: $primaryText;
-        line-height: 1;
-
-        &.subtitle {
-          width: 100%;
-          display: block;
-          text-align: left;
-          font-size: 13px;
-          font-weight: $fwRegular;
-          padding-top: 2px;
-          line-height: 1.3;
-          color: $subtitleText;
-        }
-      }
-
-      p {
-        display: inline;
-        flex-wrap: wrap;
-        max-width: 85%;
-        font-size: 18px;
-        color: $blurple;
-
-        .subtitle {
-          font-size: 14.5px;
-        }
-
-        &.calendar {
-          color: $mainBlue;
-        }
-
-        &.expense {
-          color: $bootstrapRedColor;
-        }
-
-        &.transfer {
-          color: $darkPurple;
-        }
-
-        &.memory {
-          color: #208e59;
-        }
-
-        &.swap {
-          color: #00838f;
-        }
-
-        &.chat {
-          color: #c29323;
-        }
-
-        &.document {
-          color: $accentLight;
-        }
-      }
-
-      .svg-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 10px;
-        background: rgba(97, 113, 234, 0.18);
-        height: 40px;
-        width: 42px;
-        padding: 8px;
-        white-space: nowrap;
-        .lg-react-element {
-          z-index: -1;
-        }
-        svg {
-          font-size: 22px;
-          display: block;
-          color: $blurple;
-          white-space: nowrap;
-
-          &.add-child {
-            font-size: 26px;
-          }
-
-          &.magic {
-            font-size: 20px;
-          }
-
-          &.child,
-          &.checklist {
-            transform: scale(1.25);
-          }
-        }
-      }
     }
   }
 }
@@ -2766,7 +2755,7 @@
     width: calc(100vw - 20px);
     box-shadow: $boxShadow_surround_big;
     background: white;
-    
+
     /*#region  MODAL*/
     #modal {
       overflow: auto;
@@ -2881,12 +2870,12 @@
 
   #relative-wrapper {
     position: relative;
-    padding: 0 15px 15px 15px;
+    padding: 0 15px 25px 15px;
     height: 100%;
     margin-bottom: auto;
     display: block;
+    top: 0;
     overscroll-behavior: none;
-    overflow: hidden;
 
     #share-with-checkbox-group {
       .flex {

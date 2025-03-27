@@ -6,11 +6,11 @@ import globalState from '../../../context.js'
 import DatasetManager from '../../../managers/datasetManager.coffee'
 import DateFormats from '/src/constants/dateFormats'
 import Manager from '/src/managers/manager'
-import StringManager from '/src/managers/stringManager'
 import { FaChildren } from 'react-icons/fa6'
 import { MdLocalPhone } from 'react-icons/md'
 import { PiBellSimpleRingingDuotone, PiGlobeDuotone, PiNotepadDuotone } from 'react-icons/pi'
 import { TbLocationFilled } from 'react-icons/tb'
+import StringManager from '../../../managers/stringManager'
 
 export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (event) => {}}) {
   const {state, setState} = useContext(globalState)
@@ -117,7 +117,8 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                     <div className="flex space-between" id="title-wrapper">
                       <p className="title flex" id="title" data-event-id={event?.id}>
                         <span className={`${dotObject.className} event-type-dot`}></span>
-                        {StringManager.formatTitle(event?.title)}
+                        {event?.title.toLowerCase().includes("birthday") && `${StringManager.formatTitle(event?.title)} 🎂`}
+                        {!event?.title.toLowerCase().includes("birthday") && StringManager.formatTitle(event?.title)}
                       </p>
                     </div>
 

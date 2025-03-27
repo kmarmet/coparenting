@@ -8,27 +8,25 @@ import DB from '/src/database/DB'
 import ChatMessage from '/src/models/chat/chatMessage'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
+import { MdOutlineSearchOff } from 'react-icons/md'
 import ChatManager from '/src/managers/chatManager.js'
 import DateFormats from '/src/constants/dateFormats'
-import { PiBookmarkSimpleDuotone, PiBookmarksSimpleDuotone } from 'react-icons/pi'
+import { PiBookmarksSimpleDuotone } from 'react-icons/pi'
 import ModelNames from '/src/models/modelNames'
 import { Fade } from 'react-awesome-reveal'
-import { IoChevronBack } from 'react-icons/io5'
+import { IoChevronBack, IoSend } from 'react-icons/io5'
 import Modal from '/src/components/shared/modal'
 import { TbMessageCircleSearch } from 'react-icons/tb'
-import { BsBookmarkPlus } from 'react-icons/bs'
+import { BsBookmarkPlus, BsFillBookmarksFill, BsFillBookmarkStarFill } from 'react-icons/bs'
 import { DebounceInput } from 'react-debounce-input'
 import { useLongPress } from 'use-long-press'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import DomManager from '/src/managers/domManager'
-import { BsFillBookmarkStarFill } from 'react-icons/bs'
 import ActivityCategory from '/src/models/activityCategory'
 import ChatThread from '/src/models/chat/chatThread'
 import StringManager from '/src/managers/stringManager.coffee'
-import { IoSend } from 'react-icons/io5'
-import { BsFillBookmarksFill } from 'react-icons/bs'
 
 const Chats = () => {
   const { state, setState } = useContext(globalState)
@@ -44,6 +42,9 @@ const Chats = () => {
   const [searchInputQuery, setSearchInputQuery] = useState('')
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [toneObject, setToneObject] = useState()
+  const [inSearchMode, setInSearchMode] = useState(false)
+
+
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
     AlertManager.successAlert('Message Copied!', false)
@@ -244,6 +245,12 @@ const Chats = () => {
     }
   }, [searchResults.length])
 
+  useEffect(() => {
+    if (showSearchCard) {
+      setInSearchMode(true)
+    }
+  }, [showSearchCard])
+
   return (
     <>
       <Modal
@@ -263,14 +270,14 @@ const Chats = () => {
           setBookmarks([])
           setSearchResults(results)
           setSearchInputQuery('')
-          setState({ ...state, showOverlay: false })
+          setShowSearchCard(false)
         }}
         onClose={() => {
           setShowSearchInput(false)
           setShowSearchCard(false)
+          setInSearchMode(false)
           setSearchResults([])
           scrollToLatestMessage()
-          setRefreshKey(Manager.getUid())
         }}>
         <InputWrapper
           labelText="Find a message..."
@@ -300,7 +307,14 @@ const Chats = () => {
               <p id="user-name">{StringManager.getFirstNameOnly(messageRecipient?.name)}</p>
             </div>
             <div id="right-side" className="flex">
-              <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />
+              {inSearchMode ? <MdOutlineSearchOff onClick={() => {
+                setShowSearchInput(false)
+                setShowSearchCard(false)
+                setInSearchMode(false)
+                setSearchResults([])
+                scrollToLatestMessage()
+              }}/> :  <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />}
+
               {bookmarks.length > 0 && (
                 <BsFillBookmarksFill
                   id="conversation-bookmark-icon"
@@ -364,6 +378,8 @@ const Chats = () => {
           <>
             {/* ITERATE DEFAULT MESSAGES */}
             <div id="default-messages">
+              <Fade direction={'up'} duration={300} triggerOnce={true} damping={0.2} cascade={true}>
+
               {Manager.isValid(messagesToLoop) &&
                 messagesToLoop.map((message, index) => {
                   // Determine bookmark class
@@ -391,6 +407,7 @@ const Chats = () => {
                     </div>
                   )
                 })}
+              </Fade>
             </div>
 
             {/* MESSAGE INPUT */}

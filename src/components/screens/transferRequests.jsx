@@ -7,7 +7,6 @@ import { child, getDatabase, onValue, ref } from 'firebase/database'
 import NotificationManager from '/src/managers/notificationManager.js'
 import DB_UserScoped from '../../database/db_userScoped.js'
 import DateManager from '/src/managers/dateManager.js'
-import NavBar from '../navBar'
 import { GrMapLocation } from 'react-icons/gr'
 import { IoAdd, IoHourglassOutline } from 'react-icons/io5'
 import { IoMdPin } from 'react-icons/io'
@@ -38,6 +37,7 @@ import AddressInput from '../shared/addressInput'
 import { CgDetailsMore } from 'react-icons/cg'
 import ViewSelector from '../shared/viewSelector'
 import CheckboxGroup from '../shared/checkboxGroup'
+import NavBar from '../navBar'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -46,8 +46,8 @@ const Decisions = {
 }
 
 export default function TransferRequests() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey, authUser } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, refreshKey, authUser} = state
   const [existingRequests, setExistingRequests] = useState([])
   const [rejectionReason, setRejectionReason] = useState('')
   const [showNewRequestCard, setShowNewRequestCard] = useState(false)
@@ -67,12 +67,12 @@ export default function TransferRequests() {
     setRequestDate('')
     setResponseDueDate('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser })
+    setState({...state, currentUser: updatedCurrentUser})
   }
 
   const update = async () => {
     // Fill -> overwrite
-    let updatedRequest = { ...activeRequest }
+    let updatedRequest = {...activeRequest}
     updatedRequest.time = requestTime
     updatedRequest.location = requestLocation
     updatedRequest.directionsLink = Manager.getDirectionsLink(requestLocation)
@@ -407,16 +407,16 @@ export default function TransferRequests() {
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
 
-          <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title">Transfer Change Requests</p>
-            {!DomManager.isMobile() && <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />}
-          </div>
-          <p className="text-screen-intro">A proposal to modify the time and/or location for the child exchange on a designated day.</p>
-          <Spacer height={10} />
-          {/* LOOP REQUESTS */}
-          {!showNewRequestCard && (
-            <div id="all-transfer-requests-container" className="mt-15">
-        <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={.2}>
+        <div className="flex" id="screen-title-wrapper">
+          <p className="screen-title">Transfer Change Requests</p>
+          {!DomManager.isMobile() && <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />}
+        </div>
+        <p className="text-screen-intro">A proposal to modify the time and/or location for the child exchange on a designated day.</p>
+        <Spacer height={10} />
+        {/* LOOP REQUESTS */}
+        {!showNewRequestCard && (
+          <div id="all-transfer-requests-container" className="mt-15">
+            <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
               {Manager.isValid(existingRequests) &&
                 existingRequests.map((request, index) => {
                   return (
@@ -451,16 +451,11 @@ export default function TransferRequests() {
                     </div>
                   )
                 })}
-        </Fade>
-            </div>
-          )}
+            </Fade>
+          </div>
+        )}
+        <NavBar/>
       </div>
-
-      {!showNewRequestCard && !showDetails && (
-        <NavBar navbarClass={'transfer-requests'}>
-          <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />
-        </NavBar>
-      )}
     </>
   )
 }

@@ -41,7 +41,6 @@ StringManager = {
       return "#{match[1]}-#{match[2]}-#{match[3]}"
     return phone
 
-
   compressString: (string) ->
     # Import the lz-string library dependency
     compressed = lzstring.compress(string)
@@ -124,9 +123,12 @@ StringManager = {
     str =  str.replace(/\s+/g, '').replaceAll(" ",  "")
     return str
 
+  removeSpecialChars: (str) ->
+    return str.replace(/[^a-zA-Z0-9 ]/g, '')
+
   formatDbProp: (prop) ->
     prop = StringManager.toCamelCase(prop).replaceAll(' ', '')
-    prop
+    StringManager.removeSpecialChars(prop)
 
   addSpaceBetweenWords: (str) ->
     str = str.replace(/([a-z])([A-Z])/, '$1 $2')
@@ -179,7 +181,9 @@ StringManager = {
       .replaceAll(" Up ", " up ")
       .replaceAll(" Via ", " via ")
 
-    return title.trim()
+    title = StringManager.removeSpecialChars(title)
+
+    return title
 
 }
 

@@ -5,15 +5,7 @@ import ScreenNames from '../constants/screenNames'
 import Manager from '../managers/manager'
 import AppManager from '../managers/appManager'
 import { getAuth, signOut } from 'firebase/auth'
-import {
-  BsCalendarWeekFill,
-  BsFillArrowDownSquareFill,
-  BsFillArrowRightCircleFill,
-  BsFillHousesFill,
-  BsFillMoonStarsFill,
-  BsPersonVcardFill,
-  BsSendFill,
-} from 'react-icons/bs'
+import { BsCalendarWeekFill, BsFillArrowDownSquareFill, BsFillArrowRightCircleFill, BsFillHousesFill, BsFillMoonStarsFill, BsPersonVcardFill, BsSendFill } from 'react-icons/bs'
 import { IoChatbubbles, IoDocuments, IoPeopleCircleSharp } from 'react-icons/io5'
 import { PiBellFill, PiSunDuotone } from 'react-icons/pi'
 import { IoMdPhotos } from 'react-icons/io'
@@ -31,7 +23,7 @@ export default function FullMenu() {
 
   const auth = getAuth()
 
-  const changeCurrentScreen = async (screen, menuItem) => {
+  const changeCurrentScreen = async (screen) => {
     const _user = await DB_UserScoped.getCurrentUser(authUser?.email)
 
     setState({ ...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: _user })

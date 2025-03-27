@@ -1,7 +1,6 @@
 // Path: src\components\screens\childInfo\newChildForm.jsx
 import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
-import DB from '../../../database/DB'
+import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import { TiUserAdd } from 'react-icons/ti'
 
@@ -43,6 +42,10 @@ const NewChildForm = ({hideCard, showCard}) => {
     hideCard()
     setGender('male')
     setDateOfBirth('')
+    setProfilePic(null)
+    setPhoneNumber('')
+    setAddress('')
+    setName('')
     setState({...state, refreshKey: Manager.getUid()})
   }
 
@@ -56,13 +59,13 @@ const NewChildForm = ({hideCard, showCard}) => {
       const general = new General()
       general.address = address
       general.phone = phoneNumber
-      general.name = name
+      general.name = StringManager.formatTitle(name, true)
       general.gender = gender
       general.dateOfBirth = dateOfBirth
       newChild.general = general
       newChild.general.profilePic = ''
 
-      AlertManager.successAlert(`${StringManager.getFirstNameOnly(name)} Added!`)
+      AlertManager.successAlert(`${StringManager.getFirstNameOnly(StringManager.formatTitle(name, true))} Added!`)
 
       // Add profile pic
       if (Manager.isValid(_profilePic)) {
@@ -79,22 +82,21 @@ const NewChildForm = ({hideCard, showCard}) => {
       const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.child)
 
       const childBirthdayEvent = new CalendarEvent()
-      childBirthdayEvent.title = `${cleanChild.general.name}'s Birthday 🎂`
+      childBirthdayEvent.title = `${cleanChild.general.name}'s Birthday`
       childBirthdayEvent.startDate = cleanChild.general.dateOfBirth
       childBirthdayEvent.ownerKey = currentUser.key
-      console.log(childBirthdayEvent)
       await CalendarManager.addCalendarEvent(currentUser, childBirthdayEvent)
 
       // Add child to DB
       await DB_UserScoped.addUserChild(currentUser, cleanChild)
 
       await resetForm()
+
+      const updatedCurrentUser  = await DB_UserScoped.getCurrentUser(authUser?.email)
+      setState({ ...state, currentUser: updatedCurrentUser, activeInfoChild: cleanChild })
     }
   }
 
-  const getExistingChildren = async () => {
-    await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, theme, 'children')
-  }
 
   const handleGenderSelect = (e) => {
     Manager.handleCheckboxSelection(
@@ -106,9 +108,7 @@ const NewChildForm = ({hideCard, showCard}) => {
     )
   }
 
-  useEffect(() => {
-    getExistingChildren().then((r) => r)
-  }, [])
+
 
   return (
     <Modal
@@ -116,7 +116,7 @@ const NewChildForm = ({hideCard, showCard}) => {
       onSubmit={submit}
       className="new-child-wrapper"
       wrapperClass="new-child-card"
-      title={`Add ${name.length > 0 ? name : 'Child'}`}
+      title={`Add ${name.length > 0 ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Child'}`}
       showCard={showCard}
       titleIcon={<TiUserAdd className={'add-child'} />}
       onClose={resetForm}>

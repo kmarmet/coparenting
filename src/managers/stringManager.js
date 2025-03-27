@@ -137,9 +137,12 @@ StringManager = {
     str = str.replace(/\s+/g, '').replaceAll(" ", "");
     return str;
   },
+  removeSpecialChars: function(str) {
+    return str.replace(/[^a-zA-Z0-9 ]/g, '');
+  },
   formatDbProp: function(prop) {
     prop = StringManager.toCamelCase(prop).replaceAll(' ', '');
-    return prop;
+    return StringManager.removeSpecialChars(prop);
   },
   addSpaceBetweenWords: function(str) {
     str = str.replace(/([a-z])([A-Z])/, '$1 $2');
@@ -181,7 +184,8 @@ StringManager = {
       title = StringManager.uppercaseFirstLetterOfAllWords(title).trim();
     }
     title = title.replaceAll(" To ", "to").replaceAll(" A ", " a ").replaceAll(" An ", " an ").replaceAll(" Or ", " or ").replaceAll(" Vs ", " vs ").replaceAll(" With ", " with ").replaceAll(" At ", " at ").replaceAll(" About ", " about ").replaceAll(" From ", "from").replaceAll(" The ", " the ").replaceAll(" For ", " for ").replaceAll(" Thru ", " thru ").replaceAll(" And ", " and ").replaceAll(" Is ", " is ").replaceAll(" Not ", " not ").replaceAll(" Off ", " off ").replaceAll(" But ", " but ").replaceAll(" On ", " on ").replaceAll(" Per ", " per ").replaceAll(" Up ", " up ").replaceAll(" Via ", " via ");
-    return title.trim();
+    title = StringManager.removeSpecialChars(title);
+    return title;
   }
 };
 

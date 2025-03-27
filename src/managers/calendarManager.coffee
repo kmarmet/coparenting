@@ -42,7 +42,7 @@ export default CalendarManager =
     if arrayType == "recurring"
       datesToIterate = CalendarMapper.recurringEvents(
         eventObject.repeatInterval,
-        moment(startDate, DateFormats.fullDatetime).format(DateFormats.monthDayYear),
+        moment(startDate).format(DateFormats.monthDayYear),
         endDate
       )
 
@@ -67,7 +67,7 @@ export default CalendarManager =
       dateObject.shareWith = DatasetManager.getUniqueArray(eventObject.shareWith, true)
       dateObject.notes = eventObject.notes
       dateObject.websiteUrl = eventObject.websiteUrl
-      dateObject.isRepeating = eventObject.isRepeating
+      dateObject.isRecurring = eventObject.isRecurring
       dateObject.isDateRange = eventObject.isDateRange
 #      dateObject.isCloned = Manager.isValid(clonedDates)
 
