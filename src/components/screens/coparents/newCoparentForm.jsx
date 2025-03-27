@@ -1,11 +1,9 @@
 // Path: src\components\screens\coparents\newCoparentForm.jsx
 import React, { useContext, useState } from 'react'
-import Autocomplete from 'react-google-autocomplete'
 import globalState from '../../../context'
 import Coparent from '/src/models/coparent'
 import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
-import { RiUserAddLine } from 'react-icons/ri'
 import ModelNames from '/src/models/modelNames'
 import ObjectManager from '/src/managers/objectManager'
 import InputWrapper from '/src/components/shared/inputWrapper'
@@ -94,7 +92,7 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       (e) => {
         setRelationshipType(e)
       },
-      (e) => {
+      () => {
         setRelationshipType('')
       }
     )
@@ -105,10 +103,9 @@ const NewCoparentForm = ({ showCard, hideCard }) => {
       refreshKey={refreshKey}
       onSubmit={submit}
       submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
-      title={'Add Co-Parent'}
+      title={`Add ${Manager.isValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'}`}
       wrapperClass="new-coparent-card"
       showCard={showCard}
-      submitIcon={<RiUserAddLine />}
       onClose={resetForm}>
       <div className="new-coparent-wrapper">
         <div id="new-coparent-container" className={`${theme} form`}>

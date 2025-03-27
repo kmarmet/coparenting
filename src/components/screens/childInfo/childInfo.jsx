@@ -8,17 +8,18 @@ import CustomChildInfo from '../../shared/customChildInfo'
 import Behavior from '/src/components/screens/childInfo/behavior'
 import General from '/src/components/screens/childInfo/general'
 import Medical from '/src/components/screens/childInfo/medical'
+import { TiUserAdd } from 'react-icons/ti'
+import { HiDotsHorizontal } from 'react-icons/hi'
 import Schooling from '/src/components/screens/childInfo/schooling'
-import { FaAngleUp, FaCameraRotate, FaWandMagicSparkles } from 'react-icons/fa6'
+import { FaCameraRotate, FaWandMagicSparkles } from 'react-icons/fa6'
 import { BiImageAdd, BiSolidUserCircle } from 'react-icons/bi'
 import { Fade } from 'react-awesome-reveal'
 import NewChildForm from '/src/components/screens/childInfo/newChildForm'
+import { IoClose, IoPersonAddOutline } from 'react-icons/io5'
 import ChildSelector from '/src/components/screens/childInfo/childSelector'
 import DB_UserScoped from '/src/database/db_userScoped'
-import { IoPersonAddOutline } from 'react-icons/io5'
 import NavBar from '/src/components/navBar'
 import AlertManager from '/src/managers/alertManager'
-import { FaUserPlus } from 'react-icons/fa'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager'
@@ -27,13 +28,11 @@ import Checklists from './checklists'
 import Spacer from '../../shared/spacer'
 import { PiListChecksFill } from 'react-icons/pi'
 import Checklist from './checklist'
-
-import { IoIosArrowDown } from 'react-icons/io'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 
 export default function ChildInfo() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild, showScreenActions } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, activeInfoChild} = state
   const imgRef = useRef()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showSelectorCard, setShowSelectorCard] = useState(false)
@@ -57,7 +56,7 @@ export default function ChildInfo() {
       'profilePic'
     ).then(async (url) => {
       const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', 'profilePic', url)
-      setState({ ...state, activeInfoChild: updatedChild, isLoading: false })
+      setState({...state, activeInfoChild: updatedChild, isLoading: false})
     })
   }
 
@@ -66,11 +65,11 @@ export default function ChildInfo() {
     if (Manager.isValid(children)) {
       if (!Manager.isValid(activeInfoChild)) {
         setTimeout(() => {
-          setState({ ...state, activeInfoChild: children[0] })
+          setState({...state, activeInfoChild: children[0]})
         }, 300)
       } else {
         if (forceSet) {
-          setState({ ...state, activeInfoChild: children[0] })
+          setState({...state, activeInfoChild: children[0]})
         }
       }
     }
@@ -119,17 +118,32 @@ export default function ChildInfo() {
       {/* NEW CHILD  */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
-      {!showScreenActions && <FaAngleUp className={'screen-actions-menu-icon'} onClick={() => setState({ ...state, showScreenActions: true })} />}
-
       <ScreenActionsMenu>
         <div className="action-items">
-          <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={500} triggerOnce={false} cascade={true}>
+          <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={0.2} triggerOnce={false} cascade={true}>
+            {/* ADD CHILD */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowNewChildForm(true)
+                setState({...state, showScreenActions: false})
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <TiUserAdd className={'add-child'} />
+                </div>
+                <p>
+                  Add Child to Your Profile
+                  <span className="subtitle">Store information about a child that has not been added to your profile yet</span>
+                </p>
+              </div>
+            </div>
             {/* CUSTOM INFO */}
             <div
               className="action-item"
               onClick={() => {
                 setShowInfoCard(true)
-                setState({ ...state, showScreenActions: false })
+                setState({...state, showScreenActions: false})
               }}>
               <div className="content">
                 <div className="svg-wrapper">
@@ -146,7 +160,7 @@ export default function ChildInfo() {
               <div
                 onClick={() => {
                   setShowSelectorCard(true)
-                  setState({ ...state, showScreenActions: false })
+                  setState({...state, showScreenActions: false})
                 }}
                 className="action-item">
                 <div className="content">
@@ -165,7 +179,7 @@ export default function ChildInfo() {
               className="action-item"
               onClick={() => {
                 setShowNewChecklistCard(true)
-                setState({ ...state, showScreenActions: false })
+                setState({...state, showScreenActions: false})
               }}>
               <div className="content">
                 <div className="svg-wrapper">
@@ -177,84 +191,85 @@ export default function ChildInfo() {
               </div>
             </div>
           </Fade>
-          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showScreenActions: false })} />
+          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
         </div>
       </ScreenActionsMenu>
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container child-info form`}>
-          <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title beside-action-button">Child Info</p>
+        <div className="flex" id="screen-title-wrapper">
+          <p className="screen-title beside-action-button">Child Info</p>
 
-            {/* ADD NEW BUTTON - DESKTOP */}
-            {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
-          </div>
+          {/* ADD NEW BUTTON - DESKTOP */}
+          {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
+        </div>
 
-          <p>
-            You can store and access all relevant information about your child, particularly essential details that you may need to retrieve at any
-            moment.
-          </p>
+        <p>
+          You can store and access all relevant information about your child, particularly essential details that you may need to retrieve at any
+          moment.
+        </p>
 
-          <Spacer height={10} />
+        <Spacer height={10} />
 
-          {!Manager.isValid(currentUser?.children) && (
-            <NoDataFallbackText
-              text={'Currently, no children have been added. To share events with your children or to store their information, please add them here.'}
-            />
+        {!Manager.isValid(currentUser?.children) && (
+          <NoDataFallbackText
+            text={'Currently, no children have been added. To share events with your children or to store their information, please add them here.'}
+          />
+        )}
+
+        {/* IMAGE AND ACTIONS */}
+        <div id="image-and-actions-wrapper">
+          {/* PROFILE PIC */}
+          {Manager.isValid(activeInfoChild?.general?.profilePic) && (
+            <div className="profile-pic-container" style={{backgroundImage: `url(${activeInfoChild?.general?.profilePic})`}}>
+              <div className="after">
+                <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
+                <FaCameraRotate />
+              </div>
+            </div>
           )}
 
-          {/* IMAGE AND ACTIONS */}
-          <div id="image-and-actions-wrapper">
-            {/* PROFILE PIC */}
-            {Manager.isValid(activeInfoChild?.general?.profilePic) && (
-              <div className="profile-pic-container" style={{ backgroundImage: `url(${activeInfoChild?.general?.profilePic})` }}>
-                <div className="after">
-                  <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
-                  <FaCameraRotate />
-                </div>
+          {/* DEFAULT AVATAR */}
+          {!Manager.isValid(activeInfoChild?.general?.profilePic, true) && (
+            <div className="profile-pic-container no-image">
+              <div className="after">
+                <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
+                <BiImageAdd />
               </div>
-            )}
+            </div>
+          )}
 
-            {/* DEFAULT AVATAR */}
-            {!Manager.isValid(activeInfoChild?.general?.profilePic, true) && (
-              <div className="profile-pic-container no-image">
-                <div className="after">
-                  <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
-                  <BiImageAdd />
-                </div>
-              </div>
-            )}
+          {/* CHILD NAME */}
+          <span className="child-name">{StringManager.getFirstNameOnly(activeInfoChild?.general?.name)}</span>
 
-            {/* CHILD NAME */}
-            <span className="child-name">{StringManager.getFirstNameOnly(activeInfoChild?.general?.name)}</span>
+          {/* REMOVE CHILD BUTTON*/}
+          <button id="remove-child-button" className="default red" onClick={deleteChild}>
+            Remove
+          </button>
+        </div>
 
-            {/* REMOVE CHILD BUTTON*/}
-            <button id="remove-child-button" className="default red" onClick={deleteChild}>
-              Remove
-            </button>
-          </div>
-
-          {/* INFO */}
-          <div id="child-info">
-            {activeInfoChild && (
-              <div className="form">
-        <Fade direction={'right'} duration={800} cascade={true} damping={.2} triggerOnce={true}>
+        {/* INFO */}
+        <div id="child-info">
+          {activeInfoChild && (
+            <div className="form">
+              <Fade direction={'right'} duration={800} cascade={true} damping={0.2} triggerOnce={true}>
                 <General />
                 <Medical />
                 <Schooling />
                 <Behavior />
                 {activeInfoChild?.checklists?.find((x) => x?.fromOrTo === 'from') && <Checklist fromOrTo={'from'} />}
                 {activeInfoChild?.checklists?.find((x) => x?.fromOrTo === 'to') && <Checklist fromOrTo={'to'} />}
-        </Fade>
-              </div>
-            )}
-          </div>
+              </Fade>
+            </div>
+          )}
+        </div>
       </div>
-      {!showNewChildForm && !showSelectorCard && !showInfoCard && (
-        <NavBar navbarClass={'child-info'}>
-          <FaUserPlus onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />
-        </NavBar>
-      )}
+      <NavBar navbarClass={'actions'}>
+        <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
+          <HiDotsHorizontal className={'screen-actions-menu-icon'} />
+          <p>Actions</p>
+        </div>
+      </NavBar>
     </>
   )
 }

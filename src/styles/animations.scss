@@ -12,6 +12,13 @@
   }
 }
 
+@keyframes animateWidth {
+  to {
+    width: 100%;
+  }
+  
+}
+
 @keyframes scaleUp {
   //  0% {
   //    transform: scale(0);

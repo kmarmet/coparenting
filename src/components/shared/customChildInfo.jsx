@@ -13,7 +13,6 @@ import ShareWithCheckboxes from './shareWithCheckboxes'
 import NotificationManager from '../../managers/notificationManager.js'
 import DateFormats from '../../constants/dateFormats'
 import StringManager from '../../managers/stringManager'
-import Spacer from './spacer'
 import ViewSelector from './viewSelector'
 import AddressInput from './addressInput'
 import validator from 'validator'
@@ -108,7 +107,7 @@ export default function CustomChildInfo({ hideCard, showCard }) {
       <div className="form">
 
         <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with" required={false} />
-        <Spacer height={5} />
+
         {/* INFO TYPE */}
         <CheckboxGroup
           parentLabel="Type"
@@ -120,7 +119,6 @@ export default function CustomChildInfo({ hideCard, showCard }) {
           })}
           onCheck={handleInfoTypeSelection}
         />
-        <Spacer height={5} />
 
         {/* INPUTS */}
         {infoType === 'text' && (

@@ -12,6 +12,7 @@ import MyConfetti from '../../shared/myConfetti'
 import AlertManager from '../../../managers/alertManager'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import { CgMathPlus } from 'react-icons/cg'
+import { PiListChecksFill } from 'react-icons/pi'
 
 export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
@@ -65,7 +66,13 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
       }
       // Add new
       else {
-        await DB.add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
+        if (Manager.isValid(newChecklist.checklistItems)) {
+          await DB.add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
+        }
+        else {
+          AlertManager.throwError('Please enter at least one item')
+          return false
+        }
       }
       hideCard()
       MyConfetti.fire()
@@ -135,6 +142,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
       submitIcon={<MdOutlineChecklist />}
       submitText={'DONE'}
       showCard={showCard}
+      titleIcon={<PiListChecksFill/>}
       viewSelector={
         <ViewSelector
           shouldUpdateStateOnLoad={false}
@@ -150,7 +158,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
           labels={['From Co-Parent', 'To Co-Parent']}
         />
       }
-      subtitle="A transfer checklist allows you and your child to ensure that nothing is left behind when transferring to or from your co-parent's home"
+      subtitle="Add a transfer checklist which will allow you and your child to ensure that nothing is left behind when transferring to or from your co-parent's home."
       title={'Transfer Checklists'}
       onClose={hideCard}>
       <div id="inputs" key={refreshKey}></div>

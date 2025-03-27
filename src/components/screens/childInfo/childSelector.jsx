@@ -26,7 +26,7 @@ function ChildSelector({ hideCard, showCard }) {
       hasSubmitButton={false}
       onClose={hideCard}
       title={'View Another Child'}
-      subtitle="Choose the child whose information you wish to view or modify"
+      subtitle="Choose the child whose information you wish to view or modify."
       showCard={showCard}
       wrapperClass="child-selector-card"
       className={`child-selector`}>

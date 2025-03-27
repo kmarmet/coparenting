@@ -1056,7 +1056,7 @@
     justify-content: space-between;
     border-radius: 25px 25px 0 0;
     margin-bottom: 10px;
-    padding: 20px 0 10px 20px;
+    padding: 20px 0 10px 0;
     white-space: nowrap;
 
     svg {
@@ -1173,9 +1173,9 @@
     }
   }
 
-  .close-arrow {
+  .close-button {
     color: $primaryText;
-    margin: 0 auto;
+    margin:20px auto 0 auto;
     background: $mediumGrey;
     height: 35px;
     width: 35px;
@@ -1195,7 +1195,7 @@
     bottom: -100%;
     border-radius: 25px 25px 0 0;
     box-shadow: $boxShadow_float;
-    padding-bottom: $homeIndicatorHeight;
+    padding: 30px 20px $homeIndicatorHeight 20px;
 
     #menu-content {
       max-width: calc(100% - 20px);
@@ -1208,7 +1208,6 @@
       padding-top: 0;
       .action-item {
         margin-bottom: 0;
-        padding-left: 20px;
         .content {
           align-items: center;
           gap: 10px;
@@ -1323,7 +1322,7 @@
           text-align: left;
           font-size: 13px;
           font-weight: $fwRegular;
-          padding-top: 4px;
+          padding-top: 2px;
           line-height: 1.3;
           color: $subtitleText;
         }
@@ -1337,7 +1336,7 @@
         color: $blurple;
 
         .subtitle {
-          font-size: 15px;
+          font-size: 14.5px;
         }
 
         &.calendar {
@@ -1387,6 +1386,14 @@
           display: block;
           color: $blurple;
           white-space: nowrap;
+          
+          &.add-child {
+            font-size: 26px;
+          }
+          
+          &.magic {
+            font-size: 20px;
+          }
 
           &.child,
           &.checklist {
@@ -1693,7 +1700,6 @@
 
   &.child-info {
     padding-left: 80px;
-    max-width: 100%;
     overflow: auto;
   }
 
@@ -1712,14 +1718,14 @@
     justify-content: center;
     align-items: center;
     padding: 10px 20px;
-    width: 50%;
     border-radius: 15px;
     text-align: center;
+    transition: all .3s ease-in-out;
     margin: 3px 0;
     white-space: nowrap;
-    background: rgb(211, 211, 211);
     background: $oneMillionGrey;
     color: $subtitleText;
+    flex: 0;
     opacity: 0.65;
     @include hover;
 
@@ -1727,10 +1733,11 @@
       opacity: 1;
       font-weight: $fwMediumBold;
       display: flex;
-      color: $accentLight;
-      background: rgb(185, 195, 255);
+      color: $headerText;
+      transition: all .4s ease-in-out;
+      background: white;
+      flex: 1;
       border: 0;
-      width: 100%;
     }
 
     &.hide {
@@ -3465,6 +3472,7 @@
       z-index: 10000;
       position: relative;
       width: 40%;
+      min-width: 100px;
       -ms-transform: none;
       transform: none;
       box-shadow: none;
@@ -3594,8 +3602,8 @@
     }
 
     .new-item-button {
-      background: $greyOnGreyBorder;
-      color: black;
+      background: #e7e7e7;
+      color: $headerText;
       font-weight: $fwMedium;
     }
 
@@ -4499,7 +4507,17 @@
     display: none;
   }
 
-  &.child-info {
+  &.actions {
+    #menu-items {
+      flex-wrap: nowrap;
+      display: flex;
+      
+      .menu-item {
+        &.notifications {
+          display: none;
+        }
+      }
+    }
     #svg-wrapper {
       #add-new-button {
         font-size: 32px;
@@ -4538,6 +4556,7 @@
     position: relative;
     bottom: 10px;
     box-shadow: 0 6px 10px 6px rgba(76, 114, 197, 0.6);
+    
 
     svg {
       transform: scale(1.2);

@@ -7,7 +7,6 @@ import { RiMapPinTimeFill } from 'react-icons/ri'
 import { MdSwapHorizontalCircle } from 'react-icons/md'
 import { FaDonate, FaFileUpload } from 'react-icons/fa'
 import CreationForms from '../../constants/creationForms'
-
 import { IoChatbubbles, IoClose } from 'react-icons/io5'
 
 const CreationMenu = () => {
@@ -131,7 +130,7 @@ const CreationMenu = () => {
          </div>
         </Fade>
        </div>
-        <IoClose className={'close-arrow'} onClick={() => setState({ ...state, showCreationMenu: false, creationFormToShow: '' })} />
+        <IoClose className={'close-button'} onClick={() => setState({ ...state, showCreationMenu: false, creationFormToShow: '' })} />
       </div>
     </div>
   )

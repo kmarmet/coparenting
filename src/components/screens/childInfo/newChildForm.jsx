@@ -1,13 +1,14 @@
 // Path: src\components\screens\childInfo\newChildForm.jsx
 import moment from 'moment'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import DB from '../../../database/DB'
 import globalState from '../../../context'
+import { TiUserAdd } from 'react-icons/ti'
+
 import Manager from '../../../managers/manager'
 import General from '../../../models/child/general'
 import Child from '../../../models/child/child'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
-import { BsGenderAmbiguous } from 'react-icons/bs'
 import DB_UserScoped from '../../../database/db_userScoped'
 import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import ModelNames from '../../../models/modelNames'
@@ -19,17 +20,15 @@ import UploadInputs from '../../shared/uploadInputs'
 import ImageManager from '../../../managers/imageManager'
 import FirebaseStorage from '../../../database/firebaseStorage'
 import Label from '../../shared/label'
-import Spacer from '../../shared/spacer'
 import DomManager from '../../../managers/domManager.js'
 import AddressInput from '/src/components/shared/addressInput.jsx'
 import StringManager from '../../../managers/stringManager.js'
 import CalendarManager from '../../../managers/calendarManager'
 import CalendarEvent from '../../../models/calendarEvent'
-import { FaChildren } from 'react-icons/fa6'
-import { BsCameraFill } from 'react-icons/bs'
-const NewChildForm = ({ hideCard, showCard }) => {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, authUser, refreshKey } = state
+
+const NewChildForm = ({hideCard, showCard}) => {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, authUser, refreshKey} = state
 
   // State
   const [name, setName] = useState('')
@@ -44,8 +43,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
     hideCard()
     setGender('male')
     setDateOfBirth('')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
+    setState({...state, refreshKey: Manager.getUid()})
   }
 
   const submit = async () => {
@@ -120,6 +118,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
       wrapperClass="new-child-card"
       title={`Add ${name.length > 0 ? name : 'Child'}`}
       showCard={showCard}
+      titleIcon={<TiUserAdd className={'add-child'} />}
       onClose={resetForm}>
       <div id="new-child-container" className={`${theme}  form`}>
         <div className="form new-child-form">
@@ -128,7 +127,7 @@ const NewChildForm = ({ hideCard, showCard }) => {
           <InputWrapper labelText={'Phone Number'} required={false} onChange={(e) => setPhoneNumber(e.target.value)} />
           {!DomManager.isMobile() && (
             <InputWrapper labelText={'Date of Birth'} required={true} inputType={'date'}>
-              <MobileDatePicker className="mt-0 w-100 event-from-date mui-input" onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
+              <MobileDatePicker onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
             </InputWrapper>
           )}
           {DomManager.isMobile() && (
@@ -158,7 +157,6 @@ const NewChildForm = ({ hideCard, showCard }) => {
             })}
             onCheck={handleGenderSelect}
           />
-          <Spacer height={5} />
           <Label classes="standalone-label-wrapper" text={'Photo'}></Label>
 
           {/* UPLOAD BUTTON */}

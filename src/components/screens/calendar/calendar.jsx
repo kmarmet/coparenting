@@ -28,7 +28,6 @@ import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { BiSolidCalendarPlus } from 'react-icons/bi'
 
 export default function EventCalendar() {
   const { state, setState } = useContext(globalState)
@@ -553,17 +552,7 @@ export default function EventCalendar() {
       )}
 
       {/* NAV BARS */}
-      {DomManager.isMobile() && (
-        <>
-          {!showNewEventCard && !showSearchCard && !showEditCard && !showHolidaysCard && !showHolidays && (
-            <NavBar navbarClass={'calendar search-results'} addOrClose={searchResults.length === 0 ? 'add' : 'close'}>
-              {searchResults.length === 0 && (
-                <BiSolidCalendarPlus className={'new-event-icon'} id={'add-new-button'} onClick={() => setShowNewEventCard(true)} />
-              )}
-            </NavBar>
-          )}
-        </>
-      )}
+      <NavBar/>
     </>
   )
 }

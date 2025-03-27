@@ -8,8 +8,9 @@ import { LuCalendarDays } from 'react-icons/lu'
 import { HiOutlineMenu } from 'react-icons/hi'
 import { PiPlusBold } from 'react-icons/pi'
 import { FaCalendarAlt } from 'react-icons/fa'
+import Manager from '../managers/manager'
 
-export default function NavBar({children, navbarClass, addOrClose = 'add'}) {
+export default function NavBar({children, navbarClass}) {
   const {state, setState} = useContext(globalState)
   const {currentScreen, currentUser, menuIsOpen, theme, notificationCount} = state
 
@@ -20,6 +21,7 @@ export default function NavBar({children, navbarClass, addOrClose = 'add'}) {
       activeInfoChild: null,
     })
   }
+
 
   useEffect(() => {
     const addNewButton = document.getElementById('add-new-button')
@@ -57,7 +59,7 @@ export default function NavBar({children, navbarClass, addOrClose = 'add'}) {
               )}
 
               {/* MENU BUTTON */}
-              <div id="svg-wrapper" onClick={() => setState({...state, menuIsOpen: true})}>
+              <div id="svg-wrapper" className="menu-button" onClick={() => setState({...state, menuIsOpen: true})}>
                 <HiOutlineMenu className={'menu'} />
               </div>
 
@@ -79,6 +81,8 @@ export default function NavBar({children, navbarClass, addOrClose = 'add'}) {
                 <PiPlusBold className={'create'} />
                 <p>Create</p>
               </div>
+
+              {Manager.isValid(children) && children}
             </Fade>
           </div>
         </div>

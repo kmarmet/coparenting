@@ -6,9 +6,10 @@ import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
 import DB_UserScoped from '/src/database/db_userScoped'
 import CustomCoparentInfo from './customCoparentInfo'
+import { HiDotsHorizontal } from 'react-icons/hi'
 import NewCoparentForm from './newCoparentForm'
-import { FaAngleUp, FaUserPlus, FaWandMagicSparkles } from 'react-icons/fa6'
-import { IoPersonRemove } from 'react-icons/io5'
+import { FaWandMagicSparkles } from 'react-icons/fa6'
+import { IoClose, IoPersonAdd, IoPersonRemove } from 'react-icons/io5'
 import { Fade } from 'react-awesome-reveal'
 import NavBar from '/src/components/navBar.jsx'
 import { BsFillSendFill, BsPersonAdd } from 'react-icons/bs'
@@ -23,9 +24,7 @@ import AddressInput from '../../shared/addressInput'
 import Modal from '../../shared/modal'
 import EmailManager from '../../../managers/emailManager'
 import Spacer from '../../shared/spacer'
-
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
-import { IoIosArrowDown } from 'react-icons/io'
 
 export default function Coparents() {
   const { state, setState } = useContext(globalState)
@@ -59,7 +58,7 @@ export default function Coparents() {
     const coparent = await getCoparent()
     await DB_UserScoped.updateCoparent(currentUser, coparent, StringManager.formatDbProp(prop), value)
     const updatedCoparent = await getCoparent()
-    console.log(updatedCoparent)
+
     setSelectedCoparentDataArray(Object.entries(updatedCoparent))
   }
 
@@ -103,11 +102,27 @@ export default function Coparents() {
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
-      {!showScreenActions && <FaAngleUp className={'screen-actions-menu-icon'} onClick={() => setState({ ...state, showScreenActions: true })} />}
 
       <ScreenActionsMenu>
         <div className="action-items">
           <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={.2} triggerOnce={false} cascade={true}>
+            {/* ADD COPARENT */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowNewCoparentFormCard(true)
+                setState({...state, showScreenActions: false})
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <IoPersonAdd className={'add-child fs-22'} />
+                </div>
+                <p>
+                  Add Co-Parent to Your Profile
+                  <span className="subtitle">Include a co-parent in your profile to save their details and facilitate information sharing with them</span>
+                </p>
+              </div>
+            </div>
             <div
               className="action-item"
               onClick={() => {
@@ -119,7 +134,7 @@ export default function Coparents() {
                   <FaWandMagicSparkles className={'magic'} />
                 </div>
                 <p>
-                  Add your Own Info<span className="subtitle">Include personalized details about your co-parent</span>
+                  Add your Own Info<span className="subtitle">Include personalized details about {selectedCoparentDataArray?.find(x => x[0] === 'name')[1]}</span>
                 </p>
               </div>
             </div>
@@ -138,7 +153,7 @@ export default function Coparents() {
                   <IoPersonRemove className={'remove-user'} />
                 </div>
                 <p>
-                  Remove Co-Parent <span className="subtitle">Remove the chosen coparent from your profile</span>
+                  Remove Co-Parent <span className="subtitle">Remove {selectedCoparentDataArray?.find(x => x[0] === 'name')[1]} from your profile</span>
                 </p>
               </div>
             </div>
@@ -159,7 +174,7 @@ export default function Coparents() {
               </div>
             </div>
           </Fade>
-          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showScreenActions: false })} />
+          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
         </div>
       </ScreenActionsMenu>
 
@@ -185,7 +200,6 @@ export default function Coparents() {
         <InputWrapper labelText={'Co-Parent Email Address'} required={true} onChange={(e) => setInvitedCoparentEmail(e.target.value)} />
       </Modal>
 
-      {/*{!selectedCoparentDataArray && <NoDataFallbackText text={'No Co-Parents Added'} />}*/}
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container coparents-wrapper form`}>
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
@@ -276,11 +290,12 @@ export default function Coparents() {
           </div>
         </Fade>
       </div>
-      {!showNewCoparentFormCard && !showCustomInfoCard && (
-        <NavBar navbarClass={'calendar'}>
-          <FaUserPlus id={'add-new-button'} onClick={() => setShowNewCoparentFormCard(true)} />
-        </NavBar>
-      )}
+      <NavBar navbarClass={'actions'}>
+        <div  onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
+          <HiDotsHorizontal className={'screen-actions-menu-icon'} />
+          <p>Actions</p>
+        </div>
+      </NavBar>
     </>
   )
 }

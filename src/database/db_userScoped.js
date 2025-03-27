@@ -4,7 +4,6 @@ import _ from 'lodash'
 import Manager from '../managers/manager'
 import ModelNames from '../models/modelNames'
 import User from '../models/user'
-import UserKey from '../models/userKey'
 import DB from './DB'
 import FirebaseStorage from './firebaseStorage'
 import DatasetManager from '/src/managers/datasetManager'
@@ -364,6 +363,7 @@ const DB_UserScoped = {
   deleteCoparentInfoProp: async (currentUser, prop, coparent) => {
     const dbRef = ref(getDatabase())
     let removalKey = await DB.getNestedSnapshotKey(`users/${currentUser?.key}/coparents/`, coparent, 'id')
+    console.log(`users/${currentUser?.key}/coparents/${removalKey}/${StringManager.formatDbProp(prop)}`)
     await remove(child(dbRef, `users/${currentUser?.key}/coparents/${removalKey}/${StringManager.formatDbProp(prop)}`))
   },
   deleteUserChildPropByPath: async (currentUser, activeChild, section, prop) => {
