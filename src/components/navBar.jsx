@@ -9,9 +9,9 @@ import { HiOutlineMenu } from 'react-icons/hi'
 import { PiPlusBold } from 'react-icons/pi'
 import { FaCalendarAlt } from 'react-icons/fa'
 
-export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
-  const { state, setState } = useContext(globalState)
-  const { currentScreen, currentUser, menuIsOpen, theme, notificationCount } = state
+export default function NavBar({children, navbarClass, addOrClose = 'add'}) {
+  const {state, setState} = useContext(globalState)
+  const {currentScreen, currentUser, menuIsOpen, theme, notificationCount} = state
 
   const changeCurrentScreen = async (screen) => {
     setState({
@@ -57,10 +57,8 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               )}
 
               {/* MENU BUTTON */}
-              <div onClick={() => setState({ ...state, menuIsOpen: true })}>
-                <div id="svg-wrapper">
-                  <HiOutlineMenu className={'menu'} />
-                </div>
+              <div id="svg-wrapper" onClick={() => setState({...state, menuIsOpen: true})}>
+                <HiOutlineMenu className={'menu'} />
               </div>
 
               {/* NOTIFICATIONS */}
@@ -77,7 +75,7 @@ export default function NavBar({ children, navbarClass, addOrClose = 'add' }) {
               </div>
 
               {/* CREATE */}
-              <div onClick={() => setState({ ...state, showCreationMenu: true })} className={`menu-item`}>
+              <div onClick={() => setState({...state, showCreationMenu: true})} className={`menu-item`}>
                 <PiPlusBold className={'create'} />
                 <p>Create</p>
               </div>

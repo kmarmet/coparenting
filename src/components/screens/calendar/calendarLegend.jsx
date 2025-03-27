@@ -5,7 +5,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import { Fade } from 'react-awesome-reveal'
 import { RiCloseCircleFill } from 'react-icons/ri'
 
-export default function Legend() {
+export default function CalendarLegend() {
   const [showLegend, setShowLegend] = useState(false)
 
   // ON PAGE LOAD

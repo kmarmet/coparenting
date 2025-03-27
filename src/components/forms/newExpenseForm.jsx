@@ -5,7 +5,6 @@ import { MobileDatePicker } from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import globalState from '../../context'
 import { MdEventRepeat } from 'react-icons/md'
-import { PiMoneyWavyDuotone } from 'react-icons/pi'
 import Toggle from 'react-toggle'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
@@ -14,6 +13,7 @@ import DateFormats from '/src/constants/dateFormats'
 import ExpenseCategories from '/src/constants/expenseCategories.js'
 import DB from '../../database/DB'
 import DB_UserScoped from '../../database/db_userScoped'
+import { RiMoneyDollarCircleLine } from 'react-icons/ri'
 import FirebaseStorage from '/src/database/firebaseStorage'
 import AlertManager from '/src/managers/alertManager'
 import DateManager from '/src/managers/dateManager'
@@ -167,6 +167,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
         )
       }
 
+      
       // Go back to expense screen
       await resetForm()
     })
@@ -210,7 +211,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       async () => {
         setExpenseChildren(expenseChildren.filter((x) => x !== childName))
       },
-      false
+      true
     )
   }
 
@@ -275,20 +276,6 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     )
   }
 
-  const deleteLastNumber = () => {
-    setExpenseAmount(expenseAmount.substring(0, expenseAmount.length - 1))
-  }
-
-  const onNumpadPress = (e) => {
-    const numberButton = e.target
-    const number = e.target.textContent
-    setExpenseAmount((amount) => (amount += number))
-    numberButton.classList.add('pressed', 'animate', 'active')
-    setTimeout(() => {
-      numberButton.classList.remove('pressed')
-    }, 50)
-  }
-
   const onDefaultAmountPress = (e) => {
     const numberButton = e.target
     const number = parseInt(e.target.textContent.replace('$', ''))
@@ -317,8 +304,8 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       refreshKey={refreshKey}
       hasDelete={false}
       onSubmit={submitNewExpense}
-      submitIcon={<PiMoneyWavyDuotone />}
       submitText={'Submit'}
+      titleIcon={<RiMoneyDollarCircleLine/>}
       title={'Create Expense'}
       className="new-expense-card"
       wrapperClass="new-expense-card"
@@ -436,12 +423,9 @@ export default function NewExpenseForm({ hideCard, showCard }) {
             onCheck={handlePayerSelection}
           />
 
-          <Spacer height={5} />
-
           {/* SHARE WITH */}
           <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
 
-          <Spacer height={5} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {currentUser && currentUser?.children !== undefined && (
@@ -461,7 +445,6 @@ export default function NewExpenseForm({ hideCard, showCard }) {
               )}
             </div>
           )}
-          <Spacer height={5} />
 
           {/* REPEATING? */}
           <div className="share-with-container" id="repeating-container">
@@ -475,7 +458,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
                       unchecked: null,
                     }}
                     className={'ml-auto reminder-toggle'}
-                    onChange={(e) => setIsRepeating(!isRepeating)}
+                    onChange={() => setIsRepeating(!isRepeating)}
                   />
                 </div>
               )}

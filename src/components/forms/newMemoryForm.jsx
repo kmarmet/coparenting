@@ -157,7 +157,7 @@ export default function NewMemoryForm() {
       submitText={'Add Memory'}
       submitIcon={<LuImagePlus />}
       title={'Share Memory'}
-      titleIcon={<TbPhotoHeart/>}
+      titleIcon={<TbPhotoHeart className={"fs-24"}/>}
       onClose={resetForm}
       showCard={creationFormToShow === creationForms.memories}>
       <div className="new-memory-wrapper">

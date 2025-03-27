@@ -527,7 +527,7 @@
 
     .MuiPickersDay-today:not(.Mui-selected) {
       opacity: 1 !important;
-      border: 1px solid $lightBorderColor !important;
+      border: 1px solid $disabledText !important;
       border-radius: 50% !important;
       font-weight: $fwMediumBold !important;
       width: 51px !important;
@@ -572,7 +572,7 @@
         margin: 0 auto 25px auto !important;
         width: calc(100vw - 30px) !important;
         border-radius: $bigBorderRadius;
-        @include bestShadow;
+        box-shadow: $boxShadow_surround_small;
         padding: 15px 0;
         
         .MuiPickersMonth-monthButton {
@@ -792,30 +792,36 @@
       width: auto;
     }
 
+    // BELOW CALENDAR BUTTONS
     button,
     p {
       opacity: 1 !important;
       text-transform: uppercase;
       margin: 0;
       font-size: 12px !important;
-      padding: 8px 12px !important;
+      padding: 6px 12px !important;
       line-height: 1 !important;
       text-align: center !important;
       position: relative;
       border-radius: 6px;
-      font-weight: $fwMediumBold !important;
-      color: $darkerSubtleText !important;
-      border: 1px solid rgba(115, 115, 115, 0.51);
+      font-weight: $fwMedium !important;
+      color: rgba(115, 115, 115, .9) !important;
+      background: #FAFAFA;
+      border: 1px solid rgba(115, 115, 115, 0.2);
     }
 
     .divider {
       color: $lightDarkGrey !important;
     }
 
+    // TODAY BUTTON
     .MuiButtonBase-root {
       font-size: 12px !important;
-      padding: 8px 12px !important;
+      padding: 6px 12px !important;
       text-align: center !important;
+      color: rgba(115, 115, 115, .9) !important;
+      background: #FAFAFA;
+      border: 1px solid rgba(115, 115, 115, 0.2);
 
       @media screen and (max-width: 400px) {
         font-size: 13px !important;

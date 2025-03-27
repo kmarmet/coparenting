@@ -8,6 +8,7 @@ import DatasetManager from '/src/managers/datasetManager'
 import DateFormats from '/src/constants/dateFormats'
 import DateManager from '/src/managers/dateManager'
 import DomManager from '/src/managers/domManager'
+import { TbCalendarSearch } from 'react-icons/tb'
 import EditCalEvent from '/src/components/forms/editCalEvent'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Manager from '/src/managers/manager'
@@ -21,7 +22,7 @@ import { StaticDatePicker } from '@mui/x-date-pickers-pro'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
 import { BsStars } from 'react-icons/bs'
 import CalendarEvents from './calendarEvents.jsx'
-import Legend from './legend.jsx'
+import CalendarLegend from './calendarLegend.jsx'
 import DesktopLegend from './desktopLegend.jsx'
 import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
@@ -364,7 +365,6 @@ export default function EventCalendar() {
         legendButton.classList.toggle('active')
       })
     }
-    console.log(window.innerHeight)
     const screenHeight = window.innerHeight
     const pageContainer = document.querySelector('.page-container')
     if (pageContainer) {
@@ -401,6 +401,7 @@ export default function EventCalendar() {
           className="search-card"
           wrapperClass="search-card"
           title={'Find Events'}
+          titleIcon={<TbCalendarSearch />}
           onClose={viewAllEvents}
           showCard={showSearchCard}
           onSubmit={search}>
@@ -441,7 +442,7 @@ export default function EventCalendar() {
         </div>
 
         {/* LEGEND */}
-        <Legend />
+        <CalendarLegend />
 
         {/* BELOW CALENDAR BUTTONS */}
         {!showHolidays && !showSearchCard && (

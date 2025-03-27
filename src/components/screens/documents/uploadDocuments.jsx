@@ -3,6 +3,8 @@ import React, { useContext, useState } from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager.js'
 import FirebaseStorage from '/src/database/firebaseStorage'
+import { FaFileUpload } from 'react-icons/fa'
+
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import Doc from '/src/models/doc'
 import NotificationManager from '/src/managers/notificationManager'
@@ -16,7 +18,6 @@ import ImageManager from '/src/managers/imageManager'
 import ModelNames from '/src/models/modelNames'
 import ObjectManager from '/src/managers/objectManager'
 import DocumentsManager from '/src/managers/documentsManager'
-import { HiOutlineDocumentArrowUp } from 'react-icons/hi2'
 import ActivityCategory from '/src/models/activityCategory'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import DB from '/src/database/DB'
@@ -198,8 +199,8 @@ export default function UploadDocuments({hideCard, showCard}) {
       onSubmit={upload}
       submitText={'Upload'}
       showCard={showCard}
-      submitIcon={<HiOutlineDocumentArrowUp />}
       title={'Upload Document'}
+      titleIcon={ <FaFileUpload className={'document'} />}
       onClose={resetForm}>
       <div className="upload-doc-wrapper">
         {/* PAGE CONTAINER */}

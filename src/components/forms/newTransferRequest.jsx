@@ -6,6 +6,8 @@ import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import TransferChangeRequest from '/src/models/transferChangeRequest.js'
 import moment from 'moment'
 import DB from '/src/database/DB'
+import { RiMapPinTimeFill } from 'react-icons/ri'
+
 import NotificationManager from '/src/managers/notificationManager.js'
 import DB_UserScoped from '/src/database/db_userScoped'
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
@@ -22,7 +24,7 @@ import AddressInput from '../shared/addressInput'
 import Spacer from '../shared/spacer'
 import creationForms from '../../constants/creationForms'
 
-export default function NewTransferChangeRequest({ showCard }) {
+export default function NewTransferChangeRequest() {
   const { state, setState } = useContext(globalState)
   const { currentUser, theme, authUser, creationFormToShow } = state
   const [requestReason, setRequestReason] = useState('')
@@ -153,7 +155,8 @@ export default function NewTransferChangeRequest({ showCard }) {
       onSubmit={submit}
       submitText={'Send Request'}
       wrapperClass="new-transfer-request"
-      title={'Create Transfer Change Request'}
+      title={'Request Transfer Change '}
+      titleIcon={<RiMapPinTimeFill />}
       showCard={creationFormToShow === creationForms.transferRequest}
       onClose={resetForm}>
       <div className="transfer-request-wrapper">

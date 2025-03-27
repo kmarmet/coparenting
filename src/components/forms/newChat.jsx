@@ -5,15 +5,15 @@ import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import globalState from '../../context'
 import DB_UserScoped from '../../database/db_userScoped'
+import { FaUserCircle } from 'react-icons/fa'
 import AlertManager from '../../managers/alertManager'
 import ScreenNames from '../../constants/screenNames'
 import SecurityManager from '../../managers/securityManager'
-import { TbMessageCirclePlus } from 'react-icons/tb'
 import { BiMessageRoundedAdd } from 'react-icons/bi'
 
-const MyComponent = () => {
+const NewChatSelector = () => {
   const { state, setState } = useContext(globalState)
-  const { currentUser, theme, showCreationMenu, creationFormToShow, authUser } = state
+  const { currentUser, creationFormToShow} = state
   const [activeChatKeys, setActiveChatKeys] = useState([])
 
   const getSecuredChats = async () => {
@@ -21,11 +21,6 @@ const MyComponent = () => {
     const members = securedChats.map((x) => x.members).flat()
     const activeChats = members.filter((x) => x?.key && x?.key !== currentUser?.key)
     const activeChatKeys = activeChats.map((x) => x?.key)
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-    // if (activeChatKeys.length === validAccounts) {
-    //   setShowNewChatButton(false)
-    // }
-    // setChats(securedChats)
     console.log(activeChatKeys)
     setActiveChatKeys(activeChatKeys)
   }
@@ -48,20 +43,23 @@ const MyComponent = () => {
   }
 
   useEffect(() => {
-    if (authUser) {
+    if (Manager.isValid(currentUser) && creationFormToShow === CreationForms.chat) {
       getSecuredChats().then((r) => r)
     }
-    console.log(authUser)
-  }, [])
+  }, [creationFormToShow])
 
   return (
     <Modal
       hasSubmitButton={false}
       className="new-chat"
       wrapperClass="new-chat"
-      onClose={() => setState({ ...state, showCreationMenu: false, creationFormToShow: null })}
+      onClose={() => setState({ ...state, showCreationMenu: false, creationFormToShow: null , refreshKey: Manager.getUid()})}
       showCard={creationFormToShow === CreationForms.chat}
+      titleIcon={<BiMessageRoundedAdd/>}
       title={'Create Chat'}>
+      {activeChatKeys.length === currentUser?.coparents?.length && (
+          <p className="center-text italic">You have an existing chat with all children and/or co-parents</p>
+      )}
       {/* COPARENTS */}
       {currentUser?.accountType === 'parent' &&
         Manager.isValid(currentUser?.coparents) &&
@@ -71,7 +69,7 @@ const MyComponent = () => {
               {!activeChatKeys.includes(coparent?.key) && (
                 <div id="users-wrapper">
                   <div className="user-wrapper">
-                    <TbMessageCirclePlus />
+                    <FaUserCircle/>
                     <p
                       className="coparent-name new-thread-coparent-name"
                       onClick={() => {
@@ -112,4 +110,4 @@ const MyComponent = () => {
   )
 }
 
-export default MyComponent
+export default NewChatSelector

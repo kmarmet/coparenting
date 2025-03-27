@@ -13,6 +13,7 @@ import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputD
 import ModelNames from '/src/models/modelNames'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import { MdOutlineSwapHorizontalCircle } from 'react-icons/md'
 import DateFormats from '/src/constants/dateFormats'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
@@ -155,7 +156,10 @@ export default function NewSwapRequest() {
       refreshKey={refreshKey}
       onSubmit={submit}
       wrapperClass="new-swap-request"
-      title={'Create Swap Request'}
+
+      title={'Request Visitation Swap'}
+      subtitle="Request for your child(ren) to remain with you during the designated visitation time of your co-parent."
+      titleIcon={<MdOutlineSwapHorizontalCircle />}
       viewSelector={
         <ViewSelector
           labels={['Day', 'Days', 'Hours']}

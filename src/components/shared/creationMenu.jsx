@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import { IoIosArrowDown, IoIosCheckmarkCircle, IoMdPhotos } from 'react-icons/io'
+import { IoMdPhotos } from 'react-icons/io'
 import { Fade } from 'react-awesome-reveal'
 import globalState from '../../context'
 import { BsCalendarWeekFill } from 'react-icons/bs'
@@ -7,7 +7,8 @@ import { RiMapPinTimeFill } from 'react-icons/ri'
 import { MdSwapHorizontalCircle } from 'react-icons/md'
 import { FaDonate, FaFileUpload } from 'react-icons/fa'
 import CreationForms from '../../constants/creationForms'
-import { IoChatbubbles } from 'react-icons/io5'
+
+import { IoChatbubbles, IoClose } from 'react-icons/io5'
 
 const CreationMenu = () => {
   const { state, setState } = useContext(globalState)
@@ -28,7 +29,7 @@ const CreationMenu = () => {
   return (
     <div id="creation-menu-wrapper" className={showCreationMenu ? 'open' : 'closed'}>
       <div className="action-items creation">
-        <p id="creation-menu-title">Select a Resource to Create <IoIosCheckmarkCircle/></p>
+        <p id="creation-menu-title">Select a Resource to Create </p>
        <div id="menu-content">
         <Fade direction={'right'} className={'creation-fade-wrapper'} duration={800} triggerOnce={false} cascade={true} damping={0.2}>
          {/* CALENDAR */}
@@ -130,7 +131,7 @@ const CreationMenu = () => {
          </div>
         </Fade>
        </div>
-        <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showCreationMenu: false, creationFormToShow: '' })} />
+        <IoClose className={'close-arrow'} onClick={() => setState({ ...state, showCreationMenu: false, creationFormToShow: '' })} />
       </div>
     </div>
   )

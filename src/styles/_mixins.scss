@@ -1011,7 +1011,6 @@
   height: 100vh;
   transition: all 0.6s ease-out;
   z-index: -1;
-  backdrop-filter: blur(5px);
   position: absolute;
   top: 0;
   left: 0;
@@ -1019,11 +1018,11 @@
   right: 0;
 
   &.open {
+  backdrop-filter: blur(5px);
     z-index: 999999999;
     background-color: rgba(0, 0, 0, 0.35);
     transition: all 0.6s ease-in;
     .action-items {
-      transition: all 0.6s ease-in-out;
       bottom: 0;
       opacity: 1;
     }
@@ -1046,10 +1045,10 @@
     line-height: 1;
     width: 100%;
     text-align: left;
-    padding: 25px 20px 0 0;
     font-size: 22px;
     color: $headerText;
     font-weight: $fwMedium;
+    border-bottom: 1px solid $greyOnWhiteBorder;
     position: sticky;
     top: 0;
     display: flex;
@@ -1057,6 +1056,7 @@
     justify-content: space-between;
     border-radius: 25px 25px 0 0;
     margin-bottom: 10px;
+    padding: 20px 0 10px 20px;
     white-space: nowrap;
 
     svg {
@@ -1174,13 +1174,19 @@
   }
 
   .close-arrow {
-    color: #bdbdbd;
+    color: $primaryText;
     margin: 0 auto;
+    background: $mediumGrey;
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    padding: 4px;
+    border: 1px solid $greyOnGreyBorder;
   }
 
   .action-items {
     background: white;
-    transition: all 0.7s ease-in-out;
+    transition: all 0.6s ease-in-out;
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -1188,10 +1194,8 @@
     opacity: 0;
     bottom: -100%;
     border-radius: 25px 25px 0 0;
-    box-shadow: rgba(0, 0, 0, 0.56) 0 0 15px 18px;
-    padding-bottom: 35pt;
-    padding-top: 30px;
-    padding-left: 20px;
+    box-shadow: $boxShadow_float;
+    padding-bottom: $homeIndicatorHeight;
 
     #menu-content {
       max-width: calc(100% - 20px);
@@ -1200,9 +1204,11 @@
     }
 
     &.creation {
+      transition: all 0.6s ease-in-out;
       padding-top: 0;
       .action-item {
         margin-bottom: 0;
+        padding-left: 20px;
         .content {
           align-items: center;
           gap: 10px;
@@ -1214,7 +1220,7 @@
             top: -1px;
           }
           .svg-wrapper {
-            transform: scale(0.8);
+            transform: scale(0.85);
 
             svg {
               transform: scale(1.2);
@@ -1247,6 +1253,7 @@
               background: $lightAccentBlue;
               svg {
                 color: $accentLight;
+                transform: scale(1);
               }
             }
 
@@ -1254,15 +1261,15 @@
               background: $bootstrapBgRed;
               svg {
                 color: $bootstrapRedColor;
-                transform: scale(1.15);
+                transform: scale(1.08);
               }
             }
 
             &.chat {
               background: $bootstrapYellowBg;
               svg {
-                transform: scale(1.3);
-                color: $bootstrapYellowColor;
+                transform: scale(1.2);
+                color: #c29323;
               }
             }
 
@@ -1354,7 +1361,7 @@
         }
 
         &.chat {
-          color: $bootstrapYellowColor;
+          color: #c29323;
         }
 
         &.document {
@@ -1366,7 +1373,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: $borderRadius;
+        border-radius: 10px;
         background: rgba(97, 113, 234, 0.18);
         height: 40px;
         width: 42px;
@@ -1682,6 +1689,7 @@
   max-width: 100vw;
   overflow: auto;
   overscroll-behavior: none;
+  margin-bottom: 5px;
 
   &.child-info {
     padding-left: 80px;
@@ -1712,7 +1720,7 @@
     background: rgb(211, 211, 211);
     background: $oneMillionGrey;
     color: $subtitleText;
-    opacity: .65;
+    opacity: 0.65;
     @include hover;
 
     &.active {
@@ -2458,7 +2466,6 @@
   &.new-expense-card,
   &.new-memory-card,
   &.new-document-card {
-
     .flex {
       align-items: stretch;
       width: 100%;
@@ -2993,6 +3000,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 5px;
+      box-shadow: $boxShadow_fade_bottom;
 
   #modal-content {
     height: auto;
@@ -3007,24 +3015,27 @@
       z-index: -1;
       max-height: calc(100vh - 230px);
       align-self: center;
-
       bottom: -100%;
       transition: all 2s ease-in;
       border-radius: 15px;
-      box-shadow: 0 12px 12px 0 #0000008f;
       width: calc(100vw - 20px);
+      box-shadow: $boxShadow_surround_big;
 
       &.animate__fadeInUp {
-        z-index: 9999999;
+        z-index: 99;
         bottom: 0;
       }
 
       @media screen and (max-width: 400px) {
         max-height: calc(100vh - 215px);
       }
+      
+      #subtitle {
+        font-size: 15px;
+      }
 
       #modal-title-and-text {
-        padding: 10px 15px;
+        padding: 10px 15px 8px 15px;
         border-bottom: 1px solid #e5e5e5;
         position: sticky;
         top: 0;
@@ -3054,7 +3065,7 @@
 
           svg {
             font-size: 28px;
-            color: $subtitleText;
+            color: $greyOnGreyDarker;
           }
 
           &.long-title {
@@ -3403,7 +3414,7 @@
     border: 0;
     width: 100%;
     background: transparent;
-    gap: 0 8px;
+    gap: 0 10px;
     z-index: 9999999;
     align-self: center;
     justify-content: center;
@@ -3429,19 +3440,17 @@
       justify-content: center;
       align-items: center;
       z-index: 99999999999;
-      padding: 8px 0;
-      border-radius: 50%;
-      margin-left: 10px;
       border: 0;
-      background: white;
+      background: $bootstrapRedColor;
       height: 45px;
-      width: 45px;
+      width: 50px;
+      border-radius: 10px;
       right: 0;
       @include shadow;
 
       .close-icon {
         font-size: 32px;
-        color: $disabledText;
+        color: $bootstrapBgRed;
       }
     }
 
@@ -4528,7 +4537,7 @@
     margin: 0 15px;
     position: relative;
     bottom: 10px;
-    box-shadow: 0 6px 12px 6px #96afe6;
+    box-shadow: 0 6px 10px 6px rgba(76, 114, 197, 0.6);
 
     svg {
       transform: scale(1.2);

@@ -8,7 +8,7 @@ export default function DesktopLegend() {
     <div id="desktop-legend-wrapper">
       <div className="flex" id="legend-row" onClick={() => setShowLegend(!showLegend)}>
         <HiOutlineColorSwatch />
-        <Label text={'Legend'} />
+        <Label text={'CalendarLegend'} />
       </div>
       <div id="legend-content" className={showLegend ? 'active' : ''}>
         <p className="flex currentUser">
