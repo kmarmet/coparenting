@@ -167,7 +167,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
         )
       }
 
-      
+
       // Go back to expense screen
       await resetForm()
     })
@@ -362,7 +362,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
                 $100
               </button>
               <button className="default button reset" onClick={() => setExpenseAmount('')}>
-                RESET
+                Reset
               </button>
             </div>
           </>

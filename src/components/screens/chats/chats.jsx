@@ -20,8 +20,8 @@ import InputWrapper from '../../shared/inputWrapper'
 import NavBar from '../../navBar'
 
 const Chats = () => {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, creationFormToShow } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, creationFormToShow} = state
   const [chats, setChats] = useState([])
   const [showInfo, setShowInfo] = useState(false)
   const [showInvitationCard, setShowInvitationCard] = useState(false)
@@ -76,40 +76,42 @@ const Chats = () => {
       <div id="chats-container" className={`${theme} page-container`}>
         {/*<VideoCall />*/}
         {chats.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
-          <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title">Chats</p>
-          </div>
-          <p>
-            Your space to peacefully chat with your co-parent and pass along any important info they need to know, or to seek clarification on
-            information that is unfamiliar to you.
-          </p>
+        <div className="flex" id="screen-title-wrapper">
+          <p className="screen-title">Chats</p>
+        </div>
+        <p>
+          Your space to peacefully chat with your co-parent and pass along any important info they need to know, or to seek clarification on
+          information that is unfamiliar to you.
+        </p>
 
-          {/* INFO BUTTON */}
-          <Accordion expanded={showInfo}>
-            <AccordionSummary>
-              <p id="info-button" onClick={() => setShowInfo(!showInfo)}>
-                Info {showInfo ? <LuMinus /> : <LuPlus />}
-              </p>
-            </AccordionSummary>
-            <AccordionDetails>
-              <p>
-                Right now, your account is connected to {currentUser?.coparents?.length} members (children and co-parents). If you’d like to chat with
-                another co-parent or child, go ahead and send them an invite.
-              </p>
+        <Spacer height={8} />
+        {/* INFO BUTTON */}
+        <Accordion expanded={showInfo} className={'br-10'}>
+          <AccordionSummary>
+            <button className="button default with-border" onClick={() => setShowInfo(!showInfo)}>
+              Invite {showInfo ? <LuMinus /> : <LuPlus />}
+            </button>
+          </AccordionSummary>
+            <Spacer height={5}/>
+          <AccordionDetails>
+            <p>
+              Right now, your account is connected to {currentUser?.coparents?.length} members (children and co-parents). If you’d like to chat with
+              another co-parent or child, go ahead and send them an invite.
+            </p>
 
-              <button
-                className="default"
-                id="send-invite-button"
-                onClick={() => {
-                  setShowInvitationCard(true)
-                  setShowInfo(false)
-                }}>
-                Send Invite
-              </button>
-            </AccordionDetails>
-          </Accordion>
+            <button
+              className="default"
+              id="send-invite-button"
+              onClick={() => {
+                setShowInvitationCard(true)
+                setShowInfo(false)
+              }}>
+              Send Invite
+            </button>
+          </AccordionDetails>
+        </Accordion>
+        <Spacer height={8} />
         <Fade direction={'up'} duration={800} triggerOnce={true} className={'chats-fade-wrapper'}>
-
           {/* CHAT ROWS */}
           {chats.length > 0 &&
             chats.map((chat, index) => {

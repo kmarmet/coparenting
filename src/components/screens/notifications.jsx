@@ -21,6 +21,7 @@ import { PiSealWarningDuotone } from 'react-icons/pi'
 import StringManager from '../../managers/stringManager'
 import AppManager from '../../managers/appManager.coffee'
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io'
+import Spacer from '../shared/spacer'
 
 export default function Notifications() {
   const { state, setState } = useContext(globalState)
@@ -105,7 +106,7 @@ export default function Notifications() {
   return (
     <>
       <div id="activity-wrapper" className={`${theme} form page-container`}>
-        {notifications.length === 0 && <NoDataFallbackText text={'No current activity'} />}
+        {notifications.length === 0 && <NoDataFallbackText text={'You have no notifications awaiting your attention'} />}
         <p className="screen-title">Notifications</p>
           <p className="intro-text mb-15">Stay updated with all developments and notifications as they happen.</p>
           {/* LEGENDS */}
@@ -113,10 +114,11 @@ export default function Notifications() {
             <div className="flex">
               <Accordion id={'legend'} expanded={legendIsExpanded}>
                 <AccordionSummary>
-                  <p id="legend-title" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
-                    Legend {legendIsExpanded ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}
-                  </p>
+                  <button className="button default with-border"  onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
+                    Legend {legendIsExpanded ? <FaMinus  /> : <FaPlus  />}
+                  </button>
                 </AccordionSummary>
+                <Spacer height={5}/>
                 <AccordionDetails>
                   <div className="flex">
                     <div className="box medical"></div>

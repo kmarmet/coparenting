@@ -7,14 +7,12 @@ import globalState from '../../../context'
 import DocumentsManager from '../../../managers/documentsManager'
 import { HiDocumentRemove } from 'react-icons/hi'
 import { child, getDatabase, onValue, ref } from 'firebase/database'
-import { GrDocumentUpload } from 'react-icons/gr'
 import { Fade } from 'react-awesome-reveal'
 import SecurityManager from '../../../managers/securityManager'
 import NavBar from '../../navBar'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
-import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
-import { HiDocumentPlus, HiDocumentText } from 'react-icons/hi2'
+import { HiDocumentText } from 'react-icons/hi2'
 import { FaFileImage } from 'react-icons/fa'
 
 export default function DocsList() {
@@ -22,7 +20,6 @@ export default function DocsList() {
   const {currentUser, theme} = state
   const [docs, setDocs] = useState([])
   const [selectedDoc, setSelectedDoc] = useState(null)
-  const [showCard, setShowCard] = useState(false)
 
   const getSecuredDocs = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)
@@ -51,7 +48,6 @@ export default function DocsList() {
         {docs.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
         <div className="flex" id="screen-title-wrapper">
           <p className="screen-title">Documents</p>
-          {!DomManager.isMobile() && <GrDocumentUpload id={'add-new-button'} onClick={() => setShowCard(true)} />}
         </div>
         <p className="screen-intro-text">
           You may upload legal documents, such as a separation agreement or custody agreement, among others. If you wish, these documents can also be
@@ -91,11 +87,7 @@ export default function DocsList() {
           </div>
         )}
       </div>
-      {!showCard && (
-        <NavBar navbarClass={'documents'}>
-          <HiDocumentPlus id={'add-new-button'} onClick={() => setShowCard(true)} />
-        </NavBar>
-      )}
+      <NavBar navbarClass={'documents'} />
     </>
   )
 }

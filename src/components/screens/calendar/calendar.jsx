@@ -1,5 +1,5 @@
 // Path: src\components\screens\calendar\calendar.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import AlertManager from '/src/managers/alertManager'
 import AppManager from '/src/managers/appManager'
 import Modal from '/src/components/shared/modal'
@@ -8,7 +8,7 @@ import DatasetManager from '/src/managers/datasetManager'
 import DateFormats from '/src/constants/dateFormats'
 import DateManager from '/src/managers/dateManager'
 import DomManager from '/src/managers/domManager'
-import { TbCalendarSearch } from 'react-icons/tb'
+import {TbCalendarSearch} from 'react-icons/tb'
 import EditCalEvent from '/src/components/forms/editCalEvent'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Manager from '/src/managers/manager'
@@ -16,22 +16,22 @@ import NavBar from '/src/components/navBar.jsx'
 import SecurityManager from '/src/managers/securityManager'
 import globalState from '/src/context.js'
 import moment from 'moment'
-import { LuCalendarSearch } from 'react-icons/lu'
-import { PiCalendarPlusDuotone, PiCalendarXDuotone } from 'react-icons/pi'
-import { StaticDatePicker } from '@mui/x-date-pickers-pro'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
-import { BsStars } from 'react-icons/bs'
+import {LuCalendarSearch} from 'react-icons/lu'
+import {PiCalendarPlusDuotone, PiCalendarXDuotone} from 'react-icons/pi'
+import {StaticDatePicker} from '@mui/x-date-pickers-pro'
+import {child, getDatabase, onValue, ref} from 'firebase/database'
+import {BsStars} from 'react-icons/bs'
 import CalendarEvents from './calendarEvents.jsx'
 import CalendarLegend from './calendarLegend.jsx'
 import DesktopLegend from './desktopLegend.jsx'
 import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
-import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import {initializeApp} from 'firebase/app'
+import {getAuth} from 'firebase/auth'
 
 export default function EventCalendar() {
-  const { state, setState } = useContext(globalState)
-  const { theme, currentUser, authUser, refreshKey } = state
+  const {state, setState} = useContext(globalState)
+  const {theme, currentUser, authUser, refreshKey} = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
   const [searchResults, setSearchResults] = useState([])
@@ -99,7 +99,7 @@ export default function EventCalendar() {
       const dayAsMs = dayElement.dataset.timestamp
       let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DateFormats.dateForDb)
       let daysEventsObject = getEventsFromDate(formattedDay, events)
-      const { dotClasses, payEvents } = daysEventsObject
+      const {dotClasses, payEvents} = daysEventsObject
       const dayEvent = events.filter((x) => x?.startDate === formattedDay)[0]
       const holiday = holidays.filter((x) => x?.startDate === formattedDay)[0]
 
@@ -220,7 +220,7 @@ export default function EventCalendar() {
     setSearchQuery('')
     setShowSearchCard(false)
     getSecuredEvents(moment().format(DateFormats.dateForDb).toString()).then((r) => r)
-    setState({ ...state, refreshKey: Manager.getUid() })
+    setState({...state, refreshKey: Manager.getUid()})
   }
 
   const setHolidaysState = async () => {
@@ -269,7 +269,7 @@ export default function EventCalendar() {
   const setInitialActivities = async () => {
     const notifications = await DB.getTable(`${DB.tables.notifications}/${currentUser?.key}`)
     await AppManager.setAppBadge(notifications.length)
-    setState({ ...state, notificationCount: notifications.length, isLoading: false })
+    setState({...state, notificationCount: notifications.length, isLoading: false})
   }
 
   const onTableChange = async () => {
@@ -290,7 +290,7 @@ export default function EventCalendar() {
     const users = await DB.getTable(`${DB.tables.users}`)
     const user = users.find((x) => x.email === authUser?.email)
     if (user && user.accountType === 'child' && !user.parentAccessGranted) {
-      setState({ ...state, currentScreen: ScreenNames.requestParentAccess, currentUser: user })
+      setState({...state, currentScreen: ScreenNames.requestParentAccess, currentUser: user})
     }
   }
 
@@ -308,7 +308,7 @@ export default function EventCalendar() {
       setSearchResults(searchResults)
       setEventsOfActiveDay(searchResults)
       setShowSearchCard(false)
-      setState({ ...state, refreshKey: Manager.getUid() })
+      setState({...state, refreshKey: Manager.getUid()})
     }
   }
 
@@ -332,7 +332,7 @@ export default function EventCalendar() {
         const rows = document.querySelectorAll('.event-row')
 
         if (rows && rows[0]) {
-          rows[0].scrollIntoView({ behavior: 'smooth' })
+          rows[0].scrollIntoView({behavior: 'smooth'})
         }
       }
     }
@@ -384,10 +384,10 @@ export default function EventCalendar() {
           showCard={showHolidaysCard}
           title={'View Holidays ✨'}>
           <div id="holiday-card-buttons">
-            <button className="card-button" id="view-all-holidays-item" onClick={showAllHolidays}>
+            <button className="default button green" id="view-all-holidays-item" onClick={showAllHolidays}>
               All
             </button>
-            <button className="card-button blue" id="view-visitation-holidays-item" onClick={showVisitationHolidays}>
+            <button className="default button blue" id="view-visitation-holidays-item" onClick={showVisitationHolidays}>
               Visitation
             </button>
           </div>
@@ -429,7 +429,7 @@ export default function EventCalendar() {
             }}
             onChange={async (day) => {
               setSelectedDate(moment(day).format('YYYY-MM-DD'))
-              setState({ ...state, defaultDate: moment(day).format('YYYY-MM-DD') })
+              setState({...state, defaultDate: moment(day).format('YYYY-MM-DD')})
               await getSecuredEvents(day).then((r) => r)
             }}
             slotProps={{
@@ -459,30 +459,6 @@ export default function EventCalendar() {
           </div>
         )}
 
-        {Manager.isValid(searchResults) && (
-          <button
-            id="close-search-button"
-            className="button default"
-            onClick={async () => {
-              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-              setSearchResults([])
-              setSearchQuery('')
-            }}>
-            close search
-          </button>
-        )}
-        {showHolidays && (
-          <button
-            id="close-holidays-button"
-            className="button default"
-            onClick={async () => {
-              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
-              setShowHolidays(false)
-            }}>
-            hide holidays
-          </button>
-        )}
-
         {/* CONTENT WITH PADDING */}
         <div className="with-padding">
           {/* MAP/LOOP EVENTS */}
@@ -494,6 +470,29 @@ export default function EventCalendar() {
             }}
           />
         </div>
+
+        {/* HIDE BUTTONS */}
+        {showHolidays && (
+          <button
+            className="button default bottom-right with-border"
+            onClick={async () => {
+              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+              setShowHolidays(false)
+            }}>
+            Hide Holidays
+          </button>
+        )}
+        {Manager.isValid(searchResults) && (
+          <button
+            className="button default bottom-right with-border"
+            onClick={async () => {
+              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+              setSearchResults([])
+              setSearchQuery('')
+            }}>
+            Close Search
+          </button>
+        )}
       </div>
 
       {/* DESKTOP SIDEBAR */}
@@ -552,7 +551,7 @@ export default function EventCalendar() {
       )}
 
       {/* NAV BARS */}
-      <NavBar/>
+      <NavBar />
     </>
   )
 }

@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import globalState from '../../context'
 import Overlay from './overlay'
 
-const ScreenActionsMenu = ({children}) => {
+const ScreenActionsMenu = ({children, centeredActionItem}) => {
   const {state, setState} = useContext(globalState)
   const {theme, showScreenActions} = state
 
@@ -21,7 +21,7 @@ const ScreenActionsMenu = ({children}) => {
   return (
     <Overlay show={showScreenActions}>
       <div className={`${showScreenActions ? 'open' : 'closed'} bottom-menu-wrapper`}>
-          <div className="action-items">
+          <div className={centeredActionItem ? 'centered action-items' : 'action-items'}>
             <p className="bottom-menu-title">Actions</p>
             {children}
           </div>

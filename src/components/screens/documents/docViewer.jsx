@@ -5,6 +5,8 @@ import searchTextHL from 'search-text-highlight'
 import DocumentConversionManager from '/src/managers/documentConversionManager'
 import Manager from '/src/managers/manager'
 import Modal from '/src/components/shared/modal'
+import { IoClose, IoListOutline } from 'react-icons/io5'
+
 import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../../navBar'
 import DB from '/src/database/DB'
@@ -12,30 +14,27 @@ import AlertManager from '/src/managers/alertManager'
 import StringManager from '/src/managers/stringManager'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
+import { HiDotsHorizontal } from 'react-icons/hi'
+
 import DomManager from '/src/managers/domManager'
 import debounce from 'debounce'
-import { IoListOutline } from 'react-icons/io5'
 import DocumentHeader from '/src/models/documentHeader'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import { TbFileSearch } from 'react-icons/tb'
-import { MdDriveFileRenameOutline, MdSearchOff } from 'react-icons/md'
-import { FaFileImage, FaLightbulb } from 'react-icons/fa6'
-import { IoIosArrowDown } from 'react-icons/io'
-
-import ScreenNames from '/src/constants/screenNames'
+import { MdDriveFileRenameOutline } from 'react-icons/md'
+import { FaLightbulb } from 'react-icons/fa6'
 import { IoIosArrowUp } from 'react-icons/io'
+import ScreenNames from '/src/constants/screenNames'
 import _ from 'lodash'
 import Label from '../../shared/label.jsx'
-import { FaAngleUp } from 'react-icons/fa6'
-
 import DatasetManager from '../../../managers/datasetManager.coffee'
 import { Fade } from 'react-awesome-reveal'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, docToView, isLoading, currentScreen, refreshKey, showScreenActions } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, docToView, isLoading, currentScreen, refreshKey, showScreenActions} = state
   const [tocHeaders, setTocHeaders] = useState([])
   const [showToc, setShowToc] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
@@ -127,6 +126,7 @@ export default function DocViewer() {
       textAsHtml = searchTextHL.highlight(textAsHtml, searchValue)
       textAsHtml = textAsHtml.replaceAll('<span class=" text-highlight"="', '')
       docText.innerHTML = textAsHtml
+      setShowSearch(false)
       setTimeout(() => {
         let headers = docText.querySelectorAll('.header')
         for (let header of headers) {
@@ -138,8 +138,10 @@ export default function DocViewer() {
               childSpan.remove()
             }
             const dataHeader = header.dataset.header
-            const cleanHeader = dataHeader.replaceAll('<span class=', '')
-            header.setAttribute('data-header', cleanHeader.trim())
+            if (dataHeader) {
+              const cleanHeader = dataHeader.replaceAll('<span class=', '')
+              header.setAttribute('data-header', cleanHeader.trim())
+            }
           }
         }
       }, 500)
@@ -191,7 +193,7 @@ export default function DocViewer() {
     const url = docToView.url
     if (!Manager.isValid(docToView) || !Manager.isValid(url) || !Manager.isValid(firebaseText, true)) {
       AlertManager.throwError('Unable to find or load document. Please try again after awhile.')
-      setState({ ...state, isLoading: false, currentScreen: ScreenNames.docsList })
+      setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
       return false
     }
     const textContainer = document.getElementById('doc-text')
@@ -367,7 +369,8 @@ export default function DocViewer() {
 
   const closeSearch = async () => {
     setShowSearch(false)
-    setState({ ...state, refreshKey: Manager.getUid() })
+    setSearchValue('')
+    setState({...state, refreshKey: Manager.getUid()})
     const searchHighlights = document.querySelectorAll('.text-highlight')
     if (Manager.isValid(searchHighlights)) {
       for (let highlight of searchHighlights) {
@@ -378,7 +381,7 @@ export default function DocViewer() {
 
   const scrollToTop = () => {
     const header = document.querySelector('.screen-title')
-    header.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    header.scrollIntoView({behavior: 'smooth', block: 'end'})
     setShouldHideSidebar(true)
   }
 
@@ -389,7 +392,7 @@ export default function DocViewer() {
 
       if (Manager.isValid(childKey)) {
         await DB.updateByPath(`${DB.tables.documents}/${currentUser?.key}/${childKey}/name`, newName)
-        setState({ ...state, refreshKey: Manager.getUid(), docToView: { ...docToView, name: newName } })
+        setState({...state, refreshKey: Manager.getUid(), docToView: {...docToView, name: newName}})
       }
       setShowRenameFile(false)
       setNewFileName('')
@@ -465,15 +468,17 @@ export default function DocViewer() {
         wrapperClass="doc-tips-card"
         hasSubmitButton={false}
         showCard={showTips}
-        title={'Tips'}
+        title={'Learn More'}
         showOverlay={true}
         onClose={() => setShowTips(false)}>
         <>
           <Label text={'Searching'} isBold={true} />
+
           <p className="tip-text">
             To begin your search, {DomManager.tapOrClick()} the search button and enter the word or words you want to look for. The results you find
             will be <span className="text-highlight">highlighted</span> for easy viewing.
           </p>
+          <hr />
           <Label text={'Table of Contents'} isBold={true} />
           <p className="tip-text">
             {DomManager.tapOrClick(true)} the <IoListOutline id="toc-button-inline" className={`${theme}`} /> icon to view the Table of Contents.
@@ -481,6 +486,7 @@ export default function DocViewer() {
           <p className="tip-text">
             When you {DomManager.tapOrClick()} an item, you&#39;ll be directed straight to the corresponding header in the document.
           </p>
+          <hr />
           <Label text={'Create Your Own Headers'} isBold={true} />
           <p className="tip-text">
             You might notice some predefined headers, which are dark blue text on a light blue background. However, it&#39;s a good idea to create
@@ -519,7 +525,7 @@ export default function DocViewer() {
                         }}
                         className={`toc-header`}
                         data-hashed-header={header}
-                        dangerouslySetInnerHTML={{ __html: Manager.decodeHash(header) }}></p>
+                        dangerouslySetInnerHTML={{__html: Manager.decodeHash(header)}}></p>
                     </div>
                   )
                 })}
@@ -540,100 +546,97 @@ export default function DocViewer() {
         <InputWrapper labelText={'Enter new document name...'} onChange={(e) => setNewFileName(e.target.value)} />
       </Modal>
 
-      {!showScreenActions && (
-        <FaAngleUp className={'screen-actions-menu-icon doc-viewer'} onClick={() => setState({ ...state, showScreenActions: true })} />
-      )}
-
       {/* SCREEN ACTIONS */}
-      <ScreenActionsMenu>
-        <div className="action-items doc-viewer">
-          <Fade direction={'right'} className={'doc-viewer-fade-wrapper'} duration={400} triggerOnce={false} cascade={true} damping={0.2}>
-            {/* SCROLL TO TOP BUTTON */}
+      <ScreenActionsMenu centeredActionItem={true}>
+        <Fade direction={'right'} className={'fade-wrapper'} duration={800} damping={0.2} triggerOnce={false} cascade={true}>
+          {/* SCROLL TO TOP BUTTON */}
+          <div
+            className="action-item scroll-to-top"
+            onClick={() => {
+              setState({...state, showScreenActions: false})
+              scrollToTop()
+            }}>
+            <div className="content">
+              <div className="svg-wrapper ">
+                <IoIosArrowUp id={'scroll-to-top-icon'} />
+              </div>
+              <p>Scroll to Top</p>
+            </div>
+          </div>
+
+          {/* TOC BUTTON */}
+          {tocHeaders.length > 0 && (
             <div
-              className="action-item scroll-to-top"
-              onClick={() => {
-                setState({ ...state, showScreenActions: false })
-                scrollToTop()
+              className="action-item toc"
+              onClick={async () => {
+                await setTableOfContentsHeaders()
+                setShowToc(true)
+                setState({...state, showScreenActions: false})
               }}>
               <div className="content">
-                <div className="svg-wrapper ">
-                  <IoIosArrowUp id={'scroll-to-top-icon'} />
+                <div className="svg-wrapper">
+                  <IoListOutline id="toc-icon" className={`${theme}`} />
                 </div>
-                <p>Scroll to Top</p>
+                <p>Table of Contents</p>
               </div>
             </div>
+          )}
 
-            {/* TOC BUTTON */}
-            {tocHeaders.length > 0 && (
-              <div
-                className="action-item toc"
-                onClick={async () => {
-                  await setTableOfContentsHeaders()
-                  setShowToc(true)
-                  setState({ ...state, showScreenActions: false })
-                }}>
-                <div className="content">
-                  <div className="svg-wrapper">
-                    <IoListOutline id="toc-icon" className={`${theme}`} />
-                  </div>
-                  <p>Table of Contents</p>
-                </div>
-              </div>
-            )}
-
-            {/* SEARCH ICON FOR 800PX > */}
-            {!DomManager.isMobile() && (
-              <div
-                className="action-item"
-                onClick={() => {
-                  setShowSearch(true)
-                  setState({ ...state, showScreenActions: false })
-                }}>
+          {/* SEARCH  */}
+          <div
+            className="action-item"
+            onClick={() => {
+              setShowSearch(true)
+              setState({...state, showScreenActions: false})
+            }}>
+            <div className="content">
+              <div className="svg-wrapper">
                 <TbFileSearch id={'desktop-search-icon'} />
               </div>
-            )}
-
-            {/* RENAME ICON */}
-            <div
-              className="action-item rename-document"
-              onClick={() => {
-                setShowRenameFile(true)
-                setState({ ...state, showScreenActions: false })
-              }}>
-              <div className="content">
-                <div className="svg-wrapper">
-                  <MdDriveFileRenameOutline />
-                </div>
-                <p>Rename Document</p>
-              </div>
+              <p>Find Text</p>
             </div>
+          </div>
 
-            {/* TIPS ICON */}
-            <div
-              className="action-item tips"
-              onClick={() => {
-                setShowTips(true)
-                setState({ ...state, showScreenActions: false })
-              }}>
-              <div className="content">
-                <div className="svg-wrapper">
-                  <FaLightbulb className={'lightbulb'} />
-                </div>
-                <p>Tips</p>
+          {/* RENAME ICON */}
+          <div
+            className="action-item rename-document"
+            onClick={() => {
+              setShowRenameFile(true)
+              setState({...state, showScreenActions: false})
+            }}>
+            <div className="content">
+              <div className="svg-wrapper">
+                <MdDriveFileRenameOutline />
               </div>
+              <p>Rename Document</p>
             </div>
+          </div>
 
-            {/* DOCUMENT IMAGE */}
-            {docType === 'image' && (
-              <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
-                <div className="action-item document-image">
-                  <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
-                </div>
-              </LightGallery>
-            )}
-          </Fade>
-          <IoIosArrowDown className={'close-arrow'} onClick={() => setState({ ...state, showScreenActions: false })} />
-        </div>
+          {/* TIPS ICON */}
+          <div
+            className="action-item tips"
+            onClick={() => {
+              setShowTips(true)
+              setState({...state, showScreenActions: false})
+            }}>
+            <div className="content">
+              <div className="svg-wrapper">
+                <FaLightbulb className={'lightbulb'} />
+              </div>
+              <p>Learn More</p>
+            </div>
+          </div>
+
+          {/* DOCUMENT IMAGE */}
+          {docType === 'image' && (
+            <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
+              <div className="action-item document-image">
+                <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
+              </div>
+            </LightGallery>
+          )}
+        </Fade>
+        <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
       </ScreenActionsMenu>
 
       {/* PAGE CONTAINER / TEXT */}
@@ -642,22 +645,17 @@ export default function DocViewer() {
           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')}
         </p>
         <div id="doc-text"></div>
+        {Manager.isValid(searchValue, true) && <button onClick={closeSearch} id="close-search-button" className="default with-border">Close Search</button>}
       </div>
 
       {/* NAVBARS */}
       {DomManager.isMobile() && (
-        <>
-          {!showSearch && !showToc && !isLoading && (
-            <NavBar addOrClose="add">
-              <TbFileSearch id={'open-search-button'} onClick={() => setShowSearch(true)} />
-            </NavBar>
-          )}
-          {showSearch && !showToc && !isLoading && (
-            <NavBar addOrClose="close">
-              <MdSearchOff id={'close-search-button'} onClick={closeSearch} />
-            </NavBar>
-          )}
-        </>
+        <NavBar navbarClass={'actions'}>
+          <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
+            <HiDotsHorizontal className={'screen-actions-menu-icon'} />
+            <p>Actions</p>
+          </div>
+        </NavBar>
       )}
     </>
   )

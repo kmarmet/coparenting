@@ -2,12 +2,12 @@
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import { MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
+import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import React, { useContext, useState } from 'react'
-import { Fade } from 'react-awesome-reveal'
-import { BsCalendar2CheckFill } from 'react-icons/bs'
-import { PiCalendarPlusDuotone } from 'react-icons/pi'
+import React, {useContext, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {BsCalendar2CheckFill} from 'react-icons/bs'
+import {PiCalendarPlusDuotone} from 'react-icons/pi'
 import validator from 'validator'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager.coffee'
@@ -169,19 +169,37 @@ export default function NewCalendarEvent() {
       //#region MULTIPLE DATES
       // Date Range
       if (eventIsDateRange) {
-        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'range', moment(eventStartDate).format(DateFormats.dateForDb), moment(eventEndDate).format(DateFormats.dateForDb))
+        const dates = CalendarManager.buildArrayOfEvents(
+          currentUser,
+          newEvent,
+          'range',
+          moment(eventStartDate).format(DateFormats.dateForDb),
+          moment(eventEndDate).format(DateFormats.dateForDb)
+        )
         await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
 
       // Add cloned dates
       if (Manager.isValid(clonedDates)) {
-        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'cloned', moment(clonedDates[0]).format(DateFormats.dateForDb), moment(clonedDates[clonedDates.length - 1]).format(DateFormats.dateForDb))
+        const dates = CalendarManager.buildArrayOfEvents(
+          currentUser,
+          newEvent,
+          'cloned',
+          moment(clonedDates[0]).format(DateFormats.dateForDb),
+          moment(clonedDates[clonedDates.length - 1]).format(DateFormats.dateForDb)
+        )
         await CalendarManager.addMultipleCalEvents(currentUser, dates)
       }
 
       // Recurring
       if (eventIsRecurring) {
-        const dates = CalendarManager.buildArrayOfEvents(currentUser, newEvent, 'recurring', moment(eventStartDate).format(DateFormats.dateForDb), moment(eventEndDate).format(DateFormats.dateForDb))
+        const dates = CalendarManager.buildArrayOfEvents(
+          currentUser,
+          newEvent,
+          'recurring',
+          moment(eventStartDate).format(DateFormats.dateForDb),
+          moment(eventEndDate).format(DateFormats.dateForDb)
+        )
         await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
       //#endregion MULTIPLE DATES
@@ -351,6 +369,7 @@ export default function NewCalendarEvent() {
         }
         titleIcon={<PiCalendarPlusDuotone />}>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
+          <Spacer height={5} />
           <Fade direction={'up'} duration={600} triggerOnce={true}>
             {/* EVENT NAME */}
             <InputWrapper
@@ -417,10 +436,7 @@ export default function NewCalendarEvent() {
 
             {/* EVENT WITH TIME */}
             <div className={'flex event-times-wrapper'}>
-              <InputWrapper
-                labelText={'Start Time'}
-                wrapperClasses={`${Manager.isValid(eventStartTime) ? 'has-value' : ''} start-time`}
-                inputType="date">
+              <InputWrapper labelText={'Start Time'} wrapperClasses={'start-time'} inputType="date">
                 <MobileTimePicker
                   slotProps={{
                     actionBar: {

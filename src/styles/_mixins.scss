@@ -358,14 +358,6 @@
       font-size: 16px;
       color: $lightDarkGrey;
     }
-
-    &:focus {
-      outline: none;
-      //      border: 1px solid #f5f5f5;
-      //      background: #f5f5f5;
-      //      border-radius: 4px;
-      padding: 10px;
-    }
   }
 
   label {
@@ -411,10 +403,10 @@
   font-weight: $fwMedium;
   color: white;
   line-height: 1;
-  padding: 15px 25px;
-  border: 0;
+  height: 45px;
+  padding: 0 25px;
   font-size: 13px;
-  text-transform: uppercase;
+  border: 0;
   @include buttonPress;
 
   * {
@@ -422,20 +414,32 @@
   }
 
   svg {
-    font-size: 18px;
+    font-size: 16px;
     margin-left: 5px;
+    top: unset;
+    width: unset;
+    margin-right: unset;
+  }
+
+  &.bottom-right {
+    position: fixed;
+    bottom: 120px;
+    right: 10px;
   }
 
   &.default {
-    color: white;
-    border: 0;
-    background: $accentLight;
+    color: $subtitleText;
+    background: $buttonGrey;
 
     @media screen and (min-width: 800px) {
       &:hover {
         background: $mainBlue;
         color: white;
       }
+    }
+
+    &.with-border {
+      border: 1px solid $lightBorderColor;
     }
 
     &.green {
@@ -1094,7 +1098,7 @@
       left: -4px;
     }
 
-    &.creation {
+    &.centered {
       .action-item {
         .content {
           align-items: center;
@@ -1219,6 +1223,14 @@
       @include row;
       border: 0;
       margin-bottom: 10px;
+
+      &.document-image {
+        width: 70px;
+        img {
+          border-radius: $borderRadius;
+          @include shadow;
+        }
+      }
 
       .content {
         display: flex;
@@ -1445,7 +1457,7 @@
     position: relative;
     justify-content: center;
     align-items: center;
-    padding: 10px 20px;
+    padding: 0 20px;
     border-radius: 15px;
     text-align: center;
     transition: all 0.3s ease-in-out;
@@ -1455,7 +1467,9 @@
     color: $subtitleText;
     flex: 0;
     opacity: 0.65;
+    border: 1px solid #898989;
     @include hover;
+    height: 45px;
 
     &.active {
       opacity: 1;
@@ -1465,7 +1479,6 @@
       transition: all 0.4s ease-in-out;
       background: white;
       flex: 1;
-      border: 0;
     }
 
     &.hide {
@@ -1754,45 +1767,40 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
   margin-bottom: 8px;
   height: 50px;
-  padding-top: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: $borderRadius;
+  border: 1px solid $lightBorderColor;
+  border-radius: 10px;
   transition: all 0.3s ease-in-out;
   overflow: hidden;
   background: white;
+  padding: 0;
 
   &.active {
-    background: white;
-    &:focus-within {
-      border: 1px solid $mainBlue;
-    }
+    background: $bestGreyForWhiteLight;
     #label-wrapper {
+      background: $bestGreyForWhiteLight;
+
       label {
-        color: $mainBlue;
+        color: $lessSubtleText;
         font-weight: $fwMediumBold;
+        background: $bestGreyForWhiteLight;
       }
     }
     input,
     textarea {
-      background: white;
       opacity: 1;
       caret-color: black;
       color: black;
     }
   }
 
-  &.has-value {
-    border: 1px solid #e0e0e0;
-  }
-
   &.textarea {
     min-height: 120px;
     overflow: auto;
+    overscroll-behavior: none;
   }
 
   &.start-time,
@@ -1805,10 +1813,8 @@
   }
 
   #label-wrapper {
-    position: absolute;
-    top: 2px;
-    left: 0;
-    padding: 0 10px;
+    width: 100%;
+    padding: 3px 10px 3px 10px;
     z-index: 9;
     background: white;
 
@@ -1823,8 +1829,6 @@
       text-transform: uppercase;
       font-size: 12px;
       transition: all 0.3s ease-in-out;
-      position: relative;
-      top: 2px;
       .asterisk {
         color: $red;
         position: relative;
@@ -1838,23 +1842,26 @@
   textarea {
     width: 100%;
     outline: 0;
-    transition: all 0.2s ease-in-out;
     max-height: unset;
     caret-color: black;
     display: flex;
-    align-items: flex-end;
     justify-content: space-between;
-    position: absolute;
-    top: 20px;
     border: 0;
     font-size: 15px;
-    padding: 5px 10px;
+    padding-left: 10px;
+    height: 100%;
     background: white;
     font-weight: $fwRegular;
     z-index: 9999;
     color: $primaryText;
+    overscroll-behavior: none;
+
     &::placeholder {
       opacity: 0;
+    }
+
+    &:focus {
+      background: $bestGreyForWhiteLight;
     }
 
     &[type='date'] {
@@ -1865,6 +1872,10 @@
       width: 100%;
       display: block;
     }
+  }
+
+  input {
+    padding-bottom: 8px;
   }
 
   textarea {
@@ -2753,7 +2764,12 @@
     align-self: center;
     overflow: hidden;
     width: calc(100vw - 20px);
-    box-shadow: $boxShadow_surround_big;
+    box-shadow:
+      rgba(0, 0, 0, 0.15) 0 0 2px 1px,
+      rgba(0, 0, 0, 0.15) 0 0 4px 2px,
+      rgba(0, 0, 0, 0.15) 5px 0 14px 14px,
+      rgba(0, 0, 0, 0.15) 0 16px 8px,
+      rgba(0, 0, 0, 0.15) 0 22px 16px;
     background: white;
 
     /*#region  MODAL*/
@@ -2771,18 +2787,12 @@
       }
 
       #modal-title-and-text {
-        padding: 15px 15px 8px 15px;
-        border-bottom: 1px solid #e5e5e5;
+        padding: 15px 15px 0 15px;
         position: sticky;
         top: 0;
         backdrop-filter: blur(18px);
         z-index: 9999999;
-        margin-bottom: 15px;
         border-radius: 15px 15px 0 0;
-
-        &.with-subtitle {
-          padding: 15px;
-        }
 
         #modal-title {
           text-align: left;
@@ -2794,10 +2804,22 @@
           justify-content: space-between;
           border-radius: 25px 25px 0 0;
           white-space: nowrap;
+          font-weight: $fwMediumBold;
 
-          svg {
-            font-size: 28px;
-            color: $greyOnGreyDarker;
+          .svg-wrapper {
+            height: 35px;
+            width: 35px;
+            background: $oneMillionGrey;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid $lightBorderColor;
+            svg {
+              font-size: 28px;
+              color: $primaryText;
+            }
           }
 
           &.long-title {
@@ -2870,12 +2892,20 @@
 
   #relative-wrapper {
     position: relative;
-    padding: 0 15px 25px 15px;
+    padding: 5px 15px 25px 15px;
     height: 100%;
     margin-bottom: auto;
     display: block;
     top: 0;
     overscroll-behavior: none;
+    max-height: calc(100vh - 285px);
+
+    // Add a 15px padding to the bottom of the modal
+    &:after {
+      content: '';
+      display: block;
+      height: 15px;
+    }
 
     #share-with-checkbox-group {
       .flex {
@@ -2991,25 +3021,7 @@
       gap: 10px;
 
       button {
-        border-radius: 10px;
-        padding: 12px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        left: inherit;
-        right: inherit;
-        bottom: 0;
-        border: 0;
-        font-size: 13px;
-        font-weight: $fwMedium;
-        text-transform: uppercase;
-        justify-self: flex-start;
-        margin-right: auto;
-        line-height: 1;
-        color: white;
-        background: $green;
-        width: 50%;
-        @include buttonPress;
+        width: 100%;
 
         &#view-visitation-holidays-item {
           color: white;
@@ -3205,7 +3217,6 @@
       justify-self: flex-start;
       line-height: 1;
       font-weight: $fwBold;
-      text-transform: uppercase;
       font-size: 13px;
       @include shadow;
 
@@ -3704,7 +3715,8 @@
       color: white;
       background: $mainBlue;
       border-radius: 5px;
-      padding: 2px 10px;
+      padding: 5px 10px;
+      font-size: 14px;
     }
 
     #toc-button-inline {
@@ -4214,13 +4226,13 @@
 
 @mixin navBar {
   width: 100vw;
-  background-color: $lightBg;
+  backdrop-filter: blur(15px);
   position: fixed;
   transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
   bottom: 0;
   opacity: 1;
   z-index: 99999;
-  padding: 15px 0 30pt 0;
+  padding: 25px 0 30pt 0;
   left: 0;
 
   &.hidden {

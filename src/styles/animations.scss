@@ -44,7 +44,7 @@
     max-height: 100px;
   }
   100% {
-    max-height: 0px;
+    max-height: 0;
   }
 }
 
@@ -268,10 +268,10 @@
 @keyframes pulseWhite {
   0%,
   100% {
-    box-shadow: 0px 0px 20px 0px white;
+    box-shadow: 0 0 20px 0 white;
   }
   50% {
-    box-shadow: 0px 0px 10px 0px white;
+    box-shadow: 0 0 10px 0 white;
   }
 }
 
@@ -322,7 +322,7 @@
     transform: translateX(-100px);
   }
   to {
-    transform: translateX(0px);
+    transform: translateX(0);
   }
 }
 

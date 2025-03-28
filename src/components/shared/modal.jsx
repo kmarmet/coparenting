@@ -1,10 +1,10 @@
 // Path: src\components\shared\modal.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
 import Manager from '/src/managers/manager.js'
 import DB_UserScoped from '../../database/db_userScoped'
 import StringManager from '../../managers/stringManager'
-import { IoClose } from 'react-icons/io5'
+import {IoClose} from 'react-icons/io5'
 import Overlay from './overlay'
 
 export default function Modal({
@@ -25,7 +25,6 @@ export default function Modal({
 }) {
   const {state, setState} = useContext(globalState)
   const {theme, authUser, creationFormToShow} = state
-  const [contentHeight, setContentHeight] = useState(0)
 
   const hideCard = () => {
     const modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper`)
@@ -34,11 +33,8 @@ export default function Modal({
       const modal = modalWrapper.querySelector('#modal')
       const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
       const pageContainer = document.querySelector('.page-container')
-      const fadeOutDown = 'animate__fadeOutDown'
-      const fadeInUp = 'animate__fadeInUp'
 
       if (modal) {
-        modal.classList.add(fadeOutDown)
         DB_UserScoped.getCurrentUser(authUser?.email).then((user) => {
           setState({...state, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: user, showBottomMenu: false, creationFormToShow: ''})
         })
@@ -58,8 +54,6 @@ export default function Modal({
               label.classList.remove('active')
             })
           }
-          modal.classList.remove(fadeInUp)
-          modal.classList.remove(fadeOutDown)
         }, 1200)
       }
     }
@@ -119,14 +113,6 @@ export default function Modal({
         startTimeInput.placeholder = 'Start time'
         endTimeInput.placeholder = 'End time'
       }
-
-      // Add bottom padding to content based on height
-      if (modalWrapper) {
-        const relativeWrapper = modalWrapper.querySelector('#relative-wrapper')
-        if (relativeWrapper) {
-          setContentHeight(relativeWrapper.offsetHeight)
-        }
-      }
     }
   }, [showCard])
 
@@ -138,14 +124,13 @@ export default function Modal({
           <div id="modal">
             <div id="modal-title-and-text" className={Manager.isValid(subtitle, true) ? 'with-subtitle' : ''}>
               <p id="modal-title">
-                {title} {titleIcon && titleIcon}
+                {title}
+                {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
               </p>
               {Manager.isValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
             </div>
             <div id="relative-wrapper">
-              <div id="content" className={contentHeight >= 200 ? 'with-bottom-padding' : ''}>
-                {children}
-              </div>
+              <div id="content">{children}</div>
             </div>
           </div>
         </div>

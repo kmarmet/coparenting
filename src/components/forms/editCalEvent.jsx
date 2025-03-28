@@ -2,16 +2,23 @@
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
+import {MobileDatePicker, MobileTimePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import { PiBellSimpleRingingDuotone, PiCalendarDotDuotone, PiCalendarDotsDuotone, PiGlobeDuotone, PiNotepadDuotone, PiUserCircleDuotone } from 'react-icons/pi'
-import { BsCalendar2CheckFill } from 'react-icons/bs'
-import { FaChildren } from 'react-icons/fa6'
-import { MdEventRepeat, MdLocalPhone } from 'react-icons/md'
-import React, { useContext, useEffect, useState } from 'react'
-import { BiSolidNavigation } from 'react-icons/bi'
-import { IoTimeOutline } from 'react-icons/io5'
-import { LiaMapMarkedAltSolid } from 'react-icons/lia'
+import {
+  PiBellSimpleRingingDuotone,
+  PiCalendarDotDuotone,
+  PiCalendarDotsDuotone,
+  PiGlobeDuotone,
+  PiNotepadDuotone,
+  PiUserCircleDuotone,
+} from 'react-icons/pi'
+import {BsCalendar2CheckFill} from 'react-icons/bs'
+import {FaChildren} from 'react-icons/fa6'
+import {MdEventRepeat, MdLocalPhone} from 'react-icons/md'
+import React, {useContext, useEffect, useState} from 'react'
+import {BiSolidNavigation} from 'react-icons/bi'
+import {IoTimeOutline} from 'react-icons/io5'
+import {LiaMapMarkedAltSolid} from 'react-icons/lia'
 import 'react-toggle/style.css'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager.coffee'
@@ -35,14 +42,14 @@ import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
 import SecurityManager from '/src/managers/securityManager'
 import StringManager from '/src/managers/stringManager'
-import { default as CalendarMapper, default as CalMapper } from '/src/mappers/calMapper'
+import {default as CalendarMapper, default as CalMapper} from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import ToggleButton from '../shared/toggleButton'
 
-export default function EditCalEvent({ event, showCard, hideCard }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+export default function EditCalEvent({event, showCard, hideCard}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, refreshKey} = state
 
   // Event Details
   const [eventStartDate, setEventStartDate] = useState('')
@@ -99,7 +106,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   const nonOwnerSubmit = async () => {
     // Fill/overwrite
     // Required
-    const updatedEvent = { ...event }
+    const updatedEvent = {...event}
 
     updatedEvent.title = eventName.trim()
     updatedEvent.reminderTimes = eventReminderTimes
@@ -222,7 +229,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
   // SUBMIT
   const submit = async () => {
     // Set new event values
-    const updatedEvent = { ...event }
+    const updatedEvent = {...event}
 
     // Required
     updatedEvent.title = eventName
@@ -467,23 +474,23 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
       onClose={async () => {
         await resetForm()
       }}
-      titleIcon={<PiCalendarDotsDuotone/>}
+      titleIcon={<PiCalendarDotsDuotone />}
       title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(event?.title))}
       showCard={showCard}
       deleteButtonText="Delete Event"
       className="edit-calendar-event"
       viewSelector={
-      <>
-        {currentUser?.accountType !== 'child' && (
-          <ViewSelector
-            key={refreshKey}
-            labels={['Details', 'Edit']}
-            updateState={(labelText) => {
-              setView(labelText)
-            }}
-          />
-
-        )}</>
+        <>
+          {currentUser?.accountType !== 'child' && (
+            <ViewSelector
+              key={refreshKey}
+              labels={['Details', 'Edit']}
+              updateState={(labelText) => {
+                setView(labelText)
+              }}
+            />
+          )}
+        </>
       }
       wrapperClass={`edit-calendar-event`}>
       <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
@@ -491,6 +498,8 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
           <>
             {/* DETAILS */}
             <div id="details" className={view === 'Details' ? 'view-wrapper details active' : 'view-wrapper'}>
+              <Spacer height={0} />
+
               {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
                 <div className="flex">
                   <b>
@@ -646,6 +655,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
             </div>
 
             <div id="edit" className={view === 'Edit' ? 'view-wrapper edit active content' : 'view-wrapper content'}>
+              <Spacer height={5} />
               {/* EVENT NAME */}
               <InputWrapper
                 inputType={'input'}
@@ -678,7 +688,7 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                     )}
                     {DomManager.isMobile() && (
                       <InputWrapper
-                        defaultValue={moment(event?.startDate).format("YYYY-MM-DD")}
+                        defaultValue={moment(event?.startDate).format('YYYY-MM-DD')}
                         onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
                         useNativeDate={true}
                         labelText={'Date'}
@@ -834,8 +844,6 @@ export default function EditCalEvent({ event, showCard, hideCard }) {
                 onChange={(e) => setEventNotes(e.target.value)}
               />
             </div>
-
-
           </>
         )}
         {dataIsLoading && <img id="modal-loading-gif" src={require('../../img/loading.gif')} alt="Loading" />}

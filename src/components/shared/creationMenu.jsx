@@ -29,8 +29,8 @@ const CreationMenu = () => {
   return (
     <Overlay show={showCreationMenu}>
       <div className={`${showCreationMenu ? 'open' : 'closed'} bottom-menu-wrapper`}>
-        <div className="action-items creation">
-        <p className="bottom-menu-title">Select a Resource to Create </p>
+        <div className="action-items centered">
+          <p className="bottom-menu-title">Select a Resource to Create </p>
           <Fade direction={'right'} className={'fade-wrapper'} duration={800} triggerOnce={false} cascade={true} damping={0.2}>
             {/* CALENDAR */}
             <div
@@ -130,7 +130,7 @@ const CreationMenu = () => {
               </div>
             </div>
           </Fade>
-        <IoClose className={'close-button'} onClick={() => setState({...state, showCreationMenu: false, creationFormToShow: ''})} />
+          <IoClose className={'close-button'} onClick={() => setState({...state, showCreationMenu: false, creationFormToShow: ''})} />
         </div>
       </div>
     </Overlay>

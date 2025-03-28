@@ -542,7 +542,7 @@
 
     .MuiPickersDay-today:not(.Mui-selected) {
       opacity: 1 !important;
-      border: 1px solid $disabledText !important;
+      border: 1px solid $lightBorderColor !important;
       border-radius: 50% !important;
       font-weight: $fwMediumBold !important;
       width: 51px !important;
@@ -639,17 +639,17 @@
 
       &.Mui-selected {
         transition: all 0.2s ease-in-out !important;
-        background: $bootstrapBgGreen !important;
+        background: $mediumGrey !important;
         width: 51px !important;
         height: 45px !important;
         margin-left: 5px;
         margin-right: 5px;
         border-radius: 50% !important;
         position: relative;
-        border: 1px solid rgba(15, 81, 50, 0.53);
+        border: 1px solid $lightBorderColor;
         top: 2px;
         opacity: 1 !important;
-        color: #27a568 !important;
+        color: $subtitleText !important;
         font-weight: $fwBold !important;
 
         .dot-wrapper {
@@ -687,7 +687,7 @@
         &.Mui-expanded {
           width: 200px !important;
           padding: 15px 0 !important;
-          background: #fcfcfc !important;
+          background: $bestGreyForWhiteLight !important;
           border-radius: $bigBorderRadius !important;
           border: 1px solid $lightBorder !important;
         }
@@ -695,6 +695,7 @@
 
       .flex {
         justify-content: center;
+        padding-bottom: 5px;
       }
 
       .MuiButtonBase-root {
@@ -944,8 +945,13 @@
       }
     }
 
+    // Accordion header
     &.MuiPaper-elevation:not(.MuiPopover-paper) {
-      border-radius: 0;
+      h3 {
+        &.MuiAccordion-heading {
+          overflow: unset !important;
+        }
+      }
     }
 
     &[role='dialog'] {
@@ -1235,10 +1241,10 @@
 
     .MuiButtonBase-root,
     .MuiPickersDay-hiddenDaySpacingFiller {
-      width: 50px;
-      height: 50px;
-      font-size: 16px;
-      color: black;
+      //      width: 50px;
+      //      height: 50px;
+      //      font-size: 16px;
+      //      color: black;
 
       &#visitation-section-accordion-title,
       &#visitation-holidays-section-accordion-title {
@@ -1370,9 +1376,9 @@
     }
     .MuiFormControl-root {
       input {
-        top: 12px !important;
+        top: 0 !important;
         border-radius: 0 !important;
-        padding-top: 2px !important;
+        padding-top: 0 !important;
       }
     }
   }

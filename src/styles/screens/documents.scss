@@ -2,6 +2,12 @@
 
 #external-overrides {
   #documents-container {
+    #close-search-button {
+      position: fixed;
+      bottom: 140px;
+      right: 10px;
+      box-shadow: $boxShadow_bottom_only;
+    }
     #doc-text {
       * {
         text-decoration: unset !important;
@@ -11,9 +17,13 @@
       .text-highlight {
         color: white;
         background: $mainBlue;
-        font-size: 18px;
-        border-radius: 5px;
-        padding: 0 5px;
+        border-radius: 50px;
+        font-size: 12px;
+        position: relative;
+        top: -2px;
+        padding: 5px 10px;
+        line-height: 1;
+        white-space: nowrap;
         font-weight: $fwBold;
       }
 
@@ -21,9 +31,11 @@
         width: 100%;
         align-items: stretch;
         justify-content: center;
-        background: $lightAccentBlue;
-        border-radius: $borderRadius;
+        background: $bestGreyForWhite;
+        border-radius: 10px;
         margin: 20px auto 5px auto;
+        padding: 5px 10px;
+        border: 1px solid $lightBorderColor;
         @include hover;
 
         &:after {
@@ -34,18 +46,14 @@
           align-self: stretch;
           display: flex;
           justify-content: center;
-          padding: 3px;
+          padding-top: 2px;
           align-items: center;
-          border-radius: 0 $borderRadius $borderRadius 0;
         }
 
         .header-text {
           font-size: 16px;
-          padding: 5px 10px 0 10px;
           font-weight: $fwMedium;
-          margin-right: auto;
-          margin-left: auto;
-          color: $accentLight !important;
+          color: $primaryText !important;
           text-align: center;
           display: flex;
           justify-content: center;
@@ -85,7 +93,6 @@
 
       span {
         text-decoration: none !important;
-        color: black !important;
       }
 
       a {
