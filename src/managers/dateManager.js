@@ -76,6 +76,20 @@ const DateManager = {
     if (date.indexOf('/') > -1 && date.indexOf(':') > -1) {
       return DateFormats.fullDatetime
     }
+    if (date.indexOf('-') > -1) {
+      return DateFormats.jsDate
+    }
+  },
+  getValidDate: (date) => {
+    if (!Manager.isValid(date)) {
+      return null
+    }
+    const format = DateManager.getMomentFormat(date)
+    const asMoment = moment(date, format).format(DateFormats.dateForDb)
+    if (Manager.contains(asMoment, 'Invalid')) {
+      return null
+    }
+    return asMoment
   },
   msToDate: (ms) => {
     return moment(ms, 'x').format(DateFormats.dateForDb)

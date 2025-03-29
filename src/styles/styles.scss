@@ -744,6 +744,9 @@
     #input-wrapper {
       @include inputWrapper;
     }
+    #success-alert-wrapper {
+      @include successAlert;
+    }
 
     #navbar {
       @include navBar;

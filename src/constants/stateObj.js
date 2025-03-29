@@ -3,11 +3,7 @@ var StateObj;
 
 import ScreenNames from "./screenNames";
 
-import DateFormats from "./dateFormats";
-
 import moment from "moment";
-
-import DateManager from "../managers/dateManager";
 
 StateObj = {
   activeInfoChild: null,
@@ -32,7 +28,9 @@ StateObj = {
   showScreenActions: false,
   registrationUserName: '',
   selectedChild: null,
+  successAlertMessage: null,
   selectedNewEventDay: null,
+  setSuccessAlertMessage: function(message) {},
   setShowScreenActions: function(bool) {},
   setActiveInfoChild: function(child) {},
   setActiveInfoCoparent: function(coparent) {},

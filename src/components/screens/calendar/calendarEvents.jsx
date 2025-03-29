@@ -1,21 +1,20 @@
 // Path: src\components\screens\calendar\calendarEvents.jsx
 import moment from 'moment'
-import React, { useContext } from 'react'
-import { Fade } from 'react-awesome-reveal'
+import React, {useContext} from 'react'
+import {Fade} from 'react-awesome-reveal'
 import globalState from '../../../context.js'
 import DatasetManager from '../../../managers/datasetManager.coffee'
+import {MdEventRepeat, MdLocalPhone} from 'react-icons/md'
 import DateFormats from '/src/constants/dateFormats'
 import Manager from '/src/managers/manager'
-import { FaChildren } from 'react-icons/fa6'
-import { MdLocalPhone } from 'react-icons/md'
-import { PiBellSimpleRingingDuotone, PiGlobeDuotone, PiNotepadDuotone } from 'react-icons/pi'
-import { TbLocationFilled } from 'react-icons/tb'
+import {FaChildren} from 'react-icons/fa6'
+import {PiBellSimpleRingingDuotone, PiGlobeDuotone, PiNotepadDuotone} from 'react-icons/pi'
+import {TbLocationFilled} from 'react-icons/tb'
 import StringManager from '../../../managers/stringManager'
 
 export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (event) => {}}) {
   const {state, setState} = useContext(globalState)
   const {theme, currentUser, refreshKey} = state
-
 
   const getRowDotColor = (dayDate) => {
     const arr = [...eventsOfActiveDay]
@@ -78,7 +77,8 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
       Manager.isValid(event?.websiteUrl) ||
       Manager.isValid(event?.phone) ||
       Manager.isValid(event?.location) ||
-      Manager.isValid(event?.children)
+      Manager.isValid(event?.children) ||
+      event?.isRecurring
     )
   }
 
@@ -104,8 +104,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
               const dotObject = dotObjects?.filter((x) => x.id === event.id)[0]
               return (
                 <div
-                  onClick={() =>  handleEventRowClick(event).then((r) => r)
-                  }
+                  onClick={() => handleEventRowClick(event).then((r) => r)}
                   key={event?.id}
                   data-event-id={event?.id}
                   data-from-date={startDate}
@@ -117,8 +116,8 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                     <div className="flex space-between" id="title-wrapper">
                       <p className="title flex" id="title" data-event-id={event?.id}>
                         <span className={`${dotObject.className} event-type-dot`}></span>
-                        {event?.title.toLowerCase().includes("birthday") && `${StringManager.formatTitle(event?.title)} 🎂`}
-                        {!event?.title.toLowerCase().includes("birthday") && StringManager.formatTitle(event?.title)}
+                        {event?.title.toLowerCase().includes('birthday') && `${StringManager.formatTitle(event?.title)} 🎂`}
+                        {!event?.title.toLowerCase().includes('birthday') && StringManager.formatTitle(event?.title)}
                       </p>
                     </div>
 
@@ -169,6 +168,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                       {Manager.isValid(event?.phone) && <MdLocalPhone />}
                       {Manager.isValid(event?.location) && <TbLocationFilled className="location-icon" />}
                       {Manager.isValid(event?.children) && <FaChildren />}
+                      {event?.isRecurring && <MdEventRepeat />}
                     </div>
                   )}
                   <div className="delete-event-button">DELETE</div>

@@ -1,14 +1,14 @@
 // Path: src\App.js
-import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import React, { useEffect, useState } from 'react'
+import {LocalizationProvider} from '@mui/x-date-pickers-pro/LocalizationProvider'
+import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment'
+import React, {useEffect, useState} from 'react'
 import 'react-toggle/style.css'
 import globalState from '/src/context.js'
 // Screens
 import emailjs from '@emailjs/browser'
-import { LicenseInfo } from '@mui/x-license'
-import { initializeApp } from 'firebase/app'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import {LicenseInfo} from '@mui/x-license'
+import {initializeApp} from 'firebase/app'
+import {getAuth, onAuthStateChanged} from 'firebase/auth'
 import RequestParentAccess from './components/screens/auth/requestParentAccess'
 import UserDetails from './components/screens/auth/userDetails'
 import EditCalEvent from '/src/components/forms/editCalEvent.jsx'
@@ -60,14 +60,15 @@ import NotificationManager from './managers/notificationManager'
 import CreationMenu from './components/shared/creationMenu'
 import CreationForms from './constants/creationForms'
 import NewChat from './components/forms/newChat'
+import SuccessAlert from './components/shared/successAlert'
 
 export default function App() {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
   const [state, setState] = useState(StateObj)
-  const stateToUpdate = { state, setState }
-  const { userIsLoggedIn, firebaseUser, setFirebaseUser } = state
+  const stateToUpdate = {state, setState}
+  const {userIsLoggedIn, firebaseUser, setFirebaseUser} = state
   const myCanvas = document.createElement('canvas')
 
   const fullscreenScreens = [ScreenNames.login, ScreenNames.home, ScreenNames.registration]
@@ -93,7 +94,7 @@ export default function App() {
   })
 
   // State to include in App.js
-  const { isLoading, currentScreen, menuIsOpen, currentUser, loadingText, theme, authUser, creationFormToShow } = state
+  const {isLoading, currentScreen, menuIsOpen, currentUser, loadingText, theme, authUser, creationFormToShow} = state
 
   const deleteMenuAnimation = () => {
     document.querySelectorAll('#full-menu .menu-item').forEach((menuItem) => {
@@ -111,7 +112,7 @@ export default function App() {
 
   const updateCurrentUser = async () => {
     const _currentUser = await DB_UserScoped.getCurrentUser(auth.currentUser?.email)
-    setState({ ...state, currentUser: _currentUser, isLoading: false })
+    setState({...state, currentUser: _currentUser, isLoading: false})
   }
 
   // ON SCREEN CHANGE
@@ -186,10 +187,10 @@ export default function App() {
             notificationCount: notifications?.length,
           })
         } else {
-          setState({ ...state, isLoading: false, authUser: user, currentScreen: ScreenNames.login })
+          setState({...state, isLoading: false, authUser: user, currentScreen: ScreenNames.login})
         }
       } else {
-        setState({ ...state, isLoading: false })
+        setState({...state, isLoading: false})
         console.log('signed out or user doesnt exist')
       }
     })
@@ -213,7 +214,7 @@ export default function App() {
         <Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />
 
         <globalState.Provider value={stateToUpdate}>
-
+          <SuccessAlert />
           {/* FULL MENU */}
           <FullMenu />
 

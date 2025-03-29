@@ -65,7 +65,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const [eventReminderTimes, setEventReminderTimes] = useState([])
   const [eventShareWith, setEventShareWith] = useState(event?.shareWith || [])
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
-  const [eventIsRepeating, setEventIsRepeating] = useState(false)
+  const [eventIsRecurring, setEventIsRecurring] = useState(false)
   const [eventIsCloned, setEventIsCloned] = useState(false)
   const [recurInterval, setRecurInterval] = useState('')
 
@@ -77,9 +77,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const [isVisitation, setIsVisitation] = useState(false)
   const [view, setView] = useState('Details')
   const [shareWithNames, setShareWithNames] = useState([])
+
   const [dataIsLoading, setDataIsLoading] = useState(true)
 
-  const resetForm = async () => {
+  const resetForm = async (alertMessage) => {
     Manager.resetForm('edit-event-form')
     setEventStartDate('')
     setEventLocation('')
@@ -98,8 +99,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setIncludeChildren(false)
     setShowReminders(false)
     setIsVisitation(false)
-    setEventIsRepeating(false)
+    setEventIsRecurring(false)
     setEventIsCloned(false)
+    setState({...state, successAlertMessage: alertMessage})
     hideCard()
   }
 
@@ -131,7 +133,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     updatedEvent.isDateRange = eventIsDateRange
     updatedEvent.isCloned = eventIsCloned
     updatedEvent.repeatInterval = recurInterval
-    updatedEvent.isRepeating = eventIsRepeating
+    updatedEvent.isRecurring = eventIsRecurring
 
     // Add birthday cake
     if (Manager.contains(eventName, 'birthday')) {
@@ -155,7 +157,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
       // Update dates with multiple dates
-      if (event?.isRepeating || event?.isDateRange || event?.isCloned) {
+      if (event?.isRecurring || event?.isDateRange || event?.isCloned) {
         const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
         const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
 
@@ -213,8 +215,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       }
     }
 
-    AlertManager.successAlert('Event Updated')
-    await resetForm()
+    await resetForm('Event Updated')
   }
 
   const editNonOwnerEvent = async (dbPath, newEvent) => {
@@ -241,7 +242,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     updatedEvent.repeatInterval = recurInterval
     updatedEvent.isDateRange = eventIsDateRange
     updatedEvent.isCloned = eventIsCloned
-    updatedEvent.isRepeating = eventIsRepeating
+    updatedEvent.isRecurring = eventIsRecurring
 
     if (Manager.isValid(eventStartTime) || Manager.isValid(eventEndTime)) {
       updatedEvent.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
@@ -282,7 +283,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
       // Events with multiple days
-      if (event?.isRepeating || event?.isDateRange || event?.isCloned) {
+      if (event?.isRecurring || event?.isDateRange || event?.isCloned) {
         const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
         const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
 
@@ -303,7 +304,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         }
 
         // Add repeating dates
-        if (eventIsRepeating) {
+        if (eventIsRecurring) {
           const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'recurring', existing[0]?.startDate, eventEndDate)
           await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
@@ -318,8 +319,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       }
     }
 
-    AlertManager.successAlert('Event Updated')
-    await resetForm()
+    await resetForm('Event Updated')
   }
 
   // CHECKBOX HANDLERS
@@ -377,7 +377,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setEventEndTime(event?.endTime)
     setEventNotes(event?.notes)
     setEventShareWith(event?.shareWith ?? [])
-    setEventIsRepeating(event?.isRepeating)
+    setEventIsRecurring(event?.isRecurring)
     setEventPhone(event?.phone)
     setRecurInterval(event?.repeatInterval)
     setEventIsDateRange(event?.isDateRange)
@@ -409,13 +409,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     const eventCount = allEvents.filter((x) => x.title === eventName).length
     if (eventCount === 1) {
       await CalendarManager.deleteEvent(currentUser, event.id)
-      await resetForm()
+      await resetForm('Event Deleted')
     } else {
       let clonedEvents = await DB.getTable(`${dbPath}`)
       if (Manager.isValid(clonedEvents)) {
         clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
         await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser)
-        await resetForm()
+        await resetForm('Event Deleted')
       }
     }
   }
@@ -423,7 +423,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const setLocalConfirmMessage = () => {
     let message = 'Are you sure you want to delete this event?'
 
-    if (event?.isRepeating || event?.isCloned) {
+    if (event?.isRecurring || event?.isCloned) {
       message = 'Are you sure you would like to delete ALL events with these details?'
     }
 
@@ -463,7 +463,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       onDelete={() => {
         AlertManager.confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
           await deleteEvent()
-          AlertManager.successAlert('Event Deleted')
         })
       }}
       hasDelete={currentUser?.key === event?.ownerKey}
@@ -592,7 +591,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 <div className="flex">
                   <b>
                     <PiGlobeDuotone />
-                    Website
+                    Website/Link
                   </b>
                   <a className="" href={decodeURIComponent(event?.websiteUrl)} target="_blank" rel="noreferrer">
                     {decodeURIComponent(event?.websiteUrl)}
@@ -643,13 +642,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               )}
 
               {/* REPEAT INTERVAL */}
-              {Manager.isValid(event?.repeatInterval) && (
+              {event?.isRecurring && (
                 <div className="flex">
                   <b>
                     <MdEventRepeat />
                     Recurrence Interval
                   </b>
-                  <span className="">{StringManager.uppercaseFirstLetterOfAllWords(event?.repeatInterval)}</span>
+                  <span className="">{StringManager.uppercaseFirstLetterOfAllWords(event?.recurrenceInterval)}</span>
                 </div>
               )}
             </div>

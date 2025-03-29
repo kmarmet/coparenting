@@ -7,6 +7,7 @@ DateFormats =
   monthAndDay: 'MM/DD'
   dateForDb: 'MM/DD/YYYY'
   jsDateTime: 'yyyy,MM,DD h:mm a'
+  jsDate: 'YYYY-MM-DD'
   timeForDb: 'h:mma'
   monthDayYear: 'MM/DD/YYYY'
   readableDay: 'dddd Do'

@@ -35,6 +35,7 @@ import ModelNames from '/src/models/modelNames'
 import ToggleButton from '../shared/toggleButton'
 import CreationForms from '../../constants/creationForms'
 import Label from '../shared/label'
+import DateManager from '../../managers/dateManager'
 
 export default function NewCalendarEvent() {
   // APP STATE
@@ -91,7 +92,7 @@ export default function NewCalendarEvent() {
     setShowReminders(false)
     setIncludeChildren(false)
     setIsVisitation(false)
-    setState({...state, showBottomMenu: false, creationFormToShow: '', refreshKey: Manager.getUid()})
+    setState({...state, showBottomMenu: false, creationFormToShow: '', refreshKey: Manager.getUid(), successAlertMessage: 'Event Created'})
   }
 
   const submit = async () => {
@@ -213,7 +214,7 @@ export default function NewCalendarEvent() {
           eventShareWith,
           currentUser,
           `New Calendar Event`,
-          `${eventTitle} on ${moment(eventStartDate).format(DateFormats.readableMonthAndDay)}`,
+          `${eventTitle} on ${DateManager.getValidDate(eventStartDate)}`,
           ActivityCategory.calendar
         )
       }
@@ -599,7 +600,7 @@ export default function NewCalendarEvent() {
             <Spacer height={5} />
             {/* URL/WEBSITE */}
             <InputWrapper
-              labelText={'Website'}
+              labelText={'Website/Link'}
               required={false}
               inputType={'input'}
               inputValueType="url"
