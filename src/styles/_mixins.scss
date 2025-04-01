@@ -3231,12 +3231,6 @@
       }
     }
 
-    .new-item-button {
-      background: #e7e7e7;
-      color: $headerText;
-      font-weight: $fwMedium;
-    }
-
     .existing-checklist-item {
       @include row;
     }

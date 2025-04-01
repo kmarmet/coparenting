@@ -1,8 +1,7 @@
 // Path: src\components\screens\chats\chatRow.jsx
-import React, { useContext } from 'react'
-import { FaPlay } from 'react-icons/fa'
-import { HiPause } from 'react-icons/hi2'
-import { PiChatCircleTextDuotone } from 'react-icons/pi'
+import React, {useContext} from 'react'
+import {FaPlay} from 'react-icons/fa'
+import {PiChatCircleTextDuotone} from 'react-icons/pi'
 import ScreenNames from '/src/constants/screenNames.coffee'
 import globalState from '/src/context.js'
 import DB_UserScoped from '../../../database/db_userScoped'
@@ -10,10 +9,11 @@ import AlertManager from '/src/managers/alertManager.coffee'
 import ChatManager from '/src/managers/chatManager.js'
 import Manager from '/src/managers/manager.js'
 import StringManager from '/src/managers/stringManager.coffee'
-import { FaCirclePause } from 'react-icons/fa6'
-export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+import {FaCirclePause} from 'react-icons/fa6'
+
+export default function ChatRow({chat, coparent, index, hasIcon = true}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme} = state
 
   const openChat = async (coparent) => {
     // Check if thread member (coparent) account exists in DB
@@ -24,26 +24,25 @@ export default function ChatRow({ chat, coparent, index, hasIcon = true }) {
         'This co-parent may have closed their account, however, you can still view the messages',
         null,
         () => {
-          setState({ ...state, currentScreen: ScreenNames.chat, messageRecipient: coparent })
+          setState({...state, currentScreen: ScreenNames.chat, messageRecipient: coparent})
         }
       )
     } else {
-      setState({ ...state, currentScreen: ScreenNames.chat, messageRecipient: userCoparent })
+      setState({...state, currentScreen: ScreenNames.chat, messageRecipient: userCoparent})
     }
   }
 
   const pauseChat = async (coparent) => {
     if (Manager.isValid(coparent)) {
       await ChatManager.pauseChat(currentUser, coparent)
-      AlertManager.successAlert('Chats Paused')
-      setState({ ...state, currentScreen: ScreenNames.chats })
+      setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: 'Chat Paused'})
     }
   }
 
   const unpauseChat = async (coparent) => {
     if (Manager.isValid(coparent)) {
       await ChatManager.unpauseChat(currentUser, coparent)
-      setState({ ...state, currentScreen: ScreenNames.chats })
+      setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: 'Chat Resumed'})
     }
   }
 

@@ -1,18 +1,18 @@
 // Path: src\components\screens\childInfo\addOrUpdateTransferChecklists.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import Modal from '../../shared/modal'
 import globalState from '../../../context'
 import ViewSelector from '/src/components/shared/viewSelector'
 import Manager from '/src/managers/manager'
-import { MdOutlineChecklist } from 'react-icons/md'
+import {MdOutlineChecklist} from 'react-icons/md'
 import DB from '/src/database/DB'
 import Checklist from '/src/models/checklist.js'
 import DatasetManager from '../../../managers/datasetManager'
 import MyConfetti from '../../shared/myConfetti'
 import AlertManager from '../../../managers/alertManager'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
-import { CgMathPlus } from 'react-icons/cg'
-import { PiListChecksFill } from 'react-icons/pi'
+import {child, getDatabase, onValue, ref} from 'firebase/database'
+import {CgMathPlus} from 'react-icons/cg'
+import {PiListChecksFill} from 'react-icons/pi'
 
 export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
@@ -68,8 +68,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
       else {
         if (Manager.isValid(newChecklist.checklistItems)) {
           await DB.add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
-        }
-        else {
+        } else {
           AlertManager.throwError('Please enter at least one item')
           return false
         }
@@ -142,7 +141,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
       submitIcon={<MdOutlineChecklist />}
       submitText={'DONE'}
       showCard={showCard}
-      titleIcon={<PiListChecksFill/>}
+      titleIcon={<PiListChecksFill />}
       viewSelector={
         <ViewSelector
           shouldUpdateStateOnLoad={false}
@@ -170,7 +169,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
             </p>
           )
         })}
-      <button className="button default center mt-15 new-item-button" onClick={addInput}>
+      <button className="button default grey center" onClick={addInput}>
         New Checklist Item <CgMathPlus />
       </button>
     </Modal>

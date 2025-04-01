@@ -1,6 +1,6 @@
 // Path: src\database\DB.js
 import Manager from '../managers/manager'
-import { child, get, getDatabase, ref, remove, set, update } from 'firebase/database'
+import {child, get, getDatabase, ref, remove, set, update} from 'firebase/database'
 import _ from 'lodash'
 import LogManager from '../managers/logManager.js'
 

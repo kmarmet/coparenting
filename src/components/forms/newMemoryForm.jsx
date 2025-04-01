@@ -50,7 +50,7 @@ export default function NewMemoryForm() {
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n share memories with',
-        'You have not added any co-parents. Or, it is also possible they have closed their account.'
+        'You have not connected any co-parents to your profile. It is also possible they have closed their account.'
       )
       return false
     }
@@ -97,8 +97,6 @@ export default function NewMemoryForm() {
       return false
     }
 
-    MyConfetti.fire()
-
     // Upload Image
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.key, localImages)
       .then(() => {
@@ -119,6 +117,7 @@ export default function NewMemoryForm() {
               cleanedObject.url = url
               cleanedObject.memoryName = Manager.generateHash(imageName)
               cleanedObject.ownerKey = currentUser?.key
+              cleanedObject.id = Manager.getUid()
 
               // Add to Database
               await DB.add(`${DB.tables.memories}/${currentUser?.key}`, cleanedObject)
@@ -136,8 +135,11 @@ export default function NewMemoryForm() {
           .catch((error) => {
             console.error(error)
           })
+          .finally(async () => {
+            MyConfetti.fire()
+            await resetForm()
+          })
         AppManager.setAppBadge(1)
-        await resetForm()
       })
   }
 

@@ -19,7 +19,6 @@
         border-radius: 8px !important;
       }
       svg {
-        font-size: 16px !important;
         color: $darkerGrey;
       }
 
@@ -41,6 +40,23 @@
         }
         .MuiAccordionDetails-root {
           padding: 0 !important;
+        }
+      }
+
+      &.invite-accordion,
+      &#legend {
+        .MuiCollapse-root {
+          .MuiAccordion-region {
+            padding: 0 12px !important;
+          }
+        }
+      }
+      &#legend,
+      &.memories-accordion {
+        .MuiCollapse-root {
+          .MuiAccordion-region {
+            padding: 0 12px 12px 12px !important;
+          }
         }
       }
 
@@ -71,22 +87,6 @@
         }
       }
       /*#endregion  EXPENSES*/
-
-      &.invite-accordion,
-      &#legend {
-        .MuiCollapse-root {
-          .MuiAccordion-region {
-            padding: 0 12px !important;
-          }
-        }
-      }
-      &#legend {
-        .MuiCollapse-root {
-          .MuiAccordion-region {
-            padding: 0 12px 12px 12px !important;
-          }
-        }
-      }
 
       /*#region  CHILD INFO */
       &.child-info {
@@ -270,6 +270,13 @@
 
             &.Mui-expanded {
               font-weight: $fwBold !important;
+            }
+
+            #label-wrapper {
+              label {
+                font-size: 15px;
+                white-space: nowrap;
+              }
             }
 
             button {

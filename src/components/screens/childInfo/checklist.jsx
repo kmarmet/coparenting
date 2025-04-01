@@ -1,21 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import StringManager from '../../../managers/stringManager'
 import DomManager from '../../../managers/domManager'
 import Manager from '/src/managers/manager'
-import { IoCheckmarkCircleSharp } from 'react-icons/io5'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
+import {IoCheckmarkCircleSharp} from 'react-icons/io5'
+import {PiListChecksFill, PiTrashSimpleDuotone} from 'react-icons/pi'
 import DB from '../../../database/DB'
 import globalState from '../../../context'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
-import { FaMinus, FaPlus } from 'react-icons/fa6'
-import { PiListChecksFill } from 'react-icons/pi'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
+import {FaMinus, FaPlus} from 'react-icons/fa6'
+import {child, getDatabase, onValue, ref} from 'firebase/database'
 
-export default function Checklist({ fromOrTo }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, activeInfoChild, theme, refreshKey } = state
+export default function Checklist({fromOrTo}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, activeInfoChild, theme, refreshKey} = state
 
   const [checklist, setChecklist] = useState([])
   const [activeItems, setActiveItems] = useState([])
@@ -43,13 +42,13 @@ export default function Checklist({ fromOrTo }) {
       const items = activeChecklist.checklistItems
       const text = checklistItemWrapper.textContent.toLowerCase()
       const filteredText = items.filter((x) => x.toLowerCase() !== text.toLowerCase())
-      const newChecklist = { ...activeChecklist }
+      const newChecklist = {...activeChecklist}
       newChecklist.checklistItems = filteredText
-      const updated = { ...activeChecklist, ...newChecklist }
+      const updated = {...activeChecklist, ...newChecklist}
 
       if (filteredText.length === 0) {
         await DB.delete(`${path}`, activeChecklist.id)
-        setState({ ...state, refreshKey: Manager.getUid() })
+        setState({...state, refreshKey: Manager.getUid()})
       } else {
         await DB.updateEntireRecord(`${path}`, updated, activeChecklist.id)
       }
@@ -75,7 +74,7 @@ export default function Checklist({ fromOrTo }) {
     if (childKey) {
       onValue(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${childKey}`), async (snapshot) => {
         const updatedChild = snapshot.val()
-        setState({ ...state, activeInfoChild: updatedChild })
+        setState({...state, activeInfoChild: updatedChild})
         setActiveChildChecklist().then((r) => r)
       })
     }
@@ -93,7 +92,7 @@ export default function Checklist({ fromOrTo }) {
 
   return (
     <div className={`info-section section checklist ${fromOrTo}`}>
-      <Accordion className={`${theme}`} expanded={showChecklist}>
+      <Accordion className={`${theme} child-info`} expanded={showChecklist}>
         <AccordionSummary onClick={() => setShowChecklist(!showChecklist)} className={'header checklist'}>
           <PiListChecksFill className={`${fromOrTo} svg`} />
           <p id="toggle-button" className={showChecklist ? 'active' : ''}>

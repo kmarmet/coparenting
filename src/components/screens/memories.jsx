@@ -10,7 +10,7 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import moment from 'moment'
 import {Fade} from 'react-awesome-reveal'
-import {LuImagePlus, LuMinus} from 'react-icons/lu'
+import {LuImagePlus, LuMinus, LuPlus} from 'react-icons/lu'
 import ImageManager from '../../managers/imageManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
@@ -18,11 +18,12 @@ import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
-import {IoAddOutline, IoHeart} from 'react-icons/io5'
+import {IoHeart} from 'react-icons/io5'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Spacer from '../shared/spacer'
+import Label from '../shared/label'
 
 export default function Memories() {
   const {state, setState} = useContext(globalState)
@@ -38,14 +39,7 @@ export default function Memories() {
       let validImages = []
       for (const memory of all) {
         if (Manager.isValid(memory.url)) {
-          const imageStatusCode = await ImageManager.getStatusCode(memory?.url)
-          if (imageStatusCode === 404) {
-            // Delete memory if no longer in Firebase Storage
-            await DB.deleteMemory(currentUser?.key, memory)
-          }
-          if (imageStatusCode === 200) {
-            validImages.push(memory)
-          }
+          validImages.push(memory)
         }
       }
       validImages = validImages.filter((x) => x)
@@ -69,7 +63,7 @@ export default function Memories() {
       // Delete from Firebase Realtime DB
       await DB.deleteMemory(currentUser?.key, record).then(async () => {
         // Delete from Firebase Storage
-        await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.key, imageName)
+        // await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.key, imageName)
       })
     }
     // Memory was shared with current user -> hide it
@@ -112,10 +106,11 @@ export default function Memories() {
           Share photos of unforgettable memories that deserve to be seen! <IoHeart className={'heart'} />
         </p>
         <Spacer height={10} />
-        <Accordion expanded={showDisclaimer}>
+        <Accordion className={'memories-accordion'} expanded={showDisclaimer}>
           <AccordionSummary>
-            <button className="button default with-border" onClick={() => setShowDisclaimer(!showDisclaimer)}>
-              Info {showDisclaimer ? <LuMinus /> : <IoAddOutline />}
+            <button className="button default grey" onClick={() => setShowDisclaimer(!showDisclaimer)}>
+              <div id="circle" className="circle"></div>
+              <Label text={'Memory Retention'} /> {showDisclaimer ? <LuMinus /> : <LuPlus />}
             </button>
           </AccordionSummary>
           <Spacer height={5} />

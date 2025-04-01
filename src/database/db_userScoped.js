@@ -1,5 +1,5 @@
 // Path: src\database\db_userScoped.js
-import { child, get, getDatabase, push, ref, remove, set, update } from 'firebase/database'
+import {child, get, getDatabase, push, ref, remove, set, update} from 'firebase/database'
 import _ from 'lodash'
 import Manager from '../managers/manager'
 import ModelNames from '../models/modelNames'
@@ -268,7 +268,7 @@ const DB_UserScoped = {
   },
   createAndInsertUser: async (userObject) => {
     const dbRef = ref(getDatabase())
-    const { email, key, accountType, phone } = userObject
+    const {email, key, accountType, phone} = userObject
 
     const locationDetails = await AppManager.getLocationDetails()
 
@@ -300,7 +300,7 @@ const DB_UserScoped = {
     } else {
       dbRef = ref(database, `${DB.tables.users}/${currentUser?.key}`)
     }
-    update(dbRef, { [StringManager.formatDbProp(prop)]: value })
+    update(dbRef, {[StringManager.formatDbProp(prop)]: value})
   },
   updateUserChild: async (currentUser, activeChild, section, prop, value) => {
     const dbRef = ref(getDatabase())
@@ -311,7 +311,7 @@ const DB_UserScoped = {
   },
   updateCoparent: async (currentUser, coparent, prop, value) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/coparents`, coparent, 'phone')
+    let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/coparents`, coparent, 'key')
     await set(child(dbRef, `users/${currentUser?.key}/coparents/${key}/${StringManager.formatDbProp(prop)}`), value)
   },
   updateUserRecord: async (keyOrUid, propPath, value) => {
@@ -340,7 +340,7 @@ const DB_UserScoped = {
       updatedPhoneRecords = DB_UserScoped.recursiveObjectUpdate(allData, currentValue, updatedValue, propNameToUpdate)
     }
 
-    const updatedDatabase = { ...updatedEmailRecords, ...updatedPhoneRecords }
+    const updatedDatabase = {...updatedEmailRecords, ...updatedPhoneRecords}
     await set(dbRef, updatedDatabase)
   },
 

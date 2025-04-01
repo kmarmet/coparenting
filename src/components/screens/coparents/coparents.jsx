@@ -54,7 +54,7 @@ export default function Coparents() {
   }
 
   const update = async (prop, value) => {
-    AlertManager.successAlert('Updated!')
+    setState({...state, successAlertMessage: 'Updated'})
     const coparent = await getCoparent()
     await DB_UserScoped.updateCoparent(currentUser, coparent, StringManager.formatDbProp(prop), value)
     const updatedCoparent = await getCoparent()

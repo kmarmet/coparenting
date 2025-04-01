@@ -90,7 +90,7 @@ const Chats = () => {
           <AccordionSummary>
             <button className="button default grey" onClick={() => setShowInfo(!showInfo)}>
               <div id="circle" className="circle"></div>
-              <Label text={'Invite'} /> {showInfo ? <LuMinus /> : <LuPlus />}
+              <Label text={'Invite Co-Parent or Child'} /> {showInfo ? <LuMinus /> : <LuPlus />}
             </button>
           </AccordionSummary>
           <Spacer height={5} />
