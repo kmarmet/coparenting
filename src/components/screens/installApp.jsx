@@ -1,22 +1,22 @@
 // Path: src\components\screens\installApp.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../context'
-import { FaApple, FaMinus, FaPlus } from 'react-icons/fa6'
-import { BsAndroid2 } from 'react-icons/bs'
-import { TbDeviceDesktopDown } from 'react-icons/tb'
+import {FaApple, FaMinus, FaPlus} from 'react-icons/fa6'
+import {BsAndroid2} from 'react-icons/bs'
+import {TbDeviceDesktopDown} from 'react-icons/tb'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import DomManager from '../../managers/domManager'
-import { MdOutlineIosShare } from 'react-icons/md'
+import {MdOutlineIosShare} from 'react-icons/md'
 import Spacer from '../shared/spacer'
 import NavBar from '../navBar'
-import { IoIosArrowBack } from 'react-icons/io'
+import {IoIosArrowBack} from 'react-icons/io'
 import ScreenNames from '../../constants/screenNames'
 
 export default function InstallApp() {
-  const { state, setState } = useContext(globalState)
-  const { userIsLoggedIn } = state
+  const {state, setState} = useContext(globalState)
+  const {userIsLoggedIn} = state
   const [expandAppleAccordion, setExpandAppleAccordion] = useState(false)
   const [expandAndroidAccordion, setExpandAndroidAccordion] = useState(false)
   const [expandDesktopAccordion, setExpandDesktopAccordion] = useState(false)
@@ -25,19 +25,19 @@ export default function InstallApp() {
     <>
       <div className="page-container install-app">
         <div id="install-app-wrapper">
-          {!userIsLoggedIn && <IoIosArrowBack className={'back-arrow'} onClick={() => setState({ ...state, currentScreen: ScreenNames.login })} />}
+          {!userIsLoggedIn && <IoIosArrowBack className={'back-arrow'} onClick={() => setState({...state, currentScreen: ScreenNames.login})} />}
           <p className="screen-title">Installation Instructions</p>
           <p>Install the app in three steps or less! No App Store or Play Store necessary.</p>
           <Spacer height={10} />
           {/* IOS */}
           <Accordion id={'ios'}>
             <AccordionSummary>
-              <p className="accordion-header apple" onClick={(e) => setExpandAppleAccordion(!expandAppleAccordion)}>
+              <p className="accordion-header apple" onClick={() => setExpandAppleAccordion(!expandAppleAccordion)}>
                 iOS <FaApple className={'apple-logo'} />{' '}
                 {expandAppleAccordion ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}
               </p>
             </AccordionSummary>
-
+            <Spacer height={5} />
             <AccordionDetails expanded={expandAppleAccordion.toString()}>
               <div className="os-container apple">
                 <p className="while-viewing">While viewing the website in Safari...</p>
@@ -79,6 +79,7 @@ export default function InstallApp() {
                 {expandAndroidAccordion ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}
               </p>
             </AccordionSummary>
+            <Spacer height={5} />
             <AccordionDetails expanded={expandAndroidAccordion.toString()}>
               <div className="os-container android">
                 <p className="while-viewing">While viewing the website in Chrome (in default web browser)...</p>
@@ -117,6 +118,7 @@ export default function InstallApp() {
                 {expandDesktopAccordion ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}
               </p>
             </AccordionSummary>
+            <Spacer height={5} />
             <AccordionDetails expanded={expandDesktopAccordion.toString()}>
               <div className="os-container apple">
                 <p className="while-viewing">While viewing the website (in default web browser)...</p>

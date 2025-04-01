@@ -9,7 +9,6 @@ import CheckboxGroup from './checkboxGroup'
 import InputWrapper from './inputWrapper'
 import Modal from './modal'
 import AlertManager from '../../managers/alertManager'
-
 import ShareWithCheckboxes from './shareWithCheckboxes'
 import NotificationManager from '../../managers/notificationManager.js'
 import DateFormats from '../../constants/dateFormats'
@@ -17,7 +16,6 @@ import StringManager from '../../managers/stringManager'
 import ViewSelector from './viewSelector'
 import AddressInput from './addressInput'
 import validator from 'validator'
-import DomManager from '../../managers/domManager'
 
 export default function CustomChildInfo({hideCard, showCard}) {
   const {state, setState} = useContext(globalState)
@@ -145,17 +143,14 @@ export default function CustomChildInfo({hideCard, showCard}) {
         {infoType === 'date' && (
           <div className="w-100">
             <InputWrapper inputType={'input'} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
-            {!DomManager.isMobile() && (
-              <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
-                <MobileDatePicker
-                  className={`${theme} m-0 w-100 event-from-date mui-input`}
-                  onAccept={(e) => {
-                    setValue(moment(e).format(DateFormats.dateForDb))
-                  }}
-                />
-              </InputWrapper>
-            )}
-            {DomManager.isMobile() && <InputWrapper useNativeDate={true} labelText={'Date'} required={true} inputType={'date'}></InputWrapper>}
+            <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
+              <MobileDatePicker
+                className={`${theme}`}
+                onAccept={(e) => {
+                  setValue(moment(e).format(DateFormats.dateForDb))
+                }}
+              />
+            </InputWrapper>
           </div>
         )}
 

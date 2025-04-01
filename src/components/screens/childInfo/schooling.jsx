@@ -1,5 +1,5 @@
 // Path: src\components\screens\childInfo\schooling.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
 import DB_UserScoped from '/src/database/db_userScoped'
@@ -8,15 +8,15 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
-import { IoSchool } from 'react-icons/io5'
+import {IoSchool} from 'react-icons/io5'
 import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
+import {FaMinus, FaPlus} from 'react-icons/fa6'
+import {PiTrashSimpleDuotone} from 'react-icons/pi'
 
 export default function Schooling() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, activeInfoChild} = state
   const [schoolingValues, setSchoolingValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
@@ -42,14 +42,14 @@ export default function Schooling() {
     } else {
       const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'schooling', StringManager.formatDbProp(prop))
       await setSelectedChild()
-      setState({ ...state, activeInfoChild: updatedChild })
+      setState({...state, activeInfoChild: updatedChild})
     }
   }
 
   const update = async (prop, value) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'schooling', StringManager.formatDbProp(prop), value)
     AlertManager.successAlert('Updated!')
-    setState({ ...state, activeInfoChild: updatedChild })
+    setState({...state, activeInfoChild: updatedChild})
   }
 
   const setSelectedChild = async () => {
@@ -81,11 +81,11 @@ export default function Schooling() {
 
   return (
     <div className="info-section section schooling">
-      <Accordion className={theme} disabled={!Manager.isValid(activeInfoChild?.schooling)}>
+      <Accordion className={`${theme} child-info`} disabled={!Manager.isValid(activeInfoChild?.schooling)}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
           className={!Manager.isValid(activeInfoChild?.schooling) ? 'disabled header schooling' : 'header schooling'}>
-          <IoSchool className={'svg'} />
+          <IoSchool className={'svg schooling'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Schooling
             {!Manager.isValid(activeInfoChild?.schooling) ? '- no info' : ''}

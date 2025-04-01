@@ -1305,127 +1305,6 @@
   }
 }
 
-@mixin accordion {
-  .MuiCollapse-root {
-    border-radius: $borderRadius;
-    transition: all 0.3s ease-in-out;
-
-    .buttons {
-      padding: 15px;
-
-      &.flex {
-        gap: 10px;
-        padding: 0;
-      }
-
-      button {
-        &.button {
-          &.default {
-            font-size: 12px;
-            padding: 8px 15px;
-            min-width: 0;
-            width: unset;
-            background: white;
-            color: $darkerGrey;
-            opacity: 1;
-            font-weight: $fwMedium;
-            border: 1px solid $lightBorderColor;
-
-            &.active {
-              color: $mainBlue;
-              font-weight: $fwBold;
-              background: $lightAccentBlue;
-              border: 0;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .MuiPaper-elevation {
-    .MuiAccordionSummary-gutters {
-      &.MuiAccordionSummary-root {
-        width: 100%;
-
-        #toggle-button {
-          font-weight: $fwMedium;
-          color: $lessSubtleText;
-        }
-
-        #actions-button {
-          @include accordionHeader;
-          margin: 0 auto;
-          align-items: center;
-          justify-content: space-between;
-          line-height: 1;
-          padding: 8px 15px;
-          opacity: 1;
-          font-weight: $fwBold;
-
-          svg {
-            margin-left: 10px;
-            margin-right: 0;
-            font-size: 16px;
-            color: $disabledText;
-            position: relative;
-            top: 0;
-          }
-
-          &.active {
-            background: $lightIconBgBlue;
-            color: $mainBlue;
-            width: 100%;
-            opacity: 1;
-            margin: 0;
-            font-weight: $fwMediumBold;
-            border-radius: $borderRadius $borderRadius 0 0;
-            font-size: 16px;
-            padding-top: 15px;
-
-            svg {
-              color: $mainBlue;
-            }
-          }
-        }
-      }
-    }
-
-    &.Mui-disabled {
-      .MuiAccordionSummary-root {
-        #toggle-button {
-          font-weight: $fwLight !important;
-        }
-      }
-    }
-  }
-}
-
-@mixin accordionHeader {
-  padding: 10px;
-  background-color: $grey;
-  display: flex;
-  font-weight: 500;
-  flex-wrap: wrap;
-  opacity: 0.75;
-  border-radius: 6px;
-  transition: all 0.3s ease-in-out;
-  color: #737373;
-
-  svg {
-    margin-left: auto;
-    align-self: flex-end;
-    color: #737373;
-    font-size: 22px;
-    max-height: 20px;
-    display: flex;
-    position: relative;
-    top: -2px;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
 @mixin viewsWrapper {
   display: flex;
   align-items: center;
@@ -1478,6 +1357,7 @@
       color: $headerText;
       transition: all 0.4s ease-in-out;
       background: white;
+      width: 100%;
       flex: 1;
     }
 
@@ -1778,6 +1658,24 @@
   overflow: hidden;
   background: white;
   padding: 0;
+
+  * {
+    line-height: 1 !important;
+  }
+
+  .MuiFormControl-root {
+    input {
+      top: 0 !important;
+      border-radius: 0 !important;
+      padding-top: 0 !important;
+    }
+  }
+
+  &.date {
+    #label-wrapper {
+      top: 3px !important;
+    }
+  }
 
   &.active {
     border: 1px solid $darkerGrey;
@@ -2463,6 +2361,7 @@
   .os-container {
     background: $grey;
     padding: 12px;
+    border: 1px solid $lightBorderColor;
     border-radius: $borderRadius;
 
     .while-viewing {
@@ -2760,6 +2659,7 @@
     max-height: calc(100vh - 230px);
     align-self: center;
     overflow: hidden;
+    display: flex;
     width: calc(100vw - 20px);
     box-shadow:
       rgba(0, 0, 0, 0.15) 0 0 2px 1px,
@@ -2775,6 +2675,10 @@
       overscroll-behavior: none;
       position: relative;
       transition: all 0.6s ease-out;
+      display: flex;
+      align-items: stretch;
+      flex-direction: column;
+      flex-grow: 1;
       @media screen and (max-width: 400px) {
         max-height: calc(100vh - 215px);
       }
@@ -2892,20 +2796,13 @@
 
   #relative-wrapper {
     position: relative;
-    padding: 5px 15px 25px 15px;
+    padding: 5px 15px 15px 15px;
     height: 100%;
     margin-bottom: auto;
     display: block;
+    overflow: auto;
     top: 0;
     overscroll-behavior: none;
-    max-height: calc(100vh - 300px);
-
-    // Add a 15px padding to the bottom of the modal
-    &:after {
-      content: '';
-      display: block;
-      height: 15px;
-    }
 
     #share-with-checkbox-group {
       .flex {

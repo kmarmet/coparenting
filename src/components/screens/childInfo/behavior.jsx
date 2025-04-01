@@ -1,5 +1,5 @@
 // Path: src\components\screens\childInfo\behavior.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
 import DB_UserScoped from '/src/database/db_userScoped'
@@ -10,12 +10,12 @@ import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
 import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
-import { FaBrain, FaMinus, FaPlus } from 'react-icons/fa6'
-import { PiTrashSimpleDuotone } from 'react-icons/pi'
+import {FaBrain, FaMinus, FaPlus} from 'react-icons/fa6'
+import {PiTrashSimpleDuotone} from 'react-icons/pi'
 
 export default function Behavior() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, activeInfoChild} = state
   const [behaviorValues, setBehaviorValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
@@ -41,13 +41,13 @@ export default function Behavior() {
     } else {
       const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'behavior', StringManager.formatDbProp(prop))
       await setSelectedChild()
-      setState({ ...state, activeInfoChild: updatedChild })
+      setState({...state, activeInfoChild: updatedChild})
     }
   }
 
   const update = async (prop, value) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'behavior', StringManager.formatDbProp(prop), value)
-    setState({ ...state, activeInfoChild: updatedChild })
+    setState({...state, activeInfoChild: updatedChild})
     AlertManager.successAlert('Updated!')
   }
 
@@ -80,7 +80,7 @@ export default function Behavior() {
 
   return (
     <div className="info-section section behavior">
-      <Accordion className={theme} disabled={!Manager.isValid(activeInfoChild?.behavior)}>
+      <Accordion className={`${theme} child-info`} disabled={!Manager.isValid(activeInfoChild?.behavior)}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
           className={!Manager.isValid(activeInfoChild.behavior) ? 'disabled header behavior' : 'header behavior'}>

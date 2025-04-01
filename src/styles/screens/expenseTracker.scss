@@ -138,15 +138,12 @@
 
   #expense-tracker {
     // Filters Accordion
-    @include accordion;
     #filters-accordion {
       background: $grey;
     }
 
     #filters {
-      margin-top: 15px;
       border-radius: $borderRadius;
-      padding-bottom: 15px;
 
       .filter-row {
         margin-bottom: 10px;
@@ -167,20 +164,6 @@
               padding: 0;
               font-weight: $fwMedium;
             }
-          }
-        }
-      }
-
-      .MuiFormControl-root {
-        .MuiOutlinedInput-root {
-          [role='combobox'] {
-            background: white !important;
-            padding: 8px !important;
-            margin-top: 5px !important;
-            line-height: 1;
-            display: flex;
-            border: 1px solid $lightBorderColor !important;
-            align-items: center;
           }
         }
       }

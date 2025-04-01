@@ -3,954 +3,40 @@
 @import './mixins';
 
 #external-overrides {
-  /*#region  ACTIONS*/
-
-  #app-container {
-    .actions {
-      transition: all 0.3s ease-in-out !important;
-      width: 100%;
-
-      .action-items {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        justify-content: center;
-        grid-gap: 10px;
-        width: 65vw;
-        margin: 0 auto;
-
-        .action-item {
-          height: 112px;
-          border-radius: $bigBorderRadius;
-          background: $lightAccentBlue;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          margin-top: 0;
-          transition: all 0.6s ease-in-out;
-          opacity: 1;
-          border: 1px solid $accent;
-          position: relative;
-          padding: 0 10px;
-
-          span {
-            text-align: center;
-            font-size: 15px;
-            line-height: 1.2;
-            padding-top: 5px;
-            color: $accent;
-            font-weight: $fwRegular;
-          }
-
-          .svg-wrapper {
-            line-height: 1;
-            width: 100%;
-            z-index: 9;
-            display: flex;
-            justify-content: center;
-
-            &.remove-user {
-              svg {
-                font-size: 21px;
-              }
-            }
-
-            &.airplane {
-              top: -8px;
-            }
-
-            svg {
-              font-size: 22px;
-              color: $accent;
-              //              background: white;
-              &.checklist {
-                transform: scale(1.3);
-              }
-
-              &.child {
-                transform: scale(1.3);
-              }
-            }
-          }
-        }
-      }
-
-      &.Mui-expanded {
-        height: auto !important;
-        margin-top: 25px !important;
-        transition: all 0.3s ease-in-out !important;
-      }
-
-      .MuiAccordionSummary-root {
-        padding: 0 !important;
-        margin: 0 !important;
-        height: 0 !important;
-      }
-
-      .MuiCollapse-root {
-        position: unset !important;
-        background: transparent !important;
-      }
-
-      .MuiAccordionDetails-root {
-        padding: 0 !important;
-      }
-
-      .MuiAccordion-root {
-        display: none !important;
-      }
-      button {
-        margin-bottom: 8px;
-
-        &.default {
-          background: white !important;
-          color: $mainBlue !important;
-          font-size: 14px !important;
-          padding: 10px 0 !important;
-
-          &:last-child {
-            margin-bottom: 0 !important;
-          }
-        }
-      }
-      .MuiButtonBase-root {
-        height: 0 !important;
-        min-height: 0 !important;
-        transition: all 0.3s ease-in-out !important;
-      }
-    }
-  }
-  /*#endregion  ACTIONS*/
-
-  .Mui-expanded {
-    margin: 0 !important;
-  }
-  .info-section {
-    svg:not(.checklist-delete-icon) {
-      font-size: 20px;
+  // OVERLAY
+  .MuiBackdrop-root {
+    &.MuiModal-backdrop {
+      backdrop-filter: blur(5px) !important;
     }
   }
 
-  .MuiCollapse-entered {
-    display: flex !important;
-    align-items: center !important;
-  }
-  // EVENT ROW
-  .event-row {
-    .text {
-      .MuiPaper-root {
-        background: transparent;
-        height: auto;
-        border-bottom: 1px solid $lightBorderColor;
-
-        border-radius: 0;
-        &:before {
-          display: none;
-        }
-
-        .MuiAccordion-heading {
-          max-height: 20px !important;
-          overflow: hidden !important;
-        }
-
-        .MuiButtonBase-root {
-          width: 100%;
-          max-width: 95%;
-          height: auto !important;
-          .MuiAccordionSummary-content {
-            font-size: 14px !important;
-            color: $lightDarkGrey;
-            font-weight: $fwMedium !important;
-            padding: 0;
-            margin: 0;
-            height: auto;
-          }
-        }
-      }
-    }
-  }
-
-  // STATIC CALENDAR
-  #static-calendar {
-    .MuiPickersLayout-contentWrapper {
-      max-width: 100% !important;
-
-      * {
-        max-width: 100% !important;
-      }
-    }
-    .MuiPickersCalendarHeader-root {
-      //      margin: 0 !important;
-      //      order: 1 !important;
-      //      width: 100% !important;
-      //      justify-content: flex-end;
-      //      padding: 0;
-      //      position: relative;
-      //      top: -22px;
-
-      .MuiPickersCalendarHeader-labelContainer {
-        //        display: none !important;
-      }
-
-      .MuiButtonBase-root {
-        padding: 0 !important;
-      }
-    }
-  }
-
-  // PARENT/ROOT CALENDAR WRAPPER
-  .MuiPickersLayout-contentWrapper {
-    max-width: calc(100vw - 20px) !important;
-
-    * {
-      max-width: calc(100vw - 20px) !important;
-    }
-  }
-
-  .MuiTimePickerToolbar-hourMinuteLabel {
-    button {
-      border: 1px solid $lightDarkGrey !important;
-    }
-  }
-
-  .MuiDateCalendar-root {
-    margin: 0;
-    height: 400px;
-    max-height: unset !important;
-    width: 98vw;
-    max-width: 380px;
-  }
-
-  // AM/PM SELECTION
-  .MuiTimePickerToolbar-ampmSelection {
-    flex-wrap: nowrap;
-    flex-direction: row;
-    margin: 10px 25px 0 0;
-    gap: 5px;
-    button {
-      min-width: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      width: 40px !important;
-      justify-content: center;
-      display: flex;
-      align-items: center;
-
-      span {
-        padding: 0 !important;
-        width: 40px !important;
-      }
-
-      &:not(.Mui-selected) {
-        border: 0 !important;
-      }
-      .Mui-selected.MuiTypography-subtitle2 {
-        border-radius: $borderRadius;
-        border: 0;
-        width: 40px !important;
-        height: auto;
-      }
-    }
-  }
-
-  // Dropdown year selector
-  .MuiYearCalendar-root {
-    width: 100% !important;
-    border: 1px solid $mainBlue !important;
-  }
-
-  // CALENDAR ARROWS
-  .MuiPickersArrowSwitcher-root {
-    .MuiPickersArrowSwitcher-spacer {
-      display: none;
-    }
-  }
-  .MuiPickersArrowSwitcher-rightArrowIcon,
-  .MuiPickersArrowSwitcher-leftArrowIcon {
-    color: $darkerGrey;
-    position: relative;
-    right: -5px;
-    transform: scale(1.2);
-  }
-  .MuiPickersArrowSwitcher-leftArrowIcon {
-    margin-right: 15px;
-  }
-
-  .MuiPickersArrowSwitcher-button {
-    @media screen and (max-width: 400px) {
-      transform: scale(0.9);
-    }
-  }
-
-  // DATE RANGE
-  .MuiDateRangeCalendar-root {
-    width: calc(100% - 22px);
-
-    .MuiPickersSlideTransition-root {
-    }
-
-    .MuiDateRangePickerDay-rangeIntervalPreview {
-      button {
-        &.Mui-selected {
-          width: 45px !important;
-          position: relative;
-          top: -5px;
-        }
-      }
-    }
-
-    .MuiDateRangeCalendar-monthContainer {
-      width: 100%;
-
-      .MuiPickersDay-today {
-        color: $mainBlue !important;
-        opacity: 1 !important;
-      }
-    }
-
-    .MuiDayCalendar-header {
-      max-height: 30px;
-      margin: 0 auto;
-      display: grid !important;
-      grid-template-columns: repeat(7, 1fr);
-      align-items: flex-start !important;
-      width: calc(100vw - 20px) !important;
-
-      .MuiDayCalendar-weekDayLabel {
-        height: 50px !important;
-        text-align: center !important;
-      }
-    }
-
-    .MuiPickersCalendarHeader-root {
-      margin: 0;
-    }
-
-    .MuiPickersDay-today {
-      border: 0 !important;
-      font-weight: $fwBold;
-      transform: scale(1.5) !important;
-    }
-  }
-
-  // ACCORDION
-  .MuiAccordion-gutters {
-    &#checkboxes {
-      //      margin-bottom: 10px !important;
-      background-color: transparent;
-
-      &::before {
-        display: none;
-      }
-      .MuiButtonBase-root {
-        max-height: 30px !important;
-        min-height: 0 !important;
-      }
-      .MuiAccordionSummary-root {
-        width: 100%;
-        .MuiAccordionSummary-content {
-          .flex {
-            width: 100%;
-          }
-        }
-      }
-      .MuiAccordionDetails-root {
-        padding: 0 !important;
-      }
-    }
-    &#ios,
-    &#android,
-    &#pc {
-      background-color: transparent;
-      width: 100% !important;
-      margin-bottom: 5px !important;
-      .MuiAccordion-region {
-        padding: 10px 0;
-      }
-      .MuiButtonBase-root {
-        width: 100%;
-
-        .accordion-header {
-          width: 100%;
-        }
-      }
-    }
-
-    .MuiAccordion-heading {
-      background: transparent !important;
-      .MuiAccordionDetails-root {
-        padding: 0 !important;
-      }
-    }
-
-    &.MuiPaper-root {
-      width: 100% !important;
-
-      .MuiAccordion-heading {
-        max-height: 40px;
-
-        p {
-          font-weight: $fwMedium;
-          margin: 0;
-          line-height: 1.3;
-          color: $labelText;
-
-          svg {
-            position: relative;
-            top: 3px;
-            margin-right: 5px;
-            font-size: 20px;
-            width: 20px;
-
-            &.type {
-              font-size: 16px;
-            }
-          }
-        }
-      }
-
-      .MuiAccordionDetails-root {
-        padding-top: 0;
-        padding-bottom: 0;
-      }
-    }
-  }
-  .MuiAccordion-root {
-    box-shadow: none !important;
-    .MuiAccordion-heading {
-      display: flex;
-      align-items: center;
-      border: 0;
-
-      .MuiButtonBase-root {
-        padding: 0 !important;
-
-        &.general {
-          svg {
-            color: $mainBlue;
-          }
-        }
-        &.schooling {
-          svg {
-            color: #2ecc71;
-          }
-        }
-        &.medical {
-          svg {
-            color: #e74c3c;
-          }
-        }
-        &.behavior {
-          svg {
-            color: #dc7633;
-          }
-        }
-
-        &.checklist {
-          svg {
-            &.from {
-              color: rgba(110, 78, 255, 0.88);
-            }
-            &.to {
-              color: #607d8b !important;
-            }
-          }
-        }
-
-        .MuiAccordionSummary-expandIconWrapper {
-          svg {
-            margin: 0 10px 0 0 !important;
-          }
-        }
-
-        .MuiAccordionSummary-content {
-          margin: 0 !important;
-          align-items: center;
-          font-size: 20px !important;
-          color: $lightBlackLight;
-          border: 1px solid $lightBorderColor !important;
-          height: 40px !important;
-
-          &.Mui-expanded {
-            font-weight: $fwBold !important;
-          }
-        }
-      }
-    }
-  }
-  // EVENT DOTS
-  .dot-wrapper {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 3px;
-    position: relative;
-    top: -5px;
-
-    .dot {
-      margin: 0;
-      height: 5px;
-      width: 5px;
-      border: 0;
-      display: block;
-      border-radius: 100%;
-    }
-
-    .payday-dot {
-      background: $green;
-    }
-    .current-user-visitation-dot,
-    .current-user-event-dot {
-      background-color: $mainBlue;
-    }
-
-    .coparent-visitation-dot,
-    .coparent-event-dot {
-      background-color: $coparentPurple;
-    }
-
-    .holiday-event-dot {
-      background-color: $holidayOrange;
-    }
-  }
-  .invisible-dots {
-    width: 100%;
-    height: 2px;
-  }
-
-  .holiday-emoji,
-  .payday-emoji {
-    position: absolute;
-    top: -5px;
-    left: 60%;
-    right: 50%;
-    z-index: 100;
-    width: 15px;
-    height: 20px;
-    display: flex;
-    justify-content: center;
-    border-radius: 50%;
-    align-items: center;
-  }
-
-  // Padding for top row (for emoji)
-  .MuiDayCalendar-monthContainer {
-    padding-top: 5px;
-    position: unset !important;
-  }
-
-  // Static Calendar
-  .MuiDateCalendar-root {
-    width: calc(100vw) !important;
-    margin: 0 !important;
-    height: 100% !important;
-
-    @media screen and (min-width: 1000px) {
-      margin: 0 auto !important;
-      width: 47vw !important;
-    }
-
-    .MuiPickersFadeTransitionGroup-root {
-      max-width: 100% !important;
-    }
-
-    .MuiPickersDay-today:not(.Mui-selected) {
-      opacity: 1 !important;
-      border: 1px solid $lightBorderColor !important;
-      border-radius: 50% !important;
-      font-weight: $fwMediumBold !important;
-      width: 51px !important;
-      margin-left: 5px;
-      margin-right: 5px;
-      height: 45px !important;
-    }
-
-    // WEEKDAY LABEL (S M W)
-    .MuiDayCalendar-weekDayLabel {
-      width: 60px !important;
-      height: 30px !important;
-      color: black !important;
-      opacity: 0.6;
-      font-weight: $fwRegular !important;
-    }
-
-    .MuiPickersSlideTransition-root {
-      min-height: 310px !important;
-      max-width: calc(100vw - 100px) !important;
-
-      // New/Edit Datepicker
-      &[role='presentation'] {
-        width: 100%;
-        max-width: 100% !important;
-      }
-
-      .MuiDayCalendar-monthContainer {
-        [role='row'] {
-          max-width: calc(100vw - 30px) !important;
-          &:first-child {
-            .MuiPickersDay-root {
-            }
-          }
-        }
-      }
-    }
-
-    .MuiDateCalendar-viewTransitionContainer {
-      .MuiMonthCalendar-root {
-        background: $grey !important;
-        margin: 0 auto 25px auto !important;
-        width: calc(100vw - 30px) !important;
-        border-radius: $bigBorderRadius;
-        box-shadow: $boxShadow_surround_small;
-        padding: 15px 0;
-
-        .MuiPickersMonth-monthButton {
-          font-weight: $fwMedium !important;
-          color: $primaryText !important;
-
-          &.Mui-selected {
-            background: $lightAccentBlue !important;
-            opacity: 1;
-            color: $mainBlue !important;
-          }
-        }
-      }
-
-      * {
-        text-align: center !important;
-      }
-    }
-
-    .MuiPickersDay-root {
-      width: 60px !important;
-      height: 50px !important;
-      margin-bottom: 8px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      color: $primaryText;
-      border-radius: $borderRadius !important;
-      font-size: 14px !important;
-
-      @media screen and (min-width: 650px) {
-        &:hover {
-          background: $lightAccentBlue !important;
-          color: $accent !important;
-        }
-      }
-
-      // Weekend
-      &.weekend-day,
-      &.MuiPickersDay-dayOutsideMonth,
-      &[aria-colindex='7'],
-      &[aria-colindex='1'] {
-        opacity: 0.6 !important;
-
-        &.Mui-selected,
-        &.MuiPickersDay-today {
-          opacity: 1 !important;
-        }
-      }
-
-      &.Mui-selected {
-        transition: all 0.2s ease-in-out !important;
-        background: $lightAccentBlue !important;
-        width: 51px !important;
-        height: 45px !important;
-        margin-left: 5px;
-        margin-right: 5px;
-        border-radius: 50% !important;
-        position: relative;
-        opacity: 1 !important;
-        color: $mainBlue !important;
-        font-weight: $fwBold !important;
-
-        .dot-wrapper {
-          position: relative;
-          top: -2px;
-        }
-      }
-    }
-  }
-
-  #legend-wrapper,
-  #calendar-legend {
-    margin-left: 0;
-
-    &#legend-wrapper {
-      background: $grey !important;
-      order: -1;
-      border-radius: $bigBorderRadius;
-
-      #legend-button {
-        border: 0 !important;
-      }
-    }
-
-    &#calendar-legend {
-      border: 0 !important;
-      position: relative;
-
-      &.MuiPaper-root {
-        margin: 15px auto 0 !important;
-
-        &:before {
-          display: none;
-        }
-        &.Mui-expanded {
-          width: 200px !important;
-          padding: 15px 0 !important;
-          background: $grey !important;
-          border-radius: $bigBorderRadius !important;
-          border: 1px solid $lightBorderColor !important;
-        }
-      }
-
-      .flex {
-        justify-content: center;
-        padding-bottom: 5px;
-      }
-
-      .MuiButtonBase-root {
-        width: auto !important;
-        padding: 0 !important;
-        height: unset !important;
-        min-height: unset !important;
-        opacity: 0.75;
-        position: absolute;
-        bottom: 4px;
-        z-index: 1000;
-        right: 4px;
-
-        svg {
-          font-size: 22px !important;
-          color: $red !important;
-          margin: 0 !important;
-        }
-      }
-    }
-
-    p {
-      opacity: 1 !important;
-      &.coparent {
-        color: $coparentPurple;
-      }
-
-      &.financial {
-        color: $green;
-      }
-
-      &.holiday {
-        color: $holidayOrange;
-      }
-
-      &.currentUser {
-        color: $mainBlue;
-      }
-    }
-
-    .dot {
-      height: 5px;
-      width: 5px;
-      border-radius: 100%;
-      position: relative;
-
-      &.in-legend {
-        margin-right: 10px;
-        display: block;
-      }
-
-      &.coparent {
-        background: $coparentPurple;
-        top: -5px;
-      }
-
-      &.holiday {
-        background: $holidayOrange;
-        top: 5px;
-        right: 8px;
-      }
-
-      &.payday {
-        background: $green;
-        right: 11px;
-      }
-
-      &.currentUser {
-        left: 3px;
-        background: $mainBlue;
-      }
-    }
-  }
-
-  .MuiPickersLayout-root {
-    background: $lightBg !important;
-    margin: 0 !important;
-    border-radius: 0;
-
-    .MuiPickersCalendarHeader-label {
-      font-weight: $fwMediumBold !important;
-      color: $headerText;
-    }
-    .MuiPickersCalendarHeader-switchViewIcon {
-      opacity: 0.6 !important;
-      position: relative;
-      bottom: 3px;
-    }
-  }
-
-  .MuiDialogActions-root {
-    max-width: 100vw !important;
-    width: calc(100vw - 30px);
-    margin: 0 auto !important;
-    align-items: center;
-    gap: 10px !important;
-    position: relative;
-    z-index: 100000;
-    justify-content: center;
-    padding: 0 !important;
-    left: 0;
-
-    @media screen and (max-width: 800px) {
-      width: auto !important;
-      padding: 0 15px !important;
-      margin: 0 !important;
-    }
-
-    @media screen and (min-width: 1000px) {
-      width: auto;
-    }
-
-    // BELOW CALENDAR BUTTONS
-    button,
-    p {
-      opacity: 1 !important;
-      text-transform: uppercase;
-      margin: 0;
-      font-size: 12px !important;
-      line-height: 1 !important;
-      text-align: center !important;
-      position: relative;
-      border-radius: 6px;
-      font-weight: $fwMedium !important;
-      color: $darkerGrey !important;
-      height: 28px !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: $lightGrey;
-      border: 1px solid $lightBorderColor;
-    }
-
-    .divider {
-      color: $lightDarkGrey !important;
-    }
-
-    // TODAY BUTTON
-    .MuiButtonBase-root {
-      font-size: 12px !important;
-      text-align: center !important;
-      color: $darkGrey !important;
-      background: $lightGrey;
-      height: 28px !important;
-      border-radius: 6px !important;
-      border: 1px solid $lightBorderColor !important;
-
-      @media screen and (max-width: 400px) {
-        font-size: 13px !important;
-      }
-    }
-  }
-
-  .MuiPickersLayout-contentWrapper {
-    margin: 0 auto !important;
-    width: calc(100vw - 20px) !important;
-
-    @media screen and (max-width: 800px) {
-      //      max-width: 100vw !important;
-      //      width: 100vw !important;
-    }
-
-    @media screen and (min-width: 800px) {
-      width: auto !important;
-      max-width: 500px !important;
-      display: block !important;
-      grid-column: 1 !important;
-    }
-  }
-  .MuiDatePickerToolbar-root {
-    //    display: none;
-  }
-  [role='combobox'] {
-    padding: 10px;
-    background: $grey;
-    border-radius: $borderRadius;
-  }
-  .MuiList-root {
-    li {
-      height: auto !important;
-    }
-  }
-  .MuiFormControl-root {
-    width: 100%;
-    .MuiInputBase-input {
-    }
-    &.MuiFormControl-fullWidth {
-      border: 0;
-    }
-    .MuiInputLabel-root {
-      font-weight: $fwMedium !important;
-      color: black !important;
-      opacity: 0.6 !important;
-      margin: 0 !important;
-      letter-spacing: 0.4px !important;
-      line-height: 1.3 !important;
-      font-size: 16px !important;
-      //      display: none !important;
-    }
-    .MuiSvgIcon-root {
-      font-size: 28px !important;
-      opacity: 0.45 !important;
-    }
-    .MuiOutlinedInput-root {
-      [role='combobox'] {
-        padding: 10px;
-        background: $grey;
-        border-radius: $borderRadius;
-        font-size: 14px !important;
-      }
-    }
-  }
-
-  // Primary calendar picker container
+  // MUI PARENT
   .MuiPaper-root:not(.MuiAccordion-root) {
     background-color: $lightBg;
-    border-radius: 15px !important;
+    border-radius: 20px !important;
+    margin: 0 !important;
     width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
     transition: all 0.3s ease-in-out !important;
-    max-height: 490px !important;
     box-shadow: $boxShadow_bottom_only_dark;
     overflow: hidden !important;
 
-    .MuiCollapse-vertical {
-      &.MuiCollapse-hidden {
-        display: none !important;
-      }
+    &.MuiAccordion-root {
+      width: 100% !important;
     }
 
-    .MuiDialogActions-spacing {
+    /*#region  MODAL BUTTONS*/
+    .MuiDialogActions-root {
       display: grid;
-      grid-template-columns: auto auto !important;
+      grid-template-columns: 1fr 1fr !important;
       width: 100%;
       justify-content: center;
-      padding-bottom: 20px !important;
-      max-width: 380px !important;
-      padding-top: 10px;
+      padding: 10px 15px 20px 15px !important;
+      max-width: calc(100vw - 20px) !important;
+      margin: 20px auto 0 auto !important;
 
       .MuiButton-root {
         &.MuiButton-text {
-          color: white;
           font-weight: bold;
           border-radius: 10px !important;
           font-size: 14px !important;
@@ -958,255 +44,54 @@
           align-items: center;
           line-height: 1;
           height: 50px !important;
-          width: 50%;
-        }
-      }
-    }
+          color: $darkerGrey !important;
+          border: 1px solid $lightBorderColor !important;
+          background: $grey !important;
 
-    // Accordion header
-    &.MuiPaper-elevation:not(.MuiPopover-paper) {
-      h3 {
-        &.MuiAccordion-heading {
-          overflow: unset !important;
-        }
-      }
-    }
-
-    &[role='dialog'] {
-      .MuiPickersLayout-root {
-        background-color: white !important;
-        width: 380px !important;
-        max-width: 100% !important;
-
-        @media screen and (min-width: 1000px) {
-          display: block !important;
-        }
-
-        [aria-colindex='1'],
-        [aria-colindex='7'] {
-          opacity: 0.5 !important;
-
-          &.MuiPickersDay-today {
-            color: $mainBlue !important;
-            opacity: 1 !important;
-          }
-
-          &.Mui-selected {
-            opacity: 1 !important;
+          &:nth-child(2) {
+            background: $green !important;
+            color: white !important;
+            border: 1px solid $green !important;
           }
         }
       }
     }
+    /*#endregion  MODAL BUTTONS*/
 
-    .MuiButtonBase-root {
-      &.Mui-selected {
-      }
-    }
-
-    .MuiSvgIcon-root {
-      //      display: none;
-    }
-
-    // Clock wheel wrapper
-    .MuiClock-squareMask {
-      //      border-radius: 100%;
-    }
-
-    .MuiDialogActions-root {
-      button {
-        color: $darkerGrey !important;
-        border: 1px solid $lightBorderColor !important;
-        background: $grey !important;
-        border-radius: 10px !important;
-
-        &:nth-child(2) {
-          background: $green !important;
-          color: white !important;
-          border: 1px solid $green !important;
-        }
-      }
-    }
-
-    // Days Container
-    .css-1t0788u-MuiPickersSlideTransition-root-MuiDayCalendar-slideTransition {
-      min-height: 265px;
-    }
-
-    // Top Buttons
-    .css-1aim81g-MuiButtonBase-root-MuiButton-root-MuiPickersToolbarButton-root {
-      background-color: transparent;
-      border: 1px solid $mainBlue;
-    }
-
-    .MuiDialogActions-root {
-      display: flex;
-      justify-content: center;
-      margin: 20px auto 0 auto !important;
-      width: 100% !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-
-    .MuiTypography-root {
-      &.MuiTypography-overline {
-        font-weight: $fwMediumBold !important;
-        display: none !important;
-      }
-      &.MuiTypography-h4 {
-        font-size: 16px;
-        font-weight: bold;
-      }
-      &.MuiTypography-h3 {
-        font-size: 20px;
-      }
-    }
-
-    .MuiDateCalendar-root {
-      margin: 0;
-      height: 450px;
-      max-height: unset !important;
-      width: 380px !important;
-      max-width: 380px;
-      overflow: hidden !important;
-
-      .MuiIconButton-root {
-        //        font-size: 45px;
-      }
-
-      .MuiPickersCalendarHeader-label {
-        //        font-size: 18px;
-      }
-    }
-    .MuiDayCalendar-weekContainer {
-      justify-content: center;
-      height: 50px !important;
-      text-align: center !important;
-      width: calc(100vw - 20px) !important;
-
-      .css-23p0if-MuiButtonBase-root-MuiPickersDay-root:not(.Mui-selected) {
-        border: 1px solid $lightBorderColor;
-      }
-    }
-
-    .MuiDayCalendar-weekDayLabel {
-      font-size: 16px;
-      width: 50px;
-      height: 50px;
-      color: $lightDarkGrey;
-      opacity: 0.7;
-      font-weight: bold;
-    }
-
-    .MuiTabs-flexContainer {
-      button {
-        width: 50%;
-      }
-    }
-
-    .MuiDateTimePickerToolbar-dateContainer,
-    .MuiDateTimePickerToolbar-timeContainer,
-    .MuiDateTimePickerToolbar-timeDigitsContainer,
-    .MuiDateTimePickerToolbar-ampmSelection {
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      justify-content: center;
-
-      &.MuiDateTimePickerToolbar-ampmSelection,
-      &.MuiDateTimePickerToolbar-timeDigitsContainer {
-        margin-left: 0;
-        button {
-          width: 100px;
-          &:first-child {
-            margin-right: 12px;
-          }
-        }
-        &.MuiDateTimePickerToolbar-timeDigitsContainer {
-          button {
-            width: 100px;
-            &:first-child {
-              margin-right: 0;
-            }
-          }
-        }
-        &.MuiDateTimePickerToolbar-ampmSelection {
-          button {
-            width: 110px;
-          }
-        }
-      }
-      button {
-        width: 50%;
-      }
-    }
-
-    .MuiDateTimePickerToolbar-separator {
-      position: relative;
-      margin: 0 8px;
-    }
-
-    .MuiDateTimePickerToolbar-root {
-      &.Mui-selected {
-        background-color: $accent;
-        width: 55px;
-      }
-
-      &.MuiDateTimePickerToolbar-root {
-        max-width: 325px !important;
-        margin: 0 auto;
-      }
-
-      button {
-        margin-bottom: 6px;
-      }
-    }
-
-    .css-15dhvw6-MuiTypography-root-MuiPickersToolbarText-root {
-      width: 50%;
-    }
-
-    // Date/time/ampm at top
-    .css-12vly6n-MuiDateTimePickerToolbar-timeContainer {
-      flex-wrap: wrap;
-    }
-
-    .MuiPickersToolbarText-root {
-      &.Mui-selected {
-        font-weight: $fwBold;
-      }
-    }
-
-    .MuiPickersToolbar-content {
-      display: flex;
-      align-items: center;
-      .MuiTimePickerToolbar-ampmSelection {
-        margin: 0;
-      }
-    }
-
+    /*#region  TIMEPICKER TOOLBAR*/
     .MuiPickersToolbar-root {
-      display: none;
-      max-width: 380px !important;
+      max-width: calc(100vw - 20px) !important;
       padding: 15px 15px 0 15px;
       margin: 0 !important;
+
+      .MuiTypography-overline {
+        display: none !important;
+      }
 
       .MuiTimePickerToolbar-ampmSelection {
         display: grid;
         grid-template-columns: 1fr 1fr;
         align-items: center;
-        gap: 0;
+        margin: 15px 0 0 0 !important;
+        gap: 10px !important;
         * {
           line-height: 1;
         }
 
         button {
-          &:first-child {
-            margin-right: 10px !important;
-            border-radius: 0 !important;
-          }
           span {
             border-radius: 0 !important;
             font-size: 20px !important;
+            background-color: transparent;
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &.Mui-selected {
+              color: $mainBlue;
+            }
           }
         }
       }
@@ -1222,88 +107,15 @@
         }
       }
 
-      .MuiButtonBase-root {
-        border-top: 0 !important;
-        border-left: 0 !important;
-        border-right: 0 !important;
-        border-radius: 0 !important;
-        height: unset !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-
       @media screen and (min-width: 800px) {
         display: flex;
         margin: 0 auto !important;
       }
     }
-
-    // TIME PICKER
-    .MuiTimePickerToolbar-root {
-      display: unset !important;
-
-      * {
-        display: unset !important;
-      }
-
-      .MuiPickersToolbar-content {
-        display: flex !important;
-      }
-    }
-
-    // Date/time container (including buttons and clock)
-    .css-16b5y55-MuiPickersLayout-contentWrapper,
-    .MuiPickersLayout-contentWrapper {
-      grid-column: 2;
-      overflow: hidden !important;
-    }
-
-    .MuiTimeClock-arrowSwitcher {
-      display: none;
-    }
-
-    .Mui-selected {
-      &.MuiTypography-subtitle2 {
-        background-color: transparent;
-        width: 100%;
-        color: $mainBlue;
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 40px;
-      }
-    }
+    /*#endregion  TIMEPICKER TOOLBAR*/
 
     .MuiButtonBase-root,
     .MuiPickersDay-hiddenDaySpacingFiller {
-      //      width: 50px;
-      //      height: 50px;
-      //      font-size: 16px;
-      //      color: black;
-
-      &#visitation-section-accordion-title,
-      &#visitation-holidays-section-accordion-title {
-        width: 100%;
-        height: 40px !important;
-
-        .accordion-title {
-          display: flex;
-          justify-content: space-between;
-
-          #label-wrapper {
-            label {
-              font-size: 17px;
-            }
-          }
-        }
-        svg {
-          color: $subtitleText;
-          font-size: 18px;
-          margin-left: 10px;
-        }
-      }
-
       &.MuiMenuItem-root {
         width: 100%;
       }
@@ -1327,7 +139,62 @@
       }
     }
 
-    // DATE RANGE
+    /*#region  DATE RANGE*/
+    .MuiDateRangeCalendar-root {
+      .MuiDateRangePickerDay-rangeIntervalDayHighlight {
+        top: -5px !important;
+        position: relative;
+        align-items: center !important;
+        display: flex !important;
+        justify-content: center !important;
+        background: $lightAccentBlue !important;
+
+        button {
+          height: auto !important;
+          top: unset !important;
+
+          &.MuiButtonBase-root {
+            &.MuiPickersDay-root {
+              &.Mui-selected {
+                background: transparent !important;
+                margin: 0 !important;
+                height: unset !important;
+                width: unset !important;
+              }
+            }
+          }
+        }
+      }
+
+      .MuiDateRangePickerDay-outsideCurrentMonth,
+      .MuiDateRangePickerDay-root {
+        width: 55px !important;
+        text-align: center !important;
+        height: 50px !important;
+      }
+      .MuiDayCalendar-header {
+        max-height: 30px;
+        margin: 0;
+        display: grid !important;
+        gap: 0 !important;
+        grid-template-columns: repeat(7, 1fr);
+        align-items: flex-start !important;
+        width: calc(100vw - 25px) !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+        .MuiDayCalendar-weekDayLabel {
+          height: 30px !important;
+          text-align: center !important;
+          width: 100%;
+        }
+      }
+
+      .MuiPickersDay-today {
+        border: 0 !important;
+        font-weight: $fwBold;
+        color: $mainBlue;
+      }
+    }
     .MuiDateRangePickerToolbar-container {
       max-height: 40px;
       display: none !important;
@@ -1349,40 +216,357 @@
         max-height: 40px;
       }
     }
+    /*#endregion  DATE RANGE*/
 
     .Mui-focused {
       border-color: transparent;
     }
 
-    // Calendar/Time icon buttons
-    .css-1m3hk3w-MuiButtonBase-root-MuiTab-root {
-      &.Mui-selected {
-        border-bottom: 0;
-        svg {
-          border-bottom: 0;
+    /*#region  PICKER WRAPPER*/
+    .MuiDialogContent-root {
+      // DATEPICKER WRAPPER
+      .MuiPickersLayout-root {
+        .MuiPickersLayout-contentWrapper {
+          max-width: 100vw !important;
+          width: calc(100vw - 20px) !important;
+        }
+      }
+      .MuiDateCalendar-root {
+        margin: 0 !important;
+        height: 100% !important;
+        width: calc(100vw - 20px) !important;
+
+        @media screen and (min-width: 1000px) {
+          margin: 0 auto !important;
+          width: 47vw !important;
+        }
+
+        .MuiDayCalendar-weekDayLabel {
+          font-size: 16px;
+          width: 50px;
+          height: 50px;
+          color: $lightDarkGrey;
+          opacity: 0.7;
+          font-weight: bold;
+        }
+
+        .MuiPickersDay-today:not(.Mui-selected) {
+          opacity: 1 !important;
+          border-radius: 50% !important;
+          font-weight: $fwMediumBold !important;
+          width: 51px !important;
+          margin-left: 5px;
+          margin-right: 5px;
+          height: 45px !important;
+          position: relative;
+          z-index: 99;
+
+          &:after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 0;
+            width: 35px;
+            @include centerHoriz;
+            border: 1px solid $darkGrey !important;
+            height: 18px;
+            z-index: -1;
+            border-radius: 12px;
+          }
+        }
+
+        // WEEKDAY LABEL (S M W)
+        .MuiDayCalendar-weekDayLabel {
+          width: 60px !important;
+          height: 30px !important;
+          color: black !important;
+          opacity: 0.6;
+          font-weight: $fwRegular !important;
+        }
+
+        .MuiPickersSlideTransition-root {
+          min-height: 310px !important;
+          max-width: calc(100vw - 100px) !important;
+
+          // New/Edit Datepicker
+          &[role='presentation'] {
+            width: 100%;
+            max-width: 100% !important;
+          }
+
+          .MuiDayCalendar-monthContainer {
+            .MuiDayCalendar-weekContainer {
+              justify-content: center;
+              height: 50px !important;
+              text-align: center !important;
+              width: calc(100vw - 20px) !important;
+
+              .MuiPickersDay-dayWithMargin {
+                width: 60px !important;
+                height: 50px !important;
+                border: 0 !important;
+
+                &:focus {
+                  background: transparent !important;
+                }
+                &.MuiPickersDay-today {
+                  &:after {
+                    content: '';
+                    position: absolute;
+                    top: 15px;
+                    left: 0;
+                    width: 35px;
+                    @include centerHoriz;
+                    height: 18px;
+                    z-index: -1;
+                    border-radius: 12px;
+                  }
+                }
+              }
+
+              // DAY CELL
+              button {
+                &.MuiButtonBase-root {
+                  &.Mui-selected {
+                    background: transparent !important;
+                    color: $primaryText !important;
+                    margin: 0 !important;
+                    transition: all 0.2s ease-in-out !important;
+                    position: relative;
+                    opacity: 1 !important;
+                    font-weight: $fwBold !important;
+                    z-index: 999;
+
+                    &:after {
+                      content: '';
+                      position: absolute;
+                      top: 5px;
+                      left: 0;
+                      width: 35px;
+                      @include centerHoriz;
+                      height: 18px;
+                      z-index: -1;
+                      border-radius: 12px;
+                      background: $mainBlue;
+                    }
+
+                    .dot-wrapper {
+                      position: relative;
+                      top: -5px;
+                    }
+                  }
+                }
+              }
+            }
+            [role='row'] {
+              max-width: 100% !important;
+            }
+          }
+        }
+
+        .MuiDateCalendar-viewTransitionContainer {
+          .MuiMonthCalendar-root {
+            background: $grey !important;
+            margin: 0 auto 25px auto !important;
+            width: calc(100vw - 30px) !important;
+            border-radius: $bigBorderRadius;
+            box-shadow: $boxShadow_surround_small;
+            padding: 15px 0;
+
+            .MuiPickersMonth-monthButton {
+              font-weight: $fwMedium !important;
+              color: $primaryText !important;
+
+              &.Mui-selected {
+                background: $lightAccentBlue !important;
+                opacity: 1;
+                color: $mainBlue !important;
+              }
+            }
+          }
+
+          * {
+            text-align: center !important;
+          }
+        }
+
+        .MuiPickersDay-root {
+          width: 60px !important;
+          height: 50px !important;
+          margin-bottom: 8px;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          color: $primaryText;
+          border-radius: $borderRadius !important;
+          font-size: 14px !important;
+
+          @media screen and (min-width: 650px) {
+            &:hover {
+              background: $lightAccentBlue !important;
+              color: $accent !important;
+            }
+          }
+
+          // Weekend
+          &.weekend-day,
+          &.MuiPickersDay-dayOutsideMonth,
+          &[aria-colindex='7'],
+          &[aria-colindex='1'] {
+            opacity: 0.6 !important;
+
+            &.Mui-selected,
+            &.MuiPickersDay-today {
+              opacity: 1 !important;
+            }
+          }
+        }
+      }
+      // TIME SLOTS
+      .MuiTimePickerToolbar-hourMinuteLabel {
+        transform: scale(0.8);
+        position: relative;
+        left: -10px;
+        display: flex !important;
+        align-items: flex-start !important;
+
+        button {
+          border-bottom: 1px solid $darkGrey !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+
+          span {
+            position: relative;
+          }
+        }
+      }
+      // AM/PM SELECTION
+      .MuiTimePickerToolbar-ampmSelection {
+        flex-wrap: nowrap;
+        flex-direction: row;
+        margin: 10px 25px 0 0;
+        gap: 5px;
+        button {
+          min-width: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 40px !important;
+          justify-content: center;
+          display: flex;
+          align-items: center;
+
+          span {
+            padding: 0 !important;
+            width: 40px !important;
+          }
+
+          &:not(.Mui-selected) {
+            border: 0 !important;
+          }
+          .Mui-selected.MuiTypography-subtitle2 {
+            border-radius: $borderRadius;
+            border: 0;
+            width: 40px !important;
+            height: auto;
+          }
         }
       }
     }
-    // Blue bottom border
-    .css-1sj2jcg-MuiTabs-indicator {
-    }
+    /*#endregion  PICKER WRAPPER*/
   }
 
-  .MuiInputBase-input {
-    margin: 0 !important;
-    border: 0 !important;
-    &::placeholder {
-      font-size: 14px;
+  /*#region  PICKER ARROWS*/
+  .MuiPickersCalendarHeader-root {
+    width: calc(100vw - 20px);
+    margin-top: 0 !important;
+    padding-left: 15px !important;
+    padding-top: 20px !important;
+    .MuiPickersArrowSwitcher-root {
+      .MuiPickersArrowSwitcher-spacer {
+        display: none;
+      }
+      .MuiPickersArrowSwitcher-rightArrowIcon,
+      .MuiPickersArrowSwitcher-leftArrowIcon {
+        color: $darkGrey;
+        position: relative;
+        right: -5px;
+        transform: scale(1.2);
+        &.MuiPickersArrowSwitcher-leftArrowIcon {
+          margin-right: 15px;
+        }
+      }
     }
   }
+  /*#endregion  PICKER ARROWS*/
 
-  // TIME CLOCK WHEEL
+  /*#region  PICKER INPUTS*/
+  .MuiFormControl-root {
+    width: 100%;
+    fieldset {
+      border: 0 !important;
+    }
+    .MuiInputBase-root {
+      border: 0;
+      border-radius: 0;
+      padding-right: 0;
+
+      * {
+        user-select: none;
+      }
+
+      input {
+        display: block !important;
+        outline: 0 !important;
+        font-weight: 400 !important;
+        transition: all 0.2s ease-in-out !important;
+        padding: 0 8px !important;
+        max-height: unset !important;
+        position: absolute !important;
+        caret-color: $mainBlue !important;
+        height: 22px !important;
+        top: 38px !important;
+        width: 100% !important;
+        border-radius: 0 !important;
+      }
+    }
+    .MuiInputLabel-root {
+      font-weight: $fwMedium !important;
+      color: black !important;
+      opacity: 0.6 !important;
+      margin: 0 !important;
+      letter-spacing: 0.4px !important;
+      line-height: 1.3 !important;
+      font-size: 16px !important;
+    }
+    .MuiSvgIcon-root {
+      font-size: 28px !important;
+      opacity: 0.45 !important;
+    }
+    .MuiOutlinedInput-root {
+      [role='combobox'] {
+        padding: 10px;
+        background: white !important;
+        border-radius: $borderRadius;
+        font-size: 14px !important;
+        border: 1px solid $lightBorderColor !important;
+      }
+    }
+  }
+  /*#endregion  PICKER INPUTS*/
+
+  /*#region  CLOCK*/
+  .MuiTimePickerToolbar-root {
+    .MuiPickersToolbar-content {
+      display: flex !important;
+      align-items: flex-start !important;
+    }
+  }
   .MuiTimeClock-root {
     padding: 0 !important;
     display: flex;
     justify-content: center;
     overflow: auto !important;
-    //    padding-left: 10px;
     width: calc(100vw - 20px) !important;
     max-width: calc(100vw - 20px) !important;
     margin: 0 !important;
@@ -1392,10 +576,16 @@
       margin: 0 auto !important;
     }
 
+    .MuiTimeClock-arrowSwitcher {
+      display: none;
+    }
+
     .MuiClock-clock {
       margin-top: 20px !important;
       margin-bottom: 20px !important;
       transform: scale(1.08) !important;
+      border: 1px solid $lightBorderColor !important;
+      background: $grey !important;
     }
 
     .MuiClock-squareMask {
@@ -1414,291 +604,5 @@
       }
     }
   }
-
-  .MuiPickersLayout-contentWrapper,
-  .MuiPickersLayout-actionBar {
-    max-width: 380px;
-  }
-
-  #static-calendar {
-    .MuiPickersLayout-root {
-      max-width: 100vw !important;
-    }
-    .MuiPickersLayout-actionBar,
-    .MuiDialogActions-root {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      justify-content: center;
-      margin: 0;
-    }
-  }
-
-  #input-wrapper {
-    * {
-      line-height: 1 !important;
-    }
-    &.date {
-      #label-wrapper {
-        top: 3px !important;
-      }
-    }
-    .MuiFormControl-root {
-      input {
-        top: 0 !important;
-        border-radius: 0 !important;
-        padding-top: 0 !important;
-      }
-    }
-  }
-
-  .MuiInputBase-root {
-    border: 0;
-    border-radius: 0;
-    padding-right: 0;
-
-    * {
-      user-select: none;
-    }
-
-    input {
-      display: block !important;
-      outline: 0 !important;
-      font-weight: 400 !important;
-      transition: all 0.2s ease-in-out !important;
-      padding: 0 8px !important;
-      max-height: unset !important;
-      position: absolute !important;
-      caret-color: $mainBlue !important;
-      height: 22px !important;
-      top: 38px !important;
-      width: 100% !important;
-      border-radius: 0 !important;
-    }
-  }
-
-  // Input border
-  .MuiOutlinedInput-notchedOutline {
-    border: 0 !important;
-    display: none;
-    &.css-1d3z3hw-MuiOutlinedInput-notchedOutline {
-      border: 0 !important;
-      margin-bottom: 15px;
-    }
-  }
-
-  // Input border
-  .css-lxfshk-MuiInputBase-root-MuiOutlinedInput-root {
-    &.Mui-error {
-      .MuiOutlinedInput-notchedOutline {
-        border-radius: 0;
-        border: 0 !important;
-      }
-    }
-  }
-
-  .MuiOutlinedInput-root {
-    position: relative;
-  }
-
-  .MuiInputLabel-animated {
-    position: relative;
-  }
-
-  // Overlay
-  .css-yiavyu-MuiBackdrop-root-MuiDialog-backdrop {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-
-  .css-rsks93-MuiPaper-root-MuiDialog-paper {
-    margin: 0 auto;
-  }
-
-  // Year selection
-  .css-innj4t-MuiPickersYear-yearButton.Mui-selected {
-    background-color: $mainBlue;
-  }
-
-  // Top time container
-  .css-17lne2t {
-    display: block;
-  }
-
-  // Digital time container {
-  .css-1l4fxj8 {
-    justify-content: center;
-  }
-
-  //  Am/Pm Flexbox
-  .css-1bt0dft,
-  .MuiTimePickerToolbar-hourMinuteLabel {
-    flex-direction: row;
-    justify-content: center;
-  }
-
-  // Input container {
-  .css-14879vg,
-  .css-1q964xs-MuiFormLabel-root-MuiInputLabel-root {
-    transform: none;
-  }
-
-  .css-jaa451 {
-    .MuiPickersLayout-toolbar {
-      max-width: 380px;
-    }
-  }
-
-  // Input
-  .css-z3c6am-MuiFormControl-root-MuiTextField-root {
-    //    margin: 15px 0 15px 0;
-    user-select: none;
-    -moz-user-select: none; // Firefox
-    -webkit-text-select: none; // IOS Safari
-    -webkit-user-select: none; // Safari
-
-    &::placeholder {
-      font-size: 14px;
-    }
-  }
-  .MuiPickersFadeTransitionGroup-root {
-    max-width: 380px;
-    .MuiDateCalendar-viewTransitionContainer {
-      max-width: 380px;
-      .css-1h73gvd {
-        max-width: 380px;
-      }
-    }
-  }
-  .css-18pjc51-MuiFormLabel-root-MuiInputLabel-root,
-  .MuiFormLabel-root {
-    overflow: inherit;
-    font-size: 15px !important;
-  }
-
-  .css-ufcxyz-MuiTypography-root-MuiDayCalendar-weekDayLabel {
-    font-weight: bold;
-  }
-
-  .MuiPickersLayout-root {
-    margin: 0 auto;
-    max-width: 380px;
-    .css-1st8yxe-MuiPickersLayout-root {
-      max-width: 380px;
-    }
-  }
-
-  .css-18pjc51-MuiFormLabel-root-MuiInputLabel-root,
-  .css-18w7by0 {
-    transform: none;
-    font-size: 15px !important;
-  }
-
-  // Calendar container
-  .css-1y8461r {
-    margin: 0;
-    position: fixed;
-    left: 50%;
-    right: 50%;
-    transform: translate(-50%);
-  }
-
-  .css-1nf2ro8,
-  .MuiDialog-paper {
-    width: 380px;
-  }
-
-  .css-18w7by0 {
-    transform: none;
-  }
-
-  .css-1386ez6-MuiMonthCalendar-root {
-    margin: 0 auto;
-  }
-
-  // Top date container
-  .css-x79lsh {
-    max-width: 380px;
-  }
-  //  [role='row'] {
-  //    margin: 0 !important;
-  //    button {
-  //      &.MuiPickersDay-root {
-  //        border: 2px solid red;
-  //        border-radius: 0 !important;
-  //        margin: 0 0 8px 0 !important;
-  //      }
-  //    }
-  //  }
-  .MuiCollapse-wrapper {
-    //    background: $bootstrapBgGreen;
-    //    border-radius: $borderRadius;
-    //    padding: 8px;
-  }
-
-  .MuiAccordion-heading {
-    //    max-height: 20px !important;
-    overflow: hidden !important;
-    min-height: 0 !important;
-    .MuiAccordionSummary-root {
-      //      max-height: 20px !important;
-      overflow: hidden !important;
-      min-height: 0 !important;
-    }
-  }
-
-  .MuiPaper-rounded {
-    &:before {
-      display: none;
-    }
-  }
-  .MuiPickersCalendarHeader-root {
-    margin-top: 0 !important;
-    padding-left: 15px !important;
-    padding-top: 15px !important;
-  }
-
-  .MuiDatePickerToolbar-title {
-    display: none !important;
-  }
-
-  .MuiDateRangePickerDay-day {
-    font-size: 14px !important;
-  }
-
-  .MuiDateRangePickerDay-rangeIntervalDayHighlight {
-    top: -5px !important;
-    position: relative;
-    align-items: center !important;
-    display: flex !important;
-    justify-content: center !important;
-
-    button {
-      height: auto !important;
-      top: unset !important;
-    }
-  }
-
-  .MuiDateRangePickerDay-outsideCurrentMonth,
-  .MuiDateRangePickerDay-root {
-    width: 55px !important;
-  }
-
-  .expense-tracker {
-    .MuiOutlinedInput-root {
-      [role='combobox'] {
-        padding: 10px;
-        background: white;
-        border: 1px solid $lightBorderColor !important;
-        border-radius: $borderRadius;
-        font-size: 14px !important;
-      }
-    }
-  }
-  .expenses-wrapper {
-    .MuiOutlinedInput-root {
-      [role='combobox'] {
-        background: white;
-        border: 1px solid $lightBorderColor !important;
-      }
-    }
-  }
+  /*#endregion  CLOCK*/
 }

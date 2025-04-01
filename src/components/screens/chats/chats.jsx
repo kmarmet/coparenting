@@ -48,8 +48,6 @@ const Chats = () => {
 
   return (
     <>
-      {/* NEW THREAD FORM */}
-
       {/* INVITATION FORM */}
       <Modal
         submitText={'Send Invitation'}

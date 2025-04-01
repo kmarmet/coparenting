@@ -12,7 +12,6 @@ import DB from '../../database/DB'
 import Manager from '../../managers/manager'
 import DateFormats from '../../constants/dateFormats'
 import moment from 'moment'
-import NoDataFallbackText from '../../components/shared/noDataFallbackText'
 import NavBar from '../navBar'
 import DatasetManager from '../../managers/datasetManager'
 import ScreenNames from '../../constants/screenNames'
@@ -23,6 +22,7 @@ import AppManager from '../../managers/appManager.coffee'
 import {IoMdCheckmarkCircleOutline} from 'react-icons/io'
 import Spacer from '../shared/spacer'
 import Label from '../shared/label'
+import NoDataFallbackText from '../shared/noDataFallbackText'
 
 export default function Notifications() {
   const {state, setState} = useContext(globalState)
@@ -106,12 +106,11 @@ export default function Notifications() {
 
   return (
     <>
-      <div id="activity-wrapper" className={`${theme} form page-container`}>
-        {notifications.length === 0 && <NoDataFallbackText text={'You have no notifications awaiting your attention'} />}
+      <div id="activity-wrapper" className={`${theme} page-container`}>
         <p className="screen-title">Notifications</p>
-        <p className="intro-text mb-15">Stay updated with all developments and notifications as they happen.</p>
+        <p className="intro-text">Stay updated with all developments and notifications as they happen.</p>
         {/* LEGENDS */}
-
+        <Spacer height={5} />
         {currentUser?.accountType === 'parent' && (
           <div className="flex">
             <Accordion id={'legend'} expanded={legendIsExpanded}>
@@ -120,7 +119,6 @@ export default function Notifications() {
                   <Label text={'Legend'} /> {legendIsExpanded ? <FaMinus /> : <FaPlus />}
                 </button>
               </AccordionSummary>
-              <Spacer height={5} />
               <AccordionDetails>
                 <div className="flex">
                   <div className="box medical"></div>
@@ -135,14 +133,16 @@ export default function Notifications() {
             </Accordion>
           </div>
         )}
+
         {/* CLEAR ALL BUTTON */}
         {notifications.length > 0 && (
-          <button className="clear-all button green center default" onClick={clearAll}>
+          <button className="button default bottom-right" onClick={clearAll}>
             Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
           </button>
         )}
         <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
           {/* LOOP ACTIVITIES */}
+
           <div id="activity-cards">
             {Manager.isValid(notifications) &&
               notifications.map((activity, index) => {
@@ -164,6 +164,7 @@ export default function Notifications() {
                 )
               })}
           </div>
+          {notifications.length === 0 && <NoDataFallbackText text={'You have no notifications awaiting your attention'} />}
         </Fade>
       </div>
       <NavBar navbarClass={'activity no-add-new-button'}></NavBar>

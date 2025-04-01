@@ -1,5 +1,5 @@
 // Path: src\components\screens\auth\requestParentAccess.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../../context'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import DomManager from '/src/managers/domManager'
@@ -12,8 +12,8 @@ import StringManager from '../../../managers/stringManager'
 import ScreenNames from '../../../constants/screenNames'
 
 export default function RequestParentAccess() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser} = state
   const [readyToVerify, setReadyToVerify] = useState(false)
   const [parentPhone, setParentPhone] = useState(null)
   const [enteredCode, setEnteredCode] = useState(0)
@@ -40,10 +40,10 @@ export default function RequestParentAccess() {
       }
       const phoneCode = Manager.getUid().slice(0, 6)
       setVerificationCode(phoneCode)
-      setState({ ...state, isLoading: true, loadingText: 'Sending security code...' })
+      setState({...state, isLoading: true, loadingText: 'Sending security code...'})
       await SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, phoneCode))
       setReadyToVerify(true)
-      setState({ ...state, isLoading: false })
+      setState({...state, isLoading: false})
     }
   }
 
@@ -65,11 +65,11 @@ export default function RequestParentAccess() {
 
       if (parent) {
         await DB.add(`${DB.tables.users}/${parent?.key}/childAccounts`, childAccount)
-        await DB.add(`${DB.tables.users}/${currentUser?.key}/parents`, { name: parent?.name, phone: parent?.phone, key: parent?.key })
+        await DB.add(`${DB.tables.users}/${currentUser?.key}/parents`, {name: parent?.name, phone: parent?.phone, key: parent?.key})
         await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/parentAccessGranted`, true)
         await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/name`, StringManager.uppercaseFirstLetterOfAllWords(userName))
         AlertManager.successAlert('Access Granted!')
-        setState({ ...state, currentScreen: ScreenNames.calendar })
+        setState({...state, currentScreen: ScreenNames.calendar})
       }
     } else {
       AlertManager.throwError('Security code is incorrect, please try again')

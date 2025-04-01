@@ -503,7 +503,7 @@ export default function ExpenseTracker() {
         <Spacer height={8} />
 
         {/* FILTERS */}
-        <Accordion expanded={showFilters} id={'filters-accordion'} className={showFilters ? 'open' : 'closed'}>
+        <Accordion expanded={showFilters} id={'expenses-accordion'} className={showFilters ? 'open' : 'closed'}>
           <AccordionSummary onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'open' : 'closed'}>
             <p id="actions-button" className="expenses">
               Filters {showFilters && <FaMinus />}
