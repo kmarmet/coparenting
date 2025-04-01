@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 // Path: src\components\screens\visitation\fiftyFifty.jsx
 import Label from '../../../components/shared/label'
 import Modal from '../../../components/shared/modal'
@@ -6,11 +6,11 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import globalState from '../../../context'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
+import {FaMinus, FaPlus} from 'react-icons/fa6'
 import Manager from '../../../managers/manager'
 import InputWrapper from '../../../components/shared/inputWrapper'
 import DateFormats from '../../../constants/dateFormats'
-import { MobileDateRangePicker, SingleInputDateRangeField } from '@mui/x-date-pickers-pro'
+import {MobileDateRangePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import AlertManager from '../../../managers/alertManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/calendarEvent'
@@ -20,11 +20,10 @@ import MyConfetti from '../../../components/shared/myConfetti'
 import moment from 'moment'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import Spacer from '../../shared/spacer'
-import DomManager from '../../../managers/domManager'
 
-export default function FiftyFifty({ hide, showCard }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+export default function FiftyFifty({hide, showCard}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme} = state
   const [expandFiftyFiftyInfoText, setExpandFiftyFiftyInfoText] = useState(false)
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [firstFFPeriodStart, setFirstFFPeriodStart] = useState('')
@@ -104,17 +103,17 @@ export default function FiftyFifty({ hide, showCard }) {
       wrapperClass="add-fifty-fifty-schedule"
       title={'50/50 Visitation Schedule'}
       showCard={showCard}
-      refreshKey={refreshKey}
       onClose={resetForm}>
       <div className="text">
-        <Accordion id={'checkboxes'} expanded={expandFiftyFiftyInfoText}>
+        <Accordion id={'fifty-fifty-info'} expanded={expandFiftyFiftyInfoText}>
           <AccordionSummary>
-            <div className="flex w-100 space-between" onClick={() => setExpandFiftyFiftyInfoText(!expandFiftyFiftyInfoText)}>
+            <div className="flex space-between" id="accordion-title" onClick={() => setExpandFiftyFiftyInfoText(!expandFiftyFiftyInfoText)}>
               <Label text={`What is a 50/50 Visitation Schedule?`} />
               {!expandFiftyFiftyInfoText && <FaPlus className={'visitation-card'} />}
               {expandFiftyFiftyInfoText && <FaMinus className={'visitation-card'} />}
             </div>
           </AccordionSummary>
+          <Spacer height={5} />
           <AccordionDetails>
             <p>An arrangement where both you and your co-parent have equal time with your children.</p>
             <p>
@@ -127,27 +126,28 @@ export default function FiftyFifty({ hide, showCard }) {
             </p>
             <Spacer height={5} />
             <p>
-              <b>Example</b> <br /> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:
+              Example <br /> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:
               <Spacer height={5} />
               <span>You would choose: 8/14-8/16 for the first period and 8/19-8/21 for the second period.</span>
             </p>
           </AccordionDetails>
         </Accordion>
+        <Spacer height={5} />
         {/* FIRST PERIOD */}
-        <InputWrapper wrapperClasses="date-range-input mt-15" labelText={'First Period'} required={true} inputType={'date'}>
+        <InputWrapper wrapperClasses="date-range-input" labelText={'First Period'} required={true} inputType={'date'}>
           <MobileDateRangePicker
-            className={'w-100'}
-            onOpen={() => {
-              Manager.hideKeyboard('date-range-input')
-              addThemeToDatePickers()
-            }}
+            // onOpen={() => {
+            //   Manager.hideKeyboard('date-range-input')
+            //   addThemeToDatePickers()
+            // }}
+            views={['month', 'day']}
             onAccept={(dateArray) => {
               if (Manager.isValid(dateArray)) {
                 setFirstFFPeriodStart(dateArray[0].format(DateFormats.dateForDb))
                 setFirstFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
               }
             }}
-            slots={{ field: SingleInputDateRangeField }}
+            slots={{field: SingleInputDateRangeField}}
             name="allowedRange"
           />
         </InputWrapper>
@@ -155,7 +155,6 @@ export default function FiftyFifty({ hide, showCard }) {
         {/* SECOND PERIOD */}
         <InputWrapper wrapperClasses="date-range-input" labelText={'Second Period'} required={true} inputType={'date'}>
           <MobileDateRangePicker
-            className={'w-100'}
             onOpen={() => {
               Manager.hideKeyboard('date-range-input')
               addThemeToDatePickers()
@@ -166,7 +165,7 @@ export default function FiftyFifty({ hide, showCard }) {
                 setSecondFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
               }
             }}
-            slots={{ field: SingleInputDateRangeField }}
+            slots={{field: SingleInputDateRangeField}}
             name="allowedRange"
           />
         </InputWrapper>
@@ -174,7 +173,6 @@ export default function FiftyFifty({ hide, showCard }) {
         {/* THIRD PERIOD */}
         <InputWrapper wrapperClasses="date-range-input" labelText={'Third Period'} required={false} inputType={'date'}>
           <MobileDateRangePicker
-            className={'w-100'}
             onOpen={() => {
               Manager.hideKeyboard('date-range-input')
               addThemeToDatePickers()
@@ -185,7 +183,7 @@ export default function FiftyFifty({ hide, showCard }) {
                 setThirdFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
               }
             }}
-            slots={{ field: SingleInputDateRangeField }}
+            slots={{field: SingleInputDateRangeField}}
             name="allowedRange"
           />
         </InputWrapper>

@@ -3,10 +3,10 @@
 #external-overrides {
   #visitation-section,
   #visitation-holidays-section {
-    background: $oneMillionGrey !important;
+    background: $grey !important;
     border-radius: $borderRadius !important;
     padding: 0 10px;
-    border: 1px solid $greyOnGreyBorder;
+    border: 1px solid $lightBorderColor;
     #checkbox-group {
       margin: 0;
     }
@@ -22,17 +22,23 @@
     }
 
     .MuiCollapse-root {
-      background: $oneMillionGrey !important;
+      background: $grey !important;
       border-radius: $borderRadius;
     }
 
     .accordion-title {
       width: 100%;
+      justify-content: center;
+      gap: 10px;
     }
   }
   #visitation-container {
     .holiday-checkboxes-wrapper {
       margin-top: 25px;
+
+      .checkbox-wrapper {
+        border: 1px solid $darkGrey;
+      }
     }
   }
   #coparenting-setup-container {

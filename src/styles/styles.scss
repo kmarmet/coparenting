@@ -23,7 +23,7 @@
 
   #text-container {
     margin-bottom: 10px;
-    background: $bestGreyForWhite;
+    background: $grey;
     padding: 15px;
     border-radius: $borderRadius;
 
@@ -170,8 +170,8 @@
   &.react-toggle--checked {
     margin-right: 3px !important;
     .react-toggle-thumb {
-      border: 5px solid $accentLight !important;
-      background: $accentLight !important;
+      border: 5px solid $accent !important;
+      background: $accent !important;
       margin-right: 10px !important;
     }
 
@@ -183,7 +183,7 @@
 
 .react-toggle-track {
   border-radius: 5px !important;
-  background: $bestGreyForWhite !important;
+  background: $grey !important;
 }
 
 .react-toggle-track-check {
@@ -390,7 +390,6 @@
 
       &.screen-intro-text {
         color: $subtitleText;
-        color: $darkerSubtleText;
       }
     }
 
@@ -486,19 +485,7 @@
 
     button,
     .button {
-      @include buttonPress;
-
-      &.default {
-        @include defaultButton;
-      }
-
-      @media screen and (min-width: 800px) {
-        &:hover {
-          transform: scale(1.1);
-          transition: all 0.3s ease-in-out;
-          //          filter: brightness(90%);
-        }
-      }
+      @include defaultButton;
     }
 
     /*#endregion MIXINS */
@@ -534,7 +521,7 @@
       &.active {
         backdrop-filter: blur(5px);
         z-index: 999999999;
-        background-color: rgba(0, 0, 0, 0.35);
+        background-color: rgba(0, 0, 0, 0.55);
         transition: all 0.6s ease-in;
       }
     }
@@ -571,7 +558,7 @@
       outline: 0;
       font-weight: 400;
       transition: all 0.2s ease-in-out;
-      border: 1px solid $iconGrey;
+      border: 1px solid $lightBorderColor;
       border-radius: $borderRadius;
       height: 40px;
       max-height: unset;
@@ -585,7 +572,7 @@
       }
 
       &[type='date'] {
-        border: 1px solid $iconGrey;
+        border: 1px solid $lightBorderColor;
         padding: 10px 8px;
         border-radius: $borderRadius;
         height: auto;
@@ -832,10 +819,6 @@
       @include inputSuggestionDropdown;
     }
 
-    .material-icons {
-      font-family: 'Material Icons';
-    }
-
     #confirm-container {
       @include popupContainers;
     }
@@ -991,14 +974,6 @@
 
     .white-text {
       opacity: 0.87;
-    }
-
-    .trans-blue-bg {
-      background-color: $transBlue;
-    }
-
-    .trans-blue-color {
-      color: $transBlue;
     }
 
     .rs-picker-toggle-clean {
@@ -1353,7 +1328,7 @@
     .accordion-header {
       padding: 10px;
       background-color: $darkBlue;
-      color: $bestGreyForWhite;
+      color: $grey;
       display: flex;
       font-weight: 500;
       flex-wrap: wrap;

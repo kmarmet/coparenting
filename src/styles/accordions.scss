@@ -1,0 +1,98 @@
+@import './_mixins.scss';
+@import './_variables.scss';
+@import './palette';
+
+#external-overrides {
+  .MuiPaper-root {
+    &.Mui-Accordion-root {
+      display: flex !important;
+      justify-content: center !important;
+      text-align: center !important;
+    }
+  }
+  .MuiAccordion-root {
+    box-shadow: none !important;
+    border: 1px solid #e5e5e5 !important;
+    border-radius: 8px !important;
+    background: $grey !important;
+
+    &.Mui-expanded {
+      .MuiCollapse-root {
+        padding: 0 12px 10px 12px !important;
+      }
+    }
+
+    .MuiAccordionSummary-root {
+      width: 100% !important;
+    }
+
+    .MuiAccordion-heading {
+      overflow: unset !important;
+      .MuiButtonBase-root {
+        .MuiAccordionSummary-content {
+          border: 0 !important;
+        }
+      }
+
+      .MuiAccordionSummary-root {
+        overflow: unset !important;
+
+        button {
+          &.button {
+            height: 40px !important;
+            border-radius: 8px !important;
+          }
+        }
+      }
+    }
+
+    h3 {
+      border-radius: 8px !important;
+    }
+
+    &#calendar-legend,
+    &#checkboxes {
+      background: transparent !important;
+      border: 0 !important;
+      h3 {
+        border: 0 !important;
+      }
+    }
+
+    svg {
+      font-size: 16px !important;
+      color: $darkerGrey;
+    }
+
+    button {
+      border: 0 !important;
+      border-radius: 8px !important;
+      &.button {
+        &.default {
+          width: 100%;
+          border-radius: 8px !important;
+        }
+      }
+    }
+
+    // 50/50 MODAL
+    &#fifty-fifty-info {
+      background: $grey !important;
+      padding: 10px !important;
+
+      .MuiAccordionDetails-root {
+        padding: 0 !important;
+      }
+
+      .MuiAccordion-heading {
+        .MuiButtonBase-root {
+          width: 100% !important;
+        }
+      }
+
+      #accordion-title {
+        width: 100%;
+      }
+    }
+  }
+}

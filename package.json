@@ -52,6 +52,7 @@
     "react-awesome-reveal": "^4.2.14",
     "react-contenteditable": "3.3.7",
     "react-copy-to-clipboard": "^5.1.0",
+    "react-datepicker": "^8.2.1",
     "react-debounce-input": "3.3.0",
     "react-doc-viewer": "0.1.13",
     "react-dom": "18.3.1",

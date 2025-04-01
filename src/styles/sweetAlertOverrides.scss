@@ -87,7 +87,7 @@ div {
 }
 
 .swal2-popup {
-  border-radius: 12px;
+  border-radius: 15px;
   padding: 20px !important;
   margin: 0 !important;
   align-items: center !important;
@@ -106,7 +106,7 @@ div {
 
     button {
       @include fontType;
-      background: $buttonGrey;
+      background: $grey;
       color: $disabledText;
       text-transform: uppercase;
       width: 120px !important;
@@ -115,12 +115,13 @@ div {
       margin: 0 !important;
       display: flex;
       align-items: center;
+      height: 45px;
       justify-content: center;
       font-weight: $fwMedium;
       line-height: 1;
       padding: 10px 20px !important;
       border: 0;
-      font-size: 13px;
+      font-size: 14px;
     }
   }
 
@@ -175,7 +176,7 @@ div {
       //      color: $bootstrapYellowColor !important;
     }
     .swal2-deny {
-      background: $buttonGrey !important;
+      background: $grey !important;
     }
   }
 

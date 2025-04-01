@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
 import FirebaseStorage from '/src/database/firebaseStorage'
 import searchTextHL from 'search-text-highlight'
 import DocumentConversionManager from '/src/managers/documentConversionManager'
 import Manager from '/src/managers/manager'
 import Modal from '/src/components/shared/modal'
-import { IoClose, IoListOutline } from 'react-icons/io5'
-
+import {IoClose, IoListOutline} from 'react-icons/io5'
 import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../../navBar'
 import DB from '/src/database/DB'
@@ -14,21 +13,19 @@ import AlertManager from '/src/managers/alertManager'
 import StringManager from '/src/managers/stringManager'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
-import { HiDotsHorizontal } from 'react-icons/hi'
-
+import {HiDotsHorizontal} from 'react-icons/hi'
 import DomManager from '/src/managers/domManager'
 import debounce from 'debounce'
 import DocumentHeader from '/src/models/documentHeader'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import { TbFileSearch } from 'react-icons/tb'
-import { MdDriveFileRenameOutline } from 'react-icons/md'
-import { FaLightbulb } from 'react-icons/fa6'
-import { IoIosArrowUp } from 'react-icons/io'
+import {TbFileSearch} from 'react-icons/tb'
+import {MdDriveFileRenameOutline} from 'react-icons/md'
+import {FaLightbulb} from 'react-icons/fa6'
+import {IoIosArrowUp} from 'react-icons/io'
 import ScreenNames from '/src/constants/screenNames'
 import _ from 'lodash'
 import Label from '../../shared/label.jsx'
 import DatasetManager from '../../../managers/datasetManager.coffee'
-import { Fade } from 'react-awesome-reveal'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 
 export default function DocViewer() {
@@ -548,94 +545,94 @@ export default function DocViewer() {
 
       {/* SCREEN ACTIONS */}
       <ScreenActionsMenu centeredActionItem={true}>
-        <Fade direction={'right'} className={'fade-wrapper'} duration={800} damping={0.2} triggerOnce={false} cascade={true}>
-          {/* SCROLL TO TOP BUTTON */}
-          <div
-            className="action-item scroll-to-top"
-            onClick={() => {
-              setState({...state, showScreenActions: false})
-              scrollToTop()
-            }}>
-            <div className="content">
-              <div className="svg-wrapper ">
-                <IoIosArrowUp id={'scroll-to-top-icon'} />
-              </div>
-              <p>Scroll to Top</p>
+        {/*<Fade direction={'right'} className={'fade-wrapper'} duration={800} damping={0.2} triggerOnce={false} cascade={true}>*/}
+        {/* SCROLL TO TOP BUTTON */}
+        <div
+          className="action-item scroll-to-top"
+          onClick={() => {
+            setState({...state, showScreenActions: false})
+            scrollToTop()
+          }}>
+          <div className="content">
+            <div className="svg-wrapper ">
+              <IoIosArrowUp id={'scroll-to-top-icon'} />
             </div>
+            <p>Scroll to Top</p>
           </div>
+        </div>
 
-          {/* TOC BUTTON */}
-          {tocHeaders.length > 0 && (
-            <div
-              className="action-item toc"
-              onClick={async () => {
-                await setTableOfContentsHeaders()
-                setShowToc(true)
-                setState({...state, showScreenActions: false})
-              }}>
-              <div className="content">
-                <div className="svg-wrapper">
-                  <IoListOutline id="toc-icon" className={`${theme}`} />
-                </div>
-                <p>Table of Contents</p>
-              </div>
-            </div>
-          )}
-
-          {/* SEARCH  */}
+        {/* TOC BUTTON */}
+        {tocHeaders.length > 0 && (
           <div
-            className="action-item"
-            onClick={() => {
-              setShowSearch(true)
+            className="action-item toc"
+            onClick={async () => {
+              await setTableOfContentsHeaders()
+              setShowToc(true)
               setState({...state, showScreenActions: false})
             }}>
             <div className="content">
               <div className="svg-wrapper">
-                <TbFileSearch id={'desktop-search-icon'} />
+                <IoListOutline id="toc-icon" className={`${theme}`} />
               </div>
-              <p>Find Text</p>
+              <p>Table of Contents</p>
             </div>
           </div>
+        )}
 
-          {/* RENAME ICON */}
-          <div
-            className="action-item rename-document"
-            onClick={() => {
-              setShowRenameFile(true)
-              setState({...state, showScreenActions: false})
-            }}>
-            <div className="content">
-              <div className="svg-wrapper">
-                <MdDriveFileRenameOutline />
-              </div>
-              <p>Rename Document</p>
+        {/* SEARCH  */}
+        <div
+          className="action-item"
+          onClick={() => {
+            setShowSearch(true)
+            setState({...state, showScreenActions: false})
+          }}>
+          <div className="content">
+            <div className="svg-wrapper">
+              <TbFileSearch id={'desktop-search-icon'} />
             </div>
+            <p>Find Text</p>
           </div>
+        </div>
 
-          {/* TIPS ICON */}
-          <div
-            className="action-item tips"
-            onClick={() => {
-              setShowTips(true)
-              setState({...state, showScreenActions: false})
-            }}>
-            <div className="content">
-              <div className="svg-wrapper">
-                <FaLightbulb className={'lightbulb'} />
-              </div>
-              <p>Learn More</p>
+        {/* RENAME ICON */}
+        <div
+          className="action-item rename-document"
+          onClick={() => {
+            setShowRenameFile(true)
+            setState({...state, showScreenActions: false})
+          }}>
+          <div className="content">
+            <div className="svg-wrapper">
+              <MdDriveFileRenameOutline />
             </div>
+            <p>Rename Document</p>
           </div>
+        </div>
 
-          {/* DOCUMENT IMAGE */}
-          {docType === 'image' && (
-            <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
-              <div className="action-item document-image">
-                <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
-              </div>
-            </LightGallery>
-          )}
-        </Fade>
+        {/* TIPS ICON */}
+        <div
+          className="action-item tips"
+          onClick={() => {
+            setShowTips(true)
+            setState({...state, showScreenActions: false})
+          }}>
+          <div className="content">
+            <div className="svg-wrapper">
+              <FaLightbulb className={'lightbulb'} />
+            </div>
+            <p>Learn More</p>
+          </div>
+        </div>
+
+        {/* DOCUMENT IMAGE */}
+        {docType === 'image' && (
+          <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
+            <div className="action-item document-image">
+              <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
+            </div>
+          </LightGallery>
+        )}
+        {/*</Fade>*/}
         <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
       </ScreenActionsMenu>
 
@@ -645,7 +642,11 @@ export default function DocViewer() {
           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')}
         </p>
         <div id="doc-text"></div>
-        {Manager.isValid(searchValue, true) && <button onClick={closeSearch} id="close-search-button" className="default with-border">Close Search</button>}
+        {Manager.isValid(searchValue, true) && (
+          <button onClick={closeSearch} id="close-search-button" className="default with-border">
+            Close Search
+          </button>
+        )}
       </div>
 
       {/* NAVBARS */}

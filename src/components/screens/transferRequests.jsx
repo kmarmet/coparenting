@@ -1,23 +1,23 @@
 // Path: src\components\screens\transferRequests.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context.js'
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
+import {child, getDatabase, onValue, ref} from 'firebase/database'
 import NotificationManager from '/src/managers/notificationManager.js'
 import DB_UserScoped from '../../database/db_userScoped.js'
 import DateManager from '/src/managers/dateManager.js'
-import { GrMapLocation } from 'react-icons/gr'
-import { IoAdd, IoHourglassOutline } from 'react-icons/io5'
-import { IoMdPin } from 'react-icons/io'
+import {GrMapLocation} from 'react-icons/gr'
+import {IoAdd, IoHourglassOutline} from 'react-icons/io5'
+import {IoMdPin} from 'react-icons/io'
 import SecurityManager from '/src/managers/securityManager'
-import { PiCarProfileDuotone, PiCheckBold } from 'react-icons/pi'
-import { Fade } from 'react-awesome-reveal'
-import { BiSolidNavigation } from 'react-icons/bi'
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
+import {PiCarProfileDuotone, PiCheckBold} from 'react-icons/pi'
+import {Fade} from 'react-awesome-reveal'
+import {BiSolidNavigation} from 'react-icons/bi'
+import {MobileDatePicker, MobileTimePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import { TbCalendarCheck } from 'react-icons/tb'
-import { MdOutlineAccessTime } from 'react-icons/md'
+import {TbCalendarCheck} from 'react-icons/tb'
+import {MdOutlineAccessTime} from 'react-icons/md'
 import AlertManager from '/src/managers/alertManager'
 import Modal from '/src/components/shared/modal'
 import DomManager from '/src/managers/domManager'
@@ -30,11 +30,11 @@ import ModelNames from '/src/models/modelNames'
 import StringManager from '/src/managers/stringManager'
 import Spacer from '../shared/spacer.jsx'
 import Map from '/src/components/shared/map.jsx'
-import { setKey } from 'react-geocode'
+import {setKey} from 'react-geocode'
 import Label from '../shared/label.jsx'
 import StringAsHtmlElement from '../shared/stringAsHtmlElement'
 import AddressInput from '../shared/addressInput'
-import { CgDetailsMore } from 'react-icons/cg'
+import {CgDetailsMore} from 'react-icons/cg'
 import ViewSelector from '../shared/viewSelector'
 import CheckboxGroup from '../shared/checkboxGroup'
 import NavBar from '../navBar'
@@ -313,20 +313,14 @@ export default function TransferRequests() {
           {view === 'edit' && (
             <>
               {/* DATE */}
-              {!DomManager.isMobile() && (
-                <InputWrapper inputType={'date'} labelText={'Date'}>
-                  <MobileDatePicker
-                    onOpen={addThemeToDatePickers}
-                    className={`${theme}`}
-                    defaultValue={moment(activeRequest?.date)}
-                    onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
-                  />
-                </InputWrapper>
-              )}
-
-              {DomManager.isMobile() && (
-                <InputWrapper useNativeDate={true} inputType={'date'} labelText={'Date'} required={true} defaultValue={moment(activeRequest?.date)} />
-              )}
+              <InputWrapper inputType={'date'} labelText={'Date'}>
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  className={`${theme}`}
+                  defaultValue={moment(activeRequest?.date)}
+                  onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
+                />
+              </InputWrapper>
 
               {/* TIME */}
               <InputWrapper inputType={'date'} labelText={'Time'}>
@@ -417,6 +411,7 @@ export default function TransferRequests() {
         {!showNewRequestCard && (
           <div id="all-transfer-requests-container" className="mt-15">
             <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
+              <></>
               {Manager.isValid(existingRequests) &&
                 existingRequests.map((request, index) => {
                   return (
@@ -454,7 +449,7 @@ export default function TransferRequests() {
             </Fade>
           </div>
         )}
-        <NavBar/>
+        <NavBar />
       </div>
     </>
   )

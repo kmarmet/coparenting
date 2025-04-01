@@ -24,42 +24,33 @@ $orange: #c0742d;
 
 // PURPLE
 $lightPurple: #f5f0ff;
-$purple:              #856ab8;
-$mediumPurple:        #6c73c8;
-$darkPurple:          #513596;
-$accent:              $purple;
+$purple: #856ab8;
+$mediumPurple: #6c73c8;
+$darkPurple: #513596;
 $blurple: #6171ea;
 
 // BLUE
-$lightAccentBlue:     #e8eaf6;
-$linkColor:           #0667f6;
-//$accentLight: #21759b;
-$mainBlue:            #4c72c5;
-$accentLight:         #3146b6;;
-$lightBlue:           #00a2eb;
+//$lightAccentBlue: #e8eaf6;
+//$lightAccentBlue: #e3eefa;
+$lightAccentBlue: #dae5fc;
+$linkColor: #0667f6;
+$mainBlue: #3d74ec;
+//$mainBlue: #3376ff;
+$accent: #2c4dff;
+$lightBlue: #00a2eb;
 /*#endregion  BASE COLORS */
 
 /*#region  BLACKS (NOT NEGROS)*/
-$black:               #18181b;
-$lightBlack:          #1c1c1c;
+$black: #18181b;
+$lightBlack: #1c1c1c;
 $translucentLightest: rgba(255, 255, 255, 0.09);
 /*#endregion  BLACKS (NOT NEGROS)*/
 
 /*#region  GREYS*/
-$bestGreyForWhite: #f2f4f5;
-$bestGreyForWhiteLight: #fafafa;
-$borderColor: rgba(232, 235, 236, 0.17);
-$borderColorDark: #c0c2c4;
-$buttonGrey:#f7f7f9;
-$darkGrey: #757575;
-$desktopBorderColor: #e0e0e0;
-$greyOnGreyBorder: #e0e0e0;
-$greyOnGreyDarker: #A1A1AA;
-$greyOnWhiteBorder: #EEEEEE;
-$iconGrey: #e3e8ee;
-$lightestGrey: #fafafa;
-$mediumGrey: #eeeeee;
-$oneMillionGrey: #f5f5f5;
+$darkGrey: #a1a1aa;
+$darkerGrey: #86868f;
+$grey: #f3f4f6;
+$lightGrey: #f9fafb;
 /*#endregion  GREYS*/
 
 /*#region  VISITATION COLORS*/
@@ -94,7 +85,6 @@ $lightBlackLight: #1c1c1c;
 $lightBlueDark: #00319f;
 $lightBlueLightDark: #0049be;
 $lightBlueMedium: #4c6fff;
-$lightBorder: #e7e9ee;
 $lightBorderColor: #e5e5e5;
 $lightDarkGrey: rgba(0, 0, 0, 0.44);
 $lightDesktopBg: #f3f7fa;

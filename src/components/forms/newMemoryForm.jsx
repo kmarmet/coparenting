@@ -1,5 +1,5 @@
 // Path: src\components\forms\newMemoryForm.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../context'
 import UploadInputs from '/src/components/shared/uploadInputs'
 import DB from '/src/database/DB'
@@ -8,11 +8,11 @@ import AppManager from '/src/managers/appManager'
 import MyConfetti from '/src/components/shared/myConfetti'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
-import { TbPhotoHeart } from 'react-icons/tb'
+import {TbPhotoHeart} from 'react-icons/tb'
 import DateFormats from '/src/constants/dateFormats'
 import moment from 'moment'
 import Memory from '/src/models/memory.js'
-import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import SecurityManager from '/src/managers/securityManager'
 import ModelNames from '/src/models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
@@ -24,29 +24,28 @@ import AlertManager from '/src/managers/alertManager'
 import ActivityCategory from '/src/models/activityCategory'
 import StringManager from '/src/managers/stringManager'
 import DB_UserScoped from '../../database/db_userScoped'
-import DomManager from '../../managers/domManager'
-import { LuImagePlus } from 'react-icons/lu'
+import {LuImagePlus} from 'react-icons/lu'
 import creationForms from '../../constants/creationForms'
 
 export default function NewMemoryForm() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, authUser, refreshKey, theme, creationFormToShow } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, authUser, refreshKey, theme, creationFormToShow} = state
   const [images, setImages] = useState([])
   const [newMemory, setNewMemory] = useState(new Memory())
 
   const resetForm = async () => {
     Manager.resetForm('new-memory-wrapper')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser, isLoading: false, refreshKey: Manager.getUid(), creationFormToShow: '' })
+    setState({...state, currentUser: updatedCurrentUser, isLoading: false, refreshKey: Manager.getUid(), creationFormToShow: ''})
   }
 
   const handleShareWithSelection = async (e) => {
     const updated = await Manager.handleShareWithSelection(e, currentUser, newMemory.shareWith)
-    setNewMemory((prevMemory) => ({ ...prevMemory, shareWith: updated }))
+    setNewMemory((prevMemory) => ({...prevMemory, shareWith: updated}))
   }
 
   const submit = async () => {
-    setState({ ...state, isLoading: true })
+    setState({...state, isLoading: true})
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
     if (validAccounts === 0) {
       AlertManager.throwError(
@@ -58,7 +57,7 @@ export default function NewMemoryForm() {
 
     if (validAccounts > 0) {
       if (newMemory.shareWith.length === 0) {
-        setState({ ...state, showAlert: true })
+        setState({...state, showAlert: true})
         AlertManager.throwError('Please choose who you would like to share this memory with')
         return false
       }
@@ -153,11 +152,10 @@ export default function NewMemoryForm() {
     <Modal
       onSubmit={submit}
       wrapperClass="new-memory"
-      refreshKey={refreshKey}
       submitText={'Add Memory'}
       submitIcon={<LuImagePlus />}
       title={'Share Memory'}
-      titleIcon={<TbPhotoHeart className={"fs-24"}/>}
+      titleIcon={<TbPhotoHeart className={'fs-24'} />}
       onClose={resetForm}
       showCard={creationFormToShow === creationForms.memories}>
       <div className="new-memory-wrapper">
@@ -171,37 +169,27 @@ export default function NewMemoryForm() {
               refreshKey={refreshKey}
               inputType={'input'}
               labelText={'Title'}
-              onChange={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, title: e.target.value }))}></InputWrapper>
+              onChange={(e) => setNewMemory((prevMemory) => ({...prevMemory, title: e.target.value}))}></InputWrapper>
 
             {/* DATE */}
-            {!DomManager.isMobile() && (
-              <InputWrapper labelText={'Memory Capture Date'} inputType={'date'}>
-                <MobileDatePicker
-                  onOpen={addThemeToDatePickers}
-                  value={moment()}
-                  className={`${theme} m-0 w-100 mui-input`}
-                  onAccept={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, memoryCaptureDate: moment(e).format(DateFormats.dateForDb) }))}
-                />
-              </InputWrapper>
-            )}
-            {DomManager.isMobile() && (
-              <InputWrapper
-                inputType={'date'}
-                labelText={'Memory Capture Date'}
-                useNativeDate={true}
-                onChange={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, memoryCaptureDate: moment(e).format(DateFormats.dateForDb) }))}
+            <InputWrapper labelText={'Memory Capture Date'} inputType={'date'}>
+              <MobileDatePicker
+                onOpen={addThemeToDatePickers}
+                defaultValue={moment()}
+                className={`${theme} m-0 w-100 mui-input`}
+                onAccept={(e) => setNewMemory((prevMemory) => ({...prevMemory, memoryCaptureDate: moment(e).format(DateFormats.dateForDb)}))}
               />
-            )}
+            </InputWrapper>
 
             {/* NOTES */}
             <InputWrapper
               refreshKey={refreshKey}
-              onChange={(e) => setNewMemory((prevMemory) => ({ ...prevMemory, notes: e.target.value }))}
+              onChange={(e) => setNewMemory((prevMemory) => ({...prevMemory, notes: e.target.value}))}
               inputType={'textarea'}
               labelText={'Image Description/Notes'}></InputWrapper>
             {/* UPLOAD BUTTON */}
             <UploadInputs
-              onClose={() => setState({ ...state, creationFormToShow: '', showBottomMenu: false })}
+              onClose={() => setState({...state, creationFormToShow: '', showBottomMenu: false})}
               containerClass={`${theme} new-memory-card`}
               uploadType={'image'}
               actualUploadButtonText={'Upload'}

@@ -1,23 +1,23 @@
 // Path: src\components\childrenInput.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../context'
 import Manager from '../managers/manager'
 import phone from 'phone'
 import AlertManager from '../managers/alertManager'
 import ChildUser from '../models/child/childUser'
 import InputWrapper from '../components/shared/inputWrapper'
-import General from '../models/child/general'
+
 import StringManager from '../managers/stringManager.coffee'
 
-export default function ChildrenInput({ add, childrenCount }) {
-  const { state, setState } = useContext(globalState)
+export default function ChildrenInput({add, childrenCount}) {
+  const {state, setState} = useContext(globalState)
   const [name, setName] = useState('')
   const [userPhone, setUserPhone] = useState('')
   const [showAddButton, setShowAddButton] = useState(true)
 
   const validatePhone = () => {
     const validatePhone = phone(`+1${StringManager.formatPhone(userPhone)}`)
-    const { isValid } = validatePhone
+    const {isValid} = validatePhone
     return isValid
   }
 

@@ -1,16 +1,16 @@
 // Path: src\components\screens\memories.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import DB from '../../database/DB'
 import FirebaseStorage from '../../database/firebaseStorage'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
+import {child, getDatabase, onValue, ref} from 'firebase/database'
 import Manager from '../../managers/manager'
 import globalState from '../../context'
 import SecurityManager from '../../managers/securityManager'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import moment from 'moment'
-import { Fade } from 'react-awesome-reveal'
-import { LuImagePlus, LuMinus } from 'react-icons/lu'
+import {Fade} from 'react-awesome-reveal'
+import {LuImagePlus, LuMinus} from 'react-icons/lu'
 import ImageManager from '../../managers/imageManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
@@ -18,11 +18,11 @@ import DateFormats from '../../constants/dateFormats'
 import DateManager from '../../managers/dateManager'
 import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
-import { IoAddOutline, IoHeart } from 'react-icons/io5'
+import {IoAddOutline, IoHeart} from 'react-icons/io5'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import { BiSolidImageAdd } from 'react-icons/bi'
+import Spacer from '../shared/spacer'
 
 export default function Memories() {
   const {state, setState} = useContext(globalState)
@@ -111,12 +111,14 @@ export default function Memories() {
         <p id="happy-subtitle" className={`${theme}`}>
           Share photos of unforgettable memories that deserve to be seen! <IoHeart className={'heart'} />
         </p>
+        <Spacer height={10} />
         <Accordion expanded={showDisclaimer}>
           <AccordionSummary>
-            <p id="disclaimer-header-button" onClick={() => setShowDisclaimer(!showDisclaimer)}>
+            <button className="button default with-border" onClick={() => setShowDisclaimer(!showDisclaimer)}>
               Info {showDisclaimer ? <LuMinus /> : <IoAddOutline />}
-            </p>
+            </button>
           </AccordionSummary>
+          <Spacer height={5} />
           <AccordionDetails>
             <p>
               All images will be automatically and <b>permanently</b> removed 30 days after their creation date. You are welcome to download them at
@@ -175,12 +177,7 @@ export default function Memories() {
           </Fade>
         </LightGallery>
       </div>
-
-      {!showNewMemoryCard && (
-        <NavBar navbarClass={'memories'}>
-          <BiSolidImageAdd onClick={() => setShowNewMemoryCard(true)} className={'memories`'} id={'add-new-button'} />
-        </NavBar>
-      )}
+      <NavBar navbarClass={'memories'} />
     </>
   )
 }

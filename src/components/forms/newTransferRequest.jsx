@@ -1,16 +1,15 @@
 // Path: src\components\forms\newTransferRequest.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../context'
 import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import TransferChangeRequest from '/src/models/transferChangeRequest.js'
 import moment from 'moment'
 import DB from '/src/database/DB'
-import { RiMapPinTimeFill } from 'react-icons/ri'
-
+import {RiMapPinTimeFill} from 'react-icons/ri'
 import NotificationManager from '/src/managers/notificationManager.js'
 import DB_UserScoped from '/src/database/db_userScoped'
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers-pro'
+import {MobileDatePicker, MobileTimePicker} from '@mui/x-date-pickers-pro'
 import DateFormats from '/src/constants/dateFormats'
 import DateManager from '/src/managers/dateManager'
 import Modal from '../shared/modal'
@@ -19,14 +18,13 @@ import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import AlertManager from '/src/managers/alertManager'
 import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
-import DomManager from '../../managers/domManager.coffee'
 import AddressInput from '../shared/addressInput'
 import Spacer from '../shared/spacer'
 import creationForms from '../../constants/creationForms'
 
 export default function NewTransferChangeRequest() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, authUser, creationFormToShow } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, authUser, creationFormToShow} = state
   const [requestReason, setRequestReason] = useState('')
   const [shareWith, setShareWith] = useState([])
   const [requestTime, setRequestTime] = useState('')
@@ -36,7 +34,7 @@ export default function NewTransferChangeRequest() {
   const [preferredLocation, setPreferredLocation] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
 
-  const resetForm = async () => {
+  const resetForm = async (showSuccessAlert = false) => {
     Manager.resetForm('transfer-request-wrapper')
     setRequestReason('')
     setShareWith([])
@@ -46,7 +44,14 @@ export default function NewTransferChangeRequest() {
     setRequestRecipientKey('')
     setPreferredLocation('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser, creationFormToShow: '', refreshKey: Manager.getUid(), isLoading: false })
+    setState({
+      ...state,
+      currentUser: updatedCurrentUser,
+      creationFormToShow: '',
+      refreshKey: Manager.getUid(),
+      isLoading: false,
+      successAlertMessage: showSuccessAlert ? 'Transfer Change Request Sent' : null,
+    })
   }
 
   const submit = async () => {
@@ -102,7 +107,6 @@ export default function NewTransferChangeRequest() {
 
     // // Add record
     await DB.add(`${DB.tables.transferChangeRequests}/${currentUser.key}`, newRequest)
-    AlertManager.successAlert('Transfer Change Request Sent')
 
     // Notify
     await NotificationManager.sendNotification(
@@ -113,7 +117,7 @@ export default function NewTransferChangeRequest() {
       ActivityCategory.transferRequest
     )
 
-    await resetForm()
+    await resetForm(true)
   }
 
   const handleShareWithSelection = async (e) => {
@@ -165,20 +169,13 @@ export default function NewTransferChangeRequest() {
           <div className="form transfer-change">
             <div className="flex gap">
               {/* DAY */}
-              {!DomManager.isMobile() && (
-                <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
-                  <MobileDatePicker
-                    onOpen={addThemeToDatePickers}
-                    className={`${theme}  mt-0 w-100`}
-                    onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
-                  />
-                </InputWrapper>
-              )}
-              {DomManager.isMobile() && (
-                <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
-                  <input type="date" onChange={(e) => setRequestDate(moment(e.target.value).format(DateFormats.dateForDb))} />
-                </InputWrapper>
-              )}
+              <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
+                <MobileDatePicker
+                  onOpen={addThemeToDatePickers}
+                  className={`${theme}  mt-0 w-100`}
+                  onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
+                />
+              </InputWrapper>
 
               {/* TIME */}
               <InputWrapper inputType={'date'} labelText={'New Time'}>
@@ -196,21 +193,13 @@ export default function NewTransferChangeRequest() {
             </div>
 
             {/* RESPONSE DUE DATE */}
-            {!DomManager.isMobile() && (
-              <InputWrapper inputType={'date'} labelText={'Respond by'}>
-                <MobileDatePicker
-                  onOpen={addThemeToDatePickers}
-                  className={`${theme}  w-100`}
-                  onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
-                />
-              </InputWrapper>
-            )}
-
-            {DomManager.isMobile() && (
-              <InputWrapper inputType={'date'} labelText={'Respond by'} required={true}>
-                <input type="date" onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))} />
-              </InputWrapper>
-            )}
+            <InputWrapper inputType={'date'} labelText={'Respond by'}>
+              <MobileDatePicker
+                onOpen={addThemeToDatePickers}
+                className={`${theme}  w-100`}
+                onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
+              />
+            </InputWrapper>
 
             {/*  NEW LOCATION*/}
             <InputWrapper inputType={'location'} labelText={'New Location'}>
@@ -248,8 +237,6 @@ export default function NewTransferChangeRequest() {
               onCheck={handleRequestRecipient}
               required={true}
             />
-
-            <Spacer height={5} />
 
             <ShareWithCheckboxes
               shareWith={currentUser?.coparents?.map((x) => x.phone)}

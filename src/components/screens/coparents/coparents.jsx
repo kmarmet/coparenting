@@ -1,25 +1,25 @@
 // Path: src\components\screens\coparents\coparents.jsx
-import { getDatabase, onValue, ref } from 'firebase/database'
-import React, { useContext, useEffect, useState } from 'react'
+import {getDatabase, onValue, ref} from 'firebase/database'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
 import DB_UserScoped from '/src/database/db_userScoped'
 import CustomCoparentInfo from './customCoparentInfo'
-import { HiDotsHorizontal } from 'react-icons/hi'
+import {HiDotsHorizontal} from 'react-icons/hi'
 import NewCoparentForm from './newCoparentForm'
-import { FaWandMagicSparkles } from 'react-icons/fa6'
-import { IoClose, IoPersonAdd, IoPersonRemove } from 'react-icons/io5'
-import { Fade } from 'react-awesome-reveal'
+import {FaWandMagicSparkles} from 'react-icons/fa6'
+import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
+import {Fade} from 'react-awesome-reveal'
 import NavBar from '/src/components/navBar.jsx'
-import { BsFillSendFill, BsPersonAdd } from 'react-icons/bs'
+import {BsFillSendFill, BsPersonAdd} from 'react-icons/bs'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
 import DatasetManager from '/src/managers/datasetManager'
 import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager.coffee'
-import { PiTrashSimpleDuotone, PiUserCircle, PiUserCircleDuotone } from 'react-icons/pi'
+import {PiTrashSimpleDuotone, PiUserCircle, PiUserCircleDuotone} from 'react-icons/pi'
 import AddressInput from '../../shared/addressInput'
 import Modal from '../../shared/modal'
 import EmailManager from '../../../managers/emailManager'
@@ -27,8 +27,8 @@ import Spacer from '../../shared/spacer'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 
 export default function Coparents() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme} = state
 
   // State
   const [userCoparents, setUserCoparents] = useState([])
@@ -104,82 +104,85 @@ export default function Coparents() {
 
       {/*  SCREEN ACTIONS */}
       <ScreenActionsMenu>
-          <Fade direction={'right'} className={'fade-wrapper'} duration={800} damping={.2} triggerOnce={false} cascade={true}>
-            {/* ADD COPARENT */}
-            <div
-              className="action-item"
-              onClick={() => {
-                setShowNewCoparentFormCard(true)
-                setState({...state, showScreenActions: false})
-              }}>
-              <div className="content">
-                <div className="svg-wrapper">
-                  <IoPersonAdd className={'add-child fs-22'} />
-                </div>
-                <p>
-                  Add Co-Parent to Your Profile
-                  <span className="subtitle">Include a co-parent in your profile to save their details and facilitate information sharing with them</span>
-                </p>
-              </div>
+        {/*<Fade direction={'right'} className={'fade-wrapper'} duration={800} damping={.2} triggerOnce={false} cascade={true}>*/}
+        {/* ADD COPARENT */}
+        <div
+          className="action-item"
+          onClick={() => {
+            setShowNewCoparentFormCard(true)
+            setState({...state, showScreenActions: false})
+          }}>
+          <div className="content">
+            <div className="svg-wrapper">
+              <IoPersonAdd className={'add-child fs-22'} />
+            </div>
+            <p>
+              Add Co-Parent to Your Profile
+              <span className="subtitle">Include a co-parent in your profile to save their details and facilitate information sharing with them</span>
+            </p>
+          </div>
+        </div>
+
+        {/*  ADD CUSTOM INFO */}
+        <div
+          className="action-item"
+          onClick={() => {
+            setState({...state, showScreenActions: false})
+            setShowCustomInfoCard(true)
+          }}>
+          <div className="content">
+            <div className="svg-wrapper">
+              <FaWandMagicSparkles className={'magic'} />
+            </div>
+            <p>
+              Add your Own Info
+              <span className="subtitle">Include personalized details about {selectedCoparentDataArray?.find((x) => x[0] === 'name')[1]}</span>
+            </p>
+          </div>
+        </div>
+
+        {/*  REMOVE COPARENT */}
+        <div
+          className="action-item"
+          onClick={() => {
+            setState({...state, showScreenActions: false})
+            AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
+              await deleteCoparent()
+              AlertManager.successAlert('Co-Parent Removed')
+              setSelectedCoparentDataArray(null)
+            })
+          }}>
+          <div className="content">
+            <div className="svg-wrapper">
+              <IoPersonRemove className={'remove-user'} />
             </div>
 
-            {/*  ADD CUSTOM INFO */}
-            <div
-              className="action-item"
-              onClick={() => {
-                setState({ ...state, showScreenActions: false })
-                setShowCustomInfoCard(true)
-              }}>
-              <div className="content">
-                <div className="svg-wrapper">
-                  <FaWandMagicSparkles className={'magic'} />
-                </div>
-                <p>
-                  Add your Own Info<span className="subtitle">Include personalized details about {selectedCoparentDataArray?.find(x => x[0] === 'name')[1]}</span>
-                </p>
-              </div>
-            </div>
+            <p>
+              Unlink {selectedCoparentDataArray?.find((x) => x[0] === 'name')[1]} from Your Profile
+              <span className="subtitle">
+                Remove all information about {selectedCoparentDataArray?.find((x) => x[0] === 'name')[1]} from your profile
+              </span>
+            </p>
+          </div>
+        </div>
 
-            {/*  REMOVE COPARENT */}
-            <div
-              className="action-item"
-              onClick={() => {
-                setState({ ...state, showScreenActions: false })
-                AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
-                  await deleteCoparent()
-                  AlertManager.successAlert('Co-Parent Removed')
-                  setSelectedCoparentDataArray(null)
-                })
-              }}>
-              <div className="content">
-                <div className="svg-wrapper">
-                  <IoPersonRemove className={'remove-user'} />
-                </div>
-
-                <p>
-                  Unlink {selectedCoparentDataArray?.find(x => x[0] === 'name')[1]} from Your Profile
-                   <span className="subtitle">Remove all information about {selectedCoparentDataArray?.find(x => x[0] === 'name')[1]} from your profile</span>
-                </p>
-              </div>
+        <div
+          className="action-item"
+          onClick={() => {
+            setShowInvitationForm(true)
+            setState({...state, showScreenActions: false})
+          }}>
+          <div className="content">
+            <div className="svg-wrapper invite-coparent">
+              <BsFillSendFill className={'paper-airplane'} />
             </div>
-
-            <div
-              className="action-item"
-              onClick={() => {
-                setShowInvitationForm(true)
-                setState({ ...state, showScreenActions: false })
-              }}>
-              <div className="content">
-                <div className="svg-wrapper invite-coparent">
-                  <BsFillSendFill className={'paper-airplane'} />
-                </div>
-                <p>
-                  Invite Co-Parent <span className="subtitle">Send invitation to a co-parent you would like to share essential information with</span>
-                </p>
-              </div>
-            </div>
-          </Fade>
-          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
+            <p>
+              Invite Co-Parent <span className="subtitle">Send invitation to a co-parent you would like to share essential information with</span>
+            </p>
+          </div>
+        </div>
+        {/*</Fade>*/}
+        <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
       </ScreenActionsMenu>
 
       <Modal
@@ -243,59 +246,59 @@ export default function Coparents() {
           {/* COPARENT INFO */}
           <div id="coparent-info">
             <div className="form">
-              <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={.08} triggerOnce={false} cascade={true}>
-              {/* ITERATE COPARENT INFO */}
-              {Manager.isValid(selectedCoparentDataArray) &&
-                selectedCoparentDataArray.map((propArray, index) => {
-                  let infoLabel = propArray[0]
-                  infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
-                  infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-                  infoLabel = StringManager.formatTitle(infoLabel, true, true)
-                  const value = propArray[1]
-                  const inputsToSkip = ['address', 'key']
-                  return (
-                    <div key={index}>
-                      {infoLabel !== 'Id' && (
-                        <div className="row">
-                          <div className="flex input">
-                            {/* LOCATION */}
-                            {infoLabel.toLowerCase().includes('address') && (
-                              <InputWrapper inputType={'date'} labelText={value}>
-                                <AddressInput
-                                  onSelection={async (place) => {
-                                    await update('address', place)
-                                  }}
-                                />
-                              </InputWrapper>
-                            )}
+              <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
+                {/* ITERATE COPARENT INFO */}
+                {Manager.isValid(selectedCoparentDataArray) &&
+                  selectedCoparentDataArray.map((propArray, index) => {
+                    let infoLabel = propArray[0]
+                    infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
+                    infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
+                    infoLabel = StringManager.formatTitle(infoLabel, true, true)
+                    const value = propArray[1]
+                    const inputsToSkip = ['address', 'key']
+                    return (
+                      <div key={index}>
+                        {infoLabel !== 'Id' && (
+                          <div className="row">
+                            <div className="flex input">
+                              {/* LOCATION */}
+                              {infoLabel.toLowerCase().includes('address') && (
+                                <InputWrapper inputType={'date'} labelText={value}>
+                                  <AddressInput
+                                    onSelection={async (place) => {
+                                      await update('address', place)
+                                    }}
+                                  />
+                                </InputWrapper>
+                              )}
 
-                            {/* TEXT INPUT */}
-                            {!inputsToSkip.includes(infoLabel.toLowerCase()) && (
-                              <>
-                                <InputWrapper
-                                  defaultValue={value}
-                                  onChange={async (e) => {
-                                    const inputValue = e.target.value
-                                    await update(infoLabel, `${inputValue}`)
-                                  }}
-                                  inputType={'input'}
-                                  labelText={StringManager.addSpaceBetweenWords(infoLabel)}></InputWrapper>
-                                <PiTrashSimpleDuotone className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
-                              </>
-                            )}
+                              {/* TEXT INPUT */}
+                              {!inputsToSkip.includes(infoLabel.toLowerCase()) && (
+                                <>
+                                  <InputWrapper
+                                    defaultValue={value}
+                                    onChange={async (e) => {
+                                      const inputValue = e.target.value
+                                      await update(infoLabel, `${inputValue}`)
+                                    }}
+                                    inputType={'input'}
+                                    labelText={StringManager.addSpaceBetweenWords(infoLabel)}></InputWrapper>
+                                  <PiTrashSimpleDuotone className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
+                                </>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
+                        )}
+                      </div>
+                    )
+                  })}
               </Fade>
             </div>
           </div>
         </Fade>
       </div>
       <NavBar navbarClass={'actions'}>
-        <div  onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
+        <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
           <HiDotsHorizontal className={'screen-actions-menu-icon'} />
           <p>Actions</p>
         </div>

@@ -96,7 +96,7 @@
         border: 1px solid rgba(33, 59, 199, 0.11);
         padding: 15px;
         border-radius: $borderRadius;
-        background: $bestGreyForWhite;
+        background: $grey;
 
         input {
           background: transparent;
@@ -120,7 +120,6 @@
         #coparent-label,
         #group-label,
         #child-label {
-          color: $blue;
           font-size: 18px;
           font-weight: bold;
         }
@@ -222,7 +221,7 @@
       margin-top: 10px;
       #forgot-password-link {
         font-size: 14px;
-        color: $accentLight;
+        color: $accent;
         width: 50%;
         text-align: right;
       }
@@ -350,7 +349,7 @@
 
         span {
           font-weight: $fwBold;
-          color: $accentLight;
+          color: $accent;
         }
       }
 

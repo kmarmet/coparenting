@@ -1,14 +1,15 @@
 // Path: src\components\shared\customChildInfo.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
 import DB_UserScoped from '../../database/db_userScoped'
-import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import CheckboxGroup from './checkboxGroup'
 import InputWrapper from './inputWrapper'
 import Modal from './modal'
 import AlertManager from '../../managers/alertManager'
+
 import ShareWithCheckboxes from './shareWithCheckboxes'
 import NotificationManager from '../../managers/notificationManager.js'
 import DateFormats from '../../constants/dateFormats'
@@ -18,9 +19,9 @@ import AddressInput from './addressInput'
 import validator from 'validator'
 import DomManager from '../../managers/domManager'
 
-export default function CustomChildInfo({ hideCard, showCard }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+export default function CustomChildInfo({hideCard, showCard}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, activeInfoChild} = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
   const [infoSection, setInfoSection] = useState('general')
@@ -57,7 +58,7 @@ export default function CustomChildInfo({ hideCard, showCard }) {
 
     AlertManager.successAlert(`${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`)
     resetForm()
-    setState({ ...state, activeInfoChild: updatedChild, refreshKey: Manager.getUid() })
+    setState({...state, activeInfoChild: updatedChild, refreshKey: Manager.getUid()})
   }
 
   const handleInfoTypeSelection = (e) => {
@@ -86,7 +87,7 @@ export default function CustomChildInfo({ hideCard, showCard }) {
     setValue('')
     setInfoSection('')
     hideCard()
-    setState({ ...state, refreshKey: Manager.getUid() })
+    setState({...state, refreshKey: Manager.getUid()})
   }
 
   return (
@@ -97,15 +98,16 @@ export default function CustomChildInfo({ hideCard, showCard }) {
       wrapperClass="custom-child-info-card"
       onClose={resetForm}
       title={'Add Your Own Info'}
-      viewSelector={     <ViewSelector
-        defaultView={'General'}
-        wrapperClasses="child-info"
-        labels={['General', 'Medical', 'Schooling', 'Behavior']}
-        updateState={(e) => setInfoSection(e.toLowerCase())}
-      />}
+      viewSelector={
+        <ViewSelector
+          defaultView={'General'}
+          wrapperClasses="child-info"
+          labels={['General', 'Medical', 'Schooling', 'Behavior']}
+          updateState={(e) => setInfoSection(e.toLowerCase())}
+        />
+      }
       showCard={showCard}>
       <div className="form">
-
         <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with" required={false} />
 
         {/* INFO TYPE */}

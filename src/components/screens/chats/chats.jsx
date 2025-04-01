@@ -1,8 +1,8 @@
 // Path: src\components\screens\chats\chats.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import Manager from '/src/managers/manager'
 import globalState from '../../../context.js'
-import { Fade } from 'react-awesome-reveal'
+import {Fade} from 'react-awesome-reveal'
 import Modal from '../../shared/modal'
 import SecurityManager from '/src/managers/securityManager'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
@@ -10,14 +10,15 @@ import AlertManager from '/src/managers/alertManager'
 import ChatRow from './chatRow.jsx'
 import Spacer from '../../shared/spacer'
 import DB from '../../../database/DB'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
+import {child, getDatabase, onValue, ref} from 'firebase/database'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import { LuMinus, LuPlus } from 'react-icons/lu'
+import {LuMinus, LuPlus} from 'react-icons/lu'
 import EmailManager from '../../../managers/emailManager'
 import InputWrapper from '../../shared/inputWrapper'
 import NavBar from '../../navBar'
+import Label from '../../shared/label'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
@@ -75,6 +76,7 @@ const Chats = () => {
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
         {/*<VideoCall />*/}
+
         {chats.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
         <div className="flex" id="screen-title-wrapper">
           <p className="screen-title">Chats</p>
@@ -85,18 +87,20 @@ const Chats = () => {
         </p>
 
         <Spacer height={8} />
-        {/* INFO BUTTON */}
-        <Accordion expanded={showInfo} className={'br-10'}>
+        {/* INVITE BUTTON */}
+        <Accordion expanded={showInfo} className={'invite-accordion'}>
           <AccordionSummary>
-            <button className="button default with-border" onClick={() => setShowInfo(!showInfo)}>
-              Invite {showInfo ? <LuMinus /> : <LuPlus />}
+            <button className="button default grey" onClick={() => setShowInfo(!showInfo)}>
+              <div id="circle" className="circle"></div>
+              <Label text={'Invite'} /> {showInfo ? <LuMinus /> : <LuPlus />}
             </button>
           </AccordionSummary>
-            <Spacer height={5}/>
+          <Spacer height={5} />
           <AccordionDetails>
             <p>
-              Right now, your account is connected to {currentUser?.coparents?.length} members (children and co-parents). If you’d like to chat with
-              another co-parent or child, go ahead and send them an invite.
+              Right now, your account is connected to {currentUser?.coparents?.length} {currentUser?.coparents?.length > 1 ? 'members' : 'member'}{' '}
+              (children with accounts and co-parents are both considered members). If you’d like to chat with another co-parent or child, go ahead and
+              send them an invite.
             </p>
 
             <button

@@ -83,7 +83,7 @@
 
       .reset {
         font-weight: $fwMedium;
-        background: $accentLight;
+        background: $accent;
         color: white;
         width: 100%;
       }
@@ -140,7 +140,7 @@
     // Filters Accordion
     @include accordion;
     #filters-accordion {
-      background: $oneMillionGrey;
+      background: $grey;
     }
 
     #filters {
@@ -150,6 +150,15 @@
 
       .filter-row {
         margin-bottom: 10px;
+
+        .buttons {
+          button {
+            &.default {
+              height: 30px;
+            }
+          }
+        }
+
         #label-wrapper {
           label {
             line-height: 1;
@@ -170,6 +179,7 @@
             margin-top: 5px !important;
             line-height: 1;
             display: flex;
+            border: 1px solid $lightBorderColor !important;
             align-items: center;
           }
         }
@@ -207,7 +217,7 @@
           @include pillButton;
           color: $mainBlue;
           border: 1px solid $mainBlue;
-          background: $bestGreyForWhite;
+          background: $grey;
           border-radius: 50px;
           text-align: center;
           font-weight: $fwRegular;
@@ -226,7 +236,7 @@
           margin-right: 8px;
 
           &.active {
-            background: $lightIconBgBlue;
+            background: $lightAccentBlue;
             color: $mainBlue;
           }
 

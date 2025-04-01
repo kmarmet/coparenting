@@ -342,15 +342,15 @@
           .message {
             color: white;
             &.from {
-              background: $accentLight;
+              background: $accent;
               &:after {
-                background: radial-gradient(30px at 0 0, #0000 99%, $accentLight 102%);
+                background: radial-gradient(30px at 0 0, #0000 99%, $accent 102%);
               }
             }
             &.to {
               background: white;
               font-weight: $fwMedium;
-              color: $accentLight;
+              color: $accent;
 
               &:after {
                 background: radial-gradient(30px at 100% 0, #0000 99%, white 102%);

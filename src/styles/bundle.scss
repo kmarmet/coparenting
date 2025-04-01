@@ -1,5 +1,4 @@
 @import './cssReset';
-@import './colors';
 @import './mixins';
 @import './variables';
 @import './muiOverrides';
@@ -7,6 +6,7 @@
 @import './utilityClasses';
 @import './styles';
 @import './animations.scss';
+@import './accordions';
 @import './screens/expenseTracker';
 @import './screens/swapRequests';
 @import './screens/transferRequests';

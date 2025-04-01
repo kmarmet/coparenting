@@ -1,10 +1,10 @@
 // Path: src\components\forms\newExpenseForm.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import MenuItem from '@mui/material/MenuItem'
-import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import globalState from '../../context'
-import { MdEventRepeat } from 'react-icons/md'
+import {MdEventRepeat} from 'react-icons/md'
 import Toggle from 'react-toggle'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
@@ -13,11 +13,10 @@ import DateFormats from '/src/constants/dateFormats'
 import ExpenseCategories from '/src/constants/expenseCategories.js'
 import DB from '../../database/DB'
 import DB_UserScoped from '../../database/db_userScoped'
-import { RiMoneyDollarCircleLine } from 'react-icons/ri'
+import {RiMoneyDollarCircleLine} from 'react-icons/ri'
 import FirebaseStorage from '/src/database/firebaseStorage'
 import AlertManager from '/src/managers/alertManager'
 import DateManager from '/src/managers/dateManager'
-import DomManager from '/src/managers/domManager.coffee'
 import ImageManager from '/src/managers/imageManager'
 import NotificationManager from '/src/managers/notificationManager'
 import Manager from '../../managers/manager'
@@ -34,10 +33,11 @@ import Spacer from '/src/components/shared/spacer.jsx'
 import DatasetManager from '../../managers/datasetManager.coffee'
 import CreationForms from '../../constants/creationForms'
 import ToggleButton from '../shared/toggleButton'
+import Label from '../shared/label'
 
-export default function NewExpenseForm({ hideCard, showCard }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey, authUser, creationFormToShow } = state
+export default function NewExpenseForm({hideCard, showCard}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, refreshKey, authUser, creationFormToShow} = state
   const [expenseName, setExpenseName] = useState('')
   const [expenseChildren, setExpenseChildren] = useState([])
   const [expenseDueDate, setExpenseDueDate] = useState('')
@@ -74,7 +74,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
     setRepeatingEndDate('')
     setExpenseAmount('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid(), creationFormToShow: '' })
+    setState({...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid(), creationFormToShow: ''})
   }
 
   const submitNewExpense = async () => {
@@ -166,7 +166,6 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           ActivityCategory.expenses
         )
       }
-
 
       // Go back to expense screen
       await resetForm()
@@ -305,7 +304,7 @@ export default function NewExpenseForm({ hideCard, showCard }) {
       hasDelete={false}
       onSubmit={submitNewExpense}
       submitText={'Submit'}
-      titleIcon={<RiMoneyDollarCircleLine/>}
+      titleIcon={<RiMoneyDollarCircleLine />}
       title={'Create Expense'}
       className="new-expense-card"
       wrapperClass="new-expense-card"
@@ -384,29 +383,16 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           <InputWrapper onChange={(e) => setExpenseName(e.target.value)} inputType={'input'} labelText={'Name'} required={true}></InputWrapper>
 
           {/* DUE DATE */}
-          {!DomManager.isMobile() && (
-            <InputWrapper inputType={'date'} labelText={'Due Date'}>
-              <MobileDatePicker
-                onOpen={addThemeToDatePickers}
-                className="mt-0 w-100"
-                yearsPerRow={4}
-                onChange={(e) => {
-                  setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
-                }}
-              />
-            </InputWrapper>
-          )}
-
-          {DomManager.isMobile() && (
-            <InputWrapper inputType={'date'} labelText={'Due Date'}>
-              <input
-                type="date"
-                onChange={(e) => {
-                  setExpenseDueDate(moment(e.target.value).format('MM/DD/yyyy'))
-                }}
-              />
-            </InputWrapper>
-          )}
+          <InputWrapper inputType={'date'} labelText={'Due Date'}>
+            <MobileDatePicker
+              onOpen={addThemeToDatePickers}
+              className="mt-0 w-100"
+              yearsPerRow={4}
+              onChange={(e) => {
+                setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
+              }}
+            />
+          </InputWrapper>
 
           {/* NOTES */}
           <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'} />
@@ -426,12 +412,11 @@ export default function NewExpenseForm({ hideCard, showCard }) {
           {/* SHARE WITH */}
           <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
 
-
           {/* INCLUDING WHICH CHILDREN */}
           {currentUser && currentUser?.children !== undefined && (
             <div className="share-with-container ">
               <div className="flex">
-                <p>Applicable Child(ren)</p>
+                <Label text={'Applicable Child(ren)'} />
                 <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
               </div>
               {includeChildren && (

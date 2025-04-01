@@ -3,6 +3,8 @@ var StateObj;
 
 import ScreenNames from "./screenNames";
 
+import DateFormats from "./dateFormats";
+
 import moment from "moment";
 
 StateObj = {
@@ -15,11 +17,11 @@ StateObj = {
   currentUser: {},
   docToView: '',
   firebaseUser: null,
-  defaultDate: moment().format('YYYY-MM-DD'),
   isLoading: true,
   loadingText: 'Preparing your pathway to peace...',
   menuIsOpen: false,
   messageToUser: null,
+  dateToEdit: moment().format(DateFormats.dateForDb),
   modalIsOpen: false,
   notificationCount: 0,
   parentAccessGranted: false,
@@ -53,7 +55,6 @@ StateObj = {
   setParentAccessGranted: function(bool) {},
   setRefreshKey: function(num) {},
   setRegistrationUserName: function(name) {},
-  setDefaultDate: function(date) {},
   setSelectedChild: function(child) {},
   setSelectedNewEventDay: function(day) {},
   setShowBottomMenu: function(bool) {},

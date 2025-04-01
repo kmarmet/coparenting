@@ -300,7 +300,7 @@ export default function EventCalendar() {
       AlertManager.throwError('Please enter a search value')
       return false
     }
-    const searchResults = allEventsFromDb.filter((x) => x.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1)
+    const searchResults = allEventsFromDb.filter((x) => x.title.toLowerCase().trim().indexOf(searchQuery.toLowerCase().trim()) > -1)
     if (searchResults.length === 0) {
       AlertManager.throwError('No events found')
       return false
@@ -429,7 +429,6 @@ export default function EventCalendar() {
             }}
             onChange={async (day) => {
               setSelectedDate(moment(day).format('YYYY-MM-DD'))
-              setState({...state, defaultDate: moment(day).format('YYYY-MM-DD')})
               await getSecuredEvents(day).then((r) => r)
             }}
             slotProps={{
@@ -474,7 +473,7 @@ export default function EventCalendar() {
         {/* HIDE BUTTONS */}
         {showHolidays && (
           <button
-            className="button default bottom-right with-border"
+            className="button bottom-right"
             onClick={async () => {
               await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
               setShowHolidays(false)

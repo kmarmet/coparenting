@@ -67,6 +67,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
     if (clickedEvent?.ownerKey !== currentUser?.key && clickedEvent?.fromVisitationSchedule) {
       return false
     }
+    setState({...state, dateToEdit: clickedEvent.startDate})
     setEventToEdit(clickedEvent)
   }
 
@@ -95,13 +96,15 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
           className={'calendar-events-fade-wrapper'}>
           {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">No events on this day</p>}
           {Manager.isValid(eventsOfActiveDay) &&
-            eventsOfActiveDay.map((event, index) => {
+            DatasetManager.getUniqueByPropValue(eventsOfActiveDay, 'title').map((event, index) => {
               let startDate = event?.startDate
               if (event?.isDateRange) {
                 startDate = event?.staticStartDate
               }
               let dotObjects = getRowDotColor(event.startDate)
               const dotObject = dotObjects?.filter((x) => x.id === event.id)[0]
+              const isBirthdayEvent = event?.title.toLowerCase().includes('birthday') || event?.title.toLowerCase().includes('bday')
+
               return (
                 <div
                   onClick={() => handleEventRowClick(event).then((r) => r)}
@@ -116,8 +119,8 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                     <div className="flex space-between" id="title-wrapper">
                       <p className="title flex" id="title" data-event-id={event?.id}>
                         <span className={`${dotObject.className} event-type-dot`}></span>
-                        {event?.title.toLowerCase().includes('birthday') && `${StringManager.formatTitle(event?.title)} 🎂`}
-                        {!event?.title.toLowerCase().includes('birthday') && StringManager.formatTitle(event?.title)}
+                        {isBirthdayEvent && `${StringManager.formatTitle(event?.title)} 🎂`}
+                        {!isBirthdayEvent && StringManager.formatTitle(event?.title)}
                       </p>
                     </div>
 

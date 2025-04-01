@@ -1,4 +1,3 @@
-import Manager from '../managers/manager'
 import FirebaseStorage from '../database/firebaseStorage'
 import ImageManager from './imageManager'
 import StringManager from './stringManager'
@@ -80,6 +79,7 @@ const DocumentConversionManager = {
     'deferred',
     'dependents',
   ],
+
   docToHtml: async (fileName, currentUserId) => {
     const myHeaders = new Headers()
     myHeaders.append('Access-Control-Allow-Origin', '*')
@@ -95,7 +95,7 @@ const DocumentConversionManager = {
 
     let returnHtml = ''
     const all = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, currentUserId, fileName)
-    const { status, imageUrl } = all
+    const {status, imageUrl} = all
     if (status === 'success') {
       await fetch(`${apiAddress}/document/getDocText?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
         .then((response) => response.text())
@@ -119,7 +119,7 @@ const DocumentConversionManager = {
 
     let returnHtml = ''
     const all = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, currentUserId, fileName)
-    const { status, imageUrl } = all
+    const {status, imageUrl} = all
     if (status === 'success') {
       await fetch(`${apiAddress}/document/getTextFromPdf?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
         .then((response) => response.text())

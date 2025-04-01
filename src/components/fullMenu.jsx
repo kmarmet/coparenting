@@ -1,32 +1,40 @@
 // Path: src\components\fullMenu.jsx
-import React, { useContext } from 'react'
+import React, {useContext} from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
 import Manager from '../managers/manager'
 import AppManager from '../managers/appManager'
-import { getAuth, signOut } from 'firebase/auth'
-import { BsCalendarWeekFill, BsFillArrowDownSquareFill, BsFillArrowRightCircleFill, BsFillHousesFill, BsFillMoonStarsFill, BsPersonVcardFill, BsSendFill } from 'react-icons/bs'
-import { IoChatbubbles, IoDocuments, IoPeopleCircleSharp } from 'react-icons/io5'
-import { PiBellFill, PiSunDuotone } from 'react-icons/pi'
-import { IoMdPhotos } from 'react-icons/io'
-import { RiArchive2Fill, RiMapPinTimeFill } from 'react-icons/ri'
-import { MdSettingsSuggest, MdSwapHorizontalCircle } from 'react-icons/md'
-import { BiSolidDashboard } from 'react-icons/bi'
-import { HiUserCircle } from 'react-icons/hi2'
-import { FaDonate } from 'react-icons/fa'
+import {getAuth, signOut} from 'firebase/auth'
+import {
+  BsCalendarWeekFill,
+  BsFillArrowDownSquareFill,
+  BsFillArrowRightCircleFill,
+  BsFillHousesFill,
+  BsFillMoonStarsFill,
+  BsPersonVcardFill,
+  BsSendFill,
+} from 'react-icons/bs'
+import {IoChatbubbles, IoDocuments, IoPeopleCircleSharp} from 'react-icons/io5'
+import {PiBellFill, PiSunDuotone} from 'react-icons/pi'
+import {IoMdPhotos} from 'react-icons/io'
+import {RiArchive2Fill, RiMapPinTimeFill} from 'react-icons/ri'
+import {MdSettingsSuggest, MdSwapHorizontalCircle} from 'react-icons/md'
+import {BiSolidDashboard} from 'react-icons/bi'
+import {HiUserCircle} from 'react-icons/hi2'
+import {FaDonate} from 'react-icons/fa'
 import DB_UserScoped from '../database/db_userScoped'
 import Modal from './shared/modal'
 
 export default function FullMenu() {
-  const { state, setState } = useContext(globalState)
-  const { currentScreen, menuIsOpen, theme, currentUser, authUser, notificationCount } = state
+  const {state, setState} = useContext(globalState)
+  const {currentScreen, menuIsOpen, theme, currentUser, authUser, notificationCount} = state
 
   const auth = getAuth()
 
   const changeCurrentScreen = async (screen) => {
     const _user = await DB_UserScoped.getCurrentUser(authUser?.email)
 
-    setState({ ...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: _user })
+    setState({...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: _user})
   }
 
   const changeTheme = async (theme) => {
@@ -61,7 +69,9 @@ export default function FullMenu() {
       title={'Menu'}
       className={`full-menu ${theme}`}
       showCard={menuIsOpen}
-      onClose={() => {}}
+      onClose={() => {
+        setState({...state, menuIsOpen: false})
+      }}
       hasDelete={false}
       hasSubmitButton={false}>
       <div id="full-menu" className={`${theme}`}>

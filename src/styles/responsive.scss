@@ -69,7 +69,7 @@
     }
     .MuiYearCalendar-root {
       border-radius: $bigBorderRadius;
-      background: $bestGreyForWhite !important;
+      background: $grey !important;
     }
     .MuiPickersYear-yearButton {
       &.Mui-selected {
@@ -139,7 +139,7 @@
       .page-container:not(.home):not(.login) {
         padding: 20px 20px 200px 20px;
         max-height: calc(100vh - 110px);
-        border: 1px solid $desktopBorderColor;
+        border: 1px solid $lightBorderColor;
         border-radius: $bigBorderRadius;
 
         &.calendar {
@@ -248,7 +248,7 @@
         }
 
         .MuiYearCalendar-root {
-          background: $bestGreyForWhite;
+          background: $grey;
         }
         .MuiPickersLayout-root {
           max-width: 50vw !important;
@@ -280,7 +280,7 @@
 
       // CALENDAR
       #calendar-container {
-        border: 1px solid $desktopBorderColor;
+        border: 1px solid $lightBorderColor;
         border-radius: $bigBorderRadius;
         .events {
           max-height: 20vh;
@@ -290,7 +290,7 @@
         background: white;
         padding: 20px;
         border-radius: $bigBorderRadius;
-        border: 1px solid $desktopBorderColor;
+        border: 1px solid $lightBorderColor;
 
         @media screen and (max-width: 600px) {
           display: none;
@@ -506,7 +506,7 @@
             @include hover;
             height: 150px;
             min-height: 0;
-            border: 1px solid $bestGreyForWhite;
+            border: 1px solid $grey;
             @media screen and (min-width: 650px) {
               &:hover {
                 @include bestShadow;
@@ -678,7 +678,7 @@
         margin-left: 15px;
         display: block;
         height: calc(100vh - 110px);
-        border: 1px solid $desktopBorderColor;
+        border: 1px solid $lightBorderColor;
 
         .form:not(.input-container) {
           &.message-input-form {
@@ -743,7 +743,7 @@
           margin-left: 20px;
           width: 20vw;
           border-radius: $bigBorderRadius;
-          border: 1px solid $desktopBorderColor;
+          border: 1px solid $lightBorderColor;
           padding: 15px;
           background-color: white;
 
@@ -792,9 +792,9 @@
           width: 100%;
           display: flex;
           justify-content: center;
-          border-left: 1px solid $desktopBorderColor;
-          border-right: 1px solid $desktopBorderColor;
-          border-bottom: 1px solid $desktopBorderColor;
+          border-left: 1px solid $lightBorderColor;
+          border-right: 1px solid $lightBorderColor;
+          border-bottom: 1px solid $lightBorderColor;
           border-radius: 0 0 $bigBorderRadius $bigBorderRadius;
           //          position: fixed;
 

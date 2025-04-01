@@ -124,7 +124,12 @@ StringManager = {
     return str
 
   removeSpecialChars: (str) ->
-    return str.replace(/[^a-zA-Z0-9 ]/g, '')
+    return str.replaceAll("~", "")
+      .replaceAll("#", "")
+      .replaceAll("^", "")
+      .replaceAll("`", "")
+      .replaceAll("`", "")
+
 
   formatDbProp: (prop) ->
     prop = StringManager.toCamelCase(prop).replaceAll(' ', '')

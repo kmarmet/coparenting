@@ -9,9 +9,9 @@
       &.expenses {
         padding-bottom: 0;
         margin-bottom: 10px;
-        background: $lightestGrey;
+        background: $grey;
         border-radius: $borderRadius;
-        border: 1px solid $lightBorder;
+        border: 1px solid $lightBorderColor;
       }
 
       table {
@@ -23,14 +23,13 @@
 
           th {
             color: black;
-            //            opacity: 0.7;
             font-size: 14px;
             line-height: 1;
             border-collapse: collapse;
             border: 0;
             border-radius: 0;
             padding: 0;
-            font-weight: $fwMediumBold;
+            font-weight: $fwMedium;
             &:first-child {
               border-radius: 5px 0 0 5px;
             }
@@ -55,14 +54,14 @@
       }
 
       .title {
-        font-weight: $fwBold;
-        border-bottom: 1px solid $lightBorder;
-        background: $lightAccentBlue;
+        font-weight: $fwMedium;
+        border-bottom: 1px solid $lightBorderColor;
+        background: $blurple;
         width: 100%;
-        color: $accentLight;
+        color: white;
         border-radius: $borderRadius $borderRadius 0 0;
         text-align: center;
-        padding: 10px 10px 8px 10px;
+        padding: 10px 10px 8px 13px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -79,7 +78,7 @@
     // FILTER DROPDOWN
     .sorting-dropdown {
       [role='combobox'] {
-        padding: 8px;
+        padding: 10px;
         height: auto !important;
       }
     }

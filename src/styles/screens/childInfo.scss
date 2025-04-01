@@ -93,7 +93,7 @@
 
       .profile-pic-container {
         transform-origin: center;
-        border: 3px solid $borderColor;
+        border: 3px solid $lightBorderColor;
       }
     }
 
@@ -245,7 +245,7 @@
           width: 32px;
           height: 32px;
           overflow: hidden;
-          background: $bestGreyForWhite;
+          background: $grey;
           border-radius: 100%;
           display: flex;
           align-items: center;
@@ -278,8 +278,6 @@
 
       .MuiCollapse-root {
         &.MuiCollapse-entered {
-          background: $oneMillionGrey;
-          padding: 12px;
         }
       }
       .rs-panel-body {
@@ -354,12 +352,14 @@
               border-bottom: 0;
               justify-content: space-between;
               margin-bottom: 5px;
+              height: 40px;
+              overflow: hidden;
 
               svg {
                 margin-right: 5px;
                 &.checklist-delete-icon {
                   color: $red;
-                  font-size: 26px;
+                  font-size: 24px;
                   padding: 0;
                   position: relative;
                   margin: 0 0 0 10px;
@@ -368,10 +368,12 @@
 
               .checklist-item {
                 width: 100%;
-                background: $bestGreyForWhite;
-                padding: 8px 10px;
+                background: $grey;
+                padding: 10px;
                 border-radius: $borderRadius;
                 display: flex;
+                line-height: 1;
+                white-space: nowrap;
                 align-items: center;
                 transition: all 0.3s ease-in-out;
 

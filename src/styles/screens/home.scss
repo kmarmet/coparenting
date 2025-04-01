@@ -166,7 +166,7 @@
       line-height: 1.4;
 
       .emphasize {
-        color: $accentLight;
+        color: $accent;
         font-weight: $fwMediumBold;
         opacity: 1;
       }
@@ -689,7 +689,7 @@
       }
 
       &.with-bg {
-        background: $bestGreyForWhite;
+        background: $grey;
         border: 0;
       }
     }
@@ -836,7 +836,7 @@
               border-radius: $bigBorderRadius;
               overflow: hidden;
               position: relative;
-              background: $bestGreyForWhite;
+              background: $grey;
               @include hoverShadow;
               display: flex;
               flex-direction: column;
@@ -868,18 +868,18 @@
                 li,
                 b,
                 .box-svg {
-                  color: $accentLight;
+                  color: $accent;
                   b {
-                    color: $accentLight;
+                    color: $accent;
                   }
                 }
 
                 .feature-title-wrapper {
                   .feature-title {
-                    color: $accentLight;
+                    color: $accent;
                   }
                   svg {
-                    background: $accentLight;
+                    background: $accent;
                   }
                 }
               }
@@ -1051,7 +1051,7 @@
                   }
                 }
                 svg {
-                  background: $accentLight;
+                  background: $accent;
                   height: 30px;
                   width: 30px;
                   border-radius: 50%;
@@ -1220,7 +1220,7 @@
           }
 
           &.with-bg {
-            background: $bestGreyForWhite;
+            background: $grey;
             border: 0;
           }
 

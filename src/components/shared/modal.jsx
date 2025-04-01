@@ -2,7 +2,6 @@
 import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
 import Manager from '/src/managers/manager.js'
-import DB_UserScoped from '../../database/db_userScoped'
 import StringManager from '../../managers/stringManager'
 import {IoClose} from 'react-icons/io5'
 import Overlay from './overlay'
@@ -35,9 +34,9 @@ export default function Modal({
       const pageContainer = document.querySelector('.page-container')
 
       if (modal) {
-        DB_UserScoped.getCurrentUser(authUser?.email).then((user) => {
-          setState({...state, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: user, showBottomMenu: false, creationFormToShow: ''})
-        })
+        // DB_UserScoped.getCurrentUser(authUser?.email).then((user) => {
+        //   setState({...state, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: user, showBottomMenu: false, creationFormToShow: ''})
+        // })
 
         // Remove disable-scroll class
         if (pageContainer) {

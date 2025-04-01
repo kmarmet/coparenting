@@ -1,4 +1,5 @@
 import ScreenNames from "./screenNames"
+import DateFormats from "./dateFormats"
 import moment from "moment"
 
 StateObj =
@@ -11,11 +12,11 @@ StateObj =
   currentUser: {}
   docToView: ''
   firebaseUser: null,
-  defaultDate: moment().format('YYYY-MM-DD')
   isLoading: true
   loadingText: 'Preparing your pathway to peace...'
   menuIsOpen: false
   messageToUser: null
+  dateToEdit: moment().format(DateFormats.dateForDb)
   modalIsOpen: false
   notificationCount: 0,
   parentAccessGranted: false
@@ -49,7 +50,6 @@ StateObj =
   setParentAccessGranted: (bool) ->
   setRefreshKey: (num) ->
   setRegistrationUserName: (name) ->
-  setDefaultDate: (date) ->
   setSelectedChild: (child) ->
   setSelectedNewEventDay: (day) ->
   setShowBottomMenu: (bool) ->

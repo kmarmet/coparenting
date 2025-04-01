@@ -21,7 +21,6 @@ import {IoTimeOutline} from 'react-icons/io5'
 import {LiaMapMarkedAltSolid} from 'react-icons/lia'
 import 'react-toggle/style.css'
 import globalState from '../../context'
-import DomManager from '../../managers/domManager.coffee'
 import AddressInput from '../shared/addressInput'
 import Map from '../shared/map.jsx'
 import Spacer from '../shared/spacer.jsx'
@@ -49,7 +48,7 @@ import ToggleButton from '../shared/toggleButton'
 
 export default function EditCalEvent({event, showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey} = state
+  const {currentUser, theme, refreshKey, dateToEdit} = state
 
   // Event Details
   const [eventStartDate, setEventStartDate] = useState('')
@@ -77,7 +76,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const [isVisitation, setIsVisitation] = useState(false)
   const [view, setView] = useState('Details')
   const [shareWithNames, setShareWithNames] = useState([])
-
   const [dataIsLoading, setDataIsLoading] = useState(true)
 
   const resetForm = async (alertMessage) => {
@@ -101,7 +99,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setIsVisitation(false)
     setEventIsRecurring(false)
     setEventIsCloned(false)
-    setState({...state, successAlertMessage: alertMessage})
+    setState({...state, successAlertMessage: alertMessage, dateToEdit: moment().format(DateFormats.dateForDb)})
     hideCard()
   }
 
@@ -668,34 +666,21 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   }
                 }}
               />
+
               {/* DATE */}
               <div className="flex" id={'date-input-container'}>
                 {!eventIsDateRange && (
-                  <>
-                    {!DomManager.isMobile() && (
-                      <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
-                        <MobileDatePicker
-                          onOpen={addThemeToDatePickers}
-                          defaultValue={DateManager.dateOrNull(moment(event?.startDate))}
-                          className={`${theme} m-0 w-100 event-from-date mui-input`}
-                          yearsPerRow={4}
-                          onAccept={(e) => {
-                            setEventStartDate(e)
-                          }}
-                        />
-                      </InputWrapper>
-                    )}
-                    {DomManager.isMobile() && (
-                      <InputWrapper
-                        defaultValue={moment(event?.startDate).format('YYYY-MM-DD')}
-                        onChange={(e) => setEventStartDate(moment(e.target.value).format(DateFormats.dateForDb))}
-                        useNativeDate={true}
-                        labelText={'Date'}
-                        inputType={'date'}
-                        required={true}
-                      />
-                    )}
-                  </>
+                  <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
+                    <MobileDatePicker
+                      value={DateManager.dateOrNull(moment(dateToEdit))}
+                      onOpen={addThemeToDatePickers}
+                      className={`${theme} event-from-date`}
+                      yearsPerRow={4}
+                      onAccept={(e) => {
+                        setEventStartDate(e)
+                      }}
+                    />
+                  </InputWrapper>
                 )}
               </div>
 

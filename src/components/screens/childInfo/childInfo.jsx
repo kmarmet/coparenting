@@ -1,5 +1,5 @@
 // Path: src\components\screens\childInfo\childInfo.jsx
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import globalState from '../../../context'
 import DB from '/src/database/DB'
 import FirebaseStorage from '/src/database/firebaseStorage'
@@ -8,14 +8,14 @@ import CustomChildInfo from '../../shared/customChildInfo'
 import Behavior from '/src/components/screens/childInfo/behavior'
 import General from '/src/components/screens/childInfo/general'
 import Medical from '/src/components/screens/childInfo/medical'
-import { HiDotsHorizontal } from 'react-icons/hi'
+import {HiDotsHorizontal} from 'react-icons/hi'
 import Schooling from '/src/components/screens/childInfo/schooling'
 
-import { FaCameraRotate, FaWandMagicSparkles } from 'react-icons/fa6'
-import { BiImageAdd, BiSolidUserCircle } from 'react-icons/bi'
-import { Fade } from 'react-awesome-reveal'
+import {FaCameraRotate, FaWandMagicSparkles} from 'react-icons/fa6'
+import {BiImageAdd, BiSolidUserCircle} from 'react-icons/bi'
+import {Fade} from 'react-awesome-reveal'
 import NewChildForm from '/src/components/screens/childInfo/newChildForm'
-import { IoClose, IoPersonAdd, IoPersonAddOutline, IoPersonRemove } from 'react-icons/io5'
+import {IoClose, IoPersonAdd, IoPersonAddOutline, IoPersonRemove} from 'react-icons/io5'
 import ChildSelector from '/src/components/screens/childInfo/childSelector'
 import DB_UserScoped from '/src/database/db_userScoped'
 import NavBar from '/src/components/navBar'
@@ -26,7 +26,7 @@ import StringManager from '/src/managers/stringManager'
 import AddOrUpdateTransferChecklists from './addOrUpdateTransferChecklists'
 import Checklists from './checklists'
 import Spacer from '../../shared/spacer'
-import { PiListChecksFill } from 'react-icons/pi'
+import {PiListChecksFill} from 'react-icons/pi'
 import Checklist from './checklist'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 
@@ -119,96 +119,96 @@ export default function ChildInfo() {
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
       <ScreenActionsMenu>
-        <Fade direction={'right'} className={'fade-wrapper'} duration={800} damping={0.2} triggerOnce={false} cascade={true}>
-          {/* ADD CHILD */}
-          <div
-            className="action-item"
-            onClick={() => {
-              setShowNewChildForm(true)
-              setState({...state, showScreenActions: false})
-            }}>
-            <div className="content">
-              <div className="svg-wrapper add-child">
-                <IoPersonAdd className={'add-child'} />
-              </div>
-              <p>
-                Add Child to Your Profile
-                <span className="subtitle">Store information about a child that has not been added to your profile yet</span>
-              </p>
+        {/*<Fade direction={'right'} className={'fade-wrapper'} duration={800} damping={0.2} triggerOnce={false} cascade={true}>*/}
+        {/* ADD CHILD */}
+        <div
+          className="action-item"
+          onClick={() => {
+            setShowNewChildForm(true)
+            setState({...state, showScreenActions: false})
+          }}>
+          <div className="content">
+            <div className="svg-wrapper add-child">
+              <IoPersonAdd className={'add-child'} />
             </div>
+            <p>
+              Add Child to Your Profile
+              <span className="subtitle">Store information about a child that has not been added to your profile yet</span>
+            </p>
           </div>
+        </div>
 
-          {/*  UNLINK CHILD */}
-          <div
-            className="action-item"
-            onClick={async () => {
-              await deleteChild()
-              setState({...state, showScreenActions: false})
-            }}>
-            <div className="content">
-              <div className="svg-wrapper add-child">
-                <IoPersonRemove className={'remove-child'} />
-              </div>
-              <p>
-                Unlink {activeInfoChild?.general?.name} from Your Profile
-                <span className="subtitle">Remove all information about {activeInfoChild?.general?.name}</span>
-              </p>
+        {/*  UNLINK CHILD */}
+        <div
+          className="action-item"
+          onClick={async () => {
+            await deleteChild()
+            setState({...state, showScreenActions: false})
+          }}>
+          <div className="content">
+            <div className="svg-wrapper add-child">
+              <IoPersonRemove className={'remove-child'} />
             </div>
+            <p>
+              Unlink {activeInfoChild?.general?.name} from Your Profile
+              <span className="subtitle">Remove all information about {activeInfoChild?.general?.name}</span>
+            </p>
           </div>
-          {/* CUSTOM INFO */}
+        </div>
+        {/* CUSTOM INFO */}
+        <div
+          className="action-item"
+          onClick={() => {
+            setShowInfoCard(true)
+            setState({...state, showScreenActions: false})
+          }}>
+          <div className="content">
+            <div className="svg-wrapper">
+              <FaWandMagicSparkles className={'magic'} />
+            </div>
+            <p>
+              Add your Own Info<span className="subtitle">Include personalized details about your child</span>
+            </p>
+          </div>
+        </div>
+
+        {/* VIEW ANOTHER CHILD */}
+        {currentUser?.children?.length > 1 && (
           <div
-            className="action-item"
             onClick={() => {
-              setShowInfoCard(true)
+              setShowSelectorCard(true)
               setState({...state, showScreenActions: false})
-            }}>
+            }}
+            className="action-item">
             <div className="content">
               <div className="svg-wrapper">
-                <FaWandMagicSparkles className={'magic'} />
+                <BiSolidUserCircle className={'child'} />
               </div>
               <p>
-                Add your Own Info<span className="subtitle">Include personalized details about your child</span>
+                View Another Child <p className="subtitle">Visit information details for a different child</p>
               </p>
             </div>
           </div>
+        )}
 
-          {/* VIEW ANOTHER CHILD */}
-          {currentUser?.children?.length > 1 && (
-            <div
-              onClick={() => {
-                setShowSelectorCard(true)
-                setState({...state, showScreenActions: false})
-              }}
-              className="action-item">
-              <div className="content">
-                <div className="svg-wrapper">
-                  <BiSolidUserCircle className={'child'} />
-                </div>
-                <p>
-                  View Another Child <p className="subtitle">Visit information details for a different child</p>
-                </p>
-              </div>
+        {/* EDIT/ADD CHECKLIST */}
+        <div
+          className="action-item"
+          onClick={() => {
+            setShowNewChecklistCard(true)
+            setState({...state, showScreenActions: false})
+          }}>
+          <div className="content">
+            <div className="svg-wrapper">
+              <PiListChecksFill className={'checklist'} />
             </div>
-          )}
-
-          {/* EDIT/ADD CHECKLIST */}
-          <div
-            className="action-item"
-            onClick={() => {
-              setShowNewChecklistCard(true)
-              setState({...state, showScreenActions: false})
-            }}>
-            <div className="content">
-              <div className="svg-wrapper">
-                <PiListChecksFill className={'checklist'} />
-              </div>
-              <p>
-                Configure Checklists <p className="subtitle">Add or edit checklists for transferring to or from a co-parent&#39;s home</p>
-              </p>
-            </div>
+            <p>
+              Configure Checklists <p className="subtitle">Add or edit checklists for transferring to or from a co-parent&#39;s home</p>
+            </p>
           </div>
-        </Fade>
-          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
+        </div>
+        {/*</Fade>*/}
+        <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
       </ScreenActionsMenu>
 
       {/* PAGE CONTAINER */}

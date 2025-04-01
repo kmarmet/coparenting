@@ -1,13 +1,12 @@
 // Path: src\components\navBar.jsx
-import React, { useContext, useEffect } from 'react'
+import React, {useContext, useEffect} from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
-import { Fade } from 'react-awesome-reveal'
-import { IoChatbubbles, IoChatbubblesOutline, IoNotifications, IoNotificationsOutline } from 'react-icons/io5'
-import { LuCalendarDays } from 'react-icons/lu'
-import { HiOutlineMenu } from 'react-icons/hi'
-import { PiPlusBold } from 'react-icons/pi'
-import { FaCalendarAlt } from 'react-icons/fa'
+import {Fade} from 'react-awesome-reveal'
+import {IoChatbubblesOutline, IoNotificationsOutline} from 'react-icons/io5'
+import {LuCalendarDays} from 'react-icons/lu'
+import {HiOutlineMenu} from 'react-icons/hi'
+import {PiPlusBold} from 'react-icons/pi'
 import Manager from '../managers/manager'
 
 export default function NavBar({children, navbarClass}) {
@@ -21,7 +20,6 @@ export default function NavBar({children, navbarClass}) {
       activeInfoChild: null,
     })
   }
-
 
   useEffect(() => {
     const addNewButton = document.getElementById('add-new-button')
@@ -43,7 +41,7 @@ export default function NavBar({children, navbarClass}) {
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.calendar)}
                 className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
-                {currentScreen === ScreenNames.calendar ? <FaCalendarAlt className={'calendar fs-26'} /> : <LuCalendarDays className={'calendar'} />}
+                <LuCalendarDays className={'calendar'} />
                 <p>Calendar</p>
               </div>
 
@@ -53,7 +51,7 @@ export default function NavBar({children, navbarClass}) {
                   id="chat-menu-item"
                   onClick={() => changeCurrentScreen(ScreenNames.chats)}
                   className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
-                  {currentScreen === ScreenNames.chats ? <IoChatbubbles className={'chats'} /> : <IoChatbubblesOutline className={'chats'} />}
+                  <IoChatbubblesOutline className={'chats'} />
                   <p>Chats</p>
                 </div>
               )}
@@ -67,11 +65,7 @@ export default function NavBar({children, navbarClass}) {
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.notifications)}
                 className={`${currentScreen === ScreenNames.notifications ? 'active menu-item notifications' : 'menu-item notifications'}`}>
-                {currentScreen === ScreenNames.notifications ? (
-                  <IoNotifications className={'notifications'} />
-                ) : (
-                  <IoNotificationsOutline className={'notifications'} />
-                )}
+                <IoNotificationsOutline className={'notifications active'} />
                 <p>Notifications</p>
                 {notificationCount > 0 && <span className="badge"></span>}
               </div>

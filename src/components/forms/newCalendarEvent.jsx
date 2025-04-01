@@ -35,16 +35,15 @@ import ModelNames from '/src/models/modelNames'
 import ToggleButton from '../shared/toggleButton'
 import CreationForms from '../../constants/creationForms'
 import Label from '../shared/label'
-import DateManager from '../../managers/dateManager'
 
 export default function NewCalendarEvent() {
   // APP STATE
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey, creationFormToShow, defaultDate} = state
+  const {currentUser, theme, refreshKey, creationFormToShow} = state
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
-  const [eventStartDate, setEventStartDate] = useState(defaultDate)
+  const [eventStartDate, setEventStartDate] = useState()
   const [eventEndDate, setEventEndDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
   const [eventTitle, setEventTitle] = useState('')
@@ -69,7 +68,7 @@ export default function NewCalendarEvent() {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
 
-  const resetForm = async () => {
+  const resetForm = async (showSuccessAlert = false) => {
     Manager.resetForm('new-event-form')
     setEventLength(EventLengths.single)
     setEventStartDate('')
@@ -92,7 +91,13 @@ export default function NewCalendarEvent() {
     setShowReminders(false)
     setIncludeChildren(false)
     setIsVisitation(false)
-    setState({...state, showBottomMenu: false, creationFormToShow: '', refreshKey: Manager.getUid(), successAlertMessage: 'Event Created'})
+    setState({
+      ...state,
+      showBottomMenu: false,
+      creationFormToShow: '',
+      refreshKey: Manager.getUid(),
+      successAlertMessage: showSuccessAlert ? 'Event Created' : null,
+    })
   }
 
   const submit = async () => {
@@ -100,14 +105,14 @@ export default function NewCalendarEvent() {
     const newEvent = new CalendarEvent()
 
     // Required
-    newEvent.title = eventTitle.trim()
+    newEvent.title = StringManager.formatEventTitle(eventTitle)
     if (isVisitation) {
       newEvent.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Visitation`
     }
     if (DomManager.isMobile()) {
-      newEvent.startDate = moment(defaultDate, 'YYYY-MM-DD').format(DateFormats.dateForDb)
+      newEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
     } else {
-      newEvent.startDate = moment(defaultDate).format(DateFormats.dateForDb)
+      newEvent.startDate = moment(eventEndDate).format(DateFormats.dateForDb)
     }
     newEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
     newEvent.startTime = moment(eventStartTime).format(DateFormats.timeForDb)
@@ -157,7 +162,7 @@ export default function NewCalendarEvent() {
         return false
       }
 
-      if (!Manager.isValid(moment(defaultDate, 'YYYY-MM-DD').format(DateFormats.dateForDb))) {
+      if (!Manager.isValid(moment(eventStartDate).format(DateFormats.dateForDb))) {
         AlertManager.throwError('Please select an event date')
         return false
       }
@@ -165,6 +170,7 @@ export default function NewCalendarEvent() {
       //#endregion VALIDATION
 
       MyConfetti.fire()
+
       const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
 
       //#region MULTIPLE DATES
@@ -203,9 +209,11 @@ export default function NewCalendarEvent() {
         )
         await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
+
       //#endregion MULTIPLE DATES
 
       //#region SINGLE DATE
+
       if (!eventIsRecurring && !eventIsDateRange && !eventIsCloned) {
         await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
 
@@ -214,7 +222,7 @@ export default function NewCalendarEvent() {
           eventShareWith,
           currentUser,
           `New Calendar Event`,
-          `${eventTitle} on ${DateManager.getValidDate(eventStartDate)}`,
+          `${eventTitle} on ${moment(eventStartDate).format(DateFormats.readableMonthAndDay)}`,
           ActivityCategory.calendar
         )
       }
@@ -388,28 +396,20 @@ export default function NewCalendarEvent() {
               }}
             />
 
-            {/* FROM DATE */}
+            {/* START DATE */}
             <div className="flex gap">
-              {eventLength === EventLengths.single && !DomManager.isMobile() && (
+              {eventLength === EventLengths.single && DomManager.isMobile() && (
                 <InputWrapper labelText={'Date'} inputType={'date'} required={true}>
                   <MobileDatePicker
                     onOpen={addThemeToDatePickers}
-                    className={`${theme} m-0  event-from-date mui-input`}
+                    showDaysOutsideCurrentMonth={true}
+                    views={['month', 'day']}
+                    className={`${theme} event-from-date mui-input mobile-date-picker`}
                     onAccept={(e) => {
                       setEventStartDate(e)
                     }}
                   />
                 </InputWrapper>
-              )}
-              {eventLength === EventLengths.single && DomManager.isMobile() && (
-                <InputWrapper
-                  onChange={(e) => setState({...state, defaultDate: e.target.value})}
-                  useNativeDate={true}
-                  labelText={'Date'}
-                  inputType={'date'}
-                  defaultValue={defaultDate}
-                  required={true}
-                />
               )}
             </div>
 
@@ -548,21 +548,11 @@ export default function NewCalendarEvent() {
 
                     {Manager.isValid(repeatInterval) && (
                       <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
-                        {!DomManager.isMobile() && (
-                          <MobileDatePicker
-                            onOpen={addThemeToDatePickers}
-                            className={`${theme}  w-100`}
-                            onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))}
-                          />
-                        )}
-                        {DomManager.isMobile() && (
-                          <input
-                            type="date"
-                            onChange={(e) => {
-                              setEventEndDate(moment(e.target.value).format('MM-DD-yyyy'))
-                            }}
-                          />
-                        )}
+                        <MobileDatePicker
+                          onOpen={addThemeToDatePickers}
+                          className={`${theme}  w-100`}
+                          onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))}
+                        />
                       </InputWrapper>
                     )}
                   </AccordionDetails>

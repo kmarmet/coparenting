@@ -1,10 +1,9 @@
 // Path: src\components\shared\inputWrapper.jsx
-import React, {useContext, useEffect} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {DebounceInput} from 'react-debounce-input'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager'
 import Label from './label'
-import moment from 'moment'
 
 const DebounceLengths = {
   short: 500,
@@ -28,8 +27,9 @@ function InputWrapper({
   customDebounceDelay = DebounceLengths.medium,
 }) {
   const {state, setState} = useContext(globalState)
-  const {defaultDate, refreshKey} = state
+  const {refreshKey} = state
   const noInputTypes = ['location', 'textarea', 'date']
+  const [startDate, setStartDate] = useState(new Date())
 
   // Set the height of the textarea
   useEffect(() => {
@@ -78,7 +78,6 @@ function InputWrapper({
             value={defaultValue}
             element={inputType}
             minLength={2}
-            autofocus={true}
             className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
             onChange={onChange}
             debounceTimeout={isDebounced ? (customDebounceDelay ? customDebounceDelay : DebounceLengths.long) : 0}
@@ -96,16 +95,9 @@ function InputWrapper({
         </>
       )}
 
-      {/* NATIVE DATE */}
-      {noInputTypes.includes(inputType) && useNativeDate && (
-        <input
-          className="date-input"
-          type="date"
-          value={Manager.isValid(defaultValue) ? moment(defaultValue).format('YYYY-MM-DD') : null}
-          onChange={onChange}
-        />
-      )}
-      {noInputTypes.includes(inputType) && !useNativeDate && <> {children}</>}
+      {/* DATES */}
+      {noInputTypes.includes(inputType) && children}
+
       {childrenOnly && <>{children}</>}
 
       {/* TEXTAREA */}

@@ -1,21 +1,21 @@
 // Path: src\components\screens\swapRequests.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context.js'
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
 import moment from 'moment'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
+import {child, getDatabase, onValue, ref} from 'firebase/database'
 import SwapDurations from '/src/constants/swapDurations.js'
 import NotificationManager from '/src/managers/notificationManager'
 import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../navBar'
-import { IoAdd, IoHourglassOutline } from 'react-icons/io5'
+import {IoAdd, IoHourglassOutline} from 'react-icons/io5'
 import AlertManager from '/src/managers/alertManager'
 import Modal from '/src/components/shared/modal'
-import { PiCheckBold, PiSwapDuotone, PiUserCircleDuotone } from 'react-icons/pi'
-import { CgDetailsMore } from 'react-icons/cg'
-import { Fade } from 'react-awesome-reveal'
-import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import {PiCheckBold, PiSwapDuotone, PiUserCircleDuotone} from 'react-icons/pi'
+import {CgDetailsMore} from 'react-icons/cg'
+import {Fade} from 'react-awesome-reveal'
+import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import DateManager from '/src/managers/dateManager'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import DomManager from '/src/managers/domManager'
@@ -26,8 +26,8 @@ import ObjectManager from '/src/managers/objectManager'
 import ModelNames from '/src/models/modelNames'
 import ActivityCategory from '/src/models/activityCategory'
 import StringManager from '/src/managers/stringManager'
-import { FaChildren } from 'react-icons/fa6'
-import { TbCalendarCheck } from 'react-icons/tb'
+import {FaChildren} from 'react-icons/fa6'
+import {TbCalendarCheck} from 'react-icons/tb'
 import ViewSelector from '../shared/viewSelector'
 import StringAsHtmlElement from '../shared/stringAsHtmlElement'
 import DB_UserScoped from '../../database/db_userScoped.js'
@@ -41,9 +41,9 @@ const Decisions = {
 }
 
 export default function SwapRequests() {
-  const { state, setState } = useContext(globalState)
+  const {state, setState} = useContext(globalState)
   const [existingRequests, setExistingRequests] = useState([])
-  const { currentUser, theme, authUser } = state
+  const {currentUser, theme, authUser} = state
   const [showCard, setShowCard] = useState(false)
   const [activeRequest, setActiveRequest] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
@@ -63,12 +63,12 @@ export default function SwapRequests() {
     setIncludeChildren(false)
     setStartDate('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({ ...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid() })
+    setState({...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid()})
   }
 
   const update = async () => {
     // Fill -> overwrite
-    let updatedRequest = { ...activeRequest }
+    let updatedRequest = {...activeRequest}
     updatedRequest.startDate = startDate
     updatedRequest.responseDueDate = responseDueDate
     updatedRequest.children = requestChildren
@@ -202,8 +202,8 @@ export default function SwapRequests() {
           setView('details')
           setActiveRequest(null)
         }}
+        viewSelector={<ViewSelector labels={['Details', 'Edit']} visibleLabels={['Details']} updateState={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
-        <ViewSelector labels={['Details', 'Edit']} visibleLabels={['Details']} updateState={(e) => setView(e.toLowerCase())} />
         {/* DETAILS */}
         {view === 'details' && (
           <Fade direction={'up'} duration={600} triggerOnce={true}>
@@ -341,25 +341,14 @@ export default function SwapRequests() {
             )}
 
             {/* RESPONSE DUE DATE */}
-            {!DomManager.isMobile() && (
-              <InputWrapper inputType={'date'} labelText={'Respond by'}>
-                <MobileDatePicker
-                  onOpen={addThemeToDatePickers}
-                  className={`${theme}  w-100`}
-                  defaultValue={moment(activeRequest?.responseDueDate)}
-                  onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
-                />
-              </InputWrapper>
-            )}
-            {DomManager.isMobile() && (
-              <InputWrapper
-                inputType={'date'}
-                labelText={'Respond by'}
-                useNativeDate={true}
+            <InputWrapper inputType={'date'} labelText={'Respond by'}>
+              <MobileDatePicker
+                onOpen={addThemeToDatePickers}
+                className={`${theme}  w-100`}
                 defaultValue={moment(activeRequest?.responseDueDate)}
-                onChange={(day) => setResponseDueDate(moment(day.target.value).format(DateFormats.dateForDb))}
+                onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
               />
-            )}
+            </InputWrapper>
 
             <Spacer height={5} />
             {/* INCLUDE CHILDREN */}
@@ -485,11 +474,7 @@ export default function SwapRequests() {
           </div>
         </Fade>
       </div>
-      {!showCard && !showDetails && (
-        <NavBar navbarClass={'swap-requests'}>
-          <IoAdd id={'add-new-button'} onClick={() => setShowCard(true)} />
-        </NavBar>
-      )}
+      <NavBar />
     </>
   )
 }

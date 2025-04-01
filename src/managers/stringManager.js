@@ -138,7 +138,7 @@ StringManager = {
     return str;
   },
   removeSpecialChars: function(str) {
-    return str.replace(/[^a-zA-Z0-9 ]/g, '');
+    return str.replaceAll("~", "").replaceAll("#", "").replaceAll("^", "").replaceAll("`", "").replaceAll("`", "");
   },
   formatDbProp: function(prop) {
     prop = StringManager.toCamelCase(prop).replaceAll(' ', '');

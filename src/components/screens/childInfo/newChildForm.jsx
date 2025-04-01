@@ -1,15 +1,15 @@
 // Path: src\components\screens\childInfo\newChildForm.jsx
 import moment from 'moment'
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../../context'
-import { TiUserAdd } from 'react-icons/ti'
+import {TiUserAdd} from 'react-icons/ti'
 
 import Manager from '../../../managers/manager'
 import General from '../../../models/child/general'
 import Child from '../../../models/child/child'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
 import DB_UserScoped from '../../../database/db_userScoped'
-import { MobileDatePicker } from '@mui/x-date-pickers-pro'
+import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import ModelNames from '../../../models/modelNames'
 import InputWrapper from '../../shared/inputWrapper'
 import Modal from '../../shared/modal'
@@ -19,7 +19,6 @@ import UploadInputs from '../../shared/uploadInputs'
 import ImageManager from '../../../managers/imageManager'
 import FirebaseStorage from '../../../database/firebaseStorage'
 import Label from '../../shared/label'
-import DomManager from '../../../managers/domManager.js'
 import AddressInput from '/src/components/shared/addressInput.jsx'
 import StringManager from '../../../managers/stringManager.js'
 import CalendarManager from '../../../managers/calendarManager'
@@ -92,11 +91,10 @@ const NewChildForm = ({hideCard, showCard}) => {
 
       await resetForm()
 
-      const updatedCurrentUser  = await DB_UserScoped.getCurrentUser(authUser?.email)
-      setState({ ...state, currentUser: updatedCurrentUser, activeInfoChild: cleanChild })
+      const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
+      setState({...state, currentUser: updatedCurrentUser, activeInfoChild: cleanChild})
     }
   }
-
 
   const handleGenderSelect = (e) => {
     Manager.handleCheckboxSelection(
@@ -107,8 +105,6 @@ const NewChildForm = ({hideCard, showCard}) => {
       () => {}
     )
   }
-
-
 
   return (
     <Modal
@@ -125,20 +121,9 @@ const NewChildForm = ({hideCard, showCard}) => {
           {/* NAME */}
           <InputWrapper labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
           <InputWrapper labelText={'Phone Number'} required={false} onChange={(e) => setPhoneNumber(e.target.value)} />
-          {!DomManager.isMobile() && (
-            <InputWrapper labelText={'Date of Birth'} required={true} inputType={'date'}>
-              <MobileDatePicker onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
-            </InputWrapper>
-          )}
-          {DomManager.isMobile() && (
-            <InputWrapper
-              useNativeDate={true}
-              labelText={'Date of Birth'}
-              required={true}
-              inputType={'date'}
-              onChange={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))}
-            />
-          )}
+          <InputWrapper labelText={'Date of Birth'} required={true} inputType={'date'}>
+            <MobileDatePicker onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
+          </InputWrapper>
           <InputWrapper labelText={'Home Address'} required={true} inputType={'location'}>
             <AddressInput
               onSelection={(place) => {
