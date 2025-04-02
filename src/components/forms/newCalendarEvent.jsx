@@ -39,7 +39,7 @@ import Label from '../shared/label'
 export default function NewCalendarEvent() {
   // APP STATE
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey, creationFormToShow} = state
+  const {currentUser, theme, refreshKey, creationFormToShow, dateToEdit} = state
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
@@ -398,10 +398,10 @@ export default function NewCalendarEvent() {
 
             {/* START DATE */}
             <div className="flex gap">
-              {eventLength === EventLengths.single && DomManager.isMobile() && (
+              {eventLength === EventLengths.single && (
                 <InputWrapper labelText={'Date'} inputType={'date'} required={true}>
                   <MobileDatePicker
-                    onOpen={addThemeToDatePickers}
+                    defaultValue={moment(dateToEdit)}
                     showDaysOutsideCurrentMonth={true}
                     views={['month', 'day']}
                     className={`${theme} event-from-date mui-input mobile-date-picker`}

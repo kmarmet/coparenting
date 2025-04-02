@@ -4,13 +4,16 @@ var ConversationMessage;
 import Manager from "../../managers/manager";
 
 export default ConversationMessage = class ConversationMessage {
-  constructor(id = Manager.getUid(), sender = '', recipient = '', timestamp = '', readState = 'delivered', message = '') {
+  constructor(id = Manager.getUid(), sender = '', recipient = '', timestamp = '', message = '', recipientKey = '', senderKey = '') {
     this.id = id;
     this.sender = sender;
     this.recipient = recipient;
     this.timestamp = timestamp;
-    this.readState = readState;
     this.message = message;
+    this.recipientKey = recipientKey;
+    this.senderKey = senderKey;
   }
 
 };
+
+//# sourceMappingURL=chatMessage.js.map

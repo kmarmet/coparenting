@@ -142,10 +142,31 @@
       flex-wrap: nowrap;
       position: relative;
       padding-bottom: 8px;
+      @include row;
+
+      .last-message {
+        max-width: 400px;
+        color: $darkGrey;
+        font-size: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-height: 1.2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 90%;
+      }
 
       .flex {
         align-items: center;
         width: 100%;
+        justify-content: space-between;
+        .column {
+          &.left {
+            width: 90%;
+          }
+        }
+
         .coparent-name {
           margin: 0;
           padding: 0;
@@ -185,9 +206,9 @@
         display: flex;
         position: relative;
         right: 0;
-        font-weight: $fwMedium;
+        font-weight: $fwRegular;
         color: $primaryText;
-        font-size: 20px;
+        font-size: 18px;
         line-height: 1;
         vertical-align: middle;
         width: 100%;
@@ -199,19 +220,6 @@
           width: 28vw;
         }
 
-        .last-message {
-          max-width: 400px;
-          color: black;
-          opacity: 0.7;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          line-height: 1.3;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          padding-top: 3px;
-          width: 95%;
-        }
         .timestamp {
           opacity: 0.7;
           font-size: 15px;
@@ -228,14 +236,14 @@
 }
 
 #chat-wrapper {
-  display: flex;
-  flex-direction: column;
   width: 100vw;
   overflow: hidden;
   background: white;
   height: 100vh;
   justify-content: flex-start;
   padding-top: $statusBarHeight;
+  display: grid;
+  grid-template-rows: auto 2fr auto;
 
   .search-results {
     display: none;
@@ -509,7 +517,7 @@
   }
 
   .form {
-    width: 100%;
+    width: 100vw;
     padding: 15px 15px $statusBarHeight 15px;
     z-index: 9999;
     backdrop-filter: blur(50px);

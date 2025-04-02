@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 // Path: src\components\screens\archives.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
 import Label from '/src/components/shared/label.jsx'
@@ -6,13 +6,13 @@ import SelectDropdown from '/src/components/shared/selectDropdown.jsx'
 import DateFormats from '/src/constants/dateFormats.coffee'
 import DatasetManager from '/src/managers/datasetManager.coffee'
 import Manager from '/src/managers/manager'
-import RecordsManager from '/src/managers/recordsManager.coffee'
+import ArchivesManager from '/src/managers/archivesManager.coffee'
 import SecurityManager from '/src/managers/securityManager.coffee'
 import StringManager from '/src/managers/stringManager.coffee'
 import MenuItem from '@mui/material/MenuItem'
 import moment from 'moment'
-import { Fade } from 'react-awesome-reveal'
-import { RiFileExcel2Fill } from 'react-icons/ri'
+import {Fade} from 'react-awesome-reveal'
+import {RiFileExcel2Fill} from 'react-icons/ri'
 import globalState from '../../context'
 import NavBar from '../navBar'
 import Spacer from '../shared/spacer'
@@ -133,9 +133,9 @@ export default function Archives() {
     }
   }
 
-  const exportExpenses = () => RecordsManager.createCSV(expenses, 'Peaceful_coParenting_Exported_Expenses', 'expenses')
+  const exportExpenses = () => ArchivesManager.createCSV(expenses, 'Peaceful_coParenting_Exported_Expenses', 'expenses')
 
-  const exportChat = () => RecordsManager.createCSV(messagesToExport, 'Peaceful_coParenting_Exported_Chat', 'chat')
+  const exportChat = () => ArchivesManager.createCSV(messagesToExport, 'Peaceful_coParenting_Exported_Chat', 'chat')
 
   const getChats = async () => {
     const allChats = await SecurityManager.getChats(currentUser)
@@ -202,7 +202,6 @@ export default function Archives() {
             />
           </>
         )}
-
 
         {/* SORTING */}
         {recordType === RecordTypes.Expenses && Manager.isValid(expenses) && (

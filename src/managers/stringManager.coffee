@@ -164,7 +164,7 @@ StringManager = {
     if uppercase
       title = StringManager.uppercaseFirstLetterOfAllWords(title).trim()
 
-    title = title.replaceAll(" To ", "to")
+    title = title.replaceAll(" To ", " to ")
       .replaceAll(" A ", " a ")
       .replaceAll(" An ", " an ")
       .replaceAll(" Or ", " or ")

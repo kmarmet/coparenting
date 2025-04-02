@@ -6,6 +6,7 @@ export default class ConversationMessage
     @sender = ''
     @recipient = ''
     @timestamp = ''
-    @readState = 'delivered'
     @message = ''
+    @recipientKey = ''
+    @senderKey = ''
   ) ->

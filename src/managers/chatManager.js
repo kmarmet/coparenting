@@ -1,5 +1,5 @@
 // Path: src\managers\chatManager.js
-import { child, getDatabase, ref, set } from 'firebase/database'
+import {child, getDatabase, ref, set} from 'firebase/database'
 import Manager from '../managers/manager'
 import DB from '../database/DB'
 import SecurityManager from './securityManager'
@@ -86,8 +86,8 @@ const ChatManager = {
   getMessages: async (chatId) => {
     return await DB.getTable(`${DB.tables.chatMessages}/${chatId}`)
   },
-  pauseChat: async (currentUser, coparent) => {
-    const securedChat = await ChatManager.getScopedChat(currentUser, coparent?.key)
+  pauseChat: async (currentUser, coparentKey) => {
+    const securedChat = await ChatManager.getScopedChat(currentUser, coparentKey)
     try {
       let isPausedFor = securedChat.isPausedFor
 
@@ -100,20 +100,20 @@ const ChatManager = {
       securedChat.isPausedFor = isPausedFor
       // Set chat inactive
       await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser?.key}`, securedChat, securedChat.id)
-      await DB.updateEntireRecord(`${DB.tables.chats}/${coparent?.key}`, securedChat, securedChat.id)
+      await DB.updateEntireRecord(`${DB.tables.chats}/${coparentKey}`, securedChat, securedChat.id)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }
   },
-  unpauseChat: async (currentUser, coparent) => {
-    const securedChat = await ChatManager.getScopedChat(currentUser, coparent?.key)
+  unpauseChat: async (currentUser, coparentKey) => {
+    const securedChat = await ChatManager.getScopedChat(currentUser, coparentKey)
     try {
       let isPausedFor = securedChat?.isPausedFor?.filter((x) => x !== currentUser?.key)
       isPausedFor = DatasetManager.getUniqueArray(isPausedFor, true)
       securedChat.isPausedFor = isPausedFor
       // Set chat inactive
       await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser?.key}`, securedChat, securedChat.id)
-      await DB.updateEntireRecord(`${DB.tables.chats}/${coparent?.key}`, securedChat, securedChat.id)
+      await DB.updateEntireRecord(`${DB.tables.chats}/${coparentKey}`, securedChat, securedChat.id)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error)
     }

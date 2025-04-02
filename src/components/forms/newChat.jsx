@@ -1,19 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import Modal from '../shared/modal'
 import CreationForms from '../../constants/creationForms'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import globalState from '../../context'
 import DB_UserScoped from '../../database/db_userScoped'
-import { FaUserCircle } from 'react-icons/fa'
+import {FaUserCircle} from 'react-icons/fa'
 import AlertManager from '../../managers/alertManager'
 import ScreenNames from '../../constants/screenNames'
 import SecurityManager from '../../managers/securityManager'
-import { BiMessageRoundedAdd } from 'react-icons/bi'
+import {BiMessageRoundedAdd} from 'react-icons/bi'
 
 const NewChatSelector = () => {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, creationFormToShow} = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, creationFormToShow} = state
   const [activeChatKeys, setActiveChatKeys] = useState([])
 
   const getSecuredChats = async () => {
@@ -21,7 +21,6 @@ const NewChatSelector = () => {
     const members = securedChats.map((x) => x.members).flat()
     const activeChats = members.filter((x) => x?.key && x?.key !== currentUser?.key)
     const activeChatKeys = activeChats.map((x) => x?.key)
-    console.log(activeChatKeys)
     setActiveChatKeys(activeChatKeys)
   }
 
@@ -30,15 +29,15 @@ const NewChatSelector = () => {
     let userCoparent = await DB_UserScoped.getCoparentByKey(coparent?.key, currentUser)
     if (!Manager.isValid(userCoparent)) {
       AlertManager.oneButtonAlert(
-        'Co-Parent Account not Found',
+        'Co-Parent or Child Account not Found',
         'This co-parent may have closed their account, however, you can still view the messages',
         null,
         () => {
-          setState({ ...state, currentScreen: ScreenNames.chats, messageRecipient: coparent })
+          setState({...state, currentScreen: ScreenNames.chats, messageRecipient: coparent})
         }
       )
     } else {
-      setState({ ...state, currentScreen: ScreenNames.chat, messageRecipient: userCoparent, showCreationMenu: false, creationFormToShow: null })
+      setState({...state, currentScreen: ScreenNames.chat, messageRecipient: userCoparent, showCreationMenu: false, creationFormToShow: null})
     }
   }
 
@@ -53,12 +52,12 @@ const NewChatSelector = () => {
       hasSubmitButton={false}
       className="new-chat"
       wrapperClass="new-chat"
-      onClose={() => setState({ ...state, showCreationMenu: false, creationFormToShow: null , refreshKey: Manager.getUid()})}
+      onClose={() => setState({...state, showCreationMenu: false, creationFormToShow: null, refreshKey: Manager.getUid()})}
       showCard={creationFormToShow === CreationForms.chat}
-      titleIcon={<BiMessageRoundedAdd/>}
+      titleIcon={<BiMessageRoundedAdd />}
       title={'Create Chat'}>
       {activeChatKeys.length === currentUser?.coparents?.length && (
-          <p className="center-text italic">You have an existing chat with all children and/or co-parents</p>
+        <p className="center-text italic">You have an existing chat with all children and/or co-parents</p>
       )}
       {/* COPARENTS */}
       {currentUser?.accountType === 'parent' &&
@@ -69,7 +68,7 @@ const NewChatSelector = () => {
               {!activeChatKeys.includes(coparent?.key) && (
                 <div id="users-wrapper">
                   <div className="user-wrapper">
-                    <FaUserCircle/>
+                    <FaUserCircle />
                     <p
                       className="coparent-name new-thread-coparent-name"
                       onClick={() => {

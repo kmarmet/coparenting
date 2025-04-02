@@ -19,6 +19,7 @@ import EmailManager from '../../../managers/emailManager'
 import InputWrapper from '../../shared/inputWrapper'
 import NavBar from '../../navBar'
 import Label from '../../shared/label'
+import ChatManager from '../../../managers/chatManager'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
@@ -30,8 +31,25 @@ const Chats = () => {
   const [inviteeEmail, setInviteeEmail] = useState('')
 
   const getSecuredChats = async () => {
-    let securedChats = await SecurityManager.getChats(currentUser)
-    setChats(securedChats)
+    const chats = await SecurityManager.getChats(currentUser)
+    const iterableChats = []
+    if (Manager.isValid(chats)) {
+      for (let chat of chats) {
+        const chatMessages = await ChatManager.getMessages(chat.id)
+        const otherMemberMessages = chatMessages.filter((message) => message?.senderKey !== currentUser?.key)
+        let lastMessage = ''
+        if (Manager.isValid(chatMessages)) {
+          lastMessage = otherMemberMessages[otherMemberMessages.length - 1]['message']
+        }
+        iterableChats.push({
+          lastMessage: lastMessage,
+          member: chat.members.find((member) => member?.key !== currentUser.key),
+          id: chat.id,
+          isPausedFor: chat?.isPausedFor,
+        })
+      }
+    }
+    setChats(iterableChats)
   }
 
   const onTableChange = async () => {
@@ -114,11 +132,11 @@ const Chats = () => {
         </Accordion>
         <Spacer height={8} />
         <Fade direction={'up'} duration={800} triggerOnce={true} className={'chats-fade-wrapper'}>
+          <></>
           {/* CHAT ROWS */}
           {chats.length > 0 &&
             chats.map((chat, index) => {
-              const coparent = chat?.members?.filter((x) => x.key !== currentUser?.key)[0]
-              return <ChatRow key={index} coparent={coparent} chat={chat} index={index} />
+              return <ChatRow key={index} chat={chat} index={index} />
             })}
         </Fade>
         <NavBar />

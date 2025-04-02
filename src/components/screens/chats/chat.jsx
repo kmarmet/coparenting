@@ -1,6 +1,6 @@
 // Path: src\components\screens\chats\chat.jsx
-import React, { useContext, useEffect, useState } from 'react'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
+import React, {useContext, useEffect, useState} from 'react'
+import {child, getDatabase, onValue, ref} from 'firebase/database'
 import moment from 'moment'
 import ScreenNames from '/src/constants/screenNames'
 import globalState from '/src/context.js'
@@ -8,18 +8,18 @@ import DB from '/src/database/DB'
 import ChatMessage from '/src/models/chat/chatMessage'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
-import { MdOutlineSearchOff } from 'react-icons/md'
+import {MdOutlineSearchOff} from 'react-icons/md'
 import ChatManager from '/src/managers/chatManager.js'
 import DateFormats from '/src/constants/dateFormats'
-import { PiBookmarksSimpleDuotone } from 'react-icons/pi'
+import {PiBookmarksSimpleDuotone} from 'react-icons/pi'
 import ModelNames from '/src/models/modelNames'
-import { Fade } from 'react-awesome-reveal'
-import { IoChevronBack, IoSend } from 'react-icons/io5'
+import {Fade} from 'react-awesome-reveal'
+import {IoChevronBack, IoSend} from 'react-icons/io5'
 import Modal from '/src/components/shared/modal'
-import { TbMessageCircleSearch } from 'react-icons/tb'
-import { BsBookmarkPlus, BsFillBookmarksFill, BsFillBookmarkStarFill } from 'react-icons/bs'
-import { DebounceInput } from 'react-debounce-input'
-import { useLongPress } from 'use-long-press'
+import {TbMessageCircleSearch} from 'react-icons/tb'
+import {BsBookmarkPlus, BsFillBookmarksFill, BsFillBookmarkStarFill} from 'react-icons/bs'
+import {DebounceInput} from 'react-debounce-input'
+import {useLongPress} from 'use-long-press'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
 import InputWrapper from '/src/components/shared/inputWrapper'
@@ -29,8 +29,8 @@ import ChatThread from '/src/models/chat/chatThread'
 import StringManager from '/src/managers/stringManager.coffee'
 
 const Chats = () => {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, messageRecipient } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, messageRecipient} = state
   const [existingChat, setExistingChat] = useState(null)
   const [messagesToLoop, setMessagesToLoop] = useState(null)
   const [searchResults, setSearchResults] = useState([])
@@ -43,7 +43,6 @@ const Chats = () => {
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [toneObject, setToneObject] = useState()
   const [inSearchMode, setInSearchMode] = useState(false)
-
 
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
@@ -87,17 +86,18 @@ const Chats = () => {
 
     const cleanedChat = ObjectManager.cleanObject(chat, ModelNames.chatThread)
     cleanedChat.isPausedFor = []
-    let cleanedRecipientChat = { ...cleanedChat }
+    let cleanedRecipientChat = {...cleanedChat}
     cleanedRecipientChat.isPausedFor = []
     cleanedRecipientChat.ownerKey = messageRecipient.key
 
     // Message
+    chatMessage.senderKey = currentUser?.key
     chatMessage.id = Manager.getUid()
     chatMessage.timestamp = moment().format(DateFormats.fullDatetime)
     chatMessage.sender = currentUser?.name
     chatMessage.recipient = messageRecipient.name
+    chatMessage.recipientKey = messageRecipient.key
     chatMessage.message = messageText
-    chatMessage.readState = 'delivered'
     chatMessage.notificationSent = false
 
     const cleanMessage = ObjectManager.cleanObject(chatMessage, ModelNames.chatMessage)
@@ -300,20 +300,26 @@ const Chats = () => {
               className="flex"
               id="user-info"
               onClick={() => {
-                setState({ ...state, currentScreen: ScreenNames.chats })
+                setState({...state, currentScreen: ScreenNames.chats})
                 Manager.showPageContainer('show')
               }}>
               <IoChevronBack />
               <p id="user-name">{StringManager.getFirstNameOnly(messageRecipient?.name)}</p>
             </div>
             <div id="right-side" className="flex">
-              {inSearchMode ? <MdOutlineSearchOff onClick={() => {
-                setShowSearchInput(false)
-                setShowSearchCard(false)
-                setInSearchMode(false)
-                setSearchResults([])
-                scrollToLatestMessage()
-              }}/> :  <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />}
+              {inSearchMode ? (
+                <MdOutlineSearchOff
+                  onClick={() => {
+                    setShowSearchInput(false)
+                    setShowSearchCard(false)
+                    setInSearchMode(false)
+                    setSearchResults([])
+                    scrollToLatestMessage()
+                  }}
+                />
+              ) : (
+                <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />
+              )}
 
               {bookmarks.length > 0 && (
                 <BsFillBookmarksFill
@@ -379,34 +385,34 @@ const Chats = () => {
             {/* ITERATE DEFAULT MESSAGES */}
             <div id="default-messages">
               <Fade direction={'up'} duration={300} triggerOnce={true} damping={0.2} cascade={true}>
-
-              {Manager.isValid(messagesToLoop) &&
-                messagesToLoop.map((message, index) => {
-                  // Determine bookmark class
-                  let isBookmarked = false
-                  if (bookmarks?.filter((x) => x.id === message.id).length > 0) {
-                    isBookmarked = true
-                  }
-                  let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do (h:mma)')
-                  // Message Sent Today
-                  if (moment(message.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
-                    timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
-                  }
-                  return (
-                    <div key={index} className={'message-fade-wrapper'}>
-                      <div className="flex">
-                        <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
-                          {message.message}
-                        </p>
-                        {isBookmarked && <BsFillBookmarkStarFill className={'active'} onClick={() => toggleMessageBookmark(message)} />}
-                        {!isBookmarked && (
-                          <BsBookmarkPlus className={isBookmarked ? 'active' : ''} onClick={() => toggleMessageBookmark(message, false)} />
-                        )}
+                <></>
+                {Manager.isValid(messagesToLoop) &&
+                  messagesToLoop.map((message, index) => {
+                    // Determine bookmark class
+                    let isBookmarked = false
+                    if (bookmarks?.filter((x) => x.id === message.id).length > 0) {
+                      isBookmarked = true
+                    }
+                    let timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('ddd, MMMM Do (h:mma)')
+                    // Message Sent Today
+                    if (moment(message.timestamp, DateFormats.fullDatetime).isSame(moment(), 'day')) {
+                      timestamp = moment(message.timestamp, DateFormats.fullDatetime).format('h:mma')
+                    }
+                    return (
+                      <div key={index} className={'message-fade-wrapper'}>
+                        <div className="flex">
+                          <p {...bind()} className={message.sender === currentUser?.name ? 'from message' : 'to message'}>
+                            {message.message}
+                          </p>
+                          {isBookmarked && <BsFillBookmarkStarFill className={'active'} onClick={() => toggleMessageBookmark(message)} />}
+                          {!isBookmarked && (
+                            <BsBookmarkPlus className={isBookmarked ? 'active' : ''} onClick={() => toggleMessageBookmark(message, false)} />
+                          )}
+                        </div>
+                        <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
                       </div>
-                      <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
               </Fade>
             </div>
 
